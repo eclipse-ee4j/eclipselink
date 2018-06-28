@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: EclipseLink CORBA Extension
+Bundle-SymbolicName: org.eclipse.persistence.corba
+Bundle-Version: 3.0.0.qualifier
+Bundle-ClassPath: .
+Bundle-Vendor: Eclipse.org - EclipseLink Project
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Created-By: 1.6.0_20 (Sun Microsystems Inc.)
+HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core.corba
+Export-Package: org.eclipse.persistence.sessions.coordination.corba;version="3.0.0",
+ org.eclipse.persistence.sessions.coordination.corba.sun;version="3.0.0",
+ org.eclipse.persistence.sessions.coordination.rmi;version="3.0.0"
+Import-Package: javax.naming,
+ javax.rmi,
+ javax.rmi.CORBA,
+ org.eclipse.persistence.exceptions;version="3.0.0",
+ org.eclipse.persistence.internal.helper;version="3.0.0",
+ org.eclipse.persistence.internal.sessions.coordination;version="3.0.0",
+ org.eclipse.persistence.sessions.coordination;version="3.0.0",
+ org.omg.CORBA,
+ org.omg.CORBA.portable,
+ org.omg.CORBA_2_3.portable
+Require-Bundle: org.eclipse.persistence.core;bundle-version="3.0.0"

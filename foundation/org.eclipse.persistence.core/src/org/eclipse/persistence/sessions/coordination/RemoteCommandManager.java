@@ -29,7 +29,6 @@ import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 
@@ -114,7 +113,7 @@ public class RemoteCommandManager implements org.eclipse.persistence.sessions.co
         setCommandProcessor(commandProcessor);
 
         // Set default values
-        this.transportManager = new RMITransportManager(this);
+        this.transportManager = TransportManager.newRMITransportManager(this);
         this.discoveryManager = this.transportManager.createDiscoveryManager();
         this.serviceId.setChannel(DEFAULT_CHANNEL);
         this.isAsynchronous = DEFAULT_ASYNCHRONOUS_MODE;

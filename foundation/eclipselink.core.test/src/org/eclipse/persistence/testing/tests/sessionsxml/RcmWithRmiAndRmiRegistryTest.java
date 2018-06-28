@@ -13,7 +13,7 @@
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
+import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 
@@ -23,7 +23,7 @@ public class RcmWithRmiAndRmiRegistryTest extends RcmBasicTest {
     }
 
     public void verify() {
-        if (((RMITransportManager)((AbstractSession)loadedSession).getCommandManager().getTransportManager()).getNamingServiceType() != RMITransportManager.REGISTRY_NAMING_SERVICE) {
+        if ((((AbstractSession)loadedSession).getCommandManager().getTransportManager()).getNamingServiceType() != TransportManager.REGISTRY_NAMING_SERVICE) {
             throw new TestErrorException("The RCM transport does not use rmi registry naming service");
         }
 

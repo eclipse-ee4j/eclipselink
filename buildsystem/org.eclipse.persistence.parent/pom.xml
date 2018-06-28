@@ -112,6 +112,19 @@
             </modules>
         </profile>
         <profile>
+            <id>corba</id>
+            <activation>
+                <jdk>(,11.0)</jdk>
+              <!--property>
+                  <name>corba</name>
+                  <value>true</value>
+              </property-->
+            </activation>
+            <modules>
+                <module>../../foundation/org.eclipse.persistence.corba</module>
+            </modules>
+        </profile>
+        <profile>
             <id>oracle</id>
             <activation>
               <property>
