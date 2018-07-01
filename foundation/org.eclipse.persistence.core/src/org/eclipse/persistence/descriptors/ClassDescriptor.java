@@ -1,40 +1,43 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     stardif - updates for Cascaded locking and inheritance
- *     02/20/2009-1.1 Guy Pelletier
- *       - 259829: TABLE_PER_CLASS with abstract classes does not work
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     04/01/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 2)
- *     04/05/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 3)
- *     04/21/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 5)
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     09 Jan 2013-2.5 Gordon Yorke
- *       - 397772: JPA 2.1 Entity Graph Support
- *     06/25/2014-2.5.2 Rick Curtis
- *       - 438177: Support M2M map with jointable
- *     08/12/2015-2.6 Mythily Parthasarathy
- *       - 474752: Address NPE for Embeddable with 1-M association
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     stardif - updates for Cascaded locking and inheritance
+//     02/20/2009-1.1 Guy Pelletier
+//       - 259829: TABLE_PER_CLASS with abstract classes does not work
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     04/01/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 2)
+//     04/05/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 3)
+//     04/21/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 5)
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     09 Jan 2013-2.5 Gordon Yorke
+//       - 397772: JPA 2.1 Entity Graph Support
+//     06/25/2014-2.5.2 Rick Curtis
+//       - 438177: Support M2M map with jointable
+//     08/12/2015-2.6 Mythily Parthasarathy
+//       - 474752: Address NPE for Embeddable with 1-M association
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;

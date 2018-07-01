@@ -1,32 +1,34 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     07/19/2011-2.2.1 Guy Pelletier
- *       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
- *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching
- *     10/25/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     09 Jan 2013-2.5 Gordon Yorke
- *       - 397772: JPA 2.1 Entity Graph Support
- *     02/11/2013-2.5 Guy Pelletier
- *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
- *     06/03/2013-2.5.1 Guy Pelletier
- *       - 402380: 3 jpa21/advanced tests failed on server with
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
- *     10/19/2016-2.6 Will Dazey
- *       - 506168: Make sure nestedTranslation map is new reference when cloned
- *     03/22/2018-2.7.2 Lukas Jungmann
- *       - 441498: @ElementCollection on Map<@Embeddable,String> cause NullPointerException when @Embeddable has a FK
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     07/19/2011-2.2.1 Guy Pelletier
+//       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
+//     08/01/2012-2.5 Chris Delahunt
+//       - 371950: Metadata caching
+//     10/25/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     09 Jan 2013-2.5 Gordon Yorke
+//       - 397772: JPA 2.1 Entity Graph Support
+//     02/11/2013-2.5 Guy Pelletier
+//       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
+//     06/03/2013-2.5.1 Guy Pelletier
+//       - 402380: 3 jpa21/advanced tests failed on server with
+//         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+//     10/19/2016-2.6 Will Dazey
+//       - 506168: Make sure nestedTranslation map is new reference when cloned
+//     03/22/2018-2.7.2 Lukas Jungmann
+//       - 441498: @ElementCollection on Map<@Embeddable,String> cause NullPointerException when @Embeddable has a FK
 package org.eclipse.persistence.mappings;
 
 import java.beans.PropertyChangeListener;

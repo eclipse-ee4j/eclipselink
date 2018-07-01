@@ -1,11 +1,36 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      kyuan - initial API and implementation
+-->
+
+<!-- This ant project includes the following tasks:
+        - jboss-install : recreates server and adds jars (ignore this step)
+        - jboss-setup : creates connection pool
+        - jboss-reset : removes connection pool
+        - jboss-start : starts server
+        - jboss-stop : stops server
+        - jboss-deploy : deploys ear
+        - jboss-undeploy : undeploys ear
+
+        It requires some configuration of the jboss.properties, it should be run through build.xml, not directly.
+        To connect to the jboss admin console use http://localhost:8080/jmx-console, this may be useful for debugging deployment failures.
+        Sometimes if a test or deployment fails, you server gets screwed up and you need to re-install your domain (ant server.install).
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -26,25 +51,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     kyuan - initial API and implementation
-#******************************************************************************/-->
-
-<!-- This ant project includes the following tasks:
-        - jboss-install : recreates server and adds jars (ignore this step)
-        - jboss-setup : creates connection pool
-        - jboss-reset : removes connection pool
-        - jboss-start : starts server
-        - jboss-stop : stops server
-        - jboss-deploy : deploys ear
-        - jboss-undeploy : undeploys ear
-
-        It requires some configuration of the jboss.properties, it should be run through build.xml, not directly.
-        To connect to the jboss admin console use http://localhost:8080/jmx-console, this may be useful for debugging deployment failures.
-        Sometimes if a test or deployment fails, you server gets screwed up and you need to re-install your domain (ant server.install).
 -->
-
 <project name="Eclipse Persistence Services JPA JBoss Testing" basedir=".">
 
     <property name="env" environment="env" value="env"/>

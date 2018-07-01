@@ -1,24 +1,26 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     08/10/2009-2.0 Guy Pelletier
- *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
- *     11/20/2009-2.0 Guy Pelletier/Mitesh Meswani
- *       - 295376: Improve usability of MetaModel generator
- *     04/29/2010-2.0.3 Guy Pelletier
- *       - 311020: Canonical model generator should not throw an exception when no persistence.xml is found
- *     06/01/2010-2.1 Guy Pelletier
- *       - 315195: Add new property to avoid reading XML during the canonical model generation
- *     03/06/2013-2.5 Guy Pelletier
- *       - 267391: JPA 2.1 Functionality for Java EE 7 (JSR-338)
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     08/10/2009-2.0 Guy Pelletier
+//       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
+//     11/20/2009-2.0 Guy Pelletier/Mitesh Meswani
+//       - 295376: Improve usability of MetaModel generator
+//     04/29/2010-2.0.3 Guy Pelletier
+//       - 311020: Canonical model generator should not throw an exception when no persistence.xml is found
+//     06/01/2010-2.1 Guy Pelletier
+//       - 315195: Add new property to avoid reading XML during the canonical model generation
+//     03/06/2013-2.5 Guy Pelletier
+//       - 267391: JPA 2.1 Functionality for Java EE 7 (JSR-338)
 package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
