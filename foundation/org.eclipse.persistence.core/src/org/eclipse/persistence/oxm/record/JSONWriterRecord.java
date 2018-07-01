@@ -637,31 +637,33 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
     }
 
     protected void writeKey(XPathFragment xPathFragment) throws IOException {
-        super.openStartElement(xPathFragment, namespaceResolver);
-        writer.write('"');
-        if(xPathFragment.isAttribute() && attributePrefix != null){
-            writer.writeAttributePrefix();
-        }
+        if (xPathFragment.getLocalName() != null && !xPathFragment.getLocalName().equals(Constants.EMPTY_STRING)) {
+            super.openStartElement(xPathFragment, namespaceResolver);
+            writer.write('"');
+            if (xPathFragment.isAttribute() && attributePrefix != null) {
+                writer.writeAttributePrefix();
+            }
 
-        if(isNamespaceAware()){
-            if(xPathFragment.getNamespaceURI() != null){
-                String prefix = null;
-                if(getNamespaceResolver() !=null){
-                    prefix = getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
-                } else if(namespaceResolver != null){
-                    prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
-                }
-                if(prefix != null && !prefix.equals(Constants.EMPTY_STRING)){
-                    writer.write(prefix);
-                    writer.writeNamespaceSeparator();
+            if (isNamespaceAware()) {
+                if (xPathFragment.getNamespaceURI() != null) {
+                    String prefix = null;
+                    if (getNamespaceResolver() != null) {
+                        prefix = getNamespaceResolver().resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                    } else if (namespaceResolver != null) {
+                        prefix = namespaceResolver.resolveNamespaceURI(xPathFragment.getNamespaceURI());
+                    }
+                    if (prefix != null && !prefix.equals(Constants.EMPTY_STRING)) {
+                        writer.write(prefix);
+                        writer.writeNamespaceSeparator();
+                    }
                 }
             }
+
+            writer.writeLocalName(xPathFragment);
+            writer.write('"');
+
+            writeSeparator();
         }
-
-        writer.writeLocalName(xPathFragment);
-        writer.write('"');
-
-        writeSeparator();
     }
 
     /**
