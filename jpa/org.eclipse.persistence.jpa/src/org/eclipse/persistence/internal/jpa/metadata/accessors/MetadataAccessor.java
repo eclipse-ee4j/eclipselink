@@ -1,67 +1,69 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier
- *       - 218084: Implement metadata merging functionality between mapping files
- *     08/27/2008-1.1 Guy Pelletier
- *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     10/01/2008-1.1 Guy Pelletier
- *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     12/12/2008-1.1 Guy Pelletier
- *       - 249860: Implement table per class inheritance support.
- *     02/06/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 2)
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/24/2009-2.0 Guy Pelletier
- *       - 270011: JPA 2.0 MappedById support
- *     09/29/2009-2.0 Guy Pelletier
- *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
- *     03/08/2010-2.1 Guy Pelletier
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     03/29/2010-2.1 Guy Pelletier
- *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     04/09/2010-2.1 Guy Pelletier
- *       - 307050: Add defaults for access methods of a VIRTUAL access type
- *     04/27/2010-2.1 Guy Pelletier
- *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     05/14/2010-2.1 Guy Pelletier
- *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
- *     08/19/2010-2.2 Guy Pelletier
- *       - 282733: Add plural converter annotations
- *     09/03/2010-2.2 Guy Pelletier
- *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     09/16/2010-2.2 Guy Pelletier
- *       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
- *     12/01/2010-2.2 Guy Pelletier
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
- *     01/04/2011-2.3 Guy Pelletier
- *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
- *     01/25/2011-2.3 Guy Pelletier
- *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/05/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 3)
- *     07/11/2011-2.4 Guy Pelletier
- *       - 343632: Can't map a compound constraint because of exception:
- *                 The reference column name [y] mapped on the element [field x]
- *                 does not correspond to a valid field on the mapping reference
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- *     11/19/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/16/2008-1.0M8 Guy Pelletier
+//       - 218084: Implement metadata merging functionality between mapping files
+//     08/27/2008-1.1 Guy Pelletier
+//       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     10/01/2008-1.1 Guy Pelletier
+//       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+//     12/12/2008-1.1 Guy Pelletier
+//       - 249860: Implement table per class inheritance support.
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/24/2009-2.0 Guy Pelletier
+//       - 270011: JPA 2.0 MappedById support
+//     09/29/2009-2.0 Guy Pelletier
+//       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+//     03/08/2010-2.1 Guy Pelletier
+//       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+//     03/29/2010-2.1 Guy Pelletier
+//       - 267217: Add Named Access Type to EclipseLink-ORM
+//     04/09/2010-2.1 Guy Pelletier
+//       - 307050: Add defaults for access methods of a VIRTUAL access type
+//     04/27/2010-2.1 Guy Pelletier
+//       - 309856: MappedSuperclasses from XML are not being initialized properly
+//     05/14/2010-2.1 Guy Pelletier
+//       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+//     08/19/2010-2.2 Guy Pelletier
+//       - 282733: Add plural converter annotations
+//     09/03/2010-2.2 Guy Pelletier
+//       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+//     09/16/2010-2.2 Guy Pelletier
+//       - 283028: Add support for letting an @Embeddable extend a @MappedSuperclass
+//     12/01/2010-2.2 Guy Pelletier
+//       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+//     01/04/2011-2.3 Guy Pelletier
+//       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
+//     01/25/2011-2.3 Guy Pelletier
+//       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     04/05/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 3)
+//     07/11/2011-2.4 Guy Pelletier
+//       - 343632: Can't map a compound constraint because of exception:
+//                 The reference column name [y] mapped on the element [field x]
+//                 does not correspond to a valid field on the mapping reference
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//     11/19/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.lang.annotation.Annotation;

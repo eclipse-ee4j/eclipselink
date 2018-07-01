@@ -1,12 +1,30 @@
 <?xml version="1.0"?>
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      bdoughan   - initial API and implementation
+      dtwelves   - Sep 2008 - add in MOXy SRG testing
+      egwin      - Nov 2008 - remove compile of MOXY (add dep check instead)
+      rbarkhouse - 06 Apr 2011 - Separate JavadocAnnotationExamples from JAXBTestSuite
+      dmahar     - Jan 2012 - remove update-package-names targets
+      bdoughan   - Sep 2012 - Added RESTful tests and necessary dependencies
+      mvalovy    - Mar-Jul 2014 - Added Bean Validation support, JAXBBeanValidationTestSuite
+      mvalovy    - Mar 2015 - OSGi Tests
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -27,18 +45,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     bdoughan   - initial API and implementation
-*     dtwelves   - Sep 2008 - add in MOXy SRG testing
-*     egwin      - Nov 2008 - remove compile of MOXY (add dep check instead)
-*     rbarkhouse - 06 Apr 2011 - Separate JavadocAnnotationExamples from JAXBTestSuite
-*     dmahar     - Jan 2012 - remove update-package-names targets
-*     bdoughan   - Sep 2012 - Added RESTful tests and necessary dependencies
-*     mvalovy    - Mar-Jul 2014 - Added Bean Validation support, JAXBBeanValidationTestSuite
-*     mvalovy    - Mar 2015 - OSGi Tests
-#******************************************************************************/-->
-
+-->
 <project name="eclipselink.moxy.test" default="test" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="moxytest.is.local"/>
     <fail message="Not running from '${ant.project.name}' directory" unless="moxytest.is.local"/>

@@ -1,29 +1,32 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     03/19/2009-2.0 Michael O'Brien - 266912: JPA 2.0 Metamodel API (part
- *                      of the JSR-317 EJB 3.1 Criteria API)
- *     08/17/2010-2.2 Michael O'Brien
- *        - 322585: Login the session on the first call to getMetamodel() or getCriteriaBuilder()
- *                       after EMF predeploy() completes.  This will do a DB login that calls
- *                       initializeDescriptors() so we have real Classes and not just class names for
- *                       MappedSuperclass metamodel descriptors.  This is provided for
- *                       implementations that use the metamodel before the 1st EntityManager creation.
- *                       Login will continue to only be called in EM deploy for users
- *                       that do not request the Metamodel
- *     11/17/2010-2.2 Guy Pelletier
- *       - 329008: Support dynamic context creation without persistence.xml
- *     03/22/2016-2.6_WAS Nathan Rauh
- *       - 489787: Fixed NullPointerException when specifying non-entity object to PersistenceUnitUtil.isLoaded
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     03/19/2009-2.0 Michael O'Brien - 266912: JPA 2.0 Metamodel API (part
+//                      of the JSR-317 EJB 3.1 Criteria API)
+//     08/17/2010-2.2 Michael O'Brien
+//        - 322585: Login the session on the first call to getMetamodel() or getCriteriaBuilder()
+//                       after EMF predeploy() completes.  This will do a DB login that calls
+//                       initializeDescriptors() so we have real Classes and not just class names for
+//                       MappedSuperclass metamodel descriptors.  This is provided for
+//                       implementations that use the metamodel before the 1st EntityManager creation.
+//                       Login will continue to only be called in EM deploy for users
+//                       that do not request the Metamodel
+//     11/17/2010-2.2 Guy Pelletier
+//       - 329008: Support dynamic context creation without persistence.xml
+//     03/22/2016-2.6_WAS Nathan Rauh
+//       - 489787: Fixed NullPointerException when specifying non-entity object to PersistenceUnitUtil.isLoaded
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.Collections;
