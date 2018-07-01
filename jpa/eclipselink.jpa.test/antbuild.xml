@@ -1058,7 +1058,7 @@
         </jar>
         <jar jarfile="${jpatest.basedir}/${jpa22.test.jar}">
             <fileset dir="${jpatest.basedir}/${classes22.dir}"
-                     includes="org/eclipse/persistence/testing/tests/**/*.class,org/eclipse/samples/*"
+                     includes="org/eclipse/persistence/testing/tests/**/*.class,org/eclipse/samples/**/*.class"
                      excludes="org/eclipse/persistence/testing/framework/**/*.class,
                              org/eclipse/persistence/testing/tests/jpa21/**/*.class"/>
         </jar>
@@ -2258,39 +2258,39 @@
     </target>
 
     <!-- Server Testing -->
-    <target name="server-install">
+    <target name="server-install" depends="init">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-install" inheritRefs="true"/>
     </target>
 
-    <target name="server-setup" depends="detect-os">
+    <target name="server-setup" depends="init, detect-os">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-setup" inheritRefs="true"/>
     </target>
 
-    <target name="server-reset">
+    <target name="server-reset" depends="init">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-reset" inheritRefs="true"/>
     </target>
 
-    <target name="server-start" depends="detect-os">
+    <target name="server-start" depends="init, detect-os">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 
-    <target name="server-stop" depends="detect-os">
+    <target name="server-stop" depends="init, detect-os">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
     </target>
 
-    <target name="server-restart" depends="detect-os">
+    <target name="server-restart" depends="init, detect-os">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 
-    <target name="server-deploy" depends="detect-os">
+    <target name="server-deploy" depends="init, detect-os">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
 
-    <target name="server-undeploy" depends="detect-os">
+    <target name="server-undeploy" depends="init, detect-os">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
         </ant>

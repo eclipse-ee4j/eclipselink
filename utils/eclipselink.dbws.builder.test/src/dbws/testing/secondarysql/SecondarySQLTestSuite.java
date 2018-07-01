@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -501,17 +502,22 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              DOMResult result = new DOMResult();
              transformer.transform(src, result);
              Document resultDoc = (Document)result.getNode();
-             Document controlDoc = xmlParser.parse(new StringReader(COUNT_RESPONSE_MSG));
-             assertTrue("control document not same as instance document",
-                 comparer.isNodeEqual(controlDoc, resultDoc));
+             Document controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(COUNT_RESPONSE_MSG, NS_STRING, "")));
+             boolean docsEqual = comparer.isNodeEqual(controlDoc, resultDoc);
+             if (!docsEqual) {
+                 // different JDKs put xmlns declaration to different element, so retry
+                 controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(COUNT_RESPONSE_MSG, "", NS_STRING)));
+                 assertTrue("control document not same as instance document",
+                         comparer.isNodeEqual(controlDoc, resultDoc));
+             }
          }
      }
+     private static final String NS_STRING = " xmlns=\"" + SECONDARY_NAMESPACE + "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\"";
      static final String COUNT_RESPONSE_MSG =
          "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body xmlns=\"" + SECONDARY_NAMESPACE +
-                  "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-           "<srvc:countSecondaryResponse>" +
+         "<SOAP-ENV:Body{0}>" +
+           "<srvc:countSecondaryResponse{1}>" +
              "<srvc:result>" +
                "<secondaryAggregate>" +
                  "<count>14</count>" +
@@ -554,17 +560,21 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              DOMResult result = new DOMResult();
              transformer.transform(src, result);
              Document resultDoc = (Document)result.getNode();
-             Document controlDoc = xmlParser.parse(new StringReader(ALL_RESPONSE_MSG));
-             assertTrue("control document not same as instance document",
-                 comparer.isNodeEqual(controlDoc, resultDoc));
+             Document controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(ALL_RESPONSE_MSG, NS_STRING, "")));
+             boolean docsEqual = comparer.isNodeEqual(controlDoc, resultDoc);
+             if (!docsEqual) {
+                 // different JDKs put xmlns declaration to different element, so retry
+                 controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(ALL_RESPONSE_MSG, "", NS_STRING)));
+                 assertTrue("control document not same as instance document",
+                         comparer.isNodeEqual(controlDoc, resultDoc));
+             }
          }
      }
      static final String ALL_RESPONSE_MSG =
        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body xmlns=\"" + SECONDARY_NAMESPACE +
-                 "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-           "<srvc:allSecondaryResponse>" +
+         "<SOAP-ENV:Body{0}>" +
+           "<srvc:allSecondaryResponse{1}>" +
              "<srvc:result>" +
                 "<secondaryType>" +
                   "<empno>7369</empno>" +
