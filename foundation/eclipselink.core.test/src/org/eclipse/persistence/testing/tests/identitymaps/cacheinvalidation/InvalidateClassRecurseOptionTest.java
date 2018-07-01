@@ -1,23 +1,25 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/13/2010-2.1 Michael O'Brien
- *       - 312503: JPA 2.0 CacheImpl behaviour change when recurse flag=false
- *                      We only invalidate the subtree from the class parameter down when the recurse flag=false
- *                      Previously only the class itself was invalidated
- *                      The behaviour when the recurse flag is true is unaffected - the entire rooted (above) tree is invalidated
- *                      Model must be extended to have subclasses of Small/LargeProject
- *                      to verify semi-recursive functionality surrounding the equals() to isAssignableFrom() change
- *
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/13/2010-2.1 Michael O'Brien
+//       - 312503: JPA 2.0 CacheImpl behaviour change when recurse flag=false
+//                      We only invalidate the subtree from the class parameter down when the recurse flag=false
+//                      Previously only the class itself was invalidated
+//                      The behaviour when the recurse flag is true is unaffected - the entire rooted (above) tree is invalidated
+//                      Model must be extended to have subclasses of Small/LargeProject
+//                      to verify semi-recursive functionality surrounding the equals() to isAssignableFrom() change
+//
 package org.eclipse.persistence.testing.tests.identitymaps.cacheinvalidation;
 
 import java.util.Vector;

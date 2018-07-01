@@ -1,24 +1,26 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Jun 29, 2009-1.0M6 Chris Delahunt
- *       - TODO Bug#: Bug Description
- *     07/05/2010-2.1.1 Michael O'Brien
- *       - 321716: modelgen and jpa versions of duplicate code in both copies of
- *       JUnitCriteriaSimpleTestSuite must be kept in sync (to avoid only failing on WebSphere under Derby)
- *       (ideally there should be only one copy of the code - the other suite should reference or subclass for changes)
- *       see
- *       org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.simpleModTest():1796
- *       org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.simpleModTest():1766
- *       - 321902: this copied code should be renamed, merged or subclassed off the original
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Jun 29, 2009-1.0M6 Chris Delahunt
+//       - TODO Bug#: Bug Description
+//     07/05/2010-2.1.1 Michael O'Brien
+//       - 321716: modelgen and jpa versions of duplicate code in both copies of
+//       JUnitCriteriaSimpleTestSuite must be kept in sync (to avoid only failing on WebSphere under Derby)
+//       (ideally there should be only one copy of the code - the other suite should reference or subclass for changes)
+//       see
+//       org.eclipse.persistence.testing.tests.jpa.criteria.JUnitCriteriaSimpleTestSuite.simpleModTest():1796
+//       org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.simpleModTest():1766
+//       - 321902: this copied code should be renamed, merged or subclassed off the original
 package org.eclipse.persistence.testing.tests.jpa.criteria;
 
 import java.io.ByteArrayInputStream;
