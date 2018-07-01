@@ -431,7 +431,7 @@
     <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
     <target name="test" depends="init_run">
         <run_test testclass="${test.class}"  dburl="${db.url}"/>
-        <generate.report/>
+        <generate_report/>
     </target>
 
     <!-- Runs Core Oracle-specific tests. -->

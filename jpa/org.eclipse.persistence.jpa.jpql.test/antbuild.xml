@@ -118,11 +118,11 @@
     <macrodef name="config-compile-path">
         <sequential>
         <echo message="Configuring compile.path to:"/>
-        <echo message="   '${hermes.test.2.jpa.plugins.dir}/${persistence20.jar}'"/>
+        <echo message="   '${hermes.test.2.jpa.plugins.dir}/${persistence.jar}'"/>
         <echo message="   '${hermes.test.2.common.plugins.dir}/org.eclipse.persistence.jpa.jpql_*.jar'"/>
         <echo message="   "/>
         <path id="compile.path">
-            <pathelement path="${hermes.test.2.jpa.plugins.dir}/${persistence20.jar}"/>
+            <pathelement path="${hermes.test.2.jpa.plugins.dir}/${persistence.jar}"/>
             <pathelement path="${junit.lib}"/>
             <fileset dir="${hermes.test.2.common.plugins.dir}" includes="org.eclipse.persistence.jpa.jpql_*.jar"/>
         </path>

@@ -70,6 +70,7 @@
     </condition>
     <echo message="dbws_test.2.base.dir = '${dbws_test.2.base.dir}'"/>
     <property name="dbws_test.2.common.plugins.dir" value="${dbws_test.2.base.dir}/plugins"/>
+    <property name="dbws_test.2.jpa.plugins.dir" value="${dbws_test.2.base.dir}/jpa/plugins"/>
 
     <property name="custom.tasks.lib" value="${dbws_test.build.location}/${dbws_test.2.base.dir}/buildsystem/ant_customizations.jar"/>
     <property name="custom.tolower.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.ToLower"/>
@@ -115,7 +116,7 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="../../${eclipselink.jar}"/>
         <pathelement path="${dbws_test.2.common.plugins.dir}/${asm}"/>
-        <pathelement path="${dbws_test.2.common.plugins.dir}/${persistence.jar}"/>
+        <pathelement path="${dbws_test.2.jpa.plugins.dir}/${persistence.jar}"/>
         <fileset
             dir="${dbws_test.2.common.plugins.dir}"
             includes="${eclipselink.dbws.depend}"
@@ -131,7 +132,7 @@
     <!-- Test dependencies -->
     <available file="../../${eclipselink.jar}" property="eclipselink.jar.exist"/>
     <available file="${dbws_test.2.common.plugins.dir}/${asm}" type="dir" property="asm.exist"/>
-    <available file="${dbws_test.2.common.plugins.dir}/${persistence.jar}" property="persistence.jar.exist"/>
+    <available file="${dbws_test.2.jpa.plugins.dir}/${persistence.jar}" property="persistence.jar.exist"/>
     <available file="${jdbc.driver.jar}"  property="jdbc.jar.exist"/>
     <available file="./${eclipselink.dbws.test.common.jar}" property="dbws_test.common.jar.exist"/>
     <condition property="support.test">
