@@ -108,12 +108,13 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
             }
 
             String keyName = getKeyName(xPathFragment);
-
-            if(position.isCollection && position.isEmptyCollection() ){
-                position.setKeyName(keyName);
-                startEmptyCollection();
-            }else{
-                newLevel.setKeyName(keyName);
+            if (keyName != null && !keyName.equals(Constants.EMPTY_STRING)) {
+                if (position.isCollection && position.isEmptyCollection()) {
+                    position.setKeyName(keyName);
+                    startEmptyCollection();
+                } else {
+                    newLevel.setKeyName(keyName);
+                }
             }
             position = newLevel;
             isLastEventStart = true;

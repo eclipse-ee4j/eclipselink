@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.jaxb.rs;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -42,6 +43,7 @@ public class SimpleListTestCases extends TestCase {
     public static final Integer[] arrayOfInteger = {null,1,2,3};
     public static final List<Integer> listOfInteger = Arrays.asList(arrayOfInteger);
 
+    public static final String jsonArrayOfInt = "[1,2,3]";
     public static final int[] arrayOfInt = {1,2,3};
     public static final int[][][] arrayOfInt3D = null;
 
@@ -58,23 +60,20 @@ public class SimpleListTestCases extends TestCase {
     }
 
     public void testWriteArrayOfString() throws Exception {
-        Field field = SimpleListTestCases.class.getField("arrayOfString");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
-        assertFalse(test);
+        write(arrayOfString, null, jsonArrayOfString);
+
     }
 
     public void testReadListOfString() throws Exception {
         Field field = SimpleListTestCases.class.getField("listOfString");
         InputStream entityStream = new ByteArrayInputStream(jsonArrayOfString.getBytes("UTF-8"));
-        Object result =  moxyJsonProvider.readFrom((Class<Object>) field.getType(), field.getGenericType(), null, null, null, entityStream);
+        Object result =  moxyJsonProvider.readFrom((Class<Object>) field.getType(), String.class, null, null, null, entityStream);
         entityStream.close();
         assertEquals(listOfString, result);
     }
 
     public void testWriteListOfString() throws Exception {
-        Field field = SimpleListTestCases.class.getField("listOfString");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
-        assertFalse(test);
+        write(listOfString, String.class, jsonArrayOfString);
     }
 
     public void testReadArrayOfBoolean() throws Exception {
@@ -86,23 +85,19 @@ public class SimpleListTestCases extends TestCase {
     }
 
     public void testWriteArrayOfBoolean() throws Exception {
-        Field field = SimpleListTestCases.class.getField("arrayOfBoolean");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
-        assertFalse(test);
+        write(arrayOfBoolean, null, jsonArrayOfBoolean);
     }
 
     public void testReadListOfBoolean() throws Exception {
         Field field = SimpleListTestCases.class.getField("listOfBoolean");
         InputStream entityStream = new ByteArrayInputStream(jsonArrayOfBoolean.getBytes("UTF-8"));
-        Object result =  moxyJsonProvider.readFrom((Class<Object>) field.getType(), field.getGenericType(), null, null, null, entityStream);
+        Object result =  moxyJsonProvider.readFrom((Class<Object>) field.getType(), Boolean.TYPE, null, null, null, entityStream);
         entityStream.close();
         assertEquals(listOfBoolean, result);
     }
 
     public void testWriteListOfBoolean() throws Exception {
-        Field field = SimpleListTestCases.class.getField("listOfBoolean");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
-        assertFalse(test);
+        write(listOfBoolean, Boolean.class, jsonArrayOfBoolean);
     }
 
     public void testReadArrayOfInteger() throws Exception {
@@ -114,23 +109,19 @@ public class SimpleListTestCases extends TestCase {
     }
 
     public void testWriteArrayOfInteger() throws Exception {
-        Field field = SimpleListTestCases.class.getField("arrayOfInteger");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
-        assertFalse(test);
+        write(arrayOfInteger, null, jsonArrayOfInteger);
     }
 
     public void testReadListOfInteger() throws Exception {
         Field field = SimpleListTestCases.class.getField("listOfInteger");
         InputStream entityStream = new ByteArrayInputStream(jsonArrayOfInteger.getBytes("UTF-8"));
-        Object result =  moxyJsonProvider.readFrom((Class<Object>) field.getType(), field.getGenericType(), null, null, null, entityStream);
+        Object result =  moxyJsonProvider.readFrom((Class<Object>) field.getType(), Integer.TYPE, null, null, null, entityStream);
         entityStream.close();
         assertEquals(listOfInteger, result);
     }
 
     public void testWriteListOfInteger() throws Exception {
-        Field field = SimpleListTestCases.class.getField("listOfInteger");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
-        assertFalse(test);
+        write(listOfInteger, Integer.class, jsonArrayOfInteger);
     }
 
     public void testReadArrayOfInt() throws Exception {
@@ -140,9 +131,7 @@ public class SimpleListTestCases extends TestCase {
     }
 
     public void testWriteArrayOfInt() throws Exception {
-        Field field = SimpleListTestCases.class.getField("arrayOfInt");
-        boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
-        assertFalse(test);
+        write(arrayOfInt, null, jsonArrayOfInt);
     }
 
     public void testReadArrayOfInt3D() throws Exception {
@@ -155,6 +144,21 @@ public class SimpleListTestCases extends TestCase {
         Field field = SimpleListTestCases.class.getField("arrayOfInt3D");
         boolean test = moxyJsonProvider.isWriteable((Class<Object>) field.getType(), field.getGenericType(), null, null);
         assertFalse(test);
+    }
+
+    private void write(Object input, Type genericType, String jsonOutput) throws Exception {
+        if(null == genericType) {
+            genericType = input.getClass();
+        }
+
+        //isWriteable test
+        boolean test = moxyJsonProvider.isWriteable(input.getClass(), genericType, null, null);
+        assertTrue(test);
+
+        //writeTo test
+        OutputStream entityStream = new ByteArrayOutputStream();
+        moxyJsonProvider.writeTo(input, input.getClass(), genericType, null, null, null, entityStream);
+        assertEquals(jsonOutput, entityStream.toString());
     }
 
 }

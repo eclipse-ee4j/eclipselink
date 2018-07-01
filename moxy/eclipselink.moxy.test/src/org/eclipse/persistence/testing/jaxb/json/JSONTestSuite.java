@@ -19,6 +19,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.jaxb.json.adapter.JsonMapAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.json.any.AnyTestCases;
+import org.eclipse.persistence.testing.jaxb.json.array.ArrayTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementIncludeRootFalseTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementJAXBElementTestCases;
@@ -92,6 +93,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(InheritanceNoRootTestCases.class);
           suite.addTest(JSONWithPaddingTestCases.suite());
           suite.addTest(AnyTestCases.suite());
+          suite.addTest(ArrayTestCases.suite());
           suite.addTest(AllWrapperTestCases.suite());
           suite.addTestSuite(MultiLineStringTestCases.class);
           suite.addTestSuite(TypeNameValueTestCases.class);

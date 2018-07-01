@@ -21,6 +21,8 @@ import javax.xml.transform.Result;
 import javax.xml.transform.sax.SAXResult;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.FragmentContentHandler;
 import org.eclipse.persistence.internal.oxm.JsonTypeConfiguration;
 import org.eclipse.persistence.internal.oxm.Root;
@@ -151,8 +153,32 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                 MarshalRecord writerRecord = ((ExtendedResult)result).createRecord();
                 if(object instanceof Collection){
                     writerRecord.startCollection();
+                    String valueWrapper;
                     for(Object o : (Collection) object) {
-                        marshal(o, writerRecord);
+                        if (o == null) {
+                            valueWrapper = this.getValueWrapper();
+                            if (isApplicationJSON()) {
+                                this.setValueWrapper("");
+                                writerRecord.setMarshaller(this);
+                            }
+                            writerRecord.nilSimple(null);
+                            this.setValueWrapper(valueWrapper);
+                        } else {
+                            if (isApplicationJSON() && o != null && (o.getClass() == CoreClassConstants.STRING || o.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(o.getClass()))) {
+                                if (writerRecord.getSession() == null) {
+                                    writerRecord.setSession((CoreAbstractSession) this.getContext().getSession());
+                                }
+                                valueWrapper = this.getValueWrapper();
+                                this.setValueWrapper("");
+                                writerRecord.setMarshaller(this);
+                                writerRecord.characters(null, o, null, false);
+                                this.setValueWrapper(valueWrapper);
+                            } else {
+                                marshal(o, writerRecord);
+                            }
+                        }
+
+                     //Origin   marshal(o, writerRecord);
                     }
                     writerRecord.endCollection();
                     return;
