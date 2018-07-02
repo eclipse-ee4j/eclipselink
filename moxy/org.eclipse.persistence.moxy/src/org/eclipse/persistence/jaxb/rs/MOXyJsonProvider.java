@@ -66,6 +66,7 @@ import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -558,6 +559,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return false;
         } else if(type.isPrimitive()) {
             return false;
+        } else if(type.isArray() && (String.class.equals(type.getComponentType()) || type.getComponentType().isPrimitive() || Helper.isPrimitiveWrapper(type.getComponentType()))) {
+                return true;
         } else if(type.isArray() && (type.getComponentType().isArray() || type.getComponentType().isPrimitive() || type.getComponentType().getPackage().getName().startsWith("java."))) {
             return false;
         } else if(JAXBElement.class.isAssignableFrom(type)) {
@@ -583,7 +586,12 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             }
 
             for (Class<?> domainClass : domainClasses) {
-                String packageName = domainClass.getPackage().getName();
+
+                if (String.class.equals(domainClass) || domainClass.isPrimitive() || Helper.isPrimitiveWrapper(domainClass)) {
+                    return true;
+                }
+
+                    String packageName = domainClass.getPackage().getName();
                 if(null == packageName || !packageName.startsWith("java.")) {
                     if (isWriteable(domainClass, null, annotations, mediaType)) {
                         return true;
@@ -958,7 +966,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             preWriteTo(object, type, genericType, annotations, mediaType, httpHeaders, marshaller);
             if (domainClasses.size() == 1) {
                 Class<?> domainClass = domainClasses.iterator().next();
-                if(domainClass.getPackage().getName().startsWith("java.") && !(List.class.isAssignableFrom(type) ||  type.isArray())) {
+                if(!(List.class.isAssignableFrom(type) ||  type.isArray()) && domainClass.getPackage().getName().startsWith("java.")) {
                     object = new JAXBElement(new QName((String) marshaller.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER)), domainClass, object);
                 }
             }
