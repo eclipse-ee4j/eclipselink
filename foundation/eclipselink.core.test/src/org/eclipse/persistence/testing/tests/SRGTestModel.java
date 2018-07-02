@@ -29,7 +29,6 @@ public class SRGTestModel extends TestModel {
         addTest(new org.eclipse.persistence.testing.tests.aggregate.AggregateTestModel(isSRG));
         addTest(new InheritanceTestModel(isSRG));
         addTest(new org.eclipse.persistence.testing.tests.sessionsxml.SessionsXMLTestModel(isSRG));
-        addTest(new org.eclipse.persistence.testing.tests.cache.AdvancedProcessingTestModel(isSRG));
     }
 
     /**

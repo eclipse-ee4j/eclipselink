@@ -12,7 +12,6 @@
 
 // Contributors:
 //      Marcel Valovy - initial API and implementation
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 package org.eclipse.persistence.testing.tests.junit.cache;
 
 import java.lang.reflect.Field;
@@ -23,10 +22,6 @@ import org.eclipse.persistence.internal.cache.AdvancedProcessor;
 import org.eclipse.persistence.internal.cache.ComputableTask;
 import org.eclipse.persistence.internal.cache.Memoizer;
 import org.eclipse.persistence.testing.framework.TestCase;
-
-import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * @author Marcel Valovy - marcelv3612@gmail.com
