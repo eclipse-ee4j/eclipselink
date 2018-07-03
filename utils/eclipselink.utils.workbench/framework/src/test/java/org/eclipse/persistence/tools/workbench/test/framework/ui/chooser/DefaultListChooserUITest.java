@@ -43,7 +43,6 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
 import org.eclipse.persistence.tools.workbench.test.framework.TestWorkbenchContext;
 
 import com.sun.java.swing.plaf.motif.MotifLookAndFeel;
-import com.sun.java.swing.plaf.windows.WindowsLookAndFeel;
 
 import org.eclipse.persistence.tools.workbench.framework.context.ApplicationContext;
 import org.eclipse.persistence.tools.workbench.framework.context.WorkbenchContext;
@@ -287,7 +286,7 @@ public class DefaultListChooserUITest {
     private ListValueModel buildLookAndFeelListValue() {
         List lookAndFeelValues = new ArrayList();
         lookAndFeelValues.add(MetalLookAndFeel.class.getName());
-        lookAndFeelValues.add(WindowsLookAndFeel.class.getName());
+        lookAndFeelValues.add("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         lookAndFeelValues.add(MotifLookAndFeel.class.getName());
         lookAndFeelValues.add("oracle.bali.ewt.olaf.OracleLookAndFeel");    // remove compile-time dependency on OLAF
 
