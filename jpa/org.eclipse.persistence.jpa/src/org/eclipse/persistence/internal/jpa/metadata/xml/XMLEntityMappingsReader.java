@@ -119,7 +119,7 @@ public class XMLEntityMappingsReader {
                 if (validateSchema) {
                     context[1] = getEclipseLinkOrmSchema();
                 }
-            } else if (contentHandler.getVersion() == null || contentHandler.getVersion().indexOf("2") == -1) {
+            } else if (contentHandler.getVersion() == null || contentHandler.getVersion().indexOf('2') == -1) {
                 context[0] = getOrm1_0Project();
                 if (validateSchema) {
                     context[1] = getOrm1_0Schema();
@@ -241,28 +241,6 @@ public class XMLEntityMappingsReader {
         }
 
         return m_orm2_1Schema;
-    }
-
-    /**
-     * @return the JPA 2.2 orm project.
-     */
-    public static XMLContext getOrm2_2Project() {
-        if (m_orm2_2Project == null) {
-            m_orm2_2Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_2_2_NAMESPACE, ORM_2_2_XSD));
-        }
-
-        return m_orm2_2Project;
-    }
-
-    /**
-     * @return the JPA 2.2 orm schema.
-     */
-    public static Schema getOrm2_2Schema() throws IOException, SAXException {
-        if (m_orm2_2Schema == null) {
-            m_orm2_2Schema = loadLocalSchema(ORM_2_2_XSD);
-        }
-
-        return m_orm2_2Schema;
     }
 
     /**
