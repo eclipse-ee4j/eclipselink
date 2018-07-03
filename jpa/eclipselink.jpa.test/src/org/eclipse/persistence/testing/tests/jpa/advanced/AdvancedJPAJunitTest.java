@@ -1,31 +1,34 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     03/03/2010 - 2.1 Michael O'Brien
- *       - 302316: clear the object cache when testing stored procedure returns on SQLServer
- *         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
- *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
- *     06/16/2010-2.2 Guy Pelletier
- *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     09/03/2010-2.2 Guy Pelletier
- *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/27/2010-2.2 Guy Pelletier
- *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
- *     11/01/2010-2.2 Guy Pelletier
- *       - 322916: getParameter on Query throws NPE
- *     08/07/2016-2.7 Dalia Abo Sheasha
- *       - 499335: Multiple embeddable fields can't reference same object
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     03/03/2010 - 2.1 Michael O'Brien
+//       - 302316: clear the object cache when testing stored procedure returns on SQLServer
+//         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
+//       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
+//     06/16/2010-2.2 Guy Pelletier
+//       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
+//     09/03/2010-2.2 Guy Pelletier
+//       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     10/27/2010-2.2 Guy Pelletier
+//       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+//     11/01/2010-2.2 Guy Pelletier
+//       - 322916: getParameter on Query throws NPE
+//     08/07/2016-2.7 Dalia Abo Sheasha
+//       - 499335: Multiple embeddable fields can't reference same object
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.lang.reflect.Array;

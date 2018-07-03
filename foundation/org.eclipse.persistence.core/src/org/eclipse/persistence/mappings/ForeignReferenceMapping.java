@@ -1,25 +1,27 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     08/23/2010-2.2 Michael O'Brien
- *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
- *                       warn if expected "_persistence_*_vh" method not found
- *                       instead of throwing NPE during deploy validation.
- *     11/19/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     12/07/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     08/12/2015-2.6 Mythily Parthasarathy
- *       - 474752: Address NPE for Embeddable with 1-M association
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     08/23/2010-2.2 Michael O'Brien
+//        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+//                       warn if expected "_persistence_//_vh" method not found
+//                       instead of throwing NPE during deploy validation.
+//     11/19/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     12/07/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     08/12/2015-2.6 Mythily Parthasarathy
+//       - 474752: Address NPE for Embeddable with 1-M association
 package org.eclipse.persistence.mappings;
 
 import java.security.AccessController;

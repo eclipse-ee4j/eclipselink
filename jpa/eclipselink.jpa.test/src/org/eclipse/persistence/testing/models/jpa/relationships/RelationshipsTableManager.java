@@ -1,21 +1,24 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     12/02/2010-2.2 Guy Pelletier
- *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
- *     01/25/2011-2.3 Guy Pelletier
- *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
- *     06/25/2014-2.5.2 Rick Curtis
- *       - 438177: Test M2M map
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     12/02/2010-2.2 Guy Pelletier
+//       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
+//     01/25/2011-2.3 Guy Pelletier
+//       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
+//     06/25/2014-2.5.2 Rick Curtis
+//       - 438177: Test M2M map
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;

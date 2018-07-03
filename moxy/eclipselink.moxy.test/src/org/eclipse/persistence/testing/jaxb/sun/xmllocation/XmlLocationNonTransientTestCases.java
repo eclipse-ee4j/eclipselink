@@ -1,16 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2015  Oracle. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
+/*
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
  *
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *  - rbarkhouse - 08 September 2011 - 2.4 - Initial implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//  - rbarkhouse - 08 September 2011 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.sun.xmllocation;
 
 import java.net.URL;
@@ -40,11 +41,11 @@ public class XmlLocationNonTransientTestCases extends JAXBTestCases {
         d.data1 = "sdjfhdsaoiufhosaidufh";
         d.data2 = "kjdfgkjdsfg8374934874";
         d.data3 = "84376328476324XXXXXXX";
-        d.locator = new TestLocator(2, 7, 1, includeSysId);
+        d.locator = new TestLocator(16, 7, 1, includeSysId);
 
-        SubDataNT sd1 = new DetailDataNT(); sd1.info = "name|rbarkhouse"; sd1.locator = new TestLocator(7, 91, 4, includeSysId); d.subData.add(sd1);
-        SubDataNT sd2 = new SubDataNT(); sd2.info = "phone|6132832684";  sd2.locator = new TestLocator(14, 13, 4, includeSysId); d.subData.add(sd2);
-        SubDataNT sd3 = new LeafDataNT(); sd3.info = "id|8827"; sd3.locator = new TestLocator(21, 89, 4, includeSysId); d.subData.add(sd3);
+        SubDataNT sd1 = new DetailDataNT(); sd1.info = "name|rbarkhouse"; sd1.locator = new TestLocator(21, 91, 4, includeSysId); d.subData.add(sd1);
+        SubDataNT sd2 = new SubDataNT(); sd2.info = "phone|6132832684";  sd2.locator = new TestLocator(28, 13, 4, includeSysId); d.subData.add(sd2);
+        SubDataNT sd3 = new LeafDataNT(); sd3.info = "id|8827"; sd3.locator = new TestLocator(35, 89, 4, includeSysId); d.subData.add(sd3);
 
         if (this.getName().endsWith("Node") || this.getName().endsWith("UnmarshallerHandler")) {
             TestLocator noLoc = new TestLocator(0, 0, 0, false);

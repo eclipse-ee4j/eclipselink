@@ -1,27 +1,30 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     04/24/2009-2.0 Guy Pelletier
- *       - 270011: JPA 2.0 MappedById support
- *     10/21/2009-2.0 Guy Pelletier
- *       - 290567: mappedbyid support incomplete
- *     11/23/2009-2.0 Guy Pelletier
- *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
- *     05/31/2010-2.1 Guy Pelletier
- *       - 314941: multiple joinColumns without referenced column names defined, no error
- *     01/25/2011-2.3 Guy Pelletier
- *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
- *     09/11/2017-2.1 Will Dazey 
- *       - 520387: multiple owning descriptors for an embeddable are not set
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     04/24/2009-2.0 Guy Pelletier
+//       - 270011: JPA 2.0 MappedById support
+//     10/21/2009-2.0 Guy Pelletier
+//       - 290567: mappedbyid support incomplete
+//     11/23/2009-2.0 Guy Pelletier
+//       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
+//     05/31/2010-2.1 Guy Pelletier
+//       - 314941: multiple joinColumns without referenced column names defined, no error
+//     01/25/2011-2.3 Guy Pelletier
+//       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+//     09/11/2017-2.1 Will Dazey
+//       - 520387: multiple owning descriptors for an embeddable are not set
 package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 
 import java.util.List;
