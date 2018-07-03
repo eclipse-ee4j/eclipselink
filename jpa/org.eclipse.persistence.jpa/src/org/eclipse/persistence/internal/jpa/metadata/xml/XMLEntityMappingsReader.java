@@ -119,7 +119,7 @@ public class XMLEntityMappingsReader {
                 if (validateSchema) {
                     context[1] = getEclipseLinkOrmSchema();
                 }
-            } else if (contentHandler.getVersion() == null || contentHandler.getVersion().indexOf("2") == -1) {
+            } else if (contentHandler.getVersion() == null || contentHandler.getVersion().indexOf('2') == -1) {
                 context[0] = getOrm1_0Project();
                 if (validateSchema) {
                     context[1] = getOrm1_0Schema();
