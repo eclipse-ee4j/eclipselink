@@ -46,6 +46,12 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     /** Java SE 18.9. */
     v18_9(18,9);
 
+    /** Lowest supported Java SE platform. Currently it's Java SE 1.7. */
+    public static final JavaSEPlatform MIN_SUPPORTED = v1_7;
+
+    /** Latest Java SE platform. This value is used when Java SE platform detection fails. */
+    static final JavaSEPlatform LATEST = JavaSEPlatform.v18_9;
+
     public static final class Version {
         /**
          * Creates an instance of Java SE version numbers.
@@ -127,12 +133,6 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     /** Current Java SE platform. */
     public static final JavaSEPlatform CURRENT
             = JavaVersion.vmVersion().toPlatform();
-
-    /** Lowest supported Java SE platform. Currently it's Java SE 1.7. */
-    public static final JavaSEPlatform MIN_SUPPORTED = v1_7;
-
-    /** Latest Java SE platform. This value is used when Java SE platform detection fails. */
-    static final JavaSEPlatform LATEST = JavaSEPlatform.v18_9;
 
     /**
      * Check whether current Java SE is exactly matching provided platform.
