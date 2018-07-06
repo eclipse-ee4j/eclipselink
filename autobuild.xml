@@ -563,6 +563,7 @@
         <property name="eclipselink.root.download.dir" value="/home/data/httpd/download.eclipse.org/rt/eclipselink"/>
         <!-- This depends upon freezing nightly builds after an RC# build - otherwise the nightly to be -->
         <!-- promoted to a 'RELEASE' build (same as last milestone) could expire off the nightly site   -->
+        <property name="signing.script"  value="sign"/>
         <property name="promote.source.dir"            value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}"/>
         <property name="promote.archive.unsigned.lib"  value="${promote.source.dir}/${p2.archive.presigned.zip}"/>
         <property name="promote.archive.signed.lib"    value="${promote.source.dir}/${p2.archive.signed.zip}"/>
@@ -591,7 +592,7 @@
     <target name="sign-and-wait" unless="signed.archive.exist" depends="promote-init">
         <echo message="Proceeding with signing of unsigned archive..."/>
         <ant antfile="antbuild.xml" dir="${build.location}/features" target="sign-jars">
-            <property name="signing.script"  value="sign"/>
+            <property name="signing.script"  value="${signing.script}"/>
             <property name="signed.archive.src.file"   value="${promote.archive.unsigned.lib}"/>
             <property name="signed.archive.dest.file"  value="${promote.archive.signed.lib}"/>
         </ant>
