@@ -34,7 +34,7 @@
     <version>2.7.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>EclipseLink Workbench</name>
+    <name>EclipseLink Workbench Distribution</name>
 
     <dependencies>
         <dependency>

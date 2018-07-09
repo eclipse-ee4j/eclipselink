@@ -251,6 +251,7 @@
         <mf.library.designation>EclipseLink Mapping Workbench ${project.name}</mf.library.designation>
         <mf.implementation.title>${project.groupId}.${project.artifactId}</mf.implementation.title>
         <eclipselink.version>2.7.2</eclipselink.version>
+        <netbeans.hint.jdkPlatform>JDK_1.8</netbeans.hint.jdkPlatform>
     </properties>
 
     <modules>
