@@ -49,6 +49,7 @@ public class MWModifierTests extends TestCase {
         this.project = this.buildProject();
         this.project.getRepository().addClasspathEntry(Classpath.locationFor(Bag.class));    // "core" jar
         this.project.getRepository().addClasspathEntry(Classpath.locationFor(Displayable.class));    // "ui" jar
+        this.project.getRepository().addClasspathEntry(Classpath.locationFor(MWClass.class));    // "mappingsmodel" jar
         this.project.getRepository().addClasspathEntry(Classpath.locationFor(this.getClass()));
         this.type = this.project.typeNamed("com.foo.Foo");
         this.modifier = this.type.getModifier();

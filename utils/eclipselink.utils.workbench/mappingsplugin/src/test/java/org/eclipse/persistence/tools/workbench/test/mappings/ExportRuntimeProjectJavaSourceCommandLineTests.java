@@ -22,10 +22,13 @@ import junit.framework.TestSuite;
 
 import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.platform.database.oracle.Oracle12Platform;
+import org.eclipse.persistence.tools.workbench.framework.resources.StringRepository;
 import org.eclipse.persistence.tools.workbench.mappings.JavaSourceGenerator;
 import org.eclipse.persistence.tools.workbench.mappingsio.ProjectIOManager;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.MWProject;
 import org.eclipse.persistence.tools.workbench.mappingsmodel.project.relational.MWRelationalProject;
+import org.eclipse.persistence.tools.workbench.platformsmodel.DatabasePlatform;
 import org.eclipse.persistence.tools.workbench.test.mappingsmodel.AbstractExportRuntimeProjectJavaSourceTests;
 import org.eclipse.persistence.tools.workbench.test.models.projects.LegacyEmployeeProject;
 import org.eclipse.persistence.tools.workbench.test.utility.JavaTools;
@@ -61,9 +64,14 @@ public class ExportRuntimeProjectJavaSourceCommandLineTests extends AbstractExpo
 
         List classpathEntries = new ArrayList();
         classpathEntries.add(this.tempDir.getAbsolutePath());
-        classpathEntries.add(Classpath.locationFor(MWProject.class));    // elmwcore.jar
-        classpathEntries.add(Classpath.locationFor(JavaSourceGenerator.class));    // eclipselinkmw.jar
-        classpathEntries.add(Classpath.locationFor(ValueHolderInterface.class));    // ecilpselink.jar
+        classpathEntries.add(Classpath.locationFor(Classpath.class));    // utility/elmwcore.jar
+        classpathEntries.add(Classpath.locationFor(DatabasePlatform.class));    // platformsmodel/elmwcore.jar
+        classpathEntries.add(Classpath.locationFor(ProjectIOManager.class));    // mappingsio/elmwcore.jar
+        classpathEntries.add(Classpath.locationFor(MWProject.class));    // mappingsmodel/elmwcore.jar
+        classpathEntries.add(Classpath.locationFor(StringRepository.class));    // framework/eclipselinkmw.jar
+        classpathEntries.add(Classpath.locationFor(JavaSourceGenerator.class));    // mappingsplugin/eclipselinkmw.jar
+        classpathEntries.add(Classpath.locationFor(ValueHolderInterface.class));    // org.eclipse.persistence.core/ecilpselink.jar
+        classpathEntries.add(Classpath.locationFor(Oracle12Platform.class));    // org.eclipse.persistence.oracle/ecilpselink.jar
         classpathEntries.add(Classpath.locationFor(XMLParserConfiguration.class));  // xercesImpl.jar
         classpathEntries.add(FileTools.resourceFile("/platforms.dpr").getParentFile().getAbsolutePath());    // config dir
         Classpath classpath = new Classpath(classpathEntries);

@@ -63,6 +63,13 @@ public class CodeDefinitionTests
             String nextLine = "";
             StringBuffer pregeneratedOutput = new StringBuffer();
 
+            while ((nextLine = reader.readLine()) != null) {
+                //license header ends with an empty line
+                if (nextLine.trim().isEmpty()) {
+                    break;
+                }
+            }
+
             while ((nextLine = reader.readLine()) != null)
             {
                 pregeneratedOutput.append(nextLine);
