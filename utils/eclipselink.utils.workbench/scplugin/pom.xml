@@ -51,7 +51,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -62,7 +61,6 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>workbench.utility</artifactId>
             <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -96,7 +94,7 @@
                         <additionalClasspathElement>${project.build.directory}/config</additionalClasspathElement>
                     </additionalClasspathElements>
                     <includes>
-                        <include>**/AllSCTests.java</include>
+                        <include>org.eclipse.persistence.tools.workbench.test.scplugin.AllSCTests</include>
                     </includes>
                 </configuration>
             </plugin>

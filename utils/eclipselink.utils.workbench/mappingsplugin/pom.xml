@@ -55,7 +55,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -66,18 +65,15 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>workbench.utility</artifactId>
             <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>workbench.framework</artifactId>
             <type>test-jar</type>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.nosql</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -112,9 +108,9 @@
                         <additionalClasspathElement>${project.build.directory}/config</additionalClasspathElement>
                     </additionalClasspathElements>
                     <includes>
-                        <include>**/AllMappingsModelTests.java</include>
-                        <include>**/AllMappingsPluginTests.java</include>
-                        <include>**/AllMappingsIOTests.java</include>
+                        <include>org.eclipse.persistence.tools.workbench.test.mappingsmodel.AllMappingsModelTests</include>
+                        <include>org.eclipse.persistence.tools.workbench.test.mappingsplugin.AllMappingsPluginTests</include>
+                        <include>org.eclipse.persistence.tools.workbench.test.mappingsio.AllMappingsIOTests</include>
                     </includes>
                 </configuration>
             </plugin>

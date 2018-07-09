@@ -39,7 +39,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -50,7 +49,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <includes>
-                        <include>**/AllUtilityTests.java</include>
+                        <include>org.eclipse.persistence.tools.workbench.test.utility.AllUtilityTests</include>
                     </includes>
                 </configuration>
             </plugin>
