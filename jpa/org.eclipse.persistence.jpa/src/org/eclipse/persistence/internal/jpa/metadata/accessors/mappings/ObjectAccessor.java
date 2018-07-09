@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -61,11 +61,16 @@
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
  *     02/20/2013-2.5 Guy Pelletier 
  *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+ *     07/09/2018-2.6 Jody Grassel
+ *       - 536853: MapsID processing sets up to fail validation
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -608,13 +613,41 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 } else {
                     // The reference primary key accessor will tell us which attribute 
                     // accessor we need to map a field name translation for.
-                    MappingAccessor idAccessor = mapsIdAccessor.getReferenceDescriptor().getMappingAccessor(referencePKAccessor.getAttributeName());
-                
+                    
+                    final Set<MappingAccessor> mappingAccessors = findAllFieldAccessors(mapsIdAccessor.getReferenceDescriptor());
+                    final List<MappingAccessor> accessorsWithTargetAttributeName = new ArrayList<MappingAccessor>();
+                    for (MappingAccessor ma : mappingAccessors) {
+                        if (referencePKAccessor.getAttributeName().equals(ma.getAttributeName())) {
+                            accessorsWithTargetAttributeName.add(ma);
+                        }
+                    }
+                    MappingAccessor idAccessor = null;
+                    if (accessorsWithTargetAttributeName.size() > 1 && accessorsWithTargetAttributeName.contains(referencePKAccessor)) {
+                        // The MappingAccessor that is equal() to the referencePKAccessor may still be a different object.
+                        idAccessor = accessorsWithTargetAttributeName.get(accessorsWithTargetAttributeName.indexOf(referencePKAccessor));
+                    } else {
+                        idAccessor = mapsIdAccessor.getReferenceDescriptor().getMappingAccessor(referencePKAccessor.getAttributeName());
+                    }
+                    
                     // Add a field name translation to the mapping.
                     ((EmbeddedAccessor) mapsIdAccessor).updateDerivedIdField((EmbeddableMapping) mapsIdAccessor.getMapping(), idAccessor.getAttributeName(), fkField, idAccessor);
                 }
             }
         }
+    }
+   
+    private Set<MappingAccessor> findAllFieldAccessors(MetadataDescriptor md) {
+        final HashSet<MappingAccessor> retSet = new HashSet<MappingAccessor>();
+        final Collection<MappingAccessor> mappingAccessors = md.getMappingAccessors();
+        for (MappingAccessor ma : mappingAccessors) {
+            if (ma instanceof EmbeddedAccessor) {
+                retSet.addAll(findAllFieldAccessors(ma.getReferenceDescriptor()));
+            } else {
+                retSet.add(ma);
+            }
+        }
+        
+        return retSet;
     }
     
     /**

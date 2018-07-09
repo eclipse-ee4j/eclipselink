@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -32,6 +32,8 @@
  *       - 397772: JPA 2.1 Entity Graph Support
  *     06/25/2014-2.5.2 Rick Curtis 
  *       - 438177: Support M2M map with jointable
+ *     07/09/2018-2.6 Jody Grassel
+ *       - 536853: MapsID processing sets up to fail validation
  ******************************************************************************/  
 package org.eclipse.persistence.descriptors;
 
@@ -593,7 +595,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
     public void addPrimaryKeyField(DatabaseField field) {
-        getPrimaryKeyFields().add(field);
+        // Check if the pkFields List already contains a DatabaseField that is equal to the
+        // field we want to add, in order to avoid duplicates which will fail validation later.
+        List<DatabaseField> pkFields = getPrimaryKeyFields();
+        if (!pkFields.contains(field)) {
+            pkFields.add(field);
+        }
     }
 
     /**
