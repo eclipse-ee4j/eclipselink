@@ -938,7 +938,7 @@ public class SessionsFactory {
      * INTERNAL:
      */
     protected void buildRMITransportManagerConfig(RMITransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-		TransportManager tm = TransportManager.newRMITransportManager(rcm);
+        TransportManager tm = TransportManager.newRMITransportManager(rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
         // This needs to be done before we process the DiscoveryConfig.

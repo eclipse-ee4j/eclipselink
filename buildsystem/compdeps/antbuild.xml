@@ -139,6 +139,27 @@
         <property name="sun.tools.xjc.criteria" value="[2.2.11,5.0.0)"/>
         <property name="sun.xml.bind.prefix" value="jaxb-core"/>
         <property name="sun.xml.bind.criteria" value="[0.0.1,5.0.0)"/>
+        <property name="org.glassfish.corba.orb.prefix" value="org.glassfish.corba.glassfish-corba-orb"/>
+        <property name="org.glassfish.corba.csiv2.prefix" value="org.glassfish.corba.glassfish-corba-csiv2-idl"/>
+        <property name="org.glassfish.corba.iapi.prefix" value="org.glassfish.corba.glassfish-corba-internal-api"/>
+        <property name="org.glassfish.corba.omgapi.prefix" value="org.glassfish.corba.glassfish-corba-omgapi"/>
+        <property name="org.glassfish.corba.eap.prefix" value="org.glassfish.corba.exception-annotation-processor"/>
+        <property name="org.glassfish.corba.criteria" value="[4.0.0,5.0.0)"/>
+        <property name="org.osgi.core.prefix" value="org.osgi.core"/>
+        <property name="org.osgi.core.criteria" value="[1.1.0,2.0.0)"/>
+        <property name="gmbal.api.prefix" value="gmbal-api-only"/>
+        <property name="gmbal.api.criteria" value="[3.1.0,4.0.0)"/>
+        <property name="gmbal.gf.prefix" value="org.glassfish.gmbal.gmbal"/>
+        <property name="gmbal.gf.criteria" value="[4.0.0,5.0.0)"/>
+        <property name="org.glassfish.pfl.basic.prefix" value="org.glassfish.pfl.pfl-basic"/>
+        <property name="org.glassfish.pfl.basic.tools.prefix" value="org.glassfish.pfl.pfl-basic-tools"/>
+        <property name="org.glassfish.pfl.dynamic.prefix" value="org.glassfish.pfl.pfl-dynamic"/>
+        <property name="org.glassfish.pfl.test.prefix" value="org.glassfish.pfl.pfl-test"/>
+        <property name="org.glassfish.pfl.tf.prefix" value="org.glassfish.pfl.pfl-tf"/>
+        <property name="org.glassfish.pfl.asm.prefix" value="org.glassfish.pfl.pfl-asm"/>
+        <property name="org.glassfish.pfl.criteria" value="[4.0.0,5.0.0)"/>
+        <property name="management.api.prefix" value="management-api"/>
+        <property name="management.api.criteria" value="[3.0.0,4.0.0)"/>
         <property name="sdo.prefix" value="commonj.sdo"/>
         <property name="sdo.criteria" value="[2.1.1,5.0.0)"/>
         <property name="ejb.prefix" value="javax.ejb"/>
@@ -205,6 +226,51 @@
         <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
         />
+        <selectbundle basename="${org.glassfish.corba.orb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.corba.criteria}" property="org.glassfish.corba.orb.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.corba.csiv2.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.corba.criteria}" property="org.glassfish.corba.csiv2.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.corba.iapi.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.corba.criteria}" property="org.glassfish.corba.iapi.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.corba.omgapi.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.corba.criteria}" property="org.glassfish.corba.omgapi.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.corba.eap.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.corba.criteria}" property="org.glassfish.corba.eap.version" versiononly="true"
+        />
+        <selectbundle basename="${org.osgi.core.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.osgi.core.criteria}" property="org.osgi.core.version" versiononly="true"
+        />
+        <selectbundle basename="${gmbal.api.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${gmbal.api.criteria}" property="gmbal.api.version" versiononly="true"
+        />
+        <selectbundle basename="${gmbal.gf.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${gmbal.gf.criteria}" property="gmbal.gf.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.pfl.basic.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.pfl.criteria}" property="org.glassfish.pfl.basic.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.pfl.basic.tools.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.pfl.criteria}" property="org.glassfish.pfl.basic.tools.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.pfl.dynamic.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.pfl.criteria}" property="org.glassfish.pfl.dynamic.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.pfl.test.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.pfl.criteria}" property="org.glassfish.pfl.test.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.pfl.tf.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.pfl.criteria}" property="org.glassfish.pfl.tf.version" versiononly="true"
+        />
+        <selectbundle basename="${org.glassfish.pfl.asm.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.pfl.criteria}" property="org.glassfish.pfl.asm.version" versiononly="true"
+        />
+        <selectbundle basename="${management.api.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${management.api.criteria}" property="management.api.version" versiononly="true"
+        />
         <selectbundle basename="${ejb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${ejb.criteria}" property="ejb.version" versiononly="true"
         />
@@ -257,6 +323,36 @@
         <say  message="   '${sun.tools.xjc.prefix}_${sun.tools.xjc.criteria}.jar' not found! Generated features will be invalid." unless="sun.tools.xjc.version"/>
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
         <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid."   unless="sun.xml.bind.version"/>
+        <say  message="   org.glassfish.corba.orb.version     = '${org.glassfish.corba.orb.version}'"                                                if="org.glassfish.corba.orb.version"/>
+        <say  message="   '${org.glassfish.corba.orb.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."    unless="org.glassfish.corba.orb.version"/>
+        <say  message="   org.glassfish.corba.csiv2.version     = '${org.glassfish.corba.csiv2.version}'"                                            if="org.glassfish.corba.csiv2.version"/>
+        <say  message="   '${org.glassfish.corba.csiv2.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."  unless="org.glassfish.corba.csiv2.version"/>
+        <say  message="   org.glassfish.corba.iapi.version     = '${org.glassfish.corba.iapi.version}'"                                              if="org.glassfish.corba.iapi.version"/>
+        <say  message="   '${org.glassfish.corba.iapi.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."   unless="org.glassfish.corba.iapi.version"/>
+        <say  message="   org.glassfish.corba.omgapi.version     = '${org.glassfish.corba.omgapi.version}'"                                          if="org.glassfish.corba.omgapi.version"/>
+        <say  message="   '${org.glassfish.corba.omgapi.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid." unless="org.glassfish.corba.omgapi.version"/>
+        <say  message="   org.glassfish.corba.eap.version     = '${org.glassfish.corba.eap.version}'"                                                if="org.glassfish.corba.eap.version"/>
+        <say  message="   '${org.glassfish.corba.eap.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."    unless="org.glassfish.corba.eap.version"/>
+        <say  message="   org.osgi.core.version     = '${org.osgi.core.version}'"                                                                 if="org.osgi.core.version"/>
+        <say  message="   '${org.osgi.core.prefix}_${org.osgi.core.criteria}.jar' not found! Generated features will be invalid."                 unless="org.osgi.core.version"/>
+        <say  message="   gmbal.api.version     = '${gmbal.api.version}'"                                                                         if="gmbal.api.version"/>
+        <say  message="   '${gmbal.api.prefix}_${gmbal.api.criteria}.jar' not found! Generated features will be invalid."                         unless="gmbal.api.version"/>
+        <say  message="   gmbal.gf.version     = '${gmbal.gf.version}'"                                                                           if="gmbal.gf.version"/>
+        <say  message="   '${gmbal.gf.prefix}_${gmbal.gf.criteria}.jar' not found! Generated features will be invalid."                           unless="gmbal.gf.version"/>
+        <say  message="   org.glassfish.pfl.basic.version     = '${org.glassfish.pfl.basic.version}'"                                             if="org.glassfish.pfl.basic.version"/>
+        <say  message="   '${org.glassfish.pfl.basic.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid."   unless="org.glassfish.pfl.basic.version"/>
+        <say  message="   org.glassfish.pfl.basic.tools.version     = '${org.glassfish.pfl.basic.tools.version}'"                                     if="org.glassfish.pfl.basic.tools.version"/>
+        <say  message="   '${org.glassfish.pfl.basic.tools.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid." unless="org.glassfish.pfl.basic.tools.version"/>
+        <say  message="   org.glassfish.pfl.dynamic.version     = '${org.glassfish.pfl.dynamic.version}'"                                         if="org.glassfish.pfl.dynamic.version"/>
+        <say  message="   '${org.glassfish.pfl.dynamic.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid." unless="org.glassfish.pfl.dynamic.version"/>
+        <say  message="   org.glassfish.pfl.test.version     = '${org.glassfish.pfl.test.version}'"                                               if="org.glassfish.pfl.test.version"/>
+        <say  message="   '${org.glassfish.pfl.test.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid."    unless="org.glassfish.pfl.test.version"/>
+        <say  message="   org.glassfish.pfl.tf.version     = '${org.glassfish.pfl.tf.version}'"                                                   if="org.glassfish.pfl.tf.version"/>
+        <say  message="   '${org.glassfish.pfl.tf.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid."      unless="org.glassfish.pfl.tf.version"/>
+        <say  message="   org.glassfish.pfl.asm.version     = '${org.glassfish.pfl.asm.version}'"                                                 if="org.glassfish.pfl.asm.version"/>
+        <say  message="   '${org.glassfish.pfl.asm.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid."     unless="org.glassfish.pfl.asm.version"/>
+        <say  message="   management.api.version     = '${management.api.version}'"                                                               if="management.api.version"/>
+        <say  message="   '${management.api.prefix}_${management.api.criteria}.jar' not found! Generated features will be invalid."               unless="management.api.version"/>
         <say  message="   ejb.version              = '${ejb.version}'"                                                              if="ejb.version"/>
         <say  message="   '${ejb.prefix}_${ejb.criteria}.jar' not found! Generated features will be invalid."                   unless="ejb.version"/>
         <say  message="   jms.version              = '${jms.version}'"                                                              if="jms.version"/>
@@ -343,6 +439,21 @@
         <!--          Filters for dependencies in feature.xml files -->
         <filter token="XJC_VERSION"          value="${sun.tools.xjc.version}"/>
         <filter token="JAXB_CORE_VERSION"    value="${sun.xml.bind.version}"/>
+        <filter token="GF_CORBA_ORB_VERSION"    value="${org.glassfish.corba.orb.version}"/>
+        <filter token="GF_CORBA_CSIV2_VERSION"  value="${org.glassfish.corba.csiv2.version}"/>
+        <filter token="GF_CORBA_IAPI_VERSION"   value="${org.glassfish.corba.iapi.version}"/>
+        <filter token="GF_CORBA_OMGAPI_VERSION" value="${org.glassfish.corba.omgapi.version}"/>
+        <filter token="GF_CORBA_EAP_VERSION"    value="${org.glassfish.corba.eap.version}"/>
+        <filter token="ORG_OSGI_CORE_VERSION"   value="${org.osgi.core.version}"/>
+        <filter token="GMBAL_API_VERSION"       value="${gmbal.api.version}"/>
+        <filter token="GMBAL_GF_VERSION"        value="${gmbal.gf.version}"/>
+        <filter token="PFL_BASIC_VERSION"       value="${org.glassfish.pfl.basic.version}"/>
+        <filter token="PFL_BASIC_TOOLS_VERSION" value="${org.glassfish.pfl.basic.tools.version}"/>
+        <filter token="PFL_DYNAMIC_VERSION"     value="${org.glassfish.pfl.dynamic.version}"/>
+        <filter token="PFL_TEST_VERSION"        value="${org.glassfish.pfl.test.version}"/>
+        <filter token="PFL_TF_VERSION"          value="${org.glassfish.pfl.tf.version}"/>
+        <filter token="PFL_ASM_VERSION"         value="${org.glassfish.pfl.asm.version}"/>
+        <filter token="MNGMT_API_VERSION"       value="${management.api.version}"/>
         <filter token="JAVAX_XML_BIND_VERSION"  value="${javax.xml.bind.version}"/>
         <filter token="EJB_VERSION"          value="${ejb.version}"/>
         <filter token="JMS_VERSION"          value="${jms.version}"/>
@@ -409,7 +520,23 @@
                           ${sun.tools.xjc.prefix}_${sun.tools.xjc.version}.jar,
                           ${sun.tools.xjc.prefix}.source_${sun.tools.xjc.version}.jar,
                           ${sun.xml.bind.prefix}_${sun.xml.bind.version}.jar,
-                          ${sun.xml.bind.prefix}.source_${sun.xml.bind.version}.jar"
+                          ${sun.xml.bind.prefix}.source_${sun.xml.bind.version}.jar,
+                          ${org.glassfish.corba.orb.prefix}_${org.glassfish.corba.orb.version}.jar,
+                          ${org.glassfish.corba.orb.prefix}.source_${org.glassfish.corba.orb.version}.jar,
+                          ${org.glassfish.corba.csiv2.prefix}_${org.glassfish.corba.csiv2.version}.jar,
+                          ${org.glassfish.corba.iapi.prefix}_${org.glassfish.corba.iapi.version}.jar,
+                          ${org.glassfish.corba.omgapi.prefix}_${org.glassfish.corba.omgapi.version}.jar,
+                          ${org.glassfish.corba.eap.prefix}_${org.glassfish.corba.eap.version}.jar,
+                          ${org.osgi.core.prefix}_${org.osgi.core.version}.jar,
+                          ${gmbal.api.prefix}_${gmbal.api.version}.jar,
+                          ${gmbal.gf.prefix}_${gmbal.gf.version}.jar,
+                          ${org.glassfish.pfl.basic.prefix}_${org.glassfish.pfl.basic.version}.jar,
+                          ${org.glassfish.pfl.basic.tools.prefix}_${org.glassfish.pfl.basic.tools.version}.jar,
+                          ${org.glassfish.pfl.dynamic.prefix}_${org.glassfish.pfl.dynamic.version}.jar,
+                          ${org.glassfish.pfl.test.prefix}_${org.glassfish.pfl.test.version}.jar,
+                          ${org.glassfish.pfl.tf.prefix}_${org.glassfish.pfl.tf.version}.jar,
+                          ${org.glassfish.pfl.asm.prefix}_${org.glassfish.pfl.asm.version}.jar,
+                          ${management.api.prefix}_${management.api.version}.jar"
             />
             <fileset
                 dir="${compdeps.2.jpa.plugins.dir}"
