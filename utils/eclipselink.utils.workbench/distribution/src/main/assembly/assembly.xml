@@ -61,6 +61,7 @@
                 <include>org.eclipse.persistence:javax.persistence</include>
                 <include>org.eclipse.persistence:elmwcore</include>
                 <include>org.eclipse.persistence:eclipselinkmw</include>
+                <include>org.eclipse.persistence:eclipselink</include>
             </includes>
         </dependencySet>
         <dependencySet>

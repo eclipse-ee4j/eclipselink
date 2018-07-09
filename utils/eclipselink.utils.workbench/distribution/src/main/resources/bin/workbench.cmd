@@ -12,7 +12,7 @@
 
 @echo off
 setlocal
-call "%~dp0../../../bin/setenv.cmd"
+call "%~dp0setenv.cmd"
 
 @REM User may increase Java memory setting(s) if desired:
 set JVM_ARGS=-Xmx256m
@@ -23,11 +23,11 @@ call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
 
 set CLASSPATH=%THIS%..\jlib\xercesImpl.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\connector.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\..\..\jlib\eclipselink.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\javax.resource-api.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\elmwcore.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselinkmw.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\..\..\jlib\jpa\javax.persistence_1.0.0.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\javax.persistence.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\config
 set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
 
