@@ -33,6 +33,7 @@
     <artifactId>workbench.platformsmodel</artifactId>
     <version>2.7.3-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <name>Platforms Model</name>
 
     <dependencies>
         <dependency>
@@ -40,4 +41,5 @@
             <artifactId>workbench.utility</artifactId>
         </dependency>
     </dependencies>
+
 </project>

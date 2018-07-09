@@ -30,79 +30,80 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.eclipse.persistence</groupId>
-    <artifactId>workbench.platformsplugin</artifactId>
+    <artifactId>elmwcore</artifactId>
     <version>2.7.3-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <name>Platforms Plug-in</name>
+    
+    <name>Workbench Core</name>
 
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>workbench.framework</artifactId>
+            <artifactId>workbench.utility</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>workbench.platformsmodel</artifactId>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>workbench.mappingsmodel</artifactId>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>workbench.config</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>workbench.utility</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>workbench.framework</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
+            <artifactId>workbench.mappingsio</artifactId>
         </dependency>
     </dependencies>
+
+    <properties>
+        <mf.implementation.title>org.eclipse.persistence.workbench</mf.implementation.title>
+        <mf.library.designation>Workbench Core Library</mf.library.designation>
+    </properties>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
+                <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>prepare-config</id>
-                        <phase>process-test-sources</phase>
+                        <phase>package</phase>
                         <goals>
-                            <goal>unpack-dependencies</goal>
+                            <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/config</outputDirectory>
-                            <includeArtifactIds>workbench.config</includeArtifactIds>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.eclipse.persistence:workbench.utility</include>
+                                    <include>org.eclipse.persistence:workbench.platformsmodel</include>
+                                    <include>org.eclipse.persistence:workbench.mappingsmodel</include>
+                                    <include>org.eclipse.persistence:workbench.mappingsio</include>
+                                </includes>
+                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <classpathDependencyExcludes>
-                        <classpathDependencyExclude>org.eclipse.persistence:workbench.config</classpathDependencyExclude>
-                    </classpathDependencyExcludes>
-                    <additionalClasspathElements>
-                        <additionalClasspathElement>${project.build.directory}/config</additionalClasspathElement>
-                    </additionalClasspathElements>
-                    <includes>
-                        <include>**/AllPlatformsPluginTests.java</include>
-                    </includes>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                            <configuration>
+                                <includeDependencySources>true</includeDependencySources>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

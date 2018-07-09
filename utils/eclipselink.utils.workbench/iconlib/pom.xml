@@ -33,5 +33,6 @@
     <artifactId>workbench.iconlib</artifactId>
     <version>2.7.3-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <name>Icons Library</name>
 
 </project>
