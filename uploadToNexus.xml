@@ -280,6 +280,7 @@
 
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <!-- Public APIs we depend upon that can be found on Maven Central -->
+        <property name="dep.corba"         value="${dep.grp}org.glassfish.corba${dep.art}glassfish-corba-orb${dep.ver}4.2.0-b004${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- Add as nosql dependency -->
         <property name="dep.resource"      value="${dep.grp}jakarta.resource${dep.art}jakarta.resource-api${dep.ver}1.7.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.servlet"       value="${dep.grp}jakarta.servlet${dep.art}jakarta.servlet-api${dep.ver}4.0.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -321,6 +322,7 @@
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
         <property name="extension.dependencies"   value="${deps.head}${dep.core}${deps.foot}"/>
+        <property name="corba.dependencies"       value="${deps.head}${dep.core}${dep.corba}${deps.foot}"/>
     </target>
 
     <!-- Nexus typicaly is configured to disallow uploads of already published versions (non-snapshot)   -->
@@ -524,6 +526,15 @@
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension.source_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink Extensions"/>
             <param name="dependencies"    value="${extension.dependencies}"/>
+        </antcall>
+        <antcall target="upload-artifact">
+            <param name="groupId"         value="org.eclipse.persistence"/>
+            <param name="artifactId"      value="org.eclipse.persistence.corba"/>
+            <param name="artifactVersion" value="${maven.version}"/>
+            <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.corba_${version.string}.jar"/>
+            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.corba.source_${version.string}.jar"/>
+            <param name="artifactName"    value="EclipseLink CORBA Extension"/>
+            <param name="dependencies"    value="${corba.dependencies}"/>
         </antcall>
     </target>
 

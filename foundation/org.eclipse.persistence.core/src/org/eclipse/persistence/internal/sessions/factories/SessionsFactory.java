@@ -106,7 +106,6 @@ import org.eclipse.persistence.sessions.broker.SessionBroker;
 import org.eclipse.persistence.sessions.coordination.DiscoveryManager;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
-import org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
@@ -1304,13 +1303,12 @@ public class SessionsFactory {
         }
     }
 
-
     /**
      * INTERNAL:
      * Builds a Sun CORBA transport manager with the given remote command manager
      */
     protected void buildSunCORBATransportManagerConfig(SunCORBATransportManagerConfig tmConfig, RemoteCommandManager rcm) {
-        SunCORBATransportManager tm = new SunCORBATransportManager(rcm);
+        TransportManager tm = TransportManager.newSunCORBATransportManager(rcm);
 
         // Set the transport manager. This will initialize the DiscoveryManager
         rcm.setTransportManager(tm);

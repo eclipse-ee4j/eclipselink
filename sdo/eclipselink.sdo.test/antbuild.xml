@@ -106,6 +106,7 @@
             "/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${jaxb-api.lib}"/>
     </path>
     <!-- Run path without product components -->
@@ -135,6 +136,7 @@
         <pathelement path="${classes.dir}"/>
         <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
         <pathelement path="${sdotest.2.common.plugins.dir}/jakarta.mail.jar"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/jakarta.activation.jar"/>
     </path>
 
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>

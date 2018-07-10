@@ -207,26 +207,27 @@
         <property name="test.javac.args" value=""/>
         <property name="test.junit.jvm.modules.prop" value=""/>
         <path id="dbws_test.compile.module.path" cache="true"></path>
-        <path id="dbws_test.upgrade.module.path" cache="true"></path>
         <path id="dbws_test.compile.core.path" cache="true">
             <path refid="dbws_test.product.path"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${dbws_test.2.jpa.plugins.dir}/${persistence22.jar}"/>
         </path>
+        <path id="dbws_test.run.core.path" cache="true"/>
     </target>
     <target name="init-modulepaths" if="${use.modules}">
         <property name="test.javac.version" value="9"/>
         <property name="test.javac.args" value=""/>
-        <property name="test.junit.jvm.modules.prop" value="--add-modules ${test.junit.jvm.modules}"/>
+        <property name="test.junit.jvm.modules.prop" value=""/>
         <path id="dbws_test.compile.module.path" cache="true">
             <!--<pathelement path="${dbws_test.2.jpa.plugins.dir}/${persistence22.jar}"/>-->
-        </path>
-        <path id="dbws_test.upgrade.module.path" cache="true">
         </path>
         <path id="dbws_test.compile.core.path" cache="true">
             <path refid="dbws_test.product.path"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${dbws_test.2.jpa.plugins.dir}/${persistence22.jar}"/>
+        </path>
+        <path id="dbws_test.run.core.path" cache="true">
+            <pathelement path="${dbws_test.2.common.plugins.dir}/${javax.xml.bind.jar}"/>
         </path>
     </target>
 
@@ -249,6 +250,7 @@
             <pathelement path="${dbws_test.classes.dir}"/>
             <pathelement path="${jacocoagent.lib}"/>
             <path refid="dbws_test.compile.core.path"/>
+            <path refid="dbws_test.run.core.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
         </path>
     </target>
@@ -258,7 +260,6 @@
             <attribute name="include" />
             <attribute name="classpath" default="dbws_test.run.path"/>
             <attribute name="modulepath" default="dbws_test.compile.module.path"/>
-            <attribute name="upgrademodulepath" default="dbws_test.upgrade.module.path"/>
             <sequential>
                 <local name="junit.failed"/>
                 <property name="additional.jvmargs" value=""/>
@@ -274,7 +275,6 @@
                 <echo message="  maxmemory                    ='${max.heap.memory}'"/>
                 <echo message="  java args                    ='${test.junit.jvm.modules.prop}'"/>
                 <echo message="  module-path                  ='${toString:@{modulepath}}'"/>
-                <echo message="  upgrade-module-path          ='${toString:@{upgrademodulepath}}'"/>
                 <echo message="  class-path                   ='${toString:@{classpath}}'"/>
                 <echo message="System properties:             ='${toString:test.run.propertyset}'"/>
                 <echo message="  db.pwd                       ='**********'"/>
@@ -284,7 +284,6 @@
                        dir="${dbws_test.run.dir}" showoutput="true" printsummary="yes" failureproperty="junit.failed">
                     <classpath refid="@{classpath}"/>
                     <modulepath refid="@{modulepath}"/>
-                    <upgrademodulepath refid="@{upgrademodulepath}"/>
                     <jvmarg line="${test.junit.jvm.modules.prop}"/>
                     <jvmarg line="${additional.jvmargs}"/>
                     <syspropertyset refid="test.run.propertyset"/>
@@ -346,7 +345,6 @@
         <echo message="memoryMaximumSize    ='${max.heap.memory}'"/>
         <echo message="javac args           ='${test.javac.args}'"/>
         <echo message="module-path          ='${toString:dbws_test.compile.module.path}'"/>
-        <echo message="upgrade-module-path  ='${toString:dbws_test.upgrade.module.path}'"/>
         <echo message="class-path           ='${toString:dbws_test.compile.path}'"/>
         <mkdir dir="${dbws_test.classes.dir}"/>
         <javac srcdir="${dbws_test.src.dir}" destdir="${dbws_test.classes.dir}"
@@ -358,7 +356,6 @@
                includes="dbws/testing/**"
                classpathref="dbws_test.compile.path"
                modulepathref="dbws_test.compile.module.path"
-               upgrademodulepathref="dbws_test.upgrade.module.path"
                fork="true" >
             <compilerarg line="${test.javac.args}"/>
         </javac>

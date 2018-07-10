@@ -79,6 +79,7 @@
             <modules>
                 <module>../../foundation/org.eclipse.persistence.nosql</module>
                 <module>../../foundation/org.eclipse.persistence.extension</module>
+                <module>../../foundation/org.eclipse.persistence.corba</module>
                 <module>../../jpa/org.eclipse.persistence.jpa</module>
                 <module>../../jpa/org.eclipse.persistence.jpars</module>
                 <module>../../moxy/org.eclipse.persistence.moxy</module>

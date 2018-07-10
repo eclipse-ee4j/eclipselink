@@ -14,10 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.remote.rmi.iiop;
 
-import java.rmi.*;
-import javax.rmi.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
+import java.rmi.RemoteException;
+
+import javax.rmi.PortableRemoteObject;
+
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
 
 /**
  * RemoteSessionController sits between the remote session and the session. Any interaction between these

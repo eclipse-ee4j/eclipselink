@@ -27,6 +27,7 @@ import javax.naming.NamingException;
 
 import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.coordination.ConnectToHostCommand;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
@@ -489,6 +490,24 @@ public abstract class TransportManager {
      * Generic API to allow config to be set.
      */
     public void setConfig(String config) {
-
     }
+
+    /**
+     * INTERNAL:
+     * Creates a new instance of {@code org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager} class.
+     * @param rcm cache coordination manager
+     * @return new instance of RMI transport manager implementation
+     */
+    public static TransportManager newSunCORBATransportManager(final RemoteCommandManager rcm) {
+        try {
+            return (TransportManager) PrivilegedAccessHelper.invokeConstructor(
+                    PrivilegedAccessHelper.getConstructorFor(
+                            Class.forName("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager"),
+                            new Class<?>[] { RemoteCommandManager.class }, false),
+                    new Object[] { rcm });
+        } catch (ReflectiveOperationException e) {
+            throw RemoteCommandManagerException.errorInitCorba("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager", e);
+        }
+    }
+
 }

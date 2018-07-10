@@ -19,9 +19,6 @@ import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.tests.security.SecurityOnInitializingAttributeMethodTest.AttributeMethodAbstractSession;
 import org.eclipse.persistence.testing.tests.security.SecurityOnInitializingAttributeMethodTest.AttributeMethodOneArg;
 import org.eclipse.persistence.testing.tests.security.SecurityOnInitializingAttributeMethodTest.AttributeMethodSession;
-import org.eclipse.persistence.testing.tests.security.SecurityWhileConvertingToMethodTest.ConvertMethodAbstractSession;
-import org.eclipse.persistence.testing.tests.security.SecurityWhileConvertingToMethodTest.ConvertMethodNoArg;
-import org.eclipse.persistence.testing.tests.security.SecurityWhileConvertingToMethodTest.ConvertMethodSession;
 import org.eclipse.persistence.testing.tests.security.SecurityWhileInitializingClassExtractionMethodTest.ExtractionAbstractRecord;
 import org.eclipse.persistence.testing.tests.security.SecurityWhileInitializingClassExtractionMethodTest.ExtractionRecord;
 import org.eclipse.persistence.testing.tests.security.SecurityWhileInitializingCopyPolicyTest.Policy;
@@ -38,10 +35,12 @@ public class SecurityTestModel extends TestModel {
         setDescription("This model tests the security features of TopLink.");
     }
 
+    @Override
     public void addRequiredSystems() {
         // none at this time
     }
 
+    @Override
     public void addTests() {
     addTest(getValidationSecurityTestSuite());
     addTest(new DatabaseLoginWithNoEncryptorTest());
@@ -57,9 +56,6 @@ public class SecurityTestModel extends TestModel {
         suite.addTest(new SecurityOnInitializingAttributeMethodTest(AttributeMethodOneArg.class));//ian added
         suite.addTest(new SecurityOnInitializingAttributeMethodTest(AttributeMethodAbstractSession.class));//ian added
         suite.addTest(new SecurityOnInitializingAttributeMethodTest(AttributeMethodSession.class));//ian added
-        suite.addTest(new SecurityWhileConvertingToMethodTest(ConvertMethodNoArg.class));//ian added
-        suite.addTest(new SecurityWhileConvertingToMethodTest(ConvertMethodSession.class));//ian added
-        suite.addTest(new SecurityWhileConvertingToMethodTest(ConvertMethodAbstractSession.class));//ian added
         suite.addTest(new SecurityWhileInitializingAttributesInInstanceVariableAccessorTest());//ian added
         suite.addTest(new SecurityWhileInitializingAttributesInMethodAccessorTest());//ian added
         suite.addTest(new SecurityWhileInitializingClassExtractionMethodTest(ExtractionAbstractRecord.class));//ian added
@@ -69,7 +65,7 @@ public class SecurityTestModel extends TestModel {
 
         return suite;
     }
-    
+
     /**
      * Return the JUnit suite to allow JUnit runner to find it.
      * Unfortunately JUnit only allows suite methods to be static,

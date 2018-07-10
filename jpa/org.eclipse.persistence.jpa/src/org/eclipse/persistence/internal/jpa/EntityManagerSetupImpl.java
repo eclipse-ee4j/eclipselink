@@ -2028,7 +2028,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         //bug:299926 - Case insensitive table / column matching with native SQL queries
                         EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
                     }
-                    
+
                     // Set the shared cache mode to the javax.persistence.sharedCache.mode property value.
                     updateSharedCacheMode(predeployProperties);
 
@@ -2264,7 +2264,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                 } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMI) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
                     if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
-                        ((RMITransportManager)rcm.getTransportManager()).setIsRMIOverIIOP(true);
+                        ((RMITransportManager) rcm.getTransportManager()).setIsRMIOverIIOP(true);
                     }
                     // Default protocol.
                     String delay = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_ANNOUNCEMENT_DELAY, m, this.session);
@@ -3517,7 +3517,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
     /**
      * Update the default pessimistic lock timeout unit value.
      * @param persistenceProperties the properties map
@@ -3744,7 +3744,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         // Try the ClassLoader that loaded Eclipselink classes
                         ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
                         helperClass = AccessController.doPrivileged(new PrivilegedClassForName(helperClassName, true, eclipseLinkClassLoader));
-                    }                   
+                    }
                 } else {
                     try {
                         helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, appClassLoader);
@@ -3752,7 +3752,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         // Try the ClassLoader that loaded Eclipselink classes
                         ClassLoader eclipseLinkClassLoader = EntityManagerSetupImpl.class.getClassLoader();
                         helperClass = PrivilegedAccessHelper.getClassForName(helperClassName, true, eclipseLinkClassLoader);
-                    }                   
+                    }
                 }
                 BeanValidationInitializationHelper beanValidationInitializationHelper = (BeanValidationInitializationHelper)helperClass.newInstance();
                 beanValidationInitializationHelper.bootstrapBeanValidation(puProperties, session, appClassLoader);

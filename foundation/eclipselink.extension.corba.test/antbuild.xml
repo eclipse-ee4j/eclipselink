@@ -1,0 +1,674 @@
+<!--
+
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!-- This ant project includes the following tasks:
+        - build (default) : cleans, compiles, and packages all tests
+        - clean   : cleans up all generated files and dirs
+        - compile : compiles all tests
+        - package : packages test jar
+        - test : runs tests
+
+        It requires some configuration of the build.properties and test.properties to run.
+-->
+<!--
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+-->
+<project name="eclipselink.extension.corba.test" default="build" basedir=".">
+
+    <echo message="CORBATEST_BEGINS..."/>
+    <available file="../${ant.project.name}" type="dir" property="corba_test.is.local"/>
+    <fail message="Not running from '${ant.project.name}' directory" unless="corba_test.is.local"/>
+
+    <!-- Default ant target, compiles and translates resources, does not run tests. -->
+    <target name="build" depends="compile, package" description="build CORBA extension tests"/>
+
+    <!-- Initialization -->
+
+    <target name="pre-init">
+        <!-- Setup relative pathing for build -->
+        <dirname  property="corba_test.build.location_temp" file="${ant.file.eclipselink.extension.corba.test}"/>
+        <pathconvert targetos="unix" property="corba_test.build.location">
+            <path>
+                <pathelement location="${corba_test.build.location_temp}"/>
+            </path>
+        </pathconvert>
+        <condition property="corba_test.2.base.dir" value="../.." else="..">
+            <contains string="${corba_test.build.location}" substring="foundation"/>
+        </condition>
+
+        <!-- Allows tools.jar to be relative to JAVA_HOME. -->
+        <property environment="env"/>
+
+        <!-- Allows a user to overide certain user specific properties. -->
+        <condition property="custom.bld.properties.message" value="Loading ${user.home}/build.properties..."
+                   else="Notice: custom properties file '${user.home}/build.properties' not found to load.">
+            <available file="${user.home}/build.properties"/>
+        </condition>
+        <echo message="${custom.bld.properties.message}"/>
+        <property file="${user.home}/build.properties"/>
+        <condition property="custom.cmd.properties.message" value="Loading ${test.properties}..."
+                   else="Notice: custom properties file '${test.properties}' not found to load.">
+            <available file="${test.properties}"/>
+        </condition>
+        <echo message="${custom.cmd.properties.message}"/>
+        <property file="${test.properties}"/>
+        <condition property="custom.tst.properties.message" value="Loading ${user.home}/test.properties..."
+                   else="Notice: custom properties file '${user.home}/test.properties' not found to load.">
+            <available file="${user.home}/test.properties"/>
+        </condition>
+        <echo message="${custom.tst.properties.message}"/>
+        <property file="${user.home}/test.properties"/>
+        <condition property="custom.local.properties.message" value="Loading ${basedir}/local.build.properties..."
+                   else="Notice: custom properties file '${basedir}/local.build.properties' not found to load.">
+            <available file="${basedir}/local.build.properties"/>
+        </condition>
+        <echo message="${custom.local.properties.message}"/>
+        <property file="${basedir}/local.build.properties"/>
+        <property file="${corba_test.build.location}/antbuild.properties"/>
+        <property file="${corba_test.build.location}/${test.properties}"/>
+        <property file="${corba_test.build.location}/test.properties"/>
+
+        <!-- JVM used to run tests -->
+        <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+        <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+        <property prefix="test.junit.jdk" file="${test.junit.jvm}/release"/>
+
+        <condition property="use.modules" value="true" else="false">
+            <not>
+                <matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/>
+            </not>
+        </condition>
+
+        <!-- versioning -->
+        <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
+        <property name="version.qualifier" value="qualifier"/>
+        <property name="version.string" value="${release.version}.${version.qualifier}"/>
+
+        <!-- Local path variables -->
+        <property name="corba_test.src.dir"      value="${corba_test.build.location}/${src.dir}"/>
+        <property name="corba_test.resource.dir" value="${corba_test.build.location}/${resource.dir}"/>
+        <property name="corba_test.classes.dir"  value="${corba_test.build.location}/${classes.dir}"/>
+        <property name="corba_test.report.dir"   value="${corba_test.build.location}/${report.dir}"/>
+        <property name="corba_test.run.dir"      value="${corba_test.build.location}/${run.dir}"/>
+
+        <property name="corba_test.2.common.plugins.dir" value="${corba_test.2.base.dir}/plugins"/>
+        <property name="corba_test.2.core.dir"      value="../org.eclipse.persistence.core"/>
+        <property name="corba_test.2.core.test.dir" value="../eclipselink.core.test"/>
+        <property name="corba_test.2.corba.dir"      value="../org.eclipse.persistence.corba"/>
+        <property name="corba_test.2.jpa.plugins.dir"       value="${corba_test.2.base.dir}/jpa/plugins"/>
+        <property name="corba_test.plugins.dir"     value="../plugins"/>
+
+        <!-- Give this a default value if not set in a user.home or test property file -->
+        <property name="extensions.depend.dir" value="../${corba_test.2.base.dir}/extension.lib.external"/>
+        <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
+        <property name="tools.lib"             value="${env.JAVA_HOME}/lib/tools.jar"/>
+        <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+
+        <echo message="corba_test.build.location  ='${corba_test.build.location}'"/>
+        <echo message="corba_test.2.base.dir      ='${corba_test.2.base.dir}'"/>
+        <echo message="corba_test.src.dir         ='${corba_test.src.dir}'"/>
+        <echo message="corba_test.resource.dir    ='${corba_test.resource.dir}'"/>
+        <echo message="corba_test.classes.dir     ='${corba_test.classes.dir}'"/>
+        <echo message="corba_test.report.dir      ='${corba_test.report.dir}'"/>
+        <echo message="corba_test.run.dir         ='${corba_test.run.dir}'"/>
+        <echo message="user.home                  ='${user.home}'"/>
+        <echo message="test.properties            ='${test.properties}'"/>
+        <echo message="extensions.depend.dir      ='${extensions.depend.dir}'"/>
+        <echo message="junit.lib                  ='${junit.lib}'"/>
+        <echo message="tools.lib                  ='${tools.lib}'"/>
+        <echo message="jdk.version                ='${test.junit.jdk.JAVA_VERSION}'"/>
+
+        <!-- Determine availability of compile dependencies   -->
+        <available file="${corba_test.2.common.plugins.dir}/${antlr.jar}" property="antlr.bundle.exist"/>
+        <available file="${corba_test.2.common.plugins.dir}/${asm.jar}" property="asm.bundle.exist"/>
+        <available file="${corba_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
+        <available file="${corba_test.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
+        <available file="${corba_test.2.core.dir}/${classes.dir}" type="dir" property="core.classes.exist"/>
+        <available file="${corba_test.2.corba.dir}/${classes.dir}" type="dir" property="corba.classes.exist"/>
+        <available classname="org.junit.Test" classpath="${junit.lib}" property="junit.lib.exist"/>
+        <available file="${corba_test.2.jpa.plugins.dir}/${persistence22.jar}" property="persistence.bundle.exist"/>
+        <available file="${corba_test.2.core.test.dir}/${coretest.framework.jar}" property="test.framework.exist"/>
+        <available file="${corba_test.2.core.test.dir}/${core.test.jar}" property="core.test.models.exist"/>
+        <!-- Determine availability of runtime dependencies   -->
+        <available file="${corba_test.2.core.dir}/${resource.dir}" type="dir" property="core.resources.exist"/>
+        <available file="${jdbc.driver.jar}" property="jdbc.jar.exist"/>
+        <!-- Determine where to get product classes, based upon availability  -->
+        <condition property="use.eclipselink">
+                <isset property="eclipselink.jar.exist"/>
+        </condition>
+        <condition property="use.bundles">
+            <and>
+                <isset property="antlr.bundle.exist"/>
+                <isset property="asm.bundle.exist"/>
+                <isset property="core.bundle.exist"/>
+                <not><isset property="use.eclipselink"/></not>
+            </and>
+        </condition>
+        <condition property="use.classes">
+            <and>
+                <isset property="core.resources.exist"/>
+                <isset property="core.classes.exist"/>
+                <isset property="corba.classes.exist"/>
+                <not><isset property="use.eclipselink"/></not>
+                <not><isset property="use.bundles"/></not>
+            </and>
+        </condition>
+        <!-- Determine availability and location of Oracle dependencies   -->
+        <available file="${extensions.depend.dir}"        type="dir" property="ext.depend.dir.exist"/>
+         <!-- Determine availability of other dependencies. -->
+        <condition property="dependency.ok">
+            <and>
+                <isset property="test.framework.exist"/>
+                <isset property="core.test.models.exist"/>
+                <isset property="junit.lib.exist"/>
+                <isset property="jdbc.jar.exist"/>
+            </and>
+        </condition>
+        <!-- Define properties for corba -->
+        <property name="test.run.corba.server.port" value="1122"/>
+        <property name="test.run.naming.factory" value="com.sun.enterprise.naming.SerialInitContextFactory"/>
+        <!-- Define system properties for resource processing and testing  -->
+        <property name="eclipselink.logging.level" value="${logging.level}"/>
+        <propertyset id="test.run.propertyset" dynamic="false">
+            <propertyref prefix="test.security-manager"/>
+            <propertyref prefix="test.run"/>
+            <propertyref regex="db\.(?!pwd|url|oci|sys).*"/>
+            <!-- oradb specific properties -->
+            <propertyref regex="^pa\..*[^d]$"/>
+            <propertyref name="jdbc.driver.jar"/>
+            <propertyref name="eclipselink.logging.level"/>
+        </propertyset>
+        <propertyset id="test.perfrun.propertyset" dynamic="false">
+            <propertyref regex="eclipselink.perfdb\.(?!pwd).*"/>
+        </propertyset>
+    </target>
+
+    <target name="download-gf-corba">
+        <mkdir dir="${corba_test.run.dir}"/>
+        <mkdir dir="${corba_test.run.dir}/gf-corba"/>
+        <condition property="M2_HOME" value="${env.M2_HOME}" else="~/apache-maven-3.5.2">
+            <isset property="env.M2_HOME"/>
+        </condition>
+        <java dir="${corba_test.run.dir}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${corba_test.run.dir}"/>
+            <jvmarg value="-Dartifact=org.glassfish.main.appclient:gf-client:5.1.0"/>
+            <arg value="dependency:get"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+
+        <java dir="${corba_test.run.dir}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${corba_test.run.dir}"/>
+            <jvmarg value="-DoutputDirectory=${corba_test.run.dir}/gf-corba"/>
+            <arg line="-f ${user.home}/.m2/repository/org/glassfish/main/appclient/gf-client/5.1.0/gf-client-5.1.0.pom"/>
+            <arg value="dependency:copy-dependencies"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="announce_missing_dependencies" unless="dependency.ok" description="publicize missing dependencies">
+        <echo message="Following is a list of dependencies and their status ('found=' anything but 'true' means it wasn't found):"/>
+        <echo message="    Test infrastructure:"/>
+        <echo message="        '${junit.lib}' :: found='${junit.lib.exist}'"/>
+        <echo message="        '${corba_test.2.core.test.dir}/${core.test.jar}' :: found='${core.test.models.exist}'"/>
+        <echo message="        '${corba_test.2.core.test.dir}/${coretest.framework.jar}' :: found='${test.framework.exist}'"/>
+        <echo message="The test framework is currently part of the core.test and jpa.test projects. Be sure they are built."/>
+        <echo message="    oracle dependency location: '${oracle.extensions.depend.dir}' :: found='${oracle.depend.dir.exist}'"/>
+        <echo message="    dependency location:        '${extensions.depend.dir}' :: found='${ext.depend.dir.exist}'"/>
+        <echo message="        '${jdbc.driver.jar}'        :: found='${jdbc.jar.exist}'"/>
+        <fail message="Missing dependencies!" unless="compile.ok"/>
+    </target>
+
+    <target name="init-eclipselink" if="use.eclipselink">
+        <path id="corba_test.product.path">
+            <pathelement path="${corba_test.2.base.dir}/${eclipselink.jar}"/>
+            <pathelement path="${corba_test.2.common.plugins.dir}/org.eclipse.persistence.corba_${version.string}.jar"/>
+        </path>
+        <echo message="Using EclipseLink.jar as 'product' in compile dependency: ${toString:corba_test.product.path}."/>
+    </target>
+    <target name="init-bundles" if="use.bundles">
+        <path id="corba_test.product.path">
+            <pathelement path="${corba_test.2.common.plugins.dir}/${antlr.jar}"/>
+            <pathelement path="${corba_test.2.common.plugins.dir}/${asm.jar}"/>
+            <pathelement path="${corba_test.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+            <pathelement path="${corba_test.2.common.plugins.dir}/org.eclipse.persistence.corba_${version.string}.jar"/>
+        <echo message="Using EclipseLink OSGi bundles as 'product' in compile dependency ${toString:corba_test.product.path}."/>
+        </path>
+    </target>
+    <target name="init-classes" if="use.classes">
+        <path id="corba_test.product.path">
+            <pathelement path="${corba_test.2.common.plugins.dir}/${antlr.jar}"/>
+            <pathelement path="${corba_test.2.common.plugins.dir}/${asm.jar}"/>
+            <pathelement path="${corba_test.2.core.dir}/${classes.dir}"/>
+            <pathelement path="${corba_test.2.core.dir}/${resource.dir}"/>
+            <pathelement path="${corba_test.2.corba.dir}/${classes.dir}"/>
+        </path>
+        <echo message="Using EclipseLink classes directly as 'product' in compile dependency: ${toString:corba_test.product.path}."/>
+    </target>
+
+    <target name="init-classpaths" unless="${use.modules}">
+        <property name="test.javac.version" value="1.8"/>
+        <property name="test.javac.args" value=""/>
+        <property name="test.junit.jvm.modules.prop" value=""/>
+        <path id="corba_test.compile.module.path" cache="true"></path>
+        <path id="corba_test.compile.core.path" cache="true">
+            <path refid="corba_test.product.path"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${corba_test.2.jpa.plugins.dir}/${persistence22.jar}"/>
+            <pathelement path="${corba_test.2.common.plugins.dir}/${transaction.jar}"/>
+            <!--<fileset dir="${corba_test.2.common.plugins.dir}" includes="${eclipselink.core.depend.without.connector}"/>-->
+        </path>
+    </target>
+    <target name="init-modulepaths" if="${use.modules}">
+        <property name="test.javac.version" value="9"/>
+        <property name="test.javac.args" value="--add-modules ${javac.modules}"/>
+        <property name="test.junit.jvm.modules.prop" value="--add-modules ${test.junit.jvm.modules}"/>
+        <path id="corba_test.compile.module.path" cache="true">
+            <pathelement path="${corba_test.2.common.plugins.dir}/${transaction.jar}"/>
+            <!--<pathelement path="${corba_test.2.jpa.plugins.dir}/${persistence22.jar}"/>-->
+        </path>
+        <path id="corba_test.compile.core.path" cache="true">
+            <path refid="corba_test.product.path"/>
+            <pathelement path="${junit.lib}"/>
+            <pathelement path="${corba_test.2.jpa.plugins.dir}/${persistence22.jar}"/>
+        </path>
+    </target>
+
+    <target name="init" depends="pre-init, download-gf-corba, announce_missing_dependencies, init-eclipselink, init-bundles, init-classes, init-classpaths, init-modulepaths"
+            description="Initialize the build">
+        <condition property="use.failed">
+            <and>
+                <not><isset property="use.eclipselink"/></not>
+                <not><isset property="use.bundles"/></not>
+                <not><isset property="use.classes"/></not>
+            </and>
+        </condition>
+        <fail message="Product classes do not exist anywhere! Compile product or populate jars." if="use.failed"/>
+
+        <path id="corba_test.oracle.dependency.path">
+            <pathelement path="${jdbc.driver.jar}"/>
+        </path>
+        <path id="corba_test.test.infrastructure.path">
+            <pathelement path="${corba_test.2.core.test.dir}/${coretest.framework.jar}"/>
+            <pathelement path="${corba_test.2.core.test.dir}/${core.test.jar}"/>
+        </path>
+        <path id="corba_test.public.dependency.path">
+            <!-- Java SE 11 specific - corba -->
+            <fileset dir="${corba_test.run.dir}/gf-corba">
+                <include name="*.jar"/>
+                <exclude name="tools*.jar"/>
+                <exclude name="jakarta.transaction-api*.jar"/>
+            </fileset>
+        </path>
+
+        <!-- Define 'Helper' path refids -->
+        <!-- Classpath used for compiling tests. -->
+        <path id="corba_test.compile.path">
+            <path refid="corba_test.compile.core.path"/>
+            <path refid="corba_test.public.dependency.path"/>
+            <path refid="corba_test.oracle.dependency.path"/>
+            <path refid="corba_test.test.infrastructure.path"/>
+        </path>
+        <path id="corba_test.runtime.only.path">
+            <pathelement path="${corba_test.run.dir}"/>
+            <pathelement path="${corba_test.build.location}/${corba.test.jar}"/>
+            <pathelement path="${jdbc.driver.jar}"/>
+            <pathelement path="${corba_test.2.core.test.dir}/run"/>
+        </path>
+        <!-- Classpath used for running tests. -->
+        <path id="corba_test.run.path">
+            <path refid="corba_test.runtime.only.path"/>
+            <path refid="corba_test.compile.path"/>
+        </path>
+    </target>
+
+    <target name="init-test-macro" depends="init">
+        <macrodef name="test">
+            <attribute name="include" />
+            <attribute name="classpath" default="corba_test.run.path"/>
+            <attribute name="modulepath" default="corba_test.compile.module.path"/>
+            <attribute name="dburl" default="${db.url}"/>
+            <sequential>
+                <parallel>
+                    <!-- Start transient name server (used to be $JAVA_HOME/bin/tnameserv) -->
+                    <java fork="true" timeout="40000" classname="com.sun.corba.ee.impl.naming.cosnaming.TransientNameServer" >
+                        <classpath refid="@{classpath}"/>
+                        <modulepath refid="@{modulepath}"/>
+                        <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                        <arg line="-ORBInitialPort ${test.run.corba.server.port}"/>
+                    </java>
+                    <sequential>
+                        <waitfor maxwait="5000" timeoutproperty="test.corba.start.failed">
+                            <socket server="localhost" port="${test.run.corba.server.port}"/>
+                        </waitfor>
+                        <fail message="Corba Transient Name Server failed to start!">
+                            <condition>
+                                <isset property="test.corba.start.failed"/>
+                            </condition>
+                        </fail>
+                        <local name="junit.failed"/>
+                        <property name="additional.jvmargs" value=""/>
+                        <local name="single.test"/>
+                        <condition property="single.test" value="true" else="false">
+                            <not>
+                                <contains string="@{include}" substring=".java"/>
+                            </not>
+                        </condition>
+                        <echo message="${line.separator}${line.separator}Running test on @{dburl}${line.separator}${line.separator}" />
+                        <echo message="JUnit settings:"/>
+                        <echo message="  test                         ='@{include}'"/>
+                        <echo message="  run.dir                      ='${corba_test.run.dir}'"/>
+                        <echo message="  report.dir                   ='${corba_test.report.dir}'"/>
+                        <echo message="  failonerror                  ='${fail.on.error}'"/>
+                        <echo message="Java settings:"/>
+                        <echo message="  jdk.version                  ='${test.junit.jdk.JAVA_VERSION}'"/>
+                        <echo message="  additional.jvmargs           ='${additional.jvmargs}'"/>
+                        <echo message="  maxmemory                    ='${max.heap.memory}'"/>
+                        <echo message="  java args                    ='${test.junit.jvm.modules.prop}'"/>
+                        <echo message="  module-path                  ='${toString:@{modulepath}}'"/>
+                        <echo message="  class-path                   ='${toString:@{classpath}}'"/>
+                        <echo message="System properties:             ='db.url=@{dburl}, ${toString:test.run.propertyset}'"/>
+                        <echo message="  db.pwd                       ='**********'"/>
+                        <mkdir dir="${corba_test.run.dir}"/>
+                        <mkdir dir="${corba_test.report.dir}"/>
+                        <copy file="${corba_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${corba_test.run.dir}" overwrite="true"/>
+                        <junit fork="yes" jvm="${test.junit.jvm.exec}" maxmemory="${max.heap.memory}"
+                               dir="${corba_test.run.dir}" showoutput="true" printsummary="yes" failureproperty="junit.failed">
+                            <classpath refid="@{classpath}"/>
+                            <modulepath refid="@{modulepath}"/>
+                            <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                            <jvmarg line="${additional.jvmargs}"/>
+                            <!--                    <jvmarg line="-Djava.security.manager=java.lang.SecurityManager"/>-->
+                            <jvmarg line="-Djava.security.policy=./java.policy.allpermissions"/>
+                            <jvmarg line="-Djava.naming.factory.initial=${test.run.naming.factory}"/>
+                            <jvmarg line="-Djava.naming.provider.url=iiop://localhost:${test.run.corba.server.port}"/>
+                            <jvmarg line="-Dorg.omg.CORBA.ORBInitialPort=${test.run.corba.server.port}"/>
+                            <jvmarg line="-Dorg.omg.CORBA.ORBInitialHost=localhost"/>
+                            <syspropertyset refid="test.run.propertyset"/>
+                            <sysproperty key="db.url" value="@{dburl}"/>
+                            <sysproperty key="db.pwd" value="${db.pwd}"/>
+                            <formatter type="xml"/>
+                            <!--<formatter type="plain"/>-->
+                            <batchtest haltonfailure="no" todir="${corba_test.report.dir}">
+                                <fileset dir="${corba_test.src.dir}">
+                                    <include name="@{include}"/>
+                                </fileset>
+                            </batchtest>
+                            <test name="@{include}" haltonfailure="no" todir="${corba_test.report.dir}" if="${single.test}"/>
+                        </junit>
+                        <fail message="TESTS FAILED !">
+                            <condition>
+                                <and>
+                                    <isset property="junit.failed"/>
+                                    <istrue value="${fail.on.error}"/>
+                                </and>
+                            </condition>
+                        </fail>
+                    </sequential>
+                </parallel>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="init-report-macro" depends="pre-init">
+        <macrodef name="generate-report">
+            <attribute name="dir" default="${corba_test.report.dir}"/>
+            <sequential>
+                <junitreport todir="@{dir}">
+                    <fileset dir="@{dir}">
+                        <include name="TEST-*.xml"/>
+                    </fileset>
+                    <report format="noframes" todir="@{dir}"/>
+                </junitreport>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="init-java-macro" depends="init">
+        <macrodef name="run-java">
+            <attribute name="classname" />
+            <attribute name="classpath" default="corba_test.run.path"/>
+            <attribute name="modulepath" default="corba_test.compile.module.path"/>
+            <attribute name="dburl" default="${db.url}"/>
+            <element name="customize" implicit="true" optional="true"/>
+            <sequential>
+                <property name="additional.jvmargs" value=""/>
+                <condition property="jvmarg.performance.baseline.version"
+                           value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}" else="-Ddummy=dummy">
+                    <isset property="performance.baseline.version"/>
+                </condition>
+                <echo message="Java settings:"/>
+                <echo message="  classname                    ='@{classname}'"/>
+                <echo message="  run.dir                      ='${corba_test.run.dir}'"/>
+                <echo message="  report.dir                   ='${corba_test.report.dir}'"/>
+                <echo message="  failonerror                  ='${fail.on.error}'"/>
+                <echo message="  jdk.version                  ='${test.junit.jdk.JAVA_VERSION}'"/>
+                <echo message="  additional.jvmargs           ='${additional.jvmargs}'"/>
+                <echo message="  maxmemory                    ='${max.heap.memory}'"/>
+                <echo message="  java args                    ='${test.junit.jvm.modules.prop}'"/>
+                <echo message="  module-path                  ='${toString:@{modulepath}}'"/>
+                <echo message="  class-path                   ='${toString:@{classpath}}'"/>
+                <echo message="System properties:             ='db.url=@{dburl}, ${toString:test.run.propertyset}'"/>
+                <echo message="  db.pwd                       ='**********'"/>
+                <echo message="Perf properties:               ='${jvmarg.performance.baseline.version}, ${toString:test.perfrun.propertyset}'"/>
+                <echo message="  eclipselink.perfdb.pwd       ='**********'"/>
+                <mkdir dir="${corba_test.run.dir}"/>
+                <mkdir dir="${corba_test.report.dir}"/>
+                <copy file="${oracle_spatial_test.2.core.test.dir}/${resource.dir}/java.policy.allpermissions" todir="${oracle_spatial_test.run.dir}" overwrite="true"/>
+                <java fork="true" jvm="${test.junit.jvm.exec}" maxmemory="${max.heap.memory}"
+                      dir="${corba_test.run.dir}" failonerror="${fail.on.error}"
+                      classname="@{classname}">
+                    <classpath refid="@{classpath}"/>
+                    <modulepath refid="@{modulepath}"/>
+                    <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                    <jvmarg line="-Djava.security.manager=java.lang.SecurityManager"/>
+                    <jvmarg line="-Djava.security.policy=./java.policy.allpermissions"/>
+                    <syspropertyset refid="test.run.propertyset"/>
+                    <sysproperty key="db.url" value="@{dburl}"/>
+                    <sysproperty key="db.pwd" value="${db.pwd}"/>
+                    <syspropertyset refid="test.perfrun.propertyset"/>
+                    <sysproperty key="eclipselink.perfdb.pwd" value="${eclipselink.perfdb.pwd}"/>
+                    <jvmarg value="${jvmarg.performance.baseline.version}"/>
+                    <jvmarg value="-Djava.naming.factory.initial=${test.run.naming.factory}"/>
+                    <jvmarg value="-Djava.naming.provider.url=iiop://localhost:${test.run.corba.server.port}"/>
+                    <jvmarg line="${additional.jvmargs}"/>
+                    <customize/>
+                </java>
+            </sequential>
+        </macrodef>
+    </target>
+    <target name="init-test-prompt-macro" depends="init-java-macro">
+        <macrodef name="test-prompt">
+            <attribute name="testmodel" />
+            <attribute name="classpath" default="corba_test.run.path"/>
+            <attribute name="modulepath" default="corba_test.compile.module.path"/>
+            <attribute name="dburl" default="${db.url}"/>
+            <element name="customize" implicit="true" optional="true"/>
+            <sequential>
+                <echo message="${line.separator}${line.separator}Running @{testmodel} on ${db.url}${line.separator}${line.separator}" />
+                <run-java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
+                          classpath="@{classpath}" modulepath="@{modulepath}"
+                          dburl="@{dburl}">
+                    <arg value="testmodel=@{testmodel}" />
+                    <arg value="regressionlog=${corba_test.report.dir}/test.log" />
+                    <arg value="saveresults=${should.save.results}" />
+                    <customize/>
+                </run-java>
+            </sequential>
+        </macrodef>
+    </target>
+
+    <target name="init-testing" depends="init-test-macro, init-report-macro, init-test-prompt-macro">
+    </target>
+
+
+    <!-- Cleaning, Building & Packaging -->
+
+    <!-- Clean all build generated content. -->
+    <target name="clean" depends="pre-init" description="Clean the build">
+        <echo message="Cleaning..."/>
+        <echo message="    ${corba_test.classes.dir}"/>
+        <echo message="    ${corba_test.report.dir}"/>
+        <echo message="    ${corba_test.run.dir}"/>
+        <echo message="    ${corba_test.build.location}/${corba.test.jar}"/>
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${corba_test.classes.dir}"/>
+            <fileset dir="${corba_test.report.dir}"/>
+            <fileset dir="${corba_test.run.dir}"/>
+            <fileset dir="${corba_test.build.location}" includes="${corba.test.jar}"/>
+        </delete>
+    </target>
+
+    <!-- Compiles all tests. -->
+    <target name="compile" depends="init" description="compile EclipseLink Oracle tests">
+        <!-- fail message="Cannot find junit: '${junit.lib}'." unless="junit.jar.exist"/ -->
+        <echo message="Compiler settings:"/>
+        <echo message="jdk.version          ='${test.junit.jdk.JAVA_VERSION}'"/>
+        <echo message="srcdir               ='${corba_test.src.dir}'"/>
+        <echo message="destdir              ='${corba_test.classes.dir}'"/>
+        <echo message="debug/debuglevel     ='${javac.debug}'/'${javac.debuglevel}'"/>
+        <echo message="source/target        ='${test.javac.version}'/'${test.javac.version}'"/>
+        <echo message="deprecation          ='${javac.deprecation}'"/>
+        <echo message="failonerror          ='${fail.on.error}'"/>
+        <echo message="memoryMaximumSize    ='${max.heap.memory}'"/>
+        <echo message="javac args           ='${test.javac.args}'"/>
+        <echo message="module-path          ='${toString:corba_test.compile.module.path}'"/>
+        <echo message="class-path           ='${toString:corba_test.compile.path}'"/>
+        <mkdir dir="${corba_test.classes.dir}"/>
+        <javac srcdir="${corba_test.src.dir}" destdir="${corba_test.classes.dir}"
+               debug="${javac.debug}" debuglevel="${javac.debuglevel}"
+               encoding="UTF-8" deprecation="${javac.deprecation}"
+               source="${test.javac.version}" target="${test.javac.version}"
+               failonerror="${fail.on.error}"
+               memoryMaximumSize="${max.heap.memory}"
+               includes="org/eclipse/persistence/**"
+               classpathref="corba_test.compile.path"
+               modulepathref="corba_test.compile.module.path"
+               fork="true" >
+            <compilerarg line="${test.javac.args}"/>
+        </javac>
+    </target>
+
+    <!-- Translates the login information in the resources into the run directory. -->
+    <target name="process-resource" depends="init">
+        <!-- fail message="Cannot find jdbc driver: '${jdbc.driver.jar}'." unless="jdbc.jar.exist"/ -->
+        <!-- fail message="Cannot find tools library: '${tools.lib}'." unless="tools.jar.exist"/ -->
+        <mkdir dir="${corba_test.run.dir}"/>
+        <filter token="dbUser" value="${db.user}"/>
+        <filter token="dbPassword" value="${db.pwd}"/>
+        <filter token="driverClass" value="${db.driver}"/>
+        <filter token="dbURL" value="${db.url}"/>
+        <filter token="loglevel" value="${logging.level}"/>
+        <filter token="boolvalue" value="${logging.boolvalue}"/>
+        <filter token="dbPlatform" value="${db.platform}"/>
+        <echo message="Setup filtering values:"/>
+        <echo message="dbUser:      '${db.user}'"/>
+        <echo message="dbPassword:  ********"/>
+        <echo message="driverClass: '${db.driver}'"/>
+        <echo message="dbURL        '${db.url}'"/>
+        <echo message="loglevel:    '${logging.level}'"/>
+        <echo message="boolvalue:   '${logging.boolvalue}'"/>
+        <echo message="dbPlatform:  '${db.platform}'"/>
+        <echo message=" "/>
+
+        <echo message="Filter copying Resources (all but below) (default encoding):"/>
+        <echo message="   from '${corba_test.resource.dir}'"/>
+        <echo message="     to '${corba_test.run.dir}'"/>
+        <copy todir="${corba_test.run.dir}" filtering="true" overwrite="true">
+            <fileset dir="${corba_test.resource.dir}"
+                     excludes="**/Employee_utf16.xml, **/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
+        </copy>
+
+        <echo message="Filter copying Resources '**/Employee_utf16.xml' (UTF-16 encoding)"/>
+        <echo message="   from '${corba_test.resource.dir}'"/>
+        <echo message="     to '${corba_test.run.dir}'"/>
+        <copy todir="${corba_test.run.dir}" filtering="true" overwrite="true" encoding="UTF-16">
+            <fileset dir="${corba_test.resource.dir}" includes="**/Employee_utf16.xml"/>
+        </copy>
+
+        <echo message="Filter copying Resources '**/NLSJapaneseMWIntegrationTestEmployeeProject.xml' (Shift_JIS encoding)"/>
+        <echo message="   from '${corba_test.resource.dir}'"/>
+        <echo message="     to '${corba_test.run.dir}'"/>
+        <copy todir="${corba_test.run.dir}" filtering="true" overwrite="true" encoding="Shift_JIS">
+            <fileset dir="${corba_test.resource.dir}" includes="**/NLSJapaneseMWIntegrationTestEmployeeProject.xml"/>
+        </copy>
+    </target>
+
+    <!-- Packages tests jar. -->
+    <target name="package" depends="compile, process-resource">
+        <!-- Build tests jar. -->
+        <jar jarfile="${corba.test.jar}">
+            <fileset dir="${corba_test.classes.dir}"
+                     includes="org/eclipse/persistence/**/*.class"/>
+        </jar>
+    </target>
+
+
+    <!-- Testing -->
+
+    <!-- Test target to initialize a clean database (needed before a nighlty run of the LRG or a continuous build SRG run) -->
+    <target name="clear-database" depends="init-testing">
+        <test include="org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest"/>
+    </target>
+
+     <!-- Default test target, runs test.class from test.properties (default is OracleTestModel). -->
+    <target name="test" depends="init-testing">
+        <test include="${test.class}"/>
+        <generate-report/>
+    </target>
+
+    <!-- Prompt runner test target, runs test.class from test.properties (default is OracleTestModel). -->
+    <target name="test-prompt" depends="init-testing">
+        <test-prompt testmodel="${test.class}" dburl="${db.url}"/>
+    </target>
+
+    <target name="generate-report" depends="init-report-macro">
+        <generate-report/>
+    </target>
+
+    <!-- Launches the testing browser -->
+    <target name="test-browser" depends="init, init-java-macro">
+        <echo>Running test browser</echo>
+        <run-java classname="org.eclipse.persistence.testing.framework.ui.TestingBrowserFrame" />
+    </target>
+
+</project>
