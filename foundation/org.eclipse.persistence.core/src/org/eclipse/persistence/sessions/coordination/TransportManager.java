@@ -18,6 +18,7 @@
 //       WebLogic: weblogic.jndi.WLInitialContextFactory
 package org.eclipse.persistence.sessions.coordination;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Map;
@@ -27,6 +28,7 @@ import javax.naming.NamingException;
 
 import org.eclipse.persistence.exceptions.CommunicationException;
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.SecurableObjectHolder;
 import org.eclipse.persistence.internal.sessions.coordination.ConnectToHostCommand;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
@@ -489,6 +491,62 @@ public abstract class TransportManager {
      * Generic API to allow config to be set.
      */
     public void setConfig(String config) {
-
     }
+
+    /**
+     * INTERNAL:
+     * Check whether RMI over IIOP or not.
+     * @return always returns {@code false} until overriden.
+     */
+    public boolean isRMIOverIIOP() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Set RMI over IIOP indicator.
+     * @param value indicator value to set
+     */
+    public void setIsRMIOverIIOP(boolean value) {
+        throw new UnsupportedOperationException("Method setIsRMIOverIIOP is not supported.");
+    }
+
+    /**
+     * INTERNAL:
+     * Creates a new instance of {@code org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager} class.
+     * @param rcm cache coordination manager
+     * @return new instance of RMI transport manager implementation
+     */
+    public static TransportManager newRMITransportManager(final RemoteCommandManager rcm) {
+		try {
+			return (TransportManager) PrivilegedAccessHelper.invokeConstructor(
+					PrivilegedAccessHelper.getConstructorFor(
+							Class.forName("org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager"),
+							new Class<?>[] { RemoteCommandManager.class }, false),
+					new Object[] { rcm });
+		} catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException
+				| ClassNotFoundException e) {
+			throw new IllegalStateException("Could not create an instance of org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager");
+		}
+    }
+
+    /**
+     * INTERNAL:
+     * Creates a new instance of {@code org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager} class.
+     * @param rcm cache coordination manager
+     * @return new instance of RMI transport manager implementation
+     */
+    public static TransportManager newSunCORBATransportManager(final RemoteCommandManager rcm) {
+		try {
+			return (TransportManager) PrivilegedAccessHelper.invokeConstructor(
+					PrivilegedAccessHelper.getConstructorFor(
+							Class.forName("org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager"),
+							new Class<?>[] { RemoteCommandManager.class }, false),
+					new Object[] { rcm });
+		} catch (IllegalAccessException | InvocationTargetException | InstantiationException | NoSuchMethodException
+				| ClassNotFoundException e) {
+			throw new IllegalStateException("Could not create an instance of org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager");
+		}
+    }
+
 }

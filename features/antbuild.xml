@@ -261,6 +261,8 @@
         <property name="sun.tools.xjc.criteria" value="[2.2.11,5.0.0)"/>
         <property name="sun.xml.bind.prefix" value="jaxb-core"/>
         <property name="sun.xml.bind.criteria" value="[2.2.11,5.0.0)"/>
+        <property name="org.glassfish.corba.orb.prefix" value="org.glassfish.corba.glassfish-corba-orb"/>
+        <property name="org.glassfish.corba.criteria" value="[4.0.0,5.0.0)"/>
         <property name="mongodb.prefix" value="org.mongodb.mongo-java-driver"/>
         <property name="mongodb.criteria" value="[2.0.0,9.0.0)"/>
         <property name="json.prefix" value="javax.json-api"/>
@@ -343,6 +345,9 @@
         <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${feature.2.common.plugins.dir}"
                       criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
         />
+        <selectbundle basename="${org.glassfish.corba.orb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${org.glassfish.corba.criteria}" property="org.glassfish.corba.version" versiononly="true"
+        />
         <selectbundle basename="${mongodb.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${mongodb.criteria}" property="mongodb.version" versiononly="true"
         />
@@ -397,6 +402,8 @@
         <say  message="   '${sun.tools.xjc.prefix}_${sun.tools.xjc.criteria}.jar' not found! Generated features will be invalid." unless="sun.tools.xjc.version"/>
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
         <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid."   unless="sun.xml.bind.version"/>
+        <say  message="   org.glassfish.corba.version     = '${org.glassfish.corba.version}'"                                                     if="org.glassfish.corba.version"/>
+        <say  message="   '${org.glassfish.corba.orb.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."   unless="org.glassfish.corba.version"/>
         <say  message="   mongodb.version     = '${mongodb.version}'"                                                         if="mongodb.version"/>
         <say  message="   '${mongodb.prefix}_${mongodb.criteria}.jar' not found! Generated features will be invalid."         unless="mongodb.version"/>
         <say  message="   jaxrs.version       = '${jaxrs.version}'"                                                           if="jaxrs.version"/>

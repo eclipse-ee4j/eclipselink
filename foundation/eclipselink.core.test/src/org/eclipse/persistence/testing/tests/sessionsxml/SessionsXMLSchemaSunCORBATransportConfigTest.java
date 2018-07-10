@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import org.eclipse.persistence.sessions.coordination.TransportManager;
-import org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -62,8 +61,7 @@ public class SessionsXMLSchemaSunCORBATransportConfigTest extends AutoVerifyTest
         }
 
         TransportManager tm = m_session.getCommandManager().getTransportManager();
-
-        if (!(tm instanceof SunCORBATransportManager)) {
+        if (tm == null || !"org.eclipse.persistence.sessions.coordination.corba.sun.SunCORBATransportManager".equals(tm.getClass().getCanonicalName())) {
             throw new TestErrorException("Transport manager was the wrong type");
         }
     }

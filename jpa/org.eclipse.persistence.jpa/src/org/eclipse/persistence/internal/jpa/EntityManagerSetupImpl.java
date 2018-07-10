@@ -276,7 +276,6 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager;
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
-import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.factories.SessionManager;
 import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.remote.RemoteSession;
@@ -2262,7 +2261,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                 } else if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMI) || protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
                     if (protocol.equalsIgnoreCase(CacheCoordinationProtocol.RMIIIOP)) {
-                        ((RMITransportManager)rcm.getTransportManager()).setIsRMIOverIIOP(true);
+                        rcm.getTransportManager().setIsRMIOverIIOP(true);
                     }
                     // Default protocol.
                     String delay = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.COORDINATION_RMI_ANNOUNCEMENT_DELAY, m, this.session);

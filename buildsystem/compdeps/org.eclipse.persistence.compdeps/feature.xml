@@ -45,6 +45,111 @@
             version="@XJC_VERSION@"
             unpack="false"/>
 
+    <plugin
+            id="org.glassfish.corba.glassfish-corba-orb"
+            download-size="0"
+            install-size="0"
+            version="@GF_CORBA_ORB_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.corba.glassfish-corba-csiv2-idl"
+            download-size="0"
+            install-size="0"
+            version="@GF_CORBA_CSIV2_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.corba.glassfish-corba-internal-api"
+            download-size="0"
+            install-size="0"
+            version="@GF_CORBA_IAPI_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.corba.glassfish-corba-omgapi"
+            download-size="0"
+            install-size="0"
+            version="@GF_CORBA_OMGAPI_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.corba.exception-annotation-processor"
+            download-size="0"
+            install-size="0"
+            version="@GF_CORBA_EAP_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.osgi.core"
+            download-size="0"
+            install-size="0"
+            version="@ORG_OSGI_CORE_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="gmbal-api-only"
+            download-size="0"
+            install-size="0"
+            version="@GMBAL_API_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.gmbal.gmbal"
+            download-size="0"
+            install-size="0"
+            version="@GMBAL_GF_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.pfl.pfl-basic"
+            download-size="0"
+            install-size="0"
+            version="@PFL_BASIC_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.pfl.pfl-basic-tools"
+            download-size="0"
+            install-size="0"
+            version="@PFL_BASIC_TOOLS_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.pfl.pfl-dynamic"
+            download-size="0"
+            install-size="0"
+            version="@PFL_DYNAMIC_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.pfl.pfl-test"
+            download-size="0"
+            install-size="0"
+            version="@PFL_TEST_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.pfl.pfl-asm"
+            download-size="0"
+            install-size="0"
+            version="@PFL_ASM_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="org.glassfish.pfl.pfl-tf"
+            download-size="0"
+            install-size="0"
+            version="@PFL_TF_VERSION@"
+            unpack="false"/>
+
+    <plugin
+            id="management-api"
+            download-size="0"
+            install-size="0"
+            version="@MNGMT_API_VERSION@"
+            unpack="false"/>
+
    <plugin
          id="javax.ws.rs"
          download-size="0"
