@@ -38,6 +38,9 @@
 //       - 438177: Support M2M map with jointable
 //     08/12/2015-2.6 Mythily Parthasarathy
 //       - 474752: Address NPE for Embeddable with 1-M association
+//     07/09/2018-2.6 Jody Grassel
+//       - MapsID processing sets up to fail validation
+
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
@@ -649,7 +652,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
     public void addPrimaryKeyField(DatabaseField field) {
-        getPrimaryKeyFields().add(field);
+        // Check if the pkFields List already contains a DatabaseField that is equal to the
+        // field we want to add, in order to avoid duplicates which will fail validation later.
+        List<DatabaseField> pkFields = getPrimaryKeyFields();
+        if (!pkFields.contains(field)) {
+            pkFields.add(field);
+        }
     }
 
     /**
