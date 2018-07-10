@@ -480,7 +480,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="clean"/>
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"        target="clean"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>
+        <!--<ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>-->
         <delete failonerror="false">
             <fileset dir="." includes="*${eclipselink.zip.suffix}"/>
         </delete>
@@ -516,7 +516,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>
+<!--        <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>-->
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
@@ -620,7 +620,7 @@
     <target name="build-util">
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="build"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="all"/>
+<!--        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="all"/>-->
     </target>
 
     <!-- Oracle extensions Targets -->
@@ -728,7 +728,7 @@
     <target name="build-util-test"  depends="build-workbench-test, build-dbws-utils-test"/>
 
     <target name="build-workbench-test">
-        <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>
+<!--        <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>-->
     </target>
 
     <target name="build-dbws-utils-test" if="compat.jdk">
