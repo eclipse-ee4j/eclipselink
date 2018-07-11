@@ -4,14 +4,12 @@
 *.bak text
 *.cmd text eol=crlf
 *.dtd text
-*.dpr text
 *.g text
 *.html text diff=html
 *.java text diff=java
 *.md text
 *.MF text
 *.mf text
-*.mwp text
 *.oxm text
 *.properties text
 *.sh text eol=lf
@@ -35,5 +33,4 @@
 *.jpg binary
 *.jpeg binary
 *.gif binary
-*.ico binary
 *.class binary

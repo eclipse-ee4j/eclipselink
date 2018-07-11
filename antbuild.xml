@@ -52,7 +52,6 @@
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
         - build-oracle : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
-        - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
         - jar : packages eclipselink.jar
         - package-src-jar : packages source jar
@@ -480,7 +479,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="clean"/>
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"        target="clean"/>
-        <!--<ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>-->
         <delete failonerror="false">
             <fileset dir="." includes="*${eclipselink.zip.suffix}"/>
         </delete>
@@ -516,7 +514,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
-<!--        <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>-->
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
@@ -620,7 +617,6 @@
     <target name="build-util">
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="build"/>
-<!--        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="all"/>-->
     </target>
 
     <!-- Oracle extensions Targets -->
@@ -706,7 +702,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="build"/>
     </target>
 
-    <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->
+    <!-- Compiles tests (excluding dbws-util and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"      target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}" target="build"/>
@@ -725,11 +721,7 @@
     </target>
 
     <!-- Compiles all util tests -->
-    <target name="build-util-test"  depends="build-workbench-test, build-dbws-utils-test"/>
-
-    <target name="build-workbench-test">
-<!--        <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>-->
-    </target>
+    <target name="build-util-test"  depends="build-dbws-utils-test"/>
 
     <target name="build-dbws-utils-test" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="build"/>
@@ -1491,13 +1483,6 @@
             <zipfileset dir="${eclipselink.dbws.builder}" includes="setenv.*, dbwsbuilder.*"      prefix="eclipselink/utils/dbws" filemode="755"/>
             <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}, *oracleddl*.jar" prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.plugins}"      includes="${servlet.jar}"               prefix="eclipselink/utils/dbws"/>
-            <!-- workbench jars -->
-<!--            <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench.lib}/run/" includes="connector.jar"      prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench}/config/"  includes="*, platforms/*"     prefix="eclipselink/utils/workbench/config"/>
-            <zipfileset dir="${eclipselink.util.workbench}"          includes="readme.html"        prefix="eclipselink/utils/workbench"/>
-            <zipfileset dir="${eclipselink.util.workbench}/bin/"     includes="*"                  prefix="eclipselink/utils/workbench/bin" filemode="755"/>-->
         </zip>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-package-installer-zip" >
             <property name="eclipselink.zip.file" value="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
