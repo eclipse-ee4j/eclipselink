@@ -60,6 +60,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -1190,15 +1191,34 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     /**
      * INTERNAL:
      * Returns query to check whether given table exists in MySQL database.
-     * Returned query must be completely prepared so it can be just executed by calling code.
+     * This query will not cause exception. It just returns row only when database exists.
      * @param table database table meta-data
      * @return query to check whether given table exists
      */
-    public DataReadQuery getTableExistsQuery(final TableDefinition table) {
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
         final String sql = "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'";
         final DataReadQuery query = new DataReadQuery(sql);
         query.setMaxRows(1);
         return query;
+    }
+
+    // PERF: With Oracle DB we just check whether query returns some result or not.
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Query is produced by {@link #getTableExistsQuery(TableDefinition)} method.
+     * @param session current database session
+     * @param table database table meta-data
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
+        try {
+            session.setLoggingOff(true);
+            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
+            return !result.isEmpty();
+        } catch (Exception notFound) {
+            return false;
+        }
     }
 
 }

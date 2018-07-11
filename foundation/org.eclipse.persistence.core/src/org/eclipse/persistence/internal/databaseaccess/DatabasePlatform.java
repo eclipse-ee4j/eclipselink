@@ -76,6 +76,7 @@ import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -3525,10 +3526,11 @@ public class DatabasePlatform extends DatasourcePlatform {
       * INTERNAL:
       * Returns query to check whether given table exists.
       * Returned query must be completely prepared so it can be just executed by calling code.
+      * Query execution throws an exception when no such table exists.
       * @param table database table meta-data
       * @return query to check whether given table exists
       */
-     public DataReadQuery getTableExistsQuery(final TableDefinition table) {
+     protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
          String column = null;
          for (FieldDefinition field : table.getFields()) {
              if (column == null) {
@@ -3542,6 +3544,28 @@ public class DatabasePlatform extends DatasourcePlatform {
          final DataReadQuery query = new DataReadQuery(sql);
          query.setMaxRows(1);
          return query;
+     }
+
+     // PERF: This check should work on any database but it's not very efficient
+     //       because of an exception handling.
+     /**
+      * INTERNAL:
+      * Executes and evaluates query to check whether given table exists.
+      * Query is produced by {@link #getTableExistsQuery(TableDefinition)} method.
+      * Table existence evaluation for default query relies on simple check
+      * whether query execution throws an exception or not.
+      * @param session current database session
+      * @param table database table meta-data
+      * @return value of {@code true} if given table exists or {@code false} otherwise
+      */
+     public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
+         try {
+             session.setLoggingOff(true);
+             session.executeQuery(getTableExistsQuery(table));
+             return true;
+         } catch (Exception notFound) {
+             return false;
+         }
      }
 
 }
