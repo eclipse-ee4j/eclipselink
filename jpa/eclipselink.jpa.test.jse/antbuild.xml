@@ -45,7 +45,7 @@
     <property name="jse.eclipselink.jar" value="${jse.el.root}/eclipselink.jar"/>
     <property name="javax.transaction" value="${jse.el.plugins.dir}/javax.transaction.api_1.3.0.jar"/>
     <property name="javax.validation" value="${jse.el.plugins.dir}/javax.validation.api_2.0.1.Final.jar"/>
-    <property name="javax.persistence" value="${jse.jpa.plugins.dir}/javax.persistence_2.2.0.v201708071007.jar"/>
+    <property name="javax.persistence" value="${jse.jpa.plugins.dir}/javax.persistence_2.2.1.v201807122140.jar"/>
     <property name="jse.modelgen.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.jpa.modelgen_${version.string}.jar"/>
 
     <!-- JVM used to run tests -->
