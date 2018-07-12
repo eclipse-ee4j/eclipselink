@@ -16,11 +16,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.2.0.v201708071007.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.2.1.v201807122140.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.2.0.v201708071007.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
