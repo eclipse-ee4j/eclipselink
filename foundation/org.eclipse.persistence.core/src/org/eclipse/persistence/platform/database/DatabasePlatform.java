@@ -14,6 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.database;
 
+import org.eclipse.persistence.internal.databaseaccess.TableExistenceCheck;
+
 /**
  * DatabasePlatform is private to EclipseLink. It encapsulates behavior specific to a database platform
  * (eg. Oracle, Sybase, DBase), and provides protocol for EclipseLink to access this behavior. The behavior categories
@@ -32,7 +34,19 @@ package org.eclipse.persistence.platform.database;
 public class DatabasePlatform extends org.eclipse.persistence.internal.databaseaccess.DatabasePlatform {
     public static final int DEFAULT_VARCHAR_SIZE = 255;
 
+    /**
+     * Creates an instance of default database platform.
+     */
     public DatabasePlatform() {
         super();
     }
+
+    /**
+     * Creates an instance of default database platform.
+     * @param tableExistenceCheck selected method for table existence check
+     */
+    protected DatabasePlatform(final TableExistenceCheck tableExistenceCheck) {
+        super(tableExistenceCheck);
+    }
+
 }

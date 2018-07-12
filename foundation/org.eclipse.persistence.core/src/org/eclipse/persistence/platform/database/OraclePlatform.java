@@ -49,6 +49,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.databaseaccess.TableExistenceCheck;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
@@ -60,7 +61,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -81,6 +81,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * @since TOPLink/Java 1.0
  */
 public class OraclePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+
     protected static DataModifyQuery vpdSetIdentifierQuery;
     protected static DataModifyQuery vpdClearIdentifierQuery;
 
@@ -95,8 +96,23 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     protected boolean supportsIdentity;
 
+    /**
+     * Oracle DB specific query to check whether given table exists.
+     */
+    private static final class OracleTableExistenceCheck extends TableExistenceCheck.ByResult {
+        /**
+         * {@inheritDoc}
+         */
+        protected DataReadQuery getQuery(final TableDefinition table) {
+            final String sql = "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'";
+            final DataReadQuery query = new DataReadQuery(sql);
+            query.setMaxRows(1);
+            return query;
+        }
+    }
+
     public OraclePlatform(){
-        super();
+        super(new OracleTableExistenceCheck());
         this.pingSQL = "SELECT 1 FROM DUAL";
         this.storedProcedureTerminationToken = "";
         this.shouldPrintForUpdateClause = true;
@@ -1186,39 +1202,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             return subExp1.equal(0);
         }
         return super.createExpressionFor(field, builder);
-    }
-
-    /**
-     * INTERNAL:
-     * Returns query to check whether given table exists in MySQL database.
-     * This query will not cause exception. It just returns row only when database exists.
-     * @param table database table meta-data
-     * @return query to check whether given table exists
-     */
-    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
-        final String sql = "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'";
-        final DataReadQuery query = new DataReadQuery(sql);
-        query.setMaxRows(1);
-        return query;
-    }
-
-    // PERF: With Oracle DB we just check whether query returns some result or not.
-    /**
-     * INTERNAL:
-     * Executes and evaluates query to check whether given table exists.
-     * Query is produced by {@link #getTableExistsQuery(TableDefinition)} method.
-     * @param session current database session
-     * @param table database table meta-data
-     * @return value of {@code true} if given table exists or {@code false} otherwise
-     */
-    public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
-        try {
-            session.setLoggingOff(true);
-            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
-            return !result.isEmpty();
-        } catch (Exception notFound) {
-            return false;
-        }
     }
 
 }

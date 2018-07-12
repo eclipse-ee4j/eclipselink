@@ -43,6 +43,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.databaseaccess.TableExistenceCheck;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -51,7 +52,6 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -78,8 +78,23 @@ public class MySQLPlatform extends DatabasePlatform {
     private boolean isFractionalTimeSupported;
     private boolean isConnectionDataInitialized;
 
+    /**
+     * MySQL specific query to check whether given table exists.
+     */
+    private static final class MySQLTableExistenceCheck extends TableExistenceCheck.ByResult {
+        /**
+         * {@inheritDoc}
+         */
+        protected DataReadQuery getQuery(final TableDefinition table) {
+            final String sql = "SHOW TABLES LIKE '" + table.getFullName() + "'";
+            final DataReadQuery query = new DataReadQuery(sql);
+            query.setMaxRows(1);
+            return query;
+        }
+    }
+
     public MySQLPlatform(){
-        super();
+        super(new MySQLTableExistenceCheck());
         this.pingSQL = "SELECT 1";
         this.startDelimiter = "`";
         this.endDelimiter = "`";
@@ -815,39 +830,6 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public void printStoredFunctionReturnKeyWord(Writer writer) throws IOException {
         writer.write("\n\t RETURNS ");
-    }
-
-    /**
-     * INTERNAL:
-     * Returns query to check whether given table exists in MySQL database.
-     * This query will not cause exception. It just returns row only when database exists.
-     * @param table database table meta-data
-     * @return query to check whether given table exists
-     */
-    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
-        final String sql = "SHOW TABLES LIKE '" + table.getFullName() + "'";
-        final DataReadQuery query = new DataReadQuery(sql);
-        query.setMaxRows(1);
-        return query;
-    }
-
-    // PERF: With MySQL we just check whether query returns some result or not.
-    /**
-     * INTERNAL:
-     * Executes and evaluates query to check whether given table exists.
-     * Query is produced by {@link #getTableExistsQuery(TableDefinition)} method.
-     * @param session current database session
-     * @param table database table meta-data
-     * @return value of {@code true} if given table exists or {@code false} otherwise
-     */
-    public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
-        try {
-            session.setLoggingOff(true);
-            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
-            return !result.isEmpty();
-        } catch (Exception notFound) {
-            return false;
-        }
     }
 
 }
