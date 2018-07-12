@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence_2.2.0.v201708071007.jar!/" value="MODULE_DIR/../plugins/javax.persistence_2.2.0.v201708071007.jar" />
-    <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.2.0.v201708071007.jar!/" value="src:/MODULE_DIR/../plugins/javax.persistence.source_2.2.0.v201708071007.jar" />
+    <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence_2.2.1.v201807122140.jar!/" value="MODULE_DIR/../plugins/javax.persistence_2.2.1.v201807122140.jar" />
+    <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" value="src:/MODULE_DIR/../plugins/javax.persistence.source_2.2.1.v201807122140.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" value="MODULE_DIR/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" value="MODULE_DIR/../../plugins/javax.validation.api_2.0.1.Final.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ejb_3.1.0.v201205171433.jar!/" value="MODULE_DIR/../../plugins/javax.ejb_3.1.0.v201205171433.jar" />
@@ -32,11 +32,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../plugins/javax.persistence_2.2.0.v201708071007.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/javax.persistence_2.2.1.v201807122140.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.2.0.v201708071007.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
