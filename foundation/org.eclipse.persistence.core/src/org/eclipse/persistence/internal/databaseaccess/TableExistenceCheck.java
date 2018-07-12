@@ -67,6 +67,7 @@ public interface TableExistenceCheck {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean exists(final DatabaseSessionImpl session, final TableDefinition table) {
             try {
                 session.setLoggingOff(true);
@@ -98,6 +99,7 @@ public interface TableExistenceCheck {
         /**
          * {@inheritDoc}
          */
+        @Override
         public boolean exists(final DatabaseSessionImpl session, final TableDefinition table) {
             try {
                 session.setLoggingOff(true);

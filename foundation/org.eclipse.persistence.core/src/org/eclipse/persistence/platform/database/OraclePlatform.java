@@ -103,6 +103,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         /**
          * {@inheritDoc}
          */
+        @Override
         protected DataReadQuery getQuery(final TableDefinition table) {
             final String sql = "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'";
             final DataReadQuery query = new DataReadQuery(sql);

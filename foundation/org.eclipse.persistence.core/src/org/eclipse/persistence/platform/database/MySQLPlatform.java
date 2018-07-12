@@ -85,6 +85,7 @@ public class MySQLPlatform extends DatabasePlatform {
         /**
          * {@inheritDoc}
          */
+        @Override
         protected DataReadQuery getQuery(final TableDefinition table) {
             final String sql = "SHOW TABLES LIKE '" + table.getFullName() + "'";
             final DataReadQuery query = new DataReadQuery(sql);

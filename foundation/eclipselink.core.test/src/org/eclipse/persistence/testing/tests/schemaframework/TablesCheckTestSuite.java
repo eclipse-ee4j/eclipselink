@@ -65,6 +65,7 @@ public final class TablesCheckTestSuite extends TestSuite {
     /**
      * Tests suite setup: Creates database table for the tests.
      */
+    @Override
     public void setup() {
         final TableCreator creator = new TableCreator();
         creator.addTableDefinition(BEER_TD);
@@ -79,6 +80,7 @@ public final class TablesCheckTestSuite extends TestSuite {
      * This model class is registered in {@link org.eclipse.persistence.testing.tests.TestRunModel}.
      */
     public static final class Model extends TestModel {
+        @Override
         public void addTests() {
             addTest(suite());
         }
@@ -106,6 +108,7 @@ public final class TablesCheckTestSuite extends TestSuite {
         /**
          * Table existence check test setup: Initializes session and schema manager.
          */
+        @Override
         public void setup() {
             session = getDatabaseSession();
             manager = new SchemaManager(getDatabaseSession());
@@ -114,6 +117,7 @@ public final class TablesCheckTestSuite extends TestSuite {
         /**
          * Table existence check test reset: Clears session and schema manager.
          */
+        @Override
         public void reset() {
             manager = null;
             session = null;
@@ -136,6 +140,7 @@ public final class TablesCheckTestSuite extends TestSuite {
         /**
          * Test table existence check on existing table using current database platform instance.
          */
+        @Override
         public void test() {
             final boolean beerExists = manager.checkTableExists(BEER_TD);
             assertTrue(beerExists);
@@ -158,6 +163,7 @@ public final class TablesCheckTestSuite extends TestSuite {
         /**
          * Test table existence check on non existing table using current database platform instance.
          */
+        @Override
         public void test() {
             final boolean waterExists = manager.checkTableExists(WATER_TD);
             assertFalse(waterExists);
@@ -180,10 +186,10 @@ public final class TablesCheckTestSuite extends TestSuite {
         /**
          * Test table existence check on existing table using default database platform instance.
          */
+        @Override
         public void test() {
             final DatabasePlatform defaultPlatform = new DatabasePlatform();
-            final boolean beerExists = defaultPlatform.checkTableExists(
-                    (DatabaseSessionImpl) session, BEER_TD);
+            final boolean beerExists = defaultPlatform.checkTableExists((DatabaseSessionImpl) session, BEER_TD);
             assertTrue(beerExists);
         }
 
@@ -204,10 +210,10 @@ public final class TablesCheckTestSuite extends TestSuite {
         /**
          * Test table existence check on non existing table using default database platform instance.
          */
-       public void test() {
+        @Override
+        public void test() {
             final DatabasePlatform defaultPlatform = new DatabasePlatform();
-            final boolean waterExists = defaultPlatform.checkTableExists(
-                    (DatabaseSessionImpl) session, WATER_TD);
+            final boolean waterExists = defaultPlatform.checkTableExists((DatabaseSessionImpl) session, WATER_TD);
             assertFalse(waterExists);
         }
 
