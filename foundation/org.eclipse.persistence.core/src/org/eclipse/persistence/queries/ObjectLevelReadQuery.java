@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -216,6 +217,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * 1..N: use this value to set the WAIT clause.
      */
     protected Integer waitTimeout;
+    
+  //wait timeout unit
+    protected TimeUnit waitTimeoutUnit;
 
     /** Used for ordering support. */
     protected List<Expression> orderByExpressions;
@@ -467,7 +471,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
         setWasDefaultLockMode(false);
     }
-
+    
+    public void setWaitTimeoutUnit(TimeUnit waitTimeoutUnit) {
+        this.waitTimeoutUnit = waitTimeoutUnit;
+    }
+    
     /**
      * INTERNAL:
      * Check and return custom query flag. Custom query flag value is initialized when stored value is {@code null}.
@@ -1824,7 +1832,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Integer getWaitTimeout() {
         return waitTimeout;
     }
-
+    
+    public TimeUnit getWaitTimeoutUnit() {
+        return waitTimeoutUnit;
+    }
+    
     /**
      * Initialize the expression builder which should be used for this query. If
      * there is a where clause, use its expression builder, otherwise
@@ -2177,12 +2189,24 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 // If no wait timeout was set from a query hint, grab the
                 // default one from the session if one is available.
                 Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;
+                Long convertedTimeout =null;
+                TimeUnit timeoutUnit = (this.waitTimeoutUnit == null) ? this.session.getPessimisticLockTimeoutUnitDefault() : this.waitTimeoutUnit;
                 if (timeout == null) {
                     setLockMode(ObjectBuildingQuery.LOCK);
                 } else {
                     if (timeout.intValue() == 0) {
                         setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);
                     } else {
+                        convertedTimeout = TimeUnit.SECONDS.convert(timeout, timeoutUnit);
+                        if(convertedTimeout > Integer.MAX_VALUE){
+                            timeout = Integer.MAX_VALUE;
+                        }else {
+                            timeout = convertedTimeout.intValue();
+                        }
+                      //Round up the timeout if SECONDS are larger than the given units
+                        if(TimeUnit.SECONDS.compareTo(timeoutUnit) > 0 && timeout % 1000 > 0){
+                            timeout += 1;
+                        }
                         this.lockingClause = ForUpdateClause.newInstance(timeout);
                     }
                 }

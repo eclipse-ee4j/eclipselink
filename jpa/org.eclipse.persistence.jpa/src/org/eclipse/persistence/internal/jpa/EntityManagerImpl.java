@@ -2732,7 +2732,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
                 queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
             }
-
+            if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT)) {
+                queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT));
+            }
             // Ignore the JPA cache settings if the eclipselink setting has
             // been specified.
             if (! properties.containsKey(QueryHints.CACHE_USAGE)) {

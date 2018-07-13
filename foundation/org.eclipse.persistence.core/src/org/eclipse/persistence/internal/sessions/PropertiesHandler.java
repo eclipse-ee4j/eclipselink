@@ -234,6 +234,7 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "true"));
             //Enhancement
             addProp(new QueryTimeoutUnitProp());
+            addProp(new PessimisticLockTimeoutUnitProp());
             addProp(new BooleanProp(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.SQL_CALL_DEFERRAL, "true"));
         }
@@ -709,6 +710,17 @@ public class PropertiesHandler {
     protected static class QueryTimeoutUnitProp extends Prop {
         QueryTimeoutUnitProp() {
             super(PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, DescriptorQueryManager.DefaultTimeoutUnit.toString());
+            valueArray = new Object[] {
+                TimeUnit.MILLISECONDS.toString(),
+                TimeUnit.SECONDS.toString(),
+                TimeUnit.MINUTES.toString()
+            };
+        }
+    }
+    
+    protected static class PessimisticLockTimeoutUnitProp extends Prop {
+        PessimisticLockTimeoutUnitProp() {
+            super(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, DescriptorQueryManager.DefaultTimeoutUnit.toString());
             valueArray = new Object[] {
                 TimeUnit.MILLISECONDS.toString(),
                 TimeUnit.SECONDS.toString(),

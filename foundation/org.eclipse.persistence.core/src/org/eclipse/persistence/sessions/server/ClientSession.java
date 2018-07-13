@@ -114,6 +114,7 @@ public class ClientSession extends AbstractSession {
         }
         this.exceptionHandler = parent.getExceptionHandler();
         this.pessimisticLockTimeoutDefault = parent.getPessimisticLockTimeoutDefault();
+        this.pessimisticLockTimeoutUnitDefault = parent.getPessimisticLockTimeoutUnitDefault();
         this.queryTimeoutDefault = parent.getQueryTimeoutDefault();
         this.queryTimeoutUnitDefault = parent.getQueryTimeoutUnitDefault();
         this.isConcurrent = parent.isConcurrent();
