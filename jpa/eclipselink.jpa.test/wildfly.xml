@@ -1,11 +1,38 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      Lukas - initial API and implementation
+-->
+
+<!-- This ant project includes the following tasks:
+        - wildfly-install : install binary and drivers on the server
+        - wildfly-setup : creates connection pools and prepares environment for tests
+        - wildfly-reset : removes connection pool, cleans up installation
+        - wildfly-start : starts server
+        - wildfly-stop : stops server
+        - wildfly-deploy : deploys ear
+        - wildfly-undeploy : undeploys ear
+
+        It requires some configuration of the wildfly.properties, it should be run through antbuild.xml, not directly.
+        To connect to the wildfly admin console use http://localhost:9990/console/App.html,
+        this may be useful for debugging deployment failures.
+        Sometimes if a test or deployment fails, your server gets screwed up
+        and you need to re-install your domain (ant -f antbuld.xml server-reset server-install server-setup).
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -26,27 +53,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     Lukas - initial API and implementation
-#******************************************************************************/-->
-
-<!-- This ant project includes the following tasks:
-        - wildfly-install : install binary and drivers on the server
-        - wildfly-setup : creates connection pools and prepares environment for tests
-        - wildfly-reset : removes connection pool, cleans up installation
-        - wildfly-start : starts server
-        - wildfly-stop : stops server
-        - wildfly-deploy : deploys ear
-        - wildfly-undeploy : undeploys ear
-
-        It requires some configuration of the wildfly.properties, it should be run through antbuild.xml, not directly.
-        To connect to the wildfly admin console use http://localhost:9990/console/App.html,
-        this may be useful for debugging deployment failures.
-        Sometimes if a test or deployment fails, your server gets screwed up
-        and you need to re-install your domain (ant -f antbuld.xml server-reset server-install server-setup).
 -->
-
 <project name="Eclipse Persistence Services JPA Wildfly Testing" basedir=".">
 
     <property name="env" environment="env" value="env"/>
@@ -109,17 +116,8 @@
     </target>
 
     <target name="-wildfly-cli-init" description="Initialize 'cli' macro for jboss-cli.">
-        <condition property="is.windows" value="true">
+        <condition property="suffix" value="bat" else="sh">
             <os family="windows"/>
-        </condition>
-        <condition property="is.unix" value="true">
-            <os family="unix"/>
-        </condition>
-        <condition property="suffix" value="bat">
-            <isset property="is.windows"/>
-        </condition>
-        <condition property="suffix" value="sh">
-            <isset property="is.unix"/>
         </condition>
 
         <macrodef name="cli" description="Run ${wildfly.home}/bin/jboss-cli.${suffix}">
@@ -178,9 +176,6 @@
         <cli command="data-source add --jndi-name=${wildfly.nonJtaDs.jndi} --name=${w.nonjtads.name} --connection-url=${db.url} --driver-name=${db.name}Driver --user-name=${db.user} —-password=${db.pwd} --jta=true --enabled=true"/>
         <cli command="/subsystem=datasources/data-source=${w.nonjtads.name}:write-attribute(name=password,value=${db.pwd})"/>
         <cli command=":reload"/>
-
-        <cli command="/system-property=eclipselink.archive.factory:add(value=org.jipijapa.eclipselink.JBossArchiveFactoryImpl)"/>
-        <cli command=":reload"/>
     </target>
 
     <target name="wildfly-reset" description="Revert all modifications on the server done by install/setup." depends="-wildfly-cli-init,wildfly-start">
@@ -190,7 +185,6 @@
         <cli command=":reload"/>
 
         <cli command="/subsystem=datasources/jdbc-driver=${db.name}Driver:remove"/>
-        <cli command="/system-property=eclipselink.archive.factory:remove"/>
         <cli command=":reload"/>
 
         <!-- JDBC Driver -->
@@ -229,7 +223,7 @@
             <http url="http://localhost:8080/index.html"/>
         </waitfor>
         <fail if="wildfly.not.running" message="Wildfly did not start within given time"/>
-        <echo>Wildfly is runnig at http://localhost:8080/index.html</echo>
+        <echo>Wildfly is running at http://localhost:8080/index.html</echo>
     </target>
 
     <target name="wildfly-stop" description="Stop the server." depends="-wildfly-cli-init">

@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm;
 
 import java.util.Collection;
@@ -19,6 +21,8 @@ import javax.xml.transform.Result;
 import javax.xml.transform.sax.SAXResult;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.FragmentContentHandler;
 import org.eclipse.persistence.internal.oxm.JsonTypeConfiguration;
 import org.eclipse.persistence.internal.oxm.Root;
@@ -149,8 +153,32 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
                 MarshalRecord writerRecord = ((ExtendedResult)result).createRecord();
                 if(object instanceof Collection){
                     writerRecord.startCollection();
+                    String valueWrapper;
                     for(Object o : (Collection) object) {
-                        marshal(o, writerRecord);
+                        if (o == null) {
+                            valueWrapper = this.getValueWrapper();
+                            if (isApplicationJSON()) {
+                                this.setValueWrapper("");
+                                writerRecord.setMarshaller(this);
+                            }
+                            writerRecord.nilSimple(null);
+                            this.setValueWrapper(valueWrapper);
+                        } else {
+                            if (isApplicationJSON() && o != null && (o.getClass() == CoreClassConstants.STRING || o.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(o.getClass()))) {
+                                if (writerRecord.getSession() == null) {
+                                    writerRecord.setSession((CoreAbstractSession) this.getContext().getSession());
+                                }
+                                valueWrapper = this.getValueWrapper();
+                                this.setValueWrapper("");
+                                writerRecord.setMarshaller(this);
+                                writerRecord.characters(null, o, null, false);
+                                this.setValueWrapper(valueWrapper);
+                            } else {
+                                marshal(o, writerRecord);
+                            }
+                        }
+
+                     //Origin   marshal(o, writerRecord);
                     }
                     writerRecord.endCollection();
                     return;

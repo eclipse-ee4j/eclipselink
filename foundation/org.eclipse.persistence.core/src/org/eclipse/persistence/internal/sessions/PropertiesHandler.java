@@ -1,30 +1,33 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *      Gordon Yorke - VM managed entity detachment
- *     Eduard Bartsch, SAP - Fix for Bug 351186 - ConcurrentModificationException Exception in PropertiesHandler
- *     Rick Curtis - Add support for WebSphere Liberty platform.
- *     08/11/2014-2.5 Rick Curtis
- *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
- *     09/03/2015 - Will Dazey
- *       - 456067 : Added support for defining query timeout units
- *     09/28/2015 - Will Dazey
- *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
- *     03/11/2016 - Jody Grassel
- *       - 489794 : Add support for WebSphere EJBEmbeddable platform.
- *     08/29/2016 Jody Grassel
- *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
- *     04/11/2018 - Will Dazey
- *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//      Gordon Yorke - VM managed entity detachment
+//     Eduard Bartsch, SAP - Fix for Bug 351186 - ConcurrentModificationException Exception in PropertiesHandler
+//     Rick Curtis - Add support for WebSphere Liberty platform.
+//     08/11/2014-2.5 Rick Curtis
+//       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+//     09/03/2015 - Will Dazey
+//       - 456067 : Added support for defining query timeout units
+//     09/28/2015 - Will Dazey
+//       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
+//     03/11/2016 - Jody Grassel
+//       - 489794 : Add support for WebSphere EJBEmbeddable platform.
+//     08/29/2016 Jody Grassel
+//       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
+//     04/11/2018 - Will Dazey
+//       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.internal.sessions;
 
 import java.security.AccessController;

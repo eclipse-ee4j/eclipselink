@@ -1,46 +1,31 @@
-<!--/*******************************************************************************
-* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
-*   Ant naming conventions:
-*   - regardless of the actual OS platform,'/' is the directory separator
-*     (Ant will convert as appropriate).
-*   - multi-word properties use periods '.'
-*     - properties ending in .jar define jarfile names only (no path)
-*     - properties ending in .lib are fully qualified jars (path and filename)
-*     - properties ending in .dir are directory paths
-*     - properties ending in .path are path refid names (classpath fragments)
-*   - multi-word targets use hyphens '-'
-*     - targets beginning with test- are reserved for high level test targets,
-*       and are used in test results parsing
-*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
-*   - multi-word macros use underscores '_'
-*   - multi-word macro attributes are concatenated
-*     e.g. 'runpathref'
-*   - multi-word tasks (taskdef) names are concatenated
-*     e.g. 'validateconnection'
-*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
-*     e.g. ${env.XXX}.
-*   - Ant properties are lower case.
-*
-* Contributors:
-*     tware  - initial API and implementation
-*     pkrogh - javadocs
-*     egwin  - rework to follow ant conventions.
-*     dtwelves - Add SDO, MOXy SRG targets
-*     egwin  - rework to incorporate new versioning standards and revision info.
-*     egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
+<!--
+
+    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      tware  - initial API and implementation
+      pkrogh - javadocs
+      egwin  - rework to follow ant conventions.
+      dtwelves - Add SDO, MOXy SRG targets
+      egwin  - rework to incorporate new versioning standards and revision info.
+      egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
                strategy. Also includes fixes to eclipselink.jar creation.
-*     egwin  - rework to standardize antcall conventions and fix multiple target builds.
-*     tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
-*     mvalovy - OSGi tests
-*     Rick Curtis - Add jse bucket to lrg-test
-#******************************************************************************/-->
+      egwin  - rework to standardize antcall conventions and fix multiple target builds.
+      tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
+      mvalovy - OSGi tests
+      Rick Curtis - Add jse bucket to lrg-test
+-->
 <!-- =============================================================================
 *  General Comments
 *  This buildfile contains:
@@ -67,7 +52,6 @@
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
         - build-oracle : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
-        - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
         - jar : packages eclipselink.jar
         - package-src-jar : packages source jar
@@ -89,6 +73,28 @@
 
         It may require some configuration of the build.properties to run.
     -->
+<!--
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+-->
 <project name="trunk" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:sonar="antlib:org.sonar.ant">
     <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
     <pathconvert targetos="unix" property="trunk.build.location">
@@ -171,7 +177,7 @@
         <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
         <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${json.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${json-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${javax.validation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${ejb.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jms.jar}"/>
@@ -473,8 +479,9 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="clean"/>
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"        target="clean"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>
-        <delete file="*${eclipselink.zip.suffix}" failonerror="false"/>
+        <delete failonerror="false">
+            <fileset dir="." includes="*${eclipselink.zip.suffix}"/>
+        </delete>
     </target>
     <target name="clean-core" depends="check-maven" description="Clean the maven built runtime projects">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
@@ -507,7 +514,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
@@ -611,7 +617,6 @@
     <target name="build-util">
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="build"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="all"/>
     </target>
 
     <!-- Oracle extensions Targets -->
@@ -697,7 +702,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="build"/>
     </target>
 
-    <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->
+    <!-- Compiles tests (excluding dbws-util and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"      target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}" target="build"/>
@@ -707,7 +712,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"   target="build-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"      target="compile-tests-against-jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"       target="compile-sdo-tests-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"       target="compile-sdo-tests"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"      target="build"/>
     </target>
 
@@ -716,11 +721,7 @@
     </target>
 
     <!-- Compiles all util tests -->
-    <target name="build-util-test"  depends="build-workbench-test, build-dbws-utils-test"/>
-
-    <target name="build-workbench-test">
-        <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>
-    </target>
+    <target name="build-util-test"  depends="build-dbws-utils-test"/>
 
     <target name="build-dbws-utils-test" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="build"/>
@@ -815,6 +816,7 @@
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
                 <exclude name="*extension*.jar"/>
+                <exclude name="*sdo*.jar"/>
             </zipgroupfileset>
             <!-- Include hermes runtime Only -->
             <fileset dir="${build.dir}/hermes/${classes.dir}">
@@ -1468,7 +1470,8 @@
                 <include name="${jaxb-core.jar}"/>
                 <include name="${jaxb-xjc.jar}"/>
                 <include name="${javax.validation.jar}"/>
-                <include name="${json.jar}"/>
+                <include name="${json-api.jar}"/>
+                <include name="${json-impl.jar}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy/api">
                 <include name="${jaxb-api.jar}"/>
@@ -1480,13 +1483,6 @@
             <zipfileset dir="${eclipselink.dbws.builder}" includes="setenv.*, dbwsbuilder.*"      prefix="eclipselink/utils/dbws" filemode="755"/>
             <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}, *oracleddl*.jar" prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.plugins}"      includes="${servlet.jar}"               prefix="eclipselink/utils/dbws"/>
-            <!-- workbench jars -->
-<!--            <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench.lib}/run/" includes="connector.jar"      prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench}/config/"  includes="*, platforms/*"     prefix="eclipselink/utils/workbench/config"/>
-            <zipfileset dir="${eclipselink.util.workbench}"          includes="readme.html"        prefix="eclipselink/utils/workbench"/>
-            <zipfileset dir="${eclipselink.util.workbench}/bin/"     includes="*"                  prefix="eclipselink/utils/workbench/bin" filemode="755"/>-->
         </zip>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-package-installer-zip" >
             <property name="eclipselink.zip.file" value="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
@@ -1549,6 +1545,17 @@
     <target name="test-lrg" description="run all the LRG test suites"
             depends="clear-db, test-lrg-only, generate-report"
             />
+    <target name="test-lrg-server" description="run all the server side LRG test suites">
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}">
+            <target name="init"/>
+            <target name="server-install"/>
+            <target name="server-setup"/>
+            <target name="server-test-lrg"/>
+            <target name="server-test-jpa21-lrg"/>
+            <target name="server-test-jpa22-lrg"/>
+            <target name="server-stop"/>
+        </ant>
+    </target>
     <!-- Run clear-db -->
     <target name="clear-db" description="run the core tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}" target="clear-database"/>
@@ -1628,10 +1635,10 @@
     </target>
     <!-- Run SDO & MOXY tests. -->
     <target name="test-sdo" description="run the sdo tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test"/>
     </target>
     <target name="test-sdo-srg" description="run the sdo srg tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-srg-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-srg"/>
     </target>
     <target name="test-moxy" description="run the moxy tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-against-jar"/>

@@ -1,10 +1,45 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
+<!--
+
+    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      mmeswani - initial API and implementation (checked in by tware)
+      egwin    - updated variables as they have changed in the rest of the system
+                 updated svnversion to not break build, and default if exec fails
+      egwin    - updated for publishing to Maven Central, split nexus handling to
+                 new script
+      egwin    - converted svn.revision to git.hash (was missed in original
+                 migration to Git)
+-->
+<!-- Variables Needed:
+*         release.version - need three tokens: Major.Minor.Service
+*         build.date      - in format YYYYMMDD
+*         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
+*         git.hash        - for stamping pom, to link build with source repo
+*    Optional variables:
+*         bundle.dir      - if location of bundles to publish isn't a git "view"
+*
+*********************************************************************************-->
+<!-- Build Assumptions:
+*         running from a "view"
+*            Needs:
+*               ${mavenant.dir}/maven-ant-tasks-2.0.8.jar (assumes: ${build.deps.dir}/mavenant)
+*               build.properties
+*               ./buildsystem/ant_customizations.jar
+*
+*********************************************************************************-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -25,33 +60,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     mmeswani - initial API and implementation (checked in by tware)
-*     egwin    - updated variables as they have changed in the rest of the system
-*                updated svnversion to not break build, and default if exec fails
-*     egwin    - updated for publishing to Maven Central, split nexus handling to
-*                new script
-*     egwin    - converted svn.revision to git.hash (was missed in original
-*                migration to Git)
-#******************************************************************************/-->
-<!-- Variables Needed:
-*         release.version - need three tokens: Major.Minor.Service
-*         build.date      - in format YYYYMMDD
-*         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
-*         git.hash        - for stamping pom, to link build with source repo
-*    Optional variables:
-*         bundle.dir      - if location of bundles to publish isn't a git "view"
-*
-*********************************************************************************-->
-<!-- Build Assumptions:
-*         running from a "view"
-*            Needs:
-*               ${mavenant.dir}/maven-ant-tasks-2.0.8.jar (assumes: ${build.deps.dir}/mavenant)
-*               build.properties
-*               ./buildsystem/ant_customizations.jar
-*
-*********************************************************************************-->
+-->
 <project name="Upload2Maven"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
     <property file="${user.home}/build.properties"/>
     <property file="build.properties"/>
@@ -170,10 +179,10 @@
         <property name="validation.criteria"  value="[1.1.0,2.2.0)"/>
         <property name="validation.name"      value="Javax Validation"/>
         <property name="validation.version"   value="1.1.0.Final"/>
-        <property name="json.prefix"          value="javax.json"/>
-        <property name="json.criteria"        value="[1.0.4,5.0.0)"/>
+        <property name="json.prefix"          value="javax.json-api"/>
+        <property name="json.criteria"        value="[1.1.0,5.0.0)"/>
         <property name="json.name"            value="Javax JSON"/>
-        <property name="json.version"         value="1.0.4"/>
+        <property name="json.version"         value="1.1.2"/>
         <property name="antlr.prefix"         value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria"       value="[3.0.0,4.0.0)"/>
         <property name="antlr.name"           value="EclipseLink ANTLR"/>
@@ -299,7 +308,7 @@
         <!-- APIs that are not EclipseLink's maintained public API bundles but are to be included in EclipseLink pom.xml.  -->
         <property name="dep.validation"
                   value="${dep.grp}javax.validation${dep.art}${validation.prefix}${dep.ver}${validation.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.json"          value="${dep.grp}org.glassfish${dep.art}${json.prefix}${dep.ver}${json.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.json"          value="${dep.grp}javax.json${dep.art}${json.prefix}${dep.ver}${json.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}${asm.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>

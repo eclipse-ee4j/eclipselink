@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2014, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Marcel Valovy - 2.6 - initial implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.jaxb.plugins;
 
 import static com.sun.xml.xsom.XSFacet.FACET_FRACTIONDIGITS;
@@ -328,19 +330,20 @@ public class BeanValidationPlugin extends Plugin {
 
         XSTerm term = particle.getTerm();
         if (term instanceof XSElementDecl) {
-            processTermElement(fieldVar, (XSElementDecl) term, customizations);
+            processTermElement(particle, fieldVar, (XSElementDecl) term, customizations);
         // When a complex type resides inside another complex type and thus gets lazily loaded or processed.
         } else if (term instanceof DelayedRef.Element) { 
-            processTermElement(fieldVar, ((DelayedRef.Element) term).get(), customizations);
+            processTermElement(particle, fieldVar, ((DelayedRef.Element) term).get(), customizations);
         }
     }
 
-    private void processTermElement(JFieldVar fieldVar, XSElementDecl element, List<FacetCustomization> customizations) {
+    private void processTermElement(XSParticle particle, JFieldVar fieldVar, XSElementDecl element, List<FacetCustomization> customizations) {
+        final int minOccurs = getOccursValue("minOccurs", particle);
         XSType elementType = element.getType();
 
         if (elementType.isComplexType()) {
             validAnnotate(fieldVar);
-            if (!element.isNillable()) {
+            if (!element.isNillable() && minOccurs > 0) {
                 notNullAnnotate(fieldVar);
             }
             if (elementType.getBaseType().isSimpleType()) {

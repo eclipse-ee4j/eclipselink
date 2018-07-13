@@ -1,26 +1,29 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Zoltan NAGY & tware - added implementation of updateMaxRowsForQuery
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     02/04/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     04/30/2014-2.6 Lukas Jungmann
- *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
- *     07/23/2014-2.6 Lukas Jungmann
- *       - 440278: Support fractional seconds in time values
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- *****************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Zoltan NAGY & tware - added implementation of updateMaxRowsForQuery
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     02/04/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     04/30/2014-2.6 Lukas Jungmann
+//       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+//     07/23/2014-2.6 Lukas Jungmann
+//       - 440278: Support fractional seconds in time values
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
 package org.eclipse.persistence.platform.database;
 
 import java.io.IOException;
@@ -48,8 +51,10 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
  * <p><b>Purpose</b>: Provides MySQL specific behavior.
@@ -810,4 +815,19 @@ public class MySQLPlatform extends DatabasePlatform {
     public void printStoredFunctionReturnKeyWord(Writer writer) throws IOException {
         writer.write("\n\t RETURNS ");
     }
+
+    /**
+     * INTERNAL:
+     * Returns query to check whether given table exists in MySQL database.
+     * Returned query must be completely prepared so it can be just executed by calling code.
+     * @param table database table meta-data
+     * @return query to check whether given table exists
+     */
+    public DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final String sql = "SHOW TABLES LIKE '" + table.getFullName() + "'";
+        final DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        return query;
+    }
+
 }

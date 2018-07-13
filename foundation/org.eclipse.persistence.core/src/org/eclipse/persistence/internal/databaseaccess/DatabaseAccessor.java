@@ -1,28 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Vikram Bhatia - bug fix for releasing temporary LOBs after conversion
- *     02/08/2012-2.4 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     01/08/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Vikram Bhatia - bug fix for releasing temporary LOBs after conversion
+//     02/08/2012-2.4 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     07/13/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     08/24/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     11/05/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     01/08/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
@@ -1380,39 +1383,41 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
-        } else if (Helper.shouldOptimizeDates && (type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
-            // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
-            String dateString = resultSet.getString(columnNumber);
-            value = platform.convertObject(dateString, fieldType);
         } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
-            // PERF: Optimize dates by calling direct get method if type is Date or Time,
-            // unfortunately the double conversion is unavoidable for Calendar and util.Date.
-            if (fieldType == ClassConstants.SQLDATE) {
-                value = resultSet.getDate(columnNumber);
-            } else if (fieldType == ClassConstants.TIME) {
-                value = resultSet.getTime(columnNumber);
-            } else if (fieldType == ClassConstants.TIMESTAMP) {
-                value = resultSet.getTimestamp(columnNumber);
-            } else if (fieldType == ClassConstants.TIME_LTIME) {
-                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
-                value = ts != null ? ts.toLocalDateTime().toLocalTime()
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
-            } else if (fieldType == ClassConstants.TIME_LDATE) {
-                final java.sql.Date dt = resultSet.getDate(columnNumber);
-                value = dt != null ? dt.toLocalDate()
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
-            } else if (fieldType == ClassConstants.TIME_LDATETIME) {
-                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
-                value = ts != null ? ts.toLocalDateTime()
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
-            } else if (fieldType == ClassConstants.TIME_OTIME) {
-                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
-                value = ts != null ? ts.toLocalDateTime().toLocalTime().atOffset(java.time.OffsetDateTime.now().getOffset())
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
-            } else if (fieldType == ClassConstants.TIME_ODATETIME) {
-                final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
-                value = ts != null ? java.time.OffsetDateTime.ofInstant(ts.toInstant(), java.time.ZoneId.systemDefault())
-                        : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
+            if (Helper.shouldOptimizeDates) {
+                // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
+                String dateString = resultSet.getString(columnNumber);
+                value = platform.convertObject(dateString, fieldType);
+            } else {
+                // PERF: Optimize dates by calling direct get method if type is Date or Time,
+                // unfortunately the double conversion is unavoidable for Calendar and util.Date.
+                if (fieldType == ClassConstants.SQLDATE) {
+                    value = resultSet.getDate(columnNumber);
+                } else if (fieldType == ClassConstants.TIME) {
+                    value = resultSet.getTime(columnNumber);
+                } else if (fieldType == ClassConstants.TIMESTAMP) {
+                    value = resultSet.getTimestamp(columnNumber);
+                } else if (fieldType == ClassConstants.TIME_LTIME) {
+                    final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                    value = ts != null ? ts.toLocalDateTime().toLocalTime()
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LTIME);
+                } else if (fieldType == ClassConstants.TIME_LDATE) {
+                    final java.sql.Date dt = resultSet.getDate(columnNumber);
+                    value = dt != null ? dt.toLocalDate()
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATE);
+                } else if (fieldType == ClassConstants.TIME_LDATETIME) {
+                    final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                    value = ts != null ? ts.toLocalDateTime()
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_LDATETIME);
+                } else if (fieldType == ClassConstants.TIME_OTIME) {
+                    final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                    value = ts != null ? ts.toLocalDateTime().toLocalTime().atOffset(java.time.OffsetDateTime.now().getOffset())
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_OTIME);
+                } else if (fieldType == ClassConstants.TIME_ODATETIME) {
+                    final java.sql.Timestamp ts = resultSet.getTimestamp(columnNumber);
+                    value = ts != null ? java.time.OffsetDateTime.ofInstant(ts.toInstant(), java.time.ZoneId.systemDefault())
+                            : platform.getConversionManager().getDefaultNullValue(ClassConstants.TIME_ODATETIME);
+                }
             }
         } else if (fieldType == ClassConstants.BIGINTEGER) {
             value = resultSet.getBigDecimal(columnNumber);

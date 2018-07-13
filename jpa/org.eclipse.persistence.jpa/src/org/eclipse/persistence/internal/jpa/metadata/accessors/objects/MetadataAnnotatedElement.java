@@ -1,49 +1,51 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     05/16/2008-1.0M8 Guy Pelletier
- *       - 218084: Implement metadata merging functionality between mapping files
- *     05/23/2008-1.0M8 Guy Pelletier
- *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
- *     06/20/2008-1.0 Guy Pelletier
- *       - 232975: Failure when attribute type is generic
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     10/01/2008-1.1 Guy Pelletier
- *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     02/06/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 2)
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/24/2009-2.0 Guy Pelletier
- *       - 270011: JPA 2.0 MappedById support
- *     06/25/2009-2.0 Michael O'Brien
- *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
- *          in support of the custom descriptors holding mappings required by the Metamodel
- *     03/08/2010-2.1 Guy Pelletier
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     08/11/2010-2.2 Guy Pelletier
- *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
- *     12/01/2010-2.2 Guy Pelletier
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
- *     12/02/2010-2.2 Guy Pelletier
- *       - 251554: ExcludeDefaultMapping annotation needed
- *     12/02/2010-2.2 Guy Pelletier
- *       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
- *     01/25/2011-2.3 Guy Pelletier
- *       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     07/16/2013-2.5.1 Guy Pelletier
- *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     05/16/2008-1.0M8 Guy Pelletier
+//       - 218084: Implement metadata merging functionality between mapping files
+//     05/23/2008-1.0M8 Guy Pelletier
+//       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+//     06/20/2008-1.0 Guy Pelletier
+//       - 232975: Failure when attribute type is generic
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     10/01/2008-1.1 Guy Pelletier
+//       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/24/2009-2.0 Guy Pelletier
+//       - 270011: JPA 2.0 MappedById support
+//     06/25/2009-2.0 Michael O'Brien
+//       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+//          in support of the custom descriptors holding mappings required by the Metamodel
+//     03/08/2010-2.1 Guy Pelletier
+//       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+//     08/11/2010-2.2 Guy Pelletier
+//       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
+//     12/01/2010-2.2 Guy Pelletier
+//       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+//     12/02/2010-2.2 Guy Pelletier
+//       - 251554: ExcludeDefaultMapping annotation needed
+//     12/02/2010-2.2 Guy Pelletier
+//       - 324471: Do not default to VariableOneToOneMapping for interfaces unless a managed class implementing it is found
+//     01/25/2011-2.3 Guy Pelletier
+//       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     07/16/2013-2.5.1 Guy Pelletier
+//       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.ECLIPSELINK_OXM_PACKAGE_PREFIX;
@@ -66,8 +68,10 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.annotations.Array;
 import org.eclipse.persistence.annotations.BasicCollection;
@@ -137,7 +141,7 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     private Map<String, MetadataAnnotation> m_annotations;
 
     /** Stores any meta-annotations defined for the element, keyed by meta-annotation name. */
-    private Map<String, MetadataAnnotation> m_metaAnnotations;
+    private final Map<String, MetadataAnnotation> m_metaAnnotations;
 
     /**
      * INTERNAL:
@@ -202,17 +206,36 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      * Return the annotated element for this accessor. Note: This method does
-     * not check against a metadata complete.
+     * not check against a meta-data complete.
+     * @param annotation annotation name
      */
-    public MetadataAnnotation getAnnotation(String annotation) {
+    public MetadataAnnotation getAnnotation(final String annotation) {
+        return getAnnotation(annotation, new HashSet<>());
+    }
+
+    /**
+     * INTERNAL:
+     * Return the annotated element for this accessor. Note: This method does
+     * not check against a meta-data complete.
+     * @param annotation annotation name
+     * @param names meta-annotations names cycle detection set, shall not be {@code null}
+     */
+    protected final MetadataAnnotation getAnnotation(final String annotation, final Set<String> names) {
         if (m_annotations == null && m_metaAnnotations == null) {
             return null;
         }
-
         MetadataAnnotation metadataAnnotation = m_annotations.get(annotation);
         if (metadataAnnotation == null) {
             for (MetadataAnnotation a: m_metaAnnotations.values()) {
-                MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation);
+                if (names.contains(a.getName())) {
+                    if (annotation.equals(a.getName())) {
+                        return a;
+                    } else {
+                        continue;
+                    }
+                }
+                names.add(getName());
+                MetadataAnnotation ma = m_factory.getMetadataClass(a.getName()).getAnnotation(annotation, names);
                 if (ma != null) {
                     return ma;
                 }
@@ -239,8 +262,10 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     /**
      * INTERNAL:
      * Return the annotations of this accessible object.
+     * @return annotations defined for the element, keyed by annotation name.
+     *         Never returns {@code null}.
      */
-    public Map<String, MetadataAnnotation> getAnnotations(){
+    public Map<String, MetadataAnnotation> getAnnotations() {
         return m_annotations;
     }
 

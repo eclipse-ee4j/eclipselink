@@ -1,22 +1,25 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     dminsky - added countOccurrencesOf(Object, List) API
- *     08/23/2010-2.2 Michael O'Brien
- *        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
- *                       warn if expected "_persistence_*_vh" method not found
- *                       instead of throwing NPE during deploy validation.
- *     08/29/2016 Jody Grassel
- *       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     dminsky - added countOccurrencesOf(Object, List) API
+//     08/23/2010-2.2 Michael O'Brien
+//        - 323043: application.xml module ordering may cause weaving not to occur causing an NPE.
+//                       warn if expected "_persistence_//_vh" method not found
+//                       instead of throwing NPE during deploy validation.
+//     08/29/2016 Jody Grassel
+//       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 package org.eclipse.persistence.internal.helper;
 
 import java.io.Closeable;
@@ -776,7 +779,7 @@ public class Helper extends CoreHelper implements Serializable {
 
     /** Return a copy of the vector containing a subset starting at startIndex
      *  and ending at stopIndex.
-     *  @param vector - original vector
+     *  @param originalVector - original vector
      *  @param startIndex - starting position in vector
      *  @param stopIndex - ending position in vector
      *  @exception EclipseLinkException
@@ -933,7 +936,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Answer a Date from a timestamp
      *
      * This implementation is based on the java.sql.Date class, not java.util.Date.
-     * @param timestampObject - timestamp representation of date
+     * @param timestamp - timestamp representation of date
      * @return  - date representation of timestampObject
      */
     public static java.sql.Date dateFromTimestamp(java.sql.Timestamp timestamp) {
@@ -1894,7 +1897,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Answer a Time from a Date
      *
      * This implementation is based on the java.sql.Date class, not java.util.Date.
-     * @param timestampObject - time representation of date
+     * @param date - time representation of date
      * @return  - time representation of dateObject
      */
     public static java.sql.Time timeFromDate(java.util.Date date) {
@@ -2008,7 +2011,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Answer a Time from a long
      *
-     * @param longObject - milliseconds from the epoch (00:00:00 GMT
+     * @param millis - milliseconds from the epoch (00:00:00 GMT
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.
      */
     public static java.sql.Timestamp timestampFromLong(Long millis) {
@@ -2018,7 +2021,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Answer a Time from a long
      *
-     * @param longObject - milliseconds from the epoch (00:00:00 GMT
+     * @param millis - milliseconds from the epoch (00:00:00 GMT
      * Jan 1, 1970).  Negative values represent dates prior to the epoch.
      */
     public static java.sql.Timestamp timestampFromLong(long millis) {
@@ -2037,7 +2040,13 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Answer a Timestamp from a string representation.
      * This method will accept strings in the following
-     * formats: YYYY/MM/DD HH:MM:SS, YY/MM/DD HH:MM:SS, YYYY-MM-DD HH:MM:SS, YY-MM-DD HH:MM:SS
+     * formats: 
+     * YYYY/MM/DD HH:MM:SS
+     * YY/MM/DD HH:MM:SS
+     * YYYY-MM-DD HH:MM:SS
+     * YY-MM-DD HH:MM:SS
+     * YYYY/MM/DD HH:MM:SS.NNNNNNN
+     * YYYY/MM/DD HH:MM:SS.NNNNNNN+Z
      *
      * @param timestampString - string representation of timestamp
      * @return  - timestamp representation of string
@@ -2047,15 +2056,10 @@ public class Helper extends CoreHelper implements Serializable {
         if ((timestampString.indexOf('-') == -1) && (timestampString.indexOf('/') == -1) && (timestampString.indexOf('.') == -1) && (timestampString.indexOf(':') == -1)) {
             throw ConversionException.incorrectTimestampFormat(timestampString);
         }
-        StringTokenizer timestampStringTokenizer = new StringTokenizer(timestampString, " /:.-");
+        StringTokenizer timestampStringTokenizer = new StringTokenizer(timestampString, " /:.-+");
 
-        int year;
-        int month;
-        int day;
-        int hour;
-        int minute;
-        int second;
-        int nanos;
+        int year = 0, month = 0, day = 0;
+        int hour = 0, minute = 0, second = 0, nanos = 0;
         try {
             year = Integer.parseInt(timestampStringTokenizer.nextToken());
             month = Integer.parseInt(timestampStringTokenizer.nextToken());
@@ -2066,37 +2070,28 @@ public class Helper extends CoreHelper implements Serializable {
                 second = Integer.parseInt(timestampStringTokenizer.nextToken());
             } catch (java.util.NoSuchElementException endOfStringException) {
                 // May be only a date string desired to be used as a timestamp.
-                hour = 0;
-                minute = 0;
-                second = 0;
             }
         } catch (NumberFormatException exception) {
             throw ConversionException.incorrectTimestampFormat(timestampString);
         }
 
-        try {
-            String nanoToken = timestampStringTokenizer.nextToken();
-            nanos = Integer.parseInt(nanoToken);
-            for (int times = 0; times < (9 - nanoToken.length()); times++) {
-                nanos = nanos * 10;
+        boolean containsNanos = timestampString.indexOf('.') > -1;
+        if (containsNanos) {
+            try {
+                String nanoToken = timestampStringTokenizer.nextToken();
+                nanos = Integer.parseInt(nanoToken);
+                for (int times = 0; times < (9 - nanoToken.length()); times++) {
+                    nanos = nanos * 10;
+                }
+            } catch (NumberFormatException exception) {
+                throw ConversionException.incorrectTimestampFormat(timestampString);
             }
-        } catch (java.util.NoSuchElementException endOfStringException) {
-            nanos = 0;
-        } catch (NumberFormatException exception) {
-            throw ConversionException.incorrectTimestampFormat(timestampString);
         }
-
-        // Java dates are based on year after 1900 so I need to delete it.
-        year = year - 1900;
 
         // Java returns the month in terms of 0 - 11 instead of 1 - 12.
-        month = month - 1;
-
-        java.sql.Timestamp timestamp;
-        // TODO: This was not converted to use Calendar for the conversion because calendars do not take nanos.
-        // but it should be, and then just call setNanos.
-        timestamp = new java.sql.Timestamp(year, month, day, hour, minute, second, nanos);
-        return timestamp;
+        return timestampFromYearMonthDateHourMinuteSecondNanos(
+            year, month - 1, day, hour, minute, second, nanos
+        );
     }
 
     /**

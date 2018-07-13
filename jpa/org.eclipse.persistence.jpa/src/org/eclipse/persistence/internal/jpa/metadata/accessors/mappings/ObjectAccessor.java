@@ -1,67 +1,73 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier
- *       - 218084: Implement metadata merging functionality between mapping files
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     02/06/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 2)
- *     02/25/2009-2.0 Guy Pelletier
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/24/2009-2.0 Guy Pelletier
- *       - 270011: JPA 2.0 MappedById support
- *     05/1/2009-2.0 Guy Pelletier
- *       - 249033: JPA 2.0 Orphan removal
- *     06/02/2009-2.0 Guy Pelletier
- *       - 278768: JPA 2.0 Association Override Join Table
- *     06/09/2009-2.0 Guy Pelletier
- *       - 249037: JPA 2.0 persisting list item index
- *     09/29/2009-2.0 Guy Pelletier
- *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
- *     10/21/2009-2.0 Guy Pelletier
- *       - 290567: mappedbyid support incomplete
- *     11/23/2009-2.0 Guy Pelletier
- *       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
- *     03/29/2010-2.1 Guy Pelletier
- *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     04/27/2010-2.1 Guy Pelletier
- *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     06/14/2010-2.2 Guy Pelletier
- *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- *     07/05/2010-2.1.1 Guy Pelletier
- *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
- *     08/04/2010-2.1.1 Guy Pelletier
- *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
- *     08/20/2010-2.2 Guy Pelletier
- *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
- *     08/25/2010-2.2 Guy Pelletier
- *       - 309445: CanonicalModelProcessor process all files (minor correction to patch for bug above)
- *     09/03/2010-2.2 Guy Pelletier
- *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     01/04/2011-2.3 Guy Pelletier
- *       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
- *     01/06/2011-2.3 Guy Pelletier
- *       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     11/19/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     12/07/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     02/20/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/16/2008-1.0M8 Guy Pelletier
+//       - 218084: Implement metadata merging functionality between mapping files
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+//     02/25/2009-2.0 Guy Pelletier
+//       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/24/2009-2.0 Guy Pelletier
+//       - 270011: JPA 2.0 MappedById support
+//     05/1/2009-2.0 Guy Pelletier
+//       - 249033: JPA 2.0 Orphan removal
+//     06/02/2009-2.0 Guy Pelletier
+//       - 278768: JPA 2.0 Association Override Join Table
+//     06/09/2009-2.0 Guy Pelletier
+//       - 249037: JPA 2.0 persisting list item index
+//     09/29/2009-2.0 Guy Pelletier
+//       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+//     10/21/2009-2.0 Guy Pelletier
+//       - 290567: mappedbyid support incomplete
+//     11/23/2009-2.0 Guy Pelletier
+//       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
+//     03/29/2010-2.1 Guy Pelletier
+//       - 267217: Add Named Access Type to EclipseLink-ORM
+//     04/27/2010-2.1 Guy Pelletier
+//       - 309856: MappedSuperclasses from XML are not being initialized properly
+//     06/14/2010-2.2 Guy Pelletier
+//       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+//     07/05/2010-2.1.1 Guy Pelletier
+//       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+//     08/04/2010-2.1.1 Guy Pelletier
+//       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
+//     08/20/2010-2.2 Guy Pelletier
+//       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
+//     08/25/2010-2.2 Guy Pelletier
+//       - 309445: CanonicalModelProcessor process all files (minor correction to patch for bug above)
+//     09/03/2010-2.2 Guy Pelletier
+//       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+//     01/04/2011-2.3 Guy Pelletier
+//       - 330628: @PrimaryKeyJoinColumn(...) is not working equivalently to @JoinColumn(..., insertable = false, updatable = false)
+//     01/06/2011-2.3 Guy Pelletier
+//       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     11/19/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     12/07/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     02/20/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     07/09/2018-2.6 Jody Grassel
+//       - 536853: MapsID processing sets up to fail validation
+
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_FETCH_EAGER;
@@ -71,7 +77,10 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_PRIMARY_KEY_JOIN_COLUMNS;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -616,13 +625,40 @@ public abstract class ObjectAccessor extends RelationshipAccessor {
                 } else {
                     // The reference primary key accessor will tell us which attribute
                     // accessor we need to map a field name translation for.
-                    MappingAccessor idAccessor = mapsIdAccessor.getReferenceDescriptor().getMappingAccessor(referencePKAccessor.getAttributeName());
-
+                    final Set<MappingAccessor> mappingAccessors = findAllFieldAccessors(mapsIdAccessor.getReferenceDescriptor());
+                    final List<MappingAccessor> accessorsWithTargetAttributeName = new ArrayList<MappingAccessor>();
+                    for (MappingAccessor ma : mappingAccessors) {
+                        if (referencePKAccessor.getAttributeName().equals(ma.getAttributeName())) {
+                            accessorsWithTargetAttributeName.add(ma);
+                        }
+                    }
+                    MappingAccessor idAccessor = null;
+                    if (accessorsWithTargetAttributeName.size() > 1 && accessorsWithTargetAttributeName.contains(referencePKAccessor)) {
+                        // The MappingAccessor that is equal() to the referencePKAccessor may still be a different object.
+                        idAccessor = accessorsWithTargetAttributeName.get(accessorsWithTargetAttributeName.indexOf(referencePKAccessor));
+                    } else {
+                        idAccessor = mapsIdAccessor.getReferenceDescriptor().getMappingAccessor(referencePKAccessor.getAttributeName());
+                    }
+                    
                     // Add a field name translation to the mapping.
                     ((EmbeddedAccessor) mapsIdAccessor).updateDerivedIdField((EmbeddableMapping) mapsIdAccessor.getMapping(), idAccessor.getAttributeName(), fkField, idAccessor);
                 }
             }
         }
+    }
+    
+    private Set<MappingAccessor> findAllFieldAccessors(MetadataDescriptor md) {
+        final HashSet<MappingAccessor> retSet = new HashSet<MappingAccessor>();
+        final Collection<MappingAccessor> mappingAccessors = md.getMappingAccessors();
+        for (MappingAccessor ma : mappingAccessors) {
+            if (ma instanceof EmbeddedAccessor) {
+                retSet.addAll(findAllFieldAccessors(ma.getReferenceDescriptor()));
+            } else {
+                retSet.add(ma);
+            }
+        }
+        
+        return retSet;
     }
 
     /**

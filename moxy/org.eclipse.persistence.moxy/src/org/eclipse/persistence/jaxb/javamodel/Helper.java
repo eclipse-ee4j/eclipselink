@@ -1,15 +1,17 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.javamodel;
 
 import static org.eclipse.persistence.jaxb.JAXBContextFactory.PKG_SEPARATOR;
@@ -26,12 +28,6 @@ import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import javax.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaField;
-import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
-import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
-import org.eclipse.persistence.jaxb.javamodel.JavaModel;
 
 /**
  * INTERNAL:
@@ -99,12 +95,12 @@ public class Helper {
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
 
-    private static JavaClass COLLECTION_CLASS;
-    private static JavaClass SET_CLASS;
-    private static JavaClass LIST_CLASS;
-    private static JavaClass MAP_CLASS;
-    public static JavaClass JAXBELEMENT_CLASS;
-    public static JavaClass OBJECT_CLASS;
+    private JavaClass collectionClass;
+    private JavaClass setClass;
+    private JavaClass listClass;
+    private JavaClass mapClass;
+    private JavaClass jaxbElementClass;
+    private JavaClass objectClass;
 
     /**
      * INTERNAL:
@@ -119,12 +115,12 @@ public class Helper {
         xmlToJavaTypeMap = buildXMLToJavaTypeMap();
         setJavaModel(model);
         setClassLoader(model.getClassLoader());
-        COLLECTION_CLASS = getJavaClass(CoreClassConstants.Collection_Class);
-        LIST_CLASS = getJavaClass(CoreClassConstants.List_Class);
-        SET_CLASS = getJavaClass(CoreClassConstants.Set_Class);
-        MAP_CLASS = getJavaClass(CoreClassConstants.Map_Class);
-        JAXBELEMENT_CLASS = getJavaClass(JAXBElement.class);
-        OBJECT_CLASS = getJavaClass(CoreClassConstants.OBJECT);
+        collectionClass = getJavaClass(CoreClassConstants.Collection_Class);
+        listClass = getJavaClass(CoreClassConstants.List_Class);
+        setClass = getJavaClass(CoreClassConstants.Set_Class);
+        mapClass = getJavaClass(CoreClassConstants.Map_Class);
+        jaxbElementClass = getJavaClass(JAXBElement.class);
+        objectClass = getJavaClass(CoreClassConstants.OBJECT);
     }
 
     /**
@@ -275,6 +271,28 @@ public class Helper {
             return jModel.getClass(type.getRawName());
         } catch (Exception x) {}
         return null;
+    }
+
+    /**
+     * Return a JavaClass instance based on the @see javax.xml.bind.JAXBElement .
+     *
+     * Replacement of direct access to JAXBELEMENT_CLASS field.
+     *
+     * @return
+     */
+    public JavaClass getJaxbElementClass() {
+        return jaxbElementClass;
+    }
+
+    /**
+     * Return a JavaClass instance based on the @see java.lang.Object .
+     *
+     * Replacement of direct access to OBJECT_CLASS field.
+     *
+     * @return
+     */
+    public JavaClass getObjectClass() {
+        return objectClass;
     }
 
     /**
@@ -430,16 +448,16 @@ public class Helper {
     }
 
     public boolean isCollectionType(JavaClass type) {
-     if (COLLECTION_CLASS.isAssignableFrom(type)
-             || LIST_CLASS.isAssignableFrom(type)
-             || SET_CLASS.isAssignableFrom(type)) {
+     if (collectionClass.isAssignableFrom(type)
+             || listClass.isAssignableFrom(type)
+             || setClass.isAssignableFrom(type)) {
              return true;
          }
          return false;
     }
 
     public boolean isMapType(JavaClass type) {
-        return MAP_CLASS.isAssignableFrom(type);
+        return mapClass.isAssignableFrom(type);
     }
 
     public boolean isFacets() {

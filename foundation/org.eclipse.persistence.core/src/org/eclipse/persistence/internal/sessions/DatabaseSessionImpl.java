@@ -1,31 +1,36 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     22/05/2012-2.4 Guy Pelletier
- *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
- *     31/05/2012-2.4 Guy Pelletier
- *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
- *     12/24/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     01/11/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     03/19/2015 - Rick Curtis
- *       - 462586 : Add national character support for z/OS.
- *     04/14/2015 - Will Dazey
- *       - 464641 : Fixed platform matching returning CNF.
- *     09/03/2015 - Will Dazey
- *       - 456067 : Added support for defining query timeout units
- *       ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     22/05/2012-2.4 Guy Pelletier
+//       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
+//     31/05/2012-2.4 Guy Pelletier
+//       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+//     12/24/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     01/11/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     03/19/2015 - Rick Curtis
+//       - 462586 : Add national character support for z/OS.
+//     04/14/2015 - Will Dazey
+//       - 464641 : Fixed platform matching returning CNF.
+//     09/03/2015 - Will Dazey
+//       - 456067 : Added support for defining query timeout units
+//     06/26/2018 - Will Dazey
+//       - 532160 : Add support for non-extension OracleXPlatform classes
 package org.eclipse.persistence.internal.sessions;
 
 import java.sql.Connection;
@@ -265,19 +270,25 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             this.platform = null;
             platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
             getLogin().setPlatformClassName(platformName);
-            if (driverName != null) {
-                getLogin().getPlatform().setDriverName(driverName);
-            }
         } catch (EclipseLinkException classNotFound) {
             if (platformName != null && platformName.indexOf("Oracle") != -1) {
-                // If we are running against Oracle, it is possible that we are
-                // running in an environment where
-                // the OracleXPlatform class can not be loaded. Try using
-                // OraclePlatform class before giving up
-                getLogin().setPlatformClassName(OraclePlatform.class.getName());
+                try {
+                    // If we are running against Oracle, it is possible that we are
+                    // running in an environment where the extension OracleXPlatform classes can 
+                    // not be loaded. Try using the core OracleXPlatform classes
+                    platformName = DBPlatformHelper.getDBPlatform("core."+ vendorNameAndVersion, getSessionLog());
+                    getLogin().setPlatformClassName(platformName);
+                } catch (EclipseLinkException oracleClassNotFound) {
+                    // If we still cannot classload a matching OracleXPlatform class, 
+                    // fallback on the base OraclePlatform class
+                    getLogin().setPlatformClassName(OraclePlatform.class.getName());
+                }
             } else {
                 throw classNotFound;
             }
+        }
+        if (driverName != null) {
+            getLogin().getPlatform().setDriverName(driverName);
         }
     }
 

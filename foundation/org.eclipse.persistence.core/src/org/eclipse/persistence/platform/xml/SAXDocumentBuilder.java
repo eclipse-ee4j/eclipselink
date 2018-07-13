@@ -1,15 +1,17 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.platform.xml;
 
 import java.util.HashMap;
@@ -22,6 +24,7 @@ import java.util.Map.Entry;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
 import org.eclipse.persistence.internal.oxm.record.ExtendedContentHandler;
+import org.w3c.dom.CDATASection;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -30,12 +33,13 @@ import org.w3c.dom.Text;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 
 /**
  * <p><b>Purpose</b>:  Build a DOM from SAX events.</p>
  */
 
-public class SAXDocumentBuilder implements ExtendedContentHandler {
+public class SAXDocumentBuilder implements ExtendedContentHandler, LexicalHandler {
     protected Document document;
     protected List<Node> nodes;
     protected XMLPlatform xmlPlatform;
@@ -214,4 +218,35 @@ public class SAXDocumentBuilder implements ExtendedContentHandler {
     }
     @Override
     public void setNil(boolean isNil) {}
+
+    @Override
+    public void startDTD(String name, String publicId, String systemId) throws SAXException {}
+
+    @Override
+    public void endDTD() throws SAXException {}
+
+    @Override
+    public void startEntity(String name) throws SAXException {}
+
+    @Override
+    public void endEntity(String name) throws SAXException {}
+
+    @Override
+    public void startCDATA() throws SAXException {
+        CDATASection cdata = document.createCDATASection(null);
+        Node parentNode = nodes.get(nodes.size() -1);
+        parentNode.appendChild(cdata);
+    }
+
+    @Override
+    public void endCDATA() throws SAXException {
+        CDATASection cdata = (CDATASection)nodes.get(nodes.size()-1).getFirstChild();
+        if (stringBuffer.length() > 0) {
+            cdata.setData(stringBuffer.toString());
+            stringBuffer.reset();
+        }
+    }
+
+    @Override
+    public void comment(char[] ch, int start, int length) throws SAXException {}
 }

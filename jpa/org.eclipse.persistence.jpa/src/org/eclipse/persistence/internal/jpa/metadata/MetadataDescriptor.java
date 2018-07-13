@@ -1,108 +1,110 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier
- *       - 218084: Implement metadata merging functionality between mapping files
- *     05/23/2008-1.0M8 Guy Pelletier
- *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
- *     05/30/2008-1.0M8 Guy Pelletier
- *       - 230213: ValidationException when mapping to attribute in MappedSuperClass
- *     06/20/2008-1.0M9 Guy Pelletier
- *       - 232975: Failure when attribute type is generic
- *     07/15/2008-1.0.1 Guy Pelletier
- *       - 240679: MappedSuperclass Id not picked when on get() method accessor
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     10/01/2008-1.1 Guy Pelletier
- *       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
- *     12/12/2008-1.1 Guy Pelletier
- *       - 249860: Implement table per class inheritance support.
- *     01/28/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/06/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 2)
- *     02/25/2009-2.0 Guy Pelletier
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/24/2009-2.0 Guy Pelletier
- *       - 270011: JPA 2.0 MappedById support
- *     06/02/2009-2.0 Guy Pelletier
- *       - 278768: JPA 2.0 Association Override Join Table
- *     06/16/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     06/25/2009-2.0 Michael O'Brien
- *       - 266912: add isMappedSuperclass() helper function in support
- *         of MappedSuperclass handling for the Metamodel API.
- *     08/11/2009-2.0 Michael O'Brien
- *       - 284147: So we do not add a pseudo PK Field for MappedSuperclasses when
- *         1 or more PK fields already exist on the descriptor.
- *         Add m_idAccessor map and hasIdAccessor() function.
- *     10/21/2009-2.0 Guy Pelletier
- *       - 290567: mappedbyid support incomplete
- *     01/05/2010-2.1 Guy Pelletier
- *       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
- *     01/22/2010-2.0.1 Guy Pelletier
- *       - 294361: incorrect generated table for element collection attribute overrides
- *     03/08/2010-2.1 Michael O'Brien
- *       - 300051: JPA 2.0 Metamodel processing requires EmbeddedId validation moved higher from
- *                      EmbeddedIdAccessor.process() to MetadataDescriptor.addAccessor() so we
- *                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
- *                      temporary PK field used to process MappedSuperclasses for the Metamodel API
- *                      during MetadataProject.addMetamodelMappedSuperclass()
- *     04/09/2010-2.1 Guy Pelletier
- *       - 307050: Add defaults for access methods of a VIRTUAL access type
- *     05/03/2009-1.2.1 Guy Pelletier
- *       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
- *     06/01/2010-2.1 Guy Pelletier
- *       - 315195: Add new property to avoid reading XML during the canonical model generation
- *     06/14/2010-2.2 Guy Pelletier
- *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- *     06/18/2010-2.2 Guy Pelletier
- *       - 300458: EclispeLink should throw a more specific exception than NPE
- *     07/16/2010-2.2 Guy Pelletier
- *       - 260296: mixed access with no Transient annotation does not result in error
- *     08/04/2010-2.1.1 Guy Pelletier
- *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
- *     08/11/2010-2.2 Guy Pelletier
- *       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
- *     09/03/2010-2.2 Guy Pelletier
- *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/27/2010-2.2 Guy Pelletier
- *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
- *     12/01/2010-2.2 Guy Pelletier
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
- *     12/02/2010-2.2 Guy Pelletier
- *       - 251554: ExcludeDefaultMapping annotation needed
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/01/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 2)
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     04/07/2012-2.5 Guy Pelletier
- *       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer
- *     10/09/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     11/28/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     05/19/2014-2.6 Tomas Kraus
- *       - 437578: @Cacheable annotation value is now passed to CachePolicy
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/16/2008-1.0M8 Guy Pelletier
+//       - 218084: Implement metadata merging functionality between mapping files
+//     05/23/2008-1.0M8 Guy Pelletier
+//       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+//     05/30/2008-1.0M8 Guy Pelletier
+//       - 230213: ValidationException when mapping to attribute in MappedSuperClass
+//     06/20/2008-1.0M9 Guy Pelletier
+//       - 232975: Failure when attribute type is generic
+//     07/15/2008-1.0.1 Guy Pelletier
+//       - 240679: MappedSuperclass Id not picked when on get() method accessor
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     10/01/2008-1.1 Guy Pelletier
+//       - 249329: To remain JPA 1.0 compliant, any new JPA 2.0 annotations should be referenced by name
+//     12/12/2008-1.1 Guy Pelletier
+//       - 249860: Implement table per class inheritance support.
+//     01/28/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 1)
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+//     02/25/2009-2.0 Guy Pelletier
+//       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/24/2009-2.0 Guy Pelletier
+//       - 270011: JPA 2.0 MappedById support
+//     06/02/2009-2.0 Guy Pelletier
+//       - 278768: JPA 2.0 Association Override Join Table
+//     06/16/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     06/25/2009-2.0 Michael O'Brien
+//       - 266912: add isMappedSuperclass() helper function in support
+//         of MappedSuperclass handling for the Metamodel API.
+//     08/11/2009-2.0 Michael O'Brien
+//       - 284147: So we do not add a pseudo PK Field for MappedSuperclasses when
+//         1 or more PK fields already exist on the descriptor.
+//         Add m_idAccessor map and hasIdAccessor() function.
+//     10/21/2009-2.0 Guy Pelletier
+//       - 290567: mappedbyid support incomplete
+//     01/05/2010-2.1 Guy Pelletier
+//       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
+//     01/22/2010-2.0.1 Guy Pelletier
+//       - 294361: incorrect generated table for element collection attribute overrides
+//     03/08/2010-2.1 Michael O'Brien
+//       - 300051: JPA 2.0 Metamodel processing requires EmbeddedId validation moved higher from
+//                      EmbeddedIdAccessor.process() to MetadataDescriptor.addAccessor() so we
+//                      can better determine when to add the MAPPED_SUPERCLASS_RESERVED_PK_NAME
+//                      temporary PK field used to process MappedSuperclasses for the Metamodel API
+//                      during MetadataProject.addMetamodelMappedSuperclass()
+//     04/09/2010-2.1 Guy Pelletier
+//       - 307050: Add defaults for access methods of a VIRTUAL access type
+//     05/03/2009-1.2.1 Guy Pelletier
+//       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
+//     06/01/2010-2.1 Guy Pelletier
+//       - 315195: Add new property to avoid reading XML during the canonical model generation
+//     06/14/2010-2.2 Guy Pelletier
+//       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+//     06/18/2010-2.2 Guy Pelletier
+//       - 300458: EclispeLink should throw a more specific exception than NPE
+//     07/16/2010-2.2 Guy Pelletier
+//       - 260296: mixed access with no Transient annotation does not result in error
+//     08/04/2010-2.1.1 Guy Pelletier
+//       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
+//     08/11/2010-2.2 Guy Pelletier
+//       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
+//     09/03/2010-2.2 Guy Pelletier
+//       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     10/27/2010-2.2 Guy Pelletier
+//       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+//     12/01/2010-2.2 Guy Pelletier
+//       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+//     12/02/2010-2.2 Guy Pelletier
+//       - 251554: ExcludeDefaultMapping annotation needed
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     04/01/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 2)
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     04/07/2012-2.5 Guy Pelletier
+//       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer
+//     10/09/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     11/28/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     05/19/2014-2.6 Tomas Kraus
+//       - 437578: @Cacheable annotation value is now passed to CachePolicy
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;

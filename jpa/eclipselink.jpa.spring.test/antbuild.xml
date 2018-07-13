@@ -1,11 +1,39 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      etang - initial API and implementation
+-->
+
+<!-- This ant project includes the following tasks:
+        - all (default) : compiles all Spring tests, packages test jar
+        - compile : compiles all Spring tests
+        - package : jars JPA persistent unit and tests jar
+        - test-jpa-spring: runs all Spring tests
+        - test-jpa-spring-local: runs Spring local tests
+        - test-jpa-spring-container: runs Spring container tests
+
+        It requires some configuration of the build.properties and test.properties to run.
+        It also requires the following third-party jars available in ../../../extension.lib.external/spring
+            spring.jar(version 2.5.3)
+            spring-agent.jar(version 2.5.3)
+            spring-mock.jar(version 2.5.3, self-built from source code)
+            cglib-nodep-2.2.jar
+            commons-logging-1.1.1.jar
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -26,28 +54,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     etang - initial API and implementation
-#******************************************************************************/-->
-
-<!-- This ant project includes the following tasks:
-        - all (default) : compiles all Spring tests, packages test jar
-        - compile : compiles all Spring tests
-        - package : jars JPA persistent unit and tests jar
-        - test-jpa-spring: runs all Spring tests
-        - test-jpa-spring-local: runs Spring local tests
-        - test-jpa-spring-container: runs Spring container tests
-
-        It requires some configuration of the build.properties and test.properties to run.
-        It also requires the following third-party jars available in ../../../extension.lib.external/spring
-            spring.jar(version 2.5.3)
-            spring-agent.jar(version 2.5.3)
-            spring-mock.jar(version 2.5.3, self-built from source code)
-            cglib-nodep-2.2.jar
-            commons-logging-1.1.1.jar
-    -->
-
+-->
 <project name="Eclipse Persistence Services JPA Spring Testing" default="all" basedir=".">
     <!-- Allows a user to overide certain user specific properties. -->
     <property file="${user.home}/build.properties"/>

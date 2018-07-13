@@ -1,11 +1,44 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      bdoughan, dtwelves, egwin - initial API and implementation from SDO test project
+      tware - modified for jpa rs tests
+      Dmitry Kornilov - remoteDebug property added
+      Tomas Kraus - JPA RS jUnit tests for Java EE with WebLogic
+      Dmitry Kornilov - Jersey 2.0 & dependencies
+-->
+
+<!-- This ant project includes the following tasks:
+       - test (default)    : Run JPA RS jUnit tests for Java SE
+       - test-javaee       : Run JPA RS jUnit tests for Java EE
+       - build             : Compile all JPA RS jUnit tests
+       - build-against-jar : Compile all JPA RS jUnit tests against external eclipselink.jar
+       - clean             : Clean all build generated content
+       - create-war        : Create WAR file to deploy for Java EE jUnit tests
+       - server-install    : Create Java EE server domain for tests
+       - server-start      : Start Java EE server domain for tests
+       - server-stop       : Stop Java EE server domain for tests
+       - server-setup      : Set Java EE server configuration for tests (create JDBC resources)
+       - server-reset      : Reset Java EE server configuration for tests (delete JDBC resources)
+       - server-deploy     : Deploy testing application on Java EE server
+       - server-undeploy   : Undeploy testing application from Java EE server
+
+     It requires some configuration of the build.properties and test.properties to run.
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -26,33 +59,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     bdoughan, dtwelves, egwin - initial API and implementation from SDO test project
-*     tware - modified for jpa rs tests
-*     Dmitry Kornilov - remoteDebug property added
-*     Tomas Kraus - JPA RS jUnit tests for Java EE with WebLogic
-*     Dmitry Kornilov - Jersey 2.0 & dependencies
-#******************************************************************************/-->
-
-<!-- This ant project includes the following tasks:
-       - test (default)    : Run JPA RS jUnit tests for Java SE
-       - test-javaee       : Run JPA RS jUnit tests for Java EE
-       - build             : Compile all JPA RS jUnit tests
-       - build-against-jar : Compile all JPA RS jUnit tests against external eclipselink.jar
-       - clean             : Clean all build generated content
-       - create-war        : Create WAR file to deploy for Java EE jUnit tests
-       - server-install    : Create Java EE server domain for tests
-       - server-start      : Start Java EE server domain for tests
-       - server-stop       : Stop Java EE server domain for tests
-       - server-setup      : Set Java EE server configuration for tests (create JDBC resources)
-       - server-reset      : Reset Java EE server configuration for tests (delete JDBC resources)
-       - server-deploy     : Deploy testing application on Java EE server
-       - server-undeploy   : Undeploy testing application from Java EE server
-
-     It requires some configuration of the build.properties and test.properties to run.
 -->
-
 <project name="eclipselink.jpars.test" default="test" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="jparstest.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -130,7 +137,8 @@
         <!-- Give this a default value if not set in a user.home or test property file -->
         <property name="extensions.depend.dir" value="../${core_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib"             value="${extensions.depend.dir}/junit.jar"/>
-        <property name="json.lib"              value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${json.jar}"/>
+        <property name="json-api.lib"          value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${json-api.jar}"/>
+        <property name="json-impl.lib"         value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${json-impl.jar}"/>
         <property name="jacocoagent.lib"       value="${extensions.depend.dir}/${jacocoagent.jar}"/>
 
         <!-- Jersey 2.0 dependencies -->
@@ -190,7 +198,7 @@
         <available file="${javax.annotation.lib}"   property="javax.annotation.lib.exist"/>
         <available file="${javax.ws.rs.lib}"        property="javax.ws.rs.lib.exist"/>
         <available file="${validation.lib}"         property="validation.lib.exist"/>
-        <available file="${json.lib}"               property="json.lib.exists"/>
+        <available file="${json-api.lib}"           property="json-api.lib.exists"/>
         <echo message="jaxb-api.lib          ='${jaxb-api.lib}'"/>
         <echo message="persistence20.lib     ='${persistence20.lib}'"/>
         <echo message="jersey.client.lib     ='${jersey.client.lib}'"/>
@@ -203,7 +211,7 @@
         <echo message="javax.annotation.lib  ='${javax.annotation.lib}'"/>
         <echo message="javax.ws.rs.lib       ='${javax.ws.rs.lib}'"/>
         <echo message="validation.lib        ='${validation.lib}'"/>
-        <echo message="json.lib              ='${json.lib}'"/>
+        <echo message="json-api.lib          ='${json-api.lib}'"/>
 
         <!-- Test for Eclipselink dependencies -->
         <selectbundle basename="org.eclipse.persistence.antlr" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
@@ -263,7 +271,8 @@
             <pathelement path="${classes.dir}"/>
             <pathelement path="${antlr.lib}"/>
             <pathelement path="${hermes.lib}"/>
-            <pathelement path="${json.lib}"/>
+            <pathelement path="${json-api.lib}"/>
+            <pathelement path="${json-impl.lib}"/>
             <pathelement path="${hk2.api.lib}"/>
             <pathelement path="${javax.ws.rs.lib}"/>
             <pathelement path="${hk2.locator.lib}"/>
