@@ -3531,7 +3531,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @param table database table meta-data
      * @return query to check whether given table exists
      */
-    protected DataReadQuery getQuery(final TableDefinition table) {
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
          String column = null;
          for (FieldDefinition field : table.getFields()) {
              if (column == null) {
@@ -3557,7 +3557,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
          try {
              session.setLoggingOff(true);
-             session.executeQuery(getQuery(table));
+             session.executeQuery(getTableExistsQuery(table));
              return true;
          } catch (Exception notFound) {
              return false;

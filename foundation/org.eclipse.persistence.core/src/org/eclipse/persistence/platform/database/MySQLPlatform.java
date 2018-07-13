@@ -825,7 +825,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * @return query to check whether given table exists
      */
     @Override
-    protected DataReadQuery getQuery(final TableDefinition table) {
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
         final DataReadQuery query = new DataReadQuery("SHOW TABLES LIKE '" + table.getFullName() + "'");
         query.setMaxRows(1);
         return query;
@@ -842,7 +842,7 @@ public class MySQLPlatform extends DatabasePlatform {
     public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
         try {
             session.setLoggingOff(true);
-            final Vector result = (Vector)session.executeQuery(getQuery(table));
+            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
             return !result.isEmpty();
         } catch (Exception notFound) {
             return false;

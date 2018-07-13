@@ -1197,7 +1197,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      * @return query to check whether given table exists
      */
     @Override
-    protected DataReadQuery getQuery(final TableDefinition table) {
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
         final DataReadQuery query = new DataReadQuery(
                 "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'");
         query.setMaxRows(1);
@@ -1215,7 +1215,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
         try {
             session.setLoggingOff(true);
-            final Vector result = (Vector)session.executeQuery(getQuery(table));
+            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
             return !result.isEmpty();
         } catch (Exception notFound) {
             return false;
