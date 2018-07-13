@@ -3522,7 +3522,7 @@ public class DatabasePlatform extends DatasourcePlatform {
       */
      public String getConnectionUserName() {
          throw new UnsupportedOperationException("Connection user name is not supported.");
-    }
+     }
 
     /**
      * INTERNAL:
