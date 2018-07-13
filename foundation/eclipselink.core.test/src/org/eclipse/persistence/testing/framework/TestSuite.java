@@ -94,6 +94,7 @@ public class TestSuite extends TestCollection {
                     getSummary().getTotalTime() / 1e9);
             System.out.println();
         }
+        reset();
     }
 
     /**

@@ -49,6 +49,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.databaseaccess.TableExistenceCheck;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
@@ -80,6 +81,7 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * @since TOPLink/Java 1.0
  */
 public class OraclePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+
     protected static DataModifyQuery vpdSetIdentifierQuery;
     protected static DataModifyQuery vpdClearIdentifierQuery;
 
@@ -94,8 +96,24 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     protected boolean supportsIdentity;
 
+    /**
+     * Oracle DB specific query to check whether given table exists.
+     */
+    private static final class OracleTableExistenceCheck extends TableExistenceCheck.ByResult {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected DataReadQuery getQuery(final TableDefinition table) {
+            final String sql = "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'";
+            final DataReadQuery query = new DataReadQuery(sql);
+            query.setMaxRows(1);
+            return query;
+        }
+    }
+
     public OraclePlatform(){
-        super();
+        super(new OracleTableExistenceCheck());
         this.pingSQL = "SELECT 1 FROM DUAL";
         this.storedProcedureTerminationToken = "";
         this.shouldPrintForUpdateClause = true;
@@ -1185,20 +1203,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             return subExp1.equal(0);
         }
         return super.createExpressionFor(field, builder);
-    }
-
-    /**
-     * INTERNAL:
-     * Returns query to check whether given table exists in MySQL database.
-     * Returned query must be completely prepared so it can be just executed by calling code.
-     * @param table database table meta-data
-     * @return query to check whether given table exists
-     */
-    public DataReadQuery getTableExistsQuery(final TableDefinition table) {
-        final String sql = "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'";
-        final DataReadQuery query = new DataReadQuery(sql);
-        query.setMaxRows(1);
-        return query;
     }
 
 }

@@ -76,6 +76,7 @@ import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -89,7 +90,6 @@ import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
@@ -243,6 +243,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public final static int Types_SQLXML = 2009;
 
+    /** Table existence check method. See {@link TableExistenceCheck} for existing methods. */
+    protected final TableExistenceCheck tableExistenceCheck;
 
     /**
      * String used on all table creation statements generated from the DefaultTableGenerator
@@ -269,7 +271,11 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected Boolean useJDBCStoredProcedureSyntax;
     protected String driverName;
 
-    public DatabasePlatform() {
+    /**
+     * Creates an instance of default database platform.
+     * @param tableExistenceCheck selected method for table existence check
+     */
+    protected DatabasePlatform(final TableExistenceCheck tableExistenceCheck) {
         this.tableQualifier = "";
         this.usesNativeSQL = false;
         this.usesByteArrayBinding = true;
@@ -292,6 +298,14 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.endDelimiter = "\"";
         this.useJDBCStoredProcedureSyntax = null;
         this.storedProcedureTerminationToken = ";";
+        this.tableExistenceCheck = tableExistenceCheck;
+    }
+
+    /**
+     * Creates an instance of default database platform.
+     */
+    public DatabasePlatform() {
+        this(new TableExistenceCheck.Default());
     }
 
     /**
@@ -3523,25 +3537,13 @@ public class DatabasePlatform extends DatasourcePlatform {
 
      /**
       * INTERNAL:
-      * Returns query to check whether given table exists.
-      * Returned query must be completely prepared so it can be just executed by calling code.
+      * Executes and evaluates query to check whether given table exists.
+      * @param session current database session
       * @param table database table meta-data
-      * @return query to check whether given table exists
+      * @return value of {@code true} if given table exists or {@code false} otherwise
       */
-     public DataReadQuery getTableExistsQuery(final TableDefinition table) {
-         String column = null;
-         for (FieldDefinition field : table.getFields()) {
-             if (column == null) {
-                 column = field.getName();
-             } else if (field.isPrimaryKey()) {
-                 column = field.getName();
-                 break;
-             }
-         }
-         final String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE FALSE";
-         final DataReadQuery query = new DataReadQuery(sql);
-         query.setMaxRows(1);
-         return query;
+     public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
+         return tableExistenceCheck.exists(session, table);
      }
 
 }

@@ -43,6 +43,7 @@ import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
+import org.eclipse.persistence.internal.databaseaccess.TableExistenceCheck;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
@@ -77,8 +78,24 @@ public class MySQLPlatform extends DatabasePlatform {
     private boolean isFractionalTimeSupported;
     private boolean isConnectionDataInitialized;
 
+    /**
+     * MySQL specific query to check whether given table exists.
+     */
+    private static final class MySQLTableExistenceCheck extends TableExistenceCheck.ByResult {
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected DataReadQuery getQuery(final TableDefinition table) {
+            final String sql = "SHOW TABLES LIKE '" + table.getFullName() + "'";
+            final DataReadQuery query = new DataReadQuery(sql);
+            query.setMaxRows(1);
+            return query;
+        }
+    }
+
     public MySQLPlatform(){
-        super();
+        super(new MySQLTableExistenceCheck());
         this.pingSQL = "SELECT 1";
         this.startDelimiter = "`";
         this.endDelimiter = "`";
@@ -814,20 +831,6 @@ public class MySQLPlatform extends DatabasePlatform {
     @Override
     public void printStoredFunctionReturnKeyWord(Writer writer) throws IOException {
         writer.write("\n\t RETURNS ");
-    }
-
-    /**
-     * INTERNAL:
-     * Returns query to check whether given table exists in MySQL database.
-     * Returned query must be completely prepared so it can be just executed by calling code.
-     * @param table database table meta-data
-     * @return query to check whether given table exists
-     */
-    public DataReadQuery getTableExistsQuery(final TableDefinition table) {
-        final String sql = "SHOW TABLES LIKE '" + table.getFullName() + "'";
-        final DataReadQuery query = new DataReadQuery(sql);
-        query.setMaxRows(1);
-        return query;
     }
 
 }
