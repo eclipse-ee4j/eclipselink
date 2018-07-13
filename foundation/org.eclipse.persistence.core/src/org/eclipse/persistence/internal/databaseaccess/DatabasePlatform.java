@@ -3505,24 +3505,24 @@ public class DatabasePlatform extends DatasourcePlatform {
         field.appendDBString(writer, session, table);
     }
 
-     /**
-      * INTERNAL:
-      * Override this method if the platform supports storing JDBC connection user name during
-      * {@link #initializeConnectionData(Connection)}.
-      * @return Always returns {@code false}
-      */
-     public boolean supportsConnectionUserName() {
-         return false;
-     }
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports storing JDBC connection user name during
+     * {@link #initializeConnectionData(Connection)}.
+     * @return Always returns {@code false}
+     */
+    public boolean supportsConnectionUserName() {
+        return false;
+    }
 
-     /**
-      * INTERNAL:
-      * Returns user name retrieved from JDBC connection.
-      * @throws UnsupportedOperationException on every single call until overridden.
-      */
-     public String getConnectionUserName() {
-         throw new UnsupportedOperationException("Connection user name is not supported.");
-     }
+    /**
+     * INTERNAL:
+     * Returns user name retrieved from JDBC connection.
+     * @throws UnsupportedOperationException on every single call until overridden.
+     */
+    public String getConnectionUserName() {
+        throw new UnsupportedOperationException("Connection user name is not supported.");
+    }
 
     /**
      * INTERNAL:
@@ -3532,36 +3532,36 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return query to check whether given table exists
      */
     protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
-         String column = null;
-         for (FieldDefinition field : table.getFields()) {
-             if (column == null) {
-                 column = field.getName();
-             } else if (field.isPrimaryKey()) {
-                 column = field.getName();
-                 break;
-             }
-         }
-         final String sql = "SELECT " + column + " FROM " + table.getFullName();
-         final DataReadQuery query = new DataReadQuery(sql);
-         query.setMaxRows(1);
-         return query;
-     }
+        String column = null;
+        for (FieldDefinition field : table.getFields()) {
+            if (column == null) {
+                column = field.getName();
+            } else if (field.isPrimaryKey()) {
+                column = field.getName();
+                break;
+            }
+        }
+        final String sql = "SELECT " + column + " FROM " + table.getFullName();
+        final DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        return query;
+    }
 
-     /**
-      * INTERNAL:
-      * Executes and evaluates query to check whether given table exists.
-      * @param session current database session
-      * @param table database table meta-data
-      * @return value of {@code true} if given table exists or {@code false} otherwise
-      */
-     public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
-         try {
-             session.setLoggingOff(true);
-             session.executeQuery(getTableExistsQuery(table));
-             return true;
-         } catch (Exception notFound) {
-             return false;
-         }
-     }
+    /**
+     * INTERNAL: Executes and evaluates query to check whether given table
+     * exists.
+     * @param session current database session
+     * @param table database table meta-data
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session, final TableDefinition table) {
+        try {
+            session.setLoggingOff(true);
+            session.executeQuery(getTableExistsQuery(table));
+            return true;
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
 
 }
