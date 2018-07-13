@@ -2186,6 +2186,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 // If no wait timeout was set from a query hint, grab the
                 // default one from the session if one is available.
                 Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;
+                Long convertedTimeout =null;
                 TimeUnit timeoutUnit = (this.waitTimeoutUnit == null) ? this.session.getPessimisticLockTimeoutUnitDefault() : this.waitTimeoutUnit;
                 if (timeout == null) {
                     setLockMode(ObjectBuildingQuery.LOCK);
@@ -2193,9 +2194,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                     if (timeout.intValue() == 0) {
                         setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);
                     } else {
-                        timeout = (int)TimeUnit.SECONDS.convert(timeout, timeoutUnit);
-                        if(timeout > Integer.MAX_VALUE){
+                        convertedTimeout = TimeUnit.SECONDS.convert(timeout, timeoutUnit);
+                        if(convertedTimeout > Integer.MAX_VALUE){
                             timeout = Integer.MAX_VALUE;
+                        }else {
+                            timeout = convertedTimeout.intValue();
                         }
                       //Round up the timeout if SECONDS are larger than the given units
                         if(TimeUnit.SECONDS.compareTo(timeoutUnit) > 0 && timeout % 1000 > 0){
