@@ -142,7 +142,7 @@ public final class TablesCheckTestSuite extends TestSuite {
          */
         @Override
         public void test() {
-            final boolean beerExists = manager.checkTableExists(BEER_TD);
+            final boolean beerExists = manager.checkTableExists(BEER_TD, false);
             assertTrue(beerExists);
         }
 
@@ -165,7 +165,7 @@ public final class TablesCheckTestSuite extends TestSuite {
          */
         @Override
         public void test() {
-            final boolean waterExists = manager.checkTableExists(WATER_TD);
+            final boolean waterExists = manager.checkTableExists(WATER_TD, false);
             assertFalse(waterExists);
         }
 
@@ -189,7 +189,7 @@ public final class TablesCheckTestSuite extends TestSuite {
         @Override
         public void test() {
             final DatabasePlatform defaultPlatform = new DatabasePlatform();
-            final boolean beerExists = defaultPlatform.checkTableExists((DatabaseSessionImpl) session, BEER_TD);
+            final boolean beerExists = defaultPlatform.checkTableExists((DatabaseSessionImpl) session, BEER_TD, false);
             assertTrue(beerExists);
         }
 
@@ -213,7 +213,7 @@ public final class TablesCheckTestSuite extends TestSuite {
         @Override
         public void test() {
             final DatabasePlatform defaultPlatform = new DatabasePlatform();
-            final boolean waterExists = defaultPlatform.checkTableExists((DatabaseSessionImpl) session, WATER_TD);
+            final boolean waterExists = defaultPlatform.checkTableExists((DatabaseSessionImpl) session, WATER_TD, false);
             assertFalse(waterExists);
         }
 
