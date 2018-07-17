@@ -3539,16 +3539,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * @return query to check whether given table exists
      */
     protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
-        String column = null;
-        for (FieldDefinition field : table.getFields()) {
-            if (column == null) {
-                column = field.getName();
-            } else if (field.isPrimaryKey()) {
-                column = field.getName();
-                break;
-            }
-        }
-        final String sql = "SELECT " + column + " FROM " + table.getFullName();
+        final String sql = "SELECT 1 FROM " + table.getFullName();
         final DataReadQuery query = new DataReadQuery(sql);
         query.setMaxRows(1);
         return query;
