@@ -255,6 +255,13 @@
          version="@XML_SOAP_VERSION@"
          unpack="false"/>
 
+    <plugin
+            id="org.eclipse.persistence.sun-misc"
+            download-size="0"
+            install-size="0"
+            version="@SUN_MISC_VERSION@"
+            unpack="false"/>
+
    <plugin
          id="org.eclipse.persistence.antlr"
          download-size="0"

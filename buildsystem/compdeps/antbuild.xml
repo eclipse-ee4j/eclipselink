@@ -198,6 +198,8 @@
         <property name="cdi.prefix" value="cdi.api"/>
         <property name="cdi.criteria" value="[0.0.1,5.0.0)"/>
         <!-- For EclipseLink bundles -->
+        <property name="sun-misc.prefix" value="org.eclipse.persistence.sun-misc"/>
+        <property name="sun-misc.criteria" value="[3.0,4.0)"/>
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria" value="[3.0,5.0)"/>
         <property name="asm.prefix" value="org.eclipse.persistence.asm"/>
@@ -301,6 +303,9 @@
         <selectbundle basename="${xml.soap.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${xml.soap.criteria}" property="xml.soap.version" versiononly="true"
         />
+        <selectbundle basename="${sun-misc.prefix}"  directory="${compdeps.2.common.plugins.dir}"
+                     criterion="${sun-misc.criteria}" property="sun-misc.version" versiononly="true"
+        />
         <selectbundle basename="${antlr.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
         />
@@ -376,6 +381,8 @@
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."           unless="servlet.version"/>
         <say  message="   xml.soap.version         = '${xml.soap.version}'"                                                         if="xml.soap.version"/>
         <say  message="   '${xml.soap.prefix}_${xml.soap.criteria}.jar' not found! Generated features will be invalid."         unless="xml.soap.version"/>
+        <say  message="   sun-misc.version            = '${sun-misc.version}'"                                                  if="sun-misc.version"/>
+        <say  message="   '${sun-misc.prefix}_${sun-misc.criteria}.jar' not found! Generated features will be invalid."         unless="sun-misc.version"/>
         <say  message="   antlr.version            = '${antlr.version}'"                                                            if="antlr.version"/>
         <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."               unless="antlr.version"/>
         <say  message="   asm.version              = '${asm.version}'"                                                              if="asm.version"/>
@@ -480,6 +487,7 @@
         <filter token="MONGODB_VERSION"      value="${mongodb.version}"/>
         <filter token="CDI_VERSION"          value="${cdi.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
+        <filter token="SUN_MISC_VERSION"     value="${sun-misc.version}"/>
         <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
         <filter token="ASM_VERSION"          value="${asm.version}"/>
         <filter token="ORACLEDDL_VERSION"    value="${oracleddl.version}"/>
@@ -505,6 +513,7 @@
         <delete dir="${p2.bundle.dir}" failonerror="false"/>
         <mkdir dir="${p2.bundle.dir}"/>
         <!-- populate bundle jars -->
+        <echo message="persistence.version: ${persistence.version}"/>
         <copy todir="${p2.bundle.dir}">
             <fileset
                 dir="${compdeps.2.common.plugins.dir}"
@@ -517,6 +526,7 @@
                           ${transaction.prefix}_${transaction.version}.jar,
                           ${servlet.prefix}_${servlet.version}.jar,
                           ${xml.soap.prefix}_${xml.soap.version}.jar,
+                          ${sun-misc.prefix}_${sun-misc.version}.jar,
                           ${antlr.prefix}_${antlr.version}.jar,
                           ${antlr.prefix}.source_${antlr.version}.jar,
                           ${asm.prefix}_${asm.version}.jar,
@@ -605,6 +615,7 @@
         </delete>
         <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2"
             jvm="${java.home}/bin/java" failonerror="false" maxmemory="256m">
+            <jvmarg line="--add-modules=jdk.unsupported"/>
             <classpath>
                 <fileset dir="${eclipse.plugin.dir}"
                     includes="${p2.launcher.jar},
@@ -644,6 +655,7 @@
 
         <java classname="org.eclipse.equinox.launcher.Main" fork="true" timeout="10800000" taskname="p2.director"
             jvm="${java.home}/bin/java" failonerror="true" maxmemory="512m">
+            <jvmarg line="--add-modules=jdk.unsupported"/>
             <classpath>
                 <fileset dir="${eclipse.plugin.dir}"
                     includes="${p2.launcher.jar},

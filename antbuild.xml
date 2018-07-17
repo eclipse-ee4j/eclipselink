@@ -145,7 +145,12 @@
     <echo message="JDK version detected: '${java.version}'"/>
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
-    <!-- JDBC driver settings info -->
+    <!-- Detect JDK version >=9 -->
+	<condition property="jdk.modules" value="true">
+		<matches string="${java.version}" pattern="9.*|1[0-9].*"/>
+	</condition>
+
+	<!-- JDBC driver settings info -->
     <condition property="msg.jdbc.driver.jar.configured" value="JDBC driver JAR: '${jdbc.driver.jar}'" else="JDBC driver JAR: jdbc.driver.jar property missing">
         <isset property="jdbc.driver.jar"/>
     </condition>
@@ -508,7 +513,40 @@
             </fileset>
         </delete>
     </target>
-
+	<target name="clean-sun-misc" depends="check-maven" description="Clean sun.misc OSGI fragment project">
+		<java dir="${eclipselink.sun-misc}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
+             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
+             <jvmarg value="-Declipselink.full=true"/>
+             <arg value="clean"/>
+             <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                   <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+             </classpath>
+        </java>
+	</target>
+    <target name="build-sun-misc" depends="check-maven" description="Build sun.misc OSGI fragment project" if="jdk.modules">
+        <java dir="${eclipselink.sun-misc}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
+             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
+             <jvmarg value="-Declipselink.full=true"/>
+             <arg value="package"/>
+             <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                   <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+             </classpath>
+        </java>
+        <copy todir="${plugins.dir}">
+            <fileset dir="${eclipselink.sun-misc}/target"
+                     includes="org.eclipse.persistence.sun-misc*.jar"/>
+        </copy>
+    </target>
     <target name="clean-testing" description="Clean the testing projects">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}"      target="clean"/>
@@ -540,7 +578,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="clean"/>
     </target>
 
-    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of local compiler dependencies">
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps,build-sun-misc" description="Build local p2 repository of local compiler dependencies">
         <!-- a bit redundant, but here as a failsafe. -->
         <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
         <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
