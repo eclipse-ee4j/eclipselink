@@ -4337,7 +4337,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             } else{
                 if (descriptor.getEventManager().hasAnyEventListeners()) {
                     DescriptorEvent event = new DescriptorEvent(newObject);
-                    event.setEventCode(DescriptorEventManager.PrePersistEvent);
+                    event.setEventCode(DescriptorEventManager.PostUpdateEvent);
                     event.setSession(this);
                     descriptor.getEventManager().executeEvent(event);
                  }
