@@ -40,6 +40,8 @@
     <!-- (should be set locally, and be destroyed upon return) -->
     <fail message="Not running from '${ant.project.name}' directory" unless="p2.is.local"/>
 
+    <import file="../../${ant.import.mvn}"/>
+
     <target name="generate-p2" if="p2.tooling.available" depends="generate-p2-site, test-p2-site"/>
 
     <target name="init">
@@ -226,7 +228,7 @@
         <delete dir="${p2repo.dir}"  includeEmptyDirs="true" failonerror="false"/>
     </target>
 
-    <target name="resolve-feature-dependencies" if="eclipse.install.exist" depends="init">
+    <target name="resolve-feature-dependencies" if="eclipse.install.exist" depends="init,build-sun-misc">
         <echo message="Searching ${compdeps.2.common.plugins.dir}..."/>
         <selectbundle basename="${javax.xml.bind.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${javax.xml.bind.criteria}" property="javax.xml.bind.version" versiononly="true"
@@ -337,35 +339,35 @@
         <say  message="   '${sun.tools.xjc.prefix}_${sun.tools.xjc.criteria}.jar' not found! Generated features will be invalid." unless="sun.tools.xjc.version"/>
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
         <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid."   unless="sun.xml.bind.version"/>
-        <say  message="   org.glassfish.corba.orb.version     = '${org.glassfish.corba.orb.version}'"                                                if="org.glassfish.corba.orb.version"/>
+        <say  message="   org.glassfish.corba.orb.version    = '${org.glassfish.corba.orb.version}'"                                                if="org.glassfish.corba.orb.version"/>
         <say  message="   '${org.glassfish.corba.orb.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."    unless="org.glassfish.corba.orb.version"/>
-        <say  message="   org.glassfish.corba.csiv2.version     = '${org.glassfish.corba.csiv2.version}'"                                            if="org.glassfish.corba.csiv2.version"/>
+        <say  message="   org.glassfish.corba.csiv2.version  = '${org.glassfish.corba.csiv2.version}'"                                            if="org.glassfish.corba.csiv2.version"/>
         <say  message="   '${org.glassfish.corba.csiv2.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."  unless="org.glassfish.corba.csiv2.version"/>
-        <say  message="   org.glassfish.corba.iapi.version     = '${org.glassfish.corba.iapi.version}'"                                              if="org.glassfish.corba.iapi.version"/>
+        <say  message="   org.glassfish.corba.iapi.version   = '${org.glassfish.corba.iapi.version}'"                                              if="org.glassfish.corba.iapi.version"/>
         <say  message="   '${org.glassfish.corba.iapi.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."   unless="org.glassfish.corba.iapi.version"/>
-        <say  message="   org.glassfish.corba.omgapi.version     = '${org.glassfish.corba.omgapi.version}'"                                          if="org.glassfish.corba.omgapi.version"/>
+        <say  message="   org.glassfish.corba.omgapi.version = '${org.glassfish.corba.omgapi.version}'"                                          if="org.glassfish.corba.omgapi.version"/>
         <say  message="   '${org.glassfish.corba.omgapi.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid." unless="org.glassfish.corba.omgapi.version"/>
-        <say  message="   org.glassfish.corba.eap.version     = '${org.glassfish.corba.eap.version}'"                                                if="org.glassfish.corba.eap.version"/>
+        <say  message="   org.glassfish.corba.eap.version    = '${org.glassfish.corba.eap.version}'"                                                if="org.glassfish.corba.eap.version"/>
         <say  message="   '${org.glassfish.corba.eap.prefix}_${org.glassfish.corba.criteria}.jar' not found! Generated features will be invalid."    unless="org.glassfish.corba.eap.version"/>
-        <say  message="   org.osgi.core.version     = '${org.osgi.core.version}'"                                                                 if="org.osgi.core.version"/>
+        <say  message="   org.osgi.core.version = '${org.osgi.core.version}'"                                                                 if="org.osgi.core.version"/>
         <say  message="   '${org.osgi.core.prefix}_${org.osgi.core.criteria}.jar' not found! Generated features will be invalid."                 unless="org.osgi.core.version"/>
         <say  message="   gmbal.api.version     = '${gmbal.api.version}'"                                                                         if="gmbal.api.version"/>
         <say  message="   '${gmbal.api.prefix}_${gmbal.api.criteria}.jar' not found! Generated features will be invalid."                         unless="gmbal.api.version"/>
-        <say  message="   gmbal.gf.version     = '${gmbal.gf.version}'"                                                                           if="gmbal.gf.version"/>
+        <say  message="   gmbal.gf.version      = '${gmbal.gf.version}'"                                                                           if="gmbal.gf.version"/>
         <say  message="   '${gmbal.gf.prefix}_${gmbal.gf.criteria}.jar' not found! Generated features will be invalid."                           unless="gmbal.gf.version"/>
         <say  message="   org.glassfish.pfl.basic.version     = '${org.glassfish.pfl.basic.version}'"                                             if="org.glassfish.pfl.basic.version"/>
         <say  message="   '${org.glassfish.pfl.basic.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid."   unless="org.glassfish.pfl.basic.version"/>
-        <say  message="   org.glassfish.pfl.basic.tools.version     = '${org.glassfish.pfl.basic.tools.version}'"                                     if="org.glassfish.pfl.basic.tools.version"/>
+        <say  message="   org.glassfish.pfl.basic.tools.version = '${org.glassfish.pfl.basic.tools.version}'"                                     if="org.glassfish.pfl.basic.tools.version"/>
         <say  message="   '${org.glassfish.pfl.basic.tools.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid." unless="org.glassfish.pfl.basic.tools.version"/>
         <say  message="   org.glassfish.pfl.dynamic.version     = '${org.glassfish.pfl.dynamic.version}'"                                         if="org.glassfish.pfl.dynamic.version"/>
         <say  message="   '${org.glassfish.pfl.dynamic.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid." unless="org.glassfish.pfl.dynamic.version"/>
-        <say  message="   org.glassfish.pfl.test.version     = '${org.glassfish.pfl.test.version}'"                                               if="org.glassfish.pfl.test.version"/>
+        <say  message="   org.glassfish.pfl.test.version        = '${org.glassfish.pfl.test.version}'"                                               if="org.glassfish.pfl.test.version"/>
         <say  message="   '${org.glassfish.pfl.test.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid."    unless="org.glassfish.pfl.test.version"/>
-        <say  message="   org.glassfish.pfl.tf.version     = '${org.glassfish.pfl.tf.version}'"                                                   if="org.glassfish.pfl.tf.version"/>
+        <say  message="   org.glassfish.pfl.tf.version          = '${org.glassfish.pfl.tf.version}'"                                                   if="org.glassfish.pfl.tf.version"/>
         <say  message="   '${org.glassfish.pfl.tf.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid."      unless="org.glassfish.pfl.tf.version"/>
-        <say  message="   org.glassfish.pfl.asm.version     = '${org.glassfish.pfl.asm.version}'"                                                 if="org.glassfish.pfl.asm.version"/>
+        <say  message="   org.glassfish.pfl.asm.version         = '${org.glassfish.pfl.asm.version}'"                                                 if="org.glassfish.pfl.asm.version"/>
         <say  message="   '${org.glassfish.pfl.asm.prefix}_${org.glassfish.pfl.criteria}.jar' not found! Generated features will be invalid."     unless="org.glassfish.pfl.asm.version"/>
-        <say  message="   management.api.version     = '${management.api.version}'"                                                               if="management.api.version"/>
+        <say  message="   management.api.version   = '${management.api.version}'"                                                               if="management.api.version"/>
         <say  message="   '${management.api.prefix}_${management.api.criteria}.jar' not found! Generated features will be invalid."               unless="management.api.version"/>
         <say  message="   ejb.version              = '${ejb.version}'"                                                              if="ejb.version"/>
         <say  message="   '${ejb.prefix}_${ejb.criteria}.jar' not found! Generated features will be invalid."                   unless="ejb.version"/>
@@ -381,7 +383,7 @@
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."           unless="servlet.version"/>
         <say  message="   xml.soap.version         = '${xml.soap.version}'"                                                         if="xml.soap.version"/>
         <say  message="   '${xml.soap.prefix}_${xml.soap.criteria}.jar' not found! Generated features will be invalid."         unless="xml.soap.version"/>
-        <say  message="   sun-misc.version            = '${sun-misc.version}'"                                                  if="sun-misc.version"/>
+        <say  message="   sun-misc.version         = '${sun-misc.version}'"                                                  if="sun-misc.version"/>
         <say  message="   '${sun-misc.prefix}_${sun-misc.criteria}.jar' not found! Generated features will be invalid."         unless="sun-misc.version"/>
         <say  message="   antlr.version            = '${antlr.version}'"                                                            if="antlr.version"/>
         <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."               unless="antlr.version"/>
@@ -508,8 +510,29 @@
         </antcall>
     </target>
 
+    <target name="build-sun-misc" depends="check-maven" description="Build sun.misc OSGI fragment project" if="jdk.modules">
+        <java dir="../../${eclipselink.sun-misc}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+             <jvmarg value="-Dmaven.multiModuleProjectDirectory=../../${eclipselink.mvn.parent}"/>
+             <jvmarg value="-Declipselink.full=true"/>
+             <jvmarg value="-Drelease.version=${release.version}"/>
+             <jvmarg value="-Dversion.qualifier=${version.qualifier}"/>
+             <arg value="package"/>
+             <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                   <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+             </classpath>
+        </java>
+        <copy todir="../../${plugins.dir}">
+            <fileset dir="${compdeps.build.location}/sun.misc/target"
+                     includes="org.eclipse.persistence.sun-misc*.jar"/>
+        </copy>
+    </target>
+
     <!-- P2 Targets -->
-    <target name="populate-p2-site" if="eclipse.install.exist" depends="init, resolve-feature-dependencies">
+    <target name="populate-p2-site" if="eclipse.install.exist" depends="init,resolve-feature-dependencies">
         <delete dir="${p2.bundle.dir}" failonerror="false"/>
         <mkdir dir="${p2.bundle.dir}"/>
         <!-- populate bundle jars -->

@@ -1,0 +1,12 @@
+<project>
+    <!-- Verify whether Maven 3 build tool is installed and configured. -->
+    <target name="check-maven" description="Verify the Maven tool is installed and configured">
+        <condition property="M2_HOME" value="${env.M2_HOME}" else="~/apache-maven-3.5.2">
+            <isset property="env.M2_HOME"/>
+        </condition>
+        <echo message="Maven installation directory (M2_HOME) set to: '${M2_HOME}'"/>
+        <available file="${M2_HOME}/bin/mvn" property="use.maven"/>
+        <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
+    </target>
+
+</project>

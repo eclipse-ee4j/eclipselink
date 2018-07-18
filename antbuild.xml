@@ -97,7 +97,8 @@
 *   - Ant properties are lower case.
 -->
 <project name="trunk" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:sonar="antlib:org.sonar.ant">
-    <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
+
+	<dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
     <pathconvert targetos="unix" property="trunk.build.location">
         <path>
             <pathelement location="${trunk.build.location_temp}"/>
@@ -208,6 +209,8 @@
         <pathelement path="${eclipselink.plugins}/com.sun.jersey_1.8.0.201204181614.jar"/>
         <pathelement path="${eclipselink.plugins}/javax.ejb_3.1.0.v201205171433.jar"/>
     </path>
+
+	<import file="${ant.import.mvn}"/>
 
 <!-- ================================================================================= -->
 
@@ -420,17 +423,6 @@
     <target name="build-distribution" depends="build-all-but-ext, package-all, gen-wls-shared-lib"/>
 
 <!-- ================================================================================= -->
-    <!-- Needed for Maven/Tycho builds -->
-    <target name="check-maven" description="Verify the Maven tool is installed and configured">
-        <condition property="M2_HOME" value="${env.M2_HOME}"
-                                      else="C:/apache-maven-3.0.3">
-            <isset property="env.M2_HOME"/>
-        </condition>
-        <echo message="Maven install (M2_HOME) set to: '${M2_HOME}'"/>
-        <available file="${M2_HOME}/bin/mvn" property="use.maven"/>
-        <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
-    </target>
-
     <target name="set-compdeps" depends="check-maven" description="Setup for use of local compdeps rather than hosted, and whether to generate">
         <!-- Determine whether the build could generate/use a local compdeps repo -->
         <!--     To setup generation of local compdeps:                           -->
@@ -513,40 +505,6 @@
             </fileset>
         </delete>
     </target>
-	<target name="clean-sun-misc" depends="check-maven" description="Clean sun.misc OSGI fragment project">
-		<java dir="${eclipselink.sun-misc}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
-             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
-             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
-             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
-             <jvmarg value="-Declipselink.full=true"/>
-             <arg value="clean"/>
-             <classpath>
-                <fileset dir="${M2_HOME}/boot">
-                   <include name="plexus-classworlds-*.jar"/>
-                </fileset>
-             </classpath>
-        </java>
-	</target>
-    <target name="build-sun-misc" depends="check-maven" description="Build sun.misc OSGI fragment project" if="jdk.modules">
-        <java dir="${eclipselink.sun-misc}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
-             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
-             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
-             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
-             <jvmarg value="-Declipselink.full=true"/>
-             <arg value="package"/>
-             <classpath>
-                <fileset dir="${M2_HOME}/boot">
-                   <include name="plexus-classworlds-*.jar"/>
-                </fileset>
-             </classpath>
-        </java>
-        <copy todir="${plugins.dir}">
-            <fileset dir="${eclipselink.sun-misc}/target"
-                     includes="org.eclipse.persistence.sun-misc*.jar"/>
-        </copy>
-    </target>
     <target name="clean-testing" description="Clean the testing projects">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}"      target="clean"/>
@@ -578,7 +536,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="clean"/>
     </target>
 
-    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps,build-sun-misc" description="Build local p2 repository of local compiler dependencies">
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of local compiler dependencies">
         <!-- a bit redundant, but here as a failsafe. -->
         <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
         <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
