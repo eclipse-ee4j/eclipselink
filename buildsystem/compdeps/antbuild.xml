@@ -510,7 +510,15 @@
         </antcall>
     </target>
 
-    <target name="build-sun-misc" depends="check-maven" description="Build sun.misc OSGI fragment project" if="jdk.modules">
+    <!-- Checks whether sun-misc OSGI bundle exists in plugins or should be built. -->
+    <target name="check-sun-misc">
+        <selectbundle basename="${sun-misc.prefix}"    directory="${compdeps.2.common.plugins.dir}"
+                      criterion="${sun-misc.criteria}" property="sun-misc.check.version" versiononly="true"
+        />
+    </target>
+
+    <!-- Builds sun-misc OSGI bundle to export sun.misc and sun.reflect packages from JDK9+. -->
+    <target name="build-sun-misc" depends="check-maven,check-sun-misc" description="Build sun.misc OSGI fragment project" if="jdk.modules" unless="sun-misc.check.version">
         <java dir="../../${eclipselink.sun-misc}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
