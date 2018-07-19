@@ -8,7 +8,7 @@ Implementation-Version: 3.5.2.qualifier
 Bundle-Name: EclipseLink ANTLR
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.antlr
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version>=1.7))"
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 3.5.2.qualifier
