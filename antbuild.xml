@@ -145,11 +145,6 @@
     <echo message="JDK version detected: '${java.version}'"/>
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
-    <!-- Detect JDK version >=9 -->
-    <condition property="jdk.modules" value="true">
-        <matches string="${java.version}" pattern="9.*|1[0-9].*"/>
-    </condition>
-
     <!-- JDBC driver settings info -->
     <condition property="msg.jdbc.driver.jar.configured" value="JDBC driver JAR: '${jdbc.driver.jar}'" else="JDBC driver JAR: jdbc.driver.jar property missing">
         <isset property="jdbc.driver.jar"/>

@@ -199,9 +199,10 @@
         <property name="json.criteria" value="[1.1.0,5.0.0)"/>
         <property name="cdi.prefix" value="cdi.api"/>
         <property name="cdi.criteria" value="[0.0.1,5.0.0)"/>
-        <!-- For EclipseLink bundles -->
+        <!-- Export jdk.unsupported module. -->
         <property name="sun-misc.prefix" value="org.eclipse.persistence.sun-misc"/>
         <property name="sun-misc.criteria" value="[3.0,4.0)"/>
+        <!-- For EclipseLink bundles -->
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria" value="[3.0,5.0)"/>
         <property name="asm.prefix" value="org.eclipse.persistence.asm"/>
@@ -488,8 +489,9 @@
         <filter token="WSRS_VERSION"         value="${wsrs.version}"/>
         <filter token="MONGODB_VERSION"      value="${mongodb.version}"/>
         <filter token="CDI_VERSION"          value="${cdi.version}"/>
-        <!--          Filters for product bundles in feature.xml files -->
+        <!--          Filter for jdk.unsupported module export bundle in feature.xml files. -->
         <filter token="SUN_MISC_VERSION"     value="${sun-misc.version}"/>
+        <!--          Filters for product bundles in feature.xml files -->
         <filter token="ANTLR_VERSION"        value="${antlr.version}"/>
         <filter token="ASM_VERSION"          value="${asm.version}"/>
         <filter token="ORACLEDDL_VERSION"    value="${oracleddl.version}"/>
@@ -518,7 +520,7 @@
     </target>
 
     <!-- Builds sun-misc OSGI bundle to export sun.misc and sun.reflect packages from JDK9+. -->
-    <target name="build-sun-misc" depends="check-maven,check-sun-misc" description="Build sun.misc OSGI fragment project" if="jdk.modules" unless="sun-misc.check.version">
+    <target name="build-sun-misc" depends="check-maven,check-sun-misc" description="Build sun.misc OSGI fragment project" unless="sun-misc.check.version">
         <java dir="../../${eclipselink.sun-misc}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
