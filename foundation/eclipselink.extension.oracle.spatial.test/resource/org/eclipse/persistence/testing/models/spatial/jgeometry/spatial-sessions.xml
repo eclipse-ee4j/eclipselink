@@ -18,7 +18,7 @@
    <session xsi:type="database-session">
       <name>spatial-session</name>
           <logging xsi:type="eclipselink-log">
-            <log-level>fine</log-level>
+            <log-level>@loglevel@</log-level>
             <logging-options>
             <log-exception-stacktrace/>
             <print-thread/>

@@ -210,19 +210,20 @@
         <condition property="is.oracle">
             <contains string="${db.driver}" substring="oracle"/>
         </condition>
-        <condition property="orapropsregex" value="^pa\..*|proxy\.user\.name" else="nothing.should.match">
+        <condition property="orapropsregex" value="^pa\..*[^d]$" else="nothing.should.match">
             <isset property="is.oracle" />
         </condition>
-        <!-- oradb specific properties -->
-        <property name="proxy.user.name" value="PAS_PROXY"/>
-        <property name="pa.connection.user" value="${db.user}"/>
-        <property name="pa.connection.password" value="${db.pwd}"/>
-        <property name="pa.proxyuser" value="${db.user}_PROXY"/>
-        <property name="pa.proxyuser2" value="${db.user}_PROXY2"/>
+<!--        <property name="pa.connection.user" value="PAS_CONN"/>
+        <property name="pa.connection.password" value="${db.pwd}2"/>
+        <property name="pa.proxyuser" value="PAS_PROXY"/>
+        <property name="pa.proxyuser.password" value="password"/>
+        <property name="pa.proxyuser2" value="${pa.proxyuser}2"/>
+        <property name="pa.proxyuser2.password" value="${pa.proxyuser.password}2"/>-->
 
         <propertyset id="test.run.propertyset" dynamic="false">
             <propertyref prefix="test.security-manager"/>
             <propertyref regex="db\.(?!pwd).*"/>
+            <!-- oradb specific properties -->
             <propertyref regex="${orapropsregex}"/>
             <propertyref name="jdbc.driver.jar"/>
             <propertyref name="eclipselink.logging.level"/>
@@ -428,6 +429,7 @@
             <path refid="srg.model.classpath"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.advanced.field.access.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.cascade.deletes}.jar"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.cacheable.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.ddl.generation.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.delimited.model}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.extensibility.model}.jar"/>
@@ -451,6 +453,12 @@
             <path refid="jpa.run.common.path"/>
             <path refid="lrg.base"/>
         </path>
+        <path id="remote.classpath">
+            <path refid="jpa.run.common.path"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.advanced.field.access.model}.jar"/>
+            <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.remote}.jar"/>
+        </path>
         <path id="lrg22.base">
             <pathelement path="${jpatest.basedir}/${jpa.test.jar}"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.annotation.model}.jar"/>
@@ -462,6 +470,7 @@
             <pathelement path="${jpatest.basedir}/${eclipselink.advanced.properties}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.pu.with.spaces}.jar"/>
             <pathelement path="${jpatest.basedir}/${eclipselink.validation.failed.model}.jar"/>
+            <pathelement path="${jpatest.basedir}/${eclipselink.cacheable.model}.jar"/>
         </path>
         <path id="lrg22.2.path">
             <path refid="lrg22.base"/>
@@ -563,27 +572,32 @@
             <pathelement path="${jpatest.2.common.plugins.dir}/${json-impl.jar}"/>
         </path>
          <path id="run.oracle.classpath">
-            <path refid="run.classpath"/>
+            <path refid="jpa.run.common.path"/>
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${jpatest.2.oracletest.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
-            <pathelement path="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
+            <pathelement path="${jpatest.2.oracle.dir}/${classes.dir}"/>
+            <pathelement path="${jpatest.classes.dir}"/>
             <pathelement path="${jpatest.2.oracletest.dir}/${eclipselink.timestamptz.model}.jar"/>
             <pathelement path="${jpatest.2.oracletest.dir}/${eclipselink.customfeatures.model}.jar"/>
             <pathelement path="${jpatest.2.oracletest.dir}/${eclipselink.proxyauthentication.model}.jar"/>
+            <pathelement path="${jpatest.2.oracletest.dir}/${eclipselink.dcn.model}.jar"/>
+            <pathelement path="${jpatest.2.oracletest.dir}/${oracle.test.jar}"/>
             <pathelement path="${jpatest.2.oracletest.dir}/${oracle.jpa.test.jar}"/>
-            <pathelement path="${jpatest.2.oracletest.dir}/eclipselink-dcn-model.jar"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xdb.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.aqapi.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.ucp.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.xmlparser.jar}"/>
+            <pathelement path="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
         </path>
          <path id="run.oracle.spatial.classpath">
-            <path refid="run.classpath"/>
+            <path refid="jpa.run.common.path"/>
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
-            <pathelement path="${jpatest.2.oracletest.dir}/${classes.dir}"/>
             <pathelement path="${jpatest.2.oracle.spatial.test.dir}/${classes.dir}"/>
-            <pathelement path="${eclipselink.extension.oracle}/${classes.dir}"/>
+            <pathelement path="${jpatest.2.oracletest.dir}/${classes.dir}"/>
+            <pathelement path="${jpatest.2.oracle.dir}/${classes.dir}"/>
+            <pathelement path="${jpatest.classes.dir}"/>
             <pathelement path="${jpatest.2.oracle.spatial.test.dir}/${eclipselink.struct.converter.model}.jar"/>
-            <pathelement path="${jpatest.2.oracle.spatial.test.dir}/${oracle.jpa.test.jar}"/>
+            <pathelement path="${jpatest.2.oracle.spatial.test.dir}/${oracle.spatial.jpa.test.jar}"/>
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.sdoapi.jar}"/>
         </path>
          <path id="run.oracle.nosql.classpath">
@@ -981,7 +995,7 @@
     <target name="package" depends="init-package, package-framework, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa-model,
     package-jpa22-model, package-xml-extended, package-validation-failed, package-jpa-advanced-field-access, package-jpa-advanced-properties,
     package-jpa-pu_with_spaces, package-partitioned, package-plsql, package-jpa-performance, package-jpa-performance2, package-cascade-deletes,
-    package-jpa-metamodel, package-delimited, package-beanvalidation, package-beanvalidation-dynamic, package-composite-advanced,
+    package-cacheable, package-jpa-metamodel, package-delimited, package-beanvalidation, package-beanvalidation-dynamic, package-composite-advanced,
     package-composite-advanced-member_1, package-composite-advanced-member_2, package-composite-advanced-member_3, package-xml-composite-advanced,
     package-xml-composite-advanced-member_1, package-xml-composite-advanced-member_2, package-xml-composite-advanced-member_3,
     package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2,
@@ -1129,6 +1143,10 @@
                        includes="org/eclipse/persistence/testing/models/jpa/cascadedeletes/**"/>
     </target>
 
+    <target name="package-cacheable" depends="init-package">
+        <package-model model="${eclipselink.cacheable.model}"
+                       includes="org/eclipse/persistence/testing/models/jpa/cacheable/**"/>
+    </target>
 
     <target name="package-jpa-model" depends="init-package">
         <package-model model="${eclipselink.jpa21.model}" resources="*.xml, *.jdbc"
@@ -1426,6 +1444,9 @@
                 <echo message="  class-path                   ='${toString:@{classpath}}'"/>
                 <echo message="System properties:             ='${toString:test.run.propertyset}'"/>
                 <echo message="  db.pwd                       ='**********'"/>
+                <echo message="  pa.connection.password       ='**********'"/>
+                <echo message="  pa.proxyuser.password        ='**********'"/>
+                <echo message="  pa.proxyuser2.password       ='**********'"/>
                 <mkdir dir="${jpatest.run.dir}"/>
                 <mkdir dir="${jpatest.report.dir}"/>
                 <junit fork="yes" jvm="${test.junit.jvm.exec}" maxmemory="${max.heap.memory}"
@@ -1435,12 +1456,15 @@
                     <modulepath refid="@{modulepath}"/>
                     <upgrademodulepath refid="@{upgrademodulepath}"/>
                     <jvmarg line="${test.junit.jvm.modules.prop}"/>
-        <!--<property name="additional.jvmargs" value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/>-->
+                    <jvmarg line="${additional.jvmargs}"/>
                     <jvmarg value="@{testagent}"/>
                     <jvmarg line="@{testweaving} @{testweavingoption}"/>
                     <jvmarg value="-XX:CompileCommandFile=../../jdk_hotspot_compiler"/>
                     <syspropertyset refid="test.run.propertyset"/>
                     <sysproperty key="db.pwd" value="${db.pwd}"/>
+                    <sysproperty key="pa.connection.password" value="${pa.connection.password}"/>
+                    <sysproperty key="pa.proxyuser.password" value="${pa.proxyuser.password}"/>
+                    <sysproperty key="pa.proxyuser2.password" value="${pa.proxyuser2.password}"/>
                     <sysproperty key="orm.testing" value="@{ormtesting}"/>
 
                     <formatter type="xml"/>
@@ -1511,6 +1535,9 @@
                 <echo message="  test.weaving.option          ='@{testweavingoption}'"/>
                 <echo message="System properties:             ='${toString:test.run.propertyset}'"/>
                 <echo message="  db.pwd                       ='**********'"/>
+                <echo message="  pa.connection.password       ='**********'"/>
+                <echo message="  pa.proxyuser.password        ='**********'"/>
+                <echo message="  pa.proxyuser2.password       ='**********'"/>
                 <echo message="Perf properties:               ='${jvmarg.performance.baseline.version}, ${toString:test.perfrun.propertyset}'"/>
                 <echo message="  eclipselink.perfdb.pwd       ='**********'"/>
                 <mkdir dir="${jpatest.run.dir}"/>
@@ -1526,6 +1553,9 @@
                     <jvmarg line="@{testweaving} @{testweavingoption}"/>
                     <syspropertyset refid="test.run.propertyset"/>
                     <sysproperty key="db.pwd" value="${db.pwd}"/>
+                    <sysproperty key="pa.connection.password" value="${pa.connection.password}"/>
+                    <sysproperty key="pa.proxyuser.password" value="${pa.proxyuser.password}"/>
+                    <sysproperty key="pa.proxyuser2.password" value="${pa.proxyuser2.password}"/>
                     <syspropertyset refid="test.perfrun.propertyset"/>
                     <sysproperty key="eclipselink.perfdb.pwd" value="${eclipselink.perfdb.pwd}"/>
                     <jvmarg value="${jvmarg.performance.baseline.version}"/>
@@ -1584,15 +1614,11 @@
     </target>
 
     <!-- Runs LRG (AllCMP3TestRunModel) with agent. -->
-    <target name="test-lrg21" depends="clean-test, init-testing, test-dynamic, test-remote-jpa, run-bean-validation-tests, oracle-test">
-        <test classpath="run.classpath"
-            include="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
-        <test classpath="run.extended.classpath"
-            include="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"
-            ormtesting="eclipselink"/>
-        <test classpath="run.jpa21.classpath"
+    <target name="test-lrg21" depends="clean-test, init-testing, test-remote-jpa">
+        
+<!--        <test classpath="run.jpa.classpath"
             include="org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite"
-            ormtesting="eclipselink"/>
+            ormtesting="eclipselink"/>-->
         <test classpath="run.weaver.classpath"
             include="org.eclipse.persistence.testing.tests.weaving.SimpleWeaverTestSuite"
             ormtesting="eclipselink"/>
@@ -1657,66 +1683,24 @@
             include="org.eclipse.persistence.testing.tests.jpa.beanvalidation.dynamic.BeanValidationDynamicEntityJunitTest"/>
     </target>
 
-    <target name="oracle-test" if="is.oracle" depends="config-classpath">
-        <!-- Initializes Oracle database proxy users for ProxyAuthenticationTestSuite. -->
-        <property name="pa.proxyuser" value="${db.user}_PROXY"/>
-        <property name="pa.proxyuser2" value="${db.user}_PROXY2"/>
-        <ant dir="${jpatest.2.oracletest.dir}"
-             antfile="oracle-db-setup.xml"
-             target="setup-proxy-authentication">
-            <property name="PROXY_USER" value="${pa.proxyuser}"/>
-            <property name="PROXY_USER2" value="${pa.proxyuser2}"/>
-        </ant>
-
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
-            <param name="TEST_AGENT" value="${test.agent}"/>
-            <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
-            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
-            <param name="RUN_PATH" value="run.oracle.classpath"/>
-            <param name="DB_URL" value="${db.url}"/>
-        </antcall>
-
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.OracleJPASpatialTestSuite"/>
-            <param name="TEST_AGENT" value="${test.agent}"/>
-            <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
-            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
-            <param name="RUN_PATH" value="run.oracle.spatial.classpath"/>
-            <param name="DB_URL" value="${db.url}"/>
-        </antcall>
-
-        <antcall target="oracle-proxy-test" inheritRefs="true"/>
+    <target name="oracle-test" if="is.oracle" depends="clean-test, init-testing, config-classpath, oracle-proxy-test">
+        <test classpath="run.oracle.classpath"
+            include="org.eclipse.persistence.testing.tests.OracleJPATestSuite"/>
+        <test classpath="run.oracle.spatial.classpath"
+            include="org.eclipse.persistence.testing.tests.OracleJPASpatialTestSuite"/>
     </target>
 
     <!-- Oracle proxy authentication needs to be setup for the tests. -->
-    <target name="oracle-proxy-test">
+    <target name="oracle-proxy-test" if="is.oracle" depends="clean-test, init-testing, config-classpath">
         <ant dir="${jpatest.2.oracletest.dir}"
-             antfile="oracle-db-setup.xml"
-             target="setup-proxy-authentication">
-            <property name="PROXY_USER" value="PAS_PROXY"/>
-            <property name="DB_USER" value="PAS_CONN"/>
-            <property name="DB_PWD" value="pas_conn"/>
-        </ant>
-
-        <antcall target="run-test" inheritRefs="true">
-            <param name="TEST_CLASS" value="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
-            <param name="TEST_AGENT" value="${test.agent}"/>
-            <param name="TEST_WEAVING" value="${test.weaving}"/>
-            <param name="TEST_WEAVING_OPTION" value="${test.weaving.option}"/>
-            <param name="ORM_TESTING" value="-Dorm.testing=jpa"/>
-            <param name="RUN_PATH" value="run.oracle.classpath"/>
-            <param name="DB_URL" value="${db.url}"/>
-            <param name="DB_USER" value="PAS_CONN"/>
-            <param name="DB_PWD" value="pas_conn"/>
-        </antcall>
+             antfile="oracle-db-setup.xml" target="setup-proxy-authentication"/>
+        <test classpath="run.oracle.classpath"
+            include="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"/>
     </target>
 
     <!-- Runs Remote (RMI) JPA tests. -->
     <target name="test-remote-jpa" depends="init-testing">
-        <test classpath="run.classpath"
+        <test classpath="remote.classpath"
             include="org.eclipse.persistence.testing.tests.jpa.remote.RemoteEntityManagerTestSuite"/>
     </target>
 

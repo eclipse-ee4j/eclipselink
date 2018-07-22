@@ -41,9 +41,17 @@ public class ProxyAuthenticationUsersAndProperties {
     public static final String PA_PROXYUSER = "pa.proxyuser";
     public static String proxyUserDefault = "PA_PROXY";
 
+    // specify proxyUser in a System property PA_PROXYUSERPWD, otherwise proxyUserPasswordDefault is used.
+    public static final String PA_PROXYUSERPWD = "pa.proxyuser.password";
+    public static String proxyUserPasswordDefault = "PA_PROXY";
+
     // specify proxyUser2 in a System property PA_PROXYUSER2, otherwise proxyUser2Default is used.
     public static final String PA_PROXYUSER2 = "pa.proxyuser2";
     public static String proxyUser2Default = "PA_PROXY2";
+
+    // specify proxyUser2 in a System property PA_PROXYUSER2PWD, otherwise proxyUser2PasswordDefault is used.
+    public static final String PA_PROXYUSER2PWD = "pa.proxyuser2.password";
+    public static String proxyUser2PasswordDefault = "PA_PROXY2";
 
     /** to setup Proxy Authentication users in Oracle db, need to execute in sqlPlus or EnterpriseManager
      * (sql in the following example uses default names):
@@ -69,7 +77,9 @@ public class ProxyAuthenticationUsersAndProperties {
     public static String connectionUser;
     public static String connectionPassword;
     public static String proxyUser;
+    public static String proxyUserPassword;
     public static String proxyUser2;
+    public static String proxyUser2Password;
 
     public static Properties connectionProperties;
     public static Map proxyProperties;
@@ -91,8 +101,8 @@ public class ProxyAuthenticationUsersAndProperties {
      */
     public static void initialize() {
         // obtain user and password that should be used to connect to the db.
-        connectionUser = getProperty(PA_CONNECTION_USER, "PA_CONN");
-        connectionPassword = getProperty(PA_CONNECTION_PASSWORD, "PA_CONN");
+        connectionUser = getProperty(PA_CONNECTION_USER, connectionUserDefault);
+        connectionPassword = getProperty(PA_CONNECTION_PASSWORD, connectionPasswordDefault);
         // connectionProperties used to connect to the db to test the users
         connectionProperties = new Properties();
         connectionProperties.setProperty("user", connectionUser);
@@ -100,17 +110,21 @@ public class ProxyAuthenticationUsersAndProperties {
 
         // obtain proxyuser, put into proxyProperties.
         // proxyProperties could be used either by ServerSession or ClientSession (EMFactory or EntityManager).
-        proxyUser = getProperty(PA_PROXYUSER, "PA_PROXY");
-        proxyProperties = new HashMap(2);
+        proxyUser = getProperty(PA_PROXYUSER, proxyUserDefault);
+        proxyUserPassword = getProperty(PA_PROXYUSERPWD, proxyUserPasswordDefault);
+        proxyProperties = new HashMap(3);
         proxyProperties.put(PersistenceUnitProperties.ORACLE_PROXY_TYPE, OracleConnection.PROXYTYPE_USER_NAME);
         proxyProperties.put(OracleConnection.PROXY_USER_NAME, proxyUser);
+        proxyProperties.put(OracleConnection.PROXY_USER_PASSWORD, proxyUserPassword);
 
         // obtain proxyuser2, put into proxyProperties2.
         // proxyProperties2 could be used by ClientSession (EntityManager) to override proxyProperties used by ServerSession (EMFactory).
-        proxyUser2 = getProperty(PA_PROXYUSER2, "PA_PROXY2");
-        proxyProperties2 = new HashMap(2);
+        proxyUser2 = getProperty(PA_PROXYUSER2, proxyUser2Default);
+        proxyUser2Password = getProperty(PA_PROXYUSER2PWD, proxyUser2PasswordDefault);
+        proxyProperties2 = new HashMap(3);
         proxyProperties2.put(PersistenceUnitProperties.ORACLE_PROXY_TYPE, OracleConnection.PROXYTYPE_USER_NAME);
         proxyProperties2.put(OracleConnection.PROXY_USER_NAME, proxyUser2);
+        proxyProperties2.put(OracleConnection.PROXY_USER_PASSWORD, proxyUser2Password);
 
         // cancelProxyProperties could be used by ClientSession (EntityManager) to NOT to use proxyProperties used by ServerSession (EMFactory).
         cancelProxyProperties = new HashMap(1);
@@ -142,6 +156,7 @@ public class ProxyAuthenticationUsersAndProperties {
             try {
                 Properties props = new Properties();
                 props.setProperty(OracleConnection.PROXY_USER_NAME, proxyUser);
+                props.setProperty(OracleConnection.PROXY_USER_PASSWORD, proxyUserPassword);
                 OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection();
                 oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
                 // close proxy session
@@ -154,6 +169,7 @@ public class ProxyAuthenticationUsersAndProperties {
             try {
                 Properties props = new Properties();
                 props.setProperty(OracleConnection.PROXY_USER_NAME, proxyUser2);
+                props.setProperty(OracleConnection.PROXY_USER_PASSWORD, proxyUser2Password);
                 OracleConnection oracleConnection = (oracle.jdbc.OracleConnection)((org.eclipse.persistence.internal.sessions.AbstractSession)newSession).getAccessor().getConnection();
                 oracleConnection.openProxySession(OracleConnection.PROXYTYPE_USER_NAME, props);
                 // close proxy session

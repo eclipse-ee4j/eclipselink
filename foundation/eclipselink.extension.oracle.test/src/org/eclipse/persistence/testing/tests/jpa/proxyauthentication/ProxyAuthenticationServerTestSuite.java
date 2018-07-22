@@ -17,34 +17,43 @@ package org.eclipse.persistence.testing.tests.jpa.proxyauthentication;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
-import junit.framework.*;
-
-import oracle.jdbc.OracleConnection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.sql.DataSource;
 import javax.transaction.TransactionManager;
 
+import org.eclipse.persistence.config.ExclusiveConnectionMode;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jpa.JpaEntityManager;
+import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.platform.server.glassfish.GlassfishPlatform;
 import org.eclipse.persistence.platform.server.wls.WebLogicPlatform;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.JNDIConnector;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.proxyauthentication.*;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
+import org.eclipse.persistence.testing.models.jpa.proxyauthentication.Employee;
+import org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumber;
+import org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumberPK;
+import org.eclipse.persistence.testing.tests.proxyauthentication.thin.ProxyAuthenticationUsersAndProperties;
 import org.eclipse.persistence.transaction.JTATransactionController;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jpa.JpaEntityManager;
-import org.eclipse.persistence.jpa.JpaHelper;
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.config.ExclusiveConnectionMode;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import oracle.jdbc.OracleConnection;
+
 /**
  * TestSuite to verifying that connectionUser(PAS_CONN) and proxyUser(PAS_PROXY) are used as expected.
+ * See also comment in ProxyAuthenticationUsersAndProperties.
  * To run this test suite several users should be setup in the Oracle database,
  * to setup Proxy Authentication users in Oracle db, need to execute in sqlPlus or EnterpriseManager
      * (sql in the following example uses default names):
@@ -134,7 +143,15 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
     }
 
     public void testSetup() {
-        serverSession = getServerSession(PROXY_PU);
+        // sets up all user names and properties used by the tests.
+        ProxyAuthenticationUsersAndProperties.initialize();
+        // verifies that all the users correctly setup in the db.
+        serverSession = getServerSession(PROXY_PU, createConnProperties());
+        String errorMsg = ProxyAuthenticationUsersAndProperties.verify(serverSession);
+        if(errorMsg.length() > 0) {
+            fail(errorMsg);
+        }
+        
         shouldOverrideGetEntityManager = shouldOverrideGetEntityManager();
         shouldCloseProxySessionOnRollback = shouldCloseProxySessionOnRollback();
         System.out.println("====the shouldOverrideGetEntityManager====" + shouldOverrideGetEntityManager);
@@ -187,7 +204,8 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             PhoneNumber phone = newEm.find(PhoneNumber.class, pk);
             Employee emp = newEm.find(Employee.class, empId);
             compareObjects(emp, proxyEmp, phone, proxyPhone);
-            clearCache(PROXY_PU);
+            //clearCache
+            newEm.unwrap(JpaEntityManager.class).getDatabaseSession().getIdentityMapAccessor().initializeAllIdentityMaps();
             compareObjects(emp, proxyEmp, phone, proxyPhone);
             commitTransaction(newEm);
         } catch (Exception ex) {
@@ -260,7 +278,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
      */
     public void testCreateWithOutProxy() throws Exception{
         Employee employee  = new Employee();
-        EntityManager em = createEntityManager(PROXY_PU);
+        EntityManager em = createEntityManager(PROXY_PU, createConnProperties());
         try {
             beginTransaction(em);
             employee.setFirstName("Guy");
@@ -311,7 +329,9 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         }
 
         // now do something with a new em
-        clearCache(PROXY_PU);
+        //clearCache
+        serverSession.getIdentityMapAccessor().initializeAllIdentityMaps();
+
         em = createEntityManager_proxy(PROXY_PU);
         // read
         em.createQuery("SELECT e FROM Employee e").getResultList();
@@ -378,7 +398,8 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        clearCache(PROXY_PU);
+        //clearCache
+        serverSession.getIdentityMapAccessor().initializeAllIdentityMaps();
 
         Employee employeeRead = null;
         em = createEntityManager_proxy(PROXY_PU);
@@ -418,7 +439,8 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         // Eclipselink session is used only to obtain jta data source from the application server.
         DataSource jtaDs = ((JNDIConnector)serverSession.getLogin().getConnector()).getDataSource();
         Properties props = new Properties();
-        props.setProperty(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
+        props.setProperty(OracleConnection.PROXY_USER_NAME, ProxyAuthenticationUsersAndProperties.proxyUser);
+        props.setProperty(OracleConnection.PROXY_USER_PASSWORD, ProxyAuthenticationUsersAndProperties.proxyUserPassword);
 
         mngr.begin();
         Connection conn = jtaDs.getConnection();
@@ -473,7 +495,8 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         // Eclipselink session is used only to obtain non jta data source from the application server.
         DataSource nonJtaDs = ((JNDIConnector)((DatabaseLogin)serverSession.getReadConnectionPool().getLogin()).getConnector()).getDataSource();
         Properties props = new Properties();
-        props.setProperty(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
+        props.setProperty(OracleConnection.PROXY_USER_NAME, ProxyAuthenticationUsersAndProperties.proxyUser);
+        props.setProperty(OracleConnection.PROXY_USER_PASSWORD, ProxyAuthenticationUsersAndProperties.proxyUserPassword);
 
         Connection conn = nonJtaDs.getConnection();
         OracleConnection oracleConn;
@@ -511,10 +534,18 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         empl.setProperties(createProperties());
     }
 
+    private Map createConnProperties() {
+        Map newProps = JUnitTestCaseHelper.getDatabaseProperties(PROXY_PU);
+        newProps.put(PersistenceUnitProperties.JDBC_USER, ProxyAuthenticationUsersAndProperties.connectionUser);
+        newProps.put(PersistenceUnitProperties.JDBC_PASSWORD, ProxyAuthenticationUsersAndProperties.connectionPassword);
+        return newProps;
+    }
+
     private Map createProperties(){
-        Map newProps = new HashMap(3);
+        Map newProps = new HashMap(4);
         newProps.put(PersistenceUnitProperties.ORACLE_PROXY_TYPE, OracleConnection.PROXYTYPE_USER_NAME);
-        newProps.put(OracleConnection.PROXY_USER_NAME, System.getProperty("proxy.user.name"));
+        newProps.put(OracleConnection.PROXY_USER_NAME, ProxyAuthenticationUsersAndProperties.proxyUser);
+        newProps.put(OracleConnection.PROXY_USER_PASSWORD, ProxyAuthenticationUsersAndProperties.proxyUserPassword);
         newProps.put(PersistenceUnitProperties.EXCLUSIVE_CONNECTION_MODE, ExclusiveConnectionMode.Always);
         return newProps;
     }
@@ -565,7 +596,7 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
             EntityManager em = getEntityManagerFactory(puName).createEntityManager(createProperties());
             return em;
         } else {
-            return createEntityManager(puName);
+            return createEntityManager(puName, createProperties());
         }
     }
 
@@ -593,10 +624,11 @@ public class ProxyAuthenticationServerTestSuite extends JUnitTestCase {
         return WebLogicPlatform.class.isAssignableFrom(serverSession.getServerPlatform().getClass()) && Helper.compareVersions(getServerSession(PROXY_PU).getServerPlatform().getServerNameAndVersion(), "10.3.4") >= 0;
     }
 
-    protected java.util.Properties getServerProperties(){
+    protected Properties getServerProperties(){
         String proxy_user=System.getProperty("proxy.user.name");
         Properties p = new Properties();
-        p.setProperty("proxy.user.name", proxy_user);
+        p.setProperty(ProxyAuthenticationUsersAndProperties.PA_PROXYUSER, ProxyAuthenticationUsersAndProperties.proxyUser);
+        p.setProperty(ProxyAuthenticationUsersAndProperties.PA_PROXYUSERPWD, ProxyAuthenticationUsersAndProperties.proxyUserPassword);
         return p;
     }
 

@@ -328,6 +328,7 @@
                     <modulepath refid="@{modulepath}"/>
                     <upgrademodulepath refid="@{upgrademodulepath}"/>
                     <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                    <jvmarg line="${additional.jvmargs}"/>
                     <syspropertyset refid="test.run.propertyset"/>
                     <sysproperty key="db.pwd" value="${db.pwd}"/>
                     <formatter type="xml"/>
