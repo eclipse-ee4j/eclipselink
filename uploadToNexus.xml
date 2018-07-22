@@ -178,7 +178,6 @@
         <property name="validation.prefix"    value="validation-api"/>
         <property name="validation.criteria"  value="[1.1.0,2.2.0)"/>
         <property name="validation.name"      value="Javax Validation"/>
-        <property name="validation.version"   value="1.1.0.Final"/>
         <property name="json.prefix"          value="javax.json-api"/>
         <property name="json.criteria"        value="[1.1.0,5.0.0)"/>
         <property name="json.name"            value="Javax JSON"/>
@@ -211,7 +210,7 @@
         <selectbundle basename="${sdoapi.prefix}"  directory="${maven.2.sdo.plugins.dir}"
                       criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
                 />
-        <selectbundle basename="${validation.prefix}"  directory="${maven.2.common.plugins.dir}"
+        <selectbundle basename="javax.validation.api"  directory="${maven.2.common.plugins.dir}"
                       criterion="${validation.criteria}" property="validation.version" versiononly="true"
                 />
         <selectbundle basename="${json.prefix}"  directory="${maven.2.common.plugins.dir}"
