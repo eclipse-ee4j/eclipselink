@@ -58,7 +58,7 @@ public class OSGiBundleTest {
     @Test
     public void testAsmVersion() {
         Class<?> c = loadClass("org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.asm", "6.1.1.v201804051226");
+        assertClassLoadedByBundle(c, "org.eclipse.persistence.asm", "6.2.v201807231543");
     }
 
     @Test

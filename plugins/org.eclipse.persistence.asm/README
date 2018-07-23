@@ -17,7 +17,7 @@ ant -f antbuild.xml -Dbuild.type=RELEASE bld
 -commit & push changes
 -rebuild compdeps
 -update asm version in the source tree, ie on OSX:
-grep -rl "201702131300" * | xargs sed -i '' 's/201702131300/201710052159/g'
+grep -rl "201702131300" * | xargs sed -i 's/201702131300/201710052159/g'
 -commit and push the change
 
 done.
