@@ -37,7 +37,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -457,22 +456,28 @@ public class SchemaManager {
     }
 
     /**
-     * Check if the table exists by issuing a select.
+     * Check if the table exists by issuing a query.
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(TableDefinition table, final boolean suppressLogging) {
+        final boolean loggingOff = session.isLoggingOff();
+        try {
+            return session.getPlatform().checkTableExists(session, table, suppressLogging);
+        } finally {
+            session.setLoggingOff(loggingOff);
+        }
+    }
+
+    /**
+     * Check if the table exists by issuing a query.
+     * Logging is suppressed during query execution.
      * @param table database table meta-data
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
     public boolean checkTableExists(TableDefinition table) {
-        final DataReadQuery query = session.getPlatform().getTableExistsQuery(table);
-        final boolean loggingOff = session.isLoggingOff();
-        try {
-            session.setLoggingOff(true);
-            final Vector result = (Vector)session.executeQuery(query);
-            return !result.isEmpty();
-        } catch (Exception notFound) {
-            return false;
-        } finally {
-            session.setLoggingOff(loggingOff);
-        }
+        return checkTableExists(table, true);
     }
 
     protected SequenceDefinition buildSequenceDefinition(Sequence sequence) {

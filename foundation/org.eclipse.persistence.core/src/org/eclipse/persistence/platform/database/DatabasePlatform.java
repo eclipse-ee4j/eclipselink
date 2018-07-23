@@ -32,7 +32,11 @@ package org.eclipse.persistence.platform.database;
 public class DatabasePlatform extends org.eclipse.persistence.internal.databaseaccess.DatabasePlatform {
     public static final int DEFAULT_VARCHAR_SIZE = 255;
 
+    /**
+     * Creates an instance of default database platform.
+     */
     public DatabasePlatform() {
         super();
     }
+
 }

@@ -51,6 +51,7 @@ import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
@@ -816,18 +817,39 @@ public class MySQLPlatform extends DatabasePlatform {
         writer.write("\n\t RETURNS ");
     }
 
+    // Value of shouldCheckResultTableExistsQuery must be true.
     /**
      * INTERNAL:
-     * Returns query to check whether given table exists in MySQL database.
-     * Returned query must be completely prepared so it can be just executed by calling code.
+     * Returns query to check whether given table exists.
+     * Query execution returns a row when table exists or empty result otherwise.
      * @param table database table meta-data
      * @return query to check whether given table exists
      */
-    public DataReadQuery getTableExistsQuery(final TableDefinition table) {
-        final String sql = "SHOW TABLES LIKE '" + table.getFullName() + "'";
-        final DataReadQuery query = new DataReadQuery(sql);
+    @Override
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final DataReadQuery query = new DataReadQuery("SHOW TABLES LIKE '" + table.getFullName() + "'");
         query.setMaxRows(1);
         return query;
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Returned value depends on returned result set being empty or not.
+     * @param session current database session
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session,
+            final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
+            return !result.isEmpty();
+        } catch (Exception notFound) {
+            return false;
+        }
     }
 
 }
