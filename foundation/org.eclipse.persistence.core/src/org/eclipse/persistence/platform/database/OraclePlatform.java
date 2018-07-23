@@ -101,7 +101,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         this.pingSQL = "SELECT 1 FROM DUAL";
         this.storedProcedureTerminationToken = "";
         this.shouldPrintForUpdateClause = true;
-        this.shouldCheckResultTableExistsQuery = true;
     }
 
     @Override
@@ -1204,6 +1203,26 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
                 "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'");
         query.setMaxRows(1);
         return query;
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Returned value depends on returned result set being empty or not.
+     * @param session current database session
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session,
+            final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
+            return !result.isEmpty();
+        } catch (Exception notFound) {
+            return false;
+        }
     }
 
 }

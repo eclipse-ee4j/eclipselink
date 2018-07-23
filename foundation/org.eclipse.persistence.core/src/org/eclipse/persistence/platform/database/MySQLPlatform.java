@@ -83,7 +83,6 @@ public class MySQLPlatform extends DatabasePlatform {
         this.pingSQL = "SELECT 1";
         this.startDelimiter = "`";
         this.endDelimiter = "`";
-        this.shouldCheckResultTableExistsQuery = true;
     }
 
     @Override
@@ -831,6 +830,26 @@ public class MySQLPlatform extends DatabasePlatform {
         final DataReadQuery query = new DataReadQuery("SHOW TABLES LIKE '" + table.getFullName() + "'");
         query.setMaxRows(1);
         return query;
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Returned value depends on returned result set being empty or not.
+     * @param session current database session
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session,
+            final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
+            return !result.isEmpty();
+        } catch (Exception notFound) {
+            return false;
+        }
     }
 
 }

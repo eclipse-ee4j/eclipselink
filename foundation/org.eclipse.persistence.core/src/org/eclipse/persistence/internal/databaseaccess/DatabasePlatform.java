@@ -269,11 +269,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected Boolean useJDBCStoredProcedureSyntax;
     protected String driverName;
 
-    /** Table existence check trigger.
-     *  Returned result set is checked on not being empty when {@code true}
-     *  or {@code true} value is always returned when no exception is thrown when {@code false}. */
-    protected boolean shouldCheckResultTableExistsQuery;
-
     /**
      * Creates an instance of default database platform.
      */
@@ -300,7 +295,6 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.endDelimiter = "\"";
         this.useJDBCStoredProcedureSyntax = null;
         this.storedProcedureTerminationToken = ";";
-        this.shouldCheckResultTableExistsQuery = false;
     }
 
     /**
@@ -3548,9 +3542,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * INTERNAL:
      * Executes and evaluates query to check whether given table exists.
-     * Query result evaluation depends on {@link #shouldCheckResultTableExistsQuery} value:
-     * Returned value depends on returned vector being non empty when {@code true} and
-     * returned value is always {@code true} when {@code false}.
+     * Returned value is always {@code true}, because an exception is thrown
+     * when given table does not exists.
      * @param session current database session
      * @param table database table meta-data
      * @param suppressLogging whether to suppress logging during query execution
@@ -3560,8 +3553,8 @@ public class DatabasePlatform extends DatasourcePlatform {
             final TableDefinition table, final boolean suppressLogging) {
         try {
             session.setLoggingOff(suppressLogging);
-            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
-            return shouldCheckResultTableExistsQuery ? !result.isEmpty() : true;
+            session.executeQuery(getTableExistsQuery(table));
+            return true;
         } catch (Exception notFound) {
             return false;
         }
