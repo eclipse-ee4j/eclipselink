@@ -76,6 +76,7 @@ import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -243,7 +244,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public final static int Types_SQLXML = 2009;
 
-
     /**
      * String used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project.  This value will be appended to CreationSuffix strings
@@ -269,6 +269,9 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected Boolean useJDBCStoredProcedureSyntax;
     protected String driverName;
 
+    /**
+     * Creates an instance of default database platform.
+     */
     public DatabasePlatform() {
         this.tableQualifier = "";
         this.usesNativeSQL = false;
@@ -3502,46 +3505,59 @@ public class DatabasePlatform extends DatasourcePlatform {
         field.appendDBString(writer, session, table);
     }
 
-     /**
-      * INTERNAL:
-      * Override this method if the platform supports storing JDBC connection user name during
-      * {@link #initializeConnectionData(Connection)}.
-      * @return Always returns {@code false}
-      */
-     public boolean supportsConnectionUserName() {
-         return false;
-     }
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports storing JDBC connection user name during
+     * {@link #initializeConnectionData(Connection)}.
+     * @return Always returns {@code false}
+     */
+    public boolean supportsConnectionUserName() {
+        return false;
+    }
 
-     /**
-      * INTERNAL:
-      * Returns user name retrieved from JDBC connection.
-      * @throws UnsupportedOperationException on every single call until overridden.
-      */
-     public String getConnectionUserName() {
-         throw new UnsupportedOperationException("Connection user name is not supported.");
-     }
+    /**
+     * INTERNAL:
+     * Returns user name retrieved from JDBC connection.
+     * @throws UnsupportedOperationException on every single call until overridden.
+     */
+    public String getConnectionUserName() {
+        throw new UnsupportedOperationException("Connection user name is not supported.");
+    }
 
-     /**
-      * INTERNAL:
-      * Returns query to check whether given table exists.
-      * Returned query must be completely prepared so it can be just executed by calling code.
-      * @param table database table meta-data
-      * @return query to check whether given table exists
-      */
-     public DataReadQuery getTableExistsQuery(final TableDefinition table) {
-         String column = null;
-         for (FieldDefinition field : table.getFields()) {
-             if (column == null) {
-                 column = field.getName();
-             } else if (field.isPrimaryKey()) {
-                 column = field.getName();
-                 break;
-             }
-         }
-         final String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE FALSE";
-         final DataReadQuery query = new DataReadQuery(sql);
-         query.setMaxRows(1);
-         return query;
-     }
+    // Value of shouldCheckResultTableExistsQuery must be false.
+    /**
+     * INTERNAL:
+     * Returns query to check whether given table exists.
+     * Query execution throws an exception when no such table exists.
+     * @param table database table meta-data
+     * @return query to check whether given table exists
+     */
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final String sql = "SELECT 1 FROM " + table.getFullName();
+        final DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        return query;
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Returned value is always {@code true}, because an exception is thrown
+     * when given table does not exists.
+     * @param session current database session
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session,
+            final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            session.executeQuery(getTableExistsQuery(table));
+            return true;
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
 
 }
