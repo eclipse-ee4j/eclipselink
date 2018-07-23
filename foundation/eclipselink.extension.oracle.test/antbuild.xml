@@ -252,12 +252,6 @@
         </condition>
         <!-- Define system properties for resource processing and testing  -->
         <property name="eclipselink.logging.level" value="${logging.level}"/>
-<!--        <property name="pa.connection.user" value="PAS_CONN"/>
-        <property name="pa.connection.password" value="${db.pwd}2"/>
-        <property name="pa.proxyuser" value="PAS_PROXY"/>
-        <property name="pa.proxyuser.password" value="password"/>
-        <property name="pa.proxyuser2" value="${pa.proxyuser}2"/>
-        <property name="pa.proxyuser2.password" value="${pa.proxyuser.password}2"/>-->
         <propertyset id="test.run.propertyset" dynamic="false">
             <propertyref prefix="test.security-manager"/>
             <propertyref regex="db\.(?!pwd|url|oci|sys).*"/>

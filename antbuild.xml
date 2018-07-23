@@ -1422,7 +1422,6 @@
             <target name="server-install"/>
             <target name="server-setup"/>
             <target name="server-test-lrg"/>
-            <target name="server-test-jpa21-lrg"/>
             <target name="server-test-jpa22-lrg"/>
             <target name="server-stop"/>
         </ant>
@@ -1470,7 +1469,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
     </target>
     <target name="test-jpa21" description="run the jpa tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg21"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
     </target>
     <target name="test-jpa22" description="run the jpa tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg22"/>
@@ -1480,7 +1479,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg"/>
     </target>
     <target name="test-jpa21-srg" description="run the jpa srg tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg21"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg"/>
     </target>
     <target name="test-jpa22-srg" description="run the jpa srg tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg22"/>
