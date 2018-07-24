@@ -20,7 +20,7 @@ Export-Package: org.eclipse.persistence.internal.libraries.asm;version
 Bundle-Name: EclipseLink ASM
 Created-By: 1.8.0_121 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.asm
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version>=1.7))"
 Implementation-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 7.0.0.qualifier

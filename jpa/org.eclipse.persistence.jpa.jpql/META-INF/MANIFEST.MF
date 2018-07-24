@@ -18,7 +18,7 @@ Bundle-Name: EclipseLink Hermes Parser
 Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa.j
  pql
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version>=1.8))"
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 2.7.4.qualifier
 Bundle-ManifestVersion: 2
