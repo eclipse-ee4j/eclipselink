@@ -173,7 +173,7 @@ Export-Package: org.eclipse.persistence;version="2.7.4",
  org.eclipse.persistence.transaction.wls;version="2.7.4"
 Bundle-ClassPath: .
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.core
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version>=1.8))"
 Require-Bundle: org.eclipse.persistence.antlr;bundle-version="3.5.2";resolution:=optional,
  org.eclipse.persistence.asm;bundle-version="7.0.0";resolution:=optional
 Bundle-SymbolicName: org.eclipse.persistence.core
