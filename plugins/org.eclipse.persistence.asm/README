@@ -9,6 +9,8 @@ org.eclipse.persistence.utils.rename.MigrateTopLinkToEclipseLink <tmp>/org/objec
 -copy <dst>/* to $eclipselink_home/plugins/org.eclipse.persistence.asm/src/org/eclipse/persistence/internal/libraries
 -update 'release.version' property in 'antbuild.xml'
 -update release version in 'about.html' and 'readme.html'
+-update asm version in the manifest, i.e.
+sed -i "s/6\.1\.1/6\.2\.0/g" META-INF/MANIFEST.MF
 
 -commit changes
 -build final artifact with:
