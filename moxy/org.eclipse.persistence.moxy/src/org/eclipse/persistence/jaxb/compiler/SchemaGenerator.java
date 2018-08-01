@@ -649,7 +649,10 @@ public class SchemaGenerator {
     }
 
     private Schema getSchemaForNamespace(String namespace) {
-        return getSchemaForNamespace(namespace, null);
+        if (namespace != null && !namespace.equals(EMPTY_STRING)) {
+            return getSchemaForNamespace(namespace, null);
+        }
+        return null;
     }
 
     /**
