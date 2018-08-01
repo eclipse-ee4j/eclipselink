@@ -29,7 +29,7 @@ connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
 
 edit()
 startEdit()
-deploy(appName='@appName@', path='@testDir@/@earName@', targets='@TARGET_SERVER@')
+deploy(appName='@appName@', path='@earName@', targets='@TARGET_SERVER@')
 #startApplication('@appName@')
 #dumpStack()
 save()

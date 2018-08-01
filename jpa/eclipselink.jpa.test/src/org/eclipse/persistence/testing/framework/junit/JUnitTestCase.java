@@ -731,7 +731,7 @@ public abstract class JUnitTestCase extends TestCase {
         properties.put("java.naming.provider.url", url);
         Context context = new InitialContext(properties);
         Throwable exception = null;
-        if (puName == null)
+        if (puName == null || !puName.startsWith("MulitPU-"))
         {
             String testrunner = System.getProperty("server.testrunner");
             if (testrunner == null) {

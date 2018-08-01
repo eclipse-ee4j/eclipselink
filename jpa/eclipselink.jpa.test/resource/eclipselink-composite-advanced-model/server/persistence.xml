@@ -14,9 +14,7 @@
 
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
     <persistence-unit name="composite-advanced" transaction-type="@transaction-type@">
-        <provider>
-            org.eclipse.persistence.jpa.PersistenceProvider
-        </provider>
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <jar-file>eclipselink-composite-advanced-model-member_1_ejb.jar</jar-file>
         <jar-file>eclipselink-composite-advanced-model-member_2_ejb.jar</jar-file>
         <jar-file>eclipselink-composite-advanced-model-member_3_ejb.jar</jar-file>
