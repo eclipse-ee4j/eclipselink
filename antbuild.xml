@@ -1422,7 +1422,6 @@
             <target name="server-install"/>
             <target name="server-setup"/>
             <target name="server-test-lrg"/>
-            <target name="server-test-jpa22-lrg"/>
             <target name="server-stop"/>
         </ant>
     </target>
