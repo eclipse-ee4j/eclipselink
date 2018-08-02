@@ -38,7 +38,7 @@ public class JGeometryConverter implements StructConverter {
 
     public JGeometryConverter() {
         try {
-            JGEOMETRY_CLASS = Class.forName("oracle.spatial.geometry.JGeometry");
+            JGEOMETRY_CLASS = Class.forName("oracle.spatial.geometry.JGeometry", true, Thread.currentThread().getContextClassLoader());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }

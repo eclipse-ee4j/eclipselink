@@ -21,96 +21,106 @@
 # Connect to wls server
 #===========================================================================
 
-connect('@WL_USR@','@WL_PWD@','t3://@WL_HOST@:@WL_PORT@')
+wlUser = System.getProperty("server.user")
+wlPwd = System.getProperty("server.pwd")
+wlHost = System.getProperty("weblogic.host")
+wlPort = System.getProperty("weblogic.port")
+
+
+connect(wlUser, wlPwd,'t3://' + wlHost + ':' + wlPort)
 
 #===========================================================================
-# Create and configure JTA Data Source and target it to the server.
+# Create and configure JTA and non-JTA Data Sources and target it to the server.
 #===========================================================================
 
-try:
-    edit()
-    startEdit()
+datasources = [System.getProperty("wls.ds.jta.name"), System.getProperty("wls.ds.nonjta.name")]
+if not System.getProperty("db2.url").startswith("${") :
+    datasources.append(System.getProperty("wls.ds2.jta.name"))
+    datasources.append(System.getProperty("wls.ds2.nonjta.name"))
+if not System.getProperty("db3.url").startswith("${") :
+    datasources.append(System.getProperty("wls.ds3.jta.name"))
+    datasources.append(System.getProperty("wls.ds3.nonjta.name"))
 
-    cd('/')
-    cmo.createJDBCSystemResource('EclipseLinkDS')
+targetServer = System.getProperty("target.server")
 
-    cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS')
-    cmo.setName('EclipseLinkDS')
 
-    cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDataSourceParams/EclipseLinkDS')
-    set('JNDINames',jarray.array([String('jdbc/EclipseLinkDS')], String))
+for x in range(len(datasources)):
+    ds = datasources[x]
+    y = x / 2 + 1
+    if y < 2 :
+        dbUrl = System.getProperty("db.url")
+        dbDriver = System.getProperty("db.driver")
+        dbPwd = System.getProperty("db.pwd")
+        dbUser = System.getProperty("db.user")
+    else :
+        dbUrl = System.getProperty("db" + str(y) + ".url")
+        dbDriver = System.getProperty("db" + str(y) + ".driver")
+        dbPwd = System.getProperty("db" + str(y) + ".pwd")
+        dbUser = System.getProperty("db" + str(y) + ".user")
 
-    cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS')
-    cmo.setUrl('@DBURL@')
-    cmo.setDriverName('@DBDRV@')
-    set('PasswordEncrypted','@DBPWD@')
+    print 'Setting up ' + ds + ' datasource (url: ' + dbUrl + ', driver: ' + dbDriver + ')'
 
-    cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCConnectionPoolParams/EclipseLinkDS')
-    cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
+    try:
+        edit()
+        startEdit()
+        cd('/')
+        cmo.createJDBCSystemResource(ds)
 
-    cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS')
-    cmo.createProperty('user')
+        cd('/JDBCSystemResources/' + ds + '/JDBCResource/' + ds)
+        set('Name',ds)
 
-    cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDriverParams/EclipseLinkDS/Properties/EclipseLinkDS/Properties/user')
-    cmo.setValue('@DBUSR@')
+        cd('/JDBCSystemResources/' + ds + '/JDBCResource/' + ds + '/JDBCDataSourceParams/' + ds)
+        set('JNDINames',jarray.array([String('jdbc/' + ds)], String))
 
-    #cd('/JDBCSystemResources/EclipseLinkDS/JDBCResource/EclipseLinkDS/JDBCDataSourceParams/EclipseLinkDS')
-    #cmo.setGlobalTransactionsProtocol('OnePhaseCommit')
+        #cd('/JDBCSystemResources/' + ds + '/JDBCResource/' + ds + '/JDBCDataSourceParams/' + ds)
+        #cmo.setGlobalTransactionsProtocol('OnePhaseCommit')
 
-    cd('/SystemResources/EclipseLinkDS')
-    set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
+        if ds.find('Non') > -1:
+            #non-JTA datasource
+            #cd('/JDBCSystemResources/' + ds + '/JDBCResource/' + ds + '/JDBCDataSourceParams/' + ds)
+            cmo.setGlobalTransactionsProtocol('None')
 
-    save()
-    activate()
-except Exception, x:
-    print "Failed to create EclipseLinkDS: ", x
+
+        cd('/JDBCSystemResources/' + ds + '/JDBCResource/' + ds + '/JDBCDriverParams/' + ds)
+        set('DriverName',dbDriver)
+        set('Url',dbUrl)
+        set('Password',dbPwd)
+
+        cd('/JDBCSystemResources/' + ds + '/JDBCResource/' + ds + '/JDBCDriverParams/' + ds + '/Properties/' + ds)
+        cmo.createProperty('user')
+
+        cd('/JDBCSystemResources/' + ds + '/JDBCResource/' + ds + '/JDBCDriverParams/' + ds + '/Properties/' + ds + '/Properties/user')
+        set('Value',dbUser)
+
+        cd('/JDBCSystemResources/' + ds + '/JDBCResource/' + ds + '/JDBCConnectionPoolParams/' + ds)
+        cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
+
+        cd('/JDBCSystemResources/' + ds)
+        set('Targets',jarray.array([ObjectName('com.bea:Name=' + targetServer + ',Type=Server')], ObjectName))
+        save()
+        activate()
+    except Exception, x:
+        print 'Failed to create ' + ds + ': ', x
 
 #===========================================================================
-# Create and configure Non-JTA Data Source and target it to the server.
+# Enable Exalogic Optimization
 #===========================================================================
-
-try:
-    edit()
-    startEdit()
-
-    cd('/')
-    cmo.createJDBCSystemResource('ELNonJTADS')
-
-    cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS')
-    cmo.setName('ELNonJTADS')
-
-    cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDataSourceParams/ELNonJTADS')
-    set('JNDINames',jarray.array([String('jdbc/ELNonJTADS')], String))
-
-    cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS')
-    cmo.setUrl('@DBURL@')
-    cmo.setDriverName('@DBDRV@')
-    set('PasswordEncrypted','@DBPWD@')
-
-    cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCConnectionPoolParams/ELNonJTADS')
-    cmo.setTestTableName('SQL SELECT 1 FROM DUAL')
-
-    cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS/Properties/ELNonJTADS')
-    cmo.createProperty('user')
-
-    cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDriverParams/ELNonJTADS/Properties/ELNonJTADS/Properties/user')
-    cmo.setValue('@DBUSR@')
-
-    cd('/JDBCSystemResources/ELNonJTADS/JDBCResource/ELNonJTADS/JDBCDataSourceParams/ELNonJTADS')
-    cmo.setGlobalTransactionsProtocol('None')
-
-    cd('/SystemResources/ELNonJTADS')
-    set('Targets',jarray.array([ObjectName('com.bea:Name=@TARGET_SERVER@,Type=Server')], ObjectName))
-
-    save()
-    activate()
-except Exception, x:
-    print "Failed to create ELNonJTADS: ", x
+if Boolean.getBoolean("is.exalogic"):
+    try:
+        edit()
+        startEdit()
+        cd('/')
+        cmo.setExalogicOptimizationsEnabled(true)
+        save()
+        activate()
+    except Exception, x:
+        print 'Cannot enable ExaLogic Optimization', x
 
 #===========================================================================
 # Exit WLST.
 #===========================================================================
 
+disconnect()
 exit()
 
 

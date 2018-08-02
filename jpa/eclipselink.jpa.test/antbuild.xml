@@ -105,7 +105,7 @@
         <property file="${jpatest.basedir}/test.properties"/>
         <property name="eclipselink.jpa.test.dir" value="${jpatest.basedir}"/>
 
-                <!-- JVM used to run tests -->
+        <!-- JVM used to run tests -->
         <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
         <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
         <property prefix="test.junit.jdk" file="${test.junit.jvm}/release"/>
@@ -646,6 +646,137 @@
         </path>
     </target>
 
+    <!-- Server Testing -->
+    <target name="init-server" depends="init">
+        <property name="projectcache.dir"       value="pcfile"/>
+        <!-- This checks if the Application Server is GlassFish -->
+        <condition property="is.glassfish">
+            <contains string="${server.name}" substring="glassfish"/>
+        </condition>
+
+        <condition property="is.glassfish.or.weblogic">
+            <or>
+                <contains string="${server.name}" substring="glassfish"/>
+                <contains string="${server.name}" substring="weblogic"/>
+            </or>
+        </condition>
+        <!-- This checks if the Application Server is JBoss -->
+        <condition property="is.jboss">
+            <or>
+                <contains string="${server.name}" substring="jboss"/>
+                <contains string="${server.name}" substring="wildfly"/>
+            </or>
+        </condition>
+
+        <!-- This checks if the Application Server is WebSphere -->
+        <condition property="is.websphere">
+            <contains string="${server.name}" substring="websphere"/>
+        </condition>
+
+        <!-- This checks if the Apllication Server is WebLogic -->
+        <condition property="is.weblogic">
+            <contains string="${server.name}" substring="weblogic"/>
+        </condition>
+
+        <!-- This checks if static weaving enabled -->
+        <condition property="is.static.server.weaving">
+            <contains string="${server.weaving}" substring="static"/>
+        </condition>
+
+        <!-- This checks if testing on GlassFish with nonJTA DS  -->
+        <condition property="is.glassfish.nonjta.datasource">
+            <and>
+                <contains string="${is.JTA}" substring="false"/>
+                <contains string="${server.name}" substring="glassfish"/>
+            </and>
+        </condition>
+
+        <!-- This checks if the Aplication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
+        <condition property="run.jpa.customfeatures.model">
+            <and>
+                <contains string="${db.driver}" substring="oracle"/>
+                <or>
+                    <istrue value="${is.weblogic}"/>
+                    <!--istrue value="${is.websphere}"/-->
+                    <istrue value="${is.jboss}"/>
+                    <istrue value="${is.glassfish}"/>
+                </or>
+            </and>
+        </condition>
+
+        <property file="${user.home}/${server.name}.properties"/>
+        <property file="${jpatest.basedir}/${server.name}.properties"/>
+
+        <condition property="prefix.jndi" value="java:" else="jdbc">
+            <isset property="is.jboss"/>
+        </condition>
+        <condition property="prefix.sessionds" value="jdbc/" else="">
+            <contains string="${server.name}" substring="netweaver"/>
+        </condition>
+
+        <property name="DS_NAME" value="${prefix.jndi}/EclipseLinkDS"/>
+        <property name="DS2_NAME" value="${prefix.jndi}/EclipseLinkDS2"/>
+        <property name="DS3_NAME" value="${prefix.jndi}/EclipseLinkDS3"/>
+        <property name="NONJTA_DS_NAME" value="${prefix.jndi}/ELNonJTADS"/>
+        <property name="NONJTA_DS2_NAME" value="${prefix.jndi}/ELNonJTADS2"/>
+        <property name="NONJTA_DS3_NAME" value="${prefix.jndi}/ELNonJTADS3"/>
+        <property name="SESSION_DS_NAME" value="${prefix.sessionds}${DS_NAME}"/>
+
+        <condition property="is.grid.testing">
+            <contains string="${grid}" substring="true"/>
+        </condition>
+
+        <condition property="is.kryo.testing">
+            <contains string="${kryo}" substring="true"/>
+        </condition>
+
+        <condition property="is.jpars.testing">
+            <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
+        </condition>
+
+        <condition property="jpars.url" value="http://${weblogic.host}:${weblogic.port}">
+            <contains string="${server.name}" substring="weblogic"/>
+        </condition>
+
+        <condition property="jpars.url" value="http://${glassfish.host}:8080">
+            <contains string="${server.name}" substring="glassfish"/>
+        </condition>
+
+        <condition property="tkn.data-source-name" value="${NONJTA_DS_NAME}" else="${DS_NAME}">
+            <isfalse value="${is.JTA}"/>
+        </condition>
+        <condition property="tkn.data-source2-name" value="${NONJTA_DS2_NAME}" else="${DS2_NAME}">
+            <isfalse value="${is.JTA}"/>
+        </condition>
+        <condition property="tkn.data-source3-name" value="${NONJTA_DS3_NAME}" else="${DS3_NAME}">
+            <isfalse value="${is.JTA}"/>
+        </condition>
+        <condition property="tkn.transaction-type" value="RESOURCE_LOCAL" else="JTA">
+            <isfalse value="${is.JTA}"/>
+        </condition>
+        <condition property="tkn.datasource-type" value="non-jta-data-source" else="jta-data-source">
+            <isfalse value="${is.JTA}"/>
+        </condition>
+
+        <filterset id="testing.props.filterset">
+            <filter token="server-platform-class" value="${server.platform.class}"/>
+            <filter token="server-platform" value="${server.platform}"/>
+            <filter token="session-data-source-name" value="${SESSION_DS_NAME}"/>
+            <filter token="server-weaving" value="${server.weaving}"/>
+            <filter token="database-platform" value="${db.platform}"/>
+            <filter token="database2-platform" value="${db2.platform}"/>
+            <filter token="database3-platform" value="${db3.platform}"/>
+            <filter token="dbUser" value="${db.user}"/>
+            <filter token="proxyUser" value="${pa.proxyuser}"/>
+            <filter token="data-source-name" value="${tkn.data-source-name}"/>
+            <filter token="data-source2-name" value="${tkn.data-source2-name}"/>
+            <filter token="data-source3-name" value="${tkn.data-source3-name}"/>
+            <filter token="transaction-type" value="${tkn.transaction-type}"/>
+            <filter token="datasource-type" value="${tkn.datasource-type}"/>
+            <filter token="NONJTA_DS_NAME" value="${NONJTA_DS_NAME}"/>
+        </filterset>
+    </target>
+
     <target name="init-compiler" depends="init">
         <macrodef name="compile">
             <attribute name="srcdir" default="${jpatest.generated.dir}:${jpatest.src.dir}"/>
@@ -705,6 +836,269 @@
                     <compilerarg line="-Aeclipselink.persistencexml=@{persistencexml}"/>
                     <!-- compilerarg value="-Aeclipselink.canonicalmodel.prefix=_" compiler="javac1.7"/ -->
                 </compile>
+            </sequential>
+        </macrodef>
+    </target>
+    <!-- Server Tests -->
+    <target name="init-build-ear-macro" depends="init-server, config-classpath, init-compiler, init-weaver">
+        <macrodef name="build-ejb">
+            <attribute name="modelname"/>
+            <attribute name="puname" default="default"/>
+            <attribute name="morepus" default="false"/>
+            <attribute name="classpath" default="compile.jpa22.server.path" />
+            <attribute name="dir"/>
+            <attribute name="testdir" default="org/eclipse/persistence/testing/tests/@{dir}"/>
+            <attribute name="modeldir" default="org/eclipse/persistence/testing/models/@{dir}"/>
+            <attribute name="testname" default="@{modelname}"/>
+            <attribute name="sourceroot" default="${eclipselink.jpa.test.dir}"/>
+            <attribute name="srcdir" default="@{sourceroot}/${src.dir}"/>
+            <attribute name="resourcedir" default="@{sourceroot}/${resource.dir}"/>
+            <attribute name="ejbjarincludes" default="**"/>
+            <attribute name="ejbjarexcludes" default="--NOTHING--"/>
+            <element name="extra-ejb-model-resource" optional="true"/>
+            <element name="extra-ejb-model-source" optional="true"/>
+            <sequential>
+                <!--server-init-ejb-jar-->
+                <local name="stage.build.dir.ejb"/>
+                <local name="default.ejb.jar.xml"/>
+                <local name="final.ejb.jar.xml"/>
+                <property name="stage.build.dir.ejb" value="${jpatest.server.build.dir}/@{testname}/ejb"/>
+                <mkdir dir="${stage.build.dir.ejb}/META-INF"/>
+
+                <condition property="default.ejb.jar.xml"
+                           value="${jpatest.resource.dir}/@{modelname}/server/ejb-jar.xml"
+                           else="${jpatest.resource.dir}/server/ejb-jar.xml">
+                    <!--SessionBean Test need it's own ejb-jar.xml, which including ejb-def for the sessionbean -->
+                    <available file="${jpatest.resource.dir}/@{modelname}/server/ejb-jar.xml"/>
+                </condition>
+
+                <condition property="final.ejb.jar.xml" value="${jpatest.resource.dir}/${server.name}/ejb-jar.xml" else="${default.ejb.jar.xml}">
+                    <!--Empty ejb-jar.xml is needed for GlassFish when run jpa tests against NonJTA datasource-->
+                    <and>
+                        <isset property="is.glassfish.nonjta.datasource"/>
+                        <available file="${jpatest.resource.dir}/${server.name}/ejb-jar.xml"/>
+                    </and>
+                </condition>
+
+                <copy todir="${stage.build.dir.ejb}/META-INF">
+                    <filterset>
+                        <filterset refid="testing.props.filterset"/>
+                        <filter token="default" value="@{puname}"/>
+                    </filterset>
+                    <fileset dir="${jpatest.resource.dir}/eclipselinkorm/@{testname}/server" erroronmissingdir="false">
+                        <include name="persistence.xml"/>
+                    </fileset>
+                    <fileset dir="${jpatest.resource.dir}/server">
+                        <include name="persistence.xml"/>
+                    </fileset>
+                    <fileset file="${final.ejb.jar.xml}"/>
+                </copy>
+
+                <!--DDLGeneration Test need it's own persistence.xml and mapping xml files -->
+                <copy todir="${stage.build.dir.ejb}/META-INF" overwrite="true" failonerror="false">
+                    <filterset>
+                        <filterset refid="testing.props.filterset"/>
+                        <filter token="default" value="@{puname}"/>
+                    </filterset>
+                    <fileset dir="${jpatest.resource.dir}/@{modelname}/server/">
+                        <include name="*.xml"/>
+                        <include name="*.jdbc"/>
+                        <exclude name="extension*.xml"/>
+                        <exclude name="ejb-jar.xml"/>
+                    </fileset>
+                    <extra-ejb-model-resource/>
+                </copy>
+
+                <copy todir="${stage.build.dir.ejb}" overwrite="true" failonerror="false">
+                    <fileset dir="${jpatest.resource.dir}/@{modelname}" includes="org/**"/>
+                    <fileset dir="${jpatest.resource.dir}/@{modelname}/repository" includes="**/extension*.*"/>
+                </copy>
+
+
+                <!-- Replace datasource type, name and transaction type -->
+                <!--<antcall target="add-project-cache-properties" inheritRefs="true"/>-->
+
+                <!--server-compile-ejb-jar-->
+                <compile srcdir="${jpatest.generated.dir}:@{srcdir}"
+                         destdir="${stage.build.dir.ejb}">
+                    <extra-ejb-model-source/>
+                    <include name="@{testdir}/**/*.java"/>
+                    <include name="@{modeldir}/**/*.java"/>
+                    <!--<include name="@{modeldir}/*.java"/>-->
+                    <classpath>
+                        <path refid="@{classpath}"/>
+                    </classpath>
+                </compile>
+
+                <!--server-package-ejb-jar-->
+                <jar destfile="${jpatest.server.build.dir}/@{testname}/@{testname}_ejb.jar" >
+                    <zipfileset  src="${jpatest.2.coretest.dir}/${coretest.framework.jar}"
+                                 includes="org/eclipse/persistence/testing/framework/**/*.class"/>
+                    <zipfileset  src="${jpatest.2.coretest.dir}/${coretest.jar}"
+                                 includes="org/eclipse/persistence/testing/tests/performance/emulateddb/**,
+                                  org/eclipse/persistence/tools/**,
+                                  org/eclipse/persistence/testing/tests/TestRunModel*"/>
+                    <zipfileset  src="${jpatest.basedir}/${jpatest.framework}.jar"
+                                 includes="org/eclipse/persistence/testing/framework/junit/*.class,
+                                  org/eclipse/persistence/testing/framework/server/*.class"
+                                 excludes="**/TestRunner*Bean.*"/>
+                    <fileset dir="${jpatest.server.build.dir}/@{testname}/classes" erroronmissingdir="false"/>
+                    <fileset dir="${stage.build.dir.ejb}" includes="@{ejbjarincludes}" excludes="@{ejbjarexcludes}"/>
+                </jar>
+                <!--server-weave-ejb-jar" depends="server-package-ejb-jar, init-weaver" if="is.static.server.weaving"-->
+                <!--<run-weaver model="@{testname}_ejb" dir="${jpatest.server.build.dir}/@{testname}"/>-->
+            </sequential>
+        </macrodef>
+
+        <macrodef name="build-ear">
+            <attribute name="modelname"/>
+            <attribute name="puname" default="default"/>
+            <attribute name="morepus" default="false"/>
+            <attribute name="classpath" default="compile.jpa22.server.path" />
+            <attribute name="dir"/>
+            <attribute name="earname" default="@{modelname}"/>
+            <attribute name="testdir" default="org/eclipse/persistence/testing/tests/@{dir}"/>
+            <attribute name="modeldir" default="org/eclipse/persistence/testing/models/@{dir}"/>
+            <attribute name="testname" default="@{modelname}"/>
+            <attribute name="sourceroot" default="${eclipselink.jpa.test.dir}"/>
+            <attribute name="srcdir" default="@{sourceroot}/${src.dir}"/>
+            <attribute name="resourcedir" default="@{sourceroot}/${resource.dir}"/>
+            <attribute name="ejbjarincludes" default="**"/>
+            <attribute name="ejbjarexcludes" default="--NOTHING--"/>
+            <element name="extra-model-resource" optional="true"/>
+            <element name="extra-model-source" optional="true"/>
+            <element name="extra-module" optional="true"/>
+            <element name="extra-module-jar" optional="true"/>
+            <sequential>
+                <mkdir dir="${jpatest.server.build.dir}" />
+                <!-- prepare-server-resources -->
+                <local name="bean.src"/>
+                <local name="gen.srv.src.dir"/>
+                <local name="gen.srv.cls.dir"/>
+                <local name="pusb.includes"/>
+                <local name="pusb.impl.includes"/>
+                <condition property="bean.src" value="TestRunnerBean.java_nonjtaDS" else="TestRunnerBean.java">
+                    <isfalse value="${is.JTA}"/>
+                </condition>
+                <property name="gen.srv.src.dir" value="${jpatest.server.build.dir}/@{testname}/src"/>
+                <property name="gen.srv.cls.dir" value="${jpatest.server.build.dir}/@{testname}/classes"/>
+                <mkdir dir="${gen.srv.src.dir}"/>
+                <copy overwrite="true"
+                      tofile="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"
+                      file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/server/${bean.src}">
+                    <filterset>
+                        <filter token="puName" value="@{puname}"/>
+                    </filterset>
+                </copy>
+                <condition property="pusb.includes" value="TestRunner*.java" else="TestRunner1*.java,TestRunner2*.java,TestRunner3*.java,TestRunner4*.java,TestRunner5*.java">
+                    <contains string="@{puname}" substring="jpa21-sessionbean"/>
+                </condition>
+                <condition property="pusb.impl.includes" value="${pusb.includes}" else="-NOTHING-">
+                    <istrue value="@{morepus}"/>
+                </condition>
+                <copy todir="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/server">
+                    <fileset dir="${jpatest.resource.dir}/server" includes="${pusb.impl.includes}"/>
+                </copy>
+                <compile srcdir="${gen.srv.src.dir}" destdir="${gen.srv.cls.dir}" includes="**/*.java">
+                    <classpath>
+                        <path refid="compile.path"/>
+                    </classpath>
+                </compile>
+
+                <!--server-init-client-jar-->
+                <local name="stage.build.dir.client"/>
+                <property name="stage.build.dir.client" value="${jpatest.server.build.dir}/@{testname}/client"/>
+                <mkdir dir="${stage.build.dir.client}/META-INF"/>
+                <copy todir="${stage.build.dir.client}/META-INF"
+                      file="${jpatest.resource.dir}/server/application-client.xml" />
+                <copy todir="${stage.build.dir.client}">
+                    <fileset dir="${jpatest.basedir}" includes="*.properties"/>
+                </copy>
+                <copy todir="${stage.build.dir.client}"
+                      file="${jpatest.resource.dir}/server/jndi.properties">
+                    <filterset>
+                        <filter token="server.user" value="${server.user}"/>
+                        <filter token="server.pwd" value="${server.pwd}"/>
+                        <filter token="server.factory" value="${server.factory}"/>
+                    </filterset>
+                </copy>
+                <!--server-compile-client-jar-->
+                <compile srcdir="@{srcdir}"
+                         destdir="${stage.build.dir.client}">
+                    <include name="@{testdir}/**/*.java"/>
+                    <classpath>
+                        <path refid="@{classpath}"/>
+                    </classpath>
+                </compile>
+                <!--server-package-client-jar-->
+                <jar destfile="${jpatest.server.build.dir}/@{testname}/@{testname}_client.jar">
+                    <zipfileset  src="${jpatest.2.coretest.dir}/${coretest.framework.jar}"
+                                 includes="org/eclipse/persistence/testing/framework/junit/*.class"/>
+                    <zipfileset  src="${jpatest.basedir}/${jpatest.framework}.jar"
+                                 includes="**/*.class"
+                                 excludes="**/TestRunner*Bean.*"/>
+                    <fileset dir="${gen.srv.cls.dir}"/>
+                    <fileset dir="${stage.build.dir.client}"/>
+                </jar>
+
+                <build-ejb modelname="@{modelname}" puname="@{puname}" morepus="@{morepus}" classpath="@{classpath}"
+                                     dir="@{dir}" testdir="@{testdir}" modeldir="@{modeldir}" testname="@{testname}"
+                                     sourceroot="@{sourceroot}" srcdir="@{srcdir}" resourcedir="@{resourcedir}"
+                                    ejbjarincludes="@{ejbjarincludes}" ejbjarexcludes="@{ejbjarexcludes}">
+                    <extra-ejb-model-resource>
+                        <extra-model-resource/>
+                    </extra-ejb-model-resource>
+                    <extra-ejb-model-source>
+                        <extra-model-source/>
+                    </extra-ejb-model-source>
+                </build-ejb>
+
+                <extra-module/>
+
+                <!-- Build server test ear. -->
+                <local name="stage.build.dir.ear"/>
+                <local name="tkn.modelname"/>
+                <property name="stage.build.dir.ear" value="${jpatest.server.build.dir}/@{testname}/ear"/>
+                <mkdir dir="${stage.build.dir.ear}/META-INF"/>
+                <condition property="tkn.modelname" value="@{modelname}-woven" else="@{modelname}">
+                    <isset property="is.static.server.weaving"/>
+                </condition>
+                <copy todir="${stage.build.dir.ear}/META-INF"
+                      file="${jpatest.basedir}/${resource.dir}/server/application.xml">
+                    <filterset>
+                        <filter token="modelname" value="${tkn.modelname}"/>
+                    </filterset>
+                </copy>
+                <ear destfile="${jpatest.server.build.dir}/@{testname}/@{earname}.ear" appxml="${stage.build.dir.ear}/META-INF/application.xml">
+                    <fileset dir="${jpatest.server.build.dir}/@{testname}">
+                        <include name="${tkn.modelname}_ejb.jar"/>
+                    </fileset>
+                    <extra-module-jar/>
+                </ear>
+            </sequential>
+        </macrodef>
+    </target>
+    <!-- Packages JPA persistent unit test jars. -->
+    <target name="init-package" depends="init">
+        <macrodef name="package-model">
+            <attribute name="model"/>
+            <attribute name="resources" default="*.xml"/>
+            <attribute name="includes"/>
+            <attribute name="excludes" default=""/>
+            <element name="content" optional="true"/>
+            <sequential>
+                <mkdir dir="${jpatest.build.dir}/@{model}/META-INF"/>
+                <copy todir="${jpatest.build.dir}/@{model}/META-INF">
+                    <fileset dir="${jpatest.resource.dir}/@{model}" includes="@{resources}"/>
+                </copy>
+                <copy todir="${jpatest.build.dir}/@{model}" >
+                    <fileset dir="${jpatest.classes.dir}"
+                             includes="@{includes}" excludes="@{excludes}"/>
+                </copy>
+                <content/>
+                <jar jarfile="${jpatest.build.dir}/@{model}.jar">
+                    <fileset dir="${jpatest.build.dir}/@{model}"/>
+                </jar>
             </sequential>
         </macrodef>
     </target>
@@ -825,31 +1219,6 @@
             <include name="org/eclipse/persistence/testing/tests/jpa/criteria/CriteriaServerTestSuite.java"/>
             <include name="org/eclipse/persistence/testing/tests/jpa/criteria/JunitCriteriaMetamodelTestSuite.java"/>
         </compile>
-    </target>
-
-    <!-- Packages JPA persistent unit test jars. -->
-    <target name="init-package" depends="init">
-        <macrodef name="package-model">
-            <attribute name="model"/>
-            <attribute name="resources" default="*.xml"/>
-            <attribute name="includes"/>
-            <attribute name="excludes" default=""/>
-            <element name="content" optional="true"/>
-            <sequential>
-                <mkdir dir="${jpatest.build.dir}/@{model}/META-INF"/>
-                <copy todir="${jpatest.build.dir}/@{model}/META-INF">
-                    <fileset dir="${jpatest.resource.dir}/@{model}" includes="@{resources}"/>
-                </copy>
-                <copy todir="${jpatest.build.dir}/@{model}" >
-                    <fileset dir="${jpatest.classes.dir}"
-                             includes="@{includes}" excludes="@{excludes}"/>
-                </copy>
-                <content/>
-                <jar jarfile="${jpatest.build.dir}/@{model}.jar">
-                    <fileset dir="${jpatest.build.dir}/@{model}"/>
-                </jar>
-            </sequential>
-        </macrodef>
     </target>
 
     <target name="package" depends="init-package, package-framework, package-annotation, package-ddl, package-xml-only, package-xml-merge, package-jpa-model,
@@ -1263,7 +1632,7 @@
     </target>
 
 
-  <!-- Testing -->
+    <!-- Testing -->
 
     <target name="init-test-macro" depends="init">
         <macrodef name="test">
@@ -1449,11 +1818,102 @@
             </sequential>
         </macrodef>
     </target>
+    <target name="init-server-test-macro" depends="init-server, config-classpath, init-compiler, init-weaver, init-report-macro">
+        <macrodef name="server-test">
+            <attribute name="include"/>
+            <attribute name="testname"/>
+            <attribute name="earname" default="@{testname}"/>
+            <attribute name="classpath" default="compile.jpa22.server.path"/>
+            <sequential>
+                <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+                    <property name="ear.name" value="${jpatest.server.build.dir}/@{testname}/@{earname}.ear"/>
+                    <property name="application.name" value="@{testname}"/>
+                </ant>
+                <local name="impl.url"/>
+                <local name="impl.prefix.testrunner"/>
+                <condition property="impl.url" value="${server.url}" else="${server.url}@{testname}">
+                    <or>
+                        <isset property="is.websphere"/>
+                        <isset property="is.jboss"/>
+                    </or>
+                </condition>
+                <condition property="impl.prefix.testrunner" value="@{testname}/@{testname}_ejb/" else="">
+                    <isset property="is.jboss"/>
+                </condition>
+                <path id="@{testname}.run.path">
+                    <pathelement path="${jpatest.server.build.dir}/@{testname}/@{testname}_client.jar"/>
+                    <pathelement path="${jpatest.server.build.dir}/@{testname}/@{testname}_ejb.jar"/>
+                    <fileset dir="${server.lib}" includes="${server.depend}"/>
+                    <path refid="@{classpath}"/>
+                </path>
+                <property name="additional.jvmargs" value=""/>
+                <echo message="${line.separator}${line.separator}Running @{earname} on ${server.name}${line.separator}${line.separator}" />
+                <echo message="JUnit settings:"/>
+                <echo message="  test                         ='@{include}'"/>
+                <echo message="  run.dir                      ='${jpatest.run.dir}'"/>
+                <echo message="  report.dir                   ='${jpatest.report.dir}'"/>
+                <echo message="  failonerror                  ='${fail.on.error}'"/>
+                <echo message="Java settings:"/>
+                <echo message="  jdk.version                  ='${test.junit.jdk.JAVA_VERSION}'"/>
+                <echo message="  additional.jvmargs           ='${additional.jvmargs}'"/>
+                <echo message="  maxmemory                    ='${max.heap.memory}'"/>
+                <echo message="  java args                    ='${test.junit.jvm.modules.prop}'"/>
+                <echo message="  class-path                   ='${toString:@{testname}.run.path}'"/>
+                <mkdir dir="${jpatest.run.dir}"/>
+                <mkdir dir="${jpatest.report.dir}"/>
+                <junit fork="yes" jvm="${test.junit.jvm.exec}" maxmemory="${max.heap.memory}" tempdir="${jpatest.run.dir}"
+                       dir="${jpatest.run.dir}" showoutput="true" printsummary="yes" failureproperty="junit.failed">
+                    <!--haltonfailure="${test.haltonfailure}" logfailedtests="true" forkmode="once"-->
+                    <classpath refid="@{testname}.run.path"/>
+                    <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                    <jvmarg line="${additional.jvmargs}"/>
+                    <sysproperty key="proxy.user.name" value="${pa.connection.user}"/>
+                    <sysproperty key="server.platform" value="${server.platform}"/>
+                    <sysproperty key="server.user" value="${server.user}"/>
+                    <sysproperty key="server.password" value="${server.pwd}"/>
+                    <sysproperty key="server.url" value="${impl.url}"/>
+                    <sysproperty key="server.lib" value="${server.lib}"/>
+                    <sysproperty key="server.testrunner" value="${impl.prefix.testrunner}${server.testrunner}"/>
+                    <sysproperty key="server.testrunner1" value="${impl.prefix.testrunner}${server.testrunner1}"/>
+                    <sysproperty key="server.testrunner2" value="${impl.prefix.testrunner}${server.testrunner2}"/>
+                    <sysproperty key="server.testrunner3" value="${impl.prefix.testrunner}${server.testrunner3}"/>
+                    <sysproperty key="server.testrunner4" value="${impl.prefix.testrunner}${server.testrunner4}"/>
+                    <sysproperty key="server.testrunner5" value="${impl.prefix.testrunner}${server.testrunner5}"/>
+                    <sysproperty key="server.testrunner6" value="${impl.prefix.testrunner}${server.testrunner6}"/>
+                    <sysproperty key="server.run" value="TRUE"/>
+                    <sysproperty key="pa.connection.user" value="${pa.connection.user}"/>
+                    <sysproperty key="pa.proxyuser" value="${pa.proxyuser}"/>
+                    <sysproperty key="pa.proxyuser2" value="${pa.proxyuser2}"/>
+                    <sysproperty key="pa.connection.password" value="${pa.connection.password}"/>
+                    <sysproperty key="pa.proxyuser.password" value="${pa.proxyuser.password}"/>
+                    <sysproperty key="pa.proxyuser2.password" value="${pa.proxyuser2.password}"/>
+                    <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
+                    <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
+                    <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
+                    <formatter type="xml"/>
+                    <!--<formatter type="plain"/>-->
+                    <test name="@{include}" haltonfailure="no" todir="${jpatest.report.dir}"/>
+                </junit>
+                <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+                    <property name="application.name" value="@{testname}"/>
+                </ant>
+                <fail message="TESTS FAILED !">
+                    <condition>
+                        <and>
+                            <isset property="junit.failed"/>
+                            <istrue value="${fail.on.error}"/>
+                        </and>
+                    </condition>
+                </fail>
+            </sequential>
+        </macrodef>
+    </target>
 
     <target name="init-testing" depends="init, config-classpath, init-test-macro, init-report-macro, init-test-prompt-macro"/>
+    <target name="init-server-testing" depends="init-server, init-build-ear-macro, init-server-test-macro, init-report-macro, init-test-prompt-macro"/>
 
     <!-- Clean all build generated content. -->
-    <target name="clean-test" description="Clean the test">
+    <target name="clean-test" description="Clean the test" depends="clear-database">
         <delete dir="${jpatest.report.dir}"/>
         <delete dir="${jpatest.run.dir}"/>
     </target>
@@ -1467,7 +1927,7 @@
 
     <!-- Default test target, run the FullRegressionTestSuite -->
     <!-- persistence.xml with PU "default" is in resource/${eclipselink.annotation.model} -->
-    <target name="test" depends="clean-test, init-testing">
+    <target name="test" description="Run a test defined in test.class property using JUnit." depends="clean-test, init-testing">
         <test classpath="run.classpath"
             include="${test.class}"/>
          <generate-report/>
@@ -1525,9 +1985,6 @@
             include="org.eclipse.persistence.testing.tests.jpa22.identity.IdentityTest"
             ormtesting="eclipselink"/>
     </target>
-
-    <!-- Run dynamic entities tests standalone and generate tests report. -->
-    <target name="test-dynamic-report" depends="test-dynamic, generate-report"/>
 
     <!-- Runs JPA 2.0 BeanValidation tests. -->
     <target name="run-bean-validation-tests" depends="init-testing" if="validate.jar.exists">
@@ -1664,8 +2121,7 @@
         <generate-report/>
     </target>
 
-    <!-- Prompt runner test target, runs test.class from test.properties (default is LRG). -->
-    <target name="test-prompt" depends="init-testing, clean-test">
+    <target name="test-prompt" description="Run a test model defined in test.class property using prompt test runner." depends="init-testing, clean-test">
         <test-prompt testmodel="${test.class}" classpath="run.classpath"
                      testagent="${test.agent}" testweaving="${test.weaving}" testweavingoption="${test.weaving.option}" />
     </target>
@@ -1694,17 +2150,32 @@
     </target>
 
     <!-- Tests concurrency inside the JEE server or cluster. -->
-    <target name="server-test-concurrency">
-        <antcall target="server-run-all-prompt" inheritRefs="true">
-            <param name="PERSISTENCE_UNIT_NAME" value="performance"/>
-            <param name="MODEL_DIR" value="org/eclipse/persistence/testing/models/jpa/performance"/>
-            <param name="MODEL_NAME" value="${jpa.performance}"/>
-            <param name="TEST_DIR" value="org/eclipse/persistence/testing/tests/jpa/performance"/>
-            <param name="TEST_NAME" value="${jpa.performance}"/>
-            <param name="EAR_NAME" value="${jpa.performance}"/>
-            <param name="TEST_SUITE" value="org.eclipse.persistence.testing.tests.jpa.performance.JPAClusteredConcurrencyComparisonModel"/>
-            <param name="eclipselink.jpa.test.dir" value="."/>
-        </antcall>
+    <target name="server-test-concurrency" depends="init-server-testing">
+        <build-ear dir="jpa/performance" puname="performance"
+                          modelname="${jpa.performance}"/>
+        <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
+            <property name="ear.name" value="${jpatest.server.build.dir}/${jpa.performance}/${jpa.performance}.ear"/>
+            <property name="application.name" value="${jpa.performance}"/>
+        </ant>
+        <path id="jpa.performance.server.run.path">
+            <pathelement path="${jpatest.server.build.dir}/${jpa.performance}/${jpa.performance}_client.jar"/>
+            <pathelement path="${jpatest.server.build.dir}/${jpa.performance}/${jpa.performance}_ejb.jar"/>
+            <fileset dir="${server.lib}" includes="${server.depend}"/>
+            <path refid="compile.jpa22.server.path"/>
+        </path>
+        <test-prompt testmodel="org.eclipse.persistence.testing.tests.jpa.performance.JPAClusteredConcurrencyComparisonModel"
+                     classpath="jpa.performance.server.run.path">
+            <sysproperty key="server.platform" value="${server.platform}"/>
+            <sysproperty key="server.user" value="${server.user}"/>
+            <sysproperty key="server.password" value="${server.pwd}"/>
+            <sysproperty key="server.url" value="${server.url}${jpa.performance}"/>
+            <sysproperty key="server.testrunner" value="${server.testrunner}"/>
+            <sysproperty key="server.run" value="TRUE"/>
+            <sysproperty key="java.naming.factory.initial" value="${server.factory}"/>
+        </test-prompt>
+        <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
+            <property name="application.name" value="${jpa.performance}"/>
+        </ant>
     </target>
 
     <!-- Runs concurrency tests comparing with Hibernate. -->
@@ -1930,57 +2401,39 @@
         <run-weaver model="${eclipselink.xml.mapping.metadata.complete}"/>
     </target>
 
-    <target name="run-weaver-server-test">
-        <!-- define weaving ant task-->
-        <taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask">
-            <classpath>
-                <path refid="run.weaver.path"/>
-            </classpath>
-        </taskdef>
-        <!-- process the weaving function-->
-        <weave source="${jpatest.basedir}/build/unwoven-${MODEL_NAME}_ejb.jar"
-               target="${jpatest.basedir}/build/${MODEL_NAME}_ejb.jar"
-               loglevel="${logging.level}">
-               <classpath>
-                    <path refid="run.classpath"/>
-               </classpath>
-        </weave>
-    </target>
-
-    <!-- Server Testing -->
-    <target name="server-install" depends="init">
+    <target name="server-install" depends="init-server">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-install" inheritRefs="true"/>
     </target>
 
-    <target name="server-setup" depends="init">
+    <target name="server-setup" depends="init-server">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-setup" inheritRefs="true"/>
     </target>
 
-    <target name="server-reset" depends="init">
+    <target name="server-reset" depends="init-server">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-reset" inheritRefs="true"/>
     </target>
 
-    <target name="server-start" depends="init">
+    <target name="server-start" depends="init-server">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 
-    <target name="server-stop" depends="init">
+    <target name="server-stop" depends="init-server">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
     </target>
 
-    <target name="server-restart" depends="init">
+    <target name="server-restart" depends="init-server">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-stop" inheritRefs="true"/>
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-start" inheritRefs="true"/>
     </target>
 
-    <target name="server-deploy" depends="init">
+    <target name="server-deploy" depends="init-server">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
             <property name="ear.name" value="${ear.name}"/>
             <property name="application.name" value="${application.name}"/>
         </ant>
     </target>
 
-    <target name="server-undeploy" depends="init">
+    <target name="server-undeploy" depends="init-server">
         <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
             <property name="application.name" value="${application.name}"/>
         </ant>
@@ -2059,269 +2512,13 @@
         includes="META-INF/MANIFEST.MF, WEB-INF/**"/>
     </target>
 
-    <!-- Build the client jar, ejb jar, and ear. -->
-
-    <target name="server-deploy-runtest-undeploy">
-        <antcall target="recover-server-sessionbeans" inheritRefs="true"/>
-        <!--<antcall target="cleanup-non-jta-ds-servertest" inheritRefs="true"/>-->
-        <antcall target="server-deploy" inheritRefs="true">
-            <param name="ear.name" value="${EAR_NAME}.ear"/>
-            <param name="application.name" value="${EAR_NAME}"/>
-        </antcall>
-        <antcall target="server-run-test" inheritRefs="true"/>
-        <antcall target="server-undeploy" inheritRefs="true">
-            <param name="application.name" value="${EAR_NAME}"/>
-        </antcall>
-        <antcall target="store-project-cache-file" inheritRefs="true"/>
-    </target>
-
-    <!-- Build, deploy and run a test suite on the server using the prompt runner. -->
-    <target name="server-run-all-prompt">
-        <antcall target="server-build" inheritRefs="true"/>
-        <!--antcall target="server-deploy" inheritRefs="true">
-            <param name="ear.name" value="${EAR_NAME}.ear"/>
-            <param name="application.name" value="${EAR_NAME}"/>
-        </antcall-->
-        <antcall target="server-run-test-prompt" inheritRefs="true"/>
-        <!--antcall target="server-undeploy" inheritRefs="true">
-            <param name="application.name" value="${EAR_NAME}"/>
-        </antcall-->
-    </target>
-
-    <!-- Build message to print depending on property value. -->
-    <macrodef name="build-message">
-        <attribute name="name"/>
-        <attribute name="property"/>
-        <attribute name="value"/>
-        <attribute name="else"/>
-        <sequential>
-            <condition property="@{name}" value="@{value}" else="@{else}">
-                <isset property="@{property}"/>
-            </condition>
-        </sequential>
-    </macrodef>
-
-    <!-- Build messages for test type checks. -->
-    <macrodef name="check-test-type-message">
-        <sequential>
-            <build-message name="test.with.tenant.msg" property="is.test.with.tenant"
-                value=" * Runing tests on WebLogic partition(s)"
-                else=" * Runing tests on common application server"/>
-            <build-message name="test.with.second.tenant.msg" property="is.test.with.second.tenant"
-            value=" * Runing two test suites on two WebLogic partitions in parallel"
-            else=" * Runing single test suite"/>
-            <echo message="Test setup check:"/>
-            <echo message="${test.with.tenant.msg}"/>
-            <echo message="${test.with.second.tenant.msg}"/>
-        </sequential>
-    </macrodef>
-
-    <target name="check-test-type">
-        <!-- Check whether there is at least one tenant defined. -->
-        <condition property="is.test.with.tenant" value="true">
-            <and>
-                <isset property="db.t1.url"/>
-                <isset property="db.t1.user"/>
-                <isset property="db.t1.pwd"/>
-            </and>
-        </condition>
-        <!-- Check whether there are two tenants set. -->
-        <condition property="is.test.with.second.tenant" value="true">
-            <and>
-                <isset property="is.test.with.tenant"/>
-                <isset property="db.t2.url"/>
-                <isset property="db.t2.user"/>
-                <isset property="db.t2.pwd"/>
-            </and>
-        </condition>
-    </target>
-
-    <!-- Switch between running test in simple environment or in partition (with multitenancy enabled).
-       - Both server-run-test-simple and server-run-test-partition tasks execution depends on is.test.with.tenant
-       - property:
-       -  * server-run-test-simple runs when is.test.with.tenant property is not set
-       -  * server-run-test-partition runs when is.test.with.tenant property is set
-     -->
-    <target name="server-run-test-switch" depends="server-run-test-simple,server-run-test-partition"/>
-
-    <!-- Switch between running test on a single partition or two partitions in parallel.
-       - Both server-run-test-partition-single and server-run-test-partition-parallel tasks execution depends
-       - on is.test.with.second.tenant property:
-       -  * server-run-test-partition-single runs when is.test.with.second.tenant property is not set
-       -  * server-run-test-partition-parallel runs when is.test.with.second.tenant property is set
-     -->
-    <target name="server-run-test-partition" if="is.test.with.tenant">
-        <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-test" inheritRefs="true"/>
-    </target>
-
-    <!-- Builds tests classpath and evaluates if multitenant test properties are passed before calling test switcher. -->
-    <target name="server-run-test" depends="config-classpath,check-test-type,server-run-test-switch"/>
-
-    <macrodef name="server-run-test-call">
-        <attribute name="platform"/>
-        <attribute name="libs"/>
-        <attribute name="dir.lib"/>
-        <attribute name="dir.base"/>
-        <attribute name="dir.build"/>
-        <attribute name="dir.report"/>
-        <attribute name="test.name"/>
-        <attribute name="model.name"/>
-        <attribute name="srv.name"/>
-        <attribute name="srv.user"/>
-        <attribute name="srv.pwd"/>
-        <attribute name="proxy.user"/>
-        <attribute name="ear"/>
-        <attribute name="url"/>
-        <attribute name="suite"/>
-        <attribute name="runner"/>
-        <attribute name="runner1"/>
-        <attribute name="runner2"/>
-        <attribute name="runner3"/>
-        <attribute name="runner4"/>
-        <attribute name="runner5"/>
-        <attribute name="runner6"/>
-        <sequential>
-            <property name="server.lib.full" location="@{dir.lib}"/>
-            <path id="run.path">
-                <pathelement path="@{dir.base}/@{dir.build}/@{test.name}_client.jar"/>
-                <pathelement path="@{dir.base}/@{dir.build}/@{model.name}_ejb.jar"/>
-                <fileset dir="${server.lib.full}" includes="@{libs}"/>
-                <path refid="compile.server.path"/>
-            </path>
-            <pathconvert property="run.path.message" refid="run.path"/>
-            <echo>Running test @{ear} on @{srv.name}</echo>
-            <echo message=" * oracle.proxy.user = @{proxy.user}"/>
-            <echo message=" * server.platform = @{platform}"/>
-            <echo message=" * server.user = @{srv.user}"/>
-            <echo message=" * server.pwd = @{srv.pwd}"/>
-            <echo message=" * server.depend = @{libs}"/>
-            <echo message=" * server.lib = ${server.lib.full}"/>
-            <echo message=" * SERVER.URL = @{url}"/>
-            <echo message=" * SERVER.TESTRUNNER = @{runner}"/>
-            <echo message=" * SERVER.TESTRUNNER1 = @{runner1}"/>
-            <echo message=" * SERVER.TESTRUNNER2 = @{runner2}"/>
-            <echo message=" * SERVER.TESTRUNNER3 = @{runner3}"/>
-            <echo message=" * SERVER.TESTRUNNER4 = @{runner4}"/>
-            <echo message=" * SERVER.TESTRUNNER5 = @{runner5}"/>
-            <echo message=" * SERVER.TESTRUNNER6 = @{runner6}"/>
-            <echo message=" * run.metadata.cache.test.suite = ${run.metadata.cache.test.suite}"/>
-            <echo message=" * run.path = ${run.path.message}"/>
-            <echo message=" * run.dir = ${run.dir}"/>
-            <echo message=" * TEST_SUITE = @{suite}"/>
-            <mkdir dir="@{dir.base}/@{dir.report}"/>
-            <mkdir dir="${run.dir}"/>
-            <junit printsummary="yes" haltonfailure="yes" failureproperty="junit.failed" fork="yes"
-                forkmode="once" showoutput="true" maxmemory="256m" dir="${run.dir}">
-                <sysproperty key="proxy.user.name" value="@{proxy.user}"/>
-                <sysproperty key="server.platform" value="@{platform}"/>
-                <sysproperty key="server.user" value="@{srv.user}"/>
-                <sysproperty key="server.password" value="@{srv.pwd}"/>
-                <sysproperty key="server.url" value="@{url}"/>
-                <sysproperty key="server.testrunner" value="@{runner}"/>
-                <sysproperty key="server.testrunner1" value="@{runner1}"/>
-                <sysproperty key="server.testrunner2" value="@{runner2}"/>
-                <sysproperty key="server.testrunner3" value="@{runner3}"/>
-                <sysproperty key="server.testrunner4" value="@{runner4}"/>
-                <sysproperty key="server.testrunner5" value="@{runner5}"/>
-                <sysproperty key="server.testrunner6" value="@{runner6}"/>
-                <sysproperty key="server.run" value="TRUE"/>
-                <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
-                <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
-                <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
-                <classpath refid="run.path"/>
-                <formatter type="xml"/>
-                <test name="@{suite}" haltonfailure="no" outfile="@{dir.report}/@{suite}-test-results"/>
-            </junit>
-        </sequential>
-    </macrodef>
-
-    <!-- Run an ear on the server. -->
-    <target name="server-run-test-simple" unless="is.test.with.tenant">
-        <server-run-test-call
-            platform="${server.platform}"
-            libs="${server.depend}"
-            dir.lib="${server.lib}"
-            dir.base="${jpatest.basedir}"
-            dir.build="${build.dir}"
-            dir.report="${report.dir}"
-            test.name="${TEST_NAME}"
-            model.name="${MODEL_NAME}"
-            srv.name="${server.name}"
-            srv.user="${server.user}"
-            srv.pwd="${server.pwd}"
-            proxy.user="${oracle.proxy.user}"
-            ear="${EAR_NAME}"
-            url="${SERVER.URL}"
-            suite="${TEST_SUITE}"
-            runner="${SERVER.TESTRUNNER}"
-            runner1="${SERVER.TESTRUNNER1}"
-            runner2="${SERVER.TESTRUNNER2}"
-            runner3="${SERVER.TESTRUNNER3}"
-            runner4="${SERVER.TESTRUNNER4}"
-            runner5="${SERVER.TESTRUNNER5}"
-            runner6="${SERVER.TESTRUNNER6}"
-        />
-    </target>
-
-    <!-- Run an ear on the server using prompt runner. -->
-    <target name="server-run-test-prompt" depends="config-classpath">
-        <property file="${user.home}/${server.name}.properties"/>
-        <property file="${jpatest.basedir}/${server.name}.properties"/>
-        <path id="run.path">
-            <pathelement path="${jpatest.basedir}/${build.dir}/${TEST_NAME}_client.jar"/>
-            <pathelement path="${jpatest.basedir}/${build.dir}/${MODEL_NAME}_ejb.jar"/>
-            <fileset dir="${server.lib}" includes="${server.depend}"/>
-            <path refid="compile.server.path"/>
-        </path>
-        <echo>Running test ${EAR_NAME} on ${server.name}</echo>
-        <mkdir dir="${jpatest.basedir}/${report.dir}"/>
-        <condition property="jvmarg.performance.baseline.version" value="-Dtoplink.loadbuild.baseline-version=${performance.baseline.version}">
-            <isset property="performance.baseline.version"/>
-        </condition>
-        <condition property="jvmarg.performance.baseline.version" value="-Ddummy=dummy">
-            <not>
-                <isset property="performance.baseline.version"/>
-            </not>
-        </condition>
-        <java classname="org.eclipse.persistence.testing.framework.PromptTestRunner"
-             fork="true"
-             maxmemory="512m"
-             failonerror="false"
-             dir="${run.dir}">
-            <jvmarg value="${jvmarg.performance.baseline.version}"/>
-            <jvmarg value="-Declipselink.logging.level=${logging.level}"/>
-            <jvmarg value="-Ddb.driver=${db.driver}"/>
-            <jvmarg value="-Ddb.url=${db.url}"/>
-            <jvmarg value="-Ddb.user=${db.user}"/>
-            <jvmarg value="-Ddb.pwd=${db.pwd}"/>
-            <jvmarg value="-Ddb.platform=${db.platform}"/>
-            <jvmarg value="-Dserver.platform=${server.platform}"/>
-            <jvmarg value="-Dserver.user=${server.user}"/>
-            <jvmarg value="-Dserver.password=${server.pwd}"/>
-            <jvmarg value="-Dserver.url=${server.url}${APP_NAME}"/>
-            <jvmarg value="-Dserver.testrunner=${server.testrunner}"/>
-            <jvmarg value="-Dserver.run=TRUE"/>
-            <arg value="testmodel=${TEST_SUITE}"/>
-            <arg value="regressionlog=../${report.dir}/test.log"/>
-            <arg value="saveresults=${should.save.results}" />
-            <classpath>
-                <path refid="run.path"/>
-            </classpath>
-        </java>
-    </target>
-
-    <!-- Server Tests -->
-
-    <!-- Run the LRG -->
-    <target name="server-test" depends="server-test-lrg">
+    <target name="server-test" description="Run LRG tests on server and generate the test report." depends="server-test-lrg">
         <generate-report/>
     </target>
 
-    <!-- Run the LRG with JPA 2.1 API -->
-    <target name="server-test-jpa" depends="server-test-jpa21-advanced, server-test-jpa21-sessionbean"/>
+    <target name="server-test-jpa" description="Run JPA 2.1 specific tests on server." depends="server-test-jpa21-advanced, server-test-jpa21-sessionbean"/>
 
-    <!-- Run the LRG with JPA 2.1 and 2.2 API -->
-    <target name="server-test-jpa22" depends="server-test-jpa22-advanced, server-test-jpa22-sessionbean"/>
+    <target name="server-test-jpa22" description="Run JPA 2.2 specific tests on server." depends="server-test-jpa22-advanced, server-test-jpa22-sessionbean"/>
 
     <!-- Testing Metadata Cache by running JPA tests in the server -->
     <target name="server-test-project-cache" depends="server-test-advanced, server-test-advanced-multitenantEMF, server-test-advanced-multitenant123">
@@ -2329,13 +2526,13 @@
         <generate-report/>
     </target>
 
-    <!-- Oracle DB specific tests. -->
     <!-- Oracle proxy authentication needs to be setup properly for server-test-proxy-authentication -->
-    <target name="server-test-oracle" depends="server-test-custom-features, server-test-jgeometry, server-test-oracle-timestamptz,
+    <target name="server-test-oracle"  description="Run Oracle DB specific tests on server"
+            depends="server-test-custom-features, server-test-jgeometry, server-test-oracle-timestamptz,
             server-test-struct-converter, server-test-proxy-authentication"/>
 
-    <!-- Internal: Run all the JPA tests in the server -->
-    <target name="server-test-lrg" depends="server-test-advanced, server-test-advanced-multitenant, server-test-beanvalidation,
+    <target name="server-test-lrg" description="Internal: Run LRG tests on server."
+            depends="clear-database, server-test-advanced, server-test-advanced-multitenant, server-test-beanvalidation,
             server-test-cacheable, server-test-cascadedeletes, server-test-criteria, server-test-datatypes, server-test-datetime,
             server-test-ddlgeneration, server-test-delimited, server-test-extensibility, server-test-fetchgroups,
             server-test-fieldaccess-advanced, server-test-fieldaccess-fetchgroups, server-test-fieldaccess-relationships,
@@ -2357,44 +2554,44 @@
         -->
     </target>
 
-    <target name="server-test-performance" depends="init-ear-macro">
-        <server-build-ear dir="jpa/performance" puname="performance"
-                          modelname="${jpa.performance}"/>
+    <target name="server-test-performance" depends="init-server-testing">
+        <build-ear dir="jpa/performance" puname="performance"
+                   modelname="${jpa.performance}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.performance.JPAPerformanceServerTestSuite"
                      testname="${jpa.performance}"/>
     </target>
 
-    <target name="server-test-advanced" depends="init-ear-macro">
-        <server-build-ear dir="jpa/advanced"
-                          modelname="eclipselink-advanced-model"/>
+    <target name="server-test-advanced" depends="init-server-testing">
+        <build-ear dir="jpa/advanced"
+                   modelname="eclipselink-advanced-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"
                      testname="eclipselink-advanced-model"/>
     </target>
 
-    <target name="server-test-advanced-multitenant" depends="init-ear-macro">
-        <server-build-ear dir="jpa/advanced" morepus="true"
-                          modelname="eclipselink-advanced-multitenant-model"/>
+    <target name="server-test-advanced-multitenant" depends="init-server-testing">
+        <build-ear dir="jpa/advanced" morepus="true"
+                   modelname="eclipselink-advanced-multitenant-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantServerTestSuite"
                      testname="eclipselink-advanced-multitenant-model"/>
     </target>
 
-    <target name="server-test-jpa21-advanced" depends="init-ear-macro">
-        <server-build-ear dir="jpa21/advanced" morepus="true"
-                          modelname="${eclipselink.jpa21.model}">
+    <target name="server-test-jpa21-advanced" depends="init-server-testing">
+        <build-ear dir="jpa21/advanced" morepus="true"
+                   modelname="${eclipselink.jpa21.model}">
             <extra-model-resource>
                 <fileset dir="${jpatest.resource.dir}/${eclipselink.jpa21.model}">
                     <include name="*orm.xml"/>
                     <include name="*.jdbc"/>
                 </fileset>
             </extra-model-resource>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite"
                      testname="${eclipselink.jpa21.model}"/>
     </target>
 
-    <target name="server-test-jpa22-advanced" depends="init-ear-macro">
-        <server-build-ear dir="jpa22/advanced" morepus="true"
-                          modelname="${eclipselink.jpa22.model}">
+    <target name="server-test-jpa22-advanced" depends="init-server-testing">
+        <build-ear dir="jpa22/advanced" morepus="true"
+                   modelname="${eclipselink.jpa22.model}">
             <extra-model-source>
                 <include name="org/eclipse/persistence/testing/models/jpa22/jta/*.java"/>
             </extra-model-source>
@@ -2404,18 +2601,18 @@
                     <include name="*.jdbc"/>
                 </fileset>
             </extra-model-resource>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa22.advanced.JPA22TestSuite"
                      testname="${eclipselink.jpa22.model}"/>
     </target>
 
-    <target name="server-test-beanvalidation" depends="init-ear-macro">
-        <server-build-ear dir="jpa/beanvalidation" puname="beanvalidation"
-                          modelname="${eclipselink.beanvalidation.model}"/>
+    <target name="server-test-beanvalidation" depends="init-server-testing">
+        <build-ear dir="jpa/beanvalidation" puname="beanvalidation"
+                   modelname="${eclipselink.beanvalidation.model}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.beanvalidation.BeanValidationJunitTest"
                     testname="${eclipselink.beanvalidation.model}"/>
 <!--
-        <server-build-ear dir="jpa/beanvalidation" puname="beanvalidation-dynamic"
+        <build-ear dir="jpa/beanvalidation" puname="beanvalidation-dynamic"
                           modeldir="org/eclipse/persistence/testing/models/jpa/beanvalidation-dynamic"
                           modelname="${eclipselink.beanvalidation.dynamic.model}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.beanvalidation.dynamic.BeanValidationDynamicEntityJunitTest"
@@ -2423,147 +2620,147 @@
 -->
     </target>
 
-    <target name="server-test-advanced-multitenantEMF" depends="init-ear-macro">
-        <server-build-ear dir="jpa/advanced" morepus="true" earname="eclipselink-advanced-multitenant-model-EMF"
-                          modelname="eclipselink-advanced-multitenant-projectcache-model"/>
+    <target name="server-test-advanced-multitenantEMF" depends="init-server-testing">
+        <build-ear dir="jpa/advanced" morepus="true" earname="eclipselink-advanced-multitenant-model-EMF"
+                   modelname="eclipselink-advanced-multitenant-projectcache-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenantSharedEMFJunitTest"
                      earname="eclipselink-advanced-multitenant-model-EMF"
                      testname="eclipselink-advanced-multitenant-projectcache-model"/>
     </target>
 
-    <target name="server-test-advanced-multitenant123" depends="init-ear-macro">
-        <server-build-ear dir="jpa/advanced" morepus="true" earname="eclipselink-advanced-multitenant-model-123"
-                          modelname="eclipselink-advanced-multitenant-projectcache-model"/>
+    <target name="server-test-advanced-multitenant123" depends="init-server-testing">
+        <build-ear dir="jpa/advanced" morepus="true" earname="eclipselink-advanced-multitenant-model-123"
+                   modelname="eclipselink-advanced-multitenant-projectcache-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.advanced.multitenant.AdvancedMultiTenant123JunitTest"
                      earname="eclipselink-advanced-multitenant-model-123"
                      testname="eclipselink-advanced-multitenant-projectcache-model"/>
     </target>
 
     <!--this model is only used for testing that setting eclipselink as default provider on weblogic domain-->
-    <target name="weblogic-domain-test" depends="init-ear-macro">
+    <target name="weblogic-domain-test" depends="init-server-testing">
         <ant antfile="${jpatest.basedir}/weblogic.xml" target="weblogic-domain-setup" inheritRefs="true"/>
-        <server-build-ear dir="jpa/advanced"
-                          modelname="eclipselink-domaintest-advanced-model"/>
+        <build-ear dir="jpa/advanced"
+                   modelname="eclipselink-domaintest-advanced-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedServerTestSuite"
                      testname="eclipselink-domaintest-advanced-model"/>
         <ant antfile="${jpatest.basedir}/weblogic.xml" target="weblogic-domain-reset" inheritRefs="true"/>
         <generate-report/>
     </target>
 
-    <target name="server-test-cacheable" depends="init-ear-macro">
-        <server-build-ear dir="jpa/cacheable" morepus="true"
-                          modelname="${eclipselink.cacheable.model}">
+    <target name="server-test-cacheable" depends="init-server-testing">
+        <build-ear dir="jpa/cacheable" morepus="true"
+                   modelname="${eclipselink.cacheable.model}">
             <extra-model-source>
                 <include name="org/eclipse/persistence/testing/models/jpa/xml/cacheable/*.java"/>
             </extra-model-source>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.cacheable.CacheableServerTestSuite"
                      testname="${eclipselink.cacheable.model}"/>
     </target>
 
-    <target name="server-test-cascadedeletes" depends="init-ear-macro">
-        <server-build-ear dir="jpa/cascadedeletes" puname="cascade-deletes"
-                          modelname="${eclipselink.cascade.deletes}"/>
+    <target name="server-test-cascadedeletes" depends="init-server-testing">
+        <build-ear dir="jpa/cascadedeletes" puname="cascade-deletes"
+                   modelname="${eclipselink.cascade.deletes}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.cascadedeletes.CascadeDeletesJUnitTestSuite"
                      testname="${eclipselink.cascade.deletes}"/>
     </target>
 
-    <target name="server-test-criteria" depends="init-ear-macro">
-        <server-build-ear dir="jpa/criteria"
-                          modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
-                          modelname="eclipselink-advanced-model-criteria"/>
+    <target name="server-test-criteria" depends="init-server-testing">
+        <build-ear dir="jpa/criteria"
+                   modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
+                   modelname="eclipselink-advanced-model-criteria"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.criteria.CriteriaServerTestSuite"
                      testname="eclipselink-advanced-model-criteria"/>
     </target>
 
-    <target name="server-test-datatypes" depends="init-ear-macro">
-        <server-build-ear dir="jpa/datatypes"
-                          modelname="eclipselink-datatypes-model"/>
+    <target name="server-test-datatypes" depends="init-server-testing">
+        <build-ear dir="jpa/datatypes"
+                   modelname="eclipselink-datatypes-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.datatypes.NullBindingJUnitTestCase"
                      testname="eclipselink-datatypes-model"/>
     </target>
 
-    <target name="server-test-datetime" depends="init-ear-macro">
-        <server-build-ear dir="jpa/datetime"
-                          modelname="eclipselink-datetime-model"/>
+    <target name="server-test-datetime" depends="init-server-testing">
+        <build-ear dir="jpa/datetime"
+                   modelname="eclipselink-datetime-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.datetime.NullBindingJUnitTestCase"
                      testname="eclipselink-datetime-model"/>
     </target>
 
-    <target name="server-test-ddlgeneration" depends="init-ear-macro">
-        <server-build-ear dir="jpa/ddlgeneration" morepus="true"
-                          modelname="${eclipselink.ddl.generation.model}"/>
+    <target name="server-test-ddlgeneration" depends="init-server-testing">
+        <build-ear dir="jpa/ddlgeneration" morepus="true"
+                   modelname="${eclipselink.ddl.generation.model}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.ddlgeneration.DDLGenerationServerTestSuite"
                      testname="${eclipselink.ddl.generation.model}"/>
     </target>
 
-    <target name="server-test-delimited" depends="init-ear-macro">
-        <server-build-ear dir="jpa/delimited" puname="delimited"
-                          modelname="${eclipselink.delimited.model}">
+    <target name="server-test-delimited" depends="init-server-testing">
+        <build-ear dir="jpa/delimited" puname="delimited"
+                   modelname="${eclipselink.delimited.model}">
             <extra-model-resource>
                 <fileset dir="${jpatest.resource.dir}/${eclipselink.delimited.model}">
                     <include name="orm.xml"/>
                 </fileset>
             </extra-model-resource>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.delimited.DelimitedPUTestSuite"
                      testname="${eclipselink.delimited.model}"/>
     </target>
 
-    <target name="server-test-extensibility" depends="init-ear-macro">
-        <server-build-ear dir="jpa/extensibility" puname="extensibility"
-                          modelname="${eclipselink.extensibility.model}"/>
+    <target name="server-test-extensibility" depends="init-server-testing">
+        <build-ear dir="jpa/extensibility" puname="extensibility"
+                   modelname="${eclipselink.extensibility.model}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.extensibility.ExtensibilityTests"
                      testname="${eclipselink.extensibility.model}"/>
     </target>
 
-    <target name="server-test-fetchgroups" depends="init-ear-macro">
-        <server-build-ear dir="jpa/fetchgroups"
-                          modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
-                          modelname="eclipselink-fetchgroups-model"/>
+    <target name="server-test-fetchgroups" depends="init-server-testing">
+        <build-ear dir="jpa/fetchgroups"
+                   modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
+                   modelname="eclipselink-fetchgroups-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupsServerTestSuite"
                      testname="eclipselink-fetchgroups-model"/>
     </target>
 
-    <target name="server-test-fieldaccess-advanced" depends="init-ear-macro">
-        <server-build-ear dir="jpa/fieldaccess/advanced" puname="fieldaccess"
-                          modelname="${eclipselink.advanced.field.access.model}"/>
+    <target name="server-test-fieldaccess-advanced" depends="init-server-testing">
+        <build-ear dir="jpa/fieldaccess/advanced" puname="fieldaccess"
+                   modelname="${eclipselink.advanced.field.access.model}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced.FAServerTestSuite"
                      testname="${eclipselink.advanced.field.access.model}"/>
     </target>
 
-    <target name="server-test-fieldaccess-fetchgroups" depends="init-ear-macro">
-        <server-build-ear dir="jpa/fieldaccess/fetchgroups" puname="fieldaccess"
-                          modeldir="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"
-                          modelname="eclipselink-fetchgroups-field-access-model"/>
+    <target name="server-test-fieldaccess-fetchgroups" depends="init-server-testing">
+        <build-ear dir="jpa/fieldaccess/fetchgroups" puname="fieldaccess"
+                   modeldir="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"
+                   modelname="eclipselink-fetchgroups-field-access-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups.FAServerTestSuite"
                      testname="eclipselink-fetchgroups-field-access-model"/>
     </target>
 
-    <target name="server-test-fieldaccess-relationships" depends="init-ear-macro">
-        <server-build-ear dir="jpa/fieldaccess/relationships" puname="fieldaccess"
-                          modelname="eclipselink-relationships-field-access-model"/>
+    <target name="server-test-fieldaccess-relationships" depends="init-server-testing">
+        <build-ear dir="jpa/fieldaccess/relationships" puname="fieldaccess"
+                   modelname="eclipselink-relationships-field-access-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships.FRServerTestSuite"
                      testname="eclipselink-relationships-field-access-model"/>
     </target>
 
-    <target name="server-test-inheritance" depends="init-ear-macro">
-        <server-build-ear dir="jpa/inheritance"
-                          modelname="eclipselink-inheritance-model"/>
+    <target name="server-test-inheritance" depends="init-server-testing">
+        <build-ear dir="jpa/inheritance"
+                   modelname="eclipselink-inheritance-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.inheritance.InheritanceServerTestSuite"
                      testname="eclipselink-inheritance-model"/>
     </target>
 
-    <target name="server-test-inherited" depends="init-ear-macro">
-        <server-build-ear dir="jpa/inherited"
-                          modelname="eclipselink-inherited-model"/>
+    <target name="server-test-inherited" depends="init-server-testing">
+        <build-ear dir="jpa/inherited"
+                   modelname="eclipselink-inherited-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.inherited.InheritedServerTestSuite"
                      testname="eclipselink-inherited-model"/>
     </target>
 
     <target name="server-test-jpars" depends="clean-test" if="is.glassfish.or.weblogic">
-        <server-build-ear dir="jpa/inherited"
-                          modelname="eclipselink-jpars-model"/>
+        <build-ear dir="jpa/inherited"
+                   modelname="eclipselink-jpars-model"/>
         <!--<antcall target="server-test-jpars-core" inheritRefs="true"/>-->
     </target>
 
@@ -2601,32 +2798,32 @@
         <move file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original" tofile="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" overwrite="true"/>
     </target>
 
-    <target name="server-test-plsql" depends="init-ear-macro">
-        <server-build-ear dir="jpa/plsql" puname="plsql"
-                          modelname="${eclipselink.plsql.model}"/>
+    <target name="server-test-plsql" depends="init-server-testing">
+        <build-ear dir="jpa/plsql" puname="plsql"
+                   modelname="${eclipselink.plsql.model}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.plsql.PLSQLTestSuite"
                      testname="${eclipselink.plsql.model}"/>
     </target>
 
-    <target name="server-test-partitioned-gridlink" depends="init-ear-macro">
-        <server-build-ear dir="jpa/partitioned" puname="partitioned"
-                          modelname="${eclipselink.partitioned.model}"/>
+    <target name="server-test-partitioned-gridlink" depends="init-server-testing">
+        <build-ear dir="jpa/partitioned" puname="partitioned"
+                   modelname="${eclipselink.partitioned.model}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.partitioned.PartitionedTestSuite"
                      testname="${eclipselink.partitioned.model}"/>
     </target>
 
-    <target name="server-test-jpaadvancedproperties" depends="init-ear-macro">
-        <server-build-ear dir="jpa/jpaadvancedproperties" puname="JPAADVProperties"
-                          modelname="${eclipselink.advanced.properties}"/>
+    <target name="server-test-jpaadvancedproperties" depends="init-server-testing">
+        <build-ear dir="jpa/jpaadvancedproperties" puname="JPAADVProperties"
+                   modelname="${eclipselink.advanced.properties}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.jpaadvancedproperties.JPAAdvPropertiesJUnitTestCase"
                      testname="${eclipselink.advanced.properties}"/>
     </target>
 
-    <target name="server-test-jpql" depends="init-ear-macro">
-        <server-build-ear dir="jpa/jpql" morepus="true"
-                          modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
-                          testdir="org/eclipse/persistence/testing/tests/jpa/jpql"
-                          modelname="eclipselink-jpql-model">
+    <target name="server-test-jpql" depends="init-server-testing">
+        <build-ear dir="jpa/jpql" morepus="true"
+                   modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
+                   testdir="org/eclipse/persistence/testing/tests/jpa/jpql"
+                   modelname="eclipselink-jpql-model">
             <extra-model-resource>
                 <fileset dir="${jpatest.resource.dir}/${eclipselink.annotation.model}/">
                     <include name="case-sensitive-advanced-entity-mappings.xml"/>
@@ -2635,60 +2832,60 @@
             <extra-model-source>
                 <include name="org/eclipse/persistence/testing/models/jpa/relationships/*.java"/>
             </extra-model-source>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.jpql.JPQLServerTestSuite"
-                    testname="eclipselink-jpql-model"/>
+                     testname="eclipselink-jpql-model"/>
     </target>
 
-    <target name="server-test-lob" depends="init-ear-macro">
-        <server-build-ear dir="jpa/lob"
-                          modelname="eclipselink-lob-model"/>
+    <target name="server-test-lob" depends="init-server-testing">
+        <build-ear dir="jpa/lob"
+                   modelname="eclipselink-lob-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.lob.LobJUnitTestCase"
                      testname="eclipselink-lob-model"/>
     </target>
 
-    <target name="server-test-metamodel" depends="init-ear-macro">
-        <server-build-ear dir="jpa/metamodel"
-                          modelname="eclipselink-metamodel-model"/>
+    <target name="server-test-metamodel" depends="init-server-testing">
+        <build-ear dir="jpa/metamodel"
+                   modelname="eclipselink-metamodel-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.metamodel.MetamodelMetamodelTest"
                      testname="eclipselink-metamodel-model"/>
     </target>
 
-    <target name="server-test-nativeapitest" depends="init-ear-macro">
-        <server-build-ear dir="nativeapitest" puname="nativeapitest"
-                          modelname="eclipselink-nativeapitest-model"/>
+    <target name="server-test-nativeapitest" depends="init-server-testing">
+        <build-ear dir="nativeapitest" puname="nativeapitest"
+                   modelname="eclipselink-nativeapitest-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.nativeapitest.NativeAPITests"
                      testname="eclipselink-nativeapitest-model"/>
     </target>
 
-    <target name="server-test-orphanremoval" depends="init-ear-macro">
-        <server-build-ear dir="jpa/orphanremoval"
-                          modelname="eclipselink-orphanremoval-model"/>
+    <target name="server-test-orphanremoval" depends="init-server-testing">
+        <build-ear dir="jpa/orphanremoval"
+                   modelname="eclipselink-orphanremoval-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.orphanremoval.OrphanRemovalJUnitTestCase"
                      testname="eclipselink-orphanremoval-model"/>
     </target>
 
-    <target name="server-test-privateowned" depends="init-ear-macro">
-        <server-build-ear dir="jpa/privateowned"
-                          modelname="eclipselink-privateowned-model"/>
+    <target name="server-test-privateowned" depends="init-server-testing">
+        <build-ear dir="jpa/privateowned"
+                   modelname="eclipselink-privateowned-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.privateowned.PrivateOwnedJUnitTestCase"
                      testname="eclipselink-privateowned-model"/>
     </target>
 
-    <target name="server-test-relationships" depends="init-ear-macro">
-        <server-build-ear dir="jpa/relationships"
-                          modelname="eclipselink-relationships-model"/>
+    <target name="server-test-relationships" depends="init-server-testing">
+        <build-ear dir="jpa/relationships"
+                   modelname="eclipselink-relationships-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.relationships.RelationshipsServerTestSuite"
                      testname="eclipselink-relationships-model"/>
     </target>
 
-    <target name="server-test-sessionbean" depends="init-ear-macro">
-        <server-build-ear dir="jpa/sessionbean" puname="sessionbean"
-                          modelname="eclipselink-sessionbean-model">
+    <target name="server-test-sessionbean" depends="init-server-testing">
+        <build-ear dir="jpa/sessionbean" puname="sessionbean"
+                   modelname="eclipselink-sessionbean-model">
             <extra-model-source>
                 <include name="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced/*.java"/>
             </extra-model-source>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanTests"
                      testname="eclipselink-sessionbean-model"/>
     </target>
@@ -2696,56 +2893,56 @@
     <!-- This target can only be called in an Oracle High Availability environment -
         a WebLogic server configured with Multi Data Sources to connect to Oracle RAC database
     -->
-    <target name="server-test-sessionbean-ha" depends="init-ear-macro">
-        <server-build-ear dir="jpa/sessionbean" puname="sessionbean"
-                          modelname="eclipselink-sessionbean-model"/>
+    <target name="server-test-sessionbean-ha" depends="init-server-testing">
+        <build-ear dir="jpa/sessionbean" puname="sessionbean"
+                   modelname="eclipselink-sessionbean-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.sessionbean.SessionBeanHATests"
                      testname="eclipselink-sessionbean-model"/>
             <!--<param name="MODEL_DIR2" value="org/eclipse/persistence/testing/models/jpa/fieldaccess/advanced"/>-->
     </target>
 
-    <target name="server-test-jpa21-sessionbean" depends="init-ear-macro">
-        <server-build-ear dir="jpa21/sessionbean" puname="jpa21-sessionbean"
-                          modelname="eclipselink-jpa21-sessionbean-model">
+    <target name="server-test-jpa21-sessionbean" depends="init-server-testing">
+        <build-ear dir="jpa21/sessionbean" puname="jpa21-sessionbean"
+                   modelname="eclipselink-jpa21-sessionbean-model">
             <extra-model-source>
                 <include name="org/eclipse/persistence/testing/models/jpa21/entitylistener/*.java"/>
             </extra-model-source>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa21.sessionbean.EntityListenerInjectionTest"
                      testname="eclipselink-jpa21-sessionbean-model"/>
     </target>
 
-    <target name="server-test-jpa22-sessionbean" depends="init-ear-macro">
-        <server-build-ear dir="jpa22/sessionbean" puname="jpa22-sessionbean"
-                          modelname="eclipselink-jpa22-sessionbean-model">
+    <target name="server-test-jpa22-sessionbean" depends="init-server-testing">
+        <build-ear dir="jpa22/sessionbean" puname="jpa22-sessionbean"
+                   modelname="eclipselink-jpa22-sessionbean-model">
             <extra-model-source>
                 <include name="org/eclipse/persistence/testing/models/jpa22/entitylistener/*.java"/>
             </extra-model-source>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa22.sessionbean.EntityListenerInjectionTest"
                      testname="eclipselink-jpa22-sessionbean-model"/>
 
-        <server-build-ear dir="jpa22/sessionbean" puname="jpa22-sessionbean"
-                          modelname="eclipselink-jpa22-sessionbean-model">
+        <build-ear dir="jpa22/sessionbean" puname="jpa22-sessionbean"
+                   modelname="eclipselink-jpa22-sessionbean-model">
             <extra-model-source>
                 <include name="org/eclipse/persistence/testing/models/jpa22/entitylistener/*.java"/>
             </extra-model-source>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa22.sessionbean.AttributeConverterInjectionTest"
                      testname="eclipselink-jpa22-sessionbean-model"/>
     </target>
 
-    <target name="server-test-validation" depends="init-ear-macro">
-        <server-build-ear dir="jpa/validation"
-                          modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
-                          modelname="eclipselink-validation-model"/>
+    <target name="server-test-validation" depends="init-server-testing">
+        <build-ear dir="jpa/validation"
+                   modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
+                   modelname="eclipselink-validation-model"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.validation.CMP3ValidationTestModel"
                      testname="eclipselink-validation-model"/>
     </target>
 
-    <target name="server-test-xml-mergeinherited" depends="init-ear-macro">
-        <server-build-ear dir="jpa/xml/merge/inherited" puname="ddlGeneration"
-                          modelname="eclipselink-xml-merge-inherited-model">
+    <target name="server-test-xml-mergeinherited" depends="init-server-testing">
+        <build-ear dir="jpa/xml/merge/inherited" puname="ddlGeneration"
+                   modelname="eclipselink-xml-merge-inherited-model">
             <extra-model-resource>
                 <fileset dir="${jpatest.resource.dir}/${eclipselink.ddl.generation.model}/server_merge-inherited">
                     <include name="*.xml"/>
@@ -2754,14 +2951,14 @@
                     <include name="merge-inherited-*.xml"/>
                 </fileset>
             </extra-model-resource>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.xml.merge.inherited.EntityMappingsMergeInheritedJUnitTestCase"
                      testname="eclipselink-xml-merge-inherited-model"/>
     </target>
 
-    <target name="server-test-xmltest" depends="init-ear-macro">
-        <server-build-ear dir="jpa/xml" morepus="true" ejbjarexcludes="**/member_*/**/*"
-                          modelname="eclipselink-xml-servertest-model">
+    <target name="server-test-xmltest" depends="init-server-testing">
+        <build-ear dir="jpa/xml" morepus="true" ejbjarexcludes="**/member_*/**/*"
+                   modelname="eclipselink-xml-servertest-model">
             <extra-model-resource>
                 <fileset dir="${jpatest.resource.dir}/${eclipselink.xml.merge.model}/">
                     <include name="*.xml"/>
@@ -2773,159 +2970,150 @@
             <extra-model-source>
                 <include name="org/eclipse/persistence/testing/models/jpa/advanced/*.java"/>
             </extra-model-source>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsServerJUnitTestSuite"
                      testname="eclipselink-xml-servertest-model"/>
     </target>
 
-    <target name="server-test-composite-advanced" depends="init-ear-macro">
-        <!--<ant antfile="${jpatest.basedir}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>-->
-        <server-build-ear dir="jpa/composite/advanced" puname="composite-advanced"
-                          modelname="${eclipselink.composite.advanced.model}">
+    <target name="server-test-composite-advanced" depends="init-server-testing">
+        <build-ear dir="jpa/composite/advanced" puname="composite-advanced"
+                   modelname="${eclipselink.composite.advanced.model}">
             <extra-module>
-                <server-build-ejb modelname="eclipselink-composite-advanced-model-member_1" puname="composite-advanced-member_1"
-                                  dir="jpa/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_1"
-                                  ejbjarincludes="META-INF/**,**/member_1/*,**/tests/jpa/composite/advanced/*">
-                </server-build-ejb>
-                <server-build-ejb modelname="eclipselink-composite-advanced-model-member_2" puname="composite-advanced-member_2"
-                                  dir="jpa/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_2"
-                                  ejbjarincludes="META-INF/**,**/member_2/*,**/tests/jpa/composite/advanced/*">
-                </server-build-ejb>
-                <server-build-ejb modelname="eclipselink-composite-advanced-model-member_3" puname="composite-advanced-member_3"
-                                  dir="jpa/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_3"
-                                  ejbjarincludes="META-INF/**,**/member_3/*,**/tests/jpa/composite/advanced/*">
-                </server-build-ejb>
+                <build-ejb modelname="eclipselink-composite-advanced-model-member_1" puname="composite-advanced-member_1"
+                           dir="jpa/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_1"
+                           ejbjarincludes="META-INF/**,**/member_1/*,**/tests/jpa/composite/advanced/*">
+                </build-ejb>
+                <build-ejb modelname="eclipselink-composite-advanced-model-member_2" puname="composite-advanced-member_2"
+                           dir="jpa/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_2"
+                           ejbjarincludes="META-INF/**,**/member_2/*,**/tests/jpa/composite/advanced/*">
+                </build-ejb>
+                <build-ejb modelname="eclipselink-composite-advanced-model-member_3" puname="composite-advanced-member_3"
+                           dir="jpa/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/composite/advanced/member_3"
+                           ejbjarincludes="META-INF/**,**/member_3/*,**/tests/jpa/composite/advanced/*">
+                </build-ejb>
             </extra-module>
             <extra-module-jar>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-composite-advanced-model-member_1" includes="eclipselink-composite-advanced-model-member_1_ejb.jar"/>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-composite-advanced-model-member_2" includes="eclipselink-composite-advanced-model-member_2_ejb.jar"/>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-composite-advanced-model-member_3" includes="eclipselink-composite-advanced-model-member_3_ejb.jar"/>
             </extra-module-jar>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.composite.advanced.EntityManagerJUnitTestSuite"
-                    testname="${eclipselink.composite.advanced.model}"/>
-        <!--<ant antfile="${jpatest.basedir}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>-->
-        <!--<antcall target="generate-report" inheritRefs="true"/>-->
+                     testname="${eclipselink.composite.advanced.model}"/>
     </target>
 
-    <target name="server-test-xml-composite-advanced" depends="init-ear-macro">
-        <!--<ant antfile="${jpatest.basedir}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>-->
-        <server-build-ear dir="jpa/xml/composite/advanced" puname="xml-composite-advanced"
-                          modelname="${eclipselink.xml.composite.advanced.model}">
+    <target name="server-test-xml-composite-advanced" depends="init-server-testing">
+        <build-ear dir="jpa/xml/composite/advanced" puname="xml-composite-advanced"
+                   modelname="${eclipselink.xml.composite.advanced.model}">
             <extra-module>
-                <server-build-ejb modelname="eclipselink-xml-composite-advanced-model-member_1" puname="xml-composite-advanced-member_1"
-                                  dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"
-                                  ejbjarincludes="META-INF/**,**/member_1/*,**/tests/jpa/xml/composite/advanced/*">
+                <build-ejb modelname="eclipselink-xml-composite-advanced-model-member_1" puname="xml-composite-advanced-member_1"
+                           dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"
+                           ejbjarincludes="META-INF/**,**/member_1/*,**/tests/jpa/xml/composite/advanced/*">
                     <extra-ejb-model-resource>
                         <fileset dir="${jpatest.resource.dir}/eclipselink-xml-composite-advanced-model-member_1" includes="orm.xml"/>
                     </extra-ejb-model-resource>
-                </server-build-ejb>
-                <server-build-ejb modelname="eclipselink-xml-composite-advanced-model-member_2" puname="xml-composite-advanced-member_2"
-                                  dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"
-                                  ejbjarincludes="META-INF/**,**/member_2/*,**/tests/jpa/xml/composite/advanced/*">
+                </build-ejb>
+                <build-ejb modelname="eclipselink-xml-composite-advanced-model-member_2" puname="xml-composite-advanced-member_2"
+                           dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"
+                           ejbjarincludes="META-INF/**,**/member_2/*,**/tests/jpa/xml/composite/advanced/*">
                     <extra-ejb-model-resource>
                         <fileset dir="${jpatest.resource.dir}/eclipselink-xml-composite-advanced-model-member_2" includes="orm.xml"/>
                     </extra-ejb-model-resource>
-                </server-build-ejb>
-                <server-build-ejb modelname="eclipselink-xml-composite-advanced-model-member_3" puname="xml-composite-advanced-member_3"
-                                  dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"
-                                  ejbjarincludes="META-INF/**,**/member_3/*,**/tests/jpa/xml/composite/advanced/*">
+                </build-ejb>
+                <build-ejb modelname="eclipselink-xml-composite-advanced-model-member_3" puname="xml-composite-advanced-member_3"
+                           dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"
+                           ejbjarincludes="META-INF/**,**/member_3/*,**/tests/jpa/xml/composite/advanced/*">
                     <extra-ejb-model-resource>
                         <fileset dir="${jpatest.resource.dir}/eclipselink-xml-composite-advanced-model-member_3" includes="orm.xml"/>
                     </extra-ejb-model-resource>
-                </server-build-ejb>
+                </build-ejb>
             </extra-module>
             <extra-module-jar>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-xml-composite-advanced-model-member_1" includes="eclipselink-xml-composite-advanced-model-member_1_ejb.jar"/>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-xml-composite-advanced-model-member_2" includes="eclipselink-xml-composite-advanced-model-member_2_ejb.jar"/>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-xml-composite-advanced-model-member_3" includes="eclipselink-xml-composite-advanced-model-member_3_ejb.jar"/>
             </extra-module-jar>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced.EntityMappingsAdvancedJUnitTestCase"
-                    testname="${eclipselink.xml.composite.advanced.model}"/>
-        <!--<ant antfile="${jpatest.basedir}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>-->
-        <!--<antcall target="generate-report" inheritRefs="true"/>-->
+                     testname="${eclipselink.xml.composite.advanced.model}"/>
     </target>
 
-    <target name="server-test-xml-extended-composite-advanced" depends="init-ear-macro">
-        <!--<ant antfile="${jpatest.basedir}/weblogic.xml" target="weblogic-composite-setup" inheritRefs="true"/>-->
-        <server-build-ear dir="jpa/xml/composite" puname="xml-extended-composite-advanced"
-                          modelname="${eclipselink.xml.extended.composite.advanced.model}" ejbjarincludes="**/*">
+    <target name="server-test-xml-extended-composite-advanced" depends="init-server-testing">
+        <build-ear dir="jpa/xml/composite" puname="xml-extended-composite-advanced"
+                   modelname="${eclipselink.xml.extended.composite.advanced.model}" ejbjarincludes="**/*">
             <extra-module>
-                <server-build-ejb modelname="eclipselink-xml-extended-composite-advanced-model-member_1" puname="xml-composite-advanced-member_1"
-                                  dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"
-                                  ejbjarincludes="META-INF/**,**/member_1/*,**/tests/jpa/xml/composite/advanced/*">
+                <build-ejb modelname="eclipselink-xml-extended-composite-advanced-model-member_1" puname="xml-composite-advanced-member_1"
+                           dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_1"
+                           ejbjarincludes="META-INF/**,**/member_1/*,**/tests/jpa/xml/composite/advanced/*">
                     <extra-ejb-model-resource>
                         <fileset dir="${jpatest.resource.dir}/eclipselinkorm/eclipselink-xml-extended-composite-advanced-model-member_1" includes="*-orm.xml, advanced-extended-entity-mappings_*.xml"/>
                     </extra-ejb-model-resource>
-                </server-build-ejb>
-                <server-build-ejb modelname="eclipselink-xml-extended-composite-advanced-model-member_2" puname="xml-composite-advanced-member_2"
-                                  dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"
-                                  ejbjarincludes="META-INF/**,**/member_2/*,**/tests/jpa/xml/composite/advanced/*">
+                </build-ejb>
+                <build-ejb modelname="eclipselink-xml-extended-composite-advanced-model-member_2" puname="xml-composite-advanced-member_2"
+                           dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_2"
+                           ejbjarincludes="META-INF/**,**/member_2/*,**/tests/jpa/xml/composite/advanced/*">
                     <extra-ejb-model-resource>
                         <fileset dir="${jpatest.resource.dir}/eclipselinkorm/eclipselink-xml-extended-composite-advanced-model-member_2" includes="*-orm.xml, advanced-extended-entity-mappings_*.xml"/>
                     </extra-ejb-model-resource>
-                </server-build-ejb>
-                <server-build-ejb modelname="eclipselink-xml-extended-composite-advanced-model-member_3" puname="xml-composite-advanced-member_3"
-                                  dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"
-                                  ejbjarincludes="META-INF/**,**/member_3/*,**/tests/jpa/xml/composite/advanced/*">
+                </build-ejb>
+                <build-ejb modelname="eclipselink-xml-extended-composite-advanced-model-member_3" puname="xml-composite-advanced-member_3"
+                           dir="jpa/xml/composite/advanced" modeldir="org/eclipse/persistence/testing/models/jpa/xml/composite/advanced/member_3"
+                           ejbjarincludes="META-INF/**,**/member_3/*,**/tests/jpa/xml/composite/advanced/*">
                     <extra-ejb-model-resource>
                         <fileset dir="${jpatest.resource.dir}/eclipselinkorm/eclipselink-xml-extended-composite-advanced-model-member_3" includes="*-orm.xml, advanced-extended-entity-mappings_*.xml"/>
                     </extra-ejb-model-resource>
-                </server-build-ejb>
+                </build-ejb>
             </extra-module>
             <extra-module-jar>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-xml-extended-composite-advanced-model-member_1" includes="eclipselink-xml-extended-composite-advanced-model-member_1_ejb.jar"/>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-xml-extended-composite-advanced-model-member_2" includes="eclipselink-xml-extended-composite-advanced-model-member_2_ejb.jar"/>
                 <fileset dir="${jpatest.server.build.dir}/eclipselink-xml-extended-composite-advanced-model-member_3" includes="eclipselink-xml-extended-composite-advanced-model-member_3_ejb.jar"/>
             </extra-module-jar>
-        </server-build-ear>
+        </build-ear>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.xml.composite.advanced.EntityMappingsAdvancedJUnitTestCase"
-                    testname="${eclipselink.xml.extended.composite.advanced.model}"/>
-<!--        <ant antfile="${jpatest.basedir}/weblogic.xml" target="weblogic-composite-reset" inheritRefs="true"/>
-        <antcall target="generate-report" inheritRefs="true"/>-->
+                     testname="${eclipselink.xml.extended.composite.advanced.model}"/>
     </target>
 
     <!-- Tests from foundation/eclipselink.extension.oracle.test -->
-    <target name="server-test-oracle-timestamptz" depends="init-ear-macro" if="is.oracle">
-        <server-build-ear dir="jpa/timestamptz" puname="timestamptz"
-                          modelname="${eclipselink.timestamptz.model}"
-                          sourceroot="${jpatest.2.oracletest.dir}"/>
+    <target name="server-test-oracle-timestamptz" depends="init-server-testing" if="is.oracle">
+        <build-ear dir="jpa/timestamptz" puname="timestamptz"
+                   modelname="${eclipselink.timestamptz.model}"
+                   sourceroot="${jpatest.2.oracletest.dir}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.timestamptz.TimeStampTZJUnitTestSuite"
-                    testname="${eclipselink.timestamptz.model}"/>
+                     testname="${eclipselink.timestamptz.model}"/>
     </target>
  <!--if="run.jpa.customfeatures.model"-->
-    <target name="server-test-custom-features" depends="init-ear-macro" if="is.oracle">
-        <server-build-ear dir="jpa/customfeatures" puname="customfeatures"
-                          modelname="${eclipselink.customfeatures.model}"
-                          sourceroot="${jpatest.2.oracletest.dir}"/>
+    <target name="server-test-custom-features" depends="init-server-testing" if="is.oracle">
+        <build-ear dir="jpa/customfeatures" puname="customfeatures"
+                   modelname="${eclipselink.customfeatures.model}"
+                   sourceroot="${jpatest.2.oracletest.dir}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.customfeatures.CustomFeaturesJUnitTestSuite"
-                    testname="${eclipselink.customfeatures.model}"/>
+                     testname="${eclipselink.customfeatures.model}"/>
     </target>
 <!--if="is.ready.for.proxy.authentication"-->
-    <target name="server-test-proxy-authentication" depends="init-ear-macro" if="is.oracle">
-        <server-build-ear dir="jpa/proxyauthentication" puname="proxyauthentication"
-                          modelname="${eclipselink.proxyauthentication.model}"
-                          sourceroot="${jpatest.2.oracletest.dir}"/>
+    <target name="server-test-proxy-authentication" depends="init-server-testing" if="is.oracle">
+        <build-ear dir="jpa/proxyauthentication" puname="proxyauthentication"
+                   modelname="${eclipselink.proxyauthentication.model}"
+                   sourceroot="${jpatest.2.oracletest.dir}"/>
         <ant dir="${jpatest.2.oracletest.dir}"
              antfile="oracle-db-setup.xml" target="setup-proxy-authentication"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.proxyauthentication.ProxyAuthenticationServerTestSuite"
-                    testname="${eclipselink.proxyauthentication.model}"/>
+                     testname="${eclipselink.proxyauthentication.model}"/>
     </target>
 
     <!-- Tests from foundation/eclipselink.extension.oracle.spatial.test -->
-    <target name="server-test-jgeometry" depends="init-ear-macro" if="is.oracle">
-        <server-build-ear dir="jpa/jgeometry" puname="structConverter"
-                          modeldir="org/eclipse/persistence/testing/models/jpa/structconverter"
-                          modelname="eclipselink-jgeometry-model"
-                          classpath="oracle.spatial.path"
-                          sourceroot="${jpatest.2.oracle.spatial.test.dir}"/>
+    <target name="server-test-jgeometry" depends="init-server-testing" if="is.oracle">
+        <build-ear dir="jpa/jgeometry" puname="structConverter"
+                   modeldir="org/eclipse/persistence/testing/models/jpa/structconverter"
+                   modelname="eclipselink-jgeometry-model"
+                   classpath="oracle.spatial.path"
+                   sourceroot="${jpatest.2.oracle.spatial.test.dir}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.jgeometry.SpatialJPQLTestSuite"
                      testname="eclipselink-jgeometry-model"
                      classpath="oracle.spatial.path"/>
     </target>
 
-    <target name="server-test-struct-converter" depends="init-ear-macro" if="is.oracle">
+    <target name="server-test-struct-converter" depends="init-server-testing" if="is.oracle">
         <echo message="Creating MY_GEOMETRY datatype for spatial tests: ${db.url}..."/>
         <sql userid="${db.user}" password="${db.pwd}"
              driver="${db.driver}"
@@ -2935,10 +3123,10 @@
              onerror="continue">
 CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY);
         </sql>
-        <server-build-ear dir="jpa/structconverter" puname="structConverter"
-                          modelname="${eclipselink.struct.converter.model}"
-                          classpath="oracle.spatial.path"
-                          sourceroot="${jpatest.2.oracle.spatial.test.dir}"/>
+        <build-ear dir="jpa/structconverter" puname="structConverter"
+                   modelname="${eclipselink.struct.converter.model}"
+                   classpath="oracle.spatial.path"
+                   sourceroot="${jpatest.2.oracle.spatial.test.dir}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.structconverter.StructConverterTestSuite"
                      testname="${eclipselink.struct.converter.model}"
                      classpath="oracle.spatial.path"/>
@@ -2946,7 +3134,7 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
 
     <!--Tests from foundation/eclipselink.extension.nosql.test -->
     <!-- Since in nightly GlassFish 4 and WebLogic testing, the property is.JTA can't be passed to server, so we force isJTA() returns false in JUnitTestCase.java -->
-    <target name="server-test-mongotest" depends="init-ear-macro" if="is.glassfish.or.weblogic">
+    <target name="server-test-mongotest" depends="init-server-testing" if="is.glassfish.or.weblogic">
         <copy file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" tofile="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_original"/>
         <copy file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java_nonjtaDS" tofile="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/junit/JUnitTestCase.java" overwrite="true"/>
         <antcall target="server-test-mongo-xml" inheritRefs="true"/>
@@ -2955,20 +3143,20 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
         <antcall target="generate-report" inheritRefs="true"/>
     </target>
 
-    <target name="server-test-mongo" depends="init-ear-macro">
-        <server-build-ear dir="jpa/mongo" puname="mongo"
-                          modelname="eclipselink-mongo-model"
-                          sourceroot="${jpatest.2.nosqltest.dir}"/>
+    <target name="server-test-mongo" depends="init-server-testing">
+        <build-ear dir="jpa/mongo" puname="mongo"
+                   modelname="eclipselink-mongo-model"
+                   sourceroot="${jpatest.2.nosqltest.dir}"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.mongo.MongoTestSuite"
-                    testname="eclipselink-mongo-model"/>
+                     testname="eclipselink-mongo-model"/>
     </target>
 
-    <target name="server-test-mongo-xml" depends="init-ear-macro" if="is.glassfish.or.weblogic">
+    <target name="server-test-mongo-xml" depends="init-server-testing" if="is.glassfish.or.weblogic">
         <copy file="./../../foundation/eclipselink.extension.nosql.test/resource/mongo/mongo-orm.xml" todir="${jpatest.resource.dir}/eclipselink-mongo-model-xml/server"/>
-        <server-build-ear dir="jpa/mongo" puname="mongo-xml"
-                          modelname="eclipselink-mongo-model-xml"/>
+        <build-ear dir="jpa/mongo" puname="mongo-xml"
+                   modelname="eclipselink-mongo-model-xml"/>
         <server-test include="org.eclipse.persistence.testing.tests.jpa.mongo.MongoXMLTestSuite"
-                    testname="eclipselink-mongo-model-xml"/>
+                     testname="eclipselink-mongo-model-xml"/>
             <!--<param name="eclipselink.jpa.test.dir" value="./../../foundation/eclipselink.extension.nosql.test"/>-->
         <delete file="/eclipselink-mongo-model-xml/server/mongo-orm.xml" failonerror="false"/>
     </target>
@@ -3003,494 +3191,6 @@ CREATE OR REPLACE TYPE MY_GEOMETRY AS OBJECT (id NUMBER, geom MDSYS.SDO_GEOMETRY
     </target>
     <target name="server-undeploy-concurrency" depends="config-classpath">
         <ant antfile="${jpatest.basedir}/cachecoordination-cluster.xml" target="${server.name}-undeploy-concurrency" inheritRefs="true"/>
-    </target>
-
-    <target name="init-server" depends="init, config-classpath, init-compiler, init-weaver">
-        <property name="projectcache.dir"       value="pcfile"/>
-        <!-- This checks if the Application Server is GlassFish -->
-        <condition property="is.glassfish">
-            <contains string="${server.name}" substring="glassfish"/>
-        </condition>
-
-        <condition property="is.glassfish.or.weblogic">
-            <or>
-                <contains string="${server.name}" substring="glassfish"/>
-                <contains string="${server.name}" substring="weblogic"/>
-            </or>
-        </condition>
-        <!-- This checks if the Application Server is JBoss -->
-        <condition property="is.jboss">
-            <or>
-                <contains string="${server.name}" substring="jboss"/>
-                <contains string="${server.name}" substring="wildfly"/>
-            </or>
-        </condition>
-
-        <!-- This checks if the Application Server is WebSphere -->
-        <condition property="is.websphere">
-            <contains string="${server.name}" substring="websphere"/>
-        </condition>
-
-        <!-- This checks if the Apllication Server is WebLogic -->
-        <condition property="is.weblogic">
-            <contains string="${server.name}" substring="weblogic"/>
-        </condition>
-
-        <!-- This checks if static weaving enabled -->
-        <condition property="is.static.server.weaving">
-            <contains string="${server.weaving}" substring="static"/>
-        </condition>
-
-        <!-- This checks if testing on GlassFish with nonJTA DS  -->
-        <condition property="is.glassfish.nonjta.datasource">
-            <and>
-                <contains string="${is.JTA}" substring="false"/>
-                <contains string="${server.name}" substring="glassfish"/>
-            </and>
-        </condition>
-
-        <!-- This checks if the Aplication Server is applicable to run oracle jpa/customfeatures model on oracle db-->
-        <condition property="run.jpa.customfeatures.model">
-            <and>
-                <contains string="${db.driver}" substring="oracle"/>
-                <or>
-                    <istrue value="${is.weblogic}"/>
-                    <!--istrue value="${is.websphere}"/-->
-                    <istrue value="${is.jboss}"/>
-                    <istrue value="${is.glassfish}"/>
-                </or>
-            </and>
-        </condition>
-
-        <property file="${user.home}/${server.name}.properties"/>
-        <property file="${jpatest.basedir}/${server.name}.properties"/>
-
-        <condition property="prefix.jndi" value="java:" else="jdbc">
-            <isset property="is.jboss"/>
-        </condition>
-        <condition property="prefix.sessionds" value="jdbc/" else="">
-            <contains string="${server.name}" substring="netweaver"/>
-        </condition>
-
-        <property name="DS_NAME" value="${prefix.jndi}/EclipseLinkDS"/>
-        <property name="DS2_NAME" value="${prefix.jndi}/EclipseLinkDS2"/>
-        <property name="DS3_NAME" value="${prefix.jndi}/EclipseLinkDS3"/>
-        <property name="NONJTA_DS_NAME" value="${prefix.jndi}/ELNonJTADS"/>
-        <property name="NONJTA_DS2_NAME" value="${prefix.jndi}/ELNonJTADS2"/>
-        <property name="NONJTA_DS3_NAME" value="${prefix.jndi}/ELNonJTADS3"/>
-        <property name="SESSION_DS_NAME" value="${prefix.sessionds}${DS_NAME}"/>
-
-        <condition property="is.grid.testing">
-            <contains string="${grid}" substring="true"/>
-        </condition>
-
-        <condition property="is.kryo.testing">
-            <contains string="${kryo}" substring="true"/>
-        </condition>
-
-        <condition property="is.jpars.testing">
-            <contains string="${MODEL_NAME}" substring="eclipselink-jpars-model"/>
-        </condition>
-
-        <condition property="jpars.url" value="http://${weblogic.host}:${weblogic.port}">
-            <contains string="${server.name}" substring="weblogic"/>
-        </condition>
-
-        <condition property="jpars.url" value="http://${glassfish.host}:8080">
-            <contains string="${server.name}" substring="glassfish"/>
-        </condition>
-
-        <condition property="tkn.data-source-name" value="${NONJTA_DS_NAME}" else="${DS_NAME}">
-            <isfalse value="${is.JTA}"/>
-        </condition>
-        <condition property="tkn.data-source2-name" value="${NONJTA_DS2_NAME}" else="${DS2_NAME}">
-            <isfalse value="${is.JTA}"/>
-        </condition>
-        <condition property="tkn.data-source3-name" value="${NONJTA_DS3_NAME}" else="${DS3_NAME}">
-            <isfalse value="${is.JTA}"/>
-        </condition>
-        <condition property="tkn.transaction-type" value="RESOURCE_LOCAL" else="JTA">
-            <isfalse value="${is.JTA}"/>
-        </condition>
-        <condition property="tkn.datasource-type" value="non-jta-data-source" else="jta-data-source">
-            <isfalse value="${is.JTA}"/>
-        </condition>
-
-        <filterset id="testing.props.filterset">
-            <filter token="server-platform-class" value="${server.platform.class}"/>
-            <filter token="server-platform" value="${server.platform}"/>
-            <filter token="session-data-source-name" value="${SESSION_DS_NAME}"/>
-            <filter token="server-weaving" value="${server.weaving}"/>
-            <filter token="database-platform" value="${db.platform}"/>
-            <filter token="database2-platform" value="${db2.platform}"/>
-            <filter token="database3-platform" value="${db3.platform}"/>
-            <filter token="dbUser" value="${db.user}"/>
-            <filter token="proxyUser" value="${pa.proxyuser}"/>
-            <filter token="data-source-name" value="${tkn.data-source-name}"/>
-            <filter token="data-source2-name" value="${tkn.data-source2-name}"/>
-            <filter token="data-source3-name" value="${tkn.data-source3-name}"/>
-            <filter token="transaction-type" value="${tkn.transaction-type}"/>
-            <filter token="datasource-type" value="${tkn.datasource-type}"/>
-            <filter token="NONJTA_DS_NAME" value="${NONJTA_DS_NAME}"/>
-        </filterset>
-
-    </target>
-
-    <target name="init-ear-macro" depends="init-server, init-report-macro">
-        <macrodef name="server-build-client">
-            <attribute name="modelname"/>
-            <attribute name="puname" default="default"/>
-            <attribute name="morepus" default="false"/>
-            <attribute name="classpath" default="compile.jpa22.server.path" />
-            <attribute name="dir"/>
-            <attribute name="testdir" default="org/eclipse/persistence/testing/tests/@{dir}"/>
-            <attribute name="testname" default="@{modelname}"/>
-            <attribute name="sourceroot" default="${eclipselink.jpa.test.dir}"/>
-            <attribute name="srcdir" default="@{sourceroot}/${src.dir}"/>
-            <attribute name="resourcedir" default="@{sourceroot}/${resource.dir}"/>
-            <sequential>
-                <mkdir dir="${jpatest.server.build.dir}" />
-                <!-- prepare-server-resources -->
-                <local name="bean.src"/>
-                <local name="gen.srv.src.dir"/>
-                <local name="gen.srv.cls.dir"/>
-                <local name="pusb.includes"/>
-                <local name="pusb.impl.includes"/>
-                <condition property="bean.src" value="TestRunnerBean.java_nonjtaDS" else="TestRunnerBean.java">
-                    <isfalse value="${is.JTA}"/>
-                </condition>
-                <property name="gen.srv.src.dir" value="${jpatest.server.build.dir}/@{testname}/src"/>
-                <property name="gen.srv.cls.dir" value="${jpatest.server.build.dir}/@{testname}/classes"/>
-                <mkdir dir="${gen.srv.src.dir}"/>
-                <copy overwrite="true"
-                      tofile="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"
-                      file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/server/${bean.src}">
-                    <filterset>
-                        <filter token="puName" value="@{puname}"/>
-                    </filterset>
-                </copy>
-                <condition property="pusb.includes" value="TestRunner*.java" else="TestRunner1*.java,TestRunner2*.java,TestRunner3*.java,TestRunner4*.java,TestRunner5*.java">
-                    <contains string="@{puname}" substring="jpa21-sessionbean"/>
-                </condition>
-                <condition property="pusb.impl.includes" value="${pusb.includes}" else="-NOTHING-">
-                    <istrue value="@{morepus}"/>
-                </condition>
-                <copy todir="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/server">
-                    <fileset dir="${jpatest.resource.dir}/server" includes="${pusb.impl.includes}"/>
-                </copy>
-                <compile srcdir="${gen.srv.src.dir}" destdir="${gen.srv.cls.dir}" includes="**/*.java">
-                    <classpath>
-                        <path refid="compile.path"/>
-                    </classpath>
-                </compile>
-
-                <!--server-init-client-jar-->
-                <local name="stage.build.dir.client"/>
-                <property name="stage.build.dir.client" value="${jpatest.server.build.dir}/@{testname}/client"/>
-                <mkdir dir="${stage.build.dir.client}/META-INF"/>
-                <copy todir="${stage.build.dir.client}/META-INF"
-                      file="${jpatest.resource.dir}/server/application-client.xml" />
-                <copy todir="${stage.build.dir.client}">
-                    <fileset dir="${jpatest.basedir}" includes="*.properties"/>
-                </copy>
-                <copy todir="${stage.build.dir.client}"
-                      file="${jpatest.resource.dir}/server/jndi.properties">
-                    <filterset>
-                        <filter token="server.user" value="${server.user}"/>
-                        <filter token="server.pwd" value="${server.pwd}"/>
-                        <filter token="server.factory" value="${server.factory}"/>
-                    </filterset>
-                </copy>
-                <!--server-compile-client-jar-->
-                <compile srcdir="@{srcdir}"
-                         destdir="${stage.build.dir.client}">
-                    <include name="@{testdir}/**/*.java"/>
-                    <classpath>
-                        <path refid="@{classpath}"/>
-                    </classpath>
-                </compile>
-                <!--server-package-client-jar-->
-                <jar destfile="${jpatest.server.build.dir}/@{testname}/@{testname}_client.jar">
-                    <zipfileset  src="${jpatest.2.coretest.dir}/${coretest.framework.jar}"
-                                 includes="org/eclipse/persistence/testing/framework/junit/*.class"/>
-                    <zipfileset  src="${jpatest.basedir}/${jpatest.framework}.jar"
-                                 includes="**/*.class"
-                                 excludes="**/TestRunner*Bean.*"/>
-                    <fileset dir="${gen.srv.cls.dir}"/>
-                    <fileset dir="${stage.build.dir.client}"/>
-                </jar>
-            </sequential>
-        </macrodef>
-
-        <macrodef name="server-build-ejb">
-            <attribute name="modelname"/>
-            <attribute name="puname" default="default"/>
-            <attribute name="morepus" default="false"/>
-            <attribute name="classpath" default="compile.jpa22.server.path" />
-            <attribute name="dir"/>
-            <attribute name="testdir" default="org/eclipse/persistence/testing/tests/@{dir}"/>
-            <attribute name="modeldir" default="org/eclipse/persistence/testing/models/@{dir}"/>
-            <attribute name="testname" default="@{modelname}"/>
-            <attribute name="sourceroot" default="${eclipselink.jpa.test.dir}"/>
-            <attribute name="srcdir" default="@{sourceroot}/${src.dir}"/>
-            <attribute name="resourcedir" default="@{sourceroot}/${resource.dir}"/>
-            <attribute name="ejbjarincludes" default="**"/>
-            <attribute name="ejbjarexcludes" default="--NOTHING--"/>
-            <element name="extra-ejb-model-resource" optional="true"/>
-            <element name="extra-ejb-model-source" optional="true"/>
-            <sequential>
-                <!--server-init-ejb-jar-->
-                <local name="stage.build.dir.ejb"/>
-                <local name="default.ejb.jar.xml"/>
-                <local name="final.ejb.jar.xml"/>
-                <property name="stage.build.dir.ejb" value="${jpatest.server.build.dir}/@{testname}/ejb"/>
-                <mkdir dir="${stage.build.dir.ejb}/META-INF"/>
-
-                <condition property="default.ejb.jar.xml"
-                           value="${jpatest.resource.dir}/@{modelname}/server/ejb-jar.xml"
-                           else="${jpatest.resource.dir}/server/ejb-jar.xml">
-                    <!--SessionBean Test need it's own ejb-jar.xml, which including ejb-def for the sessionbean -->
-                    <available file="${jpatest.resource.dir}/@{modelname}/server/ejb-jar.xml"/>
-                </condition>
-
-                <condition property="final.ejb.jar.xml" value="${jpatest.resource.dir}/${server.name}/ejb-jar.xml" else="${default.ejb.jar.xml}">
-                    <!--Empty ejb-jar.xml is needed for GlassFish when run jpa tests against NonJTA datasource-->
-                    <and>
-                        <isset property="is.glassfish.nonjta.datasource"/>
-                        <available file="${jpatest.resource.dir}/${server.name}/ejb-jar.xml"/>
-                    </and>
-                </condition>
-
-                <copy todir="${stage.build.dir.ejb}/META-INF">
-                    <filterset>
-                        <filterset refid="testing.props.filterset"/>
-                        <filter token="default" value="@{puname}"/>
-                    </filterset>
-                    <fileset dir="${jpatest.resource.dir}/eclipselinkorm/@{testname}/server" erroronmissingdir="false">
-                        <include name="persistence.xml"/>
-                    </fileset>
-                    <fileset dir="${jpatest.resource.dir}/server">
-                        <include name="persistence.xml"/>
-                    </fileset>
-                    <fileset file="${final.ejb.jar.xml}"/>
-                </copy>
-
-                <!--DDLGeneration Test need it's own persistence.xml and mapping xml files -->
-                <copy todir="${stage.build.dir.ejb}/META-INF" overwrite="true" failonerror="false">
-                    <filterset>
-                        <filterset refid="testing.props.filterset"/>
-                        <filter token="default" value="@{puname}"/>
-                    </filterset>
-                    <fileset dir="${jpatest.resource.dir}/@{modelname}/server/">
-                        <include name="*.xml"/>
-                        <include name="*.jdbc"/>
-                        <exclude name="extension*.xml"/>
-                        <exclude name="ejb-jar.xml"/>
-                    </fileset>
-                    <extra-ejb-model-resource/>
-                </copy>
-
-                <copy todir="${stage.build.dir.ejb}" overwrite="true" failonerror="false">
-                    <fileset dir="${jpatest.resource.dir}/@{modelname}" includes="org/**"/>
-                    <fileset dir="${jpatest.resource.dir}/@{modelname}/repository" includes="**/extension*.*"/>
-                </copy>
-
-
-                <!-- Replace datasource type, name and transaction type -->
-                <!--<antcall target="add-project-cache-properties" inheritRefs="true"/>-->
-
-                <!--server-compile-ejb-jar-->
-                <compile srcdir="${jpatest.generated.dir}:@{srcdir}"
-                         destdir="${stage.build.dir.ejb}">
-                    <extra-ejb-model-source/>
-                    <include name="@{testdir}/**/*.java"/>
-                    <include name="@{modeldir}/**/*.java"/>
-                    <!--<include name="@{modeldir}/*.java"/>-->
-                    <classpath>
-                        <path refid="@{classpath}"/>
-                    </classpath>
-                </compile>
-
-                <!--server-package-ejb-jar-->
-                <jar destfile="${jpatest.server.build.dir}/@{testname}/@{testname}_ejb.jar" >
-                    <zipfileset  src="${jpatest.2.coretest.dir}/${coretest.framework.jar}"
-                                 includes="org/eclipse/persistence/testing/framework/**/*.class"/>
-                    <zipfileset  src="${jpatest.2.coretest.dir}/${coretest.jar}"
-                                 includes="org/eclipse/persistence/testing/tests/performance/emulateddb/**,
-                                  org/eclipse/persistence/tools/**,
-                                  org/eclipse/persistence/testing/tests/TestRunModel*"/>
-                    <zipfileset  src="${jpatest.basedir}/${jpatest.framework}.jar"
-                                 includes="org/eclipse/persistence/testing/framework/junit/*.class,
-                                  org/eclipse/persistence/testing/framework/server/*.class"
-                                 excludes="**/TestRunner*Bean.*"/>
-                    <fileset dir="${jpatest.server.build.dir}/@{testname}/classes" erroronmissingdir="false"/>
-                    <fileset dir="${stage.build.dir.ejb}" includes="@{ejbjarincludes}" excludes="@{ejbjarexcludes}"/>
-                </jar>
-                <!--server-weave-ejb-jar" depends="server-package-ejb-jar, init-weaver" if="is.static.server.weaving"-->
-                <!--<run-weaver model="@{testname}_ejb" dir="${jpatest.server.build.dir}/@{testname}"/>-->
-            </sequential>
-        </macrodef>
-
-        <macrodef name="server-build-ear">
-            <attribute name="modelname"/>
-            <attribute name="puname" default="default"/>
-            <attribute name="morepus" default="false"/>
-            <attribute name="classpath" default="compile.jpa22.server.path" />
-            <attribute name="dir"/>
-            <attribute name="earname" default="@{modelname}"/>
-            <attribute name="testdir" default="org/eclipse/persistence/testing/tests/@{dir}"/>
-            <attribute name="modeldir" default="org/eclipse/persistence/testing/models/@{dir}"/>
-            <attribute name="testname" default="@{modelname}"/>
-            <attribute name="sourceroot" default="${eclipselink.jpa.test.dir}"/>
-            <attribute name="srcdir" default="@{sourceroot}/${src.dir}"/>
-            <attribute name="resourcedir" default="@{sourceroot}/${resource.dir}"/>
-            <attribute name="ejbjarincludes" default="**"/>
-            <attribute name="ejbjarexcludes" default="--NOTHING--"/>
-            <element name="extra-model-resource" optional="true"/>
-            <element name="extra-model-source" optional="true"/>
-            <element name="extra-module" optional="true"/>
-            <element name="extra-module-jar" optional="true"/>
-            <sequential>
-                <server-build-client modelname="@{modelname}" puname="@{puname}" morepus="@{morepus}" classpath="@{classpath}"
-                                     dir="@{dir}" testdir="@{testdir}" testname="@{testname}"
-                                     sourceroot="@{sourceroot}" srcdir="@{srcdir}" resourcedir="@{resourcedir}"/>
-
-                <server-build-ejb modelname="@{modelname}" puname="@{puname}" morepus="@{morepus}" classpath="@{classpath}"
-                                     dir="@{dir}" testdir="@{testdir}" modeldir="@{modeldir}" testname="@{testname}"
-                                     sourceroot="@{sourceroot}" srcdir="@{srcdir}" resourcedir="@{resourcedir}"
-                                    ejbjarincludes="@{ejbjarincludes}" ejbjarexcludes="@{ejbjarexcludes}">
-                    <extra-ejb-model-resource>
-                        <extra-model-resource/>
-                    </extra-ejb-model-resource>
-                    <extra-ejb-model-source>
-                        <extra-model-source/>
-                    </extra-ejb-model-source>
-                </server-build-ejb>
-                <extra-module/>
-                <!-- Build server test ear. -->
-                <local name="stage.build.dir.ear"/>
-                <local name="tkn.modelname"/>
-                <property name="stage.build.dir.ear" value="${jpatest.server.build.dir}/@{testname}/ear"/>
-                <mkdir dir="${stage.build.dir.ear}/META-INF"/>
-                <condition property="tkn.modelname" value="@{modelname}-woven" else="@{modelname}">
-                    <isset property="is.static.server.weaving"/>
-                </condition>
-                <copy todir="${stage.build.dir.ear}/META-INF"
-                      file="${jpatest.basedir}/${resource.dir}/server/application.xml">
-                    <filterset>
-                        <filter token="modelname" value="${tkn.modelname}"/>
-                    </filterset>
-                </copy>
-                <ear destfile="${jpatest.server.build.dir}/@{testname}/@{earname}.ear" appxml="${stage.build.dir.ear}/META-INF/application.xml">
-                    <fileset dir="${jpatest.server.build.dir}/@{testname}">
-                        <include name="${tkn.modelname}_ejb.jar"/>
-                    </fileset>
-                    <extra-module-jar/>
-                </ear>
-            </sequential>
-        </macrodef>
-
-        <macrodef name="server-test">
-            <attribute name="include"/>
-            <attribute name="testname"/>
-            <attribute name="earname" default="@{testname}"/>
-            <attribute name="classpath" default="compile.jpa22.server.path"/>
-            <sequential>
-                <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
-                    <property name="ear.name" value="${jpatest.server.build.dir}/@{testname}/@{earname}.ear"/>
-                    <property name="application.name" value="@{testname}"/>
-                </ant>
-                <local name="impl.url"/>
-                <local name="impl.prefix.testrunner"/>
-                <condition property="impl.url" value="${server.url}" else="${server.url}@{testname}">
-                    <or>
-                        <isset property="is.websphere"/>
-                        <isset property="is.jboss"/>
-                    </or>
-                </condition>
-                <condition property="impl.prefix.testrunner" value="@{testname}/@{testname}_ejb/" else="">
-                    <isset property="is.jboss"/>
-                </condition>
-                <property name="additional.jvmargs" value=""/>
-                <echo message="${line.separator}${line.separator}Running @{earname} on ${server.name}${line.separator}${line.separator}" />
-                <echo message="Test settings:"/>
-                <echo message="  orm.testing                  ='@{ormtesting}'"/>
-                <echo message="  test.agent                   ='@{testagent}'"/>
-                <echo message="  test.weaving                 ='@{testweaving}'"/>
-                <echo message="  test.weaving.option          ='@{testweavingoption}'"/>
-                <echo message="JUnit settings:"/>
-                <echo message="  test                         ='@{include}'"/>
-                <echo message="  run.dir                      ='${jpatest.run.dir}'"/>
-                <echo message="  report.dir                   ='${jpatest.report.dir}'"/>
-                <echo message="  failonerror                  ='${fail.on.error}'"/>
-                <echo message="Java settings:"/>
-                <echo message="  jdk.version                  ='${test.junit.jdk.JAVA_VERSION}'"/>
-                <echo message="  additional.jvmargs           ='${additional.jvmargs}'"/>
-                <echo message="  maxmemory                    ='${max.heap.memory}'"/>
-                <echo message="  java args                    ='${test.junit.jvm.modules.prop}'"/>
-                <echo message="  module-path                  ='${toString:@{modulepath}}'"/>
-                <echo message="  upgrade-module-path          ='${toString:@{upgrademodulepath}}'"/>
-                <echo message="  class-path                   ='${toString:@{classpath}}'"/>
-                <echo message="System properties:             ='${toString:test.run.propertyset}'"/>
-                <echo message="  db.pwd                       ='**********'"/>
-                <echo message="  pa.connection.password       ='**********'"/>
-                <echo message="  pa.proxyuser.password        ='**********'"/>
-                <echo message="  pa.proxyuser2.password       ='**********'"/>
-                <mkdir dir="${jpatest.run.dir}"/>
-                <mkdir dir="${jpatest.report.dir}"/>
-                <junit fork="yes" jvm="${test.junit.jvm.exec}" maxmemory="${max.heap.memory}" tempdir="${jpatest.run.dir}"
-                       dir="${jpatest.run.dir}" showoutput="true" printsummary="yes" failureproperty="junit.failed">
-                    <!--haltonfailure="${test.haltonfailure}" logfailedtests="true" forkmode="once"-->
-                    <classpath>
-                        <pathelement path="${jpatest.server.build.dir}/@{testname}/@{testname}_client.jar"/>
-                        <pathelement path="${jpatest.server.build.dir}/@{testname}/@{testname}_ejb.jar"/>
-                        <fileset dir="${server.lib}" includes="${server.depend}"/>
-                        <path refid="@{classpath}"/>
-                    </classpath>
-                    <!--<modulepath refid="@{modulepath}"/>-->
-                    <!--<upgrademodulepath refid="@{upgrademodulepath}"/>-->
-                    <jvmarg line="${test.junit.jvm.modules.prop}"/>
-                    <jvmarg line="${additional.jvmargs}"/>
-                    <sysproperty key="proxy.user.name" value="${pa.connection.user}"/>
-                    <sysproperty key="server.platform" value="${server.platform}"/>
-                    <sysproperty key="server.user" value="${server.user}"/>
-                    <sysproperty key="server.password" value="${server.pwd}"/>
-                    <sysproperty key="server.url" value="${impl.url}"/>
-                    <sysproperty key="server.lib" value="${server.lib}"/>
-                    <sysproperty key="server.testrunner" value="${impl.prefix.testrunner}${server.testrunner}"/>
-                    <sysproperty key="server.testrunner1" value="${impl.prefix.testrunner}${server.testrunner1}"/>
-                    <sysproperty key="server.testrunner2" value="${impl.prefix.testrunner}${server.testrunner2}"/>
-                    <sysproperty key="server.testrunner3" value="${impl.prefix.testrunner}${server.testrunner3}"/>
-                    <sysproperty key="server.testrunner4" value="${impl.prefix.testrunner}${server.testrunner4}"/>
-                    <sysproperty key="server.testrunner5" value="${impl.prefix.testrunner}${server.testrunner5}"/>
-                    <sysproperty key="server.testrunner6" value="${impl.prefix.testrunner}${server.testrunner6}"/>
-                    <sysproperty key="server.run" value="TRUE"/>
-                    <sysproperty key="pa.connection.user" value="${pa.connection.user}"/>
-                    <sysproperty key="pa.proxyuser" value="${pa.proxyuser}"/>
-                    <sysproperty key="pa.proxyuser2" value="${pa.proxyuser2}"/>
-                    <sysproperty key="pa.connection.password" value="${pa.connection.password}"/>
-                    <sysproperty key="pa.proxyuser.password" value="${pa.proxyuser.password}"/>
-                    <sysproperty key="pa.proxyuser2.password" value="${pa.proxyuser2.password}"/>
-                    <sysproperty key="com.ibm.SSL.ConfigURL" value="${com.ibm.SSL.ConfigURL}"/>
-                    <sysproperty key="com.ibm.CORBA.ConfigURL" value="${com.ibm.CORBA.ConfigURL}"/>
-                    <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
-                    <formatter type="xml"/>
-                    <!--<formatter type="plain"/>-->
-                    <test name="@{include}" haltonfailure="no" todir="${jpatest.report.dir}"/>
-                </junit>
-                <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-undeploy" inheritRefs="true">
-                    <property name="application.name" value="@{testname}"/>
-                </ant>
-                <fail message="TESTS FAILED !">
-                    <condition>
-                        <and>
-                            <isset property="junit.failed"/>
-                            <istrue value="${fail.on.error}"/>
-                        </and>
-                    </condition>
-                </fail>
-            </sequential>
-        </macrodef>
     </target>
 
 </project>

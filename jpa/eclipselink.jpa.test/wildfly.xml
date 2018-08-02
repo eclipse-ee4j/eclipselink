@@ -177,7 +177,6 @@
     </target>
 
     <target name="wildfly-setup" description="Create datasources and JDBC driver definition on the Wildfly server." depends="-wildfly-cli-init">
-        <echoproperties/>
         <cli command="/subsystem=datasources/jdbc-driver=${db.name}Driver:add(driver-name=${db.name}Driver,driver-module-name=com.${db.name},driver-class-name=${db.driver})"/>
         <cli command=":reload"/>
         <cli command="/subsystem=datasources/jdbc-driver=${db2.name}Driver:add(driver-name=${db2.name}Driver,driver-module-name=com.${db2.name},driver-class-name=${db2.driver})"/>

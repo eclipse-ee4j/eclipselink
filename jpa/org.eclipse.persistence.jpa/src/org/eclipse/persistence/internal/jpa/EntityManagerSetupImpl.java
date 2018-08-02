@@ -1415,7 +1415,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
 
                 try {
-                    structConverters.add((StructConverter)this.buildObjectForClass(clazz, clazz));
+                    structConverters.add((StructConverter)this.buildObjectForClass(clazz, StructConverter.class));
                 } catch (PrivilegedActionException e) {
                     throw ValidationException.errorInstantiatingClass(clazz, e.getException());
                 } catch (IllegalAccessException e) {
