@@ -278,6 +278,10 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
      * Tests a many to one foreign key setting with null foreign key definition.
      */
     public void testBug441546() {
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em = createEntityManager();
 
         try {

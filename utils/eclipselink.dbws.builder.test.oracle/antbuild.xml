@@ -67,6 +67,7 @@
     <echo message="dbwsbldrorcltst.2.base.dir = '${dbwsbldrorcltst.2.base.dir}'"/>
     <property name="dbwsbldrorcltst.2.common.plugins.dir" value="${dbwsbldrorcltst.build.location}/${dbwsbldrorcltst.2.base.dir}/plugins"/>
     <property name="dbwsbldrorcltst.2.plugins.dir" value="${dbwsbldrorcltst.build.location}/../plugins"/>
+    <property name="dbwsbldrorcltst.2.jpa.plugins.dir" value="${dbwsbldrorcltst.2.base.dir}/jpa/plugins"/>
     <property name="dbwsbldrorcltst.2.buildsys.dir" value="${dbwsbldrorcltst.2.base.dir}/buildsystem"/>
     <property name="dbwsbldrorcltst.2.dbwsbldr.dir" value="../org.eclipse.persistence.dbws.builder"/>
 
@@ -147,14 +148,14 @@
         <echo message="servlet.jar  ='${dbwsbldrorcltst.2.common.plugins.dir}/${servlet.jar}'"/>
         <echo message="ddlparser.jar='${dbwsbldrorcltst.2.plugins.dir}/${ddlparser.jar}'"/>
         <echo message="wsdl.jar     ='${dbwsbldrorcltst.2.plugins.dir}/${wsdl.jar}'"/>
-        <echo message="persistence.jar ='${dbwsbldrorcltst.2.common.plugins.dir}/${persistence.jar}'"/>
+        <echo message="persistence.jar ='${dbwsbldrorcltst.2.jpa.plugins.dir}/${persistence22.jar}'"/>
         <property name="eclipselink.lib"  value="${dbwsbldrorcltst.2.base.dir}/${eclipselink.jar}"/>
         <property name="asm.lib"          value="${dbwsbldrorcltst.2.common.plugins.dir}/${asm.jar}"/>
         <property name="servlet.lib"      value="${dbwsbldrorcltst.2.common.plugins.dir}/${servlet.jar}"/>
         <property name="dbwsbldr.lib"     value="${dbwsbldrorcltst.2.common.plugins.dir}/${dbwsbldr.jar}"/>
         <property name="ddlparser.lib"    value="${dbwsbldrorcltst.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrorcltst.2.plugins.dir}/${wsdl.jar}"/>
-        <property name="persistence.lib"  value="${dbwsbldrorcltst.2.common.plugins.dir}/${persistence.jar}"/>
+        <property name="persistence.lib"  value="${dbwsbldrorcltst.2.jpa.plugins.dir}/${persistence22.jar}"/>
 
         <!-- dependency tests -->
         <available classname="org.junit.Test"     classpath="${junit.lib}" property="junit.lib.exist"/>

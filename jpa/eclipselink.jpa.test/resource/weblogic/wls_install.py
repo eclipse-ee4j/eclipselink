@@ -22,18 +22,18 @@
 #===========================================================================
 
 try:
-   readTemplate("@WL_HOME@/common/templates/wls/wls.jar")
+   readTemplate(System.getProperty("weblogic.installdir") + "/common/templates/wls/wls.jar")
 except:
-   readTemplate("@WL_HOME@/common/templates/domains/wls.jar")
+   readTemplate(System.getProperty("weblogic.installdir") + "/common/templates/domains/wls.jar")
 
 #===========================================================================
 # Configure the Administration Server and SSL port.
 #===========================================================================
 
 cd('Servers/AdminServer')
-set('Name','@TARGET_SERVER@')
+set('Name', System.getProperty("target.server"))
 set('ListenAddress','')
-set('ListenPort', @WL_PORT@)
+set('ListenPort', Integer.getInteger("weblogic.port"))
 
 create('AdminServer','SSL')
 cd('SSL/AdminServer')
@@ -46,15 +46,15 @@ set('ListenPort', 7002)
 
 cd('/')
 cd('Security/base_domain/User/weblogic')
-set('Name','@WL_USR@')
-cmo.setPassword('@WL_PWD@')
+set('Name',System.getProperty("server.user"))
+cmo.setPassword(System.getProperty("server.pwd"))
 
 #===========================================================================
 # Write the domain and close the domain template.
 #===========================================================================
 
 setOption('OverwriteDomain', 'true')
-writeDomain('@WL_DOMAIN@')
+writeDomain(System.getProperty("weblogic.domain"))
 closeTemplate()
 
 #===========================================================================

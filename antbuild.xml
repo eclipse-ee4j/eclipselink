@@ -779,9 +779,6 @@
     <target name="package-eclipselink-jar" description="build EclipseLink jar">
         <delete file="${eclipselink.jar}"/>
         <echo message="Implementation-Version: ${version.string}"/>
-        <delete dir="${build.dir}/javax.persistence/${classes.dir}" failonerror="false"/>
-        <mkdir dir="${build.dir}/javax.persistence/${classes.dir}"/>
-        <unzip src="${eclipselink.jpa.plugins}/${persistence22.jar}" dest="${build.dir}/javax.persistence/${classes.dir}"/>
         <mkdir dir="${build.dir}/hermes/${classes.dir}"/>
         <unzip src="${eclipselink.plugins}/org.eclipse.persistence.jpa.jpql_${version.string}.jar" dest="${build.dir}/hermes/${classes.dir}"/>
         <jar jarfile="${eclipselink.jar}" duplicate="preserve">
@@ -831,132 +828,6 @@
             <fileset
                 dir="${eclipselink.util.jaxb}/${classes.dir}"
                 includes="**/*.class,"/>
-            <!-- JPA 2.0/2.2 concurrent dev solution: New classes from javax.persistence 2.0 & 2.2 -->
-            <fileset
-                dir="${build.dir}/javax.persistence/${classes.dir}"
-                includes="
-                    javax/persistence/Access.class,
-                    javax/persistence/AccessType.class,
-                    javax/persistence/Cache.class,
-                    javax/persistence/Cacheable.class,
-                    javax/persistence/CacheStoreMode.class,
-                    javax/persistence/CacheRetrieveMode.class,
-                    javax/persistence/LockModeType.class,
-                    javax/persistence/LockTimeoutException.class,
-                    javax/persistence/PessimisticLockException.class,
-                    javax/persistence/PessimisticLockScope.class,
-                    javax/persistence/NamedQuery.class,
-                    javax/persistence/ElementCollection.class,
-                    javax/persistence/CollectionTable.class,
-                    javax/persistence/MapKey.class,
-                    javax/persistence/MapKeyClass.class,
-                    javax/persistence/MapKeyColumn.class,
-                    javax/persistence/MapKeyEnumerated.class,
-                    javax/persistence/MapKeyTemporal.class,
-                    javax/persistence/OrderColumn.class,
-                    javax/persistence/CaseExpression.class,
-                    javax/persistence/Parameter.class,
-                    javax/persistence/Aggregate.class,
-                    javax/persistence/TrimSpec.class,
-                    javax/persistence/CollectionTable.class,
-                    javax/persistence/MapKeyJoinColumns.class,
-                    javax/persistence/MapsId.class,
-                    javax/persistence/MapKeyJoinColumn.class,
-                    javax/persistence/DomainObject.class,
-                    javax/persistence/Predicate.class,
-                    javax/persistence/FetchJoinObject.class,
-                    javax/persistence/OrderByItem.class,
-                    javax/persistence/Expression.class,
-                    javax/persistence/QueryDefinition.class,
-                    javax/persistence/SelectItem.class,
-                    javax/persistence/SequenceGenerators.class,
-                    javax/persistence/TableGenerators.class,
-                    javax/persistence/criteria/CriteriaBuilder.class,
-                    javax/persistence/TypedQuery.class,
-                    javax/persistence/ValidationMode.class,
-                    javax/persistence/criteria/CriteriaBuilder$Trimspec.class,
-                    javax/persistence/criteria/CriteriaBuilder$SimpleCase.class,
-                    javax/persistence/criteria/CriteriaBuilder$Coalesce.class,
-                    javax/persistence/criteria/CriteriaBuilder$In.class,
-                    javax/persistence/criteria/CriteriaBuilder$Case.class,
-                    javax/persistence/PredicateOperand.class,
-                    javax/persistence/PathExpression.class,
-                    javax/persistence/PersistenceUtil.class,
-                    javax/persistence/PersistenceUnitUtil.class,
-                    javax/persistence/Tuple.class,
-                    javax/persistence/QueryTimeoutException.class,
-                    javax/persistence/TupleElement.class,
-                    javax/persistence/SharedCacheMode.class,
-                    javax/persistence/spi/LoadState.class
-                    javax/persistence/spi/ProviderUtil.class,
-                    javax/persistence/metamodel/Attribute.class,
-                    javax/persistence/metamodel/Type$PersistenceType.class,
-                    javax/persistence/criteria/Predicate$BooleanOperator.class,
-                    javax/persistence/metamodel/Attribute$PersistentAttributeType.class,
-                    javax/persistence/metamodel/BasicType.class,
-                    javax/persistence/metamodel/Bindable.class,
-                    javax/persistence/metamodel/Bindable$BindableType.class,
-                    javax/persistence/metamodel/CollectionAttribute.class,
-                    javax/persistence/metamodel/EmbeddableType.class,
-                    javax/persistence/metamodel/EntityType.class,
-                    javax/persistence/metamodel/IdentifiableType.class,
-                    javax/persistence/metamodel/ListAttribute.class,
-                    javax/persistence/metamodel/ManagedType.class,
-                    javax/persistence/metamodel/MapAttribute.class,
-                    javax/persistence/metamodel/MappedSuperclassType.class,
-                    javax/persistence/metamodel/Metamodel.class,
-                    javax/persistence/metamodel/PluralAttribute.class,
-                    javax/persistence/metamodel/PluralAttribute$CollectionType.class,
-                    javax/persistence/metamodel/SetAttribute.class,
-                    javax/persistence/metamodel/SingularAttribute.class,
-                    javax/persistence/metamodel/StaticMetamodel.class,
-                    javax/persistence/metamodel/Type.class,
-                    javax/persistence/criteria/AbstractQuery.class,
-                    javax/persistence/criteria/CollectionJoin.class,
-                    javax/persistence/criteria/CriteriaQuery.class,
-                    javax/persistence/criteria/Expression.class,
-                    javax/persistence/criteria/Fetch.class,
-                    javax/persistence/criteria/FetchParent.class,
-                    javax/persistence/criteria/From.class,
-                    javax/persistence/criteria/Join.class,
-                    javax/persistence/criteria/JoinType.class,
-                    javax/persistence/criteria/ListJoin.class,
-                    javax/persistence/criteria/MapJoin.class,
-                    javax/persistence/criteria/Order.class,
-                    javax/persistnece/criteria/ParameterExpression,
-                    javax/persistence/criteria/Path.class,
-                    javax/persistence/criteria/PluralJoin.class,
-                    javax/persistence/criteria/Predicate.class,
-                    javax/persistence/criteria/Root.class,
-                    javax/persistence/criteria/Selection.class,
-                    javax/persistence/criteria/SetJoin.class,
-                    javax/persistence/criteria/Subquery.class,
-                    javax/persistence/ConstructorResult.class,
-                    javax/persistence/NamedStoredProcedureQueries.class,
-                    javax/persistence/NamedStoredProcedureQuery.class,
-                    javax/persistence/ParameterMode.class,
-                    javax/persistence/StoredProcedureParameter.class,
-                    javax/persistence/StoredProcedureQuery.class,
-                    javax/persistence/SynchronizationType.class,
-                    javax/persistence/AttributeConverter.class,
-                    javax/persistence/ConstraintMode.class,
-                    javax/persistence/Convert.class,
-                    javax/persistence/Converter.class,
-                    javax/persistence/Converts.class,
-                    javax/persistence/ForeignKey.class,
-                    javax/persistence/Index.class,
-                    javax/persistence/AttributeNode.class,
-                    javax/persistence/EntityGraph.class,
-                    javax/persistence/Subgraph.class,
-                    javax/persistence/NamedAttributeNode.class,
-                    javax/persistence/NamedEntityGraph.class,
-                    javax/persistence/NamedEntityGraphs.class,
-                    javax/persistence/NamedSubgraph.class,
-                    javax/persistence/criteria/CommonAbstractQuery.class,
-                    javax/persistence/criteria/CriteriaDelete.class,
-                    javax/persistence/criteria/CriteriaUpdate.class,
-                    javax/persistence/criteria/CommonAbstractCriteria.class
-            "/>
         </jar>
     </target>
 
@@ -1551,8 +1422,6 @@
             <target name="server-install"/>
             <target name="server-setup"/>
             <target name="server-test-lrg"/>
-            <target name="server-test-jpa21-lrg"/>
-            <target name="server-test-jpa22-lrg"/>
             <target name="server-stop"/>
         </ant>
     </target>
@@ -1599,7 +1468,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
     </target>
     <target name="test-jpa21" description="run the jpa tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg21"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
     </target>
     <target name="test-jpa22" description="run the jpa tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg22"/>
@@ -1609,7 +1478,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg"/>
     </target>
     <target name="test-jpa21-srg" description="run the jpa srg tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg21"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg"/>
     </target>
     <target name="test-jpa22-srg" description="run the jpa srg tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg22"/>

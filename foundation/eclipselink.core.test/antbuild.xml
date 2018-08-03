@@ -297,6 +297,7 @@
             <attribute name="modulepath" default="core_test.compile.module.path"/>
             <attribute name="upgrademodulepath" default="core_test.upgrade.module.path"/>
             <sequential>
+                <local name="junit.failed"/>
                 <property name="additional.jvmargs" value=""/>
                 <local name="single.test"/>
                 <condition property="single.test" value="true" else="false">
@@ -328,6 +329,7 @@
                     <modulepath refid="@{modulepath}"/>
                     <upgrademodulepath refid="@{upgrademodulepath}"/>
                     <jvmarg line="${test.junit.jvm.modules.prop}"/>
+                    <jvmarg line="${additional.jvmargs}"/>
                     <syspropertyset refid="test.run.propertyset"/>
                     <sysproperty key="db.pwd" value="${db.pwd}"/>
                     <formatter type="xml"/>

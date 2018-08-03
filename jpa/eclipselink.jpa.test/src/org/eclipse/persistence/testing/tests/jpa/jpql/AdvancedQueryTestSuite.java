@@ -1220,7 +1220,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Employee employee = (Employee) employees.get(0);
                     employee.setFirstName("New Pessimistic Employee");
 
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ);
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);
@@ -1272,7 +1274,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     employee.setFirstName("New Pessimistic Employee");
 
 
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ);
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);
@@ -1658,7 +1662,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Employee employee = (Employee) employees.get(0);
                     employee.setSalary(90000);
 
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE);
+                    HashMap properties = new HashMap();
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setSalary(100000);
                     commitTransaction(em2);
                 } catch (PessimisticLockException ex) {

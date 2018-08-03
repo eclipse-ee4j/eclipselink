@@ -18,19 +18,25 @@ package org.eclipse.persistence.testing.tests.proxyauthentication.thin;
 import java.util.Map;
 import java.util.Properties;
 
-import oracle.jdbc.OracleConnection;
-
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.ClientSession;
-import org.eclipse.persistence.sessions.server.ConnectionPolicy;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
-
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.sessions.SessionEventListener;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.framework.oracle.SessionExchanger;
+
+import oracle.jdbc.OracleConnection;
 
 // Test verifying that connectionUser and proxyUser are used as expected.
 public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
@@ -249,7 +255,7 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
     }
 
     void verifyUser(String msg, String user, String expectedUser) {
-        if(!user.equals(expectedUser)) {
+        if(!user.equalsIgnoreCase(expectedUser)) {
             errorMsg += msg + " through wrong user " + user + " - " + expectedUser + " was expected \n";
         }
     }

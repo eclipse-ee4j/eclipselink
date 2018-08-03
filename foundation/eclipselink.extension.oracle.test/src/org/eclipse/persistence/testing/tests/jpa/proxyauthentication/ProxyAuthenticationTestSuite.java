@@ -50,6 +50,9 @@ import org.eclipse.persistence.testing.tests.proxyauthentication.thin.ProxyAuthe
  * see comment in ProxyAuthenticationUsersAndProperties.
  */
 public class ProxyAuthenticationTestSuite extends JUnitTestCase {
+
+    private static final String PU_NAME = "proxyauthentication";
+
     // the map passed to creteEMFactory method.
     Map factoryProperties;
 
@@ -94,6 +97,10 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    public String getPersistenceUnitName() {
+        return PU_NAME;
+    }
+
     public static Test suite() {
         TestSuite suite = new TestSuite("Proxy Authentication JPA Test Suite");
 
@@ -125,16 +132,16 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         if(setupErrorMsg == null) {
             if (isOnServer()) {
                 setupErrorMsg = "ProxyAuthentication tests currently can't run on server.";
-            } else if(!getServerSession().getPlatform().isOracle()) {
+            } else if(!getServerSession(PU_NAME).getPlatform().isOracle()) {
                 setupErrorMsg = "ProxyAuthentication test has not run, it runs only on Oracle and Oracle9Platform or higher required.";
-            } else if (! (getServerSession().getPlatform() instanceof Oracle9Platform)) {
+            } else if (! (getServerSession(PU_NAME).getPlatform() instanceof Oracle9Platform)) {
                 setupErrorMsg = "ProxyAuthentication test has not run, Oracle9Platform or higher required.";
             } else {
                 // sets up all user names and properties used by the tests.
                 ProxyAuthenticationUsersAndProperties.initialize();
                 // verifies that all the users correctly setup in the db.
                 // returns empty string in case of success, error message otherwise.
-                setupErrorMsg = ProxyAuthenticationUsersAndProperties.verify(getServerSession());
+                setupErrorMsg = ProxyAuthenticationUsersAndProperties.verify(getServerSession(PU_NAME));
             }
         }
         if(setupErrorMsg.length() > 0) {
@@ -143,7 +150,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         } else {
             // The test will re-create EMFactory using the necessary properties, close the original factory first.
             // This does nothing if the factory already closed.
-            closeEntityManagerFactory();
+            closeEntityManagerFactory(PU_NAME);
             initializeFactoryProperties();
         }
     }
@@ -285,7 +292,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         if(serverSessionProxyProperties != null) {
             factoryProperties.putAll(serverSessionProxyProperties);
         }
-        EntityManagerFactory factory = this.getEntityManagerFactory(factoryProperties);
+        EntityManagerFactory factory = getEntityManagerFactory(factoryProperties);
         ServerSession ss = ((JpaEntityManagerFactory)factory).getServerSession();
 
         if(shoulUseExclusiveIsolatedSession) {

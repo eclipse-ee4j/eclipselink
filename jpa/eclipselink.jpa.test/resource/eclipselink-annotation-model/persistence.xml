@@ -391,7 +391,7 @@
     </persistence-unit>
 
     <!-- following persistence unit is for CASE_SENSITIVITY testing-->
-    <persistence-unit name="MulitPU-1">
+    <persistence-unit name="case_sensitivity_pu">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <mapping-file>META-INF/case-sensitive-advanced-entity-mappings.xml</mapping-file>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>

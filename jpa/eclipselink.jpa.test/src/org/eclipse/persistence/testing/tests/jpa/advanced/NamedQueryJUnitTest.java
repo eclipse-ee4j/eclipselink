@@ -34,7 +34,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.EquipmentCode;
 public class NamedQueryJUnitTest extends JUnitTestCase {
 
     /** Persistence unit name. */
-    protected String PUName = "MulitPU-1";
+    protected String PUName = "default";
 
     /**
      * Constructs an instance of <code>NamedQueryJUnitTestm</code> class.

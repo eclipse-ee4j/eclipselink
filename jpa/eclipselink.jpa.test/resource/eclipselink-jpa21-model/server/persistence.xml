@@ -179,7 +179,7 @@
         </properties>
     </persistence-unit>
     <!-- A test model for bug #466271. -->
-    <persistence-unit name="pu-with-mappedsuperclass" transaction-type="@transaction-type@">
+    <persistence-unit name="MulitPU-6" transaction-type="@transaction-type@">
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <@datasource-type@>@data-source-name@</@datasource-type@>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.WovenMS</class>

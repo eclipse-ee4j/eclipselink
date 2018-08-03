@@ -38,6 +38,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.jpa.test.basic.model.Employee;
+import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
@@ -59,10 +60,10 @@ public class TestQueryHints implements PUPropertiesProvider {
 
     private final static int realTimeout = 3099;
 
-    @Emf(name = "defaultEMF", classes = { Employee.class } )
+    @Emf(name = "defaultEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE)
     private EntityManagerFactory emf;
 
-    @Emf(name = "TimeoutPropertiesEMF", classes = { Employee.class }, properties = { 
+    @Emf(name = "TimeoutPropertiesEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE, properties = {
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryHints.realTimeout),
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "MINUTES") })
     private EntityManagerFactory emfTimeoutProperties;
@@ -70,10 +71,10 @@ public class TestQueryHints implements PUPropertiesProvider {
     /**
      * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT sets the
      * timeout accordingly on the executed java.sql.Statement.
-     * 
+     *
      * QueryHints.JDBC_TIMEOUT expects seconds by default.
      * java.sql.Statement.getQueryTimeout() will return a value in seconds.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -101,10 +102,10 @@ public class TestQueryHints implements PUPropertiesProvider {
     /**
      * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT_UNIT sets the
      * timeout accordingly on the executed java.sql.Statement.
-     * 
+     *
      * QueryHints.JDBC_TIMEOUT expects seconds by default.
      * java.sql.Statement.getQueryTimeout() will return a value in seconds.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -161,7 +162,7 @@ public class TestQueryHints implements PUPropertiesProvider {
     /**
      * Test that setting the Query Hint: QueryHints.SCROLLABLE_CURSOR on a NamedQuery
      * does not cause subsequent Queries, created using the same name, to throw exception.
-     * 
+     *
      * @throws Exception
      */
     @Test

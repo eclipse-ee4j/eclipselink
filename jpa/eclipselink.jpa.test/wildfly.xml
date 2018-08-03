@@ -62,6 +62,8 @@
     <property file="./wildfly.properties"/>
 
     <property name="jdbc.driver.lib" value="${jdbc.driver.jar}"/>
+    <property name="jdbc2.driver.lib" value="${jdbc2.driver.jar}"/>
+    <property name="jdbc3.driver.lib" value="${jdbc3.driver.jar}"/>
     <property name="w.jpa.api.jar" value="${persistence22.jar}"/>
     <path id="eclipselink.lib">
         <fileset dir="${jpatest.basedir}/../../plugins/">
@@ -71,26 +73,36 @@
         <pathelement location="${jpatest.2.sdo.plugins.dir}/${commonj.sdo.jar}"/>
     </path>
 
-    <!-- Set db name by check db.driver -->
-    <condition property="db.name" value="oracle">
-        <contains string="${db.driver}" substring="oracle"/>
-    </condition>
+    <macrodef name="set-db-name">
+        <attribute name="property"/>
+        <attribute name="driver" />
+        <sequential>
+            <!-- Set db name by check db.driver -->
+            <condition property="@{property}" value="oracle">
+                <contains string="@{driver}" substring="oracle"/>
+            </condition>
 
-    <condition property="db.name" value="mysql">
-        <contains string="${db.driver}" substring="mysql"/>
-    </condition>
+            <condition property="@{property}" value="mysql">
+                <contains string="@{driver}" substring="mysql"/>
+            </condition>
 
-    <condition property="db.name" value="mssql">
-        <contains string="${db.driver}" substring="sqlserver"/>
-    </condition>
+            <condition property="@{property}" value="mssql">
+                <contains string="@{driver}" substring="sqlserver"/>
+            </condition>
 
-    <condition property="db.name" value="db2">
-        <contains string="${db.driver}" substring="db2"/>
-    </condition>
+            <condition property="@{property}" value="db2">
+                <contains string="@{driver}" substring="db2"/>
+            </condition>
 
-    <condition property="db.name" value="sybase">
-        <contains string="${db.driver}" substring="sybase"/>
-    </condition>
+            <condition property="@{property}" value="sybase">
+                <contains string="@{driver}" substring="sybase"/>
+            </condition>
+        </sequential>
+    </macrodef>
+
+    <set-db-name property="db.name" driver="${db.driver}"/>
+    <set-db-name property="db2.name" driver="${db2.driver}"/>
+    <set-db-name property="db3.name" driver="${db3.driver}"/>
 
     <condition property="is.eap">
         <contains string="${server.version}" substring="eap"/>
@@ -156,6 +168,8 @@
         <antcall target="wildfly-start"/>
         <!-- JDBC Driver -->
         <cli command="module add --name=com.${db.name} --resources=${jdbc.driver.lib} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
+        <cli command="module add --name=com.${db2.name} --resources=${jdbc2.driver.lib} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
+        <cli command="module add --name=com.${db3.name} --resources=${jdbc3.driver.lib} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
         <!-- JUnit -->
         <cli command="module add --name=junit.junit --resources=${junit.lib} --module-root-dir=${wildfly.modules.dir}"/>
 
@@ -165,16 +179,50 @@
     <target name="wildfly-setup" description="Create datasources and JDBC driver definition on the Wildfly server." depends="-wildfly-cli-init">
         <cli command="/subsystem=datasources/jdbc-driver=${db.name}Driver:add(driver-name=${db.name}Driver,driver-module-name=com.${db.name},driver-class-name=${db.driver})"/>
         <cli command=":reload"/>
+        <cli command="/subsystem=datasources/jdbc-driver=${db2.name}Driver:add(driver-name=${db2.name}Driver,driver-module-name=com.${db2.name},driver-class-name=${db2.driver})"/>
+        <cli command=":reload"/>
+        <cli command="/subsystem=datasources/jdbc-driver=${db3.name}Driver:add(driver-name=${db3.name}Driver,driver-module-name=com.${db3.name},driver-class-name=${db3.driver})"/>
+        <cli command=":reload"/>
 
         <property name="w.ds.name" value="${wildfly.jtaDs.name}${db.name}Pool"/>
         <echo>Setting up ${w.ds.name}</echo>
         <cli command="data-source add --jndi-name=${wildfly.jtaDs.jndi} --name=${w.ds.name} --connection-url=${db.url} --driver-name=${db.name}Driver --user-name=${db.user} —-password=${db.pwd} --jta=true --enabled=true"/>
         <cli command="/subsystem=datasources/data-source=${w.ds.name}:write-attribute(name=password,value=${db.pwd})"/>
 
+        <property name="w.ds2.name" value="${wildfly.jtaDs2.name}${db2.name}Pool"/>
+        <echo>Setting up ${w.ds2.name}</echo>
+        <cli command="data-source add --jndi-name=${wildfly.jtaDs2.jndi} --name=${w.ds2.name} --connection-url=${db2.url} --driver-name=${db2.name}Driver --user-name=${db2.user} —-password=${db2.pwd} --jta=true --enabled=true"/>
+        <cli command="/subsystem=datasources/data-source=${w.ds2.name}:write-attribute(name=password,value=${db2.pwd})"/>
+
+        <property name="w.ds3.name" value="${wildfly.jtaDs3.name}${db3.name}Pool"/>
+        <echo>Setting up ${w.ds3.name}</echo>
+        <cli command="data-source add --jndi-name=${wildfly.jtaDs3.jndi} --name=${w.ds3.name} --connection-url=${db3.url} --driver-name=${db3.name}Driver --user-name=${db3.user} —-password=${db3.pwd} --jta=true --enabled=true"/>
+        <cli command="/subsystem=datasources/data-source=${w.ds3.name}:write-attribute(name=password,value=${db3.pwd})"/>
+
         <property name="w.nonjtads.name" value="${wildfly.nonJtaDs.name}${db.name}Pool"/>
         <echo>Setting up ${w.nonjtads.name}</echo>
         <cli command="data-source add --jndi-name=${wildfly.nonJtaDs.jndi} --name=${w.nonjtads.name} --connection-url=${db.url} --driver-name=${db.name}Driver --user-name=${db.user} —-password=${db.pwd} --jta=true --enabled=true"/>
         <cli command="/subsystem=datasources/data-source=${w.nonjtads.name}:write-attribute(name=password,value=${db.pwd})"/>
+        <cli command=":reload"/>
+
+        <property name="w.nonjtads2.name" value="${wildfly.nonJtaDs2.name}${db2.name}Pool"/>
+        <echo>Setting up ${w.nonjtads2.name}</echo>
+        <cli command="data-source add --jndi-name=${wildfly.nonJtaDs2.jndi} --name=${w.nonjtads2.name} --connection-url=${db2.url} --driver-name=${db2.name}Driver --user-name=${db2.user} —-password=${db2.pwd} --jta=true --enabled=true"/>
+        <cli command="/subsystem=datasources/data-source=${w.nonjtads2.name}:write-attribute(name=password,value=${db2.pwd})"/>
+        <cli command=":reload"/>
+
+        <property name="w.nonjtads3.name" value="${wildfly.nonJtaDs3.name}${db3.name}Pool"/>
+        <echo>Setting up ${w.nonjtads3.name}</echo>
+        <cli command="data-source add --jndi-name=${wildfly.nonJtaDs3.jndi} --name=${w.nonjtads3.name} --connection-url=${db3.url} --driver-name=${db3.name}Driver --user-name=${db3.user} —-password=${db3.pwd} --jta=true --enabled=true"/>
+        <cli command="/subsystem=datasources/data-source=${w.nonjtads3.name}:write-attribute(name=password,value=${db3.pwd})"/>
+        <cli command=":reload"/>
+
+        <cli command="/system-property=pa.connection.user:add(value=${pa.connection.user})"/>
+        <cli command="/system-property=pa.connection.password:add(value=${pa.connection.password})"/>
+        <cli command="/system-property=pa.proxyuser:add(value=${pa.proxyuser})"/>
+        <cli command="/system-property=pa.proxyuser.password:add(value=${pa.proxyuser.password})"/>
+        <cli command="/system-property=pa.proxyuser2:add(value=${pa.proxyuser2})"/>
+        <cli command="/system-property=pa.proxyuser2.password:add(value=${pa.proxyuser2.password})"/>
         <cli command=":reload"/>
     </target>
 
@@ -182,13 +230,30 @@
         <!-- DataSources -->
         <cli command="data-source remove --name=${wildfly.jtaDs.name}${db.name}Pool"/>
         <cli command="data-source remove --name=${wildfly.nonJtaDs.name}${db.name}Pool"/>
+        <cli command="data-source remove --name=${wildfly.jtaDs2.name}${db2.name}Pool"/>
+        <cli command="data-source remove --name=${wildfly.nonJtaDs2.name}${db2.name}Pool"/>
+        <cli command="data-source remove --name=${wildfly.jtaDs3.name}${db3.name}Pool"/>
+        <cli command="data-source remove --name=${wildfly.nonJtaDs3.name}${db3.name}Pool"/>
         <cli command=":reload"/>
 
         <cli command="/subsystem=datasources/jdbc-driver=${db.name}Driver:remove"/>
+        <cli command="/subsystem=datasources/jdbc-driver=${db2.name}Driver:remove"/>
+        <cli command="/subsystem=datasources/jdbc-driver=${db3.name}Driver:remove"/>
+        <cli command=":reload"/>
+
+        <!-- System properties -->
+        <cli command="/system-property=pa.connection.user:remove"/>
+        <cli command="/system-property=pa.connection.password:remove"/>
+        <cli command="/system-property=pa.proxyuser:remove"/>
+        <cli command="/system-property=pa.proxyuser.password:remove"/>
+        <cli command="/system-property=pa.proxyuser2:remove"/>
+        <cli command="/system-property=pa.proxyuser2.password:remove"/>
         <cli command=":reload"/>
 
         <!-- JDBC Driver -->
         <cli command="module remove --name=com.${db.name} --module-root-dir=${wildfly.modules.dir}"/>
+        <cli command="module remove --name=com.${db2.name} --module-root-dir=${wildfly.modules.dir}"/>
+        <cli command="module remove --name=com.${db3.name} --module-root-dir=${wildfly.modules.dir}"/>
         <!-- JUnit -->
         <cli command="module remove --name=junit.junit --module-root-dir=${wildfly.modules.dir}"/>
 
@@ -234,7 +299,7 @@
         <cli command="deploy ${ear.name} --force"/>
     </target>
 
-    <target name="wildfly-undeploy" description="Undeploy the application ear frpm the server." depends="-wildfly-cli-init">
+    <target name="wildfly-undeploy" description="Undeploy the application ear from the server." depends="-wildfly-cli-init">
         <cli command="undeploy ${application.name}.ear"/>
     </target>
 

@@ -54,8 +54,6 @@ public class OracleTestModel extends TestModel {
         tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionTypeWithoutAccessorsTestModel");
         tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionCustomSQLTestModel");
         tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionInsuranceObjectRelationalTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionJGeometryTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionJGeometryWrappedTestModel");
 
         tests.add("org.eclipse.persistence.testing.tests.flashback.FlashbackTestModel");
         tests.add("org.eclipse.persistence.testing.tests.returning.ReturningPolicyTestModel");

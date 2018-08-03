@@ -14,140 +14,113 @@
 
 <project name="oracle-db-setup" default="clean-schema" basedir=".">
     <echo message="user.home = '${user.home}'"/>
+    <echo message="Loading user properties from: '${test.properties}'"/>
+    <property file="${test.properties}"/>
     <echo message="Loading user properties from: '${user.home}/test.properties'"/>
     <property file="${user.home}/test.properties"/>
+    <echo message="Loading user properties from: '${basedir}/test.properties'"/>
+    <property file="${basedir}/test.properties"/>
     <property name="db.sys.user" value="sys as sysdba"/>
     <property name="db.sys.pwd" value="orasys9"/>
-    <property name="DB_USER" value="${db.user}"/>
-    <property name="DB_PWD" value="${db.pwd}"/>
-    <property name="PROXY_USER" value="${db.user}_PROXY"/>
-    <property name="PROXY_USER2" value="${db.user}_PROXY2"/>
-    <property name="PROXY_PWD" value="password"/>
-    <property name="PROXY_PWD2" value="password"/>
+    <property name="pa.connection.user" value="PAS_CONN"/>
+    <property name="pa.connection.password" value="${db.pwd}2"/>
+    <property name="pa.proxyuser" value="PAS_PROXY"/>
+    <property name="pa.proxyuser.password" value="password"/>
+    <property name="pa.proxyuser2" value="${pa.proxyuser}2"/>
+    <property name="pa.proxyuser2.password" value="${pa.proxyuser.password}2"/>
 
-    <target name="clean-schema">
+    <target name="setup-connuser">
+        <echo message="db.sys.user           = ${db.sys.user}"/>
+        <echo message="pa.connection.user    = ${pa.connection.user}"/>
 
-        <echo message="DB_USER = ${DB_USER}"/>
-        <echo message="DB_PWD = ${DB_PWD}"/>
-        <echo message="PROXY_USER = ${PROXY_USER}"/>
-        <echo message="PROXY_PWD = ${PROXY_PWD}"/>
+        <sql userid="${db.sys.user}" password="${db.sys.pwd}"
+             driver="${db.driver}" url="${db.url}"
+             classpath="${jdbc.driver.jar}"
+             keepformat="true" delimiter=";"
+             onerror="continue">
+DROP USER ${pa.connection.user} CASCADE;
 
-        <sql driver="${db.driver}"
-              url="${db.url}"
-              userid="${db.sys.user}"
-              password="${db.sys.pwd}"
-              print="true"
-              onerror="continue"
-              expandProperties="true">
-            <classpath>
-               <pathelement location="${jdbc.driver.jar}"/>
-            </classpath>
-DROP USER ${DB_USER} CASCADE;
-
-CREATE USER ${DB_USER} PROFILE "DEFAULT" IDENTIFIED BY ${DB_PWD} ACCOUNT UNLOCK;
-REM "The following line is required for Oracle DB version 12.1"
-GRANT UNLIMITED TABLESPACE TO ${DB_USER};
-GRANT CONNECT TO ${DB_USER};
-GRANT RESOURCE TO ${DB_USER};
-GRANT CREATE SESSION TO ${DB_USER};
-GRANT create any view TO ${DB_USER};
-GRANT create any context TO ${DB_USER};
-GRANT drop any context TO ${DB_USER};
-GRANT execute on dbms_flashback TO ${DB_USER};
-GRANT execute on dbms_rls TO ${DB_USER};
-GRANT execute on dbms_session TO ${DB_USER};
-GRANT change notification TO ${DB_USER};
-REM "The following 2 lines are required for DBWS Oracle-specific tests"
-GRANT create any directory TO ${DB_USER};
-GRANT drop any directory TO ${DB_USER};
+CREATE USER ${pa.connection.user} IDENTIFIED BY ${pa.connection.password} ACCOUNT UNLOCK;
+GRANT CONNECT TO ${pa.connection.user};
+GRANT RESOURCE TO ${pa.connection.user};
+GRANT CREATE SESSION TO ${pa.connection.user};
+GRANT UNLIMITED TABLESPACE TO ${pa.connection.user};
+GRANT create any view TO ${pa.connection.user};
+GRANT create any context TO ${pa.connection.user};
+GRANT drop any context TO ${pa.connection.user};
+GRANT execute on dbms_flashback TO ${pa.connection.user};
+GRANT execute on dbms_rls TO ${pa.connection.user};
+GRANT execute on dbms_session TO ${pa.connection.user};
+GRANT change notification TO ${pa.connection.user};
+GRANT create any directory TO ${pa.connection.user};
+GRANT drop any directory TO ${pa.connection.user};
         </sql>
     </target>
 
-    <target name="setup-proxy-authentication" depends="clean-schema">
+    <target name="setup-proxy-authentication" depends="setup-connuser">
+        <echo message="db.sys.user           = ${db.sys.user}"/>
+        <echo message="pa.connection.user    = ${pa.connection.user}"/>
+        <echo message="pa.proxyuser          = ${pa.proxyuser}"/>
+        <echo message="pa.proxyuser.password = ${pa.proxyuser.password}"/>
+        <echo message="pa.proxyuser          = ${pa.proxyuser}"/>
+        <echo message="pa.proxyuser.password = ${pa.proxyuser.password}"/>
 
-        <echo message="DB_USER = ${DB_USER}"/>
-        <echo message="DB_PWD = ${DB_PWD}"/>
-        <echo message="PROXY_USER = ${PROXY_USER}"/>
-        <echo message="PROXY_PWD = ${PROXY_PWD}"/>
+        <sql userid="${db.sys.user}" password="${db.sys.pwd}"
+             driver="${db.driver}" url="${db.url}"
+             classpath="${jdbc.driver.jar}"
+             keepformat="true" delimiter=";"
+             onerror="continue">
+DROP USER ${pa.proxyuser} CASCADE;
+DROP USER ${pa.proxyuser2} CASCADE;
 
-        <sql driver="${db.driver}"
-              url="${db.url}"
-              userid="${db.sys.user}"
-              password="${db.sys.pwd}"
-              print="true"
-              onerror="continue"
-              expandProperties="true">
-            <classpath>
-               <pathelement location="${jdbc.driver.jar}"/>
-            </classpath>
-DROP USER ${PROXY_USER} CASCADE;
-DROP USER ${PROXY_USER2} CASCADE;
-
-CREATE USER ${PROXY_USER} IDENTIFIED BY ${PROXY_PWD} ACCOUNT UNLOCK;
-CREATE USER ${PROXY_USER2} IDENTIFIED BY ${PROXY_PWD2} ACCOUNT UNLOCK;
-REM "The following 2 lines are required for Oracle DB version 12.1"
-GRANT UNLIMITED TABLESPACE TO ${PROXY_USER};
-GRANT UNLIMITED TABLESPACE TO ${PROXY_USER2};
-GRANT CONNECT TO ${PROXY_USER};
-GRANT CONNECT TO ${PROXY_USER2};
-GRANT RESOURCE TO ${PROXY_USER};
-GRANT CREATE SESSION TO ${PROXY_USER};
-ALTER USER ${PROXY_USER} GRANT CONNECT THROUGH ${DB_USER};
-ALTER USER ${PROXY_USER2} GRANT CONNECT THROUGH ${DB_USER};
+CREATE USER ${pa.proxyuser} IDENTIFIED BY ${pa.proxyuser.password} ACCOUNT UNLOCK;
+CREATE USER ${pa.proxyuser2} IDENTIFIED BY ${pa.proxyuser2.password} ACCOUNT UNLOCK;
+GRANT UNLIMITED TABLESPACE TO ${pa.proxyuser};
+GRANT UNLIMITED TABLESPACE TO ${pa.proxyuser2};
+GRANT CONNECT TO ${pa.proxyuser};
+GRANT CONNECT TO ${pa.proxyuser2};
+GRANT RESOURCE TO ${pa.proxyuser};
+GRANT CREATE SESSION TO ${pa.proxyuser};
+ALTER USER ${pa.proxyuser} GRANT CONNECT THROUGH ${pa.connection.user};
+ALTER USER ${pa.proxyuser2} GRANT CONNECT THROUGH ${pa.connection.user};
         </sql>
 
-        <sql driver="${db.driver}"
-              url="${db.url}"
-              userid="${DB_USER}"
-              password="${DB_PWD}"
-              print="true"
-              onerror="continue"
-              expandProperties="true">
-            <classpath>
-               <pathelement location="${jdbc.driver.jar}"/>
-            </classpath>
+        <sql userid="${pa.connection.user}" password="${pa.connection.password}"
+             driver="${db.driver}" url="${db.url}"
+             classpath="${jdbc.driver.jar}"
+             keepformat="true" delimiter=";"
+             onerror="continue">
 CREATE TABLE JPA_PROXY_EMPLOYEE (EMP_ID NUMBER(15) NOT NULL, F_NAME VARCHAR2(40) NULL, L_NAME VARCHAR2(40) NULL, PRIMARY KEY (EMP_ID));
 CREATE TABLE PROXY_EMPLOYEE_SEQ (SEQ_NAME VARCHAR2(50) NOT NULL, SEQ_COUNT NUMBER(38) NULL, PRIMARY KEY (SEQ_NAME));
 INSERT INTO PROXY_EMPLOYEE_SEQ(SEQ_NAME, SEQ_COUNT) values ('PROXY_EMPLOYEE_SEQ', 1);
         </sql>
 
-        <sql driver="${db.driver}"
-              url="${db.url}"
-              userid="${PROXY_USER}"
-              password="${PROXY_PWD}"
-              print="true"
-              onerror="continue"
-              expandProperties="true">
-            <classpath>
-               <pathelement location="${jdbc.driver.jar}"/>
-            </classpath>
+        <sql userid="${pa.proxyuser}" password="${pa.proxyuser.password}"
+             driver="${db.driver}" url="${db.url}"
+             classpath="${jdbc.driver.jar}"
+             keepformat="true" delimiter=";"
+             onerror="continue">
 CREATE TABLE PROXY_PHONENUMBER (OWNER_ID NUMBER(15) NOT NULL, TYPE VARCHAR2(15) NOT NULL, AREA_CODE VARCHAR2(3) NULL, NUMB VARCHAR2(8) NULL, PRIMARY KEY (OWNER_ID, TYPE));
         </sql>
 
-        <sql driver="${db.driver}"
-              url="${db.url}"
-              userid="${db.sys.user}"
-              password="${db.sys.pwd}"
-              print="true"
-              onerror="continue"
-              autocommit="true"
-              expandProperties="true">
-            <classpath>
-               <pathelement location="${jdbc.driver.jar}"/>
-            </classpath>
-GRANT ALTER ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
-GRANT DELETE ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
-GRANT INSERT ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
-GRANT SELECT ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
-GRANT UPDATE ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
-GRANT INDEX ON ${DB_USER}.JPA_PROXY_EMPLOYEE TO ${PROXY_USER};
+        <sql userid="${db.sys.user}" password="${db.sys.pwd}"
+             driver="${db.driver}" url="${db.url}"
+             classpath="${jdbc.driver.jar}"
+             keepformat="true" delimiter=";"
+             onerror="continue">
+GRANT ALTER ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+GRANT DELETE ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+GRANT INSERT ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+GRANT SELECT ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+GRANT UPDATE ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
+GRANT INDEX ON ${pa.connection.user}.JPA_PROXY_EMPLOYEE TO ${pa.proxyuser};
 
-GRANT ALTER ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
-GRANT DELETE ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
-GRANT INSERT ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
-GRANT SELECT ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
-GRANT UPDATE ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
-GRANT INDEX ON ${DB_USER}.PROXY_EMPLOYEE_SEQ TO ${PROXY_USER};
+GRANT ALTER ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+GRANT DELETE ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+GRANT INSERT ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+GRANT SELECT ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+GRANT UPDATE ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
+GRANT INDEX ON ${pa.connection.user}.PROXY_EMPLOYEE_SEQ TO ${pa.proxyuser};
          </sql>
     </target>
 </project>

@@ -16,12 +16,15 @@ package org.eclipse.persistence.testing.tests.jpa.timestamptz;
 
 import java.util.Calendar;
 import java.util.TimeZone;
+
 import javax.persistence.EntityManager;
 
-import junit.framework.*;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.timestamptz.*;
+import org.eclipse.persistence.testing.models.jpa.timestamptz.TStamp;
+import org.eclipse.persistence.testing.models.jpa.timestamptz.TimestampTableCreator;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
 
@@ -69,7 +72,7 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
             e.printStackTrace();
             rollbackTransaction(em);
         } finally {
-            clearCache();
+            clearCache("timestamptz");
             dbCal = em.find(TStamp.class, tsId).getNoZone();
             closeEntityManager(em);
         }
@@ -104,7 +107,7 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
             tsId = ts.getId();
             commitTransaction(em);
             closeEntityManager(em);
-            clearCache();
+            clearCache("timestamptz");
             em = createEntityManager("timestamptz");
             dbCal = em.find(TStamp.class, tsId).getTsTZ();
 
@@ -149,7 +152,7 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
             rollbackTransaction(em);
             throw e;
         } finally {
-            clearCache();
+            clearCache("timestamptz");
             dbCal = em.find(TStamp.class, tsId).getTsLTZ();
             closeEntityManager(em);
         }
@@ -187,7 +190,7 @@ public class TimeStampTZJUnitTestSuite extends JUnitTestCase {
             tsId = ts.getId();
             commitTransaction(em);
             closeEntityManager(em);
-            clearCache();
+            clearCache("timestamptz");
             em = createEntityManager("timestamptz");
             dbCal = em.find(TStamp.class, tsId).getTsLTZ();
             int hourDiffFromDB = dbCal.get(Calendar.HOUR_OF_DAY) - originalCal.get(Calendar.HOUR_OF_DAY);

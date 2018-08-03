@@ -91,8 +91,8 @@ public class JPARCMLocalChangeSetTestSuite extends JUnitTestCase {
         new AdvancedTableCreator().replaceTables(session);
         clearServerSessionCache();
         
-        new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession("MulitPU-1"));
-        clearCache("MulitPU-1");  
+        new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession("cacheablePU"));
+        clearCache("cacheablePU");  
     }
     
     public void initializeRCMOnSession(ServerSession session) {
@@ -346,7 +346,7 @@ public class JPARCMLocalChangeSetTestSuite extends JUnitTestCase {
      * in the ObjectChangeSet for the cacheable object referencing the non-cacheable object.
      */
     public void testPropagateProtectedForeignKeyValuesForNewObject() {
-        String puName = "MulitPU-1";
+        String puName = "cacheablePU";
         
         ServerSession session = getServerSession(puName);
         initializeRCMOnSession(session); // must be initialized before any use
@@ -422,7 +422,7 @@ public class JPARCMLocalChangeSetTestSuite extends JUnitTestCase {
      * Common utility test method.
      */
     private void testPropagateProtectedForeignKeyValuesForExistingObject(int cacheSynchronizationType) {
-        String puName = "MulitPU-1";
+        String puName = "cacheablePU";
         
         ServerSession session = getServerSession(puName);
         

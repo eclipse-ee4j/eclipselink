@@ -59,6 +59,7 @@ import org.eclipse.persistence.testing.framework.server.TestRunner2;
 import org.eclipse.persistence.testing.framework.server.TestRunner3;
 import org.eclipse.persistence.testing.framework.server.TestRunner4;
 import org.eclipse.persistence.testing.framework.server.TestRunner5;
+import org.eclipse.persistence.testing.framework.server.TestRunner6;
 import org.eclipse.persistence.transaction.JTA11TransactionController;
 
 import junit.framework.TestCase;
@@ -731,8 +732,7 @@ public abstract class JUnitTestCase extends TestCase {
         properties.put("java.naming.provider.url", url);
         Context context = new InitialContext(properties);
         Throwable exception = null;
-        if (puName == null)
-        {
+        if (puName == null) {
             String testrunner = System.getProperty("server.testrunner");
             if (testrunner == null) {
                 fail("System property 'server.testrunner' must be set.");
@@ -741,12 +741,11 @@ public abstract class JUnitTestCase extends TestCase {
             exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
         }else{
             int i = puName.charAt(8) - 48;
-            String testRunner[] = new String[6];
-            for (int j=1; j<=5; j++)
-            {
+            String testRunner[] = new String[7];
+            for (int j=1; j<=6; j++) {
                 String serverRunner = "server.testrunner" + j;
                 testRunner[j] = System.getProperty(serverRunner);
-                if (testRunner[j] == null) {
+                if (testRunner[j] == null && j < 6) {
                     fail("System property 'server.testrunner'" + j + " must be set.");
                 }
             }
@@ -771,6 +770,10 @@ public abstract class JUnitTestCase extends TestCase {
             case 5:
                 TestRunner5 runner5 = (TestRunner5) PortableRemoteObject.narrow(context.lookup(testRunner[5]), TestRunner5.class);
                 exception = runner5.runTest(getClass().getName(), getName(), getServerProperties());
+                break;
+            case 6:
+                TestRunner6 runner6 = (TestRunner6) PortableRemoteObject.narrow(context.lookup(testRunner[6]), TestRunner6.class);
+                exception = runner6.runTest(getClass().getName(), getName(), getServerProperties());
                 break;
             default:
                 break;
