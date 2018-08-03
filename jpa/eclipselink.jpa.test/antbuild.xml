@@ -860,24 +860,35 @@
             <sequential>
                 <!--server-init-ejb-jar-->
                 <local name="stage.build.dir.ejb"/>
-                <local name="default.ejb.jar.xml"/>
-                <local name="final.ejb.jar.xml"/>
+                <local name="default.ejb.jar.xml.dir"/>
+                <local name="final.ejb.jar.xml.dir"/>
+                <local name="use.ejb.jar.xml"/>
+                <local name="impl.excluded.runner6"/>
+                <local name="impl.excluded.runners"/>
+                <!-- prepare-server-resources -->
+                <local name="bean.src"/>
+                <local name="gen.srv.src.dir"/>
+                <local name="gen.srv.cls.dir"/>
+
                 <property name="stage.build.dir.ejb" value="${jpatest.server.build.dir}/@{testname}/ejb"/>
                 <mkdir dir="${stage.build.dir.ejb}/META-INF"/>
 
-                <condition property="default.ejb.jar.xml"
-                           value="${jpatest.resource.dir}/@{modelname}/server/ejb-jar.xml"
-                           else="${jpatest.resource.dir}/server/ejb-jar.xml">
+                <condition property="default.ejb.jar.xml.dir"
+                           value="${jpatest.resource.dir}/@{modelname}/server"
+                           else="${jpatest.resource.dir}/server">
                     <!--SessionBean Test need it's own ejb-jar.xml, which including ejb-def for the sessionbean -->
                     <available file="${jpatest.resource.dir}/@{modelname}/server/ejb-jar.xml"/>
                 </condition>
 
-                <condition property="final.ejb.jar.xml" value="${jpatest.resource.dir}/${server.name}/ejb-jar.xml" else="${default.ejb.jar.xml}">
+                <condition property="final.ejb.jar.xml.dir" value="${jpatest.resource.dir}/${server.name}" else="${default.ejb.jar.xml.dir}">
                     <!--Empty ejb-jar.xml is needed for GlassFish when run jpa tests against NonJTA datasource-->
                     <and>
                         <isset property="is.glassfish.nonjta.datasource"/>
                         <available file="${jpatest.resource.dir}/${server.name}/ejb-jar.xml"/>
                     </and>
+                </condition>
+                <condition property="use.ejb.jar.xml">
+                    <isfalse value="@{morepus}"/>
                 </condition>
 
                 <copy todir="${stage.build.dir.ejb}/META-INF">
@@ -891,7 +902,9 @@
                     <fileset dir="${jpatest.resource.dir}/server">
                         <include name="persistence.xml"/>
                     </fileset>
-                    <fileset file="${final.ejb.jar.xml}"/>
+                    <fileset file="${final.ejb.jar.xml.dir}">
+                        <include name="ejb-jar.xml" if="use.ejb.jar.xml"/>
+                    </fileset>
                 </copy>
 
                 <!--DDLGeneration Test need it's own persistence.xml and mapping xml files -->
@@ -914,9 +927,35 @@
                     <fileset dir="${jpatest.resource.dir}/@{modelname}/repository" includes="**/extension*.*"/>
                 </copy>
 
-
                 <!-- Replace datasource type, name and transaction type -->
                 <!--<antcall target="add-project-cache-properties" inheritRefs="true"/>-->
+
+                <!-- prepare server session beans for testing -->
+                <condition property="bean.src" value="TestRunnerBean.java_nonjtaDS" else="TestRunnerBean.java">
+                    <isfalse value="${is.JTA}"/>
+                </condition>
+                <property name="gen.srv.src.dir" value="${jpatest.server.build.dir}/@{testname}/ejb-src"/>
+                <property name="gen.srv.cls.dir" value="${jpatest.server.build.dir}/@{testname}/ejb-classes"/>
+                <mkdir dir="${gen.srv.src.dir}"/>
+                <copy overwrite="true"
+                      tofile="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"
+                      file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/server/${bean.src}">
+                    <filterset>
+                        <filter token="puName" value="@{puname}"/>
+                    </filterset>
+                </copy>
+                <condition property="impl.excluded.runner6" value="-NOTHING-" else="**/TestRunner6Bean.*">
+                    <contains string="@{puname}" substring="jpa21-sessionbean"/>
+                </condition>
+                <condition property="impl.excluded.runners" value="**/TestRunnerBean.*,${impl.excluded.runner6}" else="**/TestRunner*Bean.*">
+                    <istrue value="@{morepus}"/>
+                </condition>
+
+                <compile srcdir="${gen.srv.src.dir}" destdir="${gen.srv.cls.dir}" includes="**/*.java" excludes="impl.excluded.runners">
+                    <classpath>
+                        <path refid="compile.path"/>
+                    </classpath>
+                </compile>
 
                 <!--server-compile-ejb-jar-->
                 <compile srcdir="${jpatest.generated.dir}:@{srcdir}"
@@ -941,8 +980,8 @@
                     <zipfileset  src="${jpatest.basedir}/${jpatest.framework}.jar"
                                  includes="org/eclipse/persistence/testing/framework/junit/*.class,
                                   org/eclipse/persistence/testing/framework/server/*.class"
-                                 excludes="**/TestRunner*Bean.*"/>
-                    <fileset dir="${jpatest.server.build.dir}/@{testname}/classes" erroronmissingdir="false"/>
+                                 excludes="${impl.excluded.runners}"/>
+                    <fileset dir="${jpatest.server.build.dir}/@{testname}/ejb-classes" erroronmissingdir="false"/>
                     <fileset dir="${stage.build.dir.ejb}" includes="@{ejbjarincludes}" excludes="@{ejbjarexcludes}"/>
                 </jar>
                 <!--server-weave-ejb-jar" depends="server-package-ejb-jar, init-weaver" if="is.static.server.weaving"-->
@@ -971,40 +1010,6 @@
             <element name="extra-module-jar" optional="true"/>
             <sequential>
                 <mkdir dir="${jpatest.server.build.dir}" />
-                <!-- prepare-server-resources -->
-                <local name="bean.src"/>
-                <local name="gen.srv.src.dir"/>
-                <local name="gen.srv.cls.dir"/>
-                <local name="pusb.includes"/>
-                <local name="pusb.impl.includes"/>
-                <condition property="bean.src" value="TestRunnerBean.java_nonjtaDS" else="TestRunnerBean.java">
-                    <isfalse value="${is.JTA}"/>
-                </condition>
-                <property name="gen.srv.src.dir" value="${jpatest.server.build.dir}/@{testname}/src"/>
-                <property name="gen.srv.cls.dir" value="${jpatest.server.build.dir}/@{testname}/classes"/>
-                <mkdir dir="${gen.srv.src.dir}"/>
-                <copy overwrite="true"
-                      tofile="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/server/TestRunnerBean.java"
-                      file="${jpatest.src.dir}/org/eclipse/persistence/testing/framework/server/${bean.src}">
-                    <filterset>
-                        <filter token="puName" value="@{puname}"/>
-                    </filterset>
-                </copy>
-                <condition property="pusb.includes" value="TestRunner*.java" else="TestRunner1*.java,TestRunner2*.java,TestRunner3*.java,TestRunner4*.java,TestRunner5*.java">
-                    <contains string="@{puname}" substring="jpa21-sessionbean"/>
-                </condition>
-                <condition property="pusb.impl.includes" value="${pusb.includes}" else="-NOTHING-">
-                    <istrue value="@{morepus}"/>
-                </condition>
-                <copy todir="${gen.srv.src.dir}/org/eclipse/persistence/testing/framework/server">
-                    <fileset dir="${jpatest.resource.dir}/server" includes="${pusb.impl.includes}"/>
-                </copy>
-                <compile srcdir="${gen.srv.src.dir}" destdir="${gen.srv.cls.dir}" includes="**/*.java">
-                    <classpath>
-                        <path refid="compile.path"/>
-                    </classpath>
-                </compile>
-
                 <!--server-init-client-jar-->
                 <local name="stage.build.dir.client"/>
                 <property name="stage.build.dir.client" value="${jpatest.server.build.dir}/@{testname}/client"/>
@@ -1025,7 +1030,7 @@
                 <!--server-compile-client-jar-->
                 <compile srcdir="@{srcdir}"
                          destdir="${stage.build.dir.client}">
-                    <include name="@{testdir}/**/*.java"/>
+                    <include name="@{testdir}/*.java"/>
                     <classpath>
                         <path refid="@{classpath}"/>
                     </classpath>
@@ -1037,7 +1042,6 @@
                     <zipfileset  src="${jpatest.basedir}/${jpatest.framework}.jar"
                                  includes="**/*.class"
                                  excludes="**/TestRunner*Bean.*"/>
-                    <fileset dir="${gen.srv.cls.dir}"/>
                     <fileset dir="${stage.build.dir.client}"/>
                 </jar>
 
@@ -2822,7 +2826,6 @@
     <target name="server-test-jpql" depends="init-server-testing">
         <build-ear dir="jpa/jpql" morepus="true"
                    modeldir="org/eclipse/persistence/testing/models/jpa/advanced"
-                   testdir="org/eclipse/persistence/testing/tests/jpa/jpql"
                    modelname="eclipselink-jpql-model">
             <extra-model-resource>
                 <fileset dir="${jpatest.resource.dir}/${eclipselink.annotation.model}/">

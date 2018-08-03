@@ -38,15 +38,24 @@ import org.eclipse.persistence.testing.tests.jpa.advanced.NamedNativeQueryJUnitT
  *
  */
 public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
-    protected String PUName = "default";
+    protected String PUName;
 
     public JUnitNativeQueryTestSuite() {
         super();
+        if (isOnServer()) {
+            PUName = "MulitPU-1";
+        } else {
+            PUName = "default";
+        }
     }
 
     public JUnitNativeQueryTestSuite(String name) {
         super(name);
-        setPuName(PUName);
+        if (isOnServer()) {
+            PUName = "MulitPU-1";
+        } else {
+            PUName = "default";
+        }
     }
 
     public static Test suite() {

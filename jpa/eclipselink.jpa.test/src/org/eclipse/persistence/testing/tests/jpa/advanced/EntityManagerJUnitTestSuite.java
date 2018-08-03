@@ -9917,6 +9917,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
     }
 
     public void testEMFTargetServerEnforcing() {
+        // the test requires passing properties to createEMF or createContainerEMF method.
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManagerFactory emf = null;
         try {
             System.setProperty(SystemProperties.ENFORCE_TARGET_SERVER, "true");

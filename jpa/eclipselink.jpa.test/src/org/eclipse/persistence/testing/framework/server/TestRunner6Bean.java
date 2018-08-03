@@ -43,11 +43,11 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 public class TestRunner6Bean implements TestRunner6 {
 
     /** The entity manager for the test is injected and passed to the test server platform. */
-    @PersistenceContext(unitName="pu-with-mappedsuperclass")
+    @PersistenceContext(unitName="MulitPU-6")
     private EntityManager entityManager;
 
     /** The entity manager factory for the test is injected and passed to the test server platform. */
-    @PersistenceUnit(unitName="pu-with-mappedsuperclass")
+    @PersistenceUnit(unitName="MulitPU-6")
     private EntityManagerFactory entityManagerFactory;
 
     /**

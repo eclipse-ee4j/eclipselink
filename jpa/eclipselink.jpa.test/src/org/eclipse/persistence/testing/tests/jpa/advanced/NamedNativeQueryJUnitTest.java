@@ -24,15 +24,24 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 
 public class NamedNativeQueryJUnitTest extends JUnitTestCase {
-    protected String PUName = "default";
+    protected String PUName;
 
     public NamedNativeQueryJUnitTest() {
         super();
+        if (isOnServer()) {
+            PUName = "MulitPU-1";
+        } else {
+            PUName = "default";
+        }
     }
 
     public NamedNativeQueryJUnitTest(String name) {
         super(name);
-        setPuName(PUName);
+        if (isOnServer()) {
+            PUName = "MulitPU-1";
+        } else {
+            PUName = "default";
+        }
     }
 
     public static Test suite() {
