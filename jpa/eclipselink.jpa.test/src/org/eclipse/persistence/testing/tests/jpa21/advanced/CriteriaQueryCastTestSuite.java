@@ -110,6 +110,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
+        if (isOnServer()) {
+            return;
+        }
 // Bug 532018 - Can't use org.eclipse.persistence.testing.models.jpa entities in JPA 2.1 test
 //        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
 //        new InheritanceTableCreator().replaceTables(getPersistenceUnitServerSession());
@@ -1373,6 +1376,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * direct {@code select}. Using CriteriaQuery to build the query.
      */
     public void testTreatOverInheritance() {
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em = createEntityManager("AnimalsPU");
         beginTransaction(em);
         try {
@@ -1404,6 +1411,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * {@code select count}. Using CriteriaQuery to build the query.
      */
     public void testTreatOverInheritanceWithCount() {
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em = createEntityManager("AnimalsPU");
         beginTransaction(em);
         try {
@@ -1437,6 +1448,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * Using JPQL to build the query.
      */
     public void testTreatOverInheritanceWithCountJPQL() {
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em = createEntityManager("AnimalsPU");
         beginTransaction(em);
         try {

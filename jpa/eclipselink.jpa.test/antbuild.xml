@@ -891,7 +891,7 @@
                     <isfalse value="@{morepus}"/>
                 </condition>
 
-                <copy todir="${stage.build.dir.ejb}/META-INF">
+                <copy todir="${stage.build.dir.ejb}/META-INF" includeEmptyDirs="false">
                     <filterset>
                         <filterset refid="testing.props.filterset"/>
                         <filter token="default" value="@{puname}"/>
@@ -908,7 +908,7 @@
                 </copy>
 
                 <!--DDLGeneration Test need it's own persistence.xml and mapping xml files -->
-                <copy todir="${stage.build.dir.ejb}/META-INF" overwrite="true" failonerror="false">
+                <copy todir="${stage.build.dir.ejb}/META-INF" overwrite="true" failonerror="false" includeEmptyDirs="false">
                     <filterset>
                         <filterset refid="testing.props.filterset"/>
                         <filter token="default" value="@{puname}"/>
@@ -917,7 +917,7 @@
                         <include name="*.xml"/>
                         <include name="*.jdbc"/>
                         <exclude name="extension*.xml"/>
-                        <exclude name="ejb-jar.xml"/>
+                        <include name="ejb-jar.xml" if="use.ejb.jar.xml"/>
                     </fileset>
                     <extra-ejb-model-resource/>
                 </copy>
@@ -951,7 +951,7 @@
                     <istrue value="@{morepus}"/>
                 </condition>
 
-                <compile srcdir="${gen.srv.src.dir}" destdir="${gen.srv.cls.dir}" includes="**/*.java" excludes="impl.excluded.runners">
+                <compile srcdir="${gen.srv.src.dir}" destdir="${gen.srv.cls.dir}" includes="${impl.excluded.runners}">
                     <classpath>
                         <path refid="compile.path"/>
                     </classpath>
@@ -1028,7 +1028,7 @@
                     </filterset>
                 </copy>
                 <!--server-compile-client-jar-->
-                <compile srcdir="@{srcdir}"
+                <compile srcdir="@{srcdir}:${jpatest.generated.dir}"
                          destdir="${stage.build.dir.client}">
                     <include name="@{testdir}/*.java"/>
                     <classpath>
@@ -1649,7 +1649,8 @@
             <attribute name="modulepath" default="jpatest.compile.module.path"/>
             <attribute name="upgrademodulepath" default="jpatest.upgrade.module.path"/>
             <sequential>
-               <property name="additional.jvmargs" value=""/>
+                <local name="junit.failed"/>
+                <property name="additional.jvmargs" value=""/>
                 <local name="single.test"/>
                 <condition property="single.test" value="true" else="false">
                     <not>
@@ -1829,6 +1830,7 @@
             <attribute name="earname" default="@{testname}"/>
             <attribute name="classpath" default="compile.jpa22.server.path"/>
             <sequential>
+                <local name="junit.failed"/>
                 <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
                     <property name="ear.name" value="${jpatest.server.build.dir}/@{testname}/@{earname}.ear"/>
                     <property name="application.name" value="@{testname}"/>

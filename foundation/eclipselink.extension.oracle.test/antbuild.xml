@@ -416,6 +416,7 @@
             <attribute name="upgrademodulepath" default="oracle_test.upgrade.module.path"/>
             <attribute name="dburl" default="${db.url}"/>
             <sequential>
+                <local name="junit.failed"/>
                 <property name="additional.jvmargs" value=""/>
                 <local name="arg.lib.path"/>
                 <condition property="arg.lib.path" value="${jdbc.driver.oci.dir}" else="--empty--">

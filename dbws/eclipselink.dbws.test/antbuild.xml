@@ -260,6 +260,7 @@
             <attribute name="modulepath" default="dbws_test.compile.module.path"/>
             <attribute name="upgrademodulepath" default="dbws_test.upgrade.module.path"/>
             <sequential>
+                <local name="junit.failed"/>
                 <property name="additional.jvmargs" value=""/>
                 <echo message="${line.separator}${line.separator}Running test on ${db.url}${line.separator}${line.separator}" />
                 <echo message="JUnit settings:"/>
