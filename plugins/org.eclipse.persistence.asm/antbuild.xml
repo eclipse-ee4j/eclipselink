@@ -72,12 +72,8 @@
 
         <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
         <!-- Version properties -->
-        <property name="release.version"             value="6.1.1"/>
+        <property name="release.version"             value="6.2.0"/>
 
-        <condition property="javac.debug" value="false"
-                                          else="true">
-            <equals arg1="${build.type}" arg2="RELEASE"/>
-        </condition>
         <property name="javac.debuglevel"            value="lines,vars,source"/>
         <property name="javac.version"               value="1.7"/>
         <property name="javac.optimize"              value="false"/>
@@ -133,7 +129,7 @@
         <javac srcdir="${src.dir}"
                destdir="${asm.classes.dir}"
                includes="org/eclipse/persistence/**/*.java"
-               debug="${javac.debug}"
+               debug="true"
                debuglevel="${javac.debuglevel}"
                encoding="UTF-8"
                optimize="${javac.optimize}"
