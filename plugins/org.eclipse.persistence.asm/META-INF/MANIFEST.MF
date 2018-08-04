@@ -1,5 +1,4 @@
 Manifest-Version: 1.0
-Automatic-Module-Name: eclipselink.asm
 Export-Package: org.eclipse.persistence.internal.libraries.asm;version
  ="6.2.0",org.eclipse.persistence.internal.libraries.asm.commons;versi
  on="6.2.0";uses:="org.eclipse.persistence.internal.libraries.asm,org.
