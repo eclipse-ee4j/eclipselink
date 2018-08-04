@@ -95,12 +95,17 @@ public class XMLCompositeCollectionMappingNodeValue extends XMLRelationshipMappi
         if (null != iterator && cp.hasNext(iterator)) {
             XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
             marshalRecord.closeStartGroupingElements(groupingFragment);
-            marshalRecord.startCollection();
+            int valueSize = cp.sizeFor(collection);
+            if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                marshalRecord.startCollection();
+            }
             do {
                 Object objectValue = cp.next(iterator, session);
                 marshalSingleValue(xPathFragment, marshalRecord, object, objectValue, session, namespaceResolver, ObjectMarshalContext.getInstance());
             } while (cp.hasNext(iterator));
-            marshalRecord.endCollection();
+            if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                marshalRecord.endCollection();
+            }
             return true;
         }
         return marshalRecord.emptyCollection(xPathFragment, namespaceResolver, xmlCompositeCollectionMapping.getWrapperNullPolicy() != null);
