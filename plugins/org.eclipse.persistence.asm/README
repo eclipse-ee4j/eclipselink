@@ -10,6 +10,12 @@ org.eclipse.persistence.utils.rename.MigrateTopLinkToEclipseLink <tmp>/org/objec
 -update release version in 'about.html' and 'readme.html'
 -update asm version in the manifest, i.e.
 sed -i "s/6\.1\.1/6\.2\.0/g" META-INF/MANIFEST.MF
+-update asm version in:
+        dbws/org.eclipse.persistence.dbws/META-INF/MANIFEST.MF
+        foundation/org.eclipse.persistence.core/META-INF/MANIFEST.MF
+        jpa/org.eclipse.persistence.jpa/META-INF/MANIFEST.MF
+        moxy/org.eclipse.persistence.moxy/META-INF/MANIFEST.MF
+        sdo/org.eclipse.persistence.sdo/META-INF/MANIFEST.MF
 
 -commit changes and create a pull request for review
 -ask EclipseLink project committer to file a CQ (see https://www.eclipse.org/projects/handbook/#ip-cq)

@@ -14,7 +14,7 @@ Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.sdo
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.7.3";visibility:=reexport,
- org.eclipse.persistence.asm;bundle-version="6.1.1";resolution:=optional,
+ org.eclipse.persistence.asm;bundle-version="6.2.0";resolution:=optional,
  org.eclipse.persistence.moxy;bundle-version="2.7.3";resolution:=optional,
  commonj.sdo;bundle-version="2.1.1"
 Bundle-Vendor: Eclipse.org - EclipseLink Project
@@ -34,7 +34,7 @@ Import-Package: javax.management;resolution:=optional,
  org.eclipse.persistence.internal.databaseaccess;version="2.7.3",
  org.eclipse.persistence.internal.descriptors;version="2.7.3",
  org.eclipse.persistence.internal.helper;version="2.7.3",
- org.eclipse.persistence.internal.libraries.asm;version="[6.1.1,7.0)";resolution:=optional,
+ org.eclipse.persistence.internal.libraries.asm;version="[6.2.0,7.0)";resolution:=optional,
  org.eclipse.persistence.internal.localization;version="2.7.3",
  org.eclipse.persistence.internal.oxm;version="2.7.3",
  org.eclipse.persistence.internal.oxm.record;version="2.7.3",
