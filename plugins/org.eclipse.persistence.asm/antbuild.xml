@@ -43,6 +43,8 @@
 
     <!-- clean -->
     <target name="clean" depends="init" description="Clean the build">
+        <!-- remove stored manifest for regen -->
+        <delete dir="${asm.classes.dir}/META-INF" includeEmptyDirs="true" failonerror="false" quiet="true"/>
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${asm.2.common.plugins.dir}" includes="${ant.project.name}_*.jar, ${ant.project.name}.source_*.jar"/>
         </delete>
@@ -62,10 +64,15 @@
 
         <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
         <!-- Version properties -->
-        <property name="release.version"               value="5.0.1"/>
-        <!-- Project infrastructure properties -->
-        <property name="src.dir"                       value="src"/>
-        <property name="asm.classes.dir"             value="${asm.build.location}"/> <!-- "." -->
+        <property name="release.version"             value="6.2.0"/>
+
+        <property name="javac.debuglevel"            value="lines,vars,source"/>
+        <property name="javac.version"               value="1.7"/>
+        <property name="javac.optimize"              value="false"/>
+        <property name="javac.deprecation"           value="false"/>
+        <property name="src.dir"                     value="src"/>
+        <property name="classes.dir"                 value="bin"/>
+        <property name="asm.classes.dir"             value="${asm.build.location}/${classes.dir}"/>
 
         <!-- local property overrides -->
         <condition property="custom.properties.message" value="Loading ${user.home}/build.properties..."
@@ -86,11 +93,6 @@
         </condition>
         <echo message="extensions.depend.dir        = '${extensions.depend.dir}'"/>
 
-        <!-- Set Compile Path-->
-        <path id="asm.compile.path">
-            <pathelement path="${asm.2.common.plugins.dir}/osgi.core.zip"/>
-            <pathelement path="${asm.2.common.plugins.dir}/osgi.cmpn_4.1.0.jar"/>
-        </path>
     </target>
 
     <target name="package-init" depends="init">
@@ -101,8 +103,10 @@
            <format property="build.time" pattern="HHmm"/>
         </tstamp>
         <property name="build.type"            value="SNAPSHOT"/>
-        <property name="svn.revision"          value="NA"/>
-        <property name="version.qualifier"     value="v201405080102"/>
+        <condition property="version.qualifier" value="v${build.date}${build.time}"
+                                                else="qualifier">
+            <equals arg1="${build.type}" arg2="RELEASE"/>
+        </condition>
         <property name="version.string"        value="${release.version}.${version.qualifier}"/>
         <property name="release.designation"   value="EclipseLink ${release.version} Build"/>
         <property name="specification.vendor"  value="Eclipse.org - EclipseLink Project"/>
@@ -112,11 +116,12 @@
     <!-- compile -->
     <target name="compile" depends="compile-init" description="Compile bundle code">
         <!-- remove stored classes for recompile -->
-        <delete dir="${asm.build.location}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
-        <property name="javac.version" value="1.7"/>
+        <delete dir="${asm.classes.dir}/org" includeEmptyDirs="true" failonerror="false" quiet="true"/>
+        <mkdir dir="${asm.classes.dir}"/>
         <javac srcdir="${src.dir}"
                destdir="${asm.classes.dir}"
                includes="org/eclipse/persistence/**/*.java"
+               debug="true"
                debuglevel="${javac.debuglevel}"
                encoding="UTF-8"
                optimize="${javac.optimize}"
@@ -126,13 +131,15 @@
                failonerror="true"
                memoryMaximumSize="512m"
                fork="true"
-               classpathref="asm.compile.path"
         />
     </target>
 
     <!-- package -->
     <target name="package" depends="package-init" description="jar OSGI bundle">
-        <jar jarfile="${asm.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="META-INF/MANIFEST.MF">
+        <mkdir dir="${asm.classes.dir}/META-INF"/>
+        <copy file="META-INF/MANIFEST.MF" todir="${asm.classes.dir}/META-INF"/>
+        <replace file="${asm.classes.dir}/META-INF/MANIFEST.MF" token="${release.version}.qualifier" value="${version.string}" />
+        <jar jarfile="${asm.2.common.plugins.dir}/${ant.project.name}_${version.string}.jar" manifest="${asm.classes.dir}/META-INF/MANIFEST.MF">
             <fileset dir="${asm.2.base.dir}">
                 <include name="license.*"/>
             </fileset>
