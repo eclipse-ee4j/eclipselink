@@ -649,10 +649,7 @@ public class SchemaGenerator {
     }
 
     private Schema getSchemaForNamespace(String namespace) {
-        if (namespace != null && !namespace.equals(EMPTY_STRING)) {
-            return getSchemaForNamespace(namespace, null);
-        }
-        return null;
+        return getSchemaForNamespace(namespace, null);
     }
 
     /**
@@ -2296,7 +2293,9 @@ public class SchemaGenerator {
         }
         boolean addRef = shouldAddRefAndSetForm(element, elementURI, lookupNamespace, isElementFormQualified, true);
         if(addRef){
-            addElementRefToSchema(schema, compositor, element, elementURI);
+            if (elementURI!=null && !elementURI.equals(EMPTY_STRING) || Occurs.ZERO.equals(element.getMinOccurs())) {
+                addElementRefToSchema(schema, compositor, element, elementURI);
+            }
         } else {
             // for positional mappings we could have multiple elements with same name; check before adding
             if (elementExistsInParticle(element.getName(), element.getRef(), compositor) == null) {
