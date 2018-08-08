@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +18,9 @@
 //       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
 //     01/23/2018-2.7 Will Dazey
 //       - 530214: trim operation should not bind parameters
+//     19/07/2018 - Jody Grassel (IBM)
+//       - 537795 : CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
+
 package org.eclipse.persistence.expressions;
 
 import java.security.AccessController;
@@ -2194,6 +2198,14 @@ public class ExpressionOperator implements Serializable {
                 printer.printString(alias.getNameDelimited(printer.getPlatform()));
             } else if ((this.selector == Count) && (item.isExpressionBuilder())) {
                 printer.printString("*");
+            } else if ((this.selector == Case) && (item.isConstantExpression())) {
+                final ConstantExpression ce = (ConstantExpression) item;
+                final Object value = ce.getValue();
+                if (value == null) {
+                    printer.printNull(ce);
+                } else {
+                    printer.printPrimitive(value);
+                }
             } else {
                 item.printSQL(printer);
             }
