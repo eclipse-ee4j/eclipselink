@@ -142,6 +142,35 @@ public class TestQueryCase {
         em.getTransaction().rollback();
     }
     
+    @Test
+    public void testQueryCase4() {
+        if (emf == null)
+            return;
+        EntityManager em = emf.createEntityManager();
+        
+        populate();
+        
+        em.getTransaction().begin();
+        
+        TypedQuery<Integer> query = em.createQuery(""
+                + "SELECT ("
+                   + "CASE t.itemString2 "
+                   + "WHEN 'A' THEN 42 "
+                   + "WHEN 'B' THEN 100 "
+                   + "ELSE 0 "
+                   + "END "
+                + ") "
+                + "FROM EntityTbl01 t", Integer.class);
+        
+        List<Integer> intList = query.getResultList();
+        assertNotNull(intList);
+        assertEquals(2, intList.size());
+        assertEquals(new Integer(100), intList.get(0));
+        assertEquals(new Integer(100), intList.get(1));
+        
+        em.getTransaction().rollback();
+    }
+    
     private void populate() {
         if (populated)
             return;
