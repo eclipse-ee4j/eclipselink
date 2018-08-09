@@ -36,8 +36,7 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestQueryCase {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { EntityTbl01.class }, 
-            properties = { @Property(name="eclipselink.logging.level", value="FINE"),
-                    @Property(name="eclipselink.logging.parameters", value="true"),
+            properties = { 
                     @Property(name = "eclipselink.cache.shared.default", value = "false")})
     private EntityManagerFactory emf;
     
@@ -45,7 +44,6 @@ public class TestQueryCase {
     
     @Test
     public void testQueryCase1() {
-//        System.out.println("Executing testQueryCase1 ...");
         if (emf == null)
             return;
         EntityManager em = emf.createEntityManager();
@@ -67,17 +65,11 @@ public class TestQueryCase {
         assertNotNull(dto01);
         assertEquals(0, dto01.size());
         
-//        System.out.println("Result list size: " + dto01.size());
-//        for(EntityTbl01 d : dto01) {
-//            System.out.println(d);
-//        }
-        
         em.getTransaction().rollback();
     }
     
     @Test
     public void testQueryCase2() {
-//        System.out.println("Executing testQueryCase2 ...");
         if (emf == null)
             return;
         EntityManager em = emf.createEntityManager();
@@ -99,17 +91,11 @@ public class TestQueryCase {
         assertNotNull(dto01);
         assertEquals(0, dto01.size());
         
-//        System.out.println("Result list size: " + dto01.size());
-//        for(EntityTbl01 d : dto01) {
-//            System.out.println(d);
-//        }
-        
         em.getTransaction().rollback();
     }
     
     @Test
     public void testQueryCase3() {
-//        System.out.println("Executing testQueryCase3 ...");
         if (emf == null)
             return;
         EntityManager em = emf.createEntityManager();
@@ -152,10 +138,6 @@ public class TestQueryCase {
         assertNull(dto01.get(0).getStr4());
         assertEquals(new Integer(2), dto01.get(0).getInteger1());
         assertEquals(new Integer(2), dto01.get(0).getInteger2());
-//        System.out.println("Result list size: " + dto01.size());
-//        for(Dto01 d : dto01) {
-//            System.out.println(d);
-//        }
         
         em.getTransaction().rollback();
     }
