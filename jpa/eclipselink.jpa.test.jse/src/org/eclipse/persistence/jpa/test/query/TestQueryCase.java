@@ -65,6 +65,24 @@ public class TestQueryCase {
         assertNotNull(dto01);
         assertEquals(0, dto01.size());
         
+        query = em.createQuery(""
+                + "SELECT t FROM EntityTbl01 t "
+                    + "WHERE t.itemString1 = ( "
+                        + "CASE t.itemInteger1 "
+                            + "WHEN 1 THEN 'A' "
+                            + "WHEN 100 THEN 'B' "
+                            + "ELSE 'C' "
+                        + "END )", EntityTbl01.class);
+        dto01 = query.getResultList();
+        assertNotNull(dto01);
+        assertEquals(1, dto01.size());
+        
+        assertEquals("A", dto01.get(0).getItemString1());
+        assertEquals("B", dto01.get(0).getItemString2());
+        assertEquals("C", dto01.get(0).getItemString3());
+        assertEquals("D", dto01.get(0).getItemString4());
+        assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+        
         em.getTransaction().rollback();
     }
     
@@ -90,6 +108,34 @@ public class TestQueryCase {
         List<EntityTbl01> dto01 = query.getResultList();
         assertNotNull(dto01);
         assertEquals(0, dto01.size());
+        
+        query = em.createQuery(""
+                + "SELECT t FROM EntityTbl01 t "
+                + "WHERE t.itemString1 = ( "
+                    + "CASE "
+                        + "WHEN t.itemInteger1 = 1 THEN 'A' "
+                        + "WHEN t.itemInteger1 = 100 THEN 'B' "
+                        + "ELSE 'C' "
+                    + "END )", EntityTbl01.class);
+        
+        dto01 = query.getResultList();
+        assertNotNull(dto01);
+        assertEquals(1, dto01.size());
+        
+        assertEquals("A", dto01.get(0).getItemString1());
+        assertEquals("B", dto01.get(0).getItemString2());
+        assertEquals("C", dto01.get(0).getItemString3());
+        assertEquals("D", dto01.get(0).getItemString4());
+        assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+        
+        query = em.createQuery(""
+                + "SELECT t FROM EntityTbl01 t "
+                + "WHERE t.itemString1 = ( "
+                    + "CASE "
+                        + "WHEN t.itemInteger1 = 1 AND t.KeyString = 'Key01' THEN 'A' "
+                        + "WHEN t.itemInteger1 = 100 THEN 'B' "
+                        + "ELSE 'C' "
+                    + "END )", EntityTbl01.class);
         
         em.getTransaction().rollback();
     }
