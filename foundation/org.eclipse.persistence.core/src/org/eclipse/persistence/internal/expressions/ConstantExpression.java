@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
  ******************************************************************************/  
 package org.eclipse.persistence.internal.expressions;
 
@@ -33,8 +34,8 @@ public class ConstantExpression extends Expression {
 
     public ConstantExpression(Object newValue, Expression baseExpression) {
         super();
-        value = newValue;
-        localBase = baseExpression;
+        this.value = newValue;
+        this.localBase = baseExpression;
     }
 
     /**
@@ -50,7 +51,7 @@ public class ConstantExpression extends Expression {
             return false;
         }
         ConstantExpression expression = (ConstantExpression) object;
-        return ((getValue() == expression.getValue()) || ((getValue() != null) && getValue().equals(expression.getValue())));
+        return ((this.value == expression.getValue()) || ((this.value != null) && this.value.equals(expression.getValue())));
     }
         
     /**
@@ -60,8 +61,8 @@ public class ConstantExpression extends Expression {
      */
     public int computeHashCode() {
         int hashCode = super.computeHashCode();
-        if (getValue() != null) {
-            hashCode = hashCode + getValue().hashCode();
+        if (this.value != null) {
+            hashCode = hashCode + this.value.hashCode();
         }
         return hashCode;
     }
@@ -87,11 +88,11 @@ public class ConstantExpression extends Expression {
     }
 
     public Expression getLocalBase() {
-        return localBase;
+        return this.localBase;
     }
 
     public Object getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(Object value) {
@@ -116,11 +117,11 @@ public class ConstantExpression extends Expression {
      */
     public Expression normalize(ExpressionNormalizer normalizer) {
         super.normalize(normalizer);
-        if (value == null)
+        if (this.value == null)
             return this;
         
-        if (value instanceof Collection) {
-            normalizeValueList(normalizer, (Collection)value);
+        if (this.value instanceof Collection) {
+            normalizeValueList(normalizer, (Collection)this.value);
         }
         return this;
     }
@@ -141,7 +142,7 @@ public class ConstantExpression extends Expression {
      */
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        localBase = localBase.copiedVersionFrom(alreadyDone);
+        this.localBase = this.localBase.copiedVersionFrom(alreadyDone);
     }
 
     /**
@@ -149,7 +150,10 @@ public class ConstantExpression extends Expression {
      * Print SQL onto the stream, using the ExpressionPrinter for context
      */
     public void printSQL(ExpressionSQLPrinter printer) {
-        Object value = getLocalBase().getFieldValue(getValue(), getSession());
+        Object value = this.value;
+        if(this.localBase != null) {
+            value = this.localBase.getFieldValue(value, getSession());
+        }
         if(value == null) {
             printer.printNull(this);
         } else {
@@ -162,7 +166,7 @@ public class ConstantExpression extends Expression {
      * Print java for project class generation
      */
     public void printJava(ExpressionJavaPrinter printer) {
-        printer.printJava(getValue());
+        printer.printJava(this.value);
     }
 
     /**
@@ -172,7 +176,13 @@ public class ConstantExpression extends Expression {
      */
     public Expression rebuildOn(Expression newBase) {
         Expression result = (ConstantExpression)clone();
-        result.setLocalBase(getLocalBase().rebuildOn(newBase));
+
+        Expression localBase = null;
+        if(this.localBase != null) {
+            localBase = this.localBase.rebuildOn(newBase);
+        }
+        result.setLocalBase(localBase);
+
         return result;
     }
 
@@ -187,7 +197,7 @@ public class ConstantExpression extends Expression {
     }
 
     public void setLocalBase(Expression e) {
-        localBase = e;
+        this.localBase = e;
     }
 
     /**
@@ -209,7 +219,10 @@ public class ConstantExpression extends Expression {
      */
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
         // PERF: direct-access.
-        return this.localBase.getFieldValue(this.value, session);
+        if(this.localBase != null) {
+            return this.localBase.getFieldValue(this.value, session);
+        }
+        return this.value;
     }
 
     /**
@@ -217,7 +230,7 @@ public class ConstantExpression extends Expression {
      * Used to print a debug form of the expression tree.
      */
     public void writeDescriptionOn(BufferedWriter writer) throws IOException {
-        writer.write(String.valueOf(getValue()));
+        writer.write(String.valueOf(this.value));
     }
 
     /**

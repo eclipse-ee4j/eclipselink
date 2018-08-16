@@ -13,6 +13,7 @@
  *       - 394524: Invalid query key [...] in expression
  *     04/30/2014-2.6 Lukas Jungmann
  *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+ *     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
  ******************************************************************************/
 package org.eclipse.persistence.internal.expressions;
 
@@ -1615,18 +1616,18 @@ public class SQLSelectStatement extends SQLStatement {
             if (orderBy.isFunctionExpression()) {
                 if (base.getOperator().getSelector() == ExpressionOperator.NullsFirst) {
                     nullsFirst = true;
-                    base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                    base = ((FunctionExpression)base).getChildren().get(0);
                 } else if (base.getOperator().getSelector() == ExpressionOperator.NullsLast) {
                     nullsFirst = false;
-                    base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                    base = ((FunctionExpression)base).getChildren().get(0);
                 }
                 if (base.isFunctionExpression()) {
                     if (base.getOperator().getSelector() == ExpressionOperator.Ascending) {
                         asc = true;
-                        base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                        base = ((FunctionExpression)base).getChildren().get(0);
                     } else if (base.getOperator().getSelector() == ExpressionOperator.Descending) {
                         asc = false;
-                        base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                        base = ((FunctionExpression)base).getChildren().get(0);
                     }
                 }
             }
@@ -2137,9 +2138,9 @@ public class SQLSelectStatement extends SQLStatement {
             tables.addAll(mapTableIndexToExpression(ce.getSecondChild(), map, tablesInOrder));
         } else if(expression instanceof FunctionExpression) {
             FunctionExpression fe = (FunctionExpression)expression;
-            Iterator it = fe.getChildren().iterator();
+            Iterator<Expression> it = fe.getChildren().iterator();
             while(it.hasNext()) {
-                tables.addAll(mapTableIndexToExpression((Expression)it.next(), map, tablesInOrder));
+                tables.addAll(mapTableIndexToExpression(it.next(), map, tablesInOrder));
             }
         }
         
