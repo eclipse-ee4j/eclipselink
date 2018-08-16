@@ -12,6 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.BufferedWriter;
@@ -50,7 +51,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * These include not, between and all functions.
  */
 public class FunctionExpression extends BaseExpression {
-    protected Vector children;
+    protected Vector<Expression> children;
     protected ExpressionOperator operator;
     protected transient ExpressionOperator platformOperator;
     protected Class resultType;
@@ -78,8 +79,8 @@ public class FunctionExpression extends BaseExpression {
         if ((this.operator != expression.getOperator()) && ((this.operator == null) || (!this.operator.equals(expression.getOperator())))) {
             return false;
         }
-        List children = getChildren();
-        List otherChildren = expression.getChildren();
+        List<?> children = getChildren();
+        List<?> otherChildren = expression.getChildren();
         int size = children.size();
         if (size != otherChildren.size()) {
             return false;
@@ -103,7 +104,7 @@ public class FunctionExpression extends BaseExpression {
         if (this.operator != null) {
             hashCode = hashCode + this.operator.hashCode();
         }
-        List children = getChildren();
+        List<?> children = getChildren();
         int size = children.size();
         for (int index = 0; index < size; index++) {
             hashCode = hashCode + children.get(index).hashCode();
@@ -244,9 +245,9 @@ public class FunctionExpression extends BaseExpression {
             Vector rightValue = new Vector(size);
             for (int index = 1; index < size; index++) {
                 Object valueFromRight;
-                Object child = this.children.get(index);
+                Expression child = this.children.get(index);
                 if (child instanceof Expression) {
-                    valueFromRight = ((Expression)child).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
+                    valueFromRight = child.valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
                 } else {
                     valueFromRight = child;
                 }
@@ -298,8 +299,8 @@ public class FunctionExpression extends BaseExpression {
         throw QueryException.cannotConformExpression();
     }
 
-    public Vector getChildren() {
-        return children;
+    public Vector<Expression> getChildren() {
+        return this.children;
     }
 
     /**
@@ -386,8 +387,8 @@ public class FunctionExpression extends BaseExpression {
     @Override
     public void iterateOn(ExpressionIterator iterator) {
         super.iterateOn(iterator);
-        for (Enumeration childrenEnum = this.children.elements(); childrenEnum.hasMoreElements();) {
-            Expression child = (Expression)childrenEnum.nextElement();
+        for (Enumeration<Expression> childrenEnum = this.children.elements(); childrenEnum.hasMoreElements();) {
+            Expression child = childrenEnum.nextElement();
             child.iterateOn(iterator);
         }
     }
@@ -422,14 +423,14 @@ public class FunctionExpression extends BaseExpression {
 
         if (!isObjectComparison()) {
             for (int index = 0; index < this.children.size(); index++) {
-                this.children.set(index, ((Expression)this.children.get(index)).normalize(normalizer));
+            	this.children.set(index, this.children.get(index).normalize(normalizer));
             }
             return this;
         } else {
             //if not normalizing we must still validate the corresponding node to make sure that they are valid
             //bug # 2956674
             for (int index = 0; index < this.children.size(); index++) {
-                ((Expression)this.children.get(index)).validateNode();
+            	this.children.get(index).validateNode();
             }
         }
 
@@ -499,7 +500,7 @@ public class FunctionExpression extends BaseExpression {
             Expression newBase = base.getField(sourceFields.get(0));
             setBaseExpression(newBase);
             this.children.set(0, newBase);
-            Expression right = (Expression)this.children.get(1);
+            Expression right = this.children.get(1);
             if (right.isSubSelectExpression()) {
                 // Check for sub-select, need to replace sub-selects on object to select its id.
                 ReportQuery query = ((SubSelectExpression)right).getSubQuery();
@@ -513,7 +514,7 @@ public class FunctionExpression extends BaseExpression {
             }
             // Still need to normalize the children.
             for (int index = 0; index < this.children.size(); index++) {
-                this.children.set(index, ((Expression)this.children.get(index)).normalize(normalizer));
+                this.children.set(index, this.children.get(index).normalize(normalizer));
             }
             return this;
         }
@@ -543,10 +544,10 @@ public class FunctionExpression extends BaseExpression {
     @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        Vector oldChildren = children;
-        children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        Vector<Expression> oldChildren = this.children;
+        this.children = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
         for (int i = 0; i < oldChildren.size(); i++) {
-            addChild((((Expression)oldChildren.elementAt(i)).copiedVersionFrom(alreadyDone)));
+        	addChild((oldChildren.elementAt(i).copiedVersionFrom(alreadyDone)));
         }
     }
 
@@ -559,8 +560,8 @@ public class FunctionExpression extends BaseExpression {
         // If all children are parameters, some databases don't allow binding.
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !this.children.isEmpty()) {
             boolean allParams = true;
-            for (Iterator iterator = this.children.iterator(); iterator.hasNext(); ) {
-                Expression child = (Expression)iterator.next();
+            for (Iterator<Expression> iterator = this.children.iterator(); iterator.hasNext(); ) {
+                Expression child = iterator.next();
                 if (!(child.isParameterExpression() || child.isConstantExpression())) {
                     allParams = false;
                 }
@@ -594,7 +595,7 @@ public class FunctionExpression extends BaseExpression {
         Expression newLocalBase = getBaseExpression().rebuildOn(newBase);
         Vector newChildren = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
         for (int i = 1; i < this.children.size(); i++) {// Skip the first one, since it's also the base
-            newChildren.addElement(((Expression)children.elementAt(i)).rebuildOn(newBase));
+            newChildren.addElement(this.children.elementAt(i).rebuildOn(newBase));
         }
         newLocalBase.setSelectIfOrderedBy(getBaseExpression().selectIfOrderedBy());
         FunctionExpression rebuilt = (FunctionExpression) newLocalBase.performOperator(this.operator, newChildren);
@@ -612,7 +613,7 @@ public class FunctionExpression extends BaseExpression {
     public void resetPlaceHolderBuilder(ExpressionBuilder queryBuilder){
         getBaseExpression().resetPlaceHolderBuilder(queryBuilder);
         for (int i = this.children.size()-1; i > 0; i--) {// Skip the first one, since it's also the base
-            ((Expression)children.elementAt(i)).resetPlaceHolderBuilder(queryBuilder);
+            this.children.elementAt(i).resetPlaceHolderBuilder(queryBuilder);
         }
     }
     // Set the local base expression, ie the one on the other side of the operator
@@ -646,11 +647,11 @@ public class FunctionExpression extends BaseExpression {
 
         // For functions the base is the first child, we only want the arguments so start at the second.
         for (int index = 1; index < this.children.size(); index++) {
-            newChildren.addElement(((Expression)children.elementAt(index)).twistedForBaseAndContext(newBase, context, oldBase));
+            newChildren.addElement(this.children.elementAt(index).twistedForBaseAndContext(newBase, context, oldBase));
         }
 
         // Aply the function to the twisted old base.
-        Expression oldBaseExp = (Expression)this.children.elementAt(0);
+        Expression oldBaseExp = this.children.elementAt(0);
         return oldBaseExp.twistedForBaseAndContext(newBase, context, oldBase).performOperator(this.operator, newChildren);
     }
 
@@ -665,7 +666,7 @@ public class FunctionExpression extends BaseExpression {
         Vector arguments = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(this.children.size());
         for (int index = 1; index < this.children.size(); index++) {
             if (this.children.elementAt(index) instanceof Expression) {
-                arguments.addElement(((Expression)this.children.elementAt(index)).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered));
+                arguments.addElement((this.children.elementAt(index)).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered));
             } else {
                 arguments.addElement(this.children.elementAt(index));
             }

@@ -12,12 +12,12 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.tools.beans;
 
 import javax.swing.event.*;
 import javax.swing.tree.*;
 
-import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.expressions.*;
 
 /**
@@ -44,7 +44,7 @@ public class ExpressionTreeModel implements TreeModel {
             }
         } else if (parent instanceof FunctionExpression) {
             FunctionExpression expression = (FunctionExpression)parent;
-            return new ExpressionNode((Expression)expression.getChildren().elementAt(index));
+            return new ExpressionNode(expression.getChildren().elementAt(index));
         }
 
         return null;

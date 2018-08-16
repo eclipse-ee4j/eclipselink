@@ -12,6 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
 import java.io.*;
@@ -193,10 +194,8 @@ public class ExpressionSQLPrinter {
         if(session.getPlatform().shouldBindLiterals()) {
             DatabaseField field = null;
             Expression localBase = nullValueExpression.getLocalBase();
-            if(localBase.isFieldExpression()) {
-                field = ((FieldExpression)localBase).getField();
-            } else if(localBase.isQueryKeyExpression()) {
-                field = ((QueryKeyExpression)localBase).getField();
+            if(localBase != null && (localBase.isFieldExpression() || localBase.isQueryKeyExpression())) {
+                field = ((DataExpression)localBase).getField();
             }
             session.getPlatform().appendLiteralToCall(getCall(), getWriter(), field);
         } else {
