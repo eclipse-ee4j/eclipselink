@@ -16,6 +16,7 @@
  *       - 531062: Incorrect expression type created for CollectionExpression
  *     05/11/2018-2.7 Will Dazey
  *       - 534515: Incorrect return type set for CASE functions
+ *     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa.jpql;
 
@@ -32,6 +33,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -581,8 +584,9 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 	@Override
 	public void visit(CaseExpression expression) {
 
-		Expression caseOperandExpression = null;
+        Expression caseBaseExpression = queryExpression;
 
+		Expression caseOperandExpression = null;
 		// Create the case operand expression
 		if (expression.hasCaseOperand()) {
 			expression.getCaseOperand().accept(this);
@@ -603,6 +607,24 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 			// Create the CASE expression
 			if (caseOperandExpression != null) {
 				queryExpression = caseOperandExpression.caseStatement(visitor.whenClauses, elseExpression);
+
+                //Bug 537795
+                //After we build the caseStatement, we need to retroactively fix the THEN/ELSE children's base
+                if(queryExpression.isFunctionExpression()) {
+                    Vector<Expression> children = ((org.eclipse.persistence.internal.expressions.FunctionExpression)queryExpression).getChildren();
+                    int index = 1;
+                    while(index <  children.size()) {
+                        Expression when_else = children.get(index);
+                        if(index+1 < children.size()) {
+                            //Not at end, must be a THEN
+                            children.get(index+1).setLocalBase(caseBaseExpression);
+                        } else {
+                            //At end, must be an ELSE
+                            when_else.setLocalBase(caseBaseExpression);
+                        }
+                        index=index+2;
+                    }
+                }
 			}
 			else {
 				queryExpression = queryContext.getBaseExpression();

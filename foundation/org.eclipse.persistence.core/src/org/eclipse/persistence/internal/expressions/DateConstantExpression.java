@@ -50,7 +50,7 @@ public class DateConstantExpression extends ConstantExpression {
      * Print SQL onto the stream, using the ExpressionPrinter for context
      */
     public void printSQL(ExpressionSQLPrinter printer) {
-        printer.printString((String)value);
+        printer.printString((String)this.value);
     }
     
 }

@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation
+ *     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
  ******************************************************************************/  
 package org.eclipse.persistence.nosql.adapters.mongo;
 
@@ -387,8 +388,8 @@ public class MongoPlatform extends EISPlatform {
         } else if (expression.isFunctionExpression()) {
             FunctionExpression function = (FunctionExpression)expression;
             if (function.getOperator().getSelector() == ExpressionOperator.Like) {
-                Object left = extractValueFromExpression((Expression)function.getChildren().get(0), query);
-                Object right = extractValueFromExpression((Expression)function.getChildren().get(1), query);
+                Object left = extractValueFromExpression(function.getChildren().get(0), query);
+                Object right = extractValueFromExpression(function.getChildren().get(1), query);
                 if (!(right instanceof String)) {
                     throw new EISException("Query too complex for Mongo translation, like with [" + right + "] not supported in query: " + query);
                 }
@@ -401,7 +402,7 @@ public class MongoPlatform extends EISPlatform {
                 row.put(left, nested);
             } else if (function.getOperator().getSelector() == ExpressionOperator.Not) {
                 DatabaseRecord nested = new DatabaseRecord();
-                appendExpressionToQueryRow((Expression)function.getChildren().get(0), nested, query);
+                appendExpressionToQueryRow(function.getChildren().get(0), nested, query);
                 row.put("$not", nested);
             } else {
                 throw new EISException("Query too complex for Mongo translation, function [" + expression + "] not supported in query: " + query);            
@@ -418,10 +419,10 @@ public class MongoPlatform extends EISPlatform {
         if (expression.isFunctionExpression()) {
             FunctionExpression function = (FunctionExpression)expression;
             if (function.getOperator().getSelector() == ExpressionOperator.Ascending) {
-                Object field = extractValueFromExpression((Expression)function.getChildren().get(0), query);
+                Object field = extractValueFromExpression(function.getChildren().get(0), query);
                 row.put(field, 1);
             } else if (function.getOperator().getSelector() == ExpressionOperator.Descending) {
-                Object field = extractValueFromExpression((Expression)function.getChildren().get(0), query);
+                Object field = extractValueFromExpression(function.getChildren().get(0), query);
                 row.put(field, -1);
             } else {
                 throw new EISException("Query too complex for Mongo translation, order by [" + expression + "] not supported in query: " + query);

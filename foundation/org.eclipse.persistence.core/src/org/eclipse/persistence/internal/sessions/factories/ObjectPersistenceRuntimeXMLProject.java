@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
  ******************************************************************************/
 package org.eclipse.persistence.internal.sessions.factories;
 
@@ -1220,13 +1221,13 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public void postBuild(DescriptorEvent event) {
                 FunctionExpression expression = (FunctionExpression)event.getObject();
                 for (int index = 0; index < expression.getChildren().size(); index++) {
-                    Expression child = (Expression)expression.getChildren().get(index);
+                    Expression child = expression.getChildren().get(index);
                     if (child.isValueExpression()) {
                         child.setLocalBase(new ExpressionBuilder());
                     }
                 }
                 if (expression.getChildren().size() > 0) {
-                    expression.setBaseExpression((Expression)expression.getChildren().get(0));
+                    expression.setBaseExpression(expression.getChildren().get(0));
                 }
                 else {
                     expression.setBaseExpression(new ExpressionBuilder());
