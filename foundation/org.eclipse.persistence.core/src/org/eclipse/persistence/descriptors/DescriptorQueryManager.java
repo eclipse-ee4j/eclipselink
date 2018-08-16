@@ -26,6 +26,7 @@
 //       - 371950: JPA Metadata caching
 //     09/03/2015 - Will Dazey
 //       - 456067 : Added support for defining query timeout units
+//     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
@@ -986,7 +987,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             updatePropertyParameterExpression(((CompoundExpression) exp).getFirstChild());
             updatePropertyParameterExpression(((CompoundExpression) exp).getSecondChild());
         } else if (exp.isFunctionExpression()) {
-            for (Expression e : (Vector<Expression>) ((FunctionExpression) exp).getChildren()) {
+        	for (Expression e : ((FunctionExpression) exp).getChildren()) {
                 updatePropertyParameterExpression(e);
             }
         } else if (exp.isSubSelectExpression()) {
