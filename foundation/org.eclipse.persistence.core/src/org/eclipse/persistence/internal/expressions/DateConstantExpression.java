@@ -54,7 +54,7 @@ public class DateConstantExpression extends ConstantExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        printer.printString((String)value);
+        printer.printString((String)this.value);
     }
 
 }

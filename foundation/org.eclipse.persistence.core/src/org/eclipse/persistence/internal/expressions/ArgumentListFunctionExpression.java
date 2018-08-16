@@ -12,6 +12,7 @@
 
 // Contributors:
 //     tware - initial API and implementation from for JPA 2.0 criteria API
+//     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.Map;
@@ -55,7 +56,7 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         } else {
             super.addChild(argument);
         }
-        setBaseExpression((Expression)getChildren().firstElement());
+        setBaseExpression(getChildren().firstElement());
         ((ListExpressionOperator)operator).incrementNumberOfItems();
     }
 
