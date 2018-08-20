@@ -72,6 +72,34 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
                         "META-INF/persistence.xml"
                 ).toString()
         );
+
+        Assert.assertEquals(
+            // The protocol changes - we view ZIPs as JARs.
+            "jar:file:/foo/bar.war!/WEB-INF/classes",
+            PersistenceUnitProcessor.computePURootURL(
+                new URL("zip", "", -1, "/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml", dummyZipHandler), 
+                "META-INF/persistence.xml"
+            ).toString()
+        );
+    }
+
+    public void testComputePURootURLForJarFile() throws Exception {
+
+        Assert.assertEquals(
+            new URL("file:/foo/bar.jar"),
+            PersistenceUnitProcessor.computePURootURL(
+                new URL("jar:file:/foo/bar.jar!/META-INF/persistence.xml"),
+                "META-INF/persistence.xml"
+            )
+        );
+
+        Assert.assertEquals(
+            new URL("jar:file:/foo/bar.war!/WEB-INF/classes"),
+            PersistenceUnitProcessor.computePURootURL(
+                new URL("jar:file:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml"),
+                "META-INF/persistence.xml"
+            )
+        );
     }
 
     public void testGetArchiveFactory() {

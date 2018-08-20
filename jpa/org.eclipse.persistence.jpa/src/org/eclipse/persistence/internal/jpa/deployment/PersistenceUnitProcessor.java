@@ -183,19 +183,61 @@ public class PersistenceUnitProcessor {
             // 210280: any file url will be assumed to always reference a file (not a directory)
             result = new URL(pxmlURL, path.toString()); // NOI18N
         } else if("jar".equals(protocol)) { // NOI18N
+            // JPA spec limits the possible scenarios in Java EE environments (8.2).
+            // However it makes sense to be a little more flexible, supporting
+            // any root URLs that resolve descriptorLocation to pxmlURL.
+            // For example, jar:file:/foo.jar!/bar/META-INF/persistence.xml
+            // will have root in jar:file:/foo.jar!/bar.
+
             // e.g. jar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
             JarURLConnection conn =
                     JarURLConnection.class.cast(pxmlURL.openConnection());
-            result = conn.getJarFileURL();
-        } else if("zip".equals(protocol)) { // NOI18N
-            // e.g. zip:/tmp/a_ear/b.jar!/META-INF/persistence.xml
-            // stolen from java.net.JarURLConnection.parseSpecs method
-            String spec = pxmlURL.getFile();
-            int separator = spec.lastIndexOf("!/");
-            if (separator == -1) {
-                separator = spec.length() - 1;
+            // Entry path, e.g. META-INF/persistence.xml. Empty string
+            // corresponds to the archive root.
+            String entry = conn.getEntryName();
+            if (entry == null) entry = "";
+            // Go up to the directory, corresponding to root of descriptorLocation
+            // (twice for META-INF/persistence.xml).
+            for(int i = 0; i <= descriptorDepth; i++) {
+                int entrySeparator = entry.lastIndexOf("/");
+                entry = entry.substring(0, Math.max(0, entrySeparator));
             }
-            result = new File(spec.substring(0, separator++)).toURL();
+
+            result = entry.isEmpty()
+                ? conn.getJarFileURL()
+                : new URL("jar:" + conn.getJarFileURL() + "!/" + entry);
+        } else if("zip".equals(protocol)) { // NOI18N
+            // More permissive than the JPA spec - see the JAR comment above.
+
+            // e.g. /tmp/a_ear/b.jar!/META-INF/persistence.xml
+            String input = pxmlURL.getFile();
+            int separator = input.lastIndexOf("!/");
+            // File part of the input, e.g. zip:/tmp/a_ear/b.jar
+            String file;
+            // Entry path, e.g. META-INF/persistence.xml. Empty string
+            // corresponds to the archive root.
+            String entry;
+            if (separator == -1) {
+                file = input;
+                entry = "";
+            } else {
+                file = input.substring(0, separator);
+                entry = input.substring(separator + 2);
+            }
+            // Go up to the directory, corresponding to root of descriptorLocation
+            // (twice for META-INF/persistence.xml).
+            for(int i = 0; i <= descriptorDepth; i++) {
+                int entrySeparator = entry.lastIndexOf("/");
+                entry = entry.substring(0, Math.max(0, entrySeparator));
+            }
+
+            if (entry.isEmpty()) {
+                result = new File(file).toURL();
+            } else {
+                // JARs and ZIPs are virtually the same thing, but we have a lot
+                // better tooling for JARs.
+                result = new URL("jar:file:" + file + "!/" + entry);
+            }
         } else if("wsjar".equals(protocol)) { // NOI18N
             // e.g. wsjar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
             // but WS gives use jar:file:..., so we need to match it.
