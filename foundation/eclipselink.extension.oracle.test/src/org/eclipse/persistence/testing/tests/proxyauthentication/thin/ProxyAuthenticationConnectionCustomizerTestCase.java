@@ -1,34 +1,42 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     05/28/2008-1.0M8 Andrei Ilitchev.
- *       - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     05/28/2008-1.0M8 Andrei Ilitchev.
+//       - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
 package org.eclipse.persistence.testing.tests.proxyauthentication.thin;
 
 import java.util.Map;
 import java.util.Properties;
 
-import oracle.jdbc.OracleConnection;
-
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.ClientSession;
-import org.eclipse.persistence.sessions.server.ConnectionPolicy;
-import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
 import org.eclipse.persistence.queries.DataModifyQuery;
 import org.eclipse.persistence.queries.ValueReadQuery;
-
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEvent;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
+import org.eclipse.persistence.sessions.SessionEventListener;
+import org.eclipse.persistence.sessions.server.ClientSession;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.framework.oracle.SessionExchanger;
+
+import oracle.jdbc.OracleConnection;
 
 // Test verifying that connectionUser and proxyUser are used as expected.
 public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
@@ -247,7 +255,7 @@ public class ProxyAuthenticationConnectionCustomizerTestCase extends TestCase {
     }
 
     void verifyUser(String msg, String user, String expectedUser) {
-        if(!user.equals(expectedUser)) {
+        if(!user.equalsIgnoreCase(expectedUser)) {
             errorMsg += msg + " through wrong user " + user + " - " + expectedUser + " was expected \n";
         }
     }

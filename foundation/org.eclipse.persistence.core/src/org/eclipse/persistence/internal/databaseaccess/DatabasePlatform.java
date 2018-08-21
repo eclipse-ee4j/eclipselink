@@ -1,30 +1,33 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
- *     tware - added implementation of computeMaxRowsForSQL
- *     Dies Koper (Fujitsu) - bug fix for printFieldUnique()
- *     Dies Koper (Fujitsu) - added methods to create/drop indices
- *     Vikram Bhatia - added method for releasing temporary LOBs after conversion
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     02/04/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     04/30/2014-2.6 Lukas Jungmann
- *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- *     02/23/2015-2.6 Dalia Abo Sheasha
- *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
+//     tware - added implementation of computeMaxRowsForSQL
+//     Dies Koper (Fujitsu) - bug fix for printFieldUnique()
+//     Dies Koper (Fujitsu) - added methods to create/drop indices
+//     Vikram Bhatia - added method for releasing temporary LOBs after conversion
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     02/04/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     04/30/2014-2.6 Lukas Jungmann
+//       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
+//     02/23/2015-2.6 Dalia Abo Sheasha
+//       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
@@ -73,6 +76,7 @@ import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -86,6 +90,7 @@ import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
@@ -239,7 +244,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public final static int Types_SQLXML = 2009;
 
-
     /**
      * String used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project.  This value will be appended to CreationSuffix strings
@@ -265,6 +269,9 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected Boolean useJDBCStoredProcedureSyntax;
     protected String driverName;
 
+    /**
+     * Creates an instance of default database platform.
+     */
     public DatabasePlatform() {
         this.tableQualifier = "";
         this.usesNativeSQL = false;
@@ -3498,22 +3505,59 @@ public class DatabasePlatform extends DatasourcePlatform {
         field.appendDBString(writer, session, table);
     }
 
-     /**
-      * INTERNAL:
-      * Override this method if the platform supports storing JDBC connection user name during
-      * {@link #initializeConnectionData(Connection)}.
-      * @return Always returns {@code false}
-      */
-     public boolean supportsConnectionUserName() {
-         return false;
-     }
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports storing JDBC connection user name during
+     * {@link #initializeConnectionData(Connection)}.
+     * @return Always returns {@code false}
+     */
+    public boolean supportsConnectionUserName() {
+        return false;
+    }
 
-     /**
-      * INTERNAL:
-      * Returns user name retrieved from JDBC connection.
-      * @throws UnsupportedOperationException on every single call until overridden.
-      */
-     public String getConnectionUserName() {
-         throw new UnsupportedOperationException("Connection user name is not supported.");
-     }
+    /**
+     * INTERNAL:
+     * Returns user name retrieved from JDBC connection.
+     * @throws UnsupportedOperationException on every single call until overridden.
+     */
+    public String getConnectionUserName() {
+        throw new UnsupportedOperationException("Connection user name is not supported.");
+    }
+
+    // Value of shouldCheckResultTableExistsQuery must be false.
+    /**
+     * INTERNAL:
+     * Returns query to check whether given table exists.
+     * Query execution throws an exception when no such table exists.
+     * @param table database table meta-data
+     * @return query to check whether given table exists
+     */
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final String sql = "SELECT 1 FROM " + table.getFullName();
+        final DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        return query;
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Returned value is always {@code true}, because an exception is thrown
+     * when given table does not exists.
+     * @param session current database session
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session,
+            final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            session.executeQuery(getTableExistsQuery(table));
+            return true;
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
+
 }

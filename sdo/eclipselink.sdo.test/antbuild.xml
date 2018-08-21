@@ -1,12 +1,25 @@
 <?xml version="1.0"?>
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      bdoughan - initial API and implementation
+      dtwelves - Sept 2008 Include SDO SRG testing
+      egwin    - Nov 08, remove compile of SDO (add dep check instead)
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -27,12 +40,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     bdoughan - initial API and implementation
-*     dtwelves - Sept 2008 Include SDO SRG testing
-*     egwin    - Nov 08, remove compile of SDO (add dep check instead)
-#******************************************************************************/-->
+-->
 <project name="eclipselink.sdo.test" default="test" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="sdotest.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -106,7 +114,7 @@
         <pathelement path="${resource.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${jacocoagent.lib}"/>
-        <pathelement path="${sdotest.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${asm.jar}"/>
     </path>
 
     <!-- Set Compile/Run Paths using product OSGi bundles -->
@@ -119,30 +127,19 @@
         <path refid="sdotest.thirdparty.run.path"/>
     </path>
 
-    <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
-    <path id="sdotest.compile.against.jar.path">
-        <pathelement path="${sdotest.2.base.dir}/${eclipselink.jar}"/>
-        <path refid="sdotest.thirdparty.compile.path"/>
-    </path>
-    <path id="sdotest.run.against.jar.path">
-        <path refid="sdotest.compile.against.jar.path"/>
-        <path refid="sdotest.thirdparty.run.path"/>
-    </path>
-
     <!-- Should be relative from the eclipselink.sdo.test/resource directory -->
     <path id="sdotest.classgen.run.path">
         <pathelement path="${jacocoagent.lib}"/>
-        <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
-        <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
-        <pathelement path="../${classes.dir}"/>
-        <pathelement path="../${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
-        <pathelement path="../${sdotest.2.common.plugins.dir}/javax.mail_1.4.0.jar"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
+        <pathelement path="${classes.dir}"/>
+        <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/javax.mail_1.4.0.jar"/>
     </path>
 
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar" property="moxy.bundle.exist"/>
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar" property="sdo.bundle.exist"/>
-    <available file="${sdotest.2.base.dir}/${eclipselink.jar}" property="eclipselink.jar.exist"/>
 
     <!-- Clean targets -->
     <target name="clean" description="clean the build">
@@ -153,10 +150,6 @@
     </target>
 
     <!-- Build targets -->
-    <target name="compile-sdo-tests-against-jar" depends="clean" description="build sdo test classes against eclipselink.jar">
-        <fail message="Cannot find EclipseLink: '${sdotest.2.base.dir}/${eclipselink.jar}'." unless="eclipselink.jar.exist"/>
-        <compile_sdo_tests compilepathref="sdotest.compile.against.jar.path"/>
-    </target>
     <target name="compile-sdo-tests" depends="clean" description="build sdo test classes">
         <fail message="Cannot find CORE: '${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar'." unless="core.bundle.exist"/>
         <fail message="Cannot find MOXY: '${sdotest.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar'." unless="moxy.bundle.exist"/>
@@ -171,15 +164,9 @@
         <!--run_sdo_tests customcontext="false runpathref="${sdotest.run.path}"/-->
         <delete dir="${resource.dir}/${tmp.dir}"/>
     </target>
-    <target name="test-against-jar" depends="compile-sdo-tests-against-jar" description="run sdo tests against eclipselink.jar">
+    <target name="test-srg" depends="compile-sdo-tests" description="run sdo srg tests">
         <mkdir dir="${resource.dir}/${tmp.dir}"/>
-        <run_sdo_tests customcontext="true" runpathref="sdotest.run.against.jar.path"/>
-        <!--run_sdo_tests customcontext="false" runpathref="${sdotest.run.against.jar.path}"/-->
-        <delete dir="${resource.dir}/${tmp.dir}"/>
-    </target>
-    <target name="test-srg-against-jar" depends="compile-sdo-tests-against-jar" description="run sdo srg tests against eclipselink.jar">
-        <mkdir dir="${resource.dir}/${tmp.dir}"/>
-        <run_sdo_srg_tests customcontext="true" runpathref="sdotest.run.against.jar.path"/>
+        <run_sdo_srg_tests customcontext="true" runpathref="sdotest.run.path"/>
         <delete dir="${resource.dir}/${tmp.dir}"/>
     </target>
 
@@ -205,7 +192,7 @@
                 <sysproperty key="tempFileDir" value="${tmp.dir}"/>
                 <sysproperty key="ignoreCRLF" value="true"/>
                 <sysproperty key="useLogging" value="false"/>
-                <sysproperty key="sdo.classgen.compile.path" value="${sdo.classgen.run.path}"/>
+                <sysproperty key="sdo.classgen.compile.path" value="${toString:sdotest.classgen.run.path}"/>
                 <sysproperty key="useSAXParsing" value="true"/>
                 <sysproperty key="useDeploymentXML" value="false"/>
                 <sysproperty key="jaxb.test.contextpath" value="oracle.toplink.testing.ox.jaxb.sax"/>
@@ -264,7 +251,7 @@
                 <sysproperty key="tempFileDir" value="${tmp.dir}"/>
                 <sysproperty key="ignoreCRLF" value="true"/>
                 <sysproperty key="useLogging" value="false"/>
-                <sysproperty key="sdo.classgen.compile.path" value="${sdo.classgen.run.path}"/>
+                <sysproperty key="sdo.classgen.compile.path" value="${toString:sdotest.classgen.run.path}"/>
                 <sysproperty key="useSAXParsing" value="true"/>
                 <sysproperty key="useDeploymentXML" value="false"/>
                 <sysproperty key="jaxb.test.contextpath" value="oracle.toplink.testing.ox.jaxb.sax"/>

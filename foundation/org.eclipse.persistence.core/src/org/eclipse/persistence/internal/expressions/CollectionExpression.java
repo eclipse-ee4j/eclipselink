@@ -1,15 +1,18 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
 import java.util.Collection;
@@ -34,7 +37,10 @@ public class CollectionExpression extends ConstantExpression {
 
     @Override
     public void printSQL(ExpressionSQLPrinter printer) {
-        Object value = getLocalBase().getFieldValue(getValue(), getSession());
+        Object value = this.value;
+        if(this.localBase != null) {
+            value = this.localBase.getFieldValue(value, getSession());
+        }
         printer.printList((Collection)value);
     }
 
@@ -45,29 +51,32 @@ public class CollectionExpression extends ConstantExpression {
      */
     @Override
     public Object valueFromObject(Object object, AbstractSession session, AbstractRecord translationRow, int valueHolderPolicy, boolean isObjectUnregistered) {
-        if (value instanceof Collection) {
-            Collection values = (Collection)value;
+        if (this.value instanceof Collection) {
+            Collection values = (Collection)this.value;
             Vector fieldValues = new Vector(values.size());
             for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                 Object value = iterator.next();
                 if (value instanceof Expression){
                     value = ((Expression)value).valueFromObject(object, session, translationRow, valueHolderPolicy, isObjectUnregistered);
-                }else{
-                    value = getLocalBase().getFieldValue(value, session);
+                } else if(this.localBase != null) {
+                    value = this.localBase.getFieldValue(value, session);
                 }
                 fieldValues.add(value);
             }
             return fieldValues;
         }
 
-        return getLocalBase().getFieldValue(getValue(), session);
+        if(this.localBase != null) {
+            return this.localBase.getFieldValue(this.value, session);
+        }
+        return this.value;
     }
 
     @Override
     public void setLocalBase(Expression e) {
         super.setLocalBase(e);
-        if (value instanceof Collection) {
-            Collection values = (Collection)value;
+        if (this.value instanceof Collection) {
+            Collection values = (Collection)this.value;
             for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
                 if (val instanceof Expression){
@@ -84,8 +93,8 @@ public class CollectionExpression extends ConstantExpression {
     @Override
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        if (value instanceof Collection) {
-            Collection values = (Collection)value;
+        if (this.value instanceof Collection) {
+            Collection values = (Collection)this.value;
             Vector newValues = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(values.size());
             for (Iterator iterator = values.iterator(); iterator.hasNext();) {
                 Object val = iterator.next();
@@ -95,7 +104,7 @@ public class CollectionExpression extends ConstantExpression {
                     newValues.add(val);
                 }
             }
-            value = newValues;
+            setValue(newValues);
         }
     }
 }

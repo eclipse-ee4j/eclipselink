@@ -1,17 +1,19 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     tware - initial API and implementation as part of Query Downcast feature
- *     02/08/2013-2.5 Chris Delahunt
- *       - 374771 - JPA 2.1 TREAT support
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     tware - initial API and implementation as part of Query Downcast feature
+//     02/08/2013-2.5 Chris Delahunt
+//       - 374771 - JPA 2.1 TREAT support
 package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.math.BigInteger;
@@ -108,6 +110,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
+        if (isOnServer()) {
+            return;
+        }
 // Bug 532018 - Can't use org.eclipse.persistence.testing.models.jpa entities in JPA 2.1 test
 //        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
 //        new InheritanceTableCreator().replaceTables(getPersistenceUnitServerSession());
@@ -1371,6 +1376,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * direct {@code select}. Using CriteriaQuery to build the query.
      */
     public void testTreatOverInheritance() {
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em = createEntityManager("AnimalsPU");
         beginTransaction(em);
         try {
@@ -1402,6 +1411,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * {@code select count}. Using CriteriaQuery to build the query.
      */
     public void testTreatOverInheritanceWithCount() {
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em = createEntityManager("AnimalsPU");
         beginTransaction(em);
         try {
@@ -1435,6 +1448,10 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * Using JPQL to build the query.
      */
     public void testTreatOverInheritanceWithCountJPQL() {
+        if (isOnServer()) {
+            return;
+        }
+
         EntityManager em = createEntityManager("AnimalsPU");
         beginTransaction(em);
         try {

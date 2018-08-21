@@ -1,46 +1,31 @@
-<!--/*******************************************************************************
-* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
-*   Ant naming conventions:
-*   - regardless of the actual OS platform,'/' is the directory separator
-*     (Ant will convert as appropriate).
-*   - multi-word properties use periods '.'
-*     - properties ending in .jar define jarfile names only (no path)
-*     - properties ending in .lib are fully qualified jars (path and filename)
-*     - properties ending in .dir are directory paths
-*     - properties ending in .path are path refid names (classpath fragments)
-*   - multi-word targets use hyphens '-'
-*     - targets beginning with test- are reserved for high level test targets,
-*       and are used in test results parsing
-*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
-*   - multi-word macros use underscores '_'
-*   - multi-word macro attributes are concatenated
-*     e.g. 'runpathref'
-*   - multi-word tasks (taskdef) names are concatenated
-*     e.g. 'validateconnection'
-*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
-*     e.g. ${env.XXX}.
-*   - Ant properties are lower case.
-*
-* Contributors:
-*     tware  - initial API and implementation
-*     pkrogh - javadocs
-*     egwin  - rework to follow ant conventions.
-*     dtwelves - Add SDO, MOXy SRG targets
-*     egwin  - rework to incorporate new versioning standards and revision info.
-*     egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
+<!--
+
+    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      tware  - initial API and implementation
+      pkrogh - javadocs
+      egwin  - rework to follow ant conventions.
+      dtwelves - Add SDO, MOXy SRG targets
+      egwin  - rework to incorporate new versioning standards and revision info.
+      egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
                strategy. Also includes fixes to eclipselink.jar creation.
-*     egwin  - rework to standardize antcall conventions and fix multiple target builds.
-*     tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
-*     mvalovy - OSGi tests
-*     Rick Curtis - Add jse bucket to lrg-test
-#******************************************************************************/-->
+      egwin  - rework to standardize antcall conventions and fix multiple target builds.
+      tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
+      mvalovy - OSGi tests
+      Rick Curtis - Add jse bucket to lrg-test
+-->
 <!-- =============================================================================
 *  General Comments
 *  This buildfile contains:
@@ -67,7 +52,6 @@
         - build-core : compiles all components, excluding tests, utilities, and Oracle extensions
         - build-oracle : compiles Oracle extensions and tests
         - build-test : compiles all tests, excluding Oracle extensions
-        - build-workbench-test : compiles the workbench tests
         - package-eclipselink-jar : packages eclipselink.jar
         - jar : packages eclipselink.jar
         - package-src-jar : packages source jar
@@ -89,6 +73,28 @@
 
         It may require some configuration of the build.properties to run.
     -->
+<!--
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+-->
 <project name="trunk" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:sonar="antlib:org.sonar.ant">
     <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
     <pathconvert targetos="unix" property="trunk.build.location">
@@ -473,8 +479,9 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.util.jaxb}"              target="clean"/>
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"        target="clean"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>
-        <delete file="*${eclipselink.zip.suffix}" failonerror="false"/>
+        <delete failonerror="false">
+            <fileset dir="." includes="*${eclipselink.zip.suffix}"/>
+        </delete>
     </target>
     <target name="clean-core" depends="check-maven" description="Clean the maven built runtime projects">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
@@ -507,7 +514,6 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
@@ -611,7 +617,6 @@
     <target name="build-util">
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"  target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"      target="build"/>
-        <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"   target="all"/>
     </target>
 
     <!-- Oracle extensions Targets -->
@@ -697,7 +702,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="build"/>
     </target>
 
-    <!-- Compiles tests (excluding workbench, dbws-util and Oracle extensions). -->
+    <!-- Compiles tests (excluding dbws-util and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"      target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}" target="build"/>
@@ -707,7 +712,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"   target="build-against-jar"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"      target="compile-tests-against-jar"/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"       target="compile-sdo-tests-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"       target="compile-sdo-tests"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"      target="build"/>
     </target>
 
@@ -716,11 +721,7 @@
     </target>
 
     <!-- Compiles all util tests -->
-    <target name="build-util-test"  depends="build-workbench-test, build-dbws-utils-test"/>
-
-    <target name="build-workbench-test">
-        <ant antfile="build.xml" dir="${eclipselink.util.workbench.test}" target="all"/>
-    </target>
+    <target name="build-util-test"  depends="build-dbws-utils-test"/>
 
     <target name="build-dbws-utils-test" if="compat.jdk">
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}" target="build"/>
@@ -778,9 +779,6 @@
     <target name="package-eclipselink-jar" description="build EclipseLink jar">
         <delete file="${eclipselink.jar}"/>
         <echo message="Implementation-Version: ${version.string}"/>
-        <delete dir="${build.dir}/javax.persistence/${classes.dir}" failonerror="false"/>
-        <mkdir dir="${build.dir}/javax.persistence/${classes.dir}"/>
-        <unzip src="${eclipselink.jpa.plugins}/${persistence22.jar}" dest="${build.dir}/javax.persistence/${classes.dir}"/>
         <mkdir dir="${build.dir}/hermes/${classes.dir}"/>
         <unzip src="${eclipselink.plugins}/org.eclipse.persistence.jpa.jpql_${version.string}.jar" dest="${build.dir}/hermes/${classes.dir}"/>
         <jar jarfile="${eclipselink.jar}" duplicate="preserve">
@@ -815,6 +813,7 @@
                 <exclude name="*jpars*.jar"/>
                 <exclude name="*nosql*.jar"/>
                 <exclude name="*extension*.jar"/>
+                <exclude name="*sdo*.jar"/>
             </zipgroupfileset>
             <!-- Include hermes runtime Only -->
             <fileset dir="${build.dir}/hermes/${classes.dir}">
@@ -829,132 +828,6 @@
             <fileset
                 dir="${eclipselink.util.jaxb}/${classes.dir}"
                 includes="**/*.class,"/>
-            <!-- JPA 2.0/2.2 concurrent dev solution: New classes from javax.persistence 2.0 & 2.2 -->
-            <fileset
-                dir="${build.dir}/javax.persistence/${classes.dir}"
-                includes="
-                    javax/persistence/Access.class,
-                    javax/persistence/AccessType.class,
-                    javax/persistence/Cache.class,
-                    javax/persistence/Cacheable.class,
-                    javax/persistence/CacheStoreMode.class,
-                    javax/persistence/CacheRetrieveMode.class,
-                    javax/persistence/LockModeType.class,
-                    javax/persistence/LockTimeoutException.class,
-                    javax/persistence/PessimisticLockException.class,
-                    javax/persistence/PessimisticLockScope.class,
-                    javax/persistence/NamedQuery.class,
-                    javax/persistence/ElementCollection.class,
-                    javax/persistence/CollectionTable.class,
-                    javax/persistence/MapKey.class,
-                    javax/persistence/MapKeyClass.class,
-                    javax/persistence/MapKeyColumn.class,
-                    javax/persistence/MapKeyEnumerated.class,
-                    javax/persistence/MapKeyTemporal.class,
-                    javax/persistence/OrderColumn.class,
-                    javax/persistence/CaseExpression.class,
-                    javax/persistence/Parameter.class,
-                    javax/persistence/Aggregate.class,
-                    javax/persistence/TrimSpec.class,
-                    javax/persistence/CollectionTable.class,
-                    javax/persistence/MapKeyJoinColumns.class,
-                    javax/persistence/MapsId.class,
-                    javax/persistence/MapKeyJoinColumn.class,
-                    javax/persistence/DomainObject.class,
-                    javax/persistence/Predicate.class,
-                    javax/persistence/FetchJoinObject.class,
-                    javax/persistence/OrderByItem.class,
-                    javax/persistence/Expression.class,
-                    javax/persistence/QueryDefinition.class,
-                    javax/persistence/SelectItem.class,
-                    javax/persistence/SequenceGenerators.class,
-                    javax/persistence/TableGenerators.class,
-                    javax/persistence/criteria/CriteriaBuilder.class,
-                    javax/persistence/TypedQuery.class,
-                    javax/persistence/ValidationMode.class,
-                    javax/persistence/criteria/CriteriaBuilder$Trimspec.class,
-                    javax/persistence/criteria/CriteriaBuilder$SimpleCase.class,
-                    javax/persistence/criteria/CriteriaBuilder$Coalesce.class,
-                    javax/persistence/criteria/CriteriaBuilder$In.class,
-                    javax/persistence/criteria/CriteriaBuilder$Case.class,
-                    javax/persistence/PredicateOperand.class,
-                    javax/persistence/PathExpression.class,
-                    javax/persistence/PersistenceUtil.class,
-                    javax/persistence/PersistenceUnitUtil.class,
-                    javax/persistence/Tuple.class,
-                    javax/persistence/QueryTimeoutException.class,
-                    javax/persistence/TupleElement.class,
-                    javax/persistence/SharedCacheMode.class,
-                    javax/persistence/spi/LoadState.class
-                    javax/persistence/spi/ProviderUtil.class,
-                    javax/persistence/metamodel/Attribute.class,
-                    javax/persistence/metamodel/Type$PersistenceType.class,
-                    javax/persistence/criteria/Predicate$BooleanOperator.class,
-                    javax/persistence/metamodel/Attribute$PersistentAttributeType.class,
-                    javax/persistence/metamodel/BasicType.class,
-                    javax/persistence/metamodel/Bindable.class,
-                    javax/persistence/metamodel/Bindable$BindableType.class,
-                    javax/persistence/metamodel/CollectionAttribute.class,
-                    javax/persistence/metamodel/EmbeddableType.class,
-                    javax/persistence/metamodel/EntityType.class,
-                    javax/persistence/metamodel/IdentifiableType.class,
-                    javax/persistence/metamodel/ListAttribute.class,
-                    javax/persistence/metamodel/ManagedType.class,
-                    javax/persistence/metamodel/MapAttribute.class,
-                    javax/persistence/metamodel/MappedSuperclassType.class,
-                    javax/persistence/metamodel/Metamodel.class,
-                    javax/persistence/metamodel/PluralAttribute.class,
-                    javax/persistence/metamodel/PluralAttribute$CollectionType.class,
-                    javax/persistence/metamodel/SetAttribute.class,
-                    javax/persistence/metamodel/SingularAttribute.class,
-                    javax/persistence/metamodel/StaticMetamodel.class,
-                    javax/persistence/metamodel/Type.class,
-                    javax/persistence/criteria/AbstractQuery.class,
-                    javax/persistence/criteria/CollectionJoin.class,
-                    javax/persistence/criteria/CriteriaQuery.class,
-                    javax/persistence/criteria/Expression.class,
-                    javax/persistence/criteria/Fetch.class,
-                    javax/persistence/criteria/FetchParent.class,
-                    javax/persistence/criteria/From.class,
-                    javax/persistence/criteria/Join.class,
-                    javax/persistence/criteria/JoinType.class,
-                    javax/persistence/criteria/ListJoin.class,
-                    javax/persistence/criteria/MapJoin.class,
-                    javax/persistence/criteria/Order.class,
-                    javax/persistnece/criteria/ParameterExpression,
-                    javax/persistence/criteria/Path.class,
-                    javax/persistence/criteria/PluralJoin.class,
-                    javax/persistence/criteria/Predicate.class,
-                    javax/persistence/criteria/Root.class,
-                    javax/persistence/criteria/Selection.class,
-                    javax/persistence/criteria/SetJoin.class,
-                    javax/persistence/criteria/Subquery.class,
-                    javax/persistence/ConstructorResult.class,
-                    javax/persistence/NamedStoredProcedureQueries.class,
-                    javax/persistence/NamedStoredProcedureQuery.class,
-                    javax/persistence/ParameterMode.class,
-                    javax/persistence/StoredProcedureParameter.class,
-                    javax/persistence/StoredProcedureQuery.class,
-                    javax/persistence/SynchronizationType.class,
-                    javax/persistence/AttributeConverter.class,
-                    javax/persistence/ConstraintMode.class,
-                    javax/persistence/Convert.class,
-                    javax/persistence/Converter.class,
-                    javax/persistence/Converts.class,
-                    javax/persistence/ForeignKey.class,
-                    javax/persistence/Index.class,
-                    javax/persistence/AttributeNode.class,
-                    javax/persistence/EntityGraph.class,
-                    javax/persistence/Subgraph.class,
-                    javax/persistence/NamedAttributeNode.class,
-                    javax/persistence/NamedEntityGraph.class,
-                    javax/persistence/NamedEntityGraphs.class,
-                    javax/persistence/NamedSubgraph.class,
-                    javax/persistence/criteria/CommonAbstractQuery.class,
-                    javax/persistence/criteria/CriteriaDelete.class,
-                    javax/persistence/criteria/CriteriaUpdate.class,
-                    javax/persistence/criteria/CommonAbstractCriteria.class
-            "/>
         </jar>
     </target>
 
@@ -1481,13 +1354,6 @@
             <zipfileset dir="${eclipselink.dbws.builder}" includes="setenv.*, dbwsbuilder.*"      prefix="eclipselink/utils/dbws" filemode="755"/>
             <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}, *oracleddl*.jar" prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.plugins}"      includes="${servlet.jar}"               prefix="eclipselink/utils/dbws"/>
-            <!-- workbench jars -->
-<!--            <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench.lib}/run/" includes="connector.jar"      prefix="eclipselink/utils/workbench/jlib"/>
-            <zipfileset dir="${eclipselink.util.workbench}/config/"  includes="*, platforms/*"     prefix="eclipselink/utils/workbench/config"/>
-            <zipfileset dir="${eclipselink.util.workbench}"          includes="readme.html"        prefix="eclipselink/utils/workbench"/>
-            <zipfileset dir="${eclipselink.util.workbench}/bin/"     includes="*"                  prefix="eclipselink/utils/workbench/bin" filemode="755"/>-->
         </zip>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-package-installer-zip" >
             <property name="eclipselink.zip.file" value="${eclipselink.install.prefix}${eclipselink.zip.suffix}"/>
@@ -1556,8 +1422,6 @@
             <target name="server-install"/>
             <target name="server-setup"/>
             <target name="server-test-lrg"/>
-            <target name="server-test-jpa21-lrg"/>
-            <target name="server-test-jpa22-lrg"/>
             <target name="server-stop"/>
         </ant>
     </target>
@@ -1604,7 +1468,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
     </target>
     <target name="test-jpa21" description="run the jpa tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg21"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
     </target>
     <target name="test-jpa22" description="run the jpa tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg22"/>
@@ -1614,7 +1478,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg"/>
     </target>
     <target name="test-jpa21-srg" description="run the jpa srg tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg21"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg"/>
     </target>
     <target name="test-jpa22-srg" description="run the jpa srg tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-srg22"/>
@@ -1640,10 +1504,10 @@
     </target>
     <!-- Run SDO & MOXY tests. -->
     <target name="test-sdo" description="run the sdo tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test"/>
     </target>
     <target name="test-sdo-srg" description="run the sdo srg tests">
-        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-srg-against-jar"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}" target="test-srg"/>
     </target>
     <target name="test-moxy" description="run the moxy tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}" target="test-against-jar"/>

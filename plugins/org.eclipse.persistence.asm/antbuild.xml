@@ -1,12 +1,23 @@
 <?xml version="1.0"?>
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+     egwin - initial API and implementation
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -27,10 +38,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     egwin - initial API and implementation
-#******************************************************************************/-->
+-->
 <project name="org.eclipse.persistence.asm" default="build">
     <available file="../${ant.project.name}" type="dir" property="asm.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -64,12 +72,8 @@
 
         <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
         <!-- Version properties -->
-        <property name="release.version"             value="6.1.1"/>
+        <property name="release.version"             value="6.2.0"/>
 
-        <condition property="javac.debug" value="false"
-                                          else="true">
-            <equals arg1="${build.type}" arg2="RELEASE"/>
-        </condition>
         <property name="javac.debuglevel"            value="lines,vars,source"/>
         <property name="javac.version"               value="1.7"/>
         <property name="javac.optimize"              value="false"/>
@@ -125,7 +129,7 @@
         <javac srcdir="${src.dir}"
                destdir="${asm.classes.dir}"
                includes="org/eclipse/persistence/**/*.java"
-               debug="${javac.debug}"
+               debug="true"
                debuglevel="${javac.debuglevel}"
                encoding="UTF-8"
                optimize="${javac.optimize}"

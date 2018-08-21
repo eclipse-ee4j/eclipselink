@@ -1,15 +1,17 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Blaise Doughan - 2.5 - initial implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Blaise Doughan - 2.5 - initial implementation
 package org.eclipse.persistence.internal.oxm;
 
 import java.io.BufferedWriter;
@@ -1123,20 +1125,51 @@ public abstract class XMLMarshaller<
         }else{
             Class objectClass = object.getClass();
             if(object instanceof Collection) {
-                marshalRecord.startCollection();
-                for(Object o : (Collection) object) {
-                    marshal(o, marshalRecord);
+                int valueSize = ((Collection)object).size();
+                if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                    marshalRecord.startCollection();
                 }
-                marshalRecord.endCollection();
+                String valueWrapper;
+                for(Object o : (Collection) object) {
+                    if (o == null) {
+                        valueWrapper = this.getValueWrapper();
+                        if (isApplicationJSON()) {
+                            this.setValueWrapper("");
+                            marshalRecord.setMarshaller(this);
+                        }
+                        marshalRecord.nilSimple(null);
+                        this.setValueWrapper(valueWrapper);
+                    } else {
+                        if (isApplicationJSON() && o != null && (o.getClass() == CoreClassConstants.STRING || o.getClass() == CoreClassConstants.BOOLEAN || CoreClassConstants.NUMBER.isAssignableFrom(o.getClass()))) {
+                            if (marshalRecord.getSession() == null) {
+                                marshalRecord.setSession((ABSTRACT_SESSION) this.getContext().getSession());
+                            }
+                            valueWrapper = this.getValueWrapper();
+                            this.setValueWrapper("");
+                            marshalRecord.setMarshaller(this);
+                            marshalRecord.characters(null, o, null, false);
+                            this.setValueWrapper(valueWrapper);
+                        } else {
+                            marshal(o, marshalRecord);
+                        }
+                    }
+                }
+                if(marshalRecord.getMarshaller().isApplicationJSON() && (valueSize > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                    marshalRecord.endCollection();
+                }
                 marshalRecord.flush();
                 return;
             } else if(objectClass.isArray()) {
-                marshalRecord.startCollection();
                 int arrayLength = Array.getLength(object);
+                if(marshalRecord.getMarshaller().isApplicationJSON() && (arrayLength > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                    marshalRecord.startCollection();
+                }
                 for(int x=0; x<arrayLength; x++) {
                     marshal(Array.get(object, x), marshalRecord);
                 }
-                marshalRecord.endCollection();
+                if(marshalRecord.getMarshaller().isApplicationJSON() && (arrayLength > 1 || !marshalRecord.getMarshaller().isReduceAnyArrays())) {
+                    marshalRecord.endCollection();
+                }
                 marshalRecord.flush();
                 return;
             }

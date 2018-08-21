@@ -1,27 +1,30 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle, Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     James Sutherland - initial impl
- *     05/14/2010-2.1 Guy Pelletier
- *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
- *     Hans Harz, Andrew Rustleund - Bug 324862 - IndexOutOfBoundsException in
- *           DatabaseSessionImpl.initializeDescriptors because @MapKey Annotation is not found.
- *     04/21/2011-2.3 dclarke: Upgraded to support ASM 3.3.1
- *     08/10/2011-2.3 Lloyd Fernandes : Bug 336133 - Validation error during processing on parameterized generic OneToMany Entity relationship from MappedSuperclass
- *     10/05/2012-2.4.1 Guy Pelletier
- *       - 373092: Exceptions using generics, embedded key and entity inheritance
- *     19/04/2014-2.6 Lukas Jungmann
- *       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
- *     11/05/2015-2.6 Dalia Abo Sheasha
- *       - 480787 : Wrap several privileged method calls with a doPrivileged block
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     James Sutherland - initial impl
+//     05/14/2010-2.1 Guy Pelletier
+//       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+//     Hans Harz, Andrew Rustleund - Bug 324862 - IndexOutOfBoundsException in
+//           DatabaseSessionImpl.initializeDescriptors because @MapKey Annotation is not found.
+//     04/21/2011-2.3 dclarke: Upgraded to support ASM 3.3.1
+//     08/10/2011-2.3 Lloyd Fernandes : Bug 336133 - Validation error during processing on parameterized generic OneToMany Entity relationship from MappedSuperclass
+//     10/05/2012-2.4.1 Guy Pelletier
+//       - 373092: Exceptions using generics, embedded key and entity inheritance
+//     19/04/2014-2.6 Lukas Jungmann
+//       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
+//     11/05/2015-2.6 Dalia Abo Sheasha
+//       - 480787 : Wrap several privileged method calls with a doPrivileged block
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.io.IOException;
@@ -285,6 +288,10 @@ public class MetadataAsmFactory extends MetadataFactory {
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             boolean isJPA = false;
+            if (desc.startsWith("Lkotlin")) {
+                //ignore kotlin annotations
+                return null;
+            }
             if (desc.startsWith("Ljava")) {
                 char c = desc.charAt(5);
                 //ignore annotations from 'java' namespace

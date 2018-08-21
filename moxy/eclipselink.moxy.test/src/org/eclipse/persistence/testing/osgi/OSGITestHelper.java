@@ -1,15 +1,17 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Dmitry Kornilov - initial implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Dmitry Kornilov - initial implementation
 package org.eclipse.persistence.testing.osgi;
 
 import org.ops4j.pax.exam.Option;
@@ -37,7 +39,7 @@ public class OSGITestHelper {
     private static final String RELEASE_VERSION = System.getProperty("release.version", "2.7.0");
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "javax.xml.bind_2.2.12.v201410011542.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "javax.ws.rs_1.1.1.v20101004-1200.jar");
-    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_6.1.1.v201804051226.jar");
+    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_6.2.0.v201808041506.jar");
     private static final String BEAN_VALIDATION_LIB = System.getProperty("javax.validation.lib", "javax.validation.api_2.0.1.Final.jar");
 
     public static Option[] getDefaultOptions() {

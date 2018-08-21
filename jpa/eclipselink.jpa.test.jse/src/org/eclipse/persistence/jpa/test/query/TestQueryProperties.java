@@ -1,18 +1,21 @@
-/*******************************************************************************
+/*
+ * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     06/30/2015-2.6.0 Will Dazey
- *       - 471487: Added test for QueryHints.JDBC_TIMEOUT that checks the executed sql statement
- *     09/03/2015 - Will Dazey
- *       - 456067 : Added tests to check query timeout units
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     06/30/2015-2.6.0 Will Dazey
+//       - 471487: Added test for QueryHints.JDBC_TIMEOUT that checks the executed sql statement
+//     09/03/2015 - Will Dazey
+//       - 456067 : Added tests to check query timeout units
 package org.eclipse.persistence.jpa.test.query;
 
 import java.lang.reflect.InvocationHandler;
@@ -30,6 +33,7 @@ import javax.persistence.Query;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.jpa.test.basic.model.Employee;
+import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
@@ -47,19 +51,19 @@ import org.junit.runner.RunWith;
 public class TestQueryProperties implements PUPropertiesProvider {
 
     private static int setTimeout;
-    
+
     private final static int realTimeout = 3099;
 
-    @Emf(name = "timeoutEMF", classes = { Employee.class }, properties = { 
+    @Emf(name = "timeoutEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE, properties = {
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.realTimeout) })
     private EntityManagerFactory emfTimeout;
 
-    @Emf(name = "timeoutWithUnitMintuesEMF", classes = { Employee.class }, properties = { 
+    @Emf(name = "timeoutWithUnitMintuesEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE, properties = {
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.realTimeout),
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "MINUTES") })
     private EntityManagerFactory emfTimeoutMinutes;
-    
-    @Emf(name = "timeoutWithUnitMillisecondsEMF", classes = { Employee.class }, properties = { 
+
+    @Emf(name = "timeoutWithUnitMillisecondsEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE, properties = {
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.realTimeout),
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "MILLISECONDS") })
     private EntityManagerFactory emfTimeoutMilliseconds;
@@ -67,9 +71,9 @@ public class TestQueryProperties implements PUPropertiesProvider {
     /**
      * Test that setting the property "PersistenceUnitProperties.QUERY_TIMEOUT_UNIT" sets the
      * timeout accordingly on the executed java.sql.Statement.
-     * 
+     *
      * Assumes value will be converted to Seconds for JDBC.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -81,7 +85,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
             em.getTransaction().begin();
             Query q = em.createQuery("SELECT x FROM Employee x");
             q.getResultList();
-            
+
             int queryTimeoutSeconds = TestQueryProperties.realTimeout;
 
             Assert.assertEquals(queryTimeoutSeconds, TestQueryProperties.setTimeout);
@@ -99,9 +103,9 @@ public class TestQueryProperties implements PUPropertiesProvider {
     /**
      * Test that setting the property "PersistenceUnitProperties.QUERY_TIMEOUT_UNIT" sets the
      * timeout accordingly on the executed java.sql.Statement.
-     * 
+     *
      * Assumes value will be converted to Seconds for JDBC.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -113,7 +117,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
             em.getTransaction().begin();
             Query q = em.createQuery("SELECT x FROM Employee x");
             q.getResultList();
-            
+
             int queryTimeoutSeconds = TestQueryProperties.realTimeout * 60;
 
             Assert.assertEquals(queryTimeoutSeconds, TestQueryProperties.setTimeout);
@@ -131,9 +135,9 @@ public class TestQueryProperties implements PUPropertiesProvider {
     /**
      * Test that setting the property "PersistenceUnitProperties.QUERY_TIMEOUT_UNIT" sets the
      * timeout accordingly on the executed java.sql.Statement.
-     * 
+     *
      * Assumes value will be converted to Seconds for JDBC.
-     * 
+     *
      * @throws Exception
      */
     @Test
@@ -145,7 +149,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
             em.getTransaction().begin();
             Query q = em.createQuery("SELECT x FROM Employee x");
             q.getResultList();
-            
+
             double queryTimeoutSeconds = TestQueryProperties.realTimeout / 1000d;
             //if there was a remainder, it should round up
             if(queryTimeoutSeconds % 1 > 0){

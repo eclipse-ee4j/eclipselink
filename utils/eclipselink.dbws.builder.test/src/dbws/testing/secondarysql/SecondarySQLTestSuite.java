@@ -1,15 +1,17 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Mike Norman - Sept 2010: added new capabilities based on https://bugs.eclipse.org/bugs/show_bug.cgi?id=322949
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Mike Norman - Sept 2010: added new capabilities based on https://bugs.eclipse.org/bugs/show_bug.cgi?id=322949
 package dbws.testing.secondarysql;
 
 //javase imports
@@ -21,6 +23,7 @@ import java.io.StringReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -499,17 +502,22 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              DOMResult result = new DOMResult();
              transformer.transform(src, result);
              Document resultDoc = (Document)result.getNode();
-             Document controlDoc = xmlParser.parse(new StringReader(COUNT_RESPONSE_MSG));
-             assertTrue("control document not same as instance document",
-                 comparer.isNodeEqual(controlDoc, resultDoc));
+             Document controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(COUNT_RESPONSE_MSG, NS_STRING, "")));
+             boolean docsEqual = comparer.isNodeEqual(controlDoc, resultDoc);
+             if (!docsEqual) {
+                 // different JDKs put xmlns declaration to different element, so retry
+                 controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(COUNT_RESPONSE_MSG, "", NS_STRING)));
+                 assertTrue("control document not same as instance document",
+                         comparer.isNodeEqual(controlDoc, resultDoc));
+             }
          }
      }
+     private static final String NS_STRING = " xmlns=\"" + SECONDARY_NAMESPACE + "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\"";
      static final String COUNT_RESPONSE_MSG =
          "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body xmlns=\"" + SECONDARY_NAMESPACE +
-                  "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-           "<srvc:countSecondaryResponse>" +
+         "<SOAP-ENV:Body{0}>" +
+           "<srvc:countSecondaryResponse{1}>" +
              "<srvc:result>" +
                "<secondaryAggregate>" +
                  "<count>14</count>" +
@@ -552,17 +560,21 @@ public class SecondarySQLTestSuite extends ProviderHelper implements Provider<SO
              DOMResult result = new DOMResult();
              transformer.transform(src, result);
              Document resultDoc = (Document)result.getNode();
-             Document controlDoc = xmlParser.parse(new StringReader(ALL_RESPONSE_MSG));
-             assertTrue("control document not same as instance document",
-                 comparer.isNodeEqual(controlDoc, resultDoc));
+             Document controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(ALL_RESPONSE_MSG, NS_STRING, "")));
+             boolean docsEqual = comparer.isNodeEqual(controlDoc, resultDoc);
+             if (!docsEqual) {
+                 // different JDKs put xmlns declaration to different element, so retry
+                 controlDoc = xmlParser.parse(new StringReader(MessageFormat.format(ALL_RESPONSE_MSG, "", NS_STRING)));
+                 assertTrue("control document not same as instance document",
+                         comparer.isNodeEqual(controlDoc, resultDoc));
+             }
          }
      }
      static final String ALL_RESPONSE_MSG =
        "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">" +
          "<SOAP-ENV:Header/>" +
-         "<SOAP-ENV:Body xmlns=\"" + SECONDARY_NAMESPACE +
-                 "\" xmlns:srvc=\"" + SECONDARY_SERVICE_NAMESPACE + "\">" +
-           "<srvc:allSecondaryResponse>" +
+         "<SOAP-ENV:Body{0}>" +
+           "<srvc:allSecondaryResponse{1}>" +
              "<srvc:result>" +
                 "<secondaryType>" +
                   "<empno>7369</empno>" +

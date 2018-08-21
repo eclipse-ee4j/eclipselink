@@ -1,56 +1,58 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     03/19/2009-2.0  dclarke  - initial API start
- *     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
- *       of the Metamodel implementation for EclipseLink 2.0 release involving
- *       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
- *     07/06/2009-2.0  mobrien - 266912: Introduce IdentifiableTypeImpl between ManagedTypeImpl
- *       - EntityTypeImpl now inherits from IdentifiableTypeImpl instead of ManagedTypeImpl
- *       - MappedSuperclassTypeImpl now inherits from IdentifiableTypeImpl instead
- *       of implementing IdentifiableType indirectly
- *       - implement Set<SingularAttribute<? super X, ?>> getSingularAttributes()
- *     07/09/2009-2.0  mobrien - 266912: implement get*Attribute() functionality
- *       - functions throw 2 types of IllegalArgumentExceptions depending on whether
- *         the member is missing or is the wrong type - see design issue #41
- *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_41:_When_to_throw_IAE_for_missing_member_or_wrong_type_on_get.28.29_call
- *     07/14/2009-2.0  mobrien - 266912: implement getDeclared*() functionality
- *       - Implement 14 functions for ManagedType - see design issue #43
- *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_43:_20090710:_Implement_getDeclaredX.28.29_methods
- *     07/28/2009-2.0  mobrien - 284877: implement recursive functionality for hasDeclaredAttribute()
- *       - see design issue #52
- *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_52:_20090728:_JPA_2:_Implement_recursive_ManagedType.getDeclared.2A_algorithm_to_differentiate_by_IdentifiableType
- *     08/08/2009-2.0  mobrien - 266912: implement Collection and List separation during attribute initialization
- *       - see design issue #58
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List
- *     08/17/2009-2.0  mobrien - 284877: The base case for the recursive function
- *         managedTypeImpl.hasDeclaredAttribute() does not handle use case 1.4 (root-level managedType)
- *         when the caller of the function does not do it's own inheritedType check.
- *       - see design issue #52
- *         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI:52_Refactor:_20090817
- *     08/19/2009-2.0  mobrien - 266912: Handle MappedSuperclass in ManagedTypeImpl.create()
- *       - see design issue #39 (partial)
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_39:_20090708:_Handle_MappedSuperclass_in_ManagedTypeImpl.create.28.29
- *     08/19/2009-2.0  mobrien - 266912: ManagedType.getDeclaredX() leaks members into entity-entity hierarchy
- *       - see design issue #61
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_61:_20090820:_ManagedType.getDeclaredX.28.29_leaks_members_into_entity-entity_hierarchy
- *     06/01/2010-2.1  mobrien - 315287: Handle BasicType as inheritance root for ManagedTypes
- *       - see design issue #103
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_103:_20100601:_315287:_Handle_BasicType_as_inheritance_root_for_ManagedTypes
- *     09/09/2010-2.2  mobrien - 322166: If attribute is defined on this current ManagedType (and not on a superclass)
- *       - do not attempt a reflective call on a superclass
- *       - see design issue #25
- *       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_25:_20090616:_Inherited_parameterized_generics_for_Element_Collections_.28Basic.29
- *
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     03/19/2009-2.0  dclarke  - initial API start
+//     06/30/2009-2.0  mobrien - finish JPA Metadata API modifications in support
+//       of the Metamodel implementation for EclipseLink 2.0 release involving
+//       Map, ElementCollection and Embeddable types on MappedSuperclass descriptors
+//       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+//     07/06/2009-2.0  mobrien - 266912: Introduce IdentifiableTypeImpl between ManagedTypeImpl
+//       - EntityTypeImpl now inherits from IdentifiableTypeImpl instead of ManagedTypeImpl
+//       - MappedSuperclassTypeImpl now inherits from IdentifiableTypeImpl instead
+//       of implementing IdentifiableType indirectly
+//       - implement Set<SingularAttribute<? super X, ?>> getSingularAttributes()
+//     07/09/2009-2.0  mobrien - 266912: implement get//Attribute() functionality
+//       - functions throw 2 types of IllegalArgumentExceptions depending on whether
+//         the member is missing or is the wrong type - see design issue #41
+//         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_41:_When_to_throw_IAE_for_missing_member_or_wrong_type_on_get.28.29_call
+//     07/14/2009-2.0  mobrien - 266912: implement getDeclared//() functionality
+//       - Implement 14 functions for ManagedType - see design issue #43
+//         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_43:_20090710:_Implement_getDeclaredX.28.29_methods
+//     07/28/2009-2.0  mobrien - 284877: implement recursive functionality for hasDeclaredAttribute()
+//       - see design issue #52
+//         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_52:_20090728:_JPA_2:_Implement_recursive_ManagedType.getDeclared.2A_algorithm_to_differentiate_by_IdentifiableType
+//     08/08/2009-2.0  mobrien - 266912: implement Collection and List separation during attribute initialization
+//       - see design issue #58
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_58:_20090807:_ManagedType_Attribute_Initialization_must_differentiate_between_Collection_and_List
+//     08/17/2009-2.0  mobrien - 284877: The base case for the recursive function
+//         managedTypeImpl.hasDeclaredAttribute() does not handle use case 1.4 (root-level managedType)
+//         when the caller of the function does not do it's own inheritedType check.
+//       - see design issue #52
+//         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI:52_Refactor:_20090817
+//     08/19/2009-2.0  mobrien - 266912: Handle MappedSuperclass in ManagedTypeImpl.create()
+//       - see design issue #39 (partial)
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_39:_20090708:_Handle_MappedSuperclass_in_ManagedTypeImpl.create.28.29
+//     08/19/2009-2.0  mobrien - 266912: ManagedType.getDeclaredX() leaks members into entity-entity hierarchy
+//       - see design issue #61
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_61:_20090820:_ManagedType.getDeclaredX.28.29_leaks_members_into_entity-entity_hierarchy
+//     06/01/2010-2.1  mobrien - 315287: Handle BasicType as inheritance root for ManagedTypes
+//       - see design issue #103
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_103:_20100601:_315287:_Handle_BasicType_as_inheritance_root_for_ManagedTypes
+//     09/09/2010-2.2  mobrien - 322166: If attribute is defined on this current ManagedType (and not on a superclass)
+//       - do not attempt a reflective call on a superclass
+//       - see design issue #25
+//       http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_25:_20090616:_Inherited_parameterized_generics_for_Element_Collections_.28Basic.29
+//
 package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.lang.reflect.Field;

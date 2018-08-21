@@ -1,28 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/5/2009-2.0 Guy Pelletier
- *       - 248489: JPA 2.0 Pessimistic Locking/Lock Mode support
- *       - Allows the configuration of pessimistic locking from JPA entity manager
- *         functions (find, refresh, lock) and from individual query execution.
- *         A pessimistic lock can be issued with a lock timeout value as well, in
- *         which case, for those databases that support LOCK WAIT will cause
- *         a LockTimeoutException to be thrown if the query fails as a result of
- *         a timeout trying to acquire the lock. A PessimisticLockException is
- *         thrown otherwise.
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
- *     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
- *     3/13/2015 - Will Dazey
- *       - 458301 : Added check so that aggregate results won't attempt force version lock if locking type is set
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/5/2009-2.0 Guy Pelletier
+//       - 248489: JPA 2.0 Pessimistic Locking/Lock Mode support
+//       - Allows the configuration of pessimistic locking from JPA entity manager
+//         functions (find, refresh, lock) and from individual query execution.
+//         A pessimistic lock can be issued with a lock timeout value as well, in
+//         which case, for those databases that support LOCK WAIT will cause
+//         a LockTimeoutException to be thrown if the query fails as a result of
+//         a timeout trying to acquire the lock. A PessimisticLockException is
+//         thrown otherwise.
+//     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
+//     09/21/2010-2.2 Frank Schwarz and ailitchev - Bug 325684 - QueryHints.BATCH combined with QueryHints.FETCH_GROUP_LOAD will cause NPE
+//     3/13/2015 - Will Dazey
+//       - 458301 : Added check so that aggregate results won't attempt force version lock if locking type is set
 package org.eclipse.persistence.queries;
 
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -213,6 +217,9 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      * 1..N: use this value to set the WAIT clause.
      */
     protected Integer waitTimeout;
+    
+  //wait timeout unit
+    protected TimeUnit waitTimeoutUnit;
 
     /** Used for ordering support. */
     protected List<Expression> orderByExpressions;
@@ -464,7 +471,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         setIsPrepared(false);
         setWasDefaultLockMode(false);
     }
-
+    
+    public void setWaitTimeoutUnit(TimeUnit waitTimeoutUnit) {
+        this.waitTimeoutUnit = waitTimeoutUnit;
+    }
+    
     /**
      * INTERNAL:
      * Check and return custom query flag. Custom query flag value is initialized when stored value is {@code null}.
@@ -1821,7 +1832,11 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
     public Integer getWaitTimeout() {
         return waitTimeout;
     }
-
+    
+    public TimeUnit getWaitTimeoutUnit() {
+        return waitTimeoutUnit;
+    }
+    
     /**
      * Initialize the expression builder which should be used for this query. If
      * there is a where clause, use its expression builder, otherwise
@@ -2174,12 +2189,24 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                 // If no wait timeout was set from a query hint, grab the
                 // default one from the session if one is available.
                 Integer timeout = (this.waitTimeout == null) ? this.session.getPessimisticLockTimeoutDefault() : this.waitTimeout;
+                Long convertedTimeout =null;
+                TimeUnit timeoutUnit = (this.waitTimeoutUnit == null) ? this.session.getPessimisticLockTimeoutUnitDefault() : this.waitTimeoutUnit;
                 if (timeout == null) {
                     setLockMode(ObjectBuildingQuery.LOCK);
                 } else {
                     if (timeout.intValue() == 0) {
                         setLockMode(ObjectBuildingQuery.LOCK_NOWAIT);
                     } else {
+                        convertedTimeout = TimeUnit.SECONDS.convert(timeout, timeoutUnit);
+                        if(convertedTimeout > Integer.MAX_VALUE){
+                            timeout = Integer.MAX_VALUE;
+                        }else {
+                            timeout = convertedTimeout.intValue();
+                        }
+                      //Round up the timeout if SECONDS are larger than the given units
+                        if(TimeUnit.SECONDS.compareTo(timeoutUnit) > 0 && timeout % 1000 > 0){
+                            timeout += 1;
+                        }
                         this.lockingClause = ForUpdateClause.newInstance(timeout);
                     }
                 }

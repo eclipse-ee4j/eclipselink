@@ -1,15 +1,18 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     dminsky - initial API and implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.ArrayList;
@@ -88,8 +91,8 @@ public class JPARCMLocalChangeSetTestSuite extends JUnitTestCase {
         new AdvancedTableCreator().replaceTables(session);
         clearServerSessionCache();
         
-        new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession("MulitPU-1"));
-        clearCache("MulitPU-1");  
+        new CacheableTableCreator().replaceTables(JUnitTestCase.getServerSession("cacheablePU"));
+        clearCache("cacheablePU");  
     }
     
     public void initializeRCMOnSession(ServerSession session) {
@@ -343,7 +346,7 @@ public class JPARCMLocalChangeSetTestSuite extends JUnitTestCase {
      * in the ObjectChangeSet for the cacheable object referencing the non-cacheable object.
      */
     public void testPropagateProtectedForeignKeyValuesForNewObject() {
-        String puName = "MulitPU-1";
+        String puName = "cacheablePU";
         
         ServerSession session = getServerSession(puName);
         initializeRCMOnSession(session); // must be initialized before any use
@@ -419,7 +422,7 @@ public class JPARCMLocalChangeSetTestSuite extends JUnitTestCase {
      * Common utility test method.
      */
     private void testPropagateProtectedForeignKeyValuesForExistingObject(int cacheSynchronizationType) {
-        String puName = "MulitPU-1";
+        String puName = "cacheablePU";
         
         ServerSession session = getServerSession(puName);
         

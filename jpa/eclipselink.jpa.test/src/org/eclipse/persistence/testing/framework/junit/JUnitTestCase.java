@@ -1,21 +1,23 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     11/17/2010-2.2 Guy Pelletier
- *       - 329008: Support dynamic context creation without persistence.xml
- *     01/23/2013-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/11/2017-2.1 Will Dazey 
- *       - 520387: multiple owning descriptors for an embeddable are not set
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     11/17/2010-2.2 Guy Pelletier
+//       - 329008: Support dynamic context creation without persistence.xml
+//     01/23/2013-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/11/2017-2.1 Will Dazey
+//       - 520387: multiple owning descriptors for an embeddable are not set
 package org.eclipse.persistence.testing.framework.junit;
 
 import java.io.StringWriter;
@@ -57,6 +59,7 @@ import org.eclipse.persistence.testing.framework.server.TestRunner2;
 import org.eclipse.persistence.testing.framework.server.TestRunner3;
 import org.eclipse.persistence.testing.framework.server.TestRunner4;
 import org.eclipse.persistence.testing.framework.server.TestRunner5;
+import org.eclipse.persistence.testing.framework.server.TestRunner6;
 import org.eclipse.persistence.transaction.JTA11TransactionController;
 
 import junit.framework.TestCase;
@@ -729,8 +732,7 @@ public abstract class JUnitTestCase extends TestCase {
         properties.put("java.naming.provider.url", url);
         Context context = new InitialContext(properties);
         Throwable exception = null;
-        if (puName == null)
-        {
+        if (puName == null) {
             String testrunner = System.getProperty("server.testrunner");
             if (testrunner == null) {
                 fail("System property 'server.testrunner' must be set.");
@@ -739,12 +741,11 @@ public abstract class JUnitTestCase extends TestCase {
             exception = runner.runTest(getClass().getName(), getName(), getServerProperties());
         }else{
             int i = puName.charAt(8) - 48;
-            String testRunner[] = new String[6];
-            for (int j=1; j<=5; j++)
-            {
+            String testRunner[] = new String[7];
+            for (int j=1; j<=6; j++) {
                 String serverRunner = "server.testrunner" + j;
                 testRunner[j] = System.getProperty(serverRunner);
-                if (testRunner[j] == null) {
+                if (testRunner[j] == null && j < 6) {
                     fail("System property 'server.testrunner'" + j + " must be set.");
                 }
             }
@@ -769,6 +770,10 @@ public abstract class JUnitTestCase extends TestCase {
             case 5:
                 TestRunner5 runner5 = (TestRunner5) PortableRemoteObject.narrow(context.lookup(testRunner[5]), TestRunner5.class);
                 exception = runner5.runTest(getClass().getName(), getName(), getServerProperties());
+                break;
+            case 6:
+                TestRunner6 runner6 = (TestRunner6) PortableRemoteObject.narrow(context.lookup(testRunner[6]), TestRunner6.class);
+                exception = runner6.runTest(getClass().getName(), getName(), getServerProperties());
                 break;
             default:
                 break;

@@ -1,51 +1,54 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     dclarke - Bug 294985: update of comments and addition of connection logging property
- *     cdelahun - Bug 214534: added COORDINATION_JMS_REUSE_PUBLISHER property to enable JMS rcm legacy behavior
- *     04/01/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 2)
- *     06/30/2011-2.3.1 Guy Pelletier
- *       - 341940: Add disable/enable allowing native queries
- *     09/20/2011-2.3.1 Guy Pelletier
- *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
- *     12/24/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     01/08/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     01/11/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/04/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/19/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     08/11/2014-2.5 Rick Curtis
- *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
- *     11/04/2014 - Rick Curtis
- *       - 450010 : Add java se test bucket
- *     01/13/2015 - Rick Curtis
- *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- *     09/03/2015 - Will Dazey
- *       - 456067 : Added support for defining query timeout units
- *     09/28/2015 - Will Dazey
- *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
- *     12/03/2015 - 2.6 Dalia Abo Sheasha
- *       - 483582 : Add the javax.persistence.sharedCache.mode property
- *     09/14/2017 - 2.6 Will Dazey
- *       - 522312 : Add the eclipselink.sequencing.start-sequence-at-nextval property
- *     04/11/2018 - Will Dazey
- *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     dclarke - Bug 294985: update of comments and addition of connection logging property
+//     cdelahun - Bug 214534: added COORDINATION_JMS_REUSE_PUBLISHER property to enable JMS rcm legacy behavior
+//     04/01/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 2)
+//     06/30/2011-2.3.1 Guy Pelletier
+//       - 341940: Add disable/enable allowing native queries
+//     09/20/2011-2.3.1 Guy Pelletier
+//       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
+//     12/24/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     01/08/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     01/11/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/04/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/19/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     08/11/2014-2.5 Rick Curtis
+//       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+//     11/04/2014 - Rick Curtis
+//       - 450010 : Add java se test bucket
+//     01/13/2015 - Rick Curtis
+//       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
+//     09/03/2015 - Will Dazey
+//       - 456067 : Added support for defining query timeout units
+//     09/28/2015 - Will Dazey
+//       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
+//     12/03/2015 - 2.6 Dalia Abo Sheasha
+//       - 483582 : Add the javax.persistence.sharedCache.mode property
+//     09/14/2017 - 2.6 Will Dazey
+//       - 522312 : Add the eclipselink.sequencing.start-sequence-at-nextval property
+//     04/11/2018 - Will Dazey
+//       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.config;
 
 import java.io.File;
@@ -3109,7 +3112,22 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT;
-
+   
+    /**
+     * The "<code>eclipselink.pessimistic.lock.timeout.unit</code>" property
+     * configures the query timeout unit value. Allows users more refinement.
+     * Used in combination with PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * </ul>
+     * @see #PESSIMISTIC_LOCK_TIMEOUT_UNIT
+    */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT;
+    
     /**
      * The "<code>javax.persistence.query.timeout</code>" property configures
      * the default query timeout value. Defaults to seconds, but is configurable 

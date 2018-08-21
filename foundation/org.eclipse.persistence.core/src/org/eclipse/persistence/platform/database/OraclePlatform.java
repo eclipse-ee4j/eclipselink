@@ -1,28 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Markus Karg - bug fix for log operator
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     02/04/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- *     02/23/2015-2.6 Dalia Abo Sheasha
- *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
- *     02/14/2018-2.7 Will Dazey
- *       - 529602: Added support for CLOBs in DELETE statements for Oracle
- *****************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Markus Karg - bug fix for log operator
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     02/04/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
+//     02/23/2015-2.6 Dalia Abo Sheasha
+//       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
+//     02/14/2018-2.7 Will Dazey
+//       - 529602: Added support for CLOBs in DELETE statements for Oracle
 package org.eclipse.persistence.platform.database;
 
 import java.io.CharArrayWriter;
@@ -57,12 +60,15 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
  * <p><b>Purpose</b>: Provides Oracle specific behavior.
@@ -75,6 +81,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * @since TOPLink/Java 1.0
  */
 public class OraclePlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+
     protected static DataModifyQuery vpdSetIdentifierQuery;
     protected static DataModifyQuery vpdClearIdentifierQuery;
 
@@ -1181,4 +1188,41 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         }
         return super.createExpressionFor(field, builder);
     }
+
+    // Value of shouldCheckResultTableExistsQuery must be true.
+    /**
+     * INTERNAL:
+     * Returns query to check whether given table exists.
+     * Query execution returns a row when table exists or empty result otherwise.
+     * @param table database table meta-data
+     * @return query to check whether given table exists
+     */
+    @Override
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final DataReadQuery query = new DataReadQuery(
+                "SELECT table_name FROM user_tables WHERE table_name='" + table.getFullName() + "'");
+        query.setMaxRows(1);
+        return query;
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Returned value depends on returned result set being empty or not.
+     * @param session current database session
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session,
+            final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            final Vector result = (Vector)session.executeQuery(getTableExistsQuery(table));
+            return !result.isEmpty();
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
+
 }

@@ -1,20 +1,22 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Markus Karg - allow arguments to be specified multiple times in argumentIndices
- *     05/07/2009-1.1.1 Dave Brosius
- *       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
- *     01/23/2018-2.7 Will Dazey
- *       - 530214: trim operation should not bind parameters
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Markus Karg - allow arguments to be specified multiple times in argumentIndices
+//     05/07/2009-1.1.1 Dave Brosius
+//       - 263904: [PATCH] ExpressionOperator doesn't compare arrays correctly
+//     01/23/2018-2.7 Will Dazey
+//       - 530214: trim operation should not bind parameters
 package org.eclipse.persistence.expressions;
 
 import java.io.IOException;

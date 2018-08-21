@@ -1,34 +1,36 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     10/20/2008-1.1M4 Michael O'Brien
- *       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
- *     11/06/2008-1.1M5 Michael O'Brien
- *       - 248746: Add getModuleName() implementation and new getApplicationName()
- *     05/07/2009-1.1.1 Dave Brosius
- *       - 265755: [PATCH] Set application name correctly
- *     06/30/2010-2.1.1 Michael O'Brien
- *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
- *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
- *     10/18/2010-2.1.2 Michael O'Brien
- *       - 328006: Refactor WebLogic MBeanServer registration to use active
- *         WLS com.bea server when multiple instances returned
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>
- *     01/01/2011-2.2 Michael O'Brien
- *       - 333160: ModuleName string extraction code does not handle -1 not found index in 1 of 3 cases
- *     07/21/2014-2.6.0 Lukas Jungmann
- *       - 440018: Failed to find mbean server warning in the wls admin server log
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     10/20/2008-1.1M4 Michael O'Brien
+//       - 248748: Add WebLogic 10.3 specific JMX MBean attributes and functions
+//       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/248748</link>
+//     11/06/2008-1.1M5 Michael O'Brien
+//       - 248746: Add getModuleName() implementation and new getApplicationName()
+//     05/07/2009-1.1.1 Dave Brosius
+//       - 265755: [PATCH] Set application name correctly
+//     06/30/2010-2.1.1 Michael O'Brien
+//       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
+//       Move JMX MBean generic registration code up from specific platforms
+//       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
+//     10/18/2010-2.1.2 Michael O'Brien
+//       - 328006: Refactor WebLogic MBeanServer registration to use active
+//         WLS com.bea server when multiple instances returned
+//       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513#DI_4:_20100624:_Verify_correct_MBeanServer_available_when_running_multiple_MBeanServer_Instances</link>
+//     01/01/2011-2.2 Michael O'Brien
+//       - 333160: ModuleName string extraction code does not handle -1 not found index in 1 of 3 cases
+//     07/21/2014-2.6.0 Lukas Jungmann
+//       - 440018: Failed to find mbean server warning in the wls admin server log
 package org.eclipse.persistence.platform.server.wls;
 
 import java.lang.reflect.Method;

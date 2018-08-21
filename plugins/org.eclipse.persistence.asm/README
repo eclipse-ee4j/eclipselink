@@ -1,5 +1,4 @@
 to update ASM library:
--obtain a CQ
 -get ASM sources and unpack them to some <tmp> folder
 -create a properties file 'asm.properties' with following content:
 org.objectweb=org.eclipse.persistence.internal.libraries
@@ -9,14 +8,28 @@ org.eclipse.persistence.utils.rename.MigrateTopLinkToEclipseLink <tmp>/org/objec
 -copy <dst>/* to $eclipselink_home/plugins/org.eclipse.persistence.asm/src/org/eclipse/persistence/internal/libraries
 -update 'release.version' property in 'antbuild.xml'
 -update release version in 'about.html' and 'readme.html'
+-update asm version in the manifest, i.e.
+sed -i "s/6\.1\.1/6\.2\.0/g" META-INF/MANIFEST.MF
+-update asm version in:
+        dbws/org.eclipse.persistence.dbws/META-INF/MANIFEST.MF
+        foundation/org.eclipse.persistence.core/META-INF/MANIFEST.MF
+        jpa/org.eclipse.persistence.jpa/META-INF/MANIFEST.MF
+        moxy/org.eclipse.persistence.moxy/META-INF/MANIFEST.MF
+        sdo/org.eclipse.persistence.sdo/META-INF/MANIFEST.MF
 
--commit changes
+-commit changes and create a pull request for review
+-ask EclipseLink project committer to file a CQ (see https://www.eclipse.org/projects/handbook/#ip-cq)
+
+Once CQ is approved, pull request can be approved, and EclipseLink project committer can:
+-merge the pull request
 -build final artifact with:
 ant -f antbuild.xml -Dbuild.type=RELEASE bld
 
 -commit & push changes
--rebuild compdeps
--update asm version in the source tree, ie on OSX:
+-rebuild compdeps (run job @ https://ci.eclipse.org/eclipselink/job/eclipselink-update-compdeps)
+-update asm version in the source tree, ie on Linux:
+grep -rl "201702131300" * | xargs sed -i 's/201702131300/201710052159/g'
+- or on OSX
 grep -rl "201702131300" * | xargs sed -i '' 's/201702131300/201710052159/g'
 -commit and push the change
 

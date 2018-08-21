@@ -1,16 +1,18 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     05/28/2008-1.0M8 Andrei Ilitchev.
- *       - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     05/28/2008-1.0M8 Andrei Ilitchev.
+//       - New file introduced for bug 224964: Provide support for Proxy Authentication through JPA.
 package org.eclipse.persistence.testing.tests.jpa.proxyauthentication;
 
 import java.sql.SQLException;
@@ -48,6 +50,9 @@ import org.eclipse.persistence.testing.tests.proxyauthentication.thin.ProxyAuthe
  * see comment in ProxyAuthenticationUsersAndProperties.
  */
 public class ProxyAuthenticationTestSuite extends JUnitTestCase {
+
+    private static final String PU_NAME = "proxyauthentication";
+
     // the map passed to creteEMFactory method.
     Map factoryProperties;
 
@@ -92,6 +97,10 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    public String getPersistenceUnitName() {
+        return PU_NAME;
+    }
+
     public static Test suite() {
         TestSuite suite = new TestSuite("Proxy Authentication JPA Test Suite");
 
@@ -123,16 +132,16 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         if(setupErrorMsg == null) {
             if (isOnServer()) {
                 setupErrorMsg = "ProxyAuthentication tests currently can't run on server.";
-            } else if(!getServerSession().getPlatform().isOracle()) {
+            } else if(!getServerSession(PU_NAME).getPlatform().isOracle()) {
                 setupErrorMsg = "ProxyAuthentication test has not run, it runs only on Oracle and Oracle9Platform or higher required.";
-            } else if (! (getServerSession().getPlatform() instanceof Oracle9Platform)) {
+            } else if (! (getServerSession(PU_NAME).getPlatform() instanceof Oracle9Platform)) {
                 setupErrorMsg = "ProxyAuthentication test has not run, Oracle9Platform or higher required.";
             } else {
                 // sets up all user names and properties used by the tests.
                 ProxyAuthenticationUsersAndProperties.initialize();
                 // verifies that all the users correctly setup in the db.
                 // returns empty string in case of success, error message otherwise.
-                setupErrorMsg = ProxyAuthenticationUsersAndProperties.verify(getServerSession());
+                setupErrorMsg = ProxyAuthenticationUsersAndProperties.verify(getServerSession(PU_NAME));
             }
         }
         if(setupErrorMsg.length() > 0) {
@@ -141,7 +150,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         } else {
             // The test will re-create EMFactory using the necessary properties, close the original factory first.
             // This does nothing if the factory already closed.
-            closeEntityManagerFactory();
+            closeEntityManagerFactory(PU_NAME);
             initializeFactoryProperties();
         }
     }
@@ -283,7 +292,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         if(serverSessionProxyProperties != null) {
             factoryProperties.putAll(serverSessionProxyProperties);
         }
-        EntityManagerFactory factory = this.getEntityManagerFactory(factoryProperties);
+        EntityManagerFactory factory = getEntityManagerFactory(factoryProperties);
         ServerSession ss = ((JpaEntityManagerFactory)factory).getServerSession();
 
         if(shoulUseExclusiveIsolatedSession) {

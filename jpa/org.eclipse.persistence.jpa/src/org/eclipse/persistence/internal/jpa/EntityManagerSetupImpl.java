@@ -1,86 +1,89 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *
- *     05/28/2008-1.0M8 Andrei Ilitchev
- *        - 224964: Provide support for Proxy Authentication through JPA.
- *        Added updateConnectionPolicy method to support EXCLUSIVE_CONNECTION property.
- *        Some methods, like setSessionEventListener called from deploy still used predeploy properties,
- *        that meant it was impossible to set listener through createEMF property in SE case with an agent - fixed that.
- *        Also if creating / closing the same emSetupImpl many times (24 in my case) "java.lang.OutOfMemoryError: PermGen space" resulted:
- *        partially fixed partially worked around this - see a big comment in predeploy method.
- *     12/23/2008-1.1M5 Michael O'Brien
- *        - 253701: add persistenceInitializationHelper field used by undeploy() to clear the JavaSECMPInitializer
- *     10/14/2009-2.0      Michael O'Brien
- *        - 266912: add Metamodel instance field as part of the JPA 2.0 implementation
- *     10/21/2009-2.0 Guy Pelletier
- *       - 290567: mappedbyid support incomplete
- *     cdelahun - Bug 214534: changes to allow JMSPublishingTransportManager configuration through properties
- *     05/14/2010-2.1 Guy Pelletier
- *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
- *     04/01/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 2)
- *     06/30/2011-2.3.1 Guy Pelletier
- *       - 341940: Add disable/enable allowing native queries
- *     09/20/2011-2.3.1 Guy Pelletier
- *       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
- *     08/01/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching
- *     12/24/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     01/08/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     01/11/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     01/16/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     01/24/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/04/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/19/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     08/11/2014-2.5 Rick Curtis
- *       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
- *     11/20/2014-2.5 Rick Curtis
- *       - 452187: Support multiple ClassLoaders to load properties.
- *     01/05/2015 Rick Curtis
- *       - 455683: Automatically detect target server
-  *     01/13/2015 - Rick Curtis
- *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- *     03/04/2015 - Will Dazey
- *       - 460862 : Added support for JTA schema generation without JTA-DS
- *     03/23/2015 - Rick Curtis
- *       - 462888 : SessionCustomizer instance based configuration
- *     08/24/2015 - Dalia Abo Sheasha
- *       - 475285 : Create a generic application-id property to generate unique session names
- *     09/03/2015 - Will Dazey
- *       - 456067 : Added support for defining query timeout units
- *     09/28/2015 - Will Dazey
- *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
- *     11/05/2015 - Dalia Abo Sheasha
- *       - 480787 : Wrap several privileged method calls with a doPrivileged block
- *     12/03/2015-2.6 Dalia Abo Sheasha
- *       - 483582: Add the javax.persistence.sharedCache.mode property
- *     09/29/2016-2.7 Tomas Kraus
- *       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
- *     09/14/2017-2.6 Will Dazey
- *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
- *     10/24/2017-3.0 Tomas Kraus
- *       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
- *     01/16/2018-2.7 Joe Grassel
- *       - 529907: EntityManagerSetupImpl.addBeanValidationListeners() should fall back on old method for finding helperClass
- *****************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//
+//     05/28/2008-1.0M8 Andrei Ilitchev
+//        - 224964: Provide support for Proxy Authentication through JPA.
+//        Added updateConnectionPolicy method to support EXCLUSIVE_CONNECTION property.
+//        Some methods, like setSessionEventListener called from deploy still used predeploy properties,
+//        that meant it was impossible to set listener through createEMF property in SE case with an agent - fixed that.
+//        Also if creating / closing the same emSetupImpl many times (24 in my case) "java.lang.OutOfMemoryError: PermGen space" resulted:
+//        partially fixed partially worked around this - see a big comment in predeploy method.
+//     12/23/2008-1.1M5 Michael O'Brien
+//        - 253701: add persistenceInitializationHelper field used by undeploy() to clear the JavaSECMPInitializer
+//     10/14/2009-2.0      Michael O'Brien
+//        - 266912: add Metamodel instance field as part of the JPA 2.0 implementation
+//     10/21/2009-2.0 Guy Pelletier
+//       - 290567: mappedbyid support incomplete
+//     cdelahun - Bug 214534: changes to allow JMSPublishingTransportManager configuration through properties
+//     05/14/2010-2.1 Guy Pelletier
+//       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+//     04/01/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 2)
+//     06/30/2011-2.3.1 Guy Pelletier
+//       - 341940: Add disable/enable allowing native queries
+//     09/20/2011-2.3.1 Guy Pelletier
+//       - 357476: Change caching default to ISOLATED for multitenant's using a shared EMF.
+//     08/01/2012-2.5 Chris Delahunt
+//       - 371950: Metadata caching
+//     12/24/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     01/08/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     01/11/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     01/16/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     01/24/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/04/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/19/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     08/11/2014-2.5 Rick Curtis
+//       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
+//     11/20/2014-2.5 Rick Curtis
+//       - 452187: Support multiple ClassLoaders to load properties.
+//     01/05/2015 Rick Curtis
+//       - 455683: Automatically detect target server
+//     01/13/2015 - Rick Curtis
+//       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
+//     03/04/2015 - Will Dazey
+//       - 460862 : Added support for JTA schema generation without JTA-DS
+//     03/23/2015 - Rick Curtis
+//       - 462888 : SessionCustomizer instance based configuration
+//     08/24/2015 - Dalia Abo Sheasha
+//       - 475285 : Create a generic application-id property to generate unique session names
+//     09/03/2015 - Will Dazey
+//       - 456067 : Added support for defining query timeout units
+//     09/28/2015 - Will Dazey
+//       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
+//     11/05/2015 - Dalia Abo Sheasha
+//       - 480787 : Wrap several privileged method calls with a doPrivileged block
+//     12/03/2015-2.6 Dalia Abo Sheasha
+//       - 483582: Add the javax.persistence.sharedCache.mode property
+//     09/29/2016-2.7 Tomas Kraus
+//       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
+//     09/14/2017-2.6 Will Dazey
+//       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
+//     10/24/2017-3.0 Tomas Kraus
+//       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
+//     01/16/2018-2.7 Joe Grassel
+//       - 529907: EntityManagerSetupImpl.addBeanValidationListeners() should fall back on old method for finding helperClass
 package org.eclipse.persistence.internal.jpa;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
@@ -1412,7 +1415,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
 
                 try {
-                    structConverters.add((StructConverter)this.buildObjectForClass(clazz, clazz));
+                    structConverters.add((StructConverter)this.buildObjectForClass(clazz, StructConverter.class));
                 } catch (PrivilegedActionException e) {
                     throw ValidationException.errorInstantiatingClass(clazz, e.getException());
                 } catch (IllegalAccessException e) {
@@ -2878,6 +2881,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             updateIdValidation(m);
             updatePessimisticLockTimeout(m);
+            updatePessimisticLockTimeoutUnit(m);
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
@@ -3502,6 +3506,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
             } catch (NumberFormatException invalid) {
                 session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeout, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, invalid));
+            }
+        }
+    }
+    
+    /**
+     * Update the default pessimistic lock timeout unit value.
+     * @param persistenceProperties the properties map
+     */
+    protected void updatePessimisticLockTimeoutUnit(Map persistenceProperties) {
+        String pessimisticLockTimeoutUnit = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, persistenceProperties, session);
+
+        if (pessimisticLockTimeoutUnit != null) {
+            try {
+                TimeUnit unit = TimeUnit.valueOf(pessimisticLockTimeoutUnit);
+                session.setPessimisticLockTimeoutUnitDefault(unit);
+            } catch (NumberFormatException invalid) {
+                session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeoutUnit, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, invalid));
             }
         }
     }

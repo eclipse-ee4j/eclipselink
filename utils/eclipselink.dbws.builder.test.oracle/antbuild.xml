@@ -1,12 +1,33 @@
 <?xml version="1.0"?>
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      egwin - initial API and implementation
+      minorman - dbws utils oracle-specific test target
+      egwin - update to adopt calling standards
+      egwin - update to dynamic dependency loading
+-->
+<!-- This ant project includes the following tasks:
+        - build (default) : cleans, compiles, and packages all tests
+        - clean   : cleans up all generated files and dirs
+        - compile : compiles all test classes
+        - package : packages tests into eclipselink-dbws-oracle-depend-test.jar
+        - test: Runs DBWS utils Oracle-specific tests
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -27,19 +48,6 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     egwin - initial API and implementation
-*     minorman - dbws utils oracle-specific test target
-*     egwin - update to adopt calling standards
-*     egwin - update to dynamic dependency loading
-#******************************************************************************/-->
-<!-- This ant project includes the following tasks:
-        - build (default) : cleans, compiles, and packages all tests
-        - clean   : cleans up all generated files and dirs
-        - compile : compiles all test classes
-        - package : packages tests into eclipselink-dbws-oracle-depend-test.jar
-        - test: Runs DBWS utils Oracle-specific tests
 -->
 <project name="eclipselink.dbws.builder.test.oracle" default="build" basedir=".">
     <!-- Test to make certain that build is run from component dir -->
@@ -59,6 +67,7 @@
     <echo message="dbwsbldrorcltst.2.base.dir = '${dbwsbldrorcltst.2.base.dir}'"/>
     <property name="dbwsbldrorcltst.2.common.plugins.dir" value="${dbwsbldrorcltst.build.location}/${dbwsbldrorcltst.2.base.dir}/plugins"/>
     <property name="dbwsbldrorcltst.2.plugins.dir" value="${dbwsbldrorcltst.build.location}/../plugins"/>
+    <property name="dbwsbldrorcltst.2.jpa.plugins.dir" value="${dbwsbldrorcltst.2.base.dir}/jpa/plugins"/>
     <property name="dbwsbldrorcltst.2.buildsys.dir" value="${dbwsbldrorcltst.2.base.dir}/buildsystem"/>
     <property name="dbwsbldrorcltst.2.dbwsbldr.dir" value="../org.eclipse.persistence.dbws.builder"/>
 
@@ -139,14 +148,14 @@
         <echo message="servlet.jar  ='${dbwsbldrorcltst.2.common.plugins.dir}/${servlet.jar}'"/>
         <echo message="ddlparser.jar='${dbwsbldrorcltst.2.plugins.dir}/${ddlparser.jar}'"/>
         <echo message="wsdl.jar     ='${dbwsbldrorcltst.2.plugins.dir}/${wsdl.jar}'"/>
-        <echo message="persistence.jar ='${dbwsbldrorcltst.2.common.plugins.dir}/${persistence.jar}'"/>
+        <echo message="persistence.jar ='${dbwsbldrorcltst.2.jpa.plugins.dir}/${persistence22.jar}'"/>
         <property name="eclipselink.lib"  value="${dbwsbldrorcltst.2.base.dir}/${eclipselink.jar}"/>
         <property name="asm.lib"          value="${dbwsbldrorcltst.2.common.plugins.dir}/${asm.jar}"/>
         <property name="servlet.lib"      value="${dbwsbldrorcltst.2.common.plugins.dir}/${servlet.jar}"/>
         <property name="dbwsbldr.lib"     value="${dbwsbldrorcltst.2.common.plugins.dir}/${dbwsbldr.jar}"/>
         <property name="ddlparser.lib"    value="${dbwsbldrorcltst.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrorcltst.2.plugins.dir}/${wsdl.jar}"/>
-        <property name="persistence.lib"  value="${dbwsbldrorcltst.2.common.plugins.dir}/${persistence.jar}"/>
+        <property name="persistence.lib"  value="${dbwsbldrorcltst.2.jpa.plugins.dir}/${persistence22.jar}"/>
 
         <!-- dependency tests -->
         <available classname="org.junit.Test"     classpath="${junit.lib}" property="junit.lib.exist"/>

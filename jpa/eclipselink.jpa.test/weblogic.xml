@@ -1,11 +1,39 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      tware - initial API and implementation
+-->
+
+<!-- This ant project includes the following tasks:
+        - weblogic-install : recreates server and adds jars
+        - weblogic-setup : creates connection pool
+        - weblogic-reset : removes connection pool
+        - weblogic-start : starts server
+        - weblogic-stop : stops server
+        - weblogic-deploy : deploys ear
+        - weblogic-undeploy : undeploys ear
+
+        It requires some configuration of the weblogic.properties, it should be run through build.xml, not directly.
+        Also weblogic may require using the JRockit JVM, which can be setup through the setEnv.sh.
+        You may need to copy the /resouces/weblogic/jaxp.properties file to your JRockit JVM jre/lib directory to allow the ant junit task to work correctly,
+        (this may cause issues with weblogic starting, so you may need to do this after you start your server).
+        To connect to the weblogic admin console use http://${weblogic.host}:7001/console, this may be useful for debugging deployment failures.
+        Sometimes if a test or deployment fails, you server gets screwed up and you need to re-install your domain (ant server.install).
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -26,28 +54,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     tware - initial API and implementation
-#******************************************************************************/-->
-
-<!-- This ant project includes the following tasks:
-        - weblogic-install : recreates server and adds jars
-        - weblogic-setup : creates connection pool
-        - weblogic-reset : removes connection pool
-        - weblogic-start : starts server
-        - weblogic-stop : stops server
-        - weblogic-deploy : deploys ear
-        - weblogic-undeploy : undeploys ear
-
-        It requires some configuration of the weblogic.properties, it should be run through build.xml, not directly.
-        Also weblogic may require using the JRockit JVM, which can be setup through the setEnv.sh.
-        You may need to copy the /resouces/weblogic/jaxp.properties file to your JRockit JVM jre/lib directory to allow the ant junit task to work correctly,
-        (this may cause issues with weblogic starting, so you may need to do this after you start your server).
-        To connect to the weblogic admin console use http://${weblogic.host}:7001/console, this may be useful for debugging deployment failures.
-        Sometimes if a test or deployment fails, you server gets screwed up and you need to re-install your domain (ant server.install).
 -->
-
 <project name="Eclipse Persistence Services JPA WLS Testing" basedir=".">
 
     <property name="env" environment="env" value="env"/>
@@ -55,16 +62,32 @@
     <property file="${user.home}/weblogic.properties"/>
     <property file="./test.properties"/>
     <property file="./weblogic.properties"/>
-    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
     <property name="temp.dir" value="temp"/>
+    <property name="wls.oracle.home" location="${weblogic.installdir}/.."/>
+    <property name="eclipselink.lib" value="../../${eclipselink.jar}"/>
+    <path id="eclipselink.lib.extras">
+        <fileset dir="${jpatest.basedir}/../../plugins/">
+            <include name="*jpa.modelgen_*"/>
+            <include name="*nosql_*"/>
+            <exclude name="*.source_*"/>
+        </fileset>
+    </path>
+    <property name="eclipselink.lib.jpa" location="../../jpa/plugins/javax.persistence_2.2.1.v201807122140.jar"/>
+    <property name="jdbc.driver.lib" value="${jdbc.driver.jar}"/>
+    <property name="jdbc2.driver.lib" value="${jdbc2.driver.jar}"/>
+    <property name="jdbc3.driver.lib" value="${jdbc3.driver.jar}"/>
 
-    <!-- This checks if the tests are run on Derby database -->
-    <condition property="is.derby">
-        <contains string="${db.driver}" substring="derby"/>
+    <condition property="suffix" value="cmd" else="sh">
+        <os family="windows"/>
     </condition>
 
-    <condition property="WLS_SETUP_PY" value="wls_exalogic_setup.py" else="wls_setup.py">
+    <condition property="is.exalogic" value="true" else="false">
         <contains string="${server.version}" substring="exalogic"/>
+    </condition>
+
+    <property name="wls.derbyFlag" value="true"/>
+    <condition property="wls.debugFlag" value="true" else="false">
+        <isset property="wls.debug.port"/>
     </condition>
 
     <path id="wls.path">
@@ -72,131 +95,168 @@
         <pathelement location="${weblogic.installdir}/modules/features/wlst.wls.classpath.jar"/>
     </path>
 
-    <!-- This replaces URL in JAX-RS testcases -->
-    <target name="weblogic-jaxrsconfig">
-        <property name="jaxrs-url" value="${weblogic.host}:${weblogic.port}"/>
-        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
-        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
-        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
-        <replace file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='@server-platform@' value="${server.platform}"/>
+    <target name="-wls-wlst-init" description="Initialize 'wslt' macro for WebLogic.">
+        <macrodef name="wlst">
+            <attribute name="script"/>
+            <element name="customize" optional="true" implicit="true"/>
+            <sequential>
+                <java classname="weblogic.WLST" fork="yes">
+                    <arg line="@{script}"/>
+                    <classpath>
+                        <path refid="wls.path"/>
+                    </classpath>
+                    <sysproperty key="target.server" value="${target.server}"/>
+                    <sysproperty key="weblogic.host" value="${weblogic.host}"/>
+                    <sysproperty key="weblogic.port" value="${weblogic.port}"/>
+                    <sysproperty key="server.user" value="${server.user}"/>
+                    <sysproperty key="server.pwd" value="${server.pwd}"/>
+                    <sysproperty key="weblogic.domain" value="${weblogic.domain}"/>
+                    <sysproperty key="weblogic.installdir" value="${weblogic.installdir}"/>
+                    <customize/>
+                </java>
+            </sequential>
+        </macrodef>
+    </target>
+
+    <target name="-wls-deploy-init" description="Initialize 'wslt' macro for WebLogic.">
+        <taskdef name="wldeploy" classname="weblogic.ant.taskdefs.management.WLDeploy">
+            <classpath>
+                <pathelement location="${weblogic.home}/lib/weblogic.jar"/>
+            </classpath>
+        </taskdef>
+    </target>
+
+    <target name="-backup-init">
+        <condition property="do.backup">
+            <not>
+                <available file="${wls.oracle.home}/oracle_common/modules/oracle.toplink-bak"/>
+            </not>
+        </condition>
+    </target>
+
+    <target name="-do-backup" description="Backup default TopLink installation." depends="-backup-init" if="do.backup">
+        <copy todir="${wls.oracle.home}/oracle_common/modules/oracle.toplink-bak">
+            <fileset dir="${server.module.toplink}"/>
+        </copy>
+        <move file="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar" tofile="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar.bak"/>
     </target>
 
     <!-- This creates the server domain. -->
-    <target name="weblogic-install">
+    <target name="weblogic-install" depends="-do-backup, -wls-wlst-init">
         <delete dir="${weblogic.domain}"/>
+        <mkdir dir="${weblogic.domain}"/>
         <delete>
             <fileset dir="." includes="std*.log"/>
         </delete>
-        <delete dir="${jpatest.basedir}/${temp.dir}"/>
-        <mkdir dir="${jpatest.basedir}/${temp.dir}"/>
-        <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
-        <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/wls_install.py"/>
-            <classpath>
-                <path refid="wls.path"/>
-            </classpath>
-        </java>
-        <copy todir="${weblogic.domain}/lib" flatten="true">
+        
+        <copy file="${eclipselink.lib}" todir="${server.module.toplink}" overwrite="true" verbose="true" flatten="true"/>
+        <copy file="${eclipselink.lib.jpa}" tofile="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar" overwrite="true" verbose="true"/>
+        <copy todir="${server.module.toplink}" overwrite="true" verbose="true">
+            <path refid="eclipselink.lib.extras"/>
+            <mapper type="regexp" from="^(.+?)_[0-9]+.*\.jar$" to="\1.jar"/>
+        </copy>
+        
+        <wlst script="${jpatest.basedir}/resource/weblogic/wls_install.py"/>
+
+        <copy todir="${weblogic.domain}/lib" flatten="true" failonerror="false">
             <path>
                 <pathelement path="${junit.lib}"/>
+                <pathelement path="${jdbc.driver.lib}"/>
+                <pathelement path="${jdbc2.driver.lib}"/>
+                <pathelement path="${jdbc3.driver.lib}"/>
             </path>
         </copy>
-        <antcall target="copy-eclipselink-jar-to-domain-lib" inheritRefs="true"/>
-        <antcall target="copy-jdbc-driver-jar-to-domain-lib" inheritRefs="true"/>
-    </target>
-
-    <target name="copy-jdbc-driver-jar-to-domain-lib" if="is.derby">
-        <copy file="${jdbc.driver.jar}" todir="${weblogic.domain}/lib"/>
-    </target>
-
-    <target name="copy-eclipselink-jar-to-domain-lib">
-        <copy file="${eclipselink.lib}" todir="${server.module.toplink}"/>
-    </target>
-
-    <target name="pass-weblogic-and-database-info">
-        <copy todir="${jpatest.basedir}/${temp.dir}" overwrite="true">
-            <fileset dir="${jpatest.basedir}/resource/weblogic" includes="*.py"/>
-        </copy>
-        <replace dir="${jpatest.basedir}/${temp.dir}">
-            <include name="**/*.py"/>
-            <replacefilter token="@WL_HOME@" value="${weblogic.installdir}"/>
-            <replacefilter token="@WL_HOST@" value="${weblogic.host}"/>
-            <replacefilter token="@WL_PORT@" value="${weblogic.port}"/>
-            <replacefilter token="@WL_USR@" value="${server.user}"/>
-            <replacefilter token="@WL_PWD@" value="${server.pwd}"/>
-            <replacefilter token="@WL_DOMAIN@" value="${weblogic.domain}"/>
-            <replacefilter token="@DOMAIN_NAME@" value="${domain.name}"/>
-            <replacefilter token="@TARGET_SERVER@" value="${target.server}"/>
-            <replacefilter token="@DBDRV@" value="${db.driver}"/>
-            <replacefilter token="@DBURL@" value="${db.url}"/>
-            <replacefilter token="@DBUSR@" value="${db.user}"/>
-            <replacefilter token="@DBPWD@" value="${db.pwd}"/>
-            <replacefilter token="@DB2DRV@" value="${db2.driver}"/>
-            <replacefilter token="@DB2URL@" value="${db2.url}"/>
-            <replacefilter token="@DB2USR@" value="${db2.user}"/>
-            <replacefilter token="@DB2PWD@" value="${db2.pwd}"/>
-            <replacefilter token="@DB3DRV@" value="${db3.driver}"/>
-            <replacefilter token="@DB3URL@" value="${db3.url}"/>
-            <replacefilter token="@DB3USR@" value="${db3.user}"/>
-            <replacefilter token="@DB3PWD@" value="${db3.pwd}"/>
-        </replace>
-    </target>
-
-    <!-- Start the server. -->
-    <target name="weblogic-start">
-        <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/wls_start.py"/>
-            <classpath>
-                <!--this path is used for WebLogic JPA2.0 support-->
-                <!--<pathelement path="${server.persistence20.lib}/${server.persistence20.jar}"/>-->
-                <fileset dir="${server.lib}" includes="${server.depend}"/>
-                <pathelement location="${env.JAVA_HOME}/lib/tools.jar"/>
-            </classpath>
-            <sysproperty key="debugMode" value="${debugMode}"/>
-            <sysproperty key="eclipselink.logging.level" value="${logging.level}"/>
-            <sysproperty key="ejb.lookup" value="${ejb.lookup}"/>
-            <sysproperty key="is.JTA" value="${is.JTA}"/>
-        </java>
+        <antcall target="weblogic-start"/>
     </target>
 
     <!-- This creates datasource and deploy to the server. -->
-    <target name="weblogic-setup">
-        <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
-        <antcall target="weblogic-datasource-setup" inheritRefs="true"/>
-    </target>
-
-    <target name="weblogic-datasource-setup" depends="weblogic-derby-setup,weblogic-non-derby-setup"/>
-
-    <!-- This creates datasource on derby and deploy to the server. -->
-    <target name="weblogic-derby-setup" if="is.derby">
-        <echo message="WebLogic will run on Derby Database ......"/>
-        <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/wls_derby_setup.py"/>
-            <classpath>
-                <path refid="wls.path"/>
-            </classpath>
-        </java>
-    </target>
-
-    <!-- This creates datasource on non-derby database and deploy to the server. -->
-    <target name="weblogic-non-derby-setup" unless="is.derby">
-        <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/${WLS_SETUP_PY}"/>
-            <classpath>
-                <path refid="wls.path"/>
-            </classpath>
-        </java>
+    <target name="weblogic-setup" depends="-wls-wlst-init">
+        <wlst script="${jpatest.basedir}/resource/weblogic/wls_setup.py">
+            <sysproperty key="is.exalogic" value="${is.exalogic}"/>
+            <sysproperty key="wls.ds.jta.name" value="EclipseLinkDS"/>
+            <sysproperty key="wls.ds2.jta.name" value="EclipseLinkDS2"/>
+            <sysproperty key="wls.ds3.jta.name" value="EclipseLinkDS3"/>
+            <sysproperty key="wls.ds.nonjta.name" value="ELNonJTADS"/>
+            <sysproperty key="wls.ds2.nonjta.name" value="ELNonJTADS2"/>
+            <sysproperty key="wls.ds3.nonjta.name" value="ELNonJTADS3"/>
+            <sysproperty key="wls.ds.session.name" value="${SESSION_DS_NAME}"/>
+            <sysproperty key="jdbc.driver.jar" value="${jdbc.driver.jar}"/>
+            <sysproperty key="db.driver" value="${db.driver}"/>
+            <sysproperty key="db.url" value="${db.url}"/>
+            <sysproperty key="db.user" value="${db.user}"/>
+            <sysproperty key="db.pwd" value="${db.pwd}"/>
+            <sysproperty key="db.platform" value="${db.platform}"/>
+            <sysproperty key="jdbc2.driver.jar" value="${jdbc2.driver.jar}"/>
+            <sysproperty key="db2.driver" value="${db2.driver}"/>
+            <sysproperty key="db2.url" value="${db2.url}"/>
+            <sysproperty key="db2.user" value="${db2.user}"/>
+            <sysproperty key="db2.pwd" value="${db2.pwd}"/>
+            <sysproperty key="db2.platform" value="${db2.platform}"/>
+            <sysproperty key="jdbc3.driver.jar" value="${jdbc3.driver.jar}"/>
+            <sysproperty key="db3.driver" value="${db3.driver}"/>
+            <sysproperty key="db3.url" value="${db3.url}"/>
+            <sysproperty key="db3.user" value="${db3.user}"/>
+            <sysproperty key="db3.pwd" value="${db3.pwd}"/>
+            <sysproperty key="db3.platform" value="${db3.platform}"/>
+        </wlst>
     </target>
 
     <!-- Remove all datasources created by target <weblogic-setup>
          Note: WLS server must be running.-->
-    <target name="weblogic-reset">
-        <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/wls_reset.py"/>
-            <classpath>
-                <path refid="wls.path"/>
-            </classpath>
-        </java>
+    <target name="weblogic-reset" depends="-wls-wlst-init">
+        <wlst script="${jpatest.basedir}/resource/weblogic/wls_reset.py">
+            <sysproperty key="wls.ds.jta.name" value="EclipseLinkDS"/>
+            <sysproperty key="wls.ds2.jta.name" value="EclipseLinkDS2"/>
+            <sysproperty key="wls.ds3.jta.name" value="EclipseLinkDS3"/>
+            <sysproperty key="wls.ds.nonjta.name" value="ELNonJTADS"/>
+            <sysproperty key="wls.ds2.nonjta.name" value="ELNonJTADS2"/>
+            <sysproperty key="wls.ds3.nonjta.name" value="ELNonJTADS3"/>
+        </wlst>
+        <delete file="${server.module.toplink}" failonerror="false"/>
+        <move file="${wls.oracle.home}/oracle_common/modules/oracle.toplink-bak" tofile="${server.module.toplink}" failonerror="false" verbose="true" overwrite="true"/>
+        <move file="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar.bak" tofile="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar" failonerror="false" verbose="true" overwrite="true"/>
+    </target>
+
+    <target name="weblogic-start" description="Start the server.">
+        <property name="additional.server.args" value=""/>
+        <property name="additional.server.jvmOpts" value=""/>
+        <property name="el.jvmOpts" value="-Declipselink.logging.level=${logging.level} -Dejb.lookup=${ejb.lookup}/stderr.log -Dis.JTA=${is.JTA}"/>
+        <property name="w.jvmOpts" value="-Dweblogic.Stdout=${basedir}/stdout.log -Dweblogic.Stderr=${basedir}/stderr.log -Djava.awt.headless=true"/>
+        <echo>Starting Weblogic Server...</echo>
+        <exec executable="${weblogic.domain}/bin/startWebLogic.${suffix}" spawn="true" dir="${basedir}">
+            <env key="JAVA_HOME" value="${test.junit.jvm}"/>
+            <env key="JAVA_OPTIONS" value="${additional.server.jvmOpts} ${el.jvmOpts} ${w.jvmOpts}"/>
+            <env key="DERBY_FLAG" value="${wls.derbyFlag}"/>
+            <env key="debugFlag" value="${wls.debugFlag}"/>
+            <env key="DEBUG_PORT" value="${wls.debug.port}"/>
+            <arg line="${additional.server.args}"/>
+        </exec>
+        <waitfor maxwait="3" maxwaitunit="minute" timeoutproperty="weblogic.not.running">
+            <and>
+                <socket server="${weblogic.host}" port="${weblogic.port}"/>
+            </and>
+        </waitfor>
+        <fail if="weblogic.not.running" message="WebLogic did not start within given time"/>
+        <echo>WebLogic is running at http://${weblogic.host}:${weblogic.port}</echo>
+    </target>
+
+    <target name="weblogic-stop" description="Stop the server.">
+        <exec executable="${weblogic.domain}/bin/stopWebLogic.${suffix}" dir="${basedir}">
+            <env key="JAVA_HOME" value="${test.junit.jvm}"/>
+            <env key="DERBY_FLAG" value="${wls.derbyFlag}"/>
+        </exec>
+    </target>
+
+    <target name="weblogic-deploy" description="Deploy the application ear to the server." depends="-wls-deploy-init">
+        <wldeploy action="deploy" adminurl="${server.url}" targets="${target.server}"
+            name="${application.name}" source="${ear.name}" failonerror="false"
+            user="${server.user}" password="${server.pwd}" />
+    </target>
+
+    <target name="weblogic-undeploy" description="Undeploy the application ear from the server." depends="-wls-deploy-init">
+        <wldeploy action="undeploy" adminurl="${server.url}" targets="${target.server}"
+            name="${application.name}" failonerror="true"
+            user="${server.user}" password="${server.pwd}" />
     </target>
 
     <!-- Set EclipseLink JPA as DefaultJPAProvider for wls. -->
@@ -241,46 +301,42 @@
         </java>
     </target>
 
-    <!-- Stop the server. -->
-    <target name="weblogic-stop">
-        <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/wls_stop.py"/>
-            <classpath>
-                <path refid="wls.path"/>
-            </classpath>
-        </java>
-    </target>
-
-    <!-- Deploy the application ear to the server.
-         Note: WLS server must be running. -->
-    <target name="weblogic-deploy">
-        <property name="ear.dir" value="${jpatest.basedir}"/>
-        <property name="ear.name" value="${application.name}.ear"/>
-        <antcall target="pass-weblogic-and-database-info" inheritRefs="true"/>
+    <target name="pass-weblogic-and-database-info">
+        <copy todir="${jpatest.basedir}/${temp.dir}" overwrite="true">
+            <fileset dir="${jpatest.basedir}/resource/weblogic" includes="*.py"/>
+        </copy>
         <replace dir="${jpatest.basedir}/${temp.dir}">
-            <include name="**/wls_*deploy.py"/>
-            <replacefilter token="@appName@" value="${application.name}"/>
-            <replacefilter token="@testDir@" value="${ear.dir}"/>
-            <replacefilter token="@earName@" value="${ear.name}"/>
+            <include name="**/*.py"/>
+            <replacefilter token="@WL_HOME@" value="${weblogic.installdir}"/>
+            <replacefilter token="@WL_HOST@" value="${weblogic.host}"/>
+            <replacefilter token="@WL_PORT@" value="${weblogic.port}"/>
+            <replacefilter token="@WL_USR@" value="${server.user}"/>
+            <replacefilter token="@WL_PWD@" value="${server.pwd}"/>
+            <replacefilter token="@WL_DOMAIN@" value="${weblogic.domain}"/>
+            <replacefilter token="@DOMAIN_NAME@" value="${domain.name}"/>
+            <replacefilter token="@TARGET_SERVER@" value="${target.server}"/>
+            <replacefilter token="@DBDRV@" value="${db.driver}"/>
+            <replacefilter token="@DBURL@" value="${db.url}"/>
+            <replacefilter token="@DBUSR@" value="${db.user}"/>
+            <replacefilter token="@DBPWD@" value="${db.pwd}"/>
+            <replacefilter token="@DB2DRV@" value="${db2.driver}"/>
+            <replacefilter token="@DB2URL@" value="${db2.url}"/>
+            <replacefilter token="@DB2USR@" value="${db2.user}"/>
+            <replacefilter token="@DB2PWD@" value="${db2.pwd}"/>
+            <replacefilter token="@DB3DRV@" value="${db3.driver}"/>
+            <replacefilter token="@DB3URL@" value="${db3.url}"/>
+            <replacefilter token="@DB3USR@" value="${db3.user}"/>
+            <replacefilter token="@DB3PWD@" value="${db3.pwd}"/>
         </replace>
-
-        <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/wls_deploy.py"/>
-            <classpath>
-                <path refid="wls.path"/>
-            </classpath>
-        </java>
     </target>
 
-    <!-- Undeploy the application ear to the server.
-         Note: WLS server must be running. -->
-    <target name="weblogic-undeploy">
-        <java classname="weblogic.WLST" fork="yes">
-            <arg line="${jpatest.basedir}/${temp.dir}/wls_undeploy.py"/>
-            <classpath>
-                <path refid="wls.path"/>
-            </classpath>
-        </java>
+    <!-- This replaces URL in JAX-RS testcases -->
+    <target name="weblogic-jaxrsconfig">
+        <property name="jaxrs-url" value="${weblogic.host}:${weblogic.port}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/DefaultJAXBContextTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/ContextResolverTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/${src.dir}/org/eclipse/persistence/testing/tests/jpa/jaxrs/MessageBodyReaderWriterTestCases.java" token='@host:port@' value="${jaxrs-url}"/>
+        <replace file="${jpatest.basedir}/resource/eclipselink-jaxrs-model/server/persistence.xml" token='@server-platform@' value="${server.platform}"/>
     </target>
 
 </project>
