@@ -182,83 +182,39 @@ public class PersistenceUnitProcessor {
             // e.g. file:/tmp/META-INF/persistence.xml
             // 210280: any file url will be assumed to always reference a file (not a directory)
             result = new URL(pxmlURL, path.toString()); // NOI18N
-        } else if("jar".equals(protocol)) { // NOI18N
-            // JPA spec limits the possible scenarios in Java EE environments (8.2).
-            // However it makes sense to be a little more flexible, supporting
-            // any root URLs that resolve descriptorLocation to pxmlURL.
-            // For example, jar:file:/foo.jar!/bar/META-INF/persistence.xml
-            // will have root in jar:file:/foo.jar!/bar.
+        } else if("zip".equals(protocol) ||
+                  "jar".equals(protocol) ||
+                  "wsjar".equals(protocol)) {
+            // Example URLs and expected results:
+            // zip:/foo/bar.jar!/META-INF/persistence.xml -> file:/foo/bar.jar
+            // zip:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml -> jar:file:/foo/bar.jar!/WEB-INF/classes
+            // jar:file:/foo/bar.jar!/META-INF/persistence.xml -> file:/foo/bar.jar
+            // jar:file:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml -> jar:file:/foo/bar.jar!/WEB-INF/classes
+            // wsjar:file:/foo/bar.jar!/META-INF/persistence.xml -> file:/foo/bar.jar
+            // wsjar:file:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml -> wsjar:file:/foo/bar.jar!/WEB-INF/classes
 
-            // e.g. jar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
-            JarURLConnection conn =
-                    JarURLConnection.class.cast(pxmlURL.openConnection());
-            // Entry path, e.g. META-INF/persistence.xml. Empty string
-            // corresponds to the archive root.
-            String entry = conn.getEntryName();
-            if (entry == null) entry = "";
-            // Go up to the directory, corresponding to root of descriptorLocation
-            // (twice for META-INF/persistence.xml).
-            for(int i = 0; i <= descriptorDepth; i++) {
-                int entrySeparator = entry.lastIndexOf("/");
-                entry = entry.substring(0, Math.max(0, entrySeparator));
-            }
+            // e.g. file:/foo/bar.jar!/META-INF/persistence.xml
+            // "zip:" URLs require additional handling - see examples above.
+            String spec = "zip".equals(protocol)
+                ? "file:" + pxmlURL.getFile()
+                : pxmlURL.getFile();
 
-            result = entry.isEmpty()
-                ? conn.getJarFileURL()
-                : new URL("jar:" + conn.getJarFileURL() + "!/" + entry);
-        } else if("zip".equals(protocol)) { // NOI18N
-            // More permissive than the JPA spec - see the JAR comment above.
-
-            // e.g. /tmp/a_ear/b.jar!/META-INF/persistence.xml
-            String input = pxmlURL.getFile();
-            int separator = input.lastIndexOf("!/");
-            // File part of the input, e.g. zip:/tmp/a_ear/b.jar
-            String file;
-            // Entry path, e.g. META-INF/persistence.xml. Empty string
-            // corresponds to the archive root.
-            String entry;
-            if (separator == -1) {
-                file = input;
-                entry = "";
-            } else {
-                file = input.substring(0, separator);
-                entry = input.substring(separator + 2);
-            }
-            // Go up to the directory, corresponding to root of descriptorLocation
-            // (twice for META-INF/persistence.xml).
-            for(int i = 0; i <= descriptorDepth; i++) {
-                int entrySeparator = entry.lastIndexOf("/");
-                entry = entry.substring(0, Math.max(0, entrySeparator));
-            }
-
-            if (entry.isEmpty()) {
-                result = new File(file).toURL();
-            } else {
-                // JARs and ZIPs are virtually the same thing, but we have a lot
-                // better tooling for JARs.
-                result = new URL("jar:file:" + file + "!/" + entry);
-            }
-        } else if("wsjar".equals(protocol)) { // NOI18N
-            // e.g. wsjar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
-            // but WS gives use jar:file:..., so we need to match it.
-            String spec = pxmlURL.getFile();
             int separator = spec.lastIndexOf("!/");
             if (separator == -1) {
-                separator = spec.length();
+                // No entry - use the archive as root. spec is a valid URL here.
+                result = new URL(spec);
+            } else if (spec.regionMatches(true, separator - 4, ".war", 0, 4) &&
+                       spec.regionMatches(true, separator + 2, WEBINF_CLASSES_STR, 0, WEBINF_CLASSES_LEN)) {
+                // If the URL references a file with a ".war" extension, and its entry
+                // starts with WEB-INF/classes/, then the calculated persistence unit root should
+                // be jar:file:path/to/a.war!/WEB-INF/classes/ as per JPA 2.1 Spec section 8.2 "Persistence Unit Packaging".
+                // Filter out invalid scenarios such as jar:file:/a/path/to/my.war!/foo/WEB-INF/classes/META-INF/persistence.xml
+                result = new URL("jar", "", -1, spec.substring(0, separator + 2 + WEBINF_CLASSES_LEN));
             } else {
                 // If this doesn't reference a war file with a properly located persistence.xml,
-                // then chop off everything after the "!/" marker and assume it is a normal jar.
-                // Else, if the wsjar URL references a file with a ".war" extension, and its entry
-                // starts with WEB-INF/classes/, then the calculated persistence unit root should
-                // be wsjar:path/to/a.war!/WEB-INF/classes/ as per JPA 2.1 Spec section 8.2 "Persistence Unit Packaging".
-                separator += 2;
-                // Filter out invalid scenarios such as wsjar:file:/a/path/to/my.war!/foo/WEB-INF/classes/META-INF/persistence.xml
-                if (spec.regionMatches(true, separator - 6, ".war", 0, 4) &&
-                        spec.regionMatches(true, separator, WEBINF_CLASSES_STR, 0, WEBINF_CLASSES_LEN)) {
-                    separator += WEBINF_CLASSES_LEN;
-                }
+                // then chop off everything starting with the "!/" marker and assume it is a normal jar.
+                result = new URL(spec.substring(0, separator));
             }
-            result = new URL("jar", "", spec.substring(0, separator));
         } else if ("bundleentry".equals(protocol)) {
             // mkeith - add bundle protocol cases
             result = new URL("bundleentry://" + pxmlURL.getAuthority());
