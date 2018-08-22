@@ -35,70 +35,140 @@ import java.util.Map;
 import javax.persistence.EntityManagerFactory;
 
 public class PersistenceUnitProcessorTest extends JUnitTestCase {
-    
+
     public static Test suite() {
         return new TestSuite(PersistenceUnitProcessorTest.class);
     }
 
-    public static void testComputePURootURLForZipFile() throws Exception {
-        // Required for allowing usage of "zip" URL protocol
-        URLStreamHandler dummyZipHandler = new URLStreamHandler() {
+    // Stub handler for nonstandard schemes (zip: and wsjar:).
+    private static URLStreamHandler dummyHandler =
+        new URLStreamHandler() {
             @Override
             protected URLConnection openConnection(URL u) throws IOException {
                 return null;
             }
         };
 
+    private static void checkPURootSimple(
+        String inputUrl,
+        String expectedOutput
+    ) throws Exception {
         Assert.assertEquals(
-                "file:/C:/Oracle/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar",
-                PersistenceUnitProcessor.computePURootURL(
-                        new URL("zip", "", -1, "/C:/Oracle/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler),
-                        "META-INF/persistence.xml"
-                ).toString()
-        );
-        
-        Assert.assertEquals(
-                "file:/C:/Program Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar", 
-                PersistenceUnitProcessor.computePURootURL(
-                        new URL("zip", "", -1, "/C:/Program Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler), 
-                        "META-INF/persistence.xml"
-                ).toString()
-        );
-        
-        Assert.assertEquals(
-                "file:/C:/Program.Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar", 
-                PersistenceUnitProcessor.computePURootURL(
-                        new URL("zip", "", -1, "/C:/Program.Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml", dummyZipHandler), 
-                        "META-INF/persistence.xml"
-                ).toString()
-        );
-
-        Assert.assertEquals(
-            // The protocol changes - we view ZIPs as JARs.
-            "jar:file:/foo/bar.war!/WEB-INF/classes/",
+            expectedOutput,
             PersistenceUnitProcessor.computePURootURL(
-                new URL("zip", "", -1, "/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml", dummyZipHandler), 
+                new URL(inputUrl),
                 "META-INF/persistence.xml"
             ).toString()
         );
     }
 
-    public void testComputePURootURLForJarFile() throws Exception {
-
+    private static void checkPURootCustom(
+        String inputScheme,
+        String inputFile,
+        String expectedOutput
+    ) throws Exception {
         Assert.assertEquals(
-            new URL("file:/foo/bar.jar"),
+            expectedOutput,
             PersistenceUnitProcessor.computePURootURL(
-                new URL("jar:file:/foo/bar.jar!/META-INF/persistence.xml"),
+                new URL(inputScheme, "", -1, inputFile, dummyHandler),
                 "META-INF/persistence.xml"
-            )
+            ).toString()
+        );
+    }
+
+    public static void testComputePURootURLForZipFile() throws Exception {
+
+        // Test cases for expected behavior.
+
+        checkPURootCustom(
+            "zip", "/foo/bar.jar!/META-INF/persistence.xml",
+            "file:/foo/bar.jar"
         );
 
-        Assert.assertEquals(
-            new URL("jar:file:/foo/bar.war!/WEB-INF/classes/"),
-            PersistenceUnitProcessor.computePURootURL(
-                new URL("jar:file:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml"),
-                "META-INF/persistence.xml"
-            )
+        // WAR files have a special location available.
+        checkPURootCustom(
+            "zip", "/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml",
+            "jar:file:/foo/bar.war!/WEB-INF/classes/"
+        );
+
+        // Same as the previous one, but not a WAR!
+        checkPURootCustom(
+            "zip", "/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml",
+            "file:/foo/bar.jar"
+        );
+
+        // META-INF in some other directory (not conforming to JPA spec!).
+        checkPURootCustom(
+            "zip", "/foo/bar.jar!/foo/META-INF/persistence.xml",
+            "file:/foo/bar.jar"
+        );
+
+        // Test cases for specific issues.
+
+        // 463571
+
+        checkPURootCustom(
+            "zip", "/C:/Oracle/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml",
+            "file:/C:/Oracle/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar"
+        );
+
+        checkPURootCustom(
+            "zip", "/C:/Program Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml",
+            "file:/C:/Program Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar"
+        );
+
+        checkPURootCustom(
+            "zip", "/C:/Program.Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar!/META-INF/persistence.xml",
+            "file:/C:/Program.Files/Middleware/Oracle_Home/wlserver/samples/domains/mydomain/servers/myserver/tmp/_WL_user/eclipselink-advanced-model/y986my/eclipselink-advanced-model_ejb.jar"
+        );
+    }
+
+    public void testComputePURootURLForJarFile() throws Exception {
+        // Test cases for expected behavior.
+
+        checkPURootSimple(
+            "jar:file:/foo/bar.jar!/META-INF/persistence.xml",
+            "file:/foo/bar.jar"
+        );
+
+        checkPURootSimple(
+            "jar:file:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml",
+            "jar:file:/foo/bar.war!/WEB-INF/classes/"
+        );
+
+        checkPURootSimple(
+            "jar:file:/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml",
+            "file:/foo/bar.jar"
+        );
+
+        checkPURootSimple(
+            "jar:file:/foo/bar.jar!/foo/META-INF/persistence.xml",
+            "file:/foo/bar.jar"
+        );
+    }
+
+    public void testComputePURootURLForWsjarFile() throws Exception {
+        // Test cases for expected behavior.
+        // The results differ slightly from the other archive URLs!
+
+        checkPURootCustom(
+            "wsjar", "file:/foo/bar.jar!/META-INF/persistence.xml",
+            "jar:file:/foo/bar.jar!/"
+        );
+
+        checkPURootCustom(
+            "wsjar", "file:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml",
+            "jar:file:/foo/bar.war!/WEB-INF/classes/"
+        );
+
+        checkPURootCustom(
+            "wsjar", "file:/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml",
+            "jar:file:/foo/bar.jar!/"
+        );
+
+        checkPURootCustom(
+            "wsjar", "file:/foo/bar.jar!/foo/META-INF/persistence.xml",
+            "jar:file:/foo/bar.jar!/"
         );
     }
 

@@ -184,12 +184,6 @@ public class PersistenceUnitProcessor {
             result = new URL(pxmlURL, path.toString()); // NOI18N
         } else if("zip".equals(protocol) ||
                   "jar".equals(protocol)) {
-            // Example URLs and expected results:
-            // zip:/foo/bar.jar!/META-INF/persistence.xml -> file:/foo/bar.jar
-            // zip:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml -> jar:file:/foo/bar.jar!/WEB-INF/classes
-            // jar:file:/foo/bar.jar!/META-INF/persistence.xml -> file:/foo/bar.jar
-            // jar:file:/foo/bar.war!/WEB-INF/classes/META-INF/persistence.xml -> jar:file:/foo/bar.jar!/WEB-INF/classes
-
             // e.g. file:/foo/bar.jar!/META-INF/persistence.xml
             // "zip:" URLs require additional handling - see examples above.
             String spec = "zip".equals(protocol)
