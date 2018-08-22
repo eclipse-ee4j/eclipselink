@@ -76,7 +76,7 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         );
     }
 
-    public static void testComputePURootURLForZipFile() throws Exception {
+    public void testComputePURootURLForZipFile() throws Exception {
 
         // Test cases for expected behavior.
 
