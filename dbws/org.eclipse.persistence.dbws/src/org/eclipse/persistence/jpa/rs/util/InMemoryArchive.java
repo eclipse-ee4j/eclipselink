@@ -27,7 +27,7 @@ import org.eclipse.persistence.internal.jpa.deployment.URLArchive;
 /**
  * This archive is designed for use with dynamic persistence units
  * it is built with a stream that allows it to read a persistence.xml file and creates a fake base URL
- * based the classpath location of the InMemoryArchiveClass
+ * based the classpath location of the InMemoryArchive class
  * @author tware
  *
  */
@@ -45,6 +45,10 @@ public class InMemoryArchive extends URLArchive {
             e.printStackTrace();
         } catch (IOException e){
             e.printStackTrace();
+        }
+
+        if (myURL == null) {
+            throw new IllegalStateException("The classloader containing InMemoryArchive class does not resolve to a valid persistence unit root");
         }
         this.rootURL = myURL;
     }

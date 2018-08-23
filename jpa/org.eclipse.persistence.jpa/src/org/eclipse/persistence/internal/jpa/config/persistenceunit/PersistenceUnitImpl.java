@@ -59,6 +59,10 @@ public class PersistenceUnitImpl implements PersistenceUnit {
             e.printStackTrace();
         }
 
+        if (puURL == null) {
+            throw new IllegalStateException("The classloader containing PersistenceUnitImpl class does not resolve to a valid persistence unit root");
+        }
+
         puInfo.setPersistenceUnitRootUrl(puURL);
         puInfo.setProperties(new Properties());
 

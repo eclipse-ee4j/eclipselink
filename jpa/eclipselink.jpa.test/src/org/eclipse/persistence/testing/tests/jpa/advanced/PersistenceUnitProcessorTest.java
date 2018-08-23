@@ -76,6 +76,29 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         );
     }
 
+    private static void checkPURootFailsCustom(
+        String inputScheme,
+        String inputFile
+    ) throws Exception {
+        Assert.assertNull(
+            PersistenceUnitProcessor.computePURootURL(
+                new URL(inputScheme, "", -1, inputFile, dummyHandler),
+                "META-INF/persistence.xml"
+            )
+        );
+    }
+
+    private static void checkPURootFailsSimple(
+        String input
+    ) throws Exception {
+        Assert.assertNull(
+            PersistenceUnitProcessor.computePURootURL(
+                new URL(input),
+                "META-INF/persistence.xml"
+            )
+        );
+    }
+
     public void testComputePURootURLForZipFile() throws Exception {
 
         // Test cases for expected behavior.
@@ -92,15 +115,13 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         );
 
         // Same as the previous one, but not a WAR!
-        checkPURootCustom(
-            "zip", "/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml",
-            "file:/foo/bar.jar"
+        checkPURootFailsCustom(
+            "zip", "/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml"
         );
 
         // META-INF in some other directory (not conforming to JPA spec!).
-        checkPURootCustom(
-            "zip", "/foo/bar.jar!/foo/META-INF/persistence.xml",
-            "file:/foo/bar.jar"
+        checkPURootFailsCustom(
+            "zip", "/foo/bar.jar!/foo/META-INF/persistence.xml"
         );
 
         // Test cases for specific issues.
@@ -136,14 +157,12 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
             "jar:file:/foo/bar.war!/WEB-INF/classes/"
         );
 
-        checkPURootSimple(
-            "jar:file:/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml",
-            "file:/foo/bar.jar"
+        checkPURootFailsSimple(
+            "jar:file:/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml"
         );
 
-        checkPURootSimple(
-            "jar:file:/foo/bar.jar!/foo/META-INF/persistence.xml",
-            "file:/foo/bar.jar"
+        checkPURootFailsSimple(
+            "jar:file:/foo/bar.jar!/foo/META-INF/persistence.xml"
         );
     }
 
@@ -161,14 +180,12 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
             "jar:file:/foo/bar.war!/WEB-INF/classes/"
         );
 
-        checkPURootCustom(
-            "wsjar", "file:/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml",
-            "jar:file:/foo/bar.jar!/"
+        checkPURootFailsCustom(
+            "wsjar", "file:/foo/bar.jar!/WEB-INF/classes/META-INF/persistence.xml"
         );
 
-        checkPURootCustom(
-            "wsjar", "file:/foo/bar.jar!/foo/META-INF/persistence.xml",
-            "jar:file:/foo/bar.jar!/"
+        checkPURootFailsCustom(
+            "wsjar", "file:/foo/bar.jar!/foo/META-INF/persistence.xml"
         );
     }
 
