@@ -25,6 +25,7 @@ import javax.persistence.spi.PersistenceUnitInfo;
 import javax.persistence.spi.PersistenceUnitTransactionType;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.config.xml.MappingsImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -57,10 +58,8 @@ public class PersistenceUnitImpl implements PersistenceUnit {
             e.printStackTrace();
         } catch (IOException e){
             e.printStackTrace();
-        }
-
-        if (puURL == null) {
-            throw new IllegalStateException("The classloader containing PersistenceUnitImpl class does not resolve to a valid persistence unit root");
+        } catch (ValidationException e) {
+            e.printStackTrace();
         }
 
         puInfo.setPersistenceUnitRootUrl(puURL);

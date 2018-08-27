@@ -58,6 +58,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLParseException;
 import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
@@ -163,10 +164,10 @@ public class PersistenceUnitProcessor {
      * @param pxmlURL - URL of a resource belonging to the PU (obtained for
      * {@code descriptorLocation} via {@link Classloader#getResource(String)}).
      * @param descriptorLocation - the name of the resource.
-     * @return The URL of the PU root containing the resource, or {@code null}
-     * if the calculated root doesn't conform to the JPA specification (8.2),
-     * or {@code pxmlURL} doesn't match the {@descriptorLocation}.
+     * @return The URL of the PU root containing the resource.
      * @throws IOException
+     * @throws ValidationException if the resolved root doesn't conform to the
+     * JPA specification (8.2)
      */
     public static URL computePURootURL(URL pxmlURL, String descriptorLocation) throws IOException, URISyntaxException {
         StringTokenizer tokenizer = new StringTokenizer(descriptorLocation, "/\\");
@@ -208,21 +209,21 @@ public class PersistenceUnitProcessor {
             if (!entry.endsWith(descriptorLocation)) {
                 // Shouldn't happen unless we have a particularly tricky
                 // classloader - which we're not obligated to support.
-                return null;
+                throw ValidationException.invalidPersistenceRootUrl(pxmlURL, descriptorLocation);
             }
 
             String rootEntry = entry.substring(0, entry.length() - descriptorLocation.length());
-
-            // Since EclipseLink is a reference implementation, let's validate
-            // the produced root!
-            if (!isValidRootInArchive(file, rootEntry)) {
-                return null;
-            }
 
             // "wsjar:" URLs always have an entry for historical reasons.
             result = !rootEntry.isEmpty() || "wsjar".equals(protocol)
                 ? new URL("jar:" + file + "!/" + rootEntry)
                 : new URL(file);
+
+            // Since EclipseLink is a reference implementation, let's validate
+            // the produced root!
+            if (!isValidRootInArchive(file, rootEntry)) {
+                throw ValidationException.invalidPersistenceRootUrl(pxmlURL, descriptorLocation);
+            }
 
         } else if ("bundleentry".equals(protocol)) {
             // mkeith - add bundle protocol cases
@@ -338,7 +339,6 @@ public class PersistenceUnitProcessor {
                     if (descUrl == null) continue;
 
                     URL puRootUrl = computePURootURL(descUrl, descriptorPath);
-                    if (puRootUrl == null) continue;
 
                     archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
                     if (archive == null) continue;

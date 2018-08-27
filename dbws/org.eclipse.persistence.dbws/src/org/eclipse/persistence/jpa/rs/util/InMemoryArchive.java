@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.URLArchive;
 
@@ -45,11 +46,10 @@ public class InMemoryArchive extends URLArchive {
             e.printStackTrace();
         } catch (IOException e){
             e.printStackTrace();
+        } catch (ValidationException e) {
+            e.printStackTrace();
         }
 
-        if (myURL == null) {
-            throw new IllegalStateException("The classloader containing InMemoryArchive class does not resolve to a valid persistence unit root");
-        }
         this.rootURL = myURL;
     }
 

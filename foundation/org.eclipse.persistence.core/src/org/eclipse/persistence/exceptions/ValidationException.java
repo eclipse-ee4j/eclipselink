@@ -36,6 +36,7 @@
 //       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.exceptions;
 
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Vector;
 import java.lang.reflect.*;
@@ -461,6 +462,8 @@ public class ValidationException extends EclipseLinkException {
     public static final int INVALID_MAPPING_FOR_MAP_KEY_CONVERT = 7354;
     public static final int INVALID_MAPPING_FOR_CONVERT_WITH_ATTRIBUTE_NAME = 7355;
     public static final int MULTIPLE_OUT_PARAMS_NOT_SUPPORTED = 7356;
+
+    public static final int INVALID_PERSISTENCE_ROOT_URL = 7357;
 
     /* Code values in range <7500;7599> reserved for {@link org.eclipse.persistence.exceptions.BeanValidationException}. */
 
@@ -3011,4 +3014,11 @@ public class ValidationException extends EclipseLinkException {
         return validationException;
     }
 
+    public static ValidationException invalidPersistenceRootUrl(URL url, String descriptorLocation) {
+        Object[] args = { url, descriptorLocation };
+
+        ValidationException validationException = new ValidationException(ExceptionMessageGenerator.buildMessage(ValidationException.class, INVALID_PERSISTENCE_ROOT_URL, args));
+        validationException.setErrorCode(INVALID_PERSISTENCE_ROOT_URL);
+        return validationException;
+    }
 }

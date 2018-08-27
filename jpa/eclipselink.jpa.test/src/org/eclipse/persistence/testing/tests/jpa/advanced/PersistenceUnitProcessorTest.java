@@ -19,6 +19,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.SystemProperties;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.jpa.ArchiveFactory;
@@ -80,23 +81,25 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
         String inputScheme,
         String inputFile
     ) throws Exception {
-        Assert.assertNull(
+        try {
             PersistenceUnitProcessor.computePURootURL(
                 new URL(inputScheme, "", -1, inputFile, dummyHandler),
                 "META-INF/persistence.xml"
-            )
-        );
+            );
+            fail("ValidationException should be thrown.");
+        } catch (ValidationException e) {}
     }
 
     private static void checkPURootFailsSimple(
         String input
     ) throws Exception {
-        Assert.assertNull(
+        try {
             PersistenceUnitProcessor.computePURootURL(
                 new URL(input),
                 "META-INF/persistence.xml"
-            )
-        );
+            );
+            fail("ValidationException should be thrown.");
+        } catch (ValidationException e) {}
     }
 
     public void testComputePURootURLForZipFile() throws Exception {
