@@ -44,6 +44,7 @@ import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
 import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor;
+import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -104,6 +105,46 @@ public class TestProcessor {
         File outputFile = new File(srcOut, "org/Sample_.java");
         Assert.assertTrue("Model file not generated", outputFile.exists());
         Assert.assertTrue(Files.lines(outputFile.toPath()).anyMatch(s -> s.contains("@StaticMetamodel(Sample.class)")));
+    }
+
+    @Test
+    public void testGenerateComment() throws Exception {
+        File runDir = new File(System.getProperty("run.dir"), "testGenerateComment");
+        File srcOut = new File(runDir, "src");
+        srcOut.mkdirs();
+        File cpDir = new File(runDir, "cp");
+        cpDir.mkdirs();
+        File pxml = new File(cpDir, "META-INF/persistence.xml");
+        pxml.getParentFile().mkdirs();
+        try (BufferedWriter writer = Files.newBufferedWriter(pxml.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+            writer.write(PXML, 0, PXML.length());
+        } catch (IOException x) {
+            throw x;
+        }
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+
+        StandardJavaFileManager sfm = compiler.getStandardFileManager(diagnostics, null, null);
+        URL apiUrl = Entity.class.getProtectionDomain().getCodeSource().getLocation();
+        sfm.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(new File(apiUrl.getFile()), cpDir));
+        sfm.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(srcOut));
+        sfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(cpDir));
+
+        TestFO entity = new TestFO("org.Sample",
+                "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+        CompilationTask task = compiler.getTask(new PrintWriter(System.out), sfm, diagnostics,
+                getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS + "=false", "-Aeclipselink.logging.level.processor=OFF"), null,
+                Arrays.asList(entity));
+        CanonicalModelProcessor modelProcessor = new CanonicalModelProcessor();
+        task.setProcessors(Collections.singleton(modelProcessor));
+        task.call();
+
+        for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+            System.out.println(diagnostic);
+        }
+        File outputFile = new File(srcOut, "org/Sample_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("comments=")));
     }
 
     @Test
