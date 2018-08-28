@@ -28,6 +28,8 @@
 package org.eclipse.persistence.internal.jpa.modelgen;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GLOBAL_LOG_LEVEL;
@@ -117,6 +119,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             String canonicalName = getName(qualifiedCanonicalName);
             String canonicalpackage = getPackage(qualifiedCanonicalName);
 
+            boolean isNewJava = SourceVersion.RELEASE_8.compareTo(processingEnv.getSourceVersion()) < 0;
             JavaFileObject file = processingEnv.getFiler().createSourceFile(qualifiedCanonicalName, element);
             writer = file.openWriter();
 
@@ -129,6 +132,12 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             // to build our attributes and import list.
             ArrayList<String> attributes = new ArrayList<String>();
             HashMap<String, String> imports = new HashMap<String, String>();
+
+            if (isNewJava) {
+                imports.put("Generated", "javax.annotation.processing.Generated");
+            } else {
+                imports.put("Generated", "javax.annotation.Generated");
+            }
 
             // Import the model class if the canonical class is generated elsewhere.
             if (! classPackage.equals(canonicalpackage)) {
@@ -205,11 +214,23 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             String parent = writeImportStatements(imports, accessor, writer, persistenceUnit, canonicalpackage);
 
             // Write out the generation annotations.
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            writer.append("@Generated(value=\"EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision() + "\"");
+            String elVersion = "EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision();
+            writer.append("@Generated(value=\"");
+            if (isNewJava) {
+                writer.append(CanonicalModelProcessor.class.getName());
+            } else {
+                writer.append(elVersion);
+            }
+            writer.append("\"");
             if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_GENERATE_TIMESTAMP, CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT, processingEnv.getOptions()))) {
+                Date date = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 writer.append(", date=\"" +  sdf.format(date) + "\"");
+            }
+            if (isNewJava && Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_GENERATE_COMMENTS, CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT, processingEnv.getOptions()))) {
+                writer.append(", comments=\"");
+                writer.append(elVersion);
+                writer.append("\"");
             }
             writer.append(")\n");
             writer.append("@StaticMetamodel(" + className + ".class)\n");
@@ -489,7 +510,6 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         imps.addAll(typeImports.values());
 
         // Add the standard canonical model generator imports.
-        imps.add("javax.annotation.Generated");
         imps.add("javax.persistence.metamodel.StaticMetamodel");
 
         // Import the parent canonical class if need be.

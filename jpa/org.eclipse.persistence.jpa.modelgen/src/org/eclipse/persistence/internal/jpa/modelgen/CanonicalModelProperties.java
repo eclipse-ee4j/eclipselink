@@ -89,6 +89,13 @@ public abstract class CanonicalModelProperties {
     public static final String CANONICAL_MODEL_GENERATE_TIMESTAMP = PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP;
     public static final String CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT = PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT;
 
+    /**
+     * This optional property can be used to avoid using of comments in {@code Generated} annotation
+     * The default value is true and should be left as such for full feature support.
+     */
+    public static final String CANONICAL_MODEL_GENERATE_COMMENTS = PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_COMMENTS;
+    public static final String CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT = PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT;
+
     // This value must match LogCategory.PROCESSOR.getLogLevelProperty()
     /**
      * This optional property can be used to set processor logging level of Canonical model generator.
