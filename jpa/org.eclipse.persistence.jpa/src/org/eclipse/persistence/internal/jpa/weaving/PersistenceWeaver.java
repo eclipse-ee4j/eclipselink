@@ -30,11 +30,14 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderFromCurrentThread;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -125,7 +128,19 @@ public class PersistenceWeaver implements ClassTransformer {
                 if (shouldLogFinest) {
                     log.log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
                 }
-                final ClassReader classReader = new ClassReader(classfileBuffer);
+                ClassReader classReader = null;
+                try {
+                    classReader = new ClassReader(classfileBuffer);
+                } catch (IllegalArgumentException iae) {
+                    // class was probably compiled with some newer than officially supported and tested JDK
+                    // in such case log a warning and try to re-read the class without class version check
+                    if (log.shouldLog(SessionLog.FINE, SessionLog.WEAVER)) {
+                        SessionLogEntry entry = new SessionLogEntry(null, SessionLog.FINE, SessionLog.WEAVER, iae);
+                        entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                        log.log(entry);
+                    }
+                    classReader = new EclipseLinkClassReader(classfileBuffer);
+                }
                 final String reflectiveIntrospectionProperty =
                         PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION);
                 final ClassWriter classWriter = reflectiveIntrospectionProperty != null

@@ -85,7 +85,7 @@ public class RestReferenceAdapterV2ClassWriter implements EclipseLinkClassWriter
             throws ClassNotFoundException {
 
         final ClassWriter cw = new ClassWriter(0);
-        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, getASMClassName(), "L" + REFERENCE_ADAPTER_SHORT_SIGNATURE + "<L" + getASMParentClassName() + ";>;", REFERENCE_ADAPTER_SHORT_SIGNATURE, null);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, getASMClassName(), "L" + REFERENCE_ADAPTER_SHORT_SIGNATURE + "<L" + getASMParentClassName() + ";>;", REFERENCE_ADAPTER_SHORT_SIGNATURE, null);
 
         // Default constructor
         MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);

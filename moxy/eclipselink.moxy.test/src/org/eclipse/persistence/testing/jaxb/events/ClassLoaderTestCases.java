@@ -44,7 +44,7 @@ public class ClassLoaderTestCases extends TestCase {
     protected void setUp() throws Exception {
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, CLASS_NAME, null, ClassLoaderRoot.class.getName().replace('.', '/'), null);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, CLASS_NAME, null, ClassLoaderRoot.class.getName().replace('.', '/'), null);
         AnnotationVisitor xmlTypeAV = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlRootElement;", true);
         xmlTypeAV.visit("name", "root");
         xmlTypeAV.visitEnd();

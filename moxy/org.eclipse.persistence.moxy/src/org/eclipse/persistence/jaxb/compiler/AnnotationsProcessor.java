@@ -4263,7 +4263,7 @@ public final class AnnotationsProcessor {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         String sig = "Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;>;";
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
 
         // Write Field: @... public Map entry
         String fieldSig = L + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
@@ -4574,9 +4574,9 @@ public final class AnnotationsProcessor {
         String componentClassNameSeparatedBySlash = getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         String containerClassNameSeperatedBySlash = containerType.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         if("[B".equals(componentClassNameSeparatedBySlash)) {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
         } else {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
         }
 
         // Write @XmlType(namespace)
