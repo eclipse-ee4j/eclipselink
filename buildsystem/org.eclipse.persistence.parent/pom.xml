@@ -23,6 +23,12 @@
     <version>3.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
+        <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
+    </scm>
+
     <!-- tycho requires maven >= 3.0 -->
     <prerequisites>
         <maven>3.0</maven>
