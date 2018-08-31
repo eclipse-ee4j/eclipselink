@@ -107,7 +107,7 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter, Opcod
         MethodVisitor mv;
 
         // public class Proxy extends SuperType implements CollectionProxy
-        cw.visit(V1_6, ACC_PUBLIC + ACC_SUPER, getASMClassName(), null, getASMParentClassName(), new String[]{INTERFACE});
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, getASMClassName(), null, getASMParentClassName(), new String[]{INTERFACE});
 
         // private List<LinkV2> links;
         final FieldVisitor fv = cw.visitField(ACC_PRIVATE, "links", "Ljava/util/List;", "Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/LinkV2;>;", null);
