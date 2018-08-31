@@ -49,7 +49,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.SIPUSH;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 
 import java.lang.reflect.Modifier;
 
@@ -183,7 +183,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         // public class Foo extends DynamicEntityImpl {
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, null);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, null);
 
         // public static DynamicPropertiesManager DPM = new
         // DynamicPropertiesManager();
@@ -246,7 +246,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         String internalClassName = className.replace('.', '/');
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(V1_5, ACC_PUBLIC + ACC_FINAL + ACC_SUPER + ACC_ENUM, internalClassName, null, "java/lang/Enum", null);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_FINAL + ACC_SUPER + ACC_ENUM, internalClassName, null, "java/lang/Enum", null);
 
         // Add the individual enum values
         for (String enumValue : enumValues) {

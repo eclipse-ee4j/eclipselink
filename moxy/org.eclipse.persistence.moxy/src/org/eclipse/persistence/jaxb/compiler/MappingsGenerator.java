@@ -1978,7 +1978,7 @@ public class MappingsGenerator {
         }
 
         String sig = "Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";" + valuePrefix + qualifiedInternalValueClassName+";>;";
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
 
         cw.visitField(Opcodes.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
 
@@ -3263,7 +3263,7 @@ public class MappingsGenerator {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         String sig = null;
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
 
         String fieldType = null;
         if(isList){

@@ -33,7 +33,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECI
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 /**
@@ -76,7 +76,7 @@ public class XRClassWriter extends DynamicClassWriter {
 
         // special-case: build sub-class of XRDynamicEntityCollection
         if (className.endsWith(COLLECTION_WRAPPER_SUFFIX)) {
-            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
+            cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
             mv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, INIT, "()V", false);
@@ -85,7 +85,7 @@ public class XRClassWriter extends DynamicClassWriter {
             mv.visitEnd();
         } else {
             // public class Foo extends XRDynamicEntity {
-            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
+            cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
 
             // public static XRDynamicPropertiesManager DPM = new
             // XRDynamicPropertiesManager();
