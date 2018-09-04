@@ -108,11 +108,11 @@ public class DynamicClassWriter {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         if (null == type.getInstanceClass()) {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
         } else {
             String[] interfaces = new String[1];
             interfaces[0] = type.getInstanceClassName().replace('.', '/');
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), interfaces);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), interfaces);
             addPropertyIndices(cw);
             for (Object object : type.getDeclaredProperties()) {
                 SDOProperty sdoProperty = (SDOProperty) object;

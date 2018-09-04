@@ -27,7 +27,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SUPER;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 
 /**
  * <p><b>INTERNAL</b>: A subclass of {@link ClassLoader} that exposes a build method to the hidden
@@ -62,7 +62,7 @@ public class SOAPResponseClassLoader extends ClassLoader {
        *   }
        */
       ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-      cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
+      cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
 
       MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
       mv.visitVarInsn(ALOAD, 0);
