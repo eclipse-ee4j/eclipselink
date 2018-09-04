@@ -14,6 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     03/03/2010 - 2.1 Michael O'Brien
 //       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
+//     09/04/2018-3.0 Ravi Babu Tummuru
+//       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+//
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.*;
@@ -859,6 +862,7 @@ public class EmployeePopulator {
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(PlatinumBuyer.class);
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(GoldBuyer.class);
         PopulationManager.getDefaultManager().getRegisteredObjects().remove(EquipmentCode.class);
+        PopulationManager.getDefaultManager().getRegisteredObjects().remove(MyTestEntity.class);
 
         employeeExample1();
         employeeExample2();
@@ -897,6 +901,7 @@ public class EmployeePopulator {
         equipmentCodeA();
         equipmentCodeB();
         equipmentCodeC();
+        mytestEntity();
     }
 
     public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress(DatabaseSession session) {
@@ -971,6 +976,7 @@ public class EmployeePopulator {
         PopulationManager.getDefaultManager().addAllObjectsForClass(GoldBuyer.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(PlatinumBuyer.class, allObjects);
         PopulationManager.getDefaultManager().addAllObjectsForClass(EquipmentCode.class, allObjects);
+        PopulationManager.getDefaultManager().addAllObjectsForClass(MyTestEntity.class, allObjects);
         unitOfWork.registerAllObjects(allObjects);
         unitOfWork.commit();
 
@@ -1711,4 +1717,14 @@ public class EmployeePopulator {
         return goldBuyer;
     }
 
+    public MyTestEntity mytestEntity() {
+        if (containsObject(MyTestEntity.class, "0001")) {
+            return (MyTestEntity)getObject(MyTestEntity.class, "0001");
+        }
+
+        MyTestEntity mytest = new MyTestEntity();
+        mytest.id = 2L;
+        registerObject(mytest, "0001");
+        return mytest;
+    }
 }
