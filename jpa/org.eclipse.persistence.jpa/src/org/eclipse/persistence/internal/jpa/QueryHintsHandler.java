@@ -24,6 +24,9 @@
 //       - 471487: Fixed eclipselink.jdbc.timeout hint not applying correctly to SQLCall
 //     09/03/2015 - Will Dazey
 //       - 456067 : Added support for defining query timeout units
+//     09/04/2018-3.0 Ravi Babu Tummuru
+//       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+
 package org.eclipse.persistence.internal.jpa;
 
 import java.security.AccessController;
@@ -355,6 +358,7 @@ public class QueryHintsHandler {
                 query.setProperty(QUERY_HINT_PROPERTY, existingHints);
             }
             existingHints.put(hintName, hintValue);
+            query.setHintString(hintName);
 
             return hint.apply(hintValue, shouldUseDefault, query, loader, activeSession);
         }

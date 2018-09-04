@@ -29,6 +29,9 @@
 //       - 322916: getParameter on Query throws NPE
 //     08/07/2016-2.7 Dalia Abo Sheasha
 //       - 499335: Multiple embeddable fields can't reference same object
+//     09/04/2018-3.0 Ravi Babu Tummuru
+//       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.lang.reflect.Array;
@@ -157,9 +160,13 @@ import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Ra
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sandwich;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.School;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
+import org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -254,7 +261,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testTransformationMappingWithColumnAnnotation"));
 
         suite.addTest(new AdvancedJPAJunitTest("testCursorStream"));
-
+        suite.addTest(new AdvancedJPAJunitTest("testCursoredNativeQueryDefinedViaAnnotation"));
         suite.addTest(new AdvancedJPAJunitTest("testProperty"));
 
         suite.addTest(new AdvancedJPAJunitTest("testBackpointerOnMerge"));
@@ -2366,6 +2373,29 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         if(errorMsg.length() > 0) {
             fail(errorMsg);
+        }
+    }
+    
+    // test case for Bug25872190 ElBug538183
+    public void testCursoredNativeQueryDefinedViaAnnotation() {
+
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query q = em.createNamedQuery("allTestEntitiesAnnotated");
+            q.setHint(QueryHints.CURSOR, true);
+            try {
+                CursoredStream stream = (CursoredStream) q.getSingleResult();
+                assertTrue(stream.hasNext());
+            } catch (QueryException qe) {
+               fail("Cursored Native Query via Annotation threw QueryException");
+            }
+            commitTransaction(em);
+        }finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 
