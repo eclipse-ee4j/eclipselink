@@ -12,6 +12,8 @@
 
 // Contributors:
 //     Guy Pelletier, Doug Clarke - initial API and implementation
+//     09/07/2018-3.0 Dmitry Polienko
+//       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.internal.jpa.config.persistenceunit;
 
 import java.io.IOException;

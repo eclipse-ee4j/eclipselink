@@ -12,6 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     09/07/2018-3.0 Dmitry Polienko
+//       - 326728: Fix persistence root calculation for WAR files
 
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 

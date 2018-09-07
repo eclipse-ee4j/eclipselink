@@ -14,6 +14,8 @@
 //     dclarke/tware - initial API and implementation
 //     05/26/2016-2.7 Tomas Kraus
 //       - 494610: Session Properties map should be Map<String, Object>
+//     09/07/2018-3.0 Dmitry Polienko
+//       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.jpa.rs.util;
 
 import java.io.IOException;

@@ -39,6 +39,8 @@
 //       - 443762 : Misc message cleanup.
 //     12/18/2014-2.6 Rick Curtis
 //       - 454189 : Misc message cleanup.#2
+//     09/07/2018-3.0 Dmitry Polienko
+//       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;

@@ -34,6 +34,8 @@
 //       - 374688: JPA 2.1 Converter support
 //     11/28/2012-2.5 Guy Pelletier
 //       - 374688: JPA 2.1 Converter support
+//     09/07/2018-3.0 Dmitry Polienko
+//       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.exceptions;
 
 import java.net.URL;
