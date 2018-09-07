@@ -39,6 +39,8 @@
 //       - 443762 : Misc message cleanup.
 //     12/18/2014-2.6 Rick Curtis
 //       - 454189 : Misc message cleanup.#2
+//     09/07/2018-3.0 Dmitry Polienko
+//       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
@@ -360,7 +362,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },
                                            { "7356", "Procedure: [{1}] cannot be executed because {0} does not currently support multiple out parameters"},
-
+                                           { "7357", "URL [{0}] for resource [{1}] does not belong to a valid persistence root (as per JPA Specification)"},
  };
 
     /**
