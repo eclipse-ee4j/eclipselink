@@ -196,6 +196,8 @@ public class PersistenceUnitProcessor {
                 ? "file:" + pxmlURL.getFile()
                 : pxmlURL.getFile();
 
+            // Warning: if we ever support nested archive URLs here, make sure
+            // that we get the entry in the *innermost* archive.
             int separator = spec.lastIndexOf("!/");
 
             // It could be possible for a "zip:" or "wsjar:" URL to not have
@@ -728,8 +730,10 @@ public class PersistenceUnitProcessor {
    }
 
     /**
-     * @param file archive file URL
-     * @param entry a directory entry in the archive (or an empty string)
+     * @param file archive file URL. In case of a nested archive, this is
+     * the URL of the innermost archive.
+     * @param rootEntry a directory entry in the archive (or an empty string).
+     * In case of a nested archive, this is the entry in the innermost archive.
      * @return true if the file-entry pair can be a persistence root according
      * to JPA Spec (8.2).
      */
@@ -740,7 +744,13 @@ public class PersistenceUnitProcessor {
             // For a JAR, the root can only be the archive itself.
             return rootEntry.isEmpty();
         } else if (extension.equalsIgnoreCase(".war")) {
-            // For a WAR, the root can only be WEB-INF/classes.
+            // For a WAR, the root can be:
+            // 1. WEB-INF/classes
+            // 2. One of a JARs inside the WEB-INF/lib
+            // In the second case rootEntry is the entry in the innermost
+            // archive, and file is the URL of that archive. Since
+            // the innermost archive has to be a JAR (according to JPA Spec),
+            // this case is handled by the previous branch.
             return rootEntry.equals(WEBINF_CLASSES_STR);
         } else {
             return false;
