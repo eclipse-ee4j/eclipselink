@@ -14,6 +14,8 @@
 //     dclarke/tware - initial API and implementation
 //     05/26/2016-2.7 Tomas Kraus
 //       - 494610: Session Properties map should be Map<String, Object>
+//     09/07/2018-3.0 Dmitry Polienko
+//       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.jpa.rs.util;
 
 import java.io.IOException;
@@ -21,13 +23,14 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.URLArchive;
 
 /**
  * This archive is designed for use with dynamic persistence units
  * it is built with a stream that allows it to read a persistence.xml file and creates a fake base URL
- * based the classpath location of the InMemoryArchiveClass
+ * based the classpath location of the InMemoryArchive class
  * @author tware
  *
  */
@@ -45,7 +48,10 @@ public class InMemoryArchive extends URLArchive {
             e.printStackTrace();
         } catch (IOException e){
             e.printStackTrace();
+        } catch (ValidationException e) {
+            e.printStackTrace();
         }
+
         this.rootURL = myURL;
     }
 

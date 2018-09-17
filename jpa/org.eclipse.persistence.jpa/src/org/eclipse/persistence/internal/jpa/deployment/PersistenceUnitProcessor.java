@@ -21,6 +21,8 @@
 //       - 500441: Eclipselink core has System.getProperty() calls that are not potentially executed under doPriv()
 //     11/23/2017: Scott Marlow
 //       - 414974: allow eclipselink.archive.factory to be specified as an integration property of PersistenceProvider.createContainerEntityManagerFactory(PersistenceUnitInfo, Map)
+//     09/07/2018-3.0 Dmitry Polienko
+//       - 326728: Fix persistence root calculation for WAR files
 package org.eclipse.persistence.internal.jpa.deployment;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CONVERTER;
@@ -58,6 +60,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.PersistenceUnitLoadingException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.exceptions.XMLParseException;
 import org.eclipse.persistence.internal.helper.XMLHelper;
 import org.eclipse.persistence.internal.jpa.deployment.xml.parser.PersistenceContentHandler;
@@ -160,9 +163,13 @@ public class PersistenceUnitProcessor {
 
     /**
      * Determine the URL path to the persistence unit
-     * @param pxmlURL - Encoded URL containing the pu
-     * @return
+     * @param pxmlURL - URL of a resource belonging to the PU (obtained for
+     * {@code descriptorLocation} via {@link Classloader#getResource(String)}).
+     * @param descriptorLocation - the name of the resource.
+     * @return The URL of the PU root containing the resource.
      * @throws IOException
+     * @throws ValidationException if the resolved root doesn't conform to the
+     * JPA specification (8.2)
      */
     public static URL computePURootURL(URL pxmlURL, String descriptorLocation) throws IOException, URISyntaxException {
         StringTokenizer tokenizer = new StringTokenizer(descriptorLocation, "/\\");
@@ -182,41 +189,46 @@ public class PersistenceUnitProcessor {
             // e.g. file:/tmp/META-INF/persistence.xml
             // 210280: any file url will be assumed to always reference a file (not a directory)
             result = new URL(pxmlURL, path.toString()); // NOI18N
-        } else if("jar".equals(protocol)) { // NOI18N
-            // e.g. jar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
-            JarURLConnection conn =
-                    JarURLConnection.class.cast(pxmlURL.openConnection());
-            result = conn.getJarFileURL();
-        } else if("zip".equals(protocol)) { // NOI18N
-            // e.g. zip:/tmp/a_ear/b.jar!/META-INF/persistence.xml
-            // stolen from java.net.JarURLConnection.parseSpecs method
-            String spec = pxmlURL.getFile();
+        } else if("zip".equals(protocol) ||
+                  "jar".equals(protocol) ||
+                  "wsjar".equals(protocol)) {
+            // e.g. file:/foo/bar.jar!/META-INF/persistence.xml
+            // "zip:" URLs require additional handling.
+            String spec = "zip".equals(protocol)
+                ? "file:" + pxmlURL.getFile()
+                : pxmlURL.getFile();
+
+            // Warning: if we ever support nested archive URLs here, make sure
+            // that we get the entry in the *innermost* archive.
             int separator = spec.lastIndexOf("!/");
-            if (separator == -1) {
-                separator = spec.length() - 1;
+
+            // It could be possible for a "zip:" or "wsjar:" URL to not have
+            // an entry! In that case we take the root of the archive.
+            String file = separator == -1 ? spec : spec.substring(0, separator);
+            String entry = separator == -1 ? "" : spec.substring(separator + 2);
+
+            // The jar file or directory whose META-INF directory contains
+            // the persistence.xml file is termed the root of the persistence
+            // unit. (JPA Spec, 8.2)
+            if (!entry.endsWith(descriptorLocation)) {
+                // Shouldn't happen unless we have a particularly tricky
+                // classloader - which we're not obligated to support.
+                throw ValidationException.invalidPersistenceRootUrl(pxmlURL, descriptorLocation);
             }
-            result = new File(spec.substring(0, separator++)).toURL();
-        } else if("wsjar".equals(protocol)) { // NOI18N
-            // e.g. wsjar:file:/tmp/a_ear/b.jar!/META-INF/persistence.xml
-            // but WS gives use jar:file:..., so we need to match it.
-            String spec = pxmlURL.getFile();
-            int separator = spec.lastIndexOf("!/");
-            if (separator == -1) {
-                separator = spec.length();
-            } else {
-                // If this doesn't reference a war file with a properly located persistence.xml,
-                // then chop off everything after the "!/" marker and assume it is a normal jar.
-                // Else, if the wsjar URL references a file with a ".war" extension, and its entry
-                // starts with WEB-INF/classes/, then the calculated persistence unit root should
-                // be wsjar:path/to/a.war!/WEB-INF/classes/ as per JPA 2.1 Spec section 8.2 "Persistence Unit Packaging".
-                separator += 2;
-                // Filter out invalid scenarios such as wsjar:file:/a/path/to/my.war!/foo/WEB-INF/classes/META-INF/persistence.xml
-                if (spec.regionMatches(true, separator - 6, ".war", 0, 4) &&
-                        spec.regionMatches(true, separator, WEBINF_CLASSES_STR, 0, WEBINF_CLASSES_LEN)) {
-                    separator += WEBINF_CLASSES_LEN;
-                }
+
+            String rootEntry = entry.substring(0, entry.length() - descriptorLocation.length());
+
+            // "wsjar:" URLs always have an entry for historical reasons.
+            result = !rootEntry.isEmpty() || "wsjar".equals(protocol)
+                ? new URL("jar:" + file + "!/" + rootEntry)
+                : new URL(file);
+
+            // Since EclipseLink is a reference implementation, let's validate
+            // the produced root!
+            if (!isValidRootInArchive(file, rootEntry)) {
+                throw ValidationException.invalidPersistenceRootUrl(pxmlURL, descriptorLocation);
             }
-            result = new URL("jar", "", spec.substring(0, separator));
+
         } else if ("bundleentry".equals(protocol)) {
             // mkeith - add bundle protocol cases
             result = new URL("bundleentry://" + pxmlURL.getAuthority());
@@ -328,15 +340,15 @@ public class PersistenceUnitProcessor {
                 while (resources.hasMoreElements()){
 
                     URL descUrl = resources.nextElement();
-                    if (descUrl != null) {
-                        URL puRootUrl = computePURootURL(descUrl, descriptorPath);
-                        archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
+                    if (descUrl == null) continue;
 
-                       // archive = new BundleArchive(puRootUrl, descUrl);
-                        if (archive != null){
-                            archives.add(archive);
-                        }
-                    }
+                    URL puRootUrl = computePURootURL(descUrl, descriptorPath);
+
+                    archive = PersistenceUnitProcessor.getArchiveFactory(loader).createArchive(puRootUrl, descriptorPath, null);
+                    if (archive == null) continue;
+
+                    // archive = new BundleArchive(puRootUrl, descUrl);
+                    archives.add(archive);
                 }
             } else {
                 // It is an embedded archive, so split up the parts
@@ -719,4 +731,31 @@ public class PersistenceUnitProcessor {
        return fullPuName;
    }
 
+    /**
+     * @param file archive file URL. In case of a nested archive, this is
+     * the URL of the innermost archive.
+     * @param rootEntry a directory entry in the archive (or an empty string).
+     * In case of a nested archive, this is the entry in the innermost archive.
+     * @return true if the file-entry pair can be a persistence root according
+     * to JPA Spec (8.2).
+     */
+    private static boolean isValidRootInArchive(String file, String rootEntry) {
+        String extension = file.substring(Math.max(0, file.length() - 4));
+        boolean valid;
+        if (extension.equalsIgnoreCase(".jar")) {
+            // For a JAR, the root can only be the archive itself.
+            return rootEntry.isEmpty();
+        } else if (extension.equalsIgnoreCase(".war")) {
+            // For a WAR, the root can be:
+            // 1. WEB-INF/classes
+            // 2. One of a JARs inside the WEB-INF/lib
+            // In the second case rootEntry is the entry in the innermost
+            // archive, and file is the URL of that archive. Since
+            // the innermost archive has to be a JAR (according to JPA Spec),
+            // this case is handled by the previous branch.
+            return rootEntry.equals(WEBINF_CLASSES_STR);
+        } else {
+            return false;
+        }
+    }
 }
