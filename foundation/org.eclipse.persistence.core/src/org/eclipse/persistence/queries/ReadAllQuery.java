@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.ThreadCursoredList;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ResultSetRecord;
@@ -52,6 +53,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
 import org.eclipse.persistence.internal.sessions.remote.Transporter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
@@ -308,10 +310,24 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Conform the result if specified.
      */
     protected Object conformResult(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, boolean buildDirectlyFromRows) {
-        if (getSelectionCriteria() != null) {
+        Expression selectionCriteria = getSelectionCriteria();
+        if (selectionCriteria != null) {
             ExpressionBuilder builder = getSelectionCriteria().getBuilder();
             builder.setSession(unitOfWork.getRootSession(null));
             builder.setQueryClass(getReferenceClass());
+            if (getQueryMechanism().isExpressionQueryMechanism()) {
+                //bug #526546
+                ExpressionQueryMechanism eqm = (ExpressionQueryMechanism) getQueryMechanism();
+                selectionCriteria = eqm.buildBaseSelectionCriteria(false, new IdentityHashMap<Expression, Expression>(), true);
+                for (DatabaseMapping mapping: getDescriptor().getMappings()) {
+                    if (mapping.isOneToManyMapping()) {
+                        OneToManyMapping otm = (OneToManyMapping) mapping;
+                        Expression join = otm.buildSelectionCriteria();
+                        selectionCriteria = selectionCriteria.and(join);
+                    }
+                }
+            }
+
         }
 
         // If the query is redirected then the collection returned might no longer
@@ -332,7 +348,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Let c be objects from cache.
         // Presently p intersect c = empty set, but later p subset c.
         // By checking cache now doesConform will be called p fewer times.
-        Map<Object, Object> indexedInterimResult = unitOfWork.scanForConformingInstances(getSelectionCriteria(), getReferenceClass(), arguments, this);
+        Map<Object, Object> indexedInterimResult = unitOfWork.scanForConformingInstances(selectionCriteria, getReferenceClass(), arguments, this);
 
         Cursor cursor = null;
         // In the case of cursors just conform/register the initially read collection.
