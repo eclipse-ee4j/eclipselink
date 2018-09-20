@@ -219,7 +219,6 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.setName("AdvancedJPAJunitTest");
 
         suite.addTest(new AdvancedJPAJunitTest("testSetup"));
-        /*
         suite.addTest(new AdvancedJPAJunitTest("testRelationshipReadDuringClone"));
 
         suite.addTest(new AdvancedJPAJunitTest("testExistenceCheckingSetting"));
@@ -257,9 +256,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetFieldMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedFunction"));
-        suite.addTest(new AdvancedJPAJunitTest("testNonTriggerLazyForSProc"));*/
+        suite.addTest(new AdvancedJPAJunitTest("testNonTriggerLazyForSProc"));
         suite.addTest(new AdvancedJPAJunitTest("testSprocFindAllMyTestEntityIDs"));
-/*
+
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testTransformationMappingWithColumnAnnotation"));
@@ -315,8 +314,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             suite.addTest(new AdvancedJPAJunitTest("testJoinWithOrderByOnElementCollectionList"));
             suite.addTest(new AdvancedJPAJunitTest("testJoinWithOrderByOnElementCollectionMap"));
         }
-        */
-
+        
         return suite;
     }
 
