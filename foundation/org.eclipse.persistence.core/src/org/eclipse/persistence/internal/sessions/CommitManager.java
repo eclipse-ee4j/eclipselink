@@ -12,6 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     09/12/2018 - Will Dazey
+//       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
 package org.eclipse.persistence.internal.sessions;
 
 import java.util.*;
@@ -592,6 +594,32 @@ public class CommitManager {
      */
     public void markShallowCommit(Object object) {
         getShallowCommits().put(object, object); // Use as set.
+    }
+
+    /**
+     * This method takes query, checks if there are any data modification events matching the Object, and
+     * merges the event into the query if there are any events matching the object.
+     */
+    public void checkForDataModificationEventMerges(WriteObjectQuery query, AbstractSession session) {
+        if(this.hasDataModifications()) {
+            for (Map.Entry<DatabaseMapping, List<Object[]>> entry: this.dataModifications.entrySet()) {
+                DatabaseMapping mapping = entry.getKey();
+                if(mapping.isUnidirectionalOneToManyMapping()) {
+                    for (int pos = 0; pos < entry.getValue().size(); pos++) {
+                        Object[] event = entry.getValue().get(pos);
+
+                        if(((UnidirectionalOneToManyMapping) mapping).mergeDataModificationEvent(query, event, session)) {
+                            entry.getValue().remove(pos);
+                            pos--;
+                        }
+                    }
+                    //If all the events have been removed for the mapping, remove the mapping too
+                    if(entry.getValue().size() == 0) {
+                        this.dataModifications.remove(mapping);
+                    }
+                }
+            }
+        }
     }
 
     /**
