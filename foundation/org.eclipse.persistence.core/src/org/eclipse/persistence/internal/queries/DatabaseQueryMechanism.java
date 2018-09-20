@@ -16,6 +16,8 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 //     08/24/2012-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/12/2018 - Will Dazey
+//       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
 package org.eclipse.persistence.internal.queries;
 
 import java.io.Serializable;
@@ -488,6 +490,9 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             // CR#3237
             // Store the size of the modify row so we can determine if the user has added to the row in the insert.
             int modifyRowSize = modifyRow.size();
+
+            //391279: check the commitManager for scheduled events that match this insert and may need to be merged
+            commitManager.checkForDataModificationEventMerges(writeQuery, session);
 
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {

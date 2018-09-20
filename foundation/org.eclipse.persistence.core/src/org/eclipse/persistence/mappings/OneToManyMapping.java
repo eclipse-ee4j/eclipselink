@@ -933,7 +933,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public void performDataModificationEvent(Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
         // Hey I might actually want to use an inner class here... ok array for now.
         if (event[0] == PostInsert) {
-            updateTargetRowPostInsertSource((WriteObjectQuery)event[1]);
+            updateTargetRowPostInsertSource((WriteObjectQuery)event[1], event[2]);
         } else if (event[0] == ObjectRemoved) {
             updateTargetForeignKeyPostUpdateSource_ObjectRemoved((WriteObjectQuery)event[1], event[2]);
         } else if (event[0] == ObjectAdded) {
@@ -986,15 +986,28 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             // only cascade dependents in UOW
             if (query.shouldCascadeOnlyDependentParts()) {
                 if (!isReadOnly() && (requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
-                    // Hey I might actually want to use an inner class here... ok array for now.
-                    Object[] event = new Object[2];
-                    event[0] = PostInsert;
-                    event[1] = query;
-                    query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                    ContainerPolicy cp = getContainerPolicy();
+                    Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+                    for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
+                        Object wrappedObject = cp.nextEntry(iter, query.getSession());
+                        Object object = cp.unwrapIteratorResult(wrappedObject);
+                        // Hey I might actually want to use an inner class here... ok array for now.
+                        Object[] event = new Object[3];
+                        event[0] = PostInsert;
+                        event[1] = query;
+                        event[2] = object;
+                        query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                    }
                 }
             } else {
                 if (!isReadOnly() && (requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())){
-                    updateTargetRowPostInsertSource(query);
+                    ContainerPolicy cp = getContainerPolicy();
+                    Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+                    for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
+                        Object wrappedObject = cp.nextEntry(iter, query.getSession());
+                        Object object = cp.unwrapIteratorResult(wrappedObject);
+                        updateTargetRowPostInsertSource(query, object);
+                    }
                 }
             }
         }
@@ -1394,14 +1407,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Update target foreign keys after a new source was inserted. This follows following steps.
      */
-    public void updateTargetRowPostInsertSource(WriteObjectQuery query) throws DatabaseException {
+    public void updateTargetRowPostInsertSource(WriteObjectQuery query, Object objectAdded) throws DatabaseException {
         if (isReadOnly() || addTargetQuery == null) {
-            return;
-        }
-
-        ContainerPolicy cp = getContainerPolicy();
-        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-        if (cp.isEmpty(objects)) {
             return;
         }
 
@@ -1409,25 +1416,22 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
         AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
 
-        // Extract target field and its value. Construct insert statement and execute it
+        AbstractRecord databaseRow = new DatabaseRecord();
+        databaseRow.mergeFrom(keyRow);
+
         int size = targetPrimaryKeyFields.size();
-        int objectIndex = 0;
-        for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
-            AbstractRecord databaseRow = new DatabaseRecord();
-            databaseRow.mergeFrom(keyRow);
-            Object wrappedObject = cp.nextEntry(iter, query.getSession());
-            Object object = cp.unwrapIteratorResult(wrappedObject);
-            for(int index = 0; index < size; index++) {
-                DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-                Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(object, targetPrimaryKey, query.getSession());
-                databaseRow.put(targetPrimaryKey, targetKeyValue);
-            }
-            ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
-            if(listOrderField != null) {
-                databaseRow.put(listOrderField, objectIndex++);
-            }
-            query.getSession().executeQuery(addTargetQuery, databaseRow);
+        for(int index = 0; index < size; index++) {
+            DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
+            Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(objectAdded, targetPrimaryKey, query.getSession());
+            databaseRow.put(targetPrimaryKey, targetKeyValue);
         }
+
+        ContainerPolicy cp = getContainerPolicy();
+        ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
+        if(listOrderField != null) {
+            databaseRow.put(listOrderField, 0);
+        }
+        query.getSession().executeQuery(addTargetQuery, databaseRow);
     }
 
     protected AbstractRecord buildKeyRowForTargetUpdate(ObjectLevelModifyQuery query){
