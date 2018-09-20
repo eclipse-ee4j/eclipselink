@@ -22,6 +22,9 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 //     09/27/2012-2.5 Guy Pelletier
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/20/2018-3.0 Ravi Babu Tummuru
+//       - 538137: CLASSCASTEXCEPTION WHEN CALLING STORED PROCEDURE TO GET LIST OF NUMBERS
+
 package org.eclipse.persistence.queries;
 
 import java.util.ArrayList;
@@ -254,7 +257,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
             }
             for (Iterator iterator = databaseRecords.iterator(); iterator.hasNext();) {
                 DatabaseRecord record = (DatabaseRecord)iterator.next();
-                results.add(record.values().toArray());
+                results.add(record.getValues().get(0)); 
             }
         } else {
             for (Iterator iterator = databaseRecords.iterator(); iterator.hasNext();) {

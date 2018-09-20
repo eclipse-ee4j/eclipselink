@@ -16,7 +16,9 @@
 //       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
 //     09/04/2018-3.0 Ravi Babu Tummuru
 //       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
-//
+//     09/20/2018-3.0 Ravi Babu Tummuru
+//       - 538137: CLASSCASTEXCEPTION WHEN CALLING STORED PROCEDURE TO GET LIST OF NUMBERS
+
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.*;
@@ -901,7 +903,9 @@ public class EmployeePopulator {
         equipmentCodeA();
         equipmentCodeB();
         equipmentCodeC();
-        mytestEntity();
+        mytestEntity1();
+        mytestEntity2();
+        mytestEntity3();
     }
 
     public StoredProcedureDefinition buildOracleStoredProcedureReadFromAddress(DatabaseSession session) {
@@ -962,6 +966,18 @@ public class EmployeePopulator {
         proc.addStatement(statement);
         return proc;
     }
+    
+    // test case for Bug26647610 ElBug538137
+    public StoredProcedureDefinition buildOracleStoredProcedureReadFromMyTestEntityCursor(Session session) {
+
+            StoredProcedureDefinition proc = new StoredProcedureDefinition();
+            proc.setName("WRAPPED_MYTESTENTITY_READ_ALL");
+            proc.addOutputArgument("RESULT_CURSOR","SYS_REFCURSOR");
+            proc.addStatement("OPEN RESULT_CURSOR FOR SELECT e.* FROM RBT_MYTESTENTITY e");
+
+            return proc;
+
+    }
 
     public void persistExample(Session session) {
         Vector allObjects = new Vector();
@@ -992,6 +1008,7 @@ public class EmployeePopulator {
                 schema.replaceObject(buildOracleStoredProcedureReadFromAddress((DatabaseSession) session));
                 schema.replaceObject(buildOracleStoredProcedureReadFromEmployee((DatabaseSession) session));
                 schema.replaceObject(buildOracleStoredProcedureReadInOut((DatabaseSession) session));
+                schema.replaceObject(buildOracleStoredProcedureReadFromMyTestEntityCursor((DatabaseSession) session));
             } finally {
                 if (useFastTableCreatorAfterInitialCreate && !isFirstCreation) {
                     SchemaManager.FAST_TABLE_CREATOR = orig_FAST_TABLE_CREATOR;
@@ -1717,7 +1734,7 @@ public class EmployeePopulator {
         return goldBuyer;
     }
 
-    public MyTestEntity mytestEntity() {
+    public MyTestEntity mytestEntity1() {
         if (containsObject(MyTestEntity.class, "0001")) {
             return (MyTestEntity)getObject(MyTestEntity.class, "0001");
         }
@@ -1725,6 +1742,28 @@ public class EmployeePopulator {
         MyTestEntity mytest = new MyTestEntity();
         mytest.id = 2L;
         registerObject(mytest, "0001");
+        return mytest;
+    }
+
+    public MyTestEntity mytestEntity2() {
+        if (containsObject(MyTestEntity.class, "0002")) {
+            return (MyTestEntity)getObject(MyTestEntity.class, "0002");
+        }
+
+        MyTestEntity mytest = new MyTestEntity();
+        mytest.id = 3L;
+        registerObject(mytest, "0002");
+        return mytest;
+    }
+
+    public MyTestEntity mytestEntity3() {
+        if (containsObject(MyTestEntity.class, "0003")) {
+            return (MyTestEntity)getObject(MyTestEntity.class, "0003");
+        }
+
+        MyTestEntity mytest = new MyTestEntity();
+        mytest.id = 4L;
+        registerObject(mytest, "0003");
         return mytest;
     }
 }
