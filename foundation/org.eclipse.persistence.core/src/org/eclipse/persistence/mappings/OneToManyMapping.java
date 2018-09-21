@@ -1434,8 +1434,19 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             databaseRow.put(targetPrimaryKey, targetKeyValue);
         }
 
+        //Find the matching wrapped object from the attribute value and copy the data
         ContainerPolicy cp = getContainerPolicy();
-        ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
+        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+        if (!cp.isEmpty(objects)) {
+            for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
+                Object wrappedObject = cp.nextEntry(iter, query.getSession());
+                Object object = cp.unwrapIteratorResult(wrappedObject);
+                if(object == objectAdded) {
+                    ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, query.getSession()), databaseRow);
+                }
+            }
+        }
+
         if(listOrderField != null) {
             databaseRow.put(listOrderField, 0);
         }
