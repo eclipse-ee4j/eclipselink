@@ -405,12 +405,14 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      */
     public boolean mergeDataModificationEvent(WriteObjectQuery query, Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
         if (event[0] == PostInsert) {
-            if (isReadOnly() || event[2] != query.getObject()) {
+
+            ContainerPolicy cp = getContainerPolicy();
+            //Try to unwrap the object. Worst case scenario, this is a no-op
+            if (isReadOnly() || cp.unwrapIteratorResult(event[2]) != query.getObject()) {
                 return false;
             }
 
             WriteObjectQuery wq = (WriteObjectQuery)event[1];
-            ContainerPolicy cp = getContainerPolicy();
             Object objects = getRealCollectionAttributeValueFromObject(wq.getObject(), wq.getSession());
             if (cp.isEmpty(objects)) {
                 return false;
@@ -423,7 +425,9 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
             int objectIndex = 0;
             for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
                 Object wrappedObject = cp.nextEntry(iter, wq.getSession());
-                if(wrappedObject == query.getObject()) {
+                //Try to unwrap the object. Worst case scenario, this is a no-op
+                Object unwrappedobject = cp.unwrapIteratorResult(wrappedObject);
+                if(unwrappedobject == query.getObject()) {
                     AbstractRecord queryModifyRow = query.getModifyRow();
                     AbstractRecord updateTransRow = buildKeyRowForTargetUpdate(wq);
 
