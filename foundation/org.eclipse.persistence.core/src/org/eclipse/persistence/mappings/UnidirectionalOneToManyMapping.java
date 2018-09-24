@@ -17,7 +17,6 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -28,7 +27,6 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -37,12 +35,10 @@ import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
-import org.eclipse.persistence.queries.InsertObjectQuery;
 import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
-import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -395,9 +391,8 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         return true;
     }
 
-    private Boolean shouldDeferInserts = null;
-
-    private boolean shouldDeferInsert() {
+    @Override
+    public boolean shouldDeferInsert() {
         if (shouldDeferInserts == null) {
             shouldDeferInserts = true;
             for (DatabaseField f : targetForeignKeyFields) {
@@ -409,111 +404,4 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         }
         return shouldDeferInserts;
     }
-
-    /**
-     * INTERNAL:
-     * Insert the reference objects.
-     */
-    @Override
-    public void postInsert(WriteObjectQuery query) throws DatabaseException, OptimisticLockException {
-        if (isReadOnly()) {
-            return;
-        }
-
-        if (!shouldDeferInsert() && (requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents())
-                && query.shouldCascadeOnlyDependentParts() && (!isReadOnly() && (requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert()))) {
-
-            ContainerPolicy cp = getContainerPolicy();
-            Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
-            if (cp.isEmpty(objects)) {
-                return;
-            }
-
-            prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
-
-            AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
-
-            // Extract target field and its value. Construct insert statement and execute it
-            int size = targetPrimaryKeyFields.size();
-            ClassDescriptor referenceDesc = getReferenceDescriptor();
-            AbstractSession session = query.getSession();
-            int objectIndex = 0;
-            for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
-                AbstractRecord row = new DatabaseRecord();
-                row.mergeFrom(keyRow) ;
-                Object wrappedObject = cp.nextEntry(iter, query.getSession());
-                Object object = cp.unwrapIteratorResult(wrappedObject);
-                AbstractRecord databaseRow = referenceDesc.getObjectBuilder().buildRow(row, object, session, WriteType.INSERT);
-                ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, session), databaseRow);
-                if(listOrderField != null) {
-                    databaseRow.put(listOrderField, objectIndex++);
-                }
-                InsertObjectQuery insertQuery = getInsertObjectQuery(session, referenceDesc);
-                insertQuery.setObject(object);
-                insertQuery.setCascadePolicy(query.getCascadePolicy());
-                insertQuery.setTranslationRow(databaseRow);
-                insertQuery.setModifyRow(databaseRow);
-                insertQuery.setIsPrepared(false);
-                query.getSession().executeQuery(insertQuery);
-            }
-        } else {
-            super.postInsert(query);
-        }
-    }
-
-    @Override
-    protected void objectAddedDuringUpdate(ObjectLevelModifyQuery query, Object objectAdded, ObjectChangeSet changeSet, Map extraData) throws DatabaseException, OptimisticLockException {
-        if (!shouldDeferInsert() && (requiresDataModificationEvents() || containerPolicy.requiresDataModificationEvents()) && query.shouldCascadeOnlyDependentParts()) {
-            super.objectAddedDuringUpdate(query, objectAdded, changeSet, extraData);
-
-            ContainerPolicy cp = getContainerPolicy();
-            prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
-            AbstractRecord databaseRow = buildKeyRowForTargetUpdate(query);
-
-            // Extract target field and its value. Construct insert statement and execute it
-            int size = targetPrimaryKeyFields.size();
-            ClassDescriptor referenceDesc = getReferenceDescriptor();
-            AbstractSession session = query.getSession();
-            for (int index = 0; index < size; index++) {
-                DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-                Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(cp.unwrapIteratorResult(objectAdded), targetPrimaryKey, query.getSession());
-                databaseRow.put(targetPrimaryKey, targetKeyValue);
-            }
-
-            ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
-            if(listOrderField != null && extraData != null) {
-                databaseRow.put(listOrderField, extraData.get(listOrderField));
-            }
-
-            InsertObjectQuery insertQuery = getInsertObjectQuery(session, referenceDesc);
-            insertQuery.setObject(objectAdded);
-            insertQuery.setCascadePolicy(query.getCascadePolicy());
-            insertQuery.setTranslationRow(databaseRow);
-            insertQuery.setModifyRow(databaseRow);
-            insertQuery.setIsPrepared(false);
-            query.getSession().executeQuery(insertQuery);
-        } else {
-            super.objectAddedDuringUpdate(query, objectAdded, changeSet, extraData);
-        }
-    }
-
-    /**
-     * INTERNAL:
-     * Returns a clone of InsertObjectQuery from the ClassDescriptor's DescriptorQueryManager or a new one
-     */
-    private InsertObjectQuery getInsertObjectQuery(AbstractSession session, ClassDescriptor desc) {
-        InsertObjectQuery insertQuery = desc.getQueryManager().getInsertQuery();
-        if (insertQuery == null) {
-            insertQuery = new InsertObjectQuery();
-            insertQuery.setDescriptor(desc);
-            insertQuery.checkPrepare(session, insertQuery.getTranslationRow());
-        } else {
-            // Ensure the query has been prepared.
-            insertQuery.checkPrepare(session, insertQuery.getTranslationRow());
-            insertQuery = (InsertObjectQuery)insertQuery.clone();
-        }
-        insertQuery.setIsExecutionClone(true);
-        return insertQuery;
-    }
-
 }
