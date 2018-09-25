@@ -19,6 +19,7 @@ package org.eclipse.persistence.mappings;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -27,6 +28,7 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -394,11 +396,16 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     @Override
     public boolean shouldDeferInsert() {
         if (shouldDeferInserts == null) {
+            String property = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ONETOMANY_DEFER_INSERTS);
             shouldDeferInserts = true;
-            for (DatabaseField f : targetForeignKeyFields) {
-                if (!f.isNullable()) {
-                    shouldDeferInserts = false;
-                    break;
+            if (property != null) {
+                shouldDeferInserts = "true".equalsIgnoreCase(property);
+            } else {
+                for (DatabaseField f : targetForeignKeyFields) {
+                    if (!f.isNullable()) {
+                        shouldDeferInserts = false;
+                        break;
+                    }
                 }
             }
         }

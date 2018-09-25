@@ -70,6 +70,15 @@ public class SystemProperties {
     public static final String DO_NOT_PROCESS_XTOMANY_FOR_QBE = "eclipselink.query.query-by-example.ignore-xtomany";
 
     /**
+     * This property can be set to <code>false</code> to enable UPDATE call to set
+     * foreign key value in the target row in unidirectional 1-Many mapping
+     * with not nullable FK. In previous versions of EclipseLink this was
+     * the default behaviour.
+     * Allowed values are: true/false.
+     */
+    public static final String ONETOMANY_DEFER_INSERTS = "eclipselink.mapping.onetomany.defer-inserts";
+
+    /**
      * This system property can be set to override target server platform set by the Java EE container
      * with the one either set in persistence.xml or auto detected.
      */
