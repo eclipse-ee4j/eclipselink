@@ -1091,10 +1091,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                             query.getSession().executeQuery(insertQuery);
                         }
                     }
-                } else {
-                    if ((requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
-                        updateTargetRowPostInsertSource(query);
-                    }
+                }
+            } else {
+                if ((requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
+                    updateTargetRowPostInsertSource(query);
                 }
             }
         }
