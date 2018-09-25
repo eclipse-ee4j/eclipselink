@@ -74,4 +74,13 @@ public class SystemProperties {
      * with the one either set in persistence.xml or auto detected.
      */
     public static final String ENFORCE_TARGET_SERVER = "eclipselink.target-server.enforce";
+
+    /**
+     * This property can be set to <code>false</code> to enable UPDATE call to set
+     * foreign key value in the target row in unidirectional 1-Many mapping
+     * with not nullable FK. In previous versions of EclipseLink this was
+     * the default behaviour.
+     * Allowed values are: true/false.
+     */
+    public static final String ONETOMANY_DEFER_INSERTS = "eclipselink.mapping.onetomany.defer-inserts";
 }
