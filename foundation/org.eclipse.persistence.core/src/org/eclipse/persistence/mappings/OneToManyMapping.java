@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,23 +14,50 @@
  ******************************************************************************/  
 package org.eclipse.persistence.mappings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.FieldExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <p><b>Purpose</b>: This mapping is used to represent the
@@ -48,7 +75,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     protected static final String PostInsert = "postInsert";
     protected static final String ObjectRemoved = "objectRemoved";
     protected static final String ObjectAdded = "objectAdded";
-    
+
     /** The target foreign key fields that reference the sourceKeyFields. */
     protected Vector<DatabaseField> targetForeignKeyFields;
 
@@ -57,7 +84,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
     /** This maps the target foreign key fields to the corresponding (primary) source key fields. */
     protected transient Map<DatabaseField, DatabaseField> targetForeignKeysToSourceKeys;
-    
+
     /** This maps the (primary) source key fields to the corresponding target foreign key fields. */
     protected transient Map<DatabaseField, DatabaseField> sourceKeysToTargetForeignKeys;
 
@@ -68,57 +95,58 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
     /** Primary keys of targetForeignKeyTable:
      *  the same as referenceDescriptor().getPrimaryKeyFields() in case the table is default table of reference descriptor;
-     *  otherwise contains secondary table's primary key fields in the same order as default table primary keys mapped to them.  
+     *  otherwise contains secondary table's primary key fields in the same order as default table primary keys mapped to them.
      *  Used only in case data modification events required.
      **/
     protected transient List<DatabaseField> targetPrimaryKeyFields;
-    
+
     /**
-     * Keep a reference to the source and target expressions to post initialize 
+     * Keep a reference to the source and target expressions to post initialize
      * when building a selection criteria early.
      */
     protected transient List<Expression> sourceExpressionsToPostInitialize;
     protected transient List<Expression> targetExpressionsToPostInitialize;
 
-    /** 
-     * Query used to update a single target row setting its foreign key to point to the source. 
+    /**
+     * Query used to update a single target row setting its foreign key to point to the source.
      * Run once for each target added to the source.
-     * Example: 
+     * Example:
      *   for Employee with managedEmployees attribute mapped with UnidirectionalOneToMany
      *   the query looks like:
      *   UPDATE EMPLOYEE SET MANAGER_ID = 1 WHERE (EMP_ID = 2)
-     *   where 1 is id of the source, and 2 is the id of the target to be added.  
+     *   where 1 is id of the source, and 2 is the id of the target to be added.
      *  Used only in case data modification events required.
      **/
     protected DataModifyQuery addTargetQuery;
     protected boolean hasCustomAddTargetQuery;
-    
-    /** 
-     * Query used to update a single target row changing its foreign key value from the one pointing to the source to null. 
-     * Run once for each target removed from the source. 
-     * Example: 
+
+    /**
+     * Query used to update a single target row changing its foreign key value from the one pointing to the source to null.
+     * Run once for each target removed from the source.
+     * Example:
      *   for Employee with managedEmployees attribute mapped with UnidirectionalOneToMany
      *   the query looks like:
      *   UPDATE EMPLOYEE SET MANAGER_ID = null WHERE ((MANAGER_ID = 1) AND (EMP_ID = 2))
-     *   where 1 is id of the source, and 2 is the id of the target to be removed.  
+     *   where 1 is id of the source, and 2 is the id of the target to be removed.
      *  Used only in case data modification events required.
      **/
     protected DataModifyQuery removeTargetQuery;
     protected boolean hasCustomRemoveTargetQuery;
 
-    /** 
-     * Query used to update all target rows changing target foreign key value from the one pointing to the source to null. 
+    /**
+     * Query used to update all target rows changing target foreign key value from the one pointing to the source to null.
      * Run before the source object is deleted.
-     * Example: 
+     * Example:
      *   for Employee with managedEmployees attribute mapped with UnidirectionalOneToMany
      *   the query looks like:
      *   UPDATE EMPLOYEE SET MANAGER_ID = null WHERE (MANAGER_ID = 1)
-     *   where 1 is id of the source to be deleted.  
+     *   where 1 is id of the source to be deleted.
      *  Used only in case data modification events required.
      **/
     protected DataModifyQuery removeAllTargetsQuery;
     protected boolean hasCustomRemoveAllTargetsQuery;
-    
+    protected Boolean shouldDeferInserts = null;
+
     /**
      * PUBLIC:
      * Default constructor.
@@ -128,7 +156,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
         this.targetForeignKeysToSourceKeys = new HashMap(2);
         this.sourceKeysToTargetForeignKeys = new HashMap(2);
-        
+
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.sourceExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
@@ -137,7 +165,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         this.deleteAllQuery = new DeleteAllQuery();
         this.removeTargetQuery = new DataModifyQuery();
         this.removeAllTargetsQuery = new DataModifyQuery();
-        
+
         this.isListOrderFieldSupported = true;
     }
 
@@ -190,6 +218,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Verifies listOrderField's table: it must be the same table that contains all target foreign keys.
      * Precondition: listOrderField != null.
      */
+    @Override
     protected void buildListOrderField() {
         if(this.listOrderField.hasTableName()) {
             if(!this.targetForeignKeyTable.equals(this.listOrderField.getTable())) {
@@ -200,7 +229,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
         this.listOrderField = this.getReferenceDescriptor().buildField(this.listOrderField, this.targetForeignKeyTable);
     }
-    
+
     /**
      * The selection criteria are created with target foreign keys and source "primary" keys.
      * These criteria are then used to read the target records from the table.
@@ -226,7 +255,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
         return selectionCriteria;
     }
-    
+
     /**
      * This method would allow customers to get the potential selection criteria for a mapping
      * prior to initialization.  This would allow them to more easily create an amendment method
@@ -237,7 +266,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * contains before login.
      */
     public Expression buildSelectionCriteria() {
-        //CR3922	
+        //CR3922
         Expression selectionCriteria = null;
         Expression builder = new ExpressionBuilder();
 
@@ -251,7 +280,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             // store the expressions in order to initialize their fields later
             this.targetExpressionsToPostInitialize.add(targetExpression);
             this.sourceExpressionsToPostInitialize.add(sourceExpression);
-            
+
             Expression partialSelectionCriteria = targetExpression.equal(sourceExpression);
             selectionCriteria = partialSelectionCriteria.and(selectionCriteria);
         }
@@ -259,7 +288,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     }
 
     /**
-     * INTERNAL: 
+     * INTERNAL:
      * This method is used to store the FK fields that can be cached that correspond to noncacheable mappings
      * the FK field values will be used to re-issue the query when cloning the shared cache entity
      */
@@ -278,13 +307,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public Object clone() {
         OneToManyMapping clone = (OneToManyMapping)super.clone();
         clone.setTargetForeignKeysToSourceKeys(new HashMap(getTargetForeignKeysToSourceKeys()));
-        
+
         if (addTargetQuery != null){
             clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
         }
         clone.removeTargetQuery = (DataModifyQuery) this.removeTargetQuery.clone();
         clone.removeAllTargetsQuery = (DataModifyQuery) this.removeAllTargetsQuery.clone();
-        
+
         return clone;
     }
 
@@ -292,15 +321,16 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
+    @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return session.executeQuery(getSelectionQuery(), dbRow);
     }
-    
+
     /**
      * Delete all the reference objects with a single query.
      */
     protected void deleteAll(DeleteObjectQuery query, AbstractSession session) throws DatabaseException {
-        Object attribute = getAttributeValueFromObject(query.getObject()); 
+        Object attribute = getAttributeValueFromObject(query.getObject());
         if (usesIndirection()) {
            if (!this.indirectionPolicy.objectIsInstantiated(attribute)) {
                // An empty Vector indicates to DeleteAllQuery that no objects should be removed from cache
@@ -376,20 +406,21 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 throw ConversionException.couldNotBeConverted(this, this.descriptor, exception);
             }
             key[index] = value;
-        }        
+        }
         return new CacheId(key);
     }
-    
+
     /**
-     * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.  
+     * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.
      */
+    @Override
     protected ModifyQuery getDeleteAllQuery() {
         if (deleteAllQuery == null) {
             deleteAllQuery = new DeleteAllQuery();//this is casted to a DeleteAllQuery
         }
         return deleteAllQuery;
     }
-    
+
     /**
      * INTERNAL:
      * Return source key fields for translation by an AggregateObjectMapping
@@ -421,7 +452,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public Vector<DatabaseField> getSourceKeyFields() {
         return sourceKeyFields;
     }
-    
+
     /**
      * INTERNAL:
      * Return the source/target key fields.
@@ -437,10 +468,11 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Primary keys of targetForeignKeyTable.
      */
+    @Override
     public List<DatabaseField> getTargetPrimaryKeyFields() {
         return this.targetPrimaryKeyFields;
     }
-    
+
     /**
      * INTERNAL:
      * Return the target foreign key field names associated with the mapping.
@@ -508,7 +540,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             // substitute session that owns the mapping for the session that owns reference descriptor.
             session = session.getBroker().getSessionForClass(getReferenceClass());
         }
-        
+
         super.initialize(session);
 
         getContainerPolicy().initialize(session, getReferenceDescriptor().getDefaultTable());
@@ -517,13 +549,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         initializeDeleteAllQuery(session);
-        
+
         if (requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()) {
             initializeAddTargetQuery(session);
             initializeRemoveTargetQuery(session);
             initializeRemoveAllTargetsQuery(session);
         }
-        
+
         // Check if any foreign keys reference a secondary table.
         if (getDescriptor().getTables().size() > 1) {
             DatabaseTable firstTable = getDescriptor().getTables().get(0);
@@ -544,21 +576,21 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         if(modifyRow.isEmpty()) {
             return;
         }
-        
+
         if (!hasCustomAddTargetQuery){
             addTargetQuery = new DataModifyQuery();
         }
-        
+
         if (!addTargetQuery.hasSessionName()) {
             addTargetQuery.setSessionName(session.getName());
         }
         if (hasCustomAddTargetQuery) {
             return;
         }
-        
+
         // all fields in modifyRow must have the same table
         DatabaseTable table = (modifyRow.getFields().get(0)).getTable();
-        
+
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
@@ -588,17 +620,18 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
         return modifyRow;
     }
-    
+
     /**
      * INTERNAL:
      * Initialize changeOrderTargetQuery.
      */
+    @Override
     protected void initializeChangeOrderTargetQuery(AbstractSession session) {
         boolean hasChangeOrderTargetQuery = changeOrderTargetQuery != null;
         if(!hasChangeOrderTargetQuery) {
             changeOrderTargetQuery = new DataModifyQuery();
         }
-        
+
         changeOrderTargetQuery = new DataModifyQuery();
         if (!changeOrderTargetQuery.hasSessionName()) {
             changeOrderTargetQuery.setSessionName(session.getName());
@@ -608,7 +641,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         }
 
         DatabaseTable table = this.listOrderField.getTable();
-        
+
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
@@ -659,7 +692,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Initialize targetForeignKeyTable and initializeTargetPrimaryKeyFields.
      * This method should be called after initializeTargetForeignKeysToSourceKeys method,
-     * which creates targetForeignKeyFields (guaranteed to be not empty in case 
+     * which creates targetForeignKeyFields (guaranteed to be not empty in case
      * requiresDataModificationEvents method returns true - the only case for the method to be called).
      */
     protected void initializeTargetPrimaryKeyFields() {
@@ -675,8 +708,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             // multiple foreign key tables - throw exception.
             throw DescriptorException.multipleTargetForeignKeyTables(this.getDescriptor(), this, tables);
         }
-        
-        List defaultTablePrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields(); 
+
+        List defaultTablePrimaryKeyFields = getReferenceDescriptor().getPrimaryKeyFields();
         if(this.targetForeignKeyTable.equals(getReferenceDescriptor().getDefaultTable())) {
             this.targetPrimaryKeyFields = defaultTablePrimaryKeyFields;
         } else {
@@ -706,7 +739,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             }
         }
     }
-    
+
     /**
      * INTERNAL:
      * Initialize removeTargetQuery.
@@ -719,9 +752,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
-        // All targetForeignKeys should have the same table 
+        // All targetForeignKeys should have the same table
         DatabaseTable table = targetForeignKeyFields.get(0).getTable();
-        
+
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
@@ -759,6 +792,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Added here initialization of target foreign keys and target primary keys so that they are ready when
      * CollectionMapping.initialize initializes listOrderField.
      */
+    @Override
     protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
         super.initializeReferenceDescriptor(session);
         if (!isSourceKeySpecified()) {
@@ -775,7 +809,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             initializeTargetPrimaryKeyFields();
         }
     }
-    
+
     /**
      * INTERNAL:
      * Initialize removeAllTargetsQuery.
@@ -788,9 +822,9 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             return;
         }
 
-        // All targetForeignKeys should have the same table 
+        // All targetForeignKeys should have the same table
         DatabaseTable table = targetForeignKeyFields.get(0).getTable();
-        
+
         // Build where clause expression.
         Expression whereClause = null;
         Expression builder = new ExpressionBuilder();
@@ -816,7 +850,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         statement.setModifyRow(modifyRow);
         removeAllTargetsQuery.setSQLStatement(statement);
     }
-    
+
     /**
      * Verify, munge, and hash the target foreign keys and source keys.
      */
@@ -882,13 +916,42 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         if (requiresDataModificationEvents() || containerPolicy.requiresDataModificationEvents()){
             // In the uow data queries are cached until the end of the commit.
             if (query.shouldCascadeOnlyDependentParts()) {
-                // Hey I might actually want to use an inner class here... ok array for now.
-                Object[] event = new Object[4];
-                event[0] = ObjectAdded;
-                event[1] = query;
-                event[2] = objectAdded;
-                event[3] = extraData;
-                query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                if (shouldDeferInsert()) {
+                    // Hey I might actually want to use an inner class here... ok array for now.
+                    Object[] event = new Object[4];
+                    event[0] = ObjectAdded;
+                    event[1] = query;
+                    event[2] = objectAdded;
+                    event[3] = extraData;
+                    query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                } else {
+                    ContainerPolicy cp = getContainerPolicy();
+                    prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
+                    AbstractRecord databaseRow = buildKeyRowForTargetUpdate(query);
+
+                    // Extract target field and its value. Construct insert statement and execute it
+                    int size = targetPrimaryKeyFields.size();
+                    ClassDescriptor referenceDesc = getReferenceDescriptor();
+                    AbstractSession session = query.getSession();
+                    for (int index = 0; index < size; index++) {
+                        DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
+                        Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(cp.unwrapIteratorResult(objectAdded), targetPrimaryKey, query.getSession());
+                        databaseRow.put(targetPrimaryKey, targetKeyValue);
+                    }
+
+                    ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
+                    if(listOrderField != null && extraData != null) {
+                        databaseRow.put(listOrderField, extraData.get(listOrderField));
+                    }
+
+                    InsertObjectQuery insertQuery = getInsertObjectQuery(session, referenceDesc);
+                    insertQuery.setObject(objectAdded);
+                    insertQuery.setCascadePolicy(query.getCascadePolicy());
+                    insertQuery.setTranslationRow(databaseRow);
+                    insertQuery.setModifyRow(databaseRow);
+                    insertQuery.setIsPrepared(false);
+                    query.getSession().executeQuery(insertQuery);
+                }
             } else {
                 updateTargetForeignKeyPostUpdateSource_ObjectAdded(query, objectAdded, extraData);
             }
@@ -921,7 +984,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         super.objectRemovedDuringUpdate(query, objectDeleted, extraData);
     }
 
-    
+
     /**
      * INTERNAL:
      * Perform the commit event.
@@ -940,7 +1003,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             throw DescriptorException.invalidDataModificationEventCode(event[0], this);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Insert the reference objects.
@@ -980,27 +1043,64 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 cp.propogatePostInsert(query, wrappedObject);
             }
         }
-        if (requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()){
+        if (requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()) {
             // only cascade dependents in UOW
             if (query.shouldCascadeOnlyDependentParts()) {
-                if (!isReadOnly() && (requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
-                    // Hey I might actually want to use an inner class here... ok array for now.
-                    Object[] event = new Object[2];
-                    event[0] = PostInsert;
-                    event[1] = query;
-                    query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                if ((requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
+                    if (shouldDeferInsert()) {
+                        // Hey I might actually want to use an inner class here... ok array for now.
+                        Object[] event = new Object[2];
+                        event[0] = PostInsert;
+                        event[1] = query;
+                        query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                    } else {
+                        ContainerPolicy cp = getContainerPolicy();
+                        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+                        if (cp.isEmpty(objects)) {
+                            return;
+                        }
+
+                        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
+
+                        AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
+
+                        // Extract target field and its value. Construct insert
+                        // statement and execute it
+                        int size = targetPrimaryKeyFields.size();
+                        ClassDescriptor referenceDesc = getReferenceDescriptor();
+                        AbstractSession session = query.getSession();
+                        int objectIndex = 0;
+                        for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
+                            AbstractRecord row = new DatabaseRecord();
+                            row.mergeFrom(keyRow);
+                            Object wrappedObject = cp.nextEntry(iter, query.getSession());
+                            Object object = cp.unwrapIteratorResult(wrappedObject);
+                            AbstractRecord databaseRow = referenceDesc.getObjectBuilder().buildRow(row, object, session, WriteType.INSERT);
+                            ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, session), databaseRow);
+                            if (listOrderField != null) {
+                                databaseRow.put(listOrderField, objectIndex++);
+                            }
+                            InsertObjectQuery insertQuery = getInsertObjectQuery(session, referenceDesc);
+                            insertQuery.setObject(object);
+                            insertQuery.setCascadePolicy(query.getCascadePolicy());
+                            insertQuery.setTranslationRow(databaseRow);
+                            insertQuery.setModifyRow(databaseRow);
+                            insertQuery.setIsPrepared(false);
+                            query.getSession().executeQuery(insertQuery);
+                        }
+                    }
                 }
             } else {
-                if (!isReadOnly() && (requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())){
+                if ((requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
                     updateTargetRowPostInsertSource(query);
                 }
             }
         }
     }
-    
+
     /**
      * INTERNAL:
-     * Post-initialize source and target expression fields created when a mapping's selectionCriteria 
+     * Post-initialize source and target expression fields created when a mapping's selectionCriteria
      * is created early with only partly initialized fields.
      */
     @Override
@@ -1023,7 +1123,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 }
             }
         }
-        
+
         // postInitialize and set target expression fields using my reference descriptor
         if (this.targetExpressionsToPostInitialize != null && this.targetExpressionsToPostInitialize.size() > 0) {
             ClassDescriptor descriptor = getReferenceDescriptor();
@@ -1052,25 +1152,25 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         if (this.isReadOnly) {
             return;
         }
-        
+
         if (!requiresDataModificationEvents() && !shouldObjectModifyCascadeToParts(query)){
             return;
         }
-       
+
         // if the target objects are not instantiated, they could not have been changed....
         if (!isAttributeValueInstantiatedOrChanged(query.getObject())) {
             return;
         }
-        
+
         if (query.getObjectChangeSet() != null) {
             // UnitOfWork
             writeChanges(query.getObjectChangeSet(), query);
         } else {
-            // OLD COMMIT            
+            // OLD COMMIT
             compareObjectsAndWrite(query);
         }
     }
-    
+
     /**
      * INTERNAL:
      * Return the selection criteria used to IN batch fetching.
@@ -1144,7 +1244,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             deleteAll(query, session);
         }
     }
-    
+
     /**
      * Prepare a cascade locking policy.
      */
@@ -1163,7 +1263,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public boolean requiresDataModificationEvents(){
         return this.listOrderField != null;
     }
-    
+
     /**
      * PUBLIC:
      * The default add target query for mapping can be overridden by specifying the new query.
@@ -1183,7 +1283,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         query.setSQLString(sqlString);
         setCustomAddTargetQuery(query);
     }
-    
+
     /**
      * PUBLIC:
      * The default remove target query for mapping can be overridden by specifying the new query.
@@ -1197,13 +1297,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     /**
      * PUBLIC:
      * The default remove all targets query for mapping can be overridden by specifying the new query.
-     * This query must set all target foreign keys that reference the source to null.  
+     * This query must set all target foreign keys that reference the source to null.
      */
     public void setCustomRemoveAllTargetsQuery(DataModifyQuery query) {
         removeAllTargetsQuery = query;
         hasCustomRemoveAllTargetsQuery = true;
     }
-    
+
     /**
      * PUBLIC:
      * Set the SQL string used by the mapping to delete the target objects.
@@ -1225,7 +1325,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         query.setSQLString(sqlString);
         setCustomDeleteAllQuery(query);
     }
-    
+
 
     /**
      * PUBLIC:
@@ -1354,14 +1454,14 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         if (isPrivateOwned()) {
             return true;
         }
-        
+
         if (containerPolicy.isMappedKeyMapPolicy() && containerPolicy.requiresDataModificationEvents()){
             return true;
         }
 
         return query.shouldCascadeAllParts();
-    }    
-    
+    }
+
     /**
      * INTERNAL
      * If it's not a map then target foreign key has been already modified (set to null).
@@ -1369,7 +1469,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     protected boolean shouldRemoveTargetQueryModifyTargetForeignKey() {
         return containerPolicy.isMapPolicy();
     }
-    
+
     /**
      * INTERNAL
      * Return true if this mapping supports cascaded version optimistic locking.
@@ -1378,7 +1478,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     public boolean isCascadedLockingSupported() {
         return true;
     }
-    
+
     /**
      * INTERNAL:
      * Return if this mapping support joining.
@@ -1406,7 +1506,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
 
         AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
-        
+
         // Extract target field and its value. Construct insert statement and execute it
         int size = targetPrimaryKeyFields.size();
         int objectIndex = 0;
@@ -1431,7 +1531,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     protected AbstractRecord buildKeyRowForTargetUpdate(ObjectLevelModifyQuery query){
         return new DatabaseRecord();
     }
-    
+
     /**
      * INTERNAL:
      * Update target foreign key after a target object was added to the source. This follows following steps.
@@ -1456,7 +1556,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(cp.unwrapIteratorResult(objectAdded), targetPrimaryKey, query.getSession());
             databaseRow.put(targetPrimaryKey, targetKeyValue);
         }
-  
+
         ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
         if(listOrderField != null && extraData != null) {
             databaseRow.put(listOrderField, extraData.get(listOrderField));
@@ -1511,7 +1611,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         removeQuery.setIsExecutionClone(true);
         session.executeQuery(removeQuery, translationRow);
     }
-    
+
     /**
      * INTERNAL:
      * Update target foreign key after a target object was removed from the source. This follows following steps.
@@ -1548,7 +1648,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         removeQuery.setIsExecutionClone(true);
         query.getSession().executeQuery(removeQuery, translationRow);
     }
-    
+
     /**
      * INTERNAL:
      * Used to verify whether the specified object is deleted or not.
@@ -1566,5 +1666,35 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             }
         }
         return true;
+    }
+
+    public boolean shouldDeferInsert() {
+        if (shouldDeferInserts == null) {
+            shouldDeferInserts = true;
+        }
+        return shouldDeferInserts;
+    }
+
+    public void setShouldDeferInsert(boolean defer) {
+        shouldDeferInserts = defer;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns a clone of InsertObjectQuery from the ClassDescriptor's DescriptorQueryManager or a new one
+     */
+    private InsertObjectQuery getInsertObjectQuery(AbstractSession session, ClassDescriptor desc) {
+        InsertObjectQuery insertQuery = desc.getQueryManager().getInsertQuery();
+        if (insertQuery == null) {
+            insertQuery = new InsertObjectQuery();
+            insertQuery.setDescriptor(desc);
+            insertQuery.checkPrepare(session, insertQuery.getTranslationRow());
+        } else {
+            // Ensure the query has been prepared.
+            insertQuery.checkPrepare(session, insertQuery.getTranslationRow());
+            insertQuery = (InsertObjectQuery)insertQuery.clone();
+        }
+        insertQuery.setIsExecutionClone(true);
+        return insertQuery;
     }
 }
