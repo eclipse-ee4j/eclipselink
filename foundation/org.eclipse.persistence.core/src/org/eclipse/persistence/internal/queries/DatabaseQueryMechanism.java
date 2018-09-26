@@ -492,9 +492,6 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
             // Store the size of the modify row so we can determine if the user has added to the row in the insert.
             int modifyRowSize = modifyRow.size();
 
-            //391279: check the commitManager for scheduled events that match this insert and may need to be merged
-            commitManager.checkForDataModificationEventMerges(writeQuery, session);
-
             // PERF: Avoid events if no listeners.
             if (eventManager.hasAnyEventListeners()) {
                 DescriptorEvent event = new DescriptorEvent(DescriptorEventManager.AboutToInsertEvent, writeQuery);
