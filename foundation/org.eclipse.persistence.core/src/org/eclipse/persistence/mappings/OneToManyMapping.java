@@ -16,23 +16,50 @@
 //       - 338812: ManyToMany mapping in aggregate object violate integrity constraint on deletion
 package org.eclipse.persistence.mappings;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.FieldExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * <p><b>Purpose</b>: This mapping is used to represent the
@@ -120,6 +147,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      **/
     protected DataModifyQuery removeAllTargetsQuery;
     protected boolean hasCustomRemoveAllTargetsQuery;
+    protected Boolean shouldDeferInserts = null;
 
     /**
      * PUBLIC:
@@ -192,6 +220,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Verifies listOrderField's table: it must be the same table that contains all target foreign keys.
      * Precondition: listOrderField != null.
      */
+    @Override
     protected void buildListOrderField() {
         if(this.listOrderField.hasTableName()) {
             if(!this.targetForeignKeyTable.equals(this.listOrderField.getTable())) {
@@ -294,6 +323,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection.  Returns the key.
      */
+    @Override
     public Object createMapComponentFromRow(AbstractRecord dbRow, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected){
         return session.executeQuery(getSelectionQuery(), dbRow);
     }
@@ -385,6 +415,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     /**
      * Overrides CollectionMappig because this mapping requires a DeleteAllQuery instead of a ModifyQuery.
      */
+    @Override
     protected ModifyQuery getDeleteAllQuery() {
         if (deleteAllQuery == null) {
             deleteAllQuery = new DeleteAllQuery();//this is casted to a DeleteAllQuery
@@ -439,6 +470,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Primary keys of targetForeignKeyTable.
      */
+    @Override
     public List<DatabaseField> getTargetPrimaryKeyFields() {
         return this.targetPrimaryKeyFields;
     }
@@ -595,6 +627,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * INTERNAL:
      * Initialize changeOrderTargetQuery.
      */
+    @Override
     protected void initializeChangeOrderTargetQuery(AbstractSession session) {
         boolean hasChangeOrderTargetQuery = changeOrderTargetQuery != null;
         if(!hasChangeOrderTargetQuery) {
@@ -761,6 +794,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
      * Added here initialization of target foreign keys and target primary keys so that they are ready when
      * CollectionMapping.initialize initializes listOrderField.
      */
+    @Override
     protected void initializeReferenceDescriptor(AbstractSession session) throws DescriptorException {
         super.initializeReferenceDescriptor(session);
         if (!isSourceKeySpecified()) {
@@ -884,13 +918,42 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         if (requiresDataModificationEvents() || containerPolicy.requiresDataModificationEvents()){
             // In the uow data queries are cached until the end of the commit.
             if (query.shouldCascadeOnlyDependentParts()) {
-                // Hey I might actually want to use an inner class here... ok array for now.
-                Object[] event = new Object[4];
-                event[0] = ObjectAdded;
-                event[1] = query;
-                event[2] = objectAdded;
-                event[3] = extraData;
-                query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                if (shouldDeferInsert()) {
+                    // Hey I might actually want to use an inner class here... ok array for now.
+                    Object[] event = new Object[4];
+                    event[0] = ObjectAdded;
+                    event[1] = query;
+                    event[2] = objectAdded;
+                    event[3] = extraData;
+                    query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                } else {
+                    ContainerPolicy cp = getContainerPolicy();
+                    prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
+                    AbstractRecord databaseRow = buildKeyRowForTargetUpdate(query);
+
+                    // Extract target field and its value. Construct insert statement and execute it
+                    int size = targetPrimaryKeyFields.size();
+                    ClassDescriptor referenceDesc = getReferenceDescriptor();
+                    AbstractSession session = query.getSession();
+                    for (int index = 0; index < size; index++) {
+                        DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
+                        Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(cp.unwrapIteratorResult(objectAdded), targetPrimaryKey, query.getSession());
+                        databaseRow.put(targetPrimaryKey, targetKeyValue);
+                    }
+
+                    ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
+                    if(listOrderField != null && extraData != null) {
+                        databaseRow.put(listOrderField, extraData.get(listOrderField));
+                    }
+
+                    InsertObjectQuery insertQuery = getInsertObjectQuery(session, referenceDesc);
+                    insertQuery.setObject(objectAdded);
+                    insertQuery.setCascadePolicy(query.getCascadePolicy());
+                    insertQuery.setTranslationRow(databaseRow);
+                    insertQuery.setModifyRow(databaseRow);
+                    insertQuery.setIsPrepared(false);
+                    query.getSession().executeQuery(insertQuery);
+                }
             } else {
                 updateTargetForeignKeyPostUpdateSource_ObjectAdded(query, objectAdded, extraData);
             }
@@ -982,18 +1045,55 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 cp.propogatePostInsert(query, wrappedObject);
             }
         }
-        if (requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()){
+        if (requiresDataModificationEvents() || getContainerPolicy().requiresDataModificationEvents()) {
             // only cascade dependents in UOW
             if (query.shouldCascadeOnlyDependentParts()) {
-                if (!isReadOnly() && (requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
-                    // Hey I might actually want to use an inner class here... ok array for now.
-                    Object[] event = new Object[2];
-                    event[0] = PostInsert;
-                    event[1] = query;
-                    query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                if ((requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
+                    if (shouldDeferInsert()) {
+                        // Hey I might actually want to use an inner class here... ok array for now.
+                        Object[] event = new Object[2];
+                        event[0] = PostInsert;
+                        event[1] = query;
+                        query.getSession().getCommitManager().addDataModificationEvent(this, event);
+                    } else {
+                        ContainerPolicy cp = getContainerPolicy();
+                        Object objects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
+                        if (cp.isEmpty(objects)) {
+                            return;
+                        }
+
+                        prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
+
+                        AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
+
+                        // Extract target field and its value. Construct insert
+                        // statement and execute it
+                        int size = targetPrimaryKeyFields.size();
+                        ClassDescriptor referenceDesc = getReferenceDescriptor();
+                        AbstractSession session = query.getSession();
+                        int objectIndex = 0;
+                        for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
+                            AbstractRecord row = new DatabaseRecord();
+                            row.mergeFrom(keyRow);
+                            Object wrappedObject = cp.nextEntry(iter, query.getSession());
+                            Object object = cp.unwrapIteratorResult(wrappedObject);
+                            AbstractRecord databaseRow = referenceDesc.getObjectBuilder().buildRow(row, object, session, WriteType.INSERT);
+                            ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(wrappedObject, session), databaseRow);
+                            if (listOrderField != null) {
+                                databaseRow.put(listOrderField, objectIndex++);
+                            }
+                            InsertObjectQuery insertQuery = getInsertObjectQuery(session, referenceDesc);
+                            insertQuery.setObject(object);
+                            insertQuery.setCascadePolicy(query.getCascadePolicy());
+                            insertQuery.setTranslationRow(databaseRow);
+                            insertQuery.setModifyRow(databaseRow);
+                            insertQuery.setIsPrepared(false);
+                            query.getSession().executeQuery(insertQuery);
+                        }
+                    }
                 }
             } else {
-                if (!isReadOnly() && (requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())){
+                if ((requiresDataModificationEvents() || containerPolicy.shouldUpdateForeignKeysPostInsert())) {
                     updateTargetRowPostInsertSource(query);
                 }
             }
@@ -1568,5 +1668,35 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             }
         }
         return true;
+    }
+
+    public boolean shouldDeferInsert() {
+        if (shouldDeferInserts == null) {
+            shouldDeferInserts = true;
+        }
+        return shouldDeferInserts;
+    }
+
+    public void setShouldDeferInsert(boolean defer) {
+        shouldDeferInserts = defer;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns a clone of InsertObjectQuery from the ClassDescriptor's DescriptorQueryManager or a new one
+     */
+    private InsertObjectQuery getInsertObjectQuery(AbstractSession session, ClassDescriptor desc) {
+        InsertObjectQuery insertQuery = desc.getQueryManager().getInsertQuery();
+        if (insertQuery == null) {
+            insertQuery = new InsertObjectQuery();
+            insertQuery.setDescriptor(desc);
+            insertQuery.checkPrepare(session, insertQuery.getTranslationRow());
+        } else {
+            // Ensure the query has been prepared.
+            insertQuery.checkPrepare(session, insertQuery.getTranslationRow());
+            insertQuery = (InsertObjectQuery)insertQuery.clone();
+        }
+        insertQuery.setIsExecutionClone(true);
+        return insertQuery;
     }
 }

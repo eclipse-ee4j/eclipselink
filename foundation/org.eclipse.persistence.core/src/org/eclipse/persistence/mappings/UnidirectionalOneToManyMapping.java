@@ -19,6 +19,7 @@ package org.eclipse.persistence.mappings;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -27,6 +28,7 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -78,6 +80,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * Build a row containing the keys for use in the query that updates the row for the
      * target object during an insert or update
      */
+    @Override
     protected AbstractRecord buildKeyRowForTargetUpdate(ObjectLevelModifyQuery query){
        AbstractRecord keyRow = new DatabaseRecord();
        // Extract primary key and value from the source.
@@ -136,6 +139,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isOwned(){
         return true;
     }
@@ -143,6 +147,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * INTERNAL:
      */
+    @Override
     public boolean isUnidirectionalOneToManyMapping() {
         return true;
     }
@@ -151,6 +156,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * INTERNAL:
      * Initialize the mapping.
      */
+    @Override
     public void initialize(AbstractSession session) throws DescriptorException {
         super.initialize(session);
         if (getReferenceDescriptor().getOptimisticLockingPolicy() != null) {
@@ -166,6 +172,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * Initialize the type of the target foreign key, as it will be null as it is not mapped in the target.
      */
+    @Override
     public void postInitialize(AbstractSession session) {
         super.postInitialize(session);
         Iterator<DatabaseField> targetForeignKeys = getTargetForeignKeyFields().iterator();
@@ -191,6 +198,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * INTERNAL:
      */
+    @Override
     protected AbstractRecord createModifyRowForAddTargetQuery() {
         AbstractRecord modifyRow = super.createModifyRowForAddTargetQuery();
         int size = targetForeignKeyFields.size();
@@ -205,6 +213,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * INTERNAL:
      * Delete the reference objects.
      */
+    @Override
     public void preDelete(DeleteObjectQuery query) throws DatabaseException, OptimisticLockException {
         if (shouldObjectModifyCascadeToParts(query)) {
             super.preDelete(query);
@@ -217,6 +226,7 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     /**
      * Prepare a cascade locking policy.
      */
+    @Override
     public void prepareCascadeLockingPolicy() {
         CascadeLockingPolicy policy = new CascadeLockingPolicy(getDescriptor(), getReferenceDescriptor());
         policy.setQueryKeyFields(getSourceKeysToTargetForeignKeys());
@@ -378,7 +388,27 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
      * INTERNAL
      * Target foreign key of the removed object should be modified (set to null).
      */
+    @Override
     protected boolean shouldRemoveTargetQueryModifyTargetForeignKey() {
         return true;
+    }
+
+    @Override
+    public boolean shouldDeferInsert() {
+        if (shouldDeferInserts == null) {
+            String property = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ONETOMANY_DEFER_INSERTS);
+            shouldDeferInserts = true;
+            if (property != null) {
+                shouldDeferInserts = "true".equalsIgnoreCase(property);
+            } else {
+                for (DatabaseField f : targetForeignKeyFields) {
+                    if (!f.isNullable()) {
+                        shouldDeferInserts = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return shouldDeferInserts;
     }
 }
