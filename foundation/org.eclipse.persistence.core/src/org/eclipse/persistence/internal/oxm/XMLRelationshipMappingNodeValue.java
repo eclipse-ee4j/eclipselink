@@ -74,6 +74,11 @@ public abstract class XMLRelationshipMappingNodeValue extends MappingNodeValue {
                         classValue = (Class)indicator;
                     }
                 }
+                // if xsi:type is overriden by JSON_TYPE_ATTRIBUTE_NAME unmarshall property
+                if (classValue == null && unmarshalRecord.getUnmarshaller().isApplicationJSON() &&
+                        unmarshalRecord.getUnmarshaller().getJsonTypeConfiguration().getJsonTypeAttributeName() != null && atts.getValue(unmarshalRecord.getUnmarshaller().getJsonTypeConfiguration().getJsonTypeAttributeName()) != null) {
+                    classValue = (Class)xmlDescriptor.getInheritancePolicy().getClassIndicatorMapping().get(new QName(atts.getValue(unmarshalRecord.getUnmarshaller().getJsonTypeConfiguration().getJsonTypeAttributeName())));
+                }
             }
             if (classValue != null) {
                 xmlDescriptor = (Descriptor)session.getDescriptor(classValue);

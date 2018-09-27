@@ -35,6 +35,13 @@ public final class OXMSystemProperties {
     public static final String JSON_TYPE_COMPATIBILITY = "org.eclipse.persistence.json.type-compatibility";
 
     /**
+     * Override default type property name for JSON as MOXy type discriminator.
+     *
+     * @since 2.7.4
+     */
+    public static final String JSON_TYPE_ATTRIBUTE_NAME = "org.eclipse.persistence.json.type-attribute-name";
+
+    /**
      * If there should be xsd prefix when using simple types, e.g. xsd.int.
      *
      * @since 2.6.0
@@ -46,5 +53,7 @@ public final class OXMSystemProperties {
     public static final Boolean jsonTypeCompatiblity = PrivilegedAccessHelper.getSystemPropertyBoolean(JSON_TYPE_COMPATIBILITY, false);
 
     public static final Boolean jsonUseXsdTypesPrefix = PrivilegedAccessHelper.getSystemPropertyBoolean(JSON_USE_XSD_TYPES_PREFIX, false);
+
+    public static final String jsonTypeAttributeName = PrivilegedAccessHelper.getSystemProperty(JSON_TYPE_ATTRIBUTE_NAME, Constants.SCHEMA_TYPE_ATTRIBUTE);
 
 }
