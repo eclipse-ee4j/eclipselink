@@ -15,22 +15,25 @@
 package org.eclipse.persistence.descriptors.changetracking;
 
 import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Map;
 
-import java.util.*;
-import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
-import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 
 /**
  * PUBLIC:
@@ -75,35 +78,37 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      */
     @Override
     public ObjectChangeSet calculateChanges(Object clone, Object backUp, boolean isNew, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
-        // PERF: Avoid events if no listeners.
-        if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
-            // The query is built for compatibility to old event mechanism.
-            WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
-            writeQuery.setObject(clone);
-            writeQuery.setBackupClone(backUp);
-            writeQuery.setSession(unitOfWork);
-            writeQuery.setDescriptor(descriptor);
-
-            descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreWriteEvent, writeQuery));
-
-            if (isNew) {
-                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreInsertEvent, writeQuery));
-            } else {
-                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
-            }
-        }
-
         ObjectChangeSet changes = createObjectChangeSet(clone, backUp, changeSet, isNew, unitOfWork, descriptor);
-        if(changes.hasChanges() && descriptor.hasMappingsPostCalculateChanges() && ! changes.isNew() && ! unitOfWork.getCommitManager().isActive() && !unitOfWork.isNestedUnitOfWork()) {
-            // if we are in the commit because of an event skip this postCalculateChanges step as we have already executed it.
-            int size = descriptor.getMappingsPostCalculateChanges().size();
-            for(int i=0; i < size; i++) {
-                DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i);
-                org.eclipse.persistence.sessions.changesets.ChangeRecord record = changes.getChangesForAttributeNamed(mapping.getAttributeName());
-                if(record != null) {
-                    // Deferred attributes will already have been acted on, therefore we need
-                    // to post calculate changes to ensure orphaned objects are removed.
-                    mapping.postCalculateChanges(record, unitOfWork);
+        if(changes.hasChanges()) {
+            // PERF: Avoid events if no listeners.
+            if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
+                // The query is built for compatibility to old event mechanism.
+                WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
+                writeQuery.setObject(clone);
+                writeQuery.setBackupClone(backUp);
+                writeQuery.setSession(unitOfWork);
+                writeQuery.setDescriptor(descriptor);
+
+                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreWriteEvent, writeQuery));
+
+                if (isNew) {
+                    descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreInsertEvent, writeQuery));
+                } else {
+                    descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
+                }
+            }
+
+            if (descriptor.hasMappingsPostCalculateChanges() && ! changes.isNew() && ! unitOfWork.getCommitManager().isActive() && !unitOfWork.isNestedUnitOfWork()) {
+                // if we are in the commit because of an event skip this postCalculateChanges step as we have already executed it.
+                int size = descriptor.getMappingsPostCalculateChanges().size();
+                for (int i=0; i < size; i++) {
+                    DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i);
+                    org.eclipse.persistence.sessions.changesets.ChangeRecord record = changes.getChangesForAttributeNamed(mapping.getAttributeName());
+                    if (record != null) {
+                        // Deferred attributes will already have been acted on, therefore we need
+                        // to post calculate changes to ensure orphaned objects are removed.
+                        mapping.postCalculateChanges(record, unitOfWork);
+                    }
                 }
             }
         }
