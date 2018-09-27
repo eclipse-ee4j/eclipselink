@@ -27,6 +27,7 @@ import javax.persistence.TypedQuery;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Address;
@@ -371,7 +372,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         try {
             getDatabaseSession().executeNonSelectingSQL("insert into CMP3_BV_PROJECT values (895, \"some long name\")");
         } catch (Throwable t) {
-            //ignore
+            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, t);
         }
         clearCache();
         Map<String, Object> props = new HashMap<>();
