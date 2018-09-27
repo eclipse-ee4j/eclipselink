@@ -215,7 +215,7 @@ public class XMLCollectionReferenceMapping extends XMLObjectReferenceMapping imp
             }
         } else {
             XMLField tgtFld = (XMLField) getSourceToTargetKeyFieldAssociations().get(xmlField);
-            String tgtXPath = tgtFld.getXPath();
+            String tgtXPath = tgtFld.getQualifiedName();
             HashMap primaryKeyMap = reference.getPrimaryKeyMap();
             CacheId pks = (CacheId) primaryKeyMap.get(tgtXPath);
             ClassDescriptor descriptor = session.getClassDescriptor(referenceClass);
