@@ -43,6 +43,16 @@ public class JsonTypeConfiguration {
     private boolean jsonTypeCompatibilitySet = false;
 
     /**
+     * Override default type property name for JSON as MOXy type discriminator.
+     */
+    private String jsonTypeAttributeName = "type";
+
+    /**
+     * Allows system property override with context property.
+     */
+    private boolean jsonTypeAttributeNameSet = false;
+
+    /**
      * Getter for useXsdTypesWithPrefix property.
      *
      * @return value of useXsdTypesWithPrefix property
@@ -110,6 +120,41 @@ public class JsonTypeConfiguration {
     public void setJsonTypeCompatibility(boolean jsonTypeCompatibility) {
         this.jsonTypeCompatibility = jsonTypeCompatibility;
         this.jsonTypeCompatibilitySet = true;
+    }
+
+    /**
+     * Getter for type property name for JSON as MOXy type discriminator.
+     *
+     * @return value of jsonTypeAttributeName property
+     * @since 2.7.4
+     */
+    public String getJsonTypeAttributeName() {
+        return jsonTypeAttributeName;
+    }
+
+    /**
+     * Override default type property name for JSON as MOXy type discriminator.
+     *
+     * @return type property name for JSON as MOXy type discriminator.
+     * @since 2.7.4
+     */
+    public String useJsonTypeAttributeName() {
+        if (jsonTypeAttributeNameSet) {
+            return jsonTypeAttributeName;
+        } else {
+            return OXMSystemProperties.jsonTypeAttributeName;
+        }
+    }
+
+    /**
+     * Override default type property name for JSON as MOXy type discriminator.
+     *
+     * @param jsonTypeAttributeName Type property name for JSON as MOXy type discriminator.
+     * @since 2.6.0
+     */
+    public void setJsonTypeAttributeName(String jsonTypeAttributeName) {
+        this.jsonTypeAttributeName = jsonTypeAttributeName;
+        this.jsonTypeAttributeNameSet = true;
     }
 
 }

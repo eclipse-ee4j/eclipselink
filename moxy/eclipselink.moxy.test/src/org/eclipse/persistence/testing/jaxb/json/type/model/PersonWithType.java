@@ -16,6 +16,7 @@ package org.eclipse.persistence.testing.jaxb.json.type.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import java.util.List;
 
 @XmlRootElement
 @XmlSeeAlso(CustomerWithInheritance.class)
@@ -24,6 +25,10 @@ public class PersonWithType {
     public String name;
 
     public String type;
+
+    public Contact primaryContact;
+
+    public List<Contact> secondaryContacts;
 
     @Override
     public int hashCode() {
@@ -52,6 +57,16 @@ public class PersonWithType {
             if (other.type != null)
                 return false;
         } else if (!type.equals(other.type))
+            return false;
+        if (primaryContact == null) {
+            if (other.primaryContact != null)
+                return false;
+        } else if (!primaryContact.equals(other.primaryContact))
+            return false;
+        if (secondaryContacts == null) {
+            if (other.secondaryContacts != null)
+                return false;
+        } else if (!secondaryContacts.equals(other.secondaryContacts))
             return false;
         return true;
     }

@@ -125,6 +125,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransforme
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
@@ -2427,7 +2428,7 @@ public class MappingsGenerator {
                 if (rootTypeInfo.isSetXmlDiscriminatorNode()) {
                     classIndicatorField = new XMLField(rootTypeInfo.getXmlDiscriminatorNode());
                 } else {
-                    classIndicatorField = new XMLField(ATT + "type");
+                    classIndicatorField = XMLConstants.DEFAULT_XML_TYPE_ATTRIBUTE;
                     classIndicatorField.getXPathFragment().setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                 }
                 rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
