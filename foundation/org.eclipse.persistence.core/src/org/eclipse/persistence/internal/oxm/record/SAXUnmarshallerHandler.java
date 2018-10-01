@@ -212,6 +212,8 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                     type = atts.getValue(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_TYPE_ATTRIBUTE);
                 } else if (unmarshaller.getMediaType() != MediaType.APPLICATION_JSON || unmarshaller.getJsonTypeConfiguration().useJsonTypeCompatibility()) {
                     type = atts.getValue(Constants.EMPTY_STRING, Constants.SCHEMA_TYPE_ATTRIBUTE);
+                } else if (unmarshaller.getMediaType() == MediaType.APPLICATION_JSON && unmarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName() != null) {
+                        type = atts.getValue(Constants.EMPTY_STRING, unmarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName());
                 }
                 if (null != type) {
                     XPathFragment typeFragment = new XPathFragment(type, xmlReader.getNamespaceSeparator(), xmlReader.isNamespaceAware());

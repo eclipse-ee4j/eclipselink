@@ -1,0 +1,29 @@
+{
+  "mytype": "customerWithInheritance",
+  "name": "theName",
+  "type": "propertyType",
+  "primaryContact": {
+    "mytype": "address",
+    "contactId": 1,
+    "street": "Main Street 1",
+    "city": "Prague",
+    "zip": "110 00"
+  },
+  "secondaryContacts": [
+    {
+      "mytype": "address",
+      "contactId": 2,
+      "street": "Under Bridge",
+      "city": "Berlin",
+      "zip": "123456"
+    },
+    {
+      "mytype": "phone",
+      "contactId": 3,
+      "number": "987654321"
+    },
+    {
+      "contactId": 4
+    }
+  ]
+}

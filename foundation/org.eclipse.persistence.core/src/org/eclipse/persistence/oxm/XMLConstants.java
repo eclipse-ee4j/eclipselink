@@ -37,4 +37,6 @@ public class XMLConstants extends Constants{
     public static final String ANY_NAMESPACE_LOCAL = "##local";
     public static final String ANY_NAMESPACE_TARGETNS = "##targetNamespace";
 
+    public static final XMLField DEFAULT_XML_TYPE_ATTRIBUTE = new XMLField(Constants.ATTRIBUTE+ Constants.SCHEMA_TYPE_ATTRIBUTE);
+
 }

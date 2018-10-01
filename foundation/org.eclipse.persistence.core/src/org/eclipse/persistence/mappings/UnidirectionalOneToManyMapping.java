@@ -19,9 +19,9 @@
 package org.eclipse.persistence.mappings;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Vector;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -30,7 +30,7 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -43,7 +43,6 @@ import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
-import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -88,9 +87,12 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
        AbstractRecord keyRow = new DatabaseRecord();
 
        // Extract primary key and value from the source.
-       for(Map.Entry<DatabaseField, DatabaseField> entry : this.sourceKeysToTargetForeignKeys.entrySet()) {
-           Object sourceKeyValue = query.getTranslationRow().get(entry.getKey());
-           keyRow.put(entry.getValue(), sourceKeyValue);
+       int size = sourceKeyFields.size();
+       for (int index = 0; index < size; index++) {
+           DatabaseField sourceKey = sourceKeyFields.get(index);
+           DatabaseField targetForeignKey = targetForeignKeyFields.get(index);
+           Object sourceKeyValue = query.getTranslationRow().get(sourceKey);
+           keyRow.put(targetForeignKey, sourceKeyValue);
        }
        return keyRow;
    }
@@ -394,90 +396,22 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
         return true;
     }
 
-    /**
-     * INTERNAL: Merges the given event with the given query. This means that the query will contain the applicable event rows.
-     * 
-     * @param query
-     * @param event
-     * @param session
-     * @throws DatabaseException
-     * @throws DescriptorException
-     */
-    public boolean mergeDataModificationEvent(WriteObjectQuery query, Object[] event, AbstractSession session) throws DatabaseException, DescriptorException {
-        if (event[0] == PostInsert) {
-            if (isReadOnly() || event[2] != query.getObject()) {
-                return false;
-            }
-
-            WriteObjectQuery wq = (WriteObjectQuery)event[1];
-            ContainerPolicy cp = getContainerPolicy();
-            Object objects = getRealCollectionAttributeValueFromObject(wq.getObject(), wq.getSession());
-            if (cp.isEmpty(objects)) {
-                return false;
-            }
-
-            prepareTranslationRow(wq.getTranslationRow(), wq.getObject(), wq.getDescriptor(), wq.getSession());
-
-            // Extract target field and its value. Construct insert statement and execute it
-            int size = this.targetPrimaryKeyFields.size();
-            int objectIndex = 0;
-            for (Object iter = cp.iteratorFor(objects); cp.hasNext(iter);) {
-                Object wrappedObject = cp.nextEntry(iter, wq.getSession());
-                if(wrappedObject == query.getObject()) {
-                    AbstractRecord queryModifyRow = query.getModifyRow();
-                    AbstractRecord updateTransRow = buildKeyRowForTargetUpdate(wq);
-
-                    // Look for any rows that are non-nullable, we need to add them to the query
-                    for(int pos = 0; pos < updateTransRow.getFields().size(); pos++) {
-                        DatabaseField fkField = updateTransRow.getFields().get(pos);
-                        if(fkField != null && !fkField.isNullable()) {
-                            Object value = updateTransRow.remove(fkField);
-                            queryModifyRow.put(fkField, value);
-                            pos--;
-                        }
+    @Override
+    public boolean shouldDeferInsert() {
+        if (shouldDeferInserts == null) {
+            String property = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ONETOMANY_DEFER_INSERTS);
+            shouldDeferInserts = true;
+            if (property != null) {
+                shouldDeferInserts = "true".equalsIgnoreCase(property);
+            } else {
+                for (DatabaseField f : targetForeignKeyFields) {
+                    if (!f.isNullable()) {
+                        shouldDeferInserts = false;
+                        break;
                     }
-                    query.setTranslationRow(queryModifyRow);
-
-                    //If we removed all the fields from the update Translation Row, then we need to indicate the event
-                    // should also be removed. If any rows are left, then the merge was partial and the event needs to still fire
-                    return updateTransRow.isEmpty();
                 }
             }
-        } else if (event[0] == ObjectRemoved) {
-        } else if (event[0] == ObjectAdded) {
-            if (isReadOnly() || event[2] != query.getObject()) {
-                return false;
-            }
-
-            WriteObjectQuery wq = (WriteObjectQuery)event[1];
-            ContainerPolicy cp = getContainerPolicy();
-            Object objects = getRealCollectionAttributeValueFromObject(wq.getObject(), wq.getSession());
-            if (cp.isEmpty(objects)) {
-                return false;
-            }
-
-            prepareTranslationRow(wq.getTranslationRow(), wq.getObject(), wq.getDescriptor(), wq.getSession());
-
-            AbstractRecord queryModifyRow = query.getModifyRow();
-            AbstractRecord updateTransRow = buildKeyRowForTargetUpdate(wq);
-
-            // Look for any rows that are non-nullable, we need to add them to the query
-            for(int pos = 0; pos < updateTransRow.getFields().size(); pos++) {
-                DatabaseField fkField = updateTransRow.getFields().get(pos);
-                if(fkField != null && !fkField.isNullable()) {
-                    Object value = updateTransRow.remove(fkField);
-                    queryModifyRow.put(fkField, value);
-                    pos--;
-                }
-            }
-            query.setTranslationRow(queryModifyRow);
-
-            //If we removed all the fields from the update Translation Row, then we need to indicate the event
-            // should also be removed. If any rows are left, then the merge was partial and the event needs to still fire
-            return updateTransRow.isEmpty();
-        } else {
-            throw DescriptorException.invalidDataModificationEventCode(event[0], this);
         }
-        return false;
+        return shouldDeferInserts;
     }
 }

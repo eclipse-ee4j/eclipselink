@@ -182,7 +182,7 @@ public class XMLObjectReferenceMappingNodeValue extends MappingNodeValue {
         QName schemaType = xmlField.getSchemaTypeForValue(fieldValue, session);
         XPathFragment groupingFragment = marshalRecord.openStartGroupingElements(namespaceResolver);
 
-        if (xPathFragment.isAttribute()) {
+        if (xPathFragment != null && xPathFragment.isAttribute()) {
             marshalRecord.attribute(xPathFragment, namespaceResolver, fieldValue, schemaType);
             marshalRecord.closeStartGroupingElements(groupingFragment);
         } else {

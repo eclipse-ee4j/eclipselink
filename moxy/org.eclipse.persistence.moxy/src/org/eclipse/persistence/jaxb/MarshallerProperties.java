@@ -157,6 +157,55 @@ public class MarshallerProperties {
     public static final String JSON_TYPE_COMPATIBILITY = JAXBContextProperties.JSON_TYPE_COMPATIBILITY;
 
     /**
+     * Override default type property name for JSON as MOXy type discriminator. Settings from binding file have higher priority.
+     *
+     * <p><b>Example</b></p>
+     * <p>Given the following property</p>
+     * <pre>
+     * marshaller.setProperty(MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME, "mytype");
+     * </pre>
+     * <p>If the property is set the JSON output will be:</p>
+     * <pre>
+     * ...
+     * {
+     *      "mytype": "phone",
+     *      "contactId": 3,
+     *      "number": "987654321"
+     * }
+     * ...
+     * </pre>
+     * <p>for following object model</p>
+     * <pre>
+     * &#64;XmlSeeAlso({Address.class, Phone.class})
+     * public class Contact {
+     *
+     *      public int contactId;
+     *      ...
+     * </pre>
+     * <pre>
+     * public class Phone extends Contact{
+     *
+     *      public String number;
+     *      ...
+     * </pre>
+     * <p>If the property is not set (default value) the JSON output will be:</p>
+     * <pre>
+     * ...
+     * {
+     *      "type": "phone",
+     *      "contactId": 3,
+     *      "number": "987654321"
+     * }
+     * ...
+     * </pre>
+     * Unmarshaller will use it as type discriminator to select right child class.
+     * @since 2.7.4
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#JSON_TYPE_ATTRIBUTE_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_TYPE_ATTRIBUTE_NAME
+     */
+    public static final String JSON_TYPE_ATTRIBUTE_NAME = JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME;
+
+    /**
      *
      */
     public static final String OBJECT_GRAPH = JAXBContextProperties.OBJECT_GRAPH;
