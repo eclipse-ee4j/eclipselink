@@ -31,6 +31,8 @@
 //       - 499335: Multiple embeddable fields can't reference same object
 //     09/04/2018-3.0 Ravi Babu Tummuru
 //       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+//     09/20/2018-3.0 Ravi Babu Tummuru
+//       - 538137: CLASSCASTEXCEPTION WHEN CALLING STORED PROCEDURE TO GET LIST OF NUMBERS
 
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
@@ -166,7 +168,7 @@ import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
-
+import java.lang.Number;
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -255,6 +257,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testNamedStoredProcedureQueryWithResultSetFieldMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testNamedFunction"));
         suite.addTest(new AdvancedJPAJunitTest("testNonTriggerLazyForSProc"));
+        suite.addTest(new AdvancedJPAJunitTest("testSprocFindAllMyTestEntityIDs"));
 
         suite.addTest(new AdvancedJPAJunitTest("testMethodBasedTransformationMapping"));
         suite.addTest(new AdvancedJPAJunitTest("testClassBasedTransformationMapping"));
@@ -2398,6 +2401,27 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+
+    // test case for Bug26647610 ElBug538137
+    public void testSprocFindAllMyTestEntityIDs() {
+
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query q = em.createNamedQuery("SProcfindAllMyTestEntityIDs");
+            List<Number> numbers = q.getResultList();
+            if(!(numbers.get(0) instanceof java.lang.Number)) {
+                fail("CLASSCASTEXCEPTION WHEN CALLING STORED PROCEDURE TO GET LIST OF NUMBERS");
+            }
+            commitTransaction(em);
+        }finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+        }
+    }
+
 
     public void testCursorStream() {
         EntityManager em = createEntityManager();

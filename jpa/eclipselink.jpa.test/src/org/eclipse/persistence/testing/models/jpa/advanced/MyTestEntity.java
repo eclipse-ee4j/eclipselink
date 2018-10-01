@@ -12,8 +12,14 @@
 
 //     09/04/2018-3.0 Ravi Babu Tummuru
 //       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+//     09/20/2018-3.0 Ravi Babu Tummuru
+//       - 538137: CLASSCASTEXCEPTION WHEN CALLING STORED PROCEDURE TO GET LIST OF NUMBERS
 
 package org.eclipse.persistence.testing.models.jpa.advanced;
+import static org.eclipse.persistence.annotations.Direction.OUT_CURSOR;
+import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
+import org.eclipse.persistence.annotations.StoredProcedureParameter;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -24,6 +30,11 @@ import javax.persistence.NamedNativeQuery;
 @Table(name="RBT_MYTESTENTITY") 
 @NamedNativeQueries( @NamedNativeQuery(name="allTestEntitiesAnnotated", query="SELECT ID FROM RBT_MYTESTENTITY"
     /* , hints={@QueryHint(name=QueryHints.CURSOR, value="true")}) */ ) )
+@NamedStoredProcedureQuery(
+                           name="SProcfindAllMyTestEntityIDs", 
+                           procedureName="WRAPPED_MYTESTENTITY_READ_ALL", 
+                           parameters={@StoredProcedureParameter(queryParameter="RESULT_CURSOR", name="RESULT_CURSOR", direction=OUT_CURSOR)}
+                           )
 public class MyTestEntity {
     @Id
     public Long id;
