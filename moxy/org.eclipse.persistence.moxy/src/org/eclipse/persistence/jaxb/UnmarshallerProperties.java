@@ -131,7 +131,7 @@ public class UnmarshallerProperties {
      * }
      * ...
      * </pre>
-     * <p>for following object model<p/>
+     * <p>for following object model</p>
      * <pre>
      * &#64;XmlSeeAlso({Address.class, Phone.class})
      * public class Contact {
