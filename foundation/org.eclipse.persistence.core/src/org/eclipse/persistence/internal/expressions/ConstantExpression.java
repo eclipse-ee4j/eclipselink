@@ -142,7 +142,9 @@ public class ConstantExpression extends Expression {
      */
     protected void postCopyIn(Map alreadyDone) {
         super.postCopyIn(alreadyDone);
-        this.localBase = this.localBase.copiedVersionFrom(alreadyDone);
+        if(this.localBase != null) {
+            this.localBase = this.localBase.copiedVersionFrom(alreadyDone);
+        }
     }
 
     /**
