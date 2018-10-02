@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -59,11 +59,11 @@ public class PrivilegedAccessHelper {
 
     private final static String[] legalProperties = { "file.separator", "java.io.tmpdir", JavaVersion.VM_VERSION_PROPERTY, "line.separator", "path.separator", "user.dir",
             "org.eclipse.persistence.fetchgroupmonitor", "org.eclipse.persistence.querymonitor", "SAP_J2EE_Engine_Version",
-            PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.JAVASE_DB_INTERACTION, 
+            PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, PersistenceUnitProperties.JAVASE_DB_INTERACTION,
             PersistenceUnitProperties.LOGGING_FILE, PersistenceUnitProperties.LOGGING_LEVEL,
             SystemProperties.ARCHIVE_FACTORY, SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE, SystemProperties.RECORD_STACK_ON_LOCK,
             SystemProperties.WEAVING_OUTPUT_PATH, SystemProperties.WEAVING_SHOULD_OVERWRITE, SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION,
-            SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE,
+            SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE, SystemProperties.ONETOMANY_DEFER_INSERTS,
             ServerPlatformBase.JMX_REGISTER_RUN_MBEAN_PROPERTY, ServerPlatformBase.JMX_REGISTER_DEV_MBEAN_PROPERTY,
             XMLPlatformFactory.XML_PLATFORM_PROPERTY};
     private final static Set<String> legalPropertiesSet = Collections.unmodifiableSet(new HashSet(Arrays.asList(legalProperties)));

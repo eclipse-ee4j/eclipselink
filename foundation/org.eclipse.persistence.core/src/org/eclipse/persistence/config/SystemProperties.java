@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -68,4 +68,13 @@ public class SystemProperties {
      */
     
     public static final String DO_NOT_PROCESS_XTOMANY_FOR_QBE = "eclipselink.query.query-by-example.ignore-xtomany";
+
+    /**
+     * This property can be set to <code>false</code> to enable UPDATE call to set
+     * foreign key value in the target row in unidirectional 1-Many mapping
+     * with not nullable FK. In previous versions of EclipseLink this was
+     * the default behaviour.
+     * Allowed values are: true/false.
+     */
+    public static final String ONETOMANY_DEFER_INSERTS = "eclipselink.mapping.onetomany.defer-inserts";
 }

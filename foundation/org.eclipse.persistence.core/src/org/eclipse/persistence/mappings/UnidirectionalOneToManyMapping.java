@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,6 +17,7 @@ package org.eclipse.persistence.mappings;
 import java.util.Iterator;
 import java.util.Vector;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -25,6 +26,7 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
@@ -371,12 +373,31 @@ public class UnidirectionalOneToManyMapping extends OneToManyMapping {
     public boolean shouldIncrementTargetLockValueOnDeleteSource() {
         return shouldIncrementTargetLockValueOnDeleteSource;
     }
-    
+
     /**
      * INTERNAL
      * Target foreign key of the removed object should be modified (set to null).
      */
     protected boolean shouldRemoveTargetQueryModifyTargetForeignKey() {
         return true;
-    }    
+    }
+
+    @Override
+    public boolean shouldDeferInsert() {
+        if (shouldDeferInserts == null) {
+            String property = PrivilegedAccessHelper.getSystemProperty(SystemProperties.ONETOMANY_DEFER_INSERTS);
+            shouldDeferInserts = true;
+            if (property != null) {
+                shouldDeferInserts = "true".equalsIgnoreCase(property);
+            } else {
+                for (DatabaseField f : targetForeignKeyFields) {
+                    if (!f.isNullable()) {
+                        shouldDeferInserts = false;
+                        break;
+                    }
+                }
+            }
+        }
+        return shouldDeferInserts;
+    }
 }
