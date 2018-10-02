@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     10/01/2018: Will Dazey
+ *       - #253: Add support for embedded constructor results with CriteriaBuilder
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -66,8 +68,8 @@ public class ConstructorReportItem extends ReportItem  {
     private static final String TO_STR_SUFFIX = "])";
 
     protected Class[] constructorArgTypes;
-    protected List constructorMappings;
-    protected List reportItems;
+    protected List<DatabaseMapping> constructorMappings;
+    protected List<ReportItem> reportItems;
     protected Constructor constructor;
     
     /**
@@ -114,7 +116,7 @@ public class ConstructorReportItem extends ReportItem  {
      * INTERNAL:
      * Return the mappings for the items.
      */
-    public List getConstructorMappings(){
+    public List<DatabaseMapping> getConstructorMappings(){
         return constructorMappings;
     }
 
@@ -134,9 +136,9 @@ public class ConstructorReportItem extends ReportItem  {
         this.constructor = constructor;
     }
 
-    public List getReportItems(){
+    public List<ReportItem> getReportItems(){
         if (reportItems == null) {
-            reportItems = new ArrayList();
+            reportItems = new ArrayList<ReportItem>();
         }
         return reportItems;
     }
@@ -147,9 +149,9 @@ public class ConstructorReportItem extends ReportItem  {
      */
     public void initialize(ReportQuery query) throws QueryException {
         int size= getReportItems().size();
-        List mappings = new ArrayList();
+        List<DatabaseMapping> mappings = new ArrayList<DatabaseMapping>();
         for (int index = 0; index < size; index++) {
-            ReportItem item = (ReportItem)reportItems.get(index);
+            ReportItem item = reportItems.get(index);
             item.initialize(query);
             mappings.add(item.getMapping());
         }
@@ -163,9 +165,9 @@ public class ConstructorReportItem extends ReportItem  {
         Class[] constructorArgTypes = getConstructorArgTypes();
         for (int index = 0; index < numberOfItems; index++) {
             if (constructorArgTypes[index] == null) {
-                ReportItem argumentItem = (ReportItem)getReportItems().get(index);
+                ReportItem argumentItem = getReportItems().get(index);
                 if (mappings.get(index) != null) {
-                    DatabaseMapping mapping = (DatabaseMapping)constructorMappings.get(index);
+                    DatabaseMapping mapping = constructorMappings.get(index);
                     if (argumentItem.getAttributeExpression() != null && argumentItem.getAttributeExpression().isMapEntryExpression()){
                         if (((MapEntryExpression)argumentItem.getAttributeExpression()).shouldReturnMapEntry()){
                             constructorArgTypes[index] = Map.Entry.class;
@@ -218,11 +220,11 @@ public class ConstructorReportItem extends ReportItem  {
      * INTERNAL:
      * Return the mappings for the items.
      */
-    public void setConstructorMappings(List constructorMappings){
+    public void setConstructorMappings(List<DatabaseMapping> constructorMappings){
         this.constructorMappings = constructorMappings;
     }
     
-    public void setReportItems(List reportItems){
+    public void setReportItems(List<ReportItem> reportItems){
         this.reportItems = reportItems;
     }
 
