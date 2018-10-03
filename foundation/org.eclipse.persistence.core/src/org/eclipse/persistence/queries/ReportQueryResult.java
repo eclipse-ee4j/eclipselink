@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle, IBM and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -11,6 +11,8 @@
  *     Oracle - initial API and implementation from Oracle TopLink
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     10/01/2018: Will Dazey
+ *       - #253: Add support for embedded constructor results with CriteriaBuilder
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
@@ -88,48 +90,19 @@ public class ReportQueryResult implements Serializable, Map {
         if (query.shouldDistinctBeUsed() && (query.shouldFilterDuplicates())) {
             this.key = new StringBuffer();
         }
-        List items = query.getItems();
-        int itemSize = items.size();
-        List results = new ArrayList(itemSize);
 
         if (query.shouldRetrievePrimaryKeys()) {
             setId(query.getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, query.getSession()));
             // For bug 3115576 this is only used for EXISTS sub-selects so no result is needed.
         }
-        for (int index = 0; index < itemSize; index++) {
+
+        List items = query.getItems();
+        List results = new ArrayList();
+        for (int index = 0; index < items.size(); index++) {
             ReportItem item = (ReportItem)items.get(index);
             if (item.isConstructorItem()) {
-                // For constructor items need to process each constructor argument.
-                ConstructorReportItem constructorItem = (ConstructorReportItem)item;
-                Class[] constructorArgTypes = constructorItem.getConstructorArgTypes();
-                int numberOfArguments = constructorItem.getReportItems().size();
-                Object[] constructorArgs = new Object[numberOfArguments];
-                
-                for (int argumentIndex = 0; argumentIndex < numberOfArguments; argumentIndex++) {
-                    ReportItem argumentItem = (ReportItem)constructorItem.getReportItems().get(argumentIndex);
-                    Object result = processItem(query, row, toManyData, argumentItem);
-                    constructorArgs[argumentIndex] = ConversionManager.getDefaultManager().convertObject(result, constructorArgTypes[argumentIndex]);
-                }
-                try {
-                    Constructor constructor = constructorItem.getConstructor();
-                    Object returnValue = null;
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            returnValue = AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, constructorArgs));
-                        } catch (PrivilegedActionException exception) {
-                            throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);                       }
-                    } else {
-                        returnValue = PrivilegedAccessHelper.invokeConstructor(constructor, constructorArgs);
-                    }
-                    results.add(returnValue);
-                } catch (IllegalAccessException exc){
-                    throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
-                } catch (java.lang.reflect.InvocationTargetException exc){
-                    throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
-                } catch (InstantiationException exc){
-                    throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
-                }
-
+                Object result = processConstructorItem(query, row, toManyData, (ConstructorReportItem) item);
+                results.add(result);
             } else if (item.getAttributeExpression()!=null && item.getAttributeExpression().isClassTypeExpression()){
                 Object value = processItem(query, row, toManyData, item);
                 ClassDescriptor descriptor = ((org.eclipse.persistence.internal.expressions.ClassTypeExpression)item.getAttributeExpression()).getContainingDescriptor(query);
@@ -148,7 +121,44 @@ public class ReportQueryResult implements Serializable, Map {
 
         setResults(results);
     }
-    
+
+    private Object processConstructorItem(ReportQuery query, AbstractRecord row, Vector toManyData, ConstructorReportItem constructorItem) {
+        // For constructor items need to process each constructor argument.
+        Class[] constructorArgTypes = constructorItem.getConstructorArgTypes();
+        int numberOfArguments = constructorItem.getReportItems().size();
+        Object[] constructorArgs = new Object[numberOfArguments];
+        for (int argumentIndex = 0; argumentIndex < numberOfArguments; argumentIndex++) {
+            ReportItem argumentItem = (ReportItem)constructorItem.getReportItems().get(argumentIndex);
+            Object result = null;
+            if(argumentItem.isConstructorItem()) {
+                result = processConstructorItem(query, row, toManyData, (ConstructorReportItem) argumentItem);
+            } else {
+                result = processItem(query, row, toManyData, argumentItem);
+            }
+            constructorArgs[argumentIndex] = ConversionManager.getDefaultManager().convertObject(result, constructorArgTypes[argumentIndex]);
+        }
+        try {
+            Constructor constructor = constructorItem.getConstructor();
+            Object returnValue = null;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    returnValue = AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, constructorArgs));
+                } catch (PrivilegedActionException exception) {
+                    throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);
+                }
+            } else {
+                returnValue = PrivilegedAccessHelper.invokeConstructor(constructor, constructorArgs);
+            }
+            return returnValue;
+        } catch (IllegalAccessException exc){
+            throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
+        } catch (java.lang.reflect.InvocationTargetException exc){
+            throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
+        } catch (InstantiationException exc){
+            throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
+        }
+    }
+
     /**
      * INTERNAL:
      * Return a value from an item and database row (converted from raw field values using the mapping).

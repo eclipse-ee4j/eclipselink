@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2018 Oracle, IBM and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,7 +9,8 @@
  *
  * Contributors:
  *     Gordon Yorke - Initial development
- *
+ *     10/01/2018: Will Dazey
+ *       - #253: Add support for embedded constructor results with CriteriaBuilder
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.jpa.querydef;
@@ -390,6 +391,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         Class[] constructorArgs = new Class[selections.length];
         int count = 0;
         for (Selection select : selections) {
+            if(select instanceof ConstructorSelectionImpl) {
+                ConstructorSelectionImpl constructorSelect = (ConstructorSelectionImpl)select;
+                Selection[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[constructorSelect.getCompoundSelectionItems().size()]);
+                populateAndSetConstructorSelection(constructorSelect, constructorSelect.getJavaType(), selectArray);
+            }
             constructorArgs[count++] = select.getJavaType();
         }
         Constructor constructor = null;
