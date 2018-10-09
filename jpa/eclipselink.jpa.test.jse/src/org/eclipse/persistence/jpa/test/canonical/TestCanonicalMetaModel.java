@@ -34,10 +34,10 @@ public class TestCanonicalMetaModel {
                 .getCodeSource().getLocation());
 
         Properties properties = new Properties();
-        properties.setProperty("javax.persistence.jdbc.driver", "com.mysql.jdbc.Driver");
-        properties.setProperty("javax.persistence.jdbc.url", "jdbc:mysql://localhost/user");
-        properties.setProperty("javax.persistence.jdbc.user", "user");
-        properties.setProperty("javax.persistence.jdbc.password", "password");
+        readProperty(properties, "javax.persistence.jdbc.driver");
+        readProperty(properties, "javax.persistence.jdbc.url");
+        readProperty(properties, "javax.persistence.jdbc.user");
+        readProperty(properties, "javax.persistence.jdbc.password");
 
         // In our actual application we have a generic session customizer that binds a number
         // of delegate session customizers in a 'logical' order - for this example however we
@@ -49,6 +49,11 @@ public class TestCanonicalMetaModel {
             assertThat("The \"name\" field is properly initialized", DomainInterface_.name, notNullValue());
         }
 
+    }
+
+    private void readProperty(Properties properties, String key) {
+
+        properties.setProperty(key, System.getProperty(key));
     }
 
     /**
