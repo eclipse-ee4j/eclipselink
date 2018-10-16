@@ -86,4 +86,4 @@ script:
   - echo 'RUNNING TESTS, BE PATIENT...'
   - if [ "$TEST_TARGET" == "test-lrg-server" ]; then tar -x -z -C $HOME -f $HOME/extension.lib.external/wildfly-12.0.0.Final.tar.gz; fi
   - set -o pipefail
-  - $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true $TEST_TARGET | grep -E "\] Running |\] Tests run:"
+  - $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true $TEST_TARGET | grep -E "\] Running |\] Tests run:"
