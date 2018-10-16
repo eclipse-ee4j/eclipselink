@@ -43,9 +43,9 @@ The project maintains the following source code repositories
 
 This project uses Bugzilla to track ongoing development and issues.
 
-* Search for issues: https://eclipse.org/bugs/buglist.cgi?product=EclipseLink
+* Search for issues: https://bugs.eclipse.org/bugs/buglist.cgi?product=EclipseLink
 * Create a new report:
-   https://eclipse.org/bugs/enter_bug.cgi?product=EclipseLink
+   https://bugs.eclipse.org/bugs/enter_bug.cgi?product=EclipseLink
 
 Be sure to search for existing bugs before you create another one. Remember that
 contributions are always welcome!
