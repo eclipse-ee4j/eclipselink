@@ -1181,11 +1181,11 @@ public class ReportQuery extends ReadAllQuery {
      * If the descriptor has a single pk, it is used, otherwise any pk is used if distinct, otherwise a subselect is used.
      * If the object was obtained through an outer join, then the subselect also will not work, so an error is thrown.
      */
-    private void prepareObjectAttributeCount(List items, Map clonedExpressions) {
+    private void prepareObjectAttributeCount(List<ReportItem> items, Map clonedExpressions) {
         int numOfReportItems = items.size();
         //gf675: need to loop through all items to fix all count(..) instances
         for (int i =0;i<numOfReportItems; i++){
-            ReportItem item = (ReportItem)items.get(i);
+            ReportItem item = items.get(i);
             if (item == null) {
                 continue;
             } else if (item instanceof ConstructorReportItem) {
