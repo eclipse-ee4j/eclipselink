@@ -40,6 +40,9 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         addDescriptor(buildPhoneNumberDescriptor());
         addDescriptor(buildProjectDescriptor());
         addDescriptor(buildSmallProjectDescriptor());
+        addDescriptor(buildTkeEmployeeDescriptor());
+        addDescriptor(buildCustomerDescriptor());
+        addDescriptor(buildContactDescriptor());
     }
 
     public void applyLogin() {
@@ -506,5 +509,101 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         // Named Queries.
         // Event Manager.
         return descriptor;
+    }
+    
+    public ClassDescriptor buildTkeEmployeeDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.TkeEmployee.class);
+        descriptor.addTableName("TKE_EMPLOYEE");
+        
+        // Descriptor Properties.
+        descriptor.addPrimaryKeyFieldName("TKE_EMPLOYEE.ID");
+        descriptor.setSequenceNumberFieldName("TKE_CONTACT.ID");
+        descriptor.setSequenceNumberName("TKE_EMPLOYEE_SEQ");
+        descriptor.setIdentityMapSize(100);
+       
+
+        // Mappings.
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setFieldName("NAME");
+        descriptor.addMapping(nameMapping);
+        
+        OneToManyMapping contactEmployeesMapping = new OneToManyMapping();
+        contactEmployeesMapping.setAttributeName("contacts");
+        contactEmployeesMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Contact.class);
+        contactEmployeesMapping.useBasicIndirection();
+        contactEmployeesMapping.addTargetForeignKeyFieldName("TKE_CONTACT.ID","TKE_EMPLOYEE.ID");
+        descriptor.addMapping(contactEmployeesMapping);
+        
+        return descriptor; 
+        
+    }
+    public ClassDescriptor buildCustomerDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.Customer.class);
+        descriptor.addTableName("TKE_CUSTOMER");
+        
+        // Descriptor Properties.
+        descriptor.addPrimaryKeyFieldName("TKE_CUSTOMER.ID");
+        descriptor.setIdentityMapSize(100);
+        descriptor.setSequenceNumberFieldName("TKE_CUSTOMER.ID");
+        descriptor.setSequenceNumberName("TKE_CUSTOMER_SEQ");
+        
+        // Mappings.
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("ID");
+        descriptor.addMapping(idMapping);
+        
+        DirectToFieldMapping nameMapping = new DirectToFieldMapping();
+        nameMapping.setAttributeName("name");
+        nameMapping.setFieldName("NAME");
+        descriptor.addMapping(nameMapping);
+        
+        OneToManyMapping contactEmployeesMapping = new OneToManyMapping();
+        contactEmployeesMapping.setAttributeName("contacts");
+        contactEmployeesMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Contact.class);
+        contactEmployeesMapping.useBasicIndirection();
+        contactEmployeesMapping.addTargetForeignKeyFieldName("TKE_CONTACT.ID","TKE_CUSTOMER.ID");
+        descriptor.addMapping(contactEmployeesMapping);
+        
+        return descriptor; 
+        
+    }
+    public ClassDescriptor buildContactDescriptor() {
+        RelationalDescriptor descriptor = new RelationalDescriptor();
+        descriptor.setJavaClass(org.eclipse.persistence.testing.models.employee.domain.Contact.class);
+        descriptor.addTableName("TKE_CONTACT");
+        
+        // Descriptor Properties.
+        descriptor.addPrimaryKeyFieldName("TKE_CONTACT.ID");
+        descriptor.setIdentityMapSize(100);
+        descriptor.setSequenceNumberFieldName("TKE_CONTACT.ID");
+        descriptor.setSequenceNumberName("TKE_CONTACT_SEQ");
+        
+               
+        // Query Manager.
+        descriptor.getQueryManager().checkCacheForDoesExist();
+        
+        // Mappings.
+        DirectToFieldMapping idMapping = new DirectToFieldMapping();
+        idMapping.setAttributeName("id");
+        idMapping.setFieldName("ID");
+        descriptor.addMapping(idMapping);
+        
+         DirectToFieldMapping daysVisitedMapping = new DirectToFieldMapping();
+        daysVisitedMapping.setAttributeName("daysVisted");
+        daysVisitedMapping.setFieldName("daysvisted");
+        descriptor.addMapping(daysVisitedMapping);
+        
+        
+        
+        return descriptor; 
     }
 }

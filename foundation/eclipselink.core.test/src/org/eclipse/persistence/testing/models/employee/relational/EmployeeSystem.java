@@ -92,6 +92,18 @@ public class EmployeeSystem extends TestSystem {
                     session.executeNonSelectingCall(new SQLCall("drop table ADDRESS CASCADE CONSTRAINTS"));
                 } catch (Exception e) {
                 }
+                try {
+                    session.executeNonSelectingCall(new SQLCall("drop table TKE_EMPLOYEE CASCADE CONSTRAINTS"));
+                } catch (Exception e) {
+                }
+                try {
+                    session.executeNonSelectingCall(new SQLCall("drop table TKE_CUSTOMER CASCADE CONSTRAINTS"));
+                } catch (Exception e) {
+                }
+                try {
+                    session.executeNonSelectingCall(new SQLCall("drop table TKE_CONTACT CASCADE CONSTRAINTS"));
+                } catch (Exception e) {
+                }
             } else {
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table PHONE"));
@@ -123,6 +135,18 @@ public class EmployeeSystem extends TestSystem {
                 }
                 try {
                     session.executeNonSelectingCall(new SQLCall("drop table ADDRESS"));
+                } catch (Exception e) {
+                }
+                try {
+                    session.executeNonSelectingCall(new SQLCall("drop table TKE_EMPLOYEE"));
+                } catch (Exception e) {
+                }
+                try {
+                    session.executeNonSelectingCall(new SQLCall("drop table TKE_CUSTOMER"));
+                } catch (Exception e) {
+                }
+                try {
+                    session.executeNonSelectingCall(new SQLCall("drop table TKE_CONTACT"));
                 } catch (Exception e) {
                 }
             }
@@ -157,6 +181,18 @@ public class EmployeeSystem extends TestSystem {
             }
             try {
                 session.executeNonSelectingCall(new SQLCall("DELETE FROM ADDRESS"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM TKE_EMPLOYEE"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM TKE_CUSTOMER"));
+            } catch (Exception e) {
+            }
+            try {
+                session.executeNonSelectingCall(new SQLCall("DELETE FROM TKE_CONTACT"));
             } catch (Exception e) {
             }
         }
