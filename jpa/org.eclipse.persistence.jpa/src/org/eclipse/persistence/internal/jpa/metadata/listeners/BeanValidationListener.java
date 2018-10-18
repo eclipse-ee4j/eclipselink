@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2015 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2018 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -58,7 +58,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         this.groupPreUpdate = groupPreUpdate != null ? groupPreUpdate : groupDefault;
         //No validation performed on preRemove if user has not explicitly specified a validation group
         this.groupPreRemove = groupPreRemove;
-        
+
         validatorMap = new ConcurrentHashMap<>();
     }
 
@@ -79,11 +79,11 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     }
 
     @Override
-    public void preUpdate (DescriptorEvent event) {
+    public void aboutToUpdate (DescriptorEvent event) {
         Object source = event.getSource();
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl )event.getSession();
         // preUpdate is also generated for deleted objects that were modified in this UOW.
-        // Do not perform preUpdate validation for such objects as preRemove would have already been called.         
+        // Do not perform preUpdate validation for such objects as preRemove would have already been called.
         if(!unitOfWork.isObjectDeleted(source)) {
             validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
         }
