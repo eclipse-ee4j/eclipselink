@@ -28,7 +28,7 @@ addons:
 
 env:
   global:
-    - ANT_HOME=$HOME/apache-ant-1.10.2
+    - ANT_HOME=$HOME/apache-ant-1.10.5
     - M2_HOME=/usr/local/maven-3.5.2
   matrix:
     - TEST_TARGET=test-core
@@ -80,4 +80,4 @@ script:
   - $ANT_HOME/bin/ant -f antbuild.xml build
   - echo 'RUNNING TESTS, BE PATIENT...'
   - set -o pipefail
-  - $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true $TEST_TARGET | grep -E "\] Running |\] Tests run:"
+  - $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true $TEST_TARGET | grep -E "\] Running |\] Tests run:"

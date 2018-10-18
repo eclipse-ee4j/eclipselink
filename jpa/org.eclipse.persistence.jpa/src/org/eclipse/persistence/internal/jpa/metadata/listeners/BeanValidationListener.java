@@ -21,6 +21,13 @@
 
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
+import java.lang.annotation.ElementType;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
@@ -30,22 +37,15 @@ import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.lang.annotation.ElementType;
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -87,7 +87,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     }
 
     @Override
-    public void preUpdate (DescriptorEvent event) {
+    public void aboutToUpdate(DescriptorEvent event) {
         Object source = event.getSource();
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl )event.getSession();
         // preUpdate is also generated for deleted objects that were modified in this UOW.
@@ -117,7 +117,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
                 // Throw a ConstrainViolationException as required by the spec.
                 // The transaction would be rolled back automatically
                 throw new ConstraintViolationException(
-                        ExceptionLocalization.buildMessage("bean_validation_constraint_violated", 
+                        ExceptionLocalization.buildMessage("bean_validation_constraint_violated",
                                 new Object[]{callbackEventName, source.getClass().getName()}),
                         (Set<ConstraintViolation<?>>) (Object) constraintViolations); /* Do not remove the explicit
                         cast. This issue is related to capture#a not being instance of capture#b. */
