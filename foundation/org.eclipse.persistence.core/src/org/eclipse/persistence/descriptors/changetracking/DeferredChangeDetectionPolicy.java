@@ -75,26 +75,25 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
      * @param shouldRaiseEvent indicates whether PreUpdate event should be risen (usually true)
      */
     public ObjectChangeSet calculateChanges(Object clone, Object backUp, boolean isNew, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
-        ObjectChangeSet changes = createObjectChangeSet(clone, backUp, changeSet, isNew, unitOfWork, descriptor);
-        if(changes.hasChanges()) {
-            // PERF: Avoid events if no listeners.
-            if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
-                // The query is built for compatibility to old event mechanism.
-                WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
-                writeQuery.setObject(clone);
-                writeQuery.setBackupClone(backUp);
-                writeQuery.setSession(unitOfWork);
-                writeQuery.setDescriptor(descriptor);
+        // PERF: Avoid events if no listeners.
+        if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
+            WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
+            writeQuery.setObject(clone);
+            writeQuery.setBackupClone(backUp);
+            writeQuery.setSession(unitOfWork);
+            writeQuery.setDescriptor(descriptor);
 
-                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreWriteEvent, writeQuery));
+            descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreWriteEvent, writeQuery));
 
-                if (isNew) {
-                    descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreInsertEvent, writeQuery));
-                } else {
-                    descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
-                }
+            if (isNew) {
+                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreInsertEvent, writeQuery));
+            } else {
+                descriptor.getEventManager().executeEvent(new DescriptorEvent(DescriptorEventManager.PreUpdateEvent, writeQuery));
             }
+        }
 
+        ObjectChangeSet changes = createObjectChangeSet(clone, backUp, changeSet, isNew, unitOfWork, descriptor);
+        if (changes.hasChanges()) {
             if (descriptor.hasMappingsPostCalculateChanges() && ! changes.isNew() && ! unitOfWork.getCommitManager().isActive() && !unitOfWork.isNestedUnitOfWork()) {
                 // if we are in the commit because of an event skip this postCalculateChanges step as we have already executed it.
                 int size = descriptor.getMappingsPostCalculateChanges().size();
