@@ -1829,6 +1829,8 @@
             <attribute name="testname"/>
             <attribute name="earname" default="@{testname}"/>
             <attribute name="classpath" default="compile.jpa22.server.path"/>
+            <attribute name="modulepath" default="jpatest.compile.module.path"/>
+            <attribute name="upgrademodulepath" default="jpatest.upgrade.module.path"/>
             <sequential>
                 <local name="junit.failed"/>
                 <ant antfile="${jpatest.basedir}/${server.name}.xml" target="${server.name}-deploy" inheritRefs="true">
@@ -1864,6 +1866,8 @@
                 <echo message="  additional.jvmargs           ='${additional.jvmargs}'"/>
                 <echo message="  maxmemory                    ='${max.heap.memory}'"/>
                 <echo message="  java args                    ='${test.junit.jvm.modules.prop}'"/>
+                <echo message="  module-path                  ='${toString:@{modulepath}}'"/>
+                <echo message="  upgrade-module-path          ='${toString:@{upgrademodulepath}}'"/>
                 <echo message="  class-path                   ='${toString:@{testname}.run.path}'"/>
                 <mkdir dir="${jpatest.run.dir}"/>
                 <mkdir dir="${jpatest.report.dir}"/>
@@ -1871,6 +1875,8 @@
                        dir="${jpatest.run.dir}" showoutput="true" printsummary="yes" failureproperty="junit.failed">
                     <!--haltonfailure="${test.haltonfailure}" logfailedtests="true" forkmode="once"-->
                     <classpath refid="@{testname}.run.path"/>
+                    <modulepath refid="@{modulepath}"/>
+                    <upgrademodulepath refid="@{upgrademodulepath}"/>
                     <jvmarg line="${test.junit.jvm.modules.prop}"/>
                     <jvmarg line="${additional.jvmargs}"/>
                     <sysproperty key="proxy.user.name" value="${pa.connection.user}"/>

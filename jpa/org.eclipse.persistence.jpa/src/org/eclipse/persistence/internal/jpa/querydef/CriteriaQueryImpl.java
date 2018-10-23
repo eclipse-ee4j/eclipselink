@@ -12,8 +12,8 @@
 
 // Contributors:
 //     Gordon Yorke - Initial development
-//
-
+//     10/01/2018: Will Dazey
+//       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.lang.reflect.Constructor;
@@ -401,6 +401,11 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
         Class[] constructorArgs = new Class[selections.length];
         int count = 0;
         for (Selection select : selections) {
+            if(select instanceof ConstructorSelectionImpl) {
+                ConstructorSelectionImpl constructorSelect = (ConstructorSelectionImpl)select;
+                Selection[] selectArray = constructorSelect.getCompoundSelectionItems().toArray(new Selection[constructorSelect.getCompoundSelectionItems().size()]);
+                populateAndSetConstructorSelection(constructorSelect, constructorSelect.getJavaType(), selectArray);
+            }
             constructorArgs[count++] = select.getJavaType();
         }
         Constructor constructor = null;
