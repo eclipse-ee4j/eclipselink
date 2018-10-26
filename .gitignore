@@ -11,6 +11,7 @@ org.eclipse.persistence.sdo*jar
 org.eclipse.persistence.nosql*jar
 org.eclipse.persistence.oracle*jar
 org.eclipse.persistence.extension*jar
+org.eclipse.persistence.sun-misc*jar
 bin/
 target/
 class/
