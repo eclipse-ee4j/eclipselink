@@ -518,7 +518,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         
         // Descriptor Properties.
         descriptor.addPrimaryKeyFieldName("TKE_EMPLOYEE.ID");
-        descriptor.setSequenceNumberFieldName("TKE_CONTACT.ID");
+        descriptor.setSequenceNumberFieldName("TKE_EMPLOYEE.ID");
         descriptor.setSequenceNumberName("TKE_EMPLOYEE_SEQ");
         descriptor.setIdentityMapSize(100);
        
@@ -538,7 +538,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         contactEmployeesMapping.setAttributeName("contacts");
         contactEmployeesMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Contact.class);
         contactEmployeesMapping.useBasicIndirection();
-        contactEmployeesMapping.addTargetForeignKeyFieldName("TKE_CONTACT.ID","TKE_EMPLOYEE.ID");
+        contactEmployeesMapping.addTargetForeignKeyFieldName("TKE_CONTACT.EMPLOYEE_ID","TKE_EMPLOYEE.ID");
         descriptor.addMapping(contactEmployeesMapping);
         
         return descriptor; 
@@ -570,7 +570,7 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         contactEmployeesMapping.setAttributeName("contacts");
         contactEmployeesMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Contact.class);
         contactEmployeesMapping.useBasicIndirection();
-        contactEmployeesMapping.addTargetForeignKeyFieldName("TKE_CONTACT.ID","TKE_CUSTOMER.ID");
+        contactEmployeesMapping.addTargetForeignKeyFieldName("TKE_CONTACT.CUSTOMER_ID","TKE_CUSTOMER.ID");
         descriptor.addMapping(contactEmployeesMapping);
         
         return descriptor; 
@@ -597,11 +597,25 @@ public class EmployeeProject extends org.eclipse.persistence.sessions.Project {
         idMapping.setFieldName("ID");
         descriptor.addMapping(idMapping);
         
-         DirectToFieldMapping daysVisitedMapping = new DirectToFieldMapping();
+        DirectToFieldMapping daysVisitedMapping = new DirectToFieldMapping();
         daysVisitedMapping.setAttributeName("daysVisted");
-        daysVisitedMapping.setFieldName("daysvisted");
+        daysVisitedMapping.setFieldName("DAYS_VISITED");
         descriptor.addMapping(daysVisitedMapping);
         
+        OneToOneMapping customerMapping = new OneToOneMapping();
+        customerMapping.setAttributeName("customer");
+        customerMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Customer.class);
+        customerMapping.dontUseIndirection();
+        customerMapping.addForeignKeyFieldName("TKE_CONTACT.CUSTOMER_ID","TKE_CUSTOMER.ID");
+        descriptor.addMapping(customerMapping);
+        
+        
+        OneToOneMapping employeeMapping = new OneToOneMapping();
+        employeeMapping.setAttributeName("employee");
+        employeeMapping.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.TkeEmployee.class);
+        employeeMapping.dontUseIndirection();
+        employeeMapping.addForeignKeyFieldName("TKE_CONTACT.EMPLOYEE_ID","TKE_EMPLOYEE.ID");
+        descriptor.addMapping(employeeMapping);
         
         
         return descriptor; 

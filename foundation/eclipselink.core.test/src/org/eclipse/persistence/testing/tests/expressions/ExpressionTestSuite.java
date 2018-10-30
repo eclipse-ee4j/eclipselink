@@ -2007,11 +2007,9 @@ public class ExpressionTestSuite extends TestSuite {
     }
     
     private void addAnyOfExpressionWithMemoryQueryPolicy() {
-        Expression expression = new ExpressionBuilder().get("address").equal(2);
         BadAnyOfExpressionTest test = new BadAnyOfExpressionTest();
         test.setDescription("Test anyOf expression");
         test.setName("BadAnyOfExpressionTest");
-
         addTest(test);
 
     }

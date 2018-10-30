@@ -26,12 +26,12 @@ public class BadAnyOfExpressionTest extends TestCase {
 
     public BadAnyOfExpressionTest() {
         super();
-        setDescription("Test using a LiteralExpression through ExpressionBuilder.literal()");
+        setDescription("Test using AnyOfExpression it should return size 1");
     }
 
     public void test() {
-        // loadTestDataForAnyOfExpression();
-        // addAnyOfExpressionWithMemoryQueryPolicy();
+        loadTestDataForAnyOfExpression();
+        addAnyOfExpressionWithMemoryQueryPolicy();
     }
 
     private void addAnyOfExpressionWithMemoryQueryPolicy() {
