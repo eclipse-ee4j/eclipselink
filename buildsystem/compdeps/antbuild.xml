@@ -199,7 +199,7 @@
         <property name="cdi.criteria" value="[0.0.1,5.0.0)"/>
         <!-- Export jdk.unsupported module. -->
         <property name="sun-misc.prefix" value="org.eclipse.persistence.sun-misc"/>
-        <property name="sun-misc.criteria" value="[3.0,4.0)"/>
+        <property name="sun-misc.criteria" value="[1.0,2.0)"/>
         <!-- For EclipseLink bundles -->
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria" value="[3.0,5.0)"/>
@@ -519,13 +519,13 @@
 
     <!-- Builds sun-misc OSGI bundle to export sun.misc and sun.reflect packages from JDK9+. -->
     <target name="build-sun-misc" depends="check-maven,check-sun-misc" description="Build sun.misc OSGI fragment project" unless="sun-misc.check.version">
-        <java dir="../../${eclipselink.sun-misc}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+        <java dir="${compdeps.build.location}/sun.misc" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=../../${eclipselink.mvn.parent}"/>
              <jvmarg value="-Declipselink.full=true"/>
-             <jvmarg value="-Drelease.version=${release.version}"/>
-             <jvmarg value="-Dversion.qualifier=${version.qualifier}"/>
+             <jvmarg value="-Drelease.version=1.0.0"/>
+             <jvmarg value="-Dversion.qualifier=v20181030"/>
              <arg value="package"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -533,7 +533,7 @@
                 </fileset>
              </classpath>
         </java>
-        <copy todir="../../${plugins.dir}">
+        <copy todir="../../plugins">
             <fileset dir="${compdeps.build.location}/sun.misc/target"
                      includes="org.eclipse.persistence.sun-misc*.jar"/>
         </copy>
@@ -706,6 +706,7 @@
     </target>
 
     <target name="check-maven" description="Verify the Maven tool is installed and configured">
+        <property environment="env"/>
         <condition property="M2_HOME" value="${env.M2_HOME}" else="~/apache-maven-3.5.2">
             <isset property="env.M2_HOME"/>
         </condition>
