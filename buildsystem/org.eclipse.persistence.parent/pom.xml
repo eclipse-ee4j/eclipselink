@@ -36,7 +36,7 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>1.1.0</tycho.version>
+        <tycho.version>1.2.0</tycho.version>
         <junit4-version>4.12</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
@@ -47,8 +47,8 @@
         <svn.revision>NA</svn.revision>
         <src>./src</src>
         <!-- BUILD Properties -->
-        <orbit.drop>R20180606145124</orbit.drop>
-        <eclipse.drop>photon</eclipse.drop>
+        <orbit.drop>R20180905201904</orbit.drop>
+        <eclipse.drop>2018-09</eclipse.drop>
         <findbugs.version>3.0.1</findbugs.version>
         <findbugs.threshold>Normal</findbugs.threshold>
     </properties>
