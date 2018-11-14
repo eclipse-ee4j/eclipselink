@@ -84,6 +84,8 @@
 //       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
 //     01/16/2018-2.7 Joe Grassel
 //       - 529907: EntityManagerSetupImpl.addBeanValidationListeners() should fall back on old method for finding helperClass
+//     11/12/2018 - Will Dazey
+//       - 540929 : 'jdbc.sql-cast' property does not apply
 package org.eclipse.persistence.internal.jpa;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
@@ -812,6 +814,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
                             // Generate the DDL using the correct connection.
                             writeDDL(deployProperties, getDatabaseSession(deployProperties), classLoaderToUse);
+                        }
+                        //Setting this requires login to have occurred
+                        if(!session.isBroker()) {
+                            updateSQLCastSetting(deployProperties);
                         }
                     }
                     updateTunerPostDeploy(deployProperties, classLoaderToUse);
@@ -2827,7 +2833,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateSequencing(m);
             updateSequencingStart(m);
             updateAllowNativeSQLQueriesSetting(m);
-            updateSQLCastSetting(m);
             updateUppercaseSetting(m);
             updateCacheStatementSettings(m);
             updateTemporalMutableSetting(m);
