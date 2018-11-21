@@ -64,6 +64,8 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.indirection.IndirectContainer;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
@@ -2925,7 +2927,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     @Override
     public int getValidationLevel() {
         return validationLevel;
-    }
+    }    
 
     /**
      * ADVANCED:
@@ -5515,6 +5517,46 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     }
                 }
             }
+            
+            @Override
+            public void iterateIndirectContainerForMapping(IndirectContainer container, DatabaseMapping mapping) {
+                setCurrentMapping(mapping);
+                setCurrentDescriptor(null);
+
+                if (container.isInstantiated()) {
+                    // force instantiation only if specified
+                    mapping.iterateOnRealAttributeValue(this, container);
+                } else {
+                    // PERF: Allow the indirect container to iterate any cached elements.
+                    if (container instanceof IndirectCollection)  {
+                        mapping.iterateOnRealAttributeValue(this, ((IndirectCollection)container).getAddedElements());
+                    }
+                    if(isLazyCascadeDetachMapping(mapping)) {
+                        ValueHolderInterface valueHolder = container.getValueHolder();
+                        if(valueHolder != null && valueHolder instanceof DatabaseValueHolder) {
+                        	((DatabaseValueHolder)valueHolder).setShouldCascadeDetachAfterInstantiation(true);
+                        }
+                    }
+                }
+            }
+          
+            @Override
+            public void iterateValueHolderForMapping(ValueHolderInterface valueHolder, DatabaseMapping mapping) {
+                setCurrentMapping(mapping);
+                setCurrentDescriptor(null);
+
+                if (valueHolder.isInstantiated()) {
+                    // force instantiation only if specified
+                    mapping.iterateOnRealAttributeValue(this, valueHolder.getValue());
+                } else if(isLazyCascadeDetachMapping(mapping) && valueHolder != null && valueHolder instanceof DatabaseValueHolder) {
+                    ((DatabaseValueHolder)valueHolder).setShouldCascadeDetachAfterInstantiation(true);
+                }
+            }
+
+            private boolean isLazyCascadeDetachMapping(DatabaseMapping mapping) {
+            	return mapping != null && mapping.isLazy() && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach();
+            }
+            
         };
 
         iterator.setSession(this);
