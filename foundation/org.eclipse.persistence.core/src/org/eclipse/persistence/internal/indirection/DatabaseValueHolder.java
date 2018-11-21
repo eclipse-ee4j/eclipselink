@@ -15,8 +15,11 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -56,6 +59,8 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
      */
     protected boolean isCoordinatedWithProperty = false;
 
+    private boolean shouldCascadeDetachAfterInstantiation;
+    
     @Override
     public Object clone() {
         try {
@@ -221,8 +226,32 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
     public void privilegedSetValue(Object value) {
         this.value = value;
         isCoordinatedWithProperty = false;
+        if(shouldCascadeDetachAfterInstantiation && value != null && session != null && session.isUnitOfWork()) {           
+            unregisterFromSession(value);
+        }        
     }
 
+    private void unregisterFromSession(Object value) {
+        UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
+        if (value instanceof IndirectCollection)  {
+            Object delegateObject = ((IndirectCollection)value).getDelegateObject();            
+            if(delegateObject != null) {
+                if(delegateObject instanceof Map) {
+                    Map mappedElements = (Map)delegateObject;
+                    for (Object mappedElementValue : mappedElements.values()) {
+                        unitOfWork.unregisterObject(mappedElementValue, 0, true);
+                    }
+                } else if(delegateObject instanceof Collection) {
+                    Collection addedElements = (Collection)delegateObject;
+                    for (Object addedElement : addedElements) {
+                        unitOfWork.unregisterObject(addedElement, 0, true);
+                    }                   
+                }
+            }               
+        } else {
+            unitOfWork.unregisterObject(value, 0, true);                
+        }
+    }
     /**
      * Releases a wrapped valueholder privately owned by a particular unit of work.
      * <p>
@@ -314,6 +343,10 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
         return true;
     }
 
+    public void setShouldCascadeDetachAfterInstantiation(boolean shouldCascadeDetachAfterInstantiation) {
+        this.shouldCascadeDetachAfterInstantiation = shouldCascadeDetachAfterInstantiation;
+    }
+    
     @Override
     public String toString() {
         if (isInstantiated()) {
