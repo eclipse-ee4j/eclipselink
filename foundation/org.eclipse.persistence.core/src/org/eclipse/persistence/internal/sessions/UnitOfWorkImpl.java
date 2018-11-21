@@ -35,38 +35,76 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
-import java.io.*;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.persistence.indirection.ValueHolderInterface;
-import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.config.ReferenceMode;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventManager;
+import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.indirection.IndirectContainer;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceAccessor;
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator.CascadeCondition;
-import org.eclipse.persistence.internal.localization.ExceptionLocalization;
-import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.identitymaps.*;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
+import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.IdentityHashSet;
+import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
 import org.eclipse.persistence.internal.indirection.DatabaseValueHolder;
 import org.eclipse.persistence.internal.indirection.UnitOfWorkQueryValueHolder;
 import org.eclipse.persistence.internal.indirection.UnitOfWorkTransformerValueHolder;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
-import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
-import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.DoesExistQuery;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ModifyAllQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
-import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
-import org.eclipse.persistence.descriptors.changetracking.ObjectChangePolicy;
+import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
 /**
  * Implementation of org.eclipse.persistence.sessions.UnitOfWork
@@ -5394,6 +5432,46 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     }
                 }
             }
+            
+            @Override
+            public void iterateIndirectContainerForMapping(IndirectContainer container, DatabaseMapping mapping) {
+                setCurrentMapping(mapping);
+                setCurrentDescriptor(null);
+
+                if (container.isInstantiated()) {
+                    // force instantiation only if specified
+                    mapping.iterateOnRealAttributeValue(this, container);
+                } else {
+                    // PERF: Allow the indirect container to iterate any cached elements.
+                    if (container instanceof IndirectCollection)  {
+                        mapping.iterateOnRealAttributeValue(this, ((IndirectCollection)container).getAddedElements());
+                    }
+                    if(isLazyCascadeDetachMapping(mapping)) {
+                        ValueHolderInterface valueHolder = container.getValueHolder();
+                        if(valueHolder != null && valueHolder instanceof DatabaseValueHolder) {
+                            ((DatabaseValueHolder)valueHolder).setShouldCascadeDetachAfterInstantiation(true);
+                        }
+                    }
+                }
+            }
+          
+            @Override
+            public void iterateValueHolderForMapping(ValueHolderInterface valueHolder, DatabaseMapping mapping) {
+                setCurrentMapping(mapping);
+                setCurrentDescriptor(null);
+
+                if (valueHolder.isInstantiated()) {
+                    // force instantiation only if specified
+                    mapping.iterateOnRealAttributeValue(this, valueHolder.getValue());
+                } else if(isLazyCascadeDetachMapping(mapping) && valueHolder != null && valueHolder instanceof DatabaseValueHolder) {
+                    ((DatabaseValueHolder)valueHolder).setShouldCascadeDetachAfterInstantiation(true);
+                }
+            }
+
+            private boolean isLazyCascadeDetachMapping(DatabaseMapping mapping) {
+                return mapping != null && mapping.isLazy() && mapping.isForeignReferenceMapping() && ((ForeignReferenceMapping)mapping).isCascadeDetach();
+            }
+            
         };
 
         iterator.setSession(this);
