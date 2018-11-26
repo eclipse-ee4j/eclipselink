@@ -30,7 +30,6 @@ package org.eclipse.persistence.internal.libraries.asm.util;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Label;
@@ -65,13 +64,25 @@ public class Textifier extends Printer {
   /** The type of class signatures. See {@link #appendDescriptor}. */
   public static final int CLASS_SIGNATURE = 5;
 
-  /** @deprecated */
+  /**
+   * Deprecated.
+   *
+   * @deprecated this constant has never been used.
+   */
   @Deprecated public static final int TYPE_DECLARATION = 6;
 
-  /** @deprecated */
+  /**
+   * Deprecated.
+   *
+   * @deprecated this constant has never been used.
+   */
   @Deprecated public static final int CLASS_DECLARATION = 7;
 
-  /** @deprecated */
+  /**
+   * Deprecated.
+   *
+   * @deprecated this constant has never been used.
+   */
   @Deprecated public static final int PARAMETERS_DECLARATION = 8;
 
   /** The type of method handle descriptors. See {@link #appendDescriptor}. */
@@ -109,7 +120,7 @@ public class Textifier extends Printer {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public Textifier() {
-    this(Opcodes.ASM6);
+    this(Opcodes.ASM7);
     if (getClass() != Textifier.class) {
       throw new IllegalStateException();
     }
@@ -119,7 +130,7 @@ public class Textifier extends Printer {
    * Constructs a new {@link Textifier}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   protected Textifier(final int api) {
     super(api);
@@ -175,7 +186,7 @@ public class Textifier extends Printer {
 
     appendDescriptor(CLASS_SIGNATURE, signature);
     if (signature != null) {
-      appendJavaDeclaration(signature);
+      appendJavaDeclaration(name, signature);
     }
 
     appendAccess(access & ~(Opcodes.ACC_SUPER | Opcodes.ACC_MODULE));
@@ -191,13 +202,14 @@ public class Textifier extends Printer {
     if (superName != null && !"java/lang/Object".equals(superName)) {
       stringBuilder.append(" extends ");
       appendDescriptor(INTERNAL_NAME, superName);
-      stringBuilder.append(' ');
     }
     if (interfaces != null && interfaces.length > 0) {
       stringBuilder.append(" implements ");
       for (int i = 0; i < interfaces.length; ++i) {
         appendDescriptor(INTERNAL_NAME, interfaces[i]);
-        stringBuilder.append(' ');
+        if (i != interfaces.length - 1) {
+          stringBuilder.append(' ');
+        }
       }
     }
     stringBuilder.append(" {\n\n");
@@ -236,6 +248,15 @@ public class Textifier extends Printer {
   }
 
   @Override
+  public void visitNestHost(final String nestHost) {
+    stringBuilder.setLength(0);
+    stringBuilder.append(tab).append("NESTHOST ");
+    appendDescriptor(INTERNAL_NAME, nestHost);
+    stringBuilder.append('\n');
+    text.add(stringBuilder.toString());
+  }
+
+  @Override
   public void visitOuterClass(final String owner, final String name, final String descriptor) {
     stringBuilder.setLength(0);
     stringBuilder.append(tab).append("OUTERCLASS ");
@@ -266,6 +287,15 @@ public class Textifier extends Printer {
   public void visitClassAttribute(final Attribute attribute) {
     text.add("\n");
     visitAttribute(attribute);
+  }
+
+  @Override
+  public void visitNestMember(final String nestMember) {
+    stringBuilder.setLength(0);
+    stringBuilder.append(tab).append("NESTMEMBER ");
+    appendDescriptor(INTERNAL_NAME, nestMember);
+    stringBuilder.append('\n');
+    text.add(stringBuilder.toString());
   }
 
   @Override
@@ -304,7 +334,7 @@ public class Textifier extends Printer {
       stringBuilder.append(tab);
       appendDescriptor(FIELD_SIGNATURE, signature);
       stringBuilder.append(tab);
-      appendJavaDeclaration(signature);
+      appendJavaDeclaration(name, signature);
     }
 
     stringBuilder.append(tab);
@@ -345,7 +375,7 @@ public class Textifier extends Printer {
       stringBuilder.append(tab);
       appendDescriptor(METHOD_SIGNATURE, signature);
       stringBuilder.append(tab);
-      appendJavaDeclaration(signature);
+      appendJavaDeclaration(name, signature);
     }
 
     stringBuilder.append(tab);
@@ -368,8 +398,8 @@ public class Textifier extends Printer {
     appendDescriptor(METHOD_DESCRIPTOR, descriptor);
     if (exceptions != null && exceptions.length > 0) {
       stringBuilder.append(" throws ");
-      for (int i = 0; i < exceptions.length; ++i) {
-        appendDescriptor(INTERNAL_NAME, exceptions[i]);
+      for (String exception : exceptions) {
+        appendDescriptor(INTERNAL_NAME, exception);
         stringBuilder.append(' ');
       }
     }
@@ -492,6 +522,7 @@ public class Textifier extends Printer {
   // Annotations
   // -----------------------------------------------------------------------------------------------
 
+  // DontCheck(OverloadMethodsDeclarationOrder): overloads are semantically different.
   @Override
   public void visit(final String name, final Object value) {
     visitAnnotationValue(name);
@@ -757,9 +788,9 @@ public class Textifier extends Printer {
   @Override
   public void visitFrame(
       final int type,
-      final int nLocal,
+      final int numLocal,
       final Object[] local,
-      final int nStack,
+      final int numStack,
       final Object[] stack) {
     stringBuilder.setLength(0);
     stringBuilder.append(ltab);
@@ -768,18 +799,18 @@ public class Textifier extends Printer {
       case Opcodes.F_NEW:
       case Opcodes.F_FULL:
         stringBuilder.append("FULL [");
-        appendFrameTypes(nLocal, local);
+        appendFrameTypes(numLocal, local);
         stringBuilder.append("] [");
-        appendFrameTypes(nStack, stack);
+        appendFrameTypes(numStack, stack);
         stringBuilder.append(']');
         break;
       case Opcodes.F_APPEND:
         stringBuilder.append("APPEND [");
-        appendFrameTypes(nLocal, local);
+        appendFrameTypes(numLocal, local);
         stringBuilder.append(']');
         break;
       case Opcodes.F_CHOP:
-        stringBuilder.append("CHOP ").append(nLocal);
+        stringBuilder.append("CHOP ").append(numLocal);
         break;
       case Opcodes.F_SAME:
         stringBuilder.append("SAME");
@@ -842,7 +873,11 @@ public class Textifier extends Printer {
     text.add(stringBuilder.toString());
   }
 
-  /** @deprecated */
+  /**
+   * Deprecated.
+   *
+   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
+   */
   @Deprecated
   @Override
   public void visitMethodInsn(
@@ -906,9 +941,8 @@ public class Textifier extends Printer {
       stringBuilder.append(" none");
     } else {
       stringBuilder.append('\n');
-      for (int i = 0; i < bootstrapMethodArguments.length; i++) {
+      for (Object value : bootstrapMethodArguments) {
         stringBuilder.append(tab3);
-        Object value = bootstrapMethodArguments[i];
         if (value instanceof String) {
           Printer.appendString(stringBuilder, (String) value);
         } else if (value instanceof Type) {
@@ -1078,7 +1112,7 @@ public class Textifier extends Printer {
       stringBuilder.append(tab2);
       appendDescriptor(FIELD_SIGNATURE, signature);
       stringBuilder.append(tab2);
-      appendJavaDeclaration(signature);
+      appendJavaDeclaration(name, signature);
     }
     text.add(stringBuilder.toString());
   }
@@ -1146,9 +1180,10 @@ public class Textifier extends Printer {
    * Prints a disassembled view of the given annotation.
    *
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return a visitor to visit the annotation values.
    */
+  // DontCheck(OverloadMethodsDeclarationOrder): overloads are semantically different.
   public Textifier visitAnnotation(final String descriptor, final boolean visible) {
     stringBuilder.setLength(0);
     stringBuilder.append(tab).append('@');
@@ -1163,10 +1198,10 @@ public class Textifier extends Printer {
    *
    * @param typeRef a reference to the annotated type. See {@link TypeReference}.
    * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
-   *     static inner type within 'typeRef'. May be <tt>null</tt> if the annotation targets
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
    *     'typeRef' as a whole.
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return a visitor to visit the annotation values.
    */
   public Textifier visitTypeAnnotation(
@@ -1276,7 +1311,7 @@ public class Textifier extends Printer {
    *     #FIELD_DESCRIPTOR}, {@link #FIELD_SIGNATURE}, {@link #METHOD_DESCRIPTOR}, {@link
    *     #METHOD_SIGNATURE}, {@link #CLASS_SIGNATURE}, {@link #TYPE_DECLARATION}, {@link
    *     #CLASS_DECLARATION}, {@link #PARAMETERS_DECLARATION} of {@link #HANDLE_DESCRIPTOR}.
-   * @param value an internal name, type descriptor or a type signature. May be <tt>null</tt>.
+   * @param value an internal name, type descriptor or a type signature. May be {@literal null}.
    */
   protected void appendDescriptor(final int type, final String value) {
     if (type == CLASS_SIGNATURE || type == FIELD_SIGNATURE || type == METHOD_SIGNATURE) {
@@ -1291,9 +1326,10 @@ public class Textifier extends Printer {
   /**
    * Appends the Java generic type declaration corresponding to the given signature.
    *
+   * @param name a class, field or method name.
    * @param signature a class, field or method signature.
    */
-  private void appendJavaDeclaration(final String signature) {
+  private void appendJavaDeclaration(final String name, final String signature) {
     TraceSignatureVisitor traceSignatureVisitor = new TraceSignatureVisitor(access);
     new SignatureReader(signature).accept(traceSignatureVisitor);
     stringBuilder.append("// declaration: ");
@@ -1301,6 +1337,7 @@ public class Textifier extends Printer {
       stringBuilder.append(traceSignatureVisitor.getReturnType());
       stringBuilder.append(' ');
     }
+    stringBuilder.append(name);
     stringBuilder.append(traceSignatureVisitor.getDeclaration());
     if (traceSignatureVisitor.getExceptions() != null) {
       stringBuilder.append(" throws ").append(traceSignatureVisitor.getExceptions());
@@ -1502,18 +1539,18 @@ public class Textifier extends Printer {
   /**
    * Appends the given stack map frame types to {@link #stringBuilder}.
    *
-   * @param nTypes the number of stack map frame types in 'frameTypes'.
+   * @param numTypes the number of stack map frame types in 'frameTypes'.
    * @param frameTypes an array of stack map frame types, in the format described in {@link
    *     org.eclipse.persistence.internal.libraries.asm.MethodVisitor#visitFrame}.
    */
-  private void appendFrameTypes(final int nTypes, final Object[] frameTypes) {
-    for (int i = 0; i < nTypes; ++i) {
+  private void appendFrameTypes(final int numTypes, final Object[] frameTypes) {
+    for (int i = 0; i < numTypes; ++i) {
       if (i > 0) {
         stringBuilder.append(' ');
       }
       if (frameTypes[i] instanceof String) {
         String descriptor = (String) frameTypes[i];
-        if (descriptor.startsWith("[")) {
+        if (descriptor.charAt(0) == '[') {
           appendDescriptor(FIELD_DESCRIPTOR, descriptor);
         } else {
           appendDescriptor(INTERNAL_NAME, descriptor);
@@ -1553,7 +1590,7 @@ public class Textifier extends Printer {
   /**
    * Creates and adds to {@link #text} a new {@link Textifier}, followed by the given string.
    *
-   * @param endText the text to add to {@link #text} after the textifier. May be <tt>null</tt>.
+   * @param endText the text to add to {@link #text} after the textifier. May be {@literal null}.
    * @return the newly created {@link Textifier}.
    */
   private Textifier addNewTextifier(final String endText) {

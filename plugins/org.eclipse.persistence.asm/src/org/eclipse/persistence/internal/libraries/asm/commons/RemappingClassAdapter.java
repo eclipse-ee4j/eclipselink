@@ -49,23 +49,24 @@ public class RemappingClassAdapter extends ClassVisitor {
 
   protected String className;
 
-  public RemappingClassAdapter(final ClassVisitor cv, final Remapper remapper) {
-    this(Opcodes.ASM6, cv, remapper);
+  public RemappingClassAdapter(final ClassVisitor classVisitor, final Remapper remapper) {
+    this(Opcodes.ASM6, classVisitor, remapper);
   }
 
-  protected RemappingClassAdapter(final int api, final ClassVisitor cv, final Remapper remapper) {
-    super(api, cv);
+  protected RemappingClassAdapter(
+      final int api, final ClassVisitor classVisitor, final Remapper remapper) {
+    super(api, classVisitor);
     this.remapper = remapper;
   }
 
   @Override
   public void visit(
-      int version,
-      int access,
-      String name,
-      String signature,
-      String superName,
-      String[] interfaces) {
+      final int version,
+      final int access,
+      final String name,
+      final String signature,
+      final String superName,
+      final String[] interfaces) {
     this.className = name;
     super.visit(
         version,
@@ -77,54 +78,65 @@ public class RemappingClassAdapter extends ClassVisitor {
   }
 
   @Override
-  public ModuleVisitor visitModule(String name, int flags, String version) {
+  public ModuleVisitor visitModule(final String name, final int flags, final String version) {
     throw new RuntimeException("RemappingClassAdapter is deprecated, use ClassRemapper instead");
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-    AnnotationVisitor av = super.visitAnnotation(remapper.mapDesc(desc), visible);
-    return av == null ? null : createRemappingAnnotationAdapter(av);
+  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+    AnnotationVisitor annotationVisitor =
+        super.visitAnnotation(remapper.mapDesc(descriptor), visible);
+    return annotationVisitor == null ? null : createRemappingAnnotationAdapter(annotationVisitor);
   }
 
   @Override
   public AnnotationVisitor visitTypeAnnotation(
-      int typeRef, TypePath typePath, String desc, boolean visible) {
-    AnnotationVisitor av =
-        super.visitTypeAnnotation(typeRef, typePath, remapper.mapDesc(desc), visible);
-    return av == null ? null : createRemappingAnnotationAdapter(av);
+      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+    AnnotationVisitor annotationVisitor =
+        super.visitTypeAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
+    return annotationVisitor == null ? null : createRemappingAnnotationAdapter(annotationVisitor);
   }
 
   @Override
   public FieldVisitor visitField(
-      int access, String name, String desc, String signature, Object value) {
-    FieldVisitor fv =
+      final int access,
+      final String name,
+      final String descriptor,
+      final String signature,
+      final Object value) {
+    FieldVisitor fieldVisitor =
         super.visitField(
             access,
-            remapper.mapFieldName(className, name, desc),
-            remapper.mapDesc(desc),
+            remapper.mapFieldName(className, name, descriptor),
+            remapper.mapDesc(descriptor),
             remapper.mapSignature(signature, true),
             remapper.mapValue(value));
-    return fv == null ? null : createRemappingFieldAdapter(fv);
+    return fieldVisitor == null ? null : createRemappingFieldAdapter(fieldVisitor);
   }
 
   @Override
   public MethodVisitor visitMethod(
-      int access, String name, String desc, String signature, String[] exceptions) {
-    String newDesc = remapper.mapMethodDesc(desc);
-    MethodVisitor mv =
+      final int access,
+      final String name,
+      final String descriptor,
+      final String signature,
+      final String[] exceptions) {
+    String newDescriptor = remapper.mapMethodDesc(descriptor);
+    MethodVisitor methodVisitor =
         super.visitMethod(
             access,
-            remapper.mapMethodName(className, name, desc),
-            newDesc,
+            remapper.mapMethodName(className, name, descriptor),
+            newDescriptor,
             remapper.mapSignature(signature, false),
             exceptions == null ? null : remapper.mapTypes(exceptions));
-    return mv == null ? null : createRemappingMethodAdapter(access, newDesc, mv);
+    return methodVisitor == null
+        ? null
+        : createRemappingMethodAdapter(access, newDescriptor, methodVisitor);
   }
 
   @Override
-  public void visitInnerClass(String name, String outerName, String innerName, int access) {
-    // TODO should innerName be changed?
+  public void visitInnerClass(
+      final String name, final String outerName, final String innerName, final int access) {
     super.visitInnerClass(
         remapper.mapType(name),
         outerName == null ? null : remapper.mapType(outerName),
@@ -133,23 +145,23 @@ public class RemappingClassAdapter extends ClassVisitor {
   }
 
   @Override
-  public void visitOuterClass(String owner, String name, String desc) {
+  public void visitOuterClass(final String owner, final String name, final String descriptor) {
     super.visitOuterClass(
         remapper.mapType(owner),
-        name == null ? null : remapper.mapMethodName(owner, name, desc),
-        desc == null ? null : remapper.mapMethodDesc(desc));
+        name == null ? null : remapper.mapMethodName(owner, name, descriptor),
+        descriptor == null ? null : remapper.mapMethodDesc(descriptor));
   }
 
-  protected FieldVisitor createRemappingFieldAdapter(FieldVisitor fv) {
-    return new RemappingFieldAdapter(fv, remapper);
+  protected FieldVisitor createRemappingFieldAdapter(final FieldVisitor fieldVisitor) {
+    return new RemappingFieldAdapter(fieldVisitor, remapper);
   }
 
   protected MethodVisitor createRemappingMethodAdapter(
-      int access, String newDesc, MethodVisitor mv) {
-    return new RemappingMethodAdapter(access, newDesc, mv, remapper);
+      final int access, final String newDescriptor, final MethodVisitor methodVisitior) {
+    return new RemappingMethodAdapter(access, newDescriptor, methodVisitior, remapper);
   }
 
-  protected AnnotationVisitor createRemappingAnnotationAdapter(AnnotationVisitor av) {
+  protected AnnotationVisitor createRemappingAnnotationAdapter(final AnnotationVisitor av) {
     return new RemappingAnnotationAdapter(av, remapper);
   }
 }

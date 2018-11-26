@@ -52,7 +52,7 @@ public class CheckAnnotationAdapter extends AnnotationVisitor {
   }
 
   CheckAnnotationAdapter(final AnnotationVisitor annotationVisitor, final boolean useNamedValues) {
-    super(Opcodes.ASM6, annotationVisitor);
+    super(Opcodes.ASM7, annotationVisitor);
     this.useNamedValue = useNamedValues;
   }
 
@@ -90,7 +90,8 @@ public class CheckAnnotationAdapter extends AnnotationVisitor {
   public void visitEnum(final String name, final String descriptor, final String value) {
     checkVisitEndNotCalled();
     checkName(name);
-    CheckMethodAdapter.checkDescriptor(descriptor, false);
+    // Annotations can only appear in V1_5 or more classes.
+    CheckMethodAdapter.checkDescriptor(Opcodes.V1_5, descriptor, false);
     if (value == null) {
       throw new IllegalArgumentException("Invalid enum value");
     }
@@ -101,7 +102,8 @@ public class CheckAnnotationAdapter extends AnnotationVisitor {
   public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
     checkVisitEndNotCalled();
     checkName(name);
-    CheckMethodAdapter.checkDescriptor(descriptor, false);
+    // Annotations can only appear in V1_5 or more classes.
+    CheckMethodAdapter.checkDescriptor(Opcodes.V1_5, descriptor, false);
     return new CheckAnnotationAdapter(super.visitAnnotation(name, descriptor));
   }
 

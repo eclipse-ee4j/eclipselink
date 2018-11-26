@@ -90,13 +90,13 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
    * @param accessFlags for class type signatures, the access flags of the class.
    */
   public TraceSignatureVisitor(final int accessFlags) {
-    super(Opcodes.ASM6);
+    super(Opcodes.ASM7);
     this.isInterface = (accessFlags & Opcodes.ACC_INTERFACE) != 0;
     this.declaration = new StringBuilder();
   }
 
   private TraceSignatureVisitor(final StringBuilder stringBuilder) {
-    super(Opcodes.ASM6);
+    super(Opcodes.ASM7);
     this.isInterface = false;
     this.declaration = stringBuilder;
   }
@@ -298,12 +298,18 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
 
   // -----------------------------------------------------------------------------------------------
 
-  /** @return the Java generic type declaration corresponding to the visited signature. */
+  /**
+   * Returns the Java generic type declaration corresponding to the visited signature.
+   *
+   * @return the Java generic type declaration corresponding to the visited signature.
+   */
   public String getDeclaration() {
     return declaration.toString();
   }
 
   /**
+   * Returns the Java generic method return type declaration corresponding to the visited signature.
+   *
    * @return the Java generic method return type declaration corresponding to the visited signature.
    */
   public String getReturnType() {
@@ -311,6 +317,8 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
   }
 
   /**
+   * Returns the Java generic exception types declaration corresponding to the visited signature.
+   *
    * @return the Java generic exception types declaration corresponding to the visited signature.
    */
   public String getExceptions() {
