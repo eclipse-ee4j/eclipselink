@@ -9,7 +9,7 @@
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.mail_1.4.0.v201005080615.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.transaction.api_1.3.0.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_6.2.0.v201808041549.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041549.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

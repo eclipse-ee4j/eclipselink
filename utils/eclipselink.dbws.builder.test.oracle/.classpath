@@ -8,7 +8,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/javax.wsdl_1.6.2.v201012040545.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/wsdl4j-src-1.6.2.zip"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr_3.5.2.v201711011707.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.antlr.source_3.5.2.v201711011707.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_6.2.0.v201808041549.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041549.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser_1.0.0.v201807030954.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/org.eclipse.persistence.oracleddlparser.source_1.0.0.v201807030954.jar"/>
 	<classpathentry kind="lib" path="/oracle.libs/xdb.jar"/>
 	<classpathentry kind="lib" path="/oracle.libs/xmlparserv2.jar"/>

@@ -29,7 +29,6 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
@@ -50,28 +49,28 @@ public class ModuleNode extends ModuleVisitor {
    */
   public int access;
 
-  /** The version of this module. May be <tt>null</tt>. */
+  /** The version of this module. May be {@literal null}. */
   public String version;
 
-  /** The internal name of the main class of this module. May be <tt>null</tt>. */
+  /** The internal name of the main class of this module. May be {@literal null}. */
   public String mainClass;
 
-  /** The internal name of the packages declared by this module. May be <tt>null</tt>. */
+  /** The internal name of the packages declared by this module. May be {@literal null}. */
   public List<String> packages;
 
-  /** The dependencies of this module. May be <tt>null</tt>. */
+  /** The dependencies of this module. May be {@literal null}. */
   public List<ModuleRequireNode> requires;
 
-  /** The packages exported by this module. May be <tt>null</tt>. */
+  /** The packages exported by this module. May be {@literal null}. */
   public List<ModuleExportNode> exports;
 
-  /** The packages opened by this module. May be <tt>null</tt>. */
+  /** The packages opened by this module. May be {@literal null}. */
   public List<ModuleOpenNode> opens;
 
-  /** The internal names of the services used by this module. May be <tt>null</tt>. */
+  /** The internal names of the services used by this module. May be {@literal null}. */
   public List<String> uses;
 
-  /** The services provided by this module. May be <tt>null</tt>. */
+  /** The services provided by this module. May be {@literal null}. */
   public List<ModuleProvideNode> provides;
 
   /**
@@ -81,11 +80,11 @@ public class ModuleNode extends ModuleVisitor {
    * @param name the fully qualified name (using dots) of the module.
    * @param access the module access flags, among {@code ACC_OPEN}, {@code ACC_SYNTHETIC} and {@code
    *     ACC_MANDATED}.
-   * @param version the module version, or <tt>null</tt>.
+   * @param version the module version, or {@literal null}.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public ModuleNode(final String name, final int access, final String version) {
-    super(Opcodes.ASM6);
+    super(Opcodes.ASM7);
     if (getClass() != ModuleNode.class) {
       throw new IllegalStateException();
     }
@@ -98,16 +97,17 @@ public class ModuleNode extends ModuleVisitor {
   /**
    * Constructs a {@link ModuleNode}.
    *
-   * @param api the ASM API version implemented by this visitor. Must be {@link Opcodes#ASM6}.
+   * @param api the ASM API version implemented by this visitor. Must be one of {@link Opcodes#ASM6}
+   *     or {@link Opcodes#ASM7}.
    * @param name the fully qualified name (using dots) of the module.
    * @param access the module access flags, among {@code ACC_OPEN}, {@code ACC_SYNTHETIC} and {@code
    *     ACC_MANDATED}.
-   * @param version the module version, or <tt>null</tt>.
-   * @param requires The dependencies of this module. May be <tt>null</tt>.
-   * @param exports The packages exported by this module. May be <tt>null</tt>.
-   * @param opens The packages opened by this module. May be <tt>null</tt>.
-   * @param uses The internal names of the services used by this module. May be <tt>null</tt>.
-   * @param provides The services provided by this module. May be <tt>null</tt>.
+   * @param version the module version, or {@literal null}.
+   * @param requires The dependencies of this module. May be {@literal null}.
+   * @param exports The packages exported by this module. May be {@literal null}.
+   * @param opens The packages opened by this module. May be {@literal null}.
+   * @param uses The internal names of the services used by this module. May be {@literal null}.
+   * @param provides The services provided by this module. May be {@literal null}.
    */
   public ModuleNode(
       final int api,
@@ -188,6 +188,11 @@ public class ModuleNode extends ModuleVisitor {
     // Nothing to do.
   }
 
+  /**
+   * Makes the given class visitor visit this module.
+   *
+   * @param classVisitor a class visitor.
+   */
   public void accept(final ClassVisitor classVisitor) {
     ModuleVisitor moduleVisitor = classVisitor.visitModule(name, access, version);
     if (moduleVisitor == null) {

@@ -29,7 +29,6 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
@@ -61,12 +60,12 @@ public class ClassNode extends ClassVisitor {
   /** The internal name of this class (see {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName}). */
   public String name;
 
-  /** The signature of this class. May be <tt>null</tt>. */
+  /** The signature of this class. May be {@literal null}. */
   public String signature;
 
   /**
    * The internal of name of the super class (see {@link org.eclipse.persistence.internal.libraries.asm.Type#getInternalName}).
-   * For interfaces, the super class is {@link Object}. May be <tt>null</tt>, but only for the
+   * For interfaces, the super class is {@link Object}. May be {@literal null}, but only for the
    * {@link Object} class.
    */
   public String superName;
@@ -77,49 +76,55 @@ public class ClassNode extends ClassVisitor {
    */
   public List<String> interfaces;
 
-  /** The name of the source file from which this class was compiled. May be <tt>null</tt>. */
+  /** The name of the source file from which this class was compiled. May be {@literal null}. */
   public String sourceFile;
 
   /**
-   * The correspondence between source and compiled elements of this class. May be <tt>null</tt>.
+   * The correspondence between source and compiled elements of this class. May be {@literal null}.
    */
   public String sourceDebug;
 
-  /** The module stored in this class. May be <tt>null</tt>. */
+  /** The module stored in this class. May be {@literal null}. */
   public ModuleNode module;
 
-  /** The internal name of the enclosing class of this class. May be <tt>null</tt>. */
+  /** The internal name of the enclosing class of this class. May be {@literal null}. */
   public String outerClass;
 
   /**
-   * The name of the method that contains this class, or <tt>null</tt> if this class is not enclosed
-   * in a method.
+   * The name of the method that contains this class, or {@literal null} if this class is not
+   * enclosed in a method.
    */
   public String outerMethod;
 
   /**
-   * The descriptor of the method that contains this class, or <tt>null</tt> if this class is not
+   * The descriptor of the method that contains this class, or {@literal null} if this class is not
    * enclosed in a method.
    */
   public String outerMethodDesc;
 
-  /** The runtime visible annotations of this class. May be <tt>null</tt>. */
+  /** The runtime visible annotations of this class. May be {@literal null}. */
   public List<AnnotationNode> visibleAnnotations;
 
-  /** The runtime invisible annotations of this class. May be <tt>null</tt>. */
+  /** The runtime invisible annotations of this class. May be {@literal null}. */
   public List<AnnotationNode> invisibleAnnotations;
 
-  /** The runtime visible type annotations of this class. May be <tt>null</tt>. */
+  /** The runtime visible type annotations of this class. May be {@literal null}. */
   public List<TypeAnnotationNode> visibleTypeAnnotations;
 
-  /** The runtime invisible type annotations of this class. May be <tt>null</tt>. */
+  /** The runtime invisible type annotations of this class. May be {@literal null}. */
   public List<TypeAnnotationNode> invisibleTypeAnnotations;
 
-  /** The non standard attributes of this class. May be <tt>null</tt>. */
+  /** The non standard attributes of this class. May be {@literal null}. */
   public List<Attribute> attrs;
 
   /** The inner classes of this class. */
   public List<InnerClassNode> innerClasses;
+
+  /** The internal name of the nest host class of this class. May be {@literal null}. */
+  public String nestHostClass;
+
+  /** The internal names of the nest members of this class. May be {@literal null}. */
+  public List<String> nestMembers;
 
   /** The fields of this class. */
   public List<FieldNode> fields;
@@ -134,7 +139,7 @@ public class ClassNode extends ClassVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public ClassNode() {
-    this(Opcodes.ASM6);
+    this(Opcodes.ASM7);
     if (getClass() != ClassNode.class) {
       throw new IllegalStateException();
     }
@@ -144,7 +149,7 @@ public class ClassNode extends ClassVisitor {
    * Constructs a new {@link ClassNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   public ClassNode(final int api) {
     super(api);
@@ -184,6 +189,11 @@ public class ClassNode extends ClassVisitor {
   public ModuleVisitor visitModule(final String name, final int access, final String version) {
     module = new ModuleNode(name, access, version);
     return module;
+  }
+
+  @Override
+  public void visitNestHost(final String nestHost) {
+    this.nestHostClass = nestHost;
   }
 
   @Override
@@ -237,6 +247,14 @@ public class ClassNode extends ClassVisitor {
   }
 
   @Override
+  public void visitNestMember(final String nestMember) {
+    if (nestMembers == null) {
+      nestMembers = new ArrayList<String>();
+    }
+    nestMembers.add(nestMember);
+  }
+
+  @Override
   public void visitInnerClass(
       final String name, final String outerName, final String innerName, final int access) {
     InnerClassNode innerClass = new InnerClassNode(name, outerName, innerName, access);
@@ -281,10 +299,13 @@ public class ClassNode extends ClassVisitor {
    * that this node, and all its children recursively, do not contain elements that were introduced
    * in more recent versions of the ASM API than the given version.
    *
-   * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or
-   *     {@link Opcodes#ASM6}.
+   * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5},
+   *     {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   public void check(final int api) {
+    if (api < Opcodes.ASM7 && (nestHostClass != null || nestMembers != null)) {
+      throw new UnsupportedClassVersionException();
+    }
     if (api < Opcodes.ASM6 && module != null) {
       throw new UnsupportedClassVersionException();
     }
@@ -343,6 +364,10 @@ public class ClassNode extends ClassVisitor {
     if (module != null) {
       module.accept(classVisitor);
     }
+    // Visit the nest host class.
+    if (nestHostClass != null) {
+      classVisitor.visitNestHost(nestHostClass);
+    }
     // Visit the outer class.
     if (outerClass != null) {
       classVisitor.visitOuterClass(outerClass, outerMethod, outerMethodDesc);
@@ -380,6 +405,12 @@ public class ClassNode extends ClassVisitor {
     if (attrs != null) {
       for (int i = 0, n = attrs.size(); i < n; ++i) {
         classVisitor.visitAttribute(attrs.get(i));
+      }
+    }
+    // Visit the nest members.
+    if (nestMembers != null) {
+      for (int i = 0, n = nestMembers.size(); i < n; ++i) {
+        classVisitor.visitNestMember(nestMembers.get(i));
       }
     }
     // Visit the inner classes.

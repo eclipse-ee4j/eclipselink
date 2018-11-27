@@ -22,7 +22,6 @@
 package org.eclipse.persistence.internal.libraries.asm.util;
 
 import java.util.Map;
-
 import org.eclipse.persistence.internal.libraries.asm.Label;
 
 /**

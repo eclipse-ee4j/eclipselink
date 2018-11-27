@@ -27,28 +27,31 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
+import org.eclipse.persistence.internal.libraries.asm.ConstantDynamic;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
 /**
- * A {@link MethodVisitor} that can be used to approximate method size.
+ * A {@link MethodVisitor} that approximates the size of the methods it visits.
  *
  * @author Eugene Kuleshov
  */
 public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
 
+  /** The minimum size in bytes of the visited method. */
   private int minSize;
 
+  /** The maximum size in bytes of the visited method. */
   private int maxSize;
 
-  public CodeSizeEvaluator(final MethodVisitor mv) {
-    this(Opcodes.ASM6, mv);
+  public CodeSizeEvaluator(final MethodVisitor methodVisitor) {
+    this(Opcodes.ASM7, methodVisitor);
   }
 
-  protected CodeSizeEvaluator(final int api, final MethodVisitor mv) {
-    super(api, mv);
+  protected CodeSizeEvaluator(final int api, final MethodVisitor methodVisitor) {
+    super(api, methodVisitor);
   }
 
   public int getMinSize() {
@@ -102,21 +105,26 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String desc) {
+      final int opcode, final String owner, final String name, final String descriptor) {
     minSize += 3;
     maxSize += 3;
-    super.visitFieldInsn(opcode, owner, name, desc);
+    super.visitFieldInsn(opcode, owner, name, descriptor);
   }
 
+  /**
+   * Deprecated.
+   *
+   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
+   */
   @Deprecated
   @Override
   public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String desc) {
+      final int opcode, final String owner, final String name, final String descriptor) {
     if (api >= Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, desc);
+      super.visitMethodInsn(opcode, owner, name, descriptor);
       return;
     }
-    doVisitMethodInsn(opcode, owner, name, desc, opcode == Opcodes.INVOKEINTERFACE);
+    doVisitMethodInsn(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
   }
 
   @Override
@@ -124,17 +132,21 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
       final int opcode,
       final String owner,
       final String name,
-      final String desc,
-      final boolean itf) {
+      final String descriptor,
+      final boolean isInterface) {
     if (api < Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, desc, itf);
+      super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
       return;
     }
-    doVisitMethodInsn(opcode, owner, name, desc, itf);
+    doVisitMethodInsn(opcode, owner, name, descriptor, isInterface);
   }
 
   private void doVisitMethodInsn(
-      int opcode, final String owner, final String name, final String desc, final boolean itf) {
+      final int opcode,
+      final String owner,
+      final String name,
+      final String descriptor,
+      final boolean isInterface) {
     if (opcode == INVOKEINTERFACE) {
       minSize += 5;
       maxSize += 5;
@@ -143,15 +155,19 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
       maxSize += 3;
     }
     if (mv != null) {
-      mv.visitMethodInsn(opcode, owner, name, desc, itf);
+      mv.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
   }
 
   @Override
-  public void visitInvokeDynamicInsn(String name, String desc, Handle bsm, Object... bsmArgs) {
+  public void visitInvokeDynamicInsn(
+      final String name,
+      final String descriptor,
+      final Handle bootstrapMethodHandle,
+      final Object... bootstrapMethodArguments) {
     minSize += 5;
     maxSize += 5;
-    super.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
+    super.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
   }
 
   @Override
@@ -166,15 +182,17 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
   }
 
   @Override
-  public void visitLdcInsn(final Object cst) {
-    if (cst instanceof Long || cst instanceof Double) {
+  public void visitLdcInsn(final Object value) {
+    if (value instanceof Long
+        || value instanceof Double
+        || (value instanceof ConstantDynamic && ((ConstantDynamic) value).getSize() == 2)) {
       minSize += 3;
       maxSize += 3;
     } else {
       minSize += 2;
       maxSize += 3;
     }
-    super.visitLdcInsn(cst);
+    super.visitLdcInsn(value);
   }
 
   @Override
@@ -205,9 +223,9 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String desc, final int dims) {
+  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
     minSize += 4;
     maxSize += 4;
-    super.visitMultiANewArrayInsn(desc, dims);
+    super.visitMultiANewArrayInsn(descriptor, numDimensions);
   }
 }

@@ -29,10 +29,10 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.ConstantDynamic;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
@@ -59,28 +59,28 @@ public class MethodNode extends MethodVisitor {
   /** The method's descriptor (see {@link Type}). */
   public String desc;
 
-  /** The method's signature. May be <tt>null</tt>. */
+  /** The method's signature. May be {@literal null}. */
   public String signature;
 
   /** The internal names of the method's exception classes (see {@link Type#getInternalName()}). */
   public List<String> exceptions;
 
-  /** The method parameter info (access flags and name) */
+  /** The method parameter info (access flags and name). */
   public List<ParameterNode> parameters;
 
-  /** The runtime visible annotations of this method. May be <tt>null</tt>. */
+  /** The runtime visible annotations of this method. May be {@literal null}. */
   public List<AnnotationNode> visibleAnnotations;
 
-  /** The runtime invisible annotations of this method. May be <tt>null</tt>. */
+  /** The runtime invisible annotations of this method. May be {@literal null}. */
   public List<AnnotationNode> invisibleAnnotations;
 
-  /** The runtime visible type annotations of this method. May be <tt>null</tt>. */
+  /** The runtime visible type annotations of this method. May be {@literal null}. */
   public List<TypeAnnotationNode> visibleTypeAnnotations;
 
-  /** The runtime invisible type annotations of this method. May be <tt>null</tt>. */
+  /** The runtime invisible type annotations of this method. May be {@literal null}. */
   public List<TypeAnnotationNode> invisibleTypeAnnotations;
 
-  /** The non standard attributes of this method. May be <tt>null</tt>. */
+  /** The non standard attributes of this method. May be {@literal null}. */
   public List<Attribute> attrs;
 
   /**
@@ -88,7 +88,7 @@ public class MethodNode extends MethodVisitor {
    * {@link Boolean}, {@link Character}, {@link Short}, {@link Integer}, {@link Long}, {@link
    * Float}, {@link Double}, {@link String} or {@link Type}, or an two elements String array (for
    * enumeration values), a {@link AnnotationNode}, or a {@link List} of values of one of the
-   * preceding types. May be <tt>null</tt>.
+   * preceding types. May be {@literal null}.
    */
   public Object annotationDefault;
 
@@ -104,7 +104,7 @@ public class MethodNode extends MethodVisitor {
 
   /**
    * The runtime visible parameter annotations of this method. These lists are lists of {@link
-   * AnnotationNode} objects. May be <tt>null</tt>.
+   * AnnotationNode} objects. May be {@literal null}.
    */
   public List<AnnotationNode>[] visibleParameterAnnotations;
 
@@ -120,7 +120,7 @@ public class MethodNode extends MethodVisitor {
 
   /**
    * The runtime invisible parameter annotations of this method. These lists are lists of {@link
-   * AnnotationNode} objects. May be <tt>null</tt>.
+   * AnnotationNode} objects. May be {@literal null}.
    */
   public List<AnnotationNode>[] invisibleParameterAnnotations;
 
@@ -136,13 +136,13 @@ public class MethodNode extends MethodVisitor {
   /** The maximum number of local variables of this method. */
   public int maxLocals;
 
-  /** The local variables of this method. May be <tt>null</tt> */
+  /** The local variables of this method. May be {@literal null} */
   public List<LocalVariableNode> localVariables;
 
-  /** The visible local variable annotations of this method. May be <tt>null</tt> */
+  /** The visible local variable annotations of this method. May be {@literal null} */
   public List<LocalVariableAnnotationNode> visibleLocalVariableAnnotations;
 
-  /** The invisible local variable annotations of this method. May be <tt>null</tt> */
+  /** The invisible local variable annotations of this method. May be {@literal null} */
   public List<LocalVariableAnnotationNode> invisibleLocalVariableAnnotations;
 
   /** Whether the accept method has been called on this object. */
@@ -155,7 +155,7 @@ public class MethodNode extends MethodVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public MethodNode() {
-    this(Opcodes.ASM6);
+    this(Opcodes.ASM7);
     if (getClass() != MethodNode.class) {
       throw new IllegalStateException();
     }
@@ -165,7 +165,7 @@ public class MethodNode extends MethodVisitor {
    * Constructs an uninitialized {@link MethodNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   public MethodNode(final int api) {
     super(api);
@@ -180,9 +180,9 @@ public class MethodNode extends MethodVisitor {
    *     the method is synthetic and/or deprecated.
    * @param name the method's name.
    * @param descriptor the method's descriptor (see {@link Type}).
-   * @param signature the method's signature. May be <tt>null</tt>.
+   * @param signature the method's signature. May be {@literal null}.
    * @param exceptions the internal names of the method's exception classes (see {@link
-   *     Type#getInternalName()}). May be <tt>null</tt>.
+   *     Type#getInternalName()}). May be {@literal null}.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public MethodNode(
@@ -191,7 +191,7 @@ public class MethodNode extends MethodVisitor {
       final String descriptor,
       final String signature,
       final String[] exceptions) {
-    this(Opcodes.ASM6, access, name, descriptor, signature, exceptions);
+    this(Opcodes.ASM7, access, name, descriptor, signature, exceptions);
     if (getClass() != MethodNode.class) {
       throw new IllegalStateException();
     }
@@ -201,14 +201,14 @@ public class MethodNode extends MethodVisitor {
    * Constructs a new {@link MethodNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    * @param access the method's access flags (see {@link Opcodes}). This parameter also indicates if
    *     the method is synthetic and/or deprecated.
    * @param name the method's name.
    * @param descriptor the method's descriptor (see {@link Type}).
-   * @param signature the method's signature. May be <tt>null</tt>.
+   * @param signature the method's signature. May be {@literal null}.
    * @param exceptions the internal names of the method's exception classes (see {@link
-   *     Type#getInternalName()}). May be <tt>null</tt>.
+   *     Type#getInternalName()}). May be {@literal null}.
    */
   public MethodNode(
       final int api,
@@ -342,16 +342,16 @@ public class MethodNode extends MethodVisitor {
   @Override
   public void visitFrame(
       final int type,
-      final int nLocal,
+      final int numLocal,
       final Object[] local,
-      final int nStack,
+      final int numStack,
       final Object[] stack) {
     instructions.add(
         new FrameNode(
             type,
-            nLocal,
+            numLocal,
             local == null ? null : getLabelNodes(local),
-            nStack,
+            numStack,
             stack == null ? null : getLabelNodes(stack)));
   }
 
@@ -381,7 +381,11 @@ public class MethodNode extends MethodVisitor {
     instructions.add(new FieldInsnNode(opcode, owner, name, descriptor));
   }
 
-  /** @deprecated */
+  /**
+   * Deprecated.
+   *
+   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
+   */
   @Deprecated
   @Override
   public void visitMethodInsn(
@@ -603,8 +607,8 @@ public class MethodNode extends MethodVisitor {
    * that this node, and all its children recursively, do not contain elements that were introduced
    * in more recent versions of the ASM API than the given version.
    *
-   * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or
-   *     {@link Opcodes#ASM6}.
+   * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5},
+   *     {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   public void check(final int api) {
     if (api == Opcodes.ASM4) {
@@ -657,6 +661,17 @@ public class MethodNode extends MethodVisitor {
       if (invisibleLocalVariableAnnotations != null
           && !invisibleLocalVariableAnnotations.isEmpty()) {
         throw new UnsupportedClassVersionException();
+      }
+    }
+    if (api != Opcodes.ASM7) {
+      for (int i = instructions.size() - 1; i >= 0; --i) {
+        AbstractInsnNode insn = instructions.get(i);
+        if (insn instanceof LdcInsnNode) {
+          Object value = ((LdcInsnNode) insn).cst;
+          if (value instanceof ConstantDynamic) {
+            throw new UnsupportedClassVersionException();
+          }
+        }
       }
     }
   }

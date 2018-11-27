@@ -8,8 +8,8 @@
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.mail_1.4.0.v201005080615.jar!/" value="MODULE_DIR/../../plugins/javax.mail_1.4.0.v201005080615.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.resource_1.6.0.v201204270900.jar!/" value="MODULE_DIR/../../plugins/javax.resource_1.6.0.v201204270900.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" value="MODULE_DIR/../../plugins/javax.transaction.api_1.3.0.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041549.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041549.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041549.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041549.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
       <src_folder value="file://$MODULE_DIR$/resource" expected_position="1" />
@@ -90,11 +90,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041549.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041549.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

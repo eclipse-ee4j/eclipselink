@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.tree.analysis;
 
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.tree.AbstractInsnNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.FieldInsnNode;
@@ -44,11 +43,11 @@ import org.eclipse.persistence.internal.libraries.asm.tree.MethodInsnNode;
 public class BasicVerifier extends BasicInterpreter {
 
   /**
-   * Constructs a new {@link BasicVerifier} for the latest ASM API version. <i>Subclasses must not use
-   * this constructor</i>. Instead, they must use the {@link #BasicVerifier(int)} version.
+   * Constructs a new {@link BasicVerifier} for the latest ASM API version. <i>Subclasses must not
+   * use this constructor</i>. Instead, they must use the {@link #BasicVerifier(int)} version.
    */
   public BasicVerifier() {
-    super(ASM6);
+    super(ASM7);
     if (getClass() != BasicVerifier.class) {
       throw new IllegalStateException();
     }
@@ -58,8 +57,8 @@ public class BasicVerifier extends BasicInterpreter {
    * Constructs a new {@link BasicVerifier}.
    *
    * @param api the ASM API version supported by this interpreter. Must be one of {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5} or {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}.
    */
   protected BasicVerifier(final int api) {
     super(api);
@@ -376,9 +375,9 @@ public class BasicVerifier extends BasicInterpreter {
       throws AnalyzerException {
     int opcode = insn.getOpcode();
     if (opcode == MULTIANEWARRAY) {
-      for (int i = 0; i < values.size(); ++i) {
-        if (!BasicValue.INT_VALUE.equals(values.get(i))) {
-          throw new AnalyzerException(insn, null, BasicValue.INT_VALUE, values.get(i));
+      for (BasicValue value : values) {
+        if (!BasicValue.INT_VALUE.equals(value)) {
+          throw new AnalyzerException(insn, null, BasicValue.INT_VALUE, value);
         }
       }
     } else {

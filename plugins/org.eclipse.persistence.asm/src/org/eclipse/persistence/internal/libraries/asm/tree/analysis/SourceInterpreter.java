@@ -30,7 +30,6 @@ package org.eclipse.persistence.internal.libraries.asm.tree.analysis;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.tree.AbstractInsnNode;
@@ -47,11 +46,12 @@ import org.eclipse.persistence.internal.libraries.asm.tree.MethodInsnNode;
 public class SourceInterpreter extends Interpreter<SourceValue> implements Opcodes {
 
   /**
-   * Constructs a new {@link SourceInterpreter} for the latest ASM API version. <i>Subclasses must not
-   * use this constructor</i>. Instead, they must use the {@link #SourceInterpreter(int)} version.
+   * Constructs a new {@link SourceInterpreter} for the latest ASM API version. <i>Subclasses must
+   * not use this constructor</i>. Instead, they must use the {@link #SourceInterpreter(int)}
+   * version.
    */
   public SourceInterpreter() {
-    super(ASM6);
+    super(ASM7);
     if (getClass() != SourceInterpreter.class) {
       throw new IllegalStateException();
     }
@@ -61,8 +61,8 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
    * Constructs a new {@link SourceInterpreter}.
    *
    * @param api the ASM API version supported by this interpreter. Must be one of {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5} or {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}.
    */
   protected SourceInterpreter(final int api) {
     super(api);
@@ -95,6 +95,7 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
         break;
       default:
         size = 1;
+        break;
     }
     return new SourceValue(size, insn);
   }
@@ -123,6 +124,7 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
         break;
       default:
         size = 1;
+        break;
     }
     return new SourceValue(size, insn);
   }
@@ -154,6 +156,7 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
         break;
       default:
         size = 1;
+        break;
     }
     return new SourceValue(size, insn);
   }
@@ -200,12 +203,19 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
         return new SourceValue(Math.min(value1.size, value2.size), setUnion);
       }
     }
-    if (value1.size != value2.size || !value1.insns.containsAll(value2.insns)) {
+    if (value1.size != value2.size || !containsAll(value1.insns, value2.insns)) {
       HashSet<AbstractInsnNode> setUnion = new HashSet<AbstractInsnNode>();
       setUnion.addAll(value1.insns);
       setUnion.addAll(value2.insns);
       return new SourceValue(Math.min(value1.size, value2.size), setUnion);
     }
     return value1;
+  }
+
+  private static <E> boolean containsAll(final Set<E> self, final Set<E> other) {
+    if (self.size() < other.size()) {
+      return false;
+    }
+    return self.containsAll(other);
   }
 }

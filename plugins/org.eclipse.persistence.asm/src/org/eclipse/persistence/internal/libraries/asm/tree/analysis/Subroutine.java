@@ -29,7 +29,6 @@ package org.eclipse.persistence.internal.libraries.asm.tree.analysis;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.tree.JumpInsnNode;
 import org.eclipse.persistence.internal.libraries.asm.tree.LabelNode;
 
