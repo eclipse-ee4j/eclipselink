@@ -56,12 +56,12 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
         if (container == null) {
             return null;
         }
-        try {
+        if (container.getClass() == ArrayList.class) {
             return ((ArrayList)container).clone();
-        } catch (Exception notArrayList) {
-            // Could potentially be another Collection type as well.
-            return new ArrayList((Collection)container);
         }
+
+        // Could potentially be another Collection type as well.
+        return new ArrayList((Collection) container);
     }
 
     /**
