@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -52,12 +52,12 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
             return null;
         }
         // Use Vector as new objects can have a Vector.
-        try {
+        if (container.getClass() == Vector.class) {
             return ((Vector)container).clone();
-        } catch (Exception notVector) {
-            // Could potentially be another Collection type as well.
-            return IndirectCollectionsFactory.createIndirectList((Collection)container);
         }
+
+        // Could potentially be another Collection type as well.
+        return IndirectCollectionsFactory.createIndirectList((Collection)container);
     }
     
     /**

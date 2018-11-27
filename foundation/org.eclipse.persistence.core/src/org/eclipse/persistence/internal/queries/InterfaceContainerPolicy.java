@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,9 @@ package org.eclipse.persistence.internal.queries;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.*;
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.exceptions.*;
@@ -38,6 +41,9 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
  * @see MapContainerPolicy
  */
 public abstract class InterfaceContainerPolicy extends ContainerPolicy {
+
+    private static final ReferenceQueue<Class> refQueue = new ReferenceQueue<>();
+    private static final ConcurrentHashMap<ClassWeakReference, Method> cloneMethodCache = new ConcurrentHashMap<>();
 
     /** The concrete container class. */
     protected Class containerClass;
@@ -90,13 +96,16 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
             return null;
         }
 
-        try {
-            return invokeCloneMethodOn(getCloneMethod(), container);
-        } catch (IllegalArgumentException ex) {
+        Method cloneMethod;
+        Class javaClass = container.getClass();
+        if (javaClass == getContainerClass()) {
+            cloneMethod = getCloneMethod();
+        } else {
             // container may be a superclass of the concrete container class
             // so we have to use the right clone method...
-            return invokeCloneMethodOn(getCloneMethod(container.getClass()), container);
+            cloneMethod = getCloneMethod(javaClass);
         }
+        return invokeCloneMethodOn(cloneMethod, container);
     }
 
     /**
@@ -166,20 +175,30 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
      * Return null if the method does not exist anywhere in the hierarchy
      */
     protected Method getCloneMethod(Class javaClass) {
+        for (Object key; (key = refQueue.poll()) != null;) {
+            cloneMethodCache.remove(key);
+        }
+        Method cloneMethod = cloneMethodCache.get(new ClassWeakReference(javaClass));
+        if (cloneMethod != null) {
+            return cloneMethod;
+        }
         try {
             // This must not be set "accessible" - clone() must be public, and some JVM's do not allow access to JDK classes.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, "clone", (Class[])null, false));
+                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, "clone", (Class[])null, false));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.methodDoesNotExistInContainerClass("clone", javaClass);
                 }
             } else {
-                return PrivilegedAccessHelper.getMethod(javaClass, "clone", (Class[])null, false);
+                cloneMethod = PrivilegedAccessHelper.getMethod(javaClass, "clone", (Class[])null, false);
             }
         } catch (NoSuchMethodException ex) {
             throw QueryException.methodDoesNotExistInContainerClass("clone", javaClass);
         }
+
+        cloneMethodCache.put(new ClassWeakReference(javaClass, refQueue), cloneMethod);
+        return cloneMethod;
     }
 
     /**
@@ -312,5 +331,41 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
     @Override
     protected Object toStringInfo() {
         return getContainerClass();
+    }
+
+    private static final class ClassWeakReference extends WeakReference<Class> {
+        private final int hash;
+
+        ClassWeakReference(Class referent) {
+            super(referent);
+            hash = referent.hashCode();
+        }
+
+        ClassWeakReference(Class referent, ReferenceQueue<Class> referenceQueue) {
+            super(referent, referenceQueue);
+            hash = referent.hashCode();
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) {
+                return true;
+            }
+            if (obj instanceof ClassWeakReference) {
+                return get() == ((ClassWeakReference) obj).get();
+            }
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            Class referent = get();
+            return new StringBuilder("ClassWeakReference: ").append(referent == null ? null : referent).toString();
+        }
     }
 }
