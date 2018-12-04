@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 
 /**
@@ -49,7 +48,7 @@ public class ModuleExportNode {
 
   /**
    * The list of modules that can access this exported package, specified with fully qualified names
-   * (using dots). May be <tt>null</tt>.
+   * (using dots). May be {@literal null}.
    */
   public List<String> modules;
 
@@ -75,6 +74,6 @@ public class ModuleExportNode {
    */
   public void accept(final ModuleVisitor moduleVisitor) {
     moduleVisitor.visitExport(
-        packaze, access, modules == null ? null : modules.toArray(new String[modules.size()]));
+        packaze, access, modules == null ? null : modules.toArray(new String[0]));
   }
 }

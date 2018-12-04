@@ -29,7 +29,6 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
@@ -59,8 +58,8 @@ public class TableSwitchInsnNode extends AbstractInsnNode {
    * @param min the minimum key value.
    * @param max the maximum key value.
    * @param dflt beginning of the default handler block.
-   * @param labels beginnings of the handler blocks. <tt>labels[i]</tt> is the beginning of the
-   *     handler block for the <tt>min + i</tt> key.
+   * @param labels beginnings of the handler blocks. {@code labels[i]} is the beginning of the
+   *     handler block for the {@code min + i} key.
    */
   public TableSwitchInsnNode(
       final int min, final int max, final LabelNode dflt, final LabelNode... labels) {

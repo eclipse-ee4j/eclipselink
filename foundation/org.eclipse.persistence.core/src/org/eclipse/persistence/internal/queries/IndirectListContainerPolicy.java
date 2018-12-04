@@ -55,12 +55,12 @@ public class IndirectListContainerPolicy extends ListContainerPolicy {
             return null;
         }
         // Use Vector as new objects can have a Vector.
-        try {
+        if (container.getClass() == Vector.class) {
             return ((Vector)container).clone();
-        } catch (Exception notVector) {
-            // Could potentially be another Collection type as well.
-            return IndirectCollectionsFactory.createIndirectList((Collection)container);
         }
+
+        // Could potentially be another Collection type as well.
+        return IndirectCollectionsFactory.createIndirectList((Collection)container);
     }
 
     /**

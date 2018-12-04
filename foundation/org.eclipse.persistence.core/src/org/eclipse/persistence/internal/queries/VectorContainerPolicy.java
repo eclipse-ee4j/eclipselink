@@ -56,12 +56,13 @@ public class VectorContainerPolicy extends ListContainerPolicy {
         if (container == null) {
             return null;
         }
-        try {
-            return ((Vector)container).clone();
-        } catch (Exception notVector) {
-            // Could potentially be another Collection type as well.
-            return new Vector((Collection)container);
+
+        if (container.getClass() == Vector.class) {
+            return ((Vector) container).clone();
         }
+
+        // Could potentially be another Collection type as well.
+        return new Vector((Collection) container);
     }
 
     /**
