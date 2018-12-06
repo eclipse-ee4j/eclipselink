@@ -84,6 +84,8 @@
 //       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
 //     01/16/2018-2.7 Joe Grassel
 //       - 529907: EntityManagerSetupImpl.addBeanValidationListeners() should fall back on old method for finding helperClass
+//     12/06/2018 - Will Dazey
+//       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.internal.jpa;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.DDL_GENERATION;
@@ -2825,6 +2827,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (shouldBindString != null) {
                 session.getPlatform().setShouldBindAllParameters(Boolean.parseBoolean(shouldBindString));
             }
+
+            String shouldForceBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_FORCE_BIND_PARAMETERS, m, session);
+            if(shouldForceBindString != null) {
+                session.getPlatform().setShouldForceBindAllParameters(Boolean.parseBoolean(shouldForceBindString));
+            }
+
             updateLogins(m);
         }
         if (!session.getDatasourceLogin().shouldUseExternalTransactionController()) {
