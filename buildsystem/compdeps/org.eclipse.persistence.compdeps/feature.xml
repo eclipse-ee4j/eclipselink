@@ -33,7 +33,7 @@
 
 
     <plugin
-            id="cdi.api"
+            id="jakarta.enterprise.cdi-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -54,77 +54,63 @@
             unpack="false"/>
 
     <plugin
-            id="com.sun.xml.bind.jaxb-core"
+            id="com.sun.xml.bind.jaxb-osgi"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="com.sun.xml.bind.jaxb-xjc"
+            id="org.glassfish.gmbal.gmbal"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="com.sun.xml.bind.jaxb-impl"
+            id="jakarta.annotation-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="gmbal-api-only"
+            id="jakarta.ejb-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.annotation-api"
+            id="org.glassfish.hk2.external.jakarta.inject"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.ejb-api"
+            id="jakarta.interceptor-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.inject"
+            id="jakarta.jms-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.interceptor-api"
+            id="com.sun.activation.jakarta.activation"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.jms"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="javax.json-api"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="javax.mail"
+            id="com.sun.mail.jakarta.mail"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -138,28 +124,28 @@
             unpack="false"/>
 
     <plugin
-            id="javax.resource"
+            id="jakarta.resource-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.servlet"
+            id="jakarta.servlet-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.transaction-api"
+            id="jakarta.transaction-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.validation.api"
+            id="jakarta.validation.jakarta.validation-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -173,21 +159,21 @@
             unpack="false"/>
 
     <plugin
-            id="jaxb-api"
+            id="jakarta.xml.bind-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.xml.soap"
+            id="jakarta.xml.soap-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="javax.xml.ws"
+            id="jakarta.xml.ws-api"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -287,7 +273,7 @@
             unpack="false"/>
 
     <plugin
-            id="org.glassfish.javax.json"
+            id="org.glassfish.jakarta.json"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -309,13 +295,6 @@
 
     <plugin
             id="org.glassfish.hk2.utils"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
-            id="org.glassfish.jersey.bundles.repackaged.jersey-guava"
             download-size="0"
             install-size="0"
             version="0.0.0"

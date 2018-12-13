@@ -23,6 +23,11 @@
     <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
+    <properties>
+        <tycho.version>1.2.0</tycho.version>
+        <!--<tycho.version>1.3.0-SNAPSHOT</tycho.version>-->
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -67,7 +72,7 @@
             <plugin>
                 <groupId>org.eclipse.tycho.extras</groupId>
                 <artifactId>tycho-p2-extras-plugin</artifactId>
-                <version>1.2.0</version>
+                <version>${tycho.version}</version>
                 <executions>
                     <execution>
                         <phase>prepare-package</phase>
@@ -80,7 +85,7 @@
             <plugin>
                 <groupId>org.eclipse.tycho</groupId>
                 <artifactId>tycho-p2-repository-plugin</artifactId>
-                <version>1.2.0</version>
+                <version>${tycho.version}</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

@@ -80,6 +80,7 @@ before_script:
   - echo 'server.name=wildfly' >> $HOME/build.properties
   - echo "wildfly.home=$HOME/wildfly-14.0.1.Final" >> $HOME/build.properties
   - echo 'wildfly.config=standalone-full.xml' >> $HOME/build.properties
+  - if [[ $JAVA_HOME == *openjdk10 ]]; then openssl x509 -in <(openssl s_client -connect oss.sonatype.org:443 -prexit 2>/dev/null) -out ~/example.crt; sudo keytool -importcert -file ~/example.crt -alias example -keystore $JAVA_HOME/lib/security/cacerts -storepass changeit -noprompt; fi
 
 script:
   - cat $HOME/build.properties
