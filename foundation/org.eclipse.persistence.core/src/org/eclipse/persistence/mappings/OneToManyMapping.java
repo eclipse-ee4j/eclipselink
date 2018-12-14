@@ -930,18 +930,13 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                 } else {
                     ContainerPolicy cp = getContainerPolicy();
                     prepareTranslationRow(query.getTranslationRow(), query.getObject(), query.getDescriptor(), query.getSession());
-                    AbstractRecord databaseRow = buildKeyRowForTargetUpdate(query);
+                    AbstractRecord keyRow = buildKeyRowForTargetUpdate(query);
 
                     // Extract target field and its value. Construct insert statement and execute it
-                    int size = targetPrimaryKeyFields.size();
                     ClassDescriptor referenceDesc = getReferenceDescriptor();
                     AbstractSession session = query.getSession();
-                    for (int index = 0; index < size; index++) {
-                        DatabaseField targetPrimaryKey = targetPrimaryKeyFields.get(index);
-                        Object targetKeyValue = getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(cp.unwrapIteratorResult(objectAdded), targetPrimaryKey, query.getSession());
-                        databaseRow.put(targetPrimaryKey, targetKeyValue);
-                    }
 
+                    AbstractRecord databaseRow = referenceDesc.getObjectBuilder().buildRow(keyRow, objectAdded, session, WriteType.INSERT);
                     ContainerPolicy.copyMapDataToRow(cp.getKeyMappingDataForWriteQuery(objectAdded, query.getSession()), databaseRow);
                     if(listOrderField != null && extraData != null) {
                         databaseRow.put(listOrderField, extraData.get(listOrderField));
@@ -1069,7 +1064,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
                         // Extract target field and its value. Construct insert
                         // statement and execute it
-                        int size = targetPrimaryKeyFields.size();
                         ClassDescriptor referenceDesc = getReferenceDescriptor();
                         AbstractSession session = query.getSession();
                         int objectIndex = 0;
