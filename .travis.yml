@@ -36,6 +36,7 @@ env:
     - TEST_TARGET=test-moxy
     - TEST_TARGET=test-sdo
     - TEST_TARGET="test-jpa-jse test-ext test-jpql test-wdf test-jpars test-dbws test-dbws-builder test-osgi"
+    - TEST_TARGET=build-distribution
 
 jdk:
   - oraclejdk8

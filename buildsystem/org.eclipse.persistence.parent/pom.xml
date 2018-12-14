@@ -86,7 +86,7 @@
                 <repository>
                      <id>Local_CompDeps</id>
                      <layout>p2</layout>
-                     <url>file:/${basedir}/../../buildsystem/compdeps/p2repo</url>
+                     <url>file:/${basedir}/../../buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/target/repository</url>
                 </repository>
              </repositories>
         </profile>
