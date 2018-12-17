@@ -38,13 +38,13 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.InvalidObject;
 import org.eclipse.persistence.internal.helper.ThreadCursoredList;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
-import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ResultSetRecord;
@@ -315,15 +315,18 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             ExpressionBuilder builder = getSelectionCriteria().getBuilder();
             builder.setSession(unitOfWork.getRootSession(null));
             builder.setQueryClass(getReferenceClass());
-            if (getQueryMechanism().isExpressionQueryMechanism()) {
-                //bug #526546
-                ExpressionQueryMechanism eqm = (ExpressionQueryMechanism) getQueryMechanism();
-                selectionCriteria = eqm.buildBaseSelectionCriteria(false, new IdentityHashMap<Expression, Expression>(), true);
-                for (DatabaseMapping mapping: getDescriptor().getMappings()) {
-                    if (mapping.isOneToManyMapping()) {
-                        OneToManyMapping otm = (OneToManyMapping) mapping;
-                        Expression join = otm.buildSelectionCriteria();
-                        selectionCriteria = selectionCriteria.and(join);
+            if (getQueryMechanism().isExpressionQueryMechanism() && selectionCriteria.isLogicalExpression()) {
+                // bug #526546
+                if (builder.derivedExpressions != null) {
+                    for (Expression e : builder.derivedExpressions) {
+                        if (e.isQueryKeyExpression() && ((QueryKeyExpression) e).shouldQueryToManyRelationship()) {
+                            DatabaseMapping mapping = ((QueryKeyExpression) e).getMapping();
+                            if (mapping.isOneToManyMapping()) {
+                                OneToManyMapping otm = (OneToManyMapping) mapping;
+                                Expression join = otm.buildSelectionCriteria();
+                                selectionCriteria = selectionCriteria.and(join);
+                            }
+                        }
                     }
                 }
             }
