@@ -44,10 +44,11 @@ import org.junit.runner.RunWith;
 public class TestUnidirectionalOneToMany {
     @Emf(createTables = DDLGen.DROP_CREATE,
             classes = { CommentA.class, CommentB.class, ComplexIdA.class, ComplexIdB.class, PostA.class, PostB.class },
-            properties = { @Property(name = "eclipselink.cache.shared.default", value = "false"),
-                    @Property(name = "eclipselink.logging.parameters", value = "true"),
-                    @Property(name = "eclipselink.logging.exceptions", value = "true"),
-@Property(name = "eclipselink.logging.level.sql", value = "FINEST")})
+            properties = {
+                @Property(name = "eclipselink.cache.shared.default", value = "false"),
+                @Property(name = "eclipselink.logging.parameters", value = "true"),
+                @Property(name = "eclipselink.logging.exceptions", value = "true"),
+                @Property(name = "eclipselink.logging.level.sql", value = "FINEST")})
     private EntityManagerFactory emf;
 
     /**
@@ -114,9 +115,9 @@ public class TestUnidirectionalOneToMany {
 
         PostB post = new PostB(new ComplexIdB(3, 4));
         post.setComments(new ArrayList<CommentB>());
-        post.getComments().add(new CommentB());
-        post.getComments().add(new CommentB());
-        post.getComments().add(new CommentB());
+        post.getComments().add(new CommentB("a"));
+        post.getComments().add(new CommentB("b"));
+        post.getComments().add(new CommentB("c"));
 
         em.persist(post);
 
@@ -135,9 +136,9 @@ public class TestUnidirectionalOneToMany {
         em.flush();
 
         post.setComments(new ArrayList<CommentB>());
-        post.getComments().add(new CommentB());
-        post.getComments().add(new CommentB());
-        post.getComments().add(new CommentB());
+        post.getComments().add(new CommentB("d"));
+        post.getComments().add(new CommentB("e"));
+        post.getComments().add(new CommentB("f"));
 
         em.persist(post);
 
