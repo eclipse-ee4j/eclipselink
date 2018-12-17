@@ -37,6 +37,7 @@
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <tycho.version>1.2.0</tycho.version>
+        <!--<tycho.version>1.3.0-SNAPSHOT</tycho.version>-->
         <junit4-version>4.12</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
@@ -59,8 +60,25 @@
         <module>../../foundation/org.eclipse.persistence.core</module>
     </modules>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>tycho-snapshots</id>
+            <url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <!-- Default repositories set and added to by all profiles -->
     <repositories>
+        <repository>
+            <id>oss.sonatype.org</id>
+            <name>OSS Sonatype Staging</name>
+            <url>https://oss.sonatype.org/content/groups/staging</url>
+        </repository>
+        <repository>
+            <id>repository.jboss.org</id>
+            <name>JBoss Staging</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/staging</url>
+        </repository>
         <repository>
             <id>Orbit</id>
             <layout>p2</layout>
@@ -72,7 +90,6 @@
             <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
         </repository>
     </repositories>
-
     <profiles>
         <profile>
             <id>tycho.local.compdeps</id>

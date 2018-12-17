@@ -6,8 +6,7 @@
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_2.0.1.v201504171603.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation.api_2.0.1.Final.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-core_2.2.11.v201407311112.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-core.source_2.2.11.v201407311112.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-xjc_2.2.11.v201407311112.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-xjc.source_2.2.11.v201407311112.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.validation-api.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind.jaxb-osgi.jar" sourcepath="/ECLIPSELINK_HOME/plugins/com.sun.xml.bind.jaxb-osgi.source.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
