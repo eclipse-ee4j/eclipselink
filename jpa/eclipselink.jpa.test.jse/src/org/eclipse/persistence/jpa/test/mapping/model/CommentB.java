@@ -15,6 +15,7 @@
 //       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
 package org.eclipse.persistence.jpa.test.mapping.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,6 +28,21 @@ public class CommentB {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable=false)
+    private String content;
+
     public CommentB() {
+    }
+
+    public CommentB(String content) {
+        this.content = content;
+    }
+
+    public void setContent(String s) {
+        content = s;
+    }
+
+    public String getContent() {
+        return content;
     }
 }
