@@ -145,8 +145,8 @@
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
     <!-- Add some modules required for javadoc JDK (=10.*). -->
-    <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none -->
-    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon}">
+    <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none. (JDK 8: in case of javax/xml/bind/JAXBContext|JAXBContextFactory there is {@linkplain java.lang.Module...}-->
+    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
         <matches string="${java.version}" pattern="10.*"/>
     </condition>
     <condition property="is.new.jdk" value="true" else="false">
@@ -184,7 +184,6 @@
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
         <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
         <pathelement path="${eclipselink.plugins}/${json-api.jar}"/>
@@ -211,7 +210,7 @@
     <path id="jpars.javadoc.path">
         <path refid="javadoc.path"/>
         <pathelement path="${eclipselink.plugins}/com.sun.jersey_1.8.0.201204181614.jar"/>
-        <pathelement path="${eclipselink.plugins}/javax.ejb_3.1.0.v201205171433.jar"/>
+        <pathelement path="${eclipselink.plugins}/jakarta.ejb-api.jar"/>
     </path>
 
     <target name="check-maven" description="Verify the Maven tool is installed and configured">
@@ -451,10 +450,6 @@
                 </resourcecount>
             </and>
         </condition>
-        <!-- Set default log level for Maven download status it it's not specified via environment variable. -->
-        <condition property="MAVEN_OPTS" value="${env.MAVEN_OPTS}" else="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=info  -Dorg.apache.commons.logging.simplelog.log.org.apache.http=INFO">
-            <isset property="env.MAVEN_OPTS"/>
-        </condition>
         <echo message="Compdeps Settings:"/>
         <echo message="    Whether to use a local compdeps p2 repo:"/>
         <echo message="        local.compdeps: '${local.compdeps}'"/>
@@ -565,13 +560,11 @@
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
-        <echo message="    ${MAVEN_OPTS}"/>
         <echo message="    clean install"/>
         <java dir="${eclipselink.compdeps.internal}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-            <jvmarg value="${MAVEN_OPTS}"/>
             <arg line="clean install"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -587,13 +580,11 @@
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
-        <echo message="    ${MAVEN_OPTS}"/>
         <echo message="    clean verify"/>
         <java dir="${eclipselink.compdeps}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
-            <jvmarg value="${MAVEN_OPTS}"/>
             <arg line="${maven.goals}"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -614,30 +605,26 @@
         </macrodef>
 
          <!--Populate plugins directory from local compdeps repository.-->
-        <copy-plugin from="cdi.api*.jar" to="cdi.api_1.0.0.v201105160744.jar"/>
+        <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="cdi.api_1.0.0.v201105160744.jar"/>
         <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
-        <!--SLF4J <copy-plugin from="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>-->
-        <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="com.sun.xml.bind_2.2.11.v201406210428.jar"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="com.sun.xml.bind.jaxb-osgi.jar"/>
         <copy-plugin from="gmbal-api-only*.jar" to="gmbal-api-only_3.2.0.b003.jar"/>
-        <copy-plugin from="javax.annotation-api*.jar" to="javax.annotation_1.2.0.v201401042248.jar"/>
-        <copy-plugin from="javax.ejb*.jar" to="javax.ejb_3.1.0.v201205171433.jar"/>
-        <copy-plugin from="javax.inject*.jar" to="javax.inject_1.0.0.v20091030.jar"/>
-        <copy-plugin from="javax.interceptor-api*.jar" to="javax.interceptor.api_1.2.2.jar"/>
-        <copy-plugin from="javax.jms*.jar" to="javax.jms_1.1.0.v200906010428.jar"/>
-        <copy-plugin from="org.glassfish.javax.json*.jar" to="javax.json_1.1.2.jar"/>
-        <copy-plugin from="javax.json-api*.jar" to="javax.json-api_1.1.2.jar"/>
-        <copy-plugin from="javax.mail*.jar" to="javax.mail_1.4.0.v201005080615.jar"/>
-        <copy-plugin from="javax.resource*.jar" to="javax.resource_1.6.0.v201204270900.jar"/>
-        <copy-plugin from="javax.servlet*.jar" to="javax.servlet_2.4.0.v200806031604.jar"/>
-        <copy-plugin from="javax.transaction-api*.jar" to="javax.transaction.api_1.3.0.jar"/>
-        <copy-plugin from="javax.validation.api*.jar" to="javax.validation.api_2.0.1.Final.jar"/>
+        <copy-plugin from="jakarta.annotation-api*.jar" to="jakarta.annotation-api.jar"/>
+        <copy-plugin from="jakarta.ejb-api*.jar" to="jakarta.ejb-api.jar"/>
+        <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="javax.inject_1.0.0.v20091030.jar"/>
+        <copy-plugin from="jakarta.interceptor-api*.jar" to="jakarta.interceptor-api.jar"/>
+        <copy-plugin from="jakarta.jms-api*.jar" to="jakarta.jms-api.jar"/>
+        <copy-plugin from="org.glassfish.jakarta.json*.jar" to="org.glassfish.jakarta.json.jar"/>
+        <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="com.sun.mail.jakarta.mail.jar"/>
+        <copy-plugin from="jakarta.resource-api*.jar" to="jakarta.resource-api.jar"/>
+        <copy-plugin from="jakarta.servlet-api*.jar" to="jakarta.servlet-api.jar"/>
+        <copy-plugin from="jakarta.transaction-api*.jar" to="jakarta.transaction-api.jar"/>
+        <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="jakarta.validation-api.jar"/>
         <copy-plugin from="javax.ws.rs*.jar" to="javax.ws.rs_2.0.1.v201504171603.jar"/>
-        <copy-plugin from="jaxb-api_*.jar" to="javax.xml.bind_2.2.12.v201410011542.jar"/>
-        <copy-plugin from="javax.xml.soap*.jar" to="javax.xml.soap_1.3.0.v200906010428.jar"/>
+        <copy-plugin from="jakarta.xml.bind-api_*.jar" to="jakarta.xml.bind-api.jar"/>
+        <copy-plugin from="jakarta.xml.soap-api*.jar" to="jakarta.xml.soap-api.jar"/>
         <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-core*.jar" to="jaxb-core_2.2.11.v201407311112.jar"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="jaxb-xjc_2.2.11.v201407311112.jar"/>
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
         <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
         <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar"/>
@@ -652,7 +639,8 @@
         <copy-plugin from="org.glassfish.hk2.api*.jar" to="org.glassfish.hk2.api_2.3.0.b10_201505192201.jar"/>
         <copy-plugin from="org.glassfish.hk2.locator*.jar" to="org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar"/>
         <copy-plugin from="org.glassfish.hk2.utils*.jar" to="org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.jersey.bundles.repackaged.jersey-guava*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-core*.jar*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
+        <!--<copy-plugin from="org.glassfish.jersey.bundles.repackaged.jersey-guava*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>-->
         <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar"/>
         <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar"/>
         <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="org.glassfish.pfl.pfl-asm_4.0.1.b003.jar"/>
@@ -670,7 +658,7 @@
         <copy-plugin from="osgi.cmpn*.jar" to="osgi.cmpn_4.1.0.jar"/>
 
         <!-- Copy source jars -->
-        <copy-plugin from="jaxb-api*sources.jar" to="javax.xml.bind.source_2.2.12.v1410011542.jar"/>
+        <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="javax.xml.bind.source_2.2.12.v1410011542.jar"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
@@ -1281,6 +1269,7 @@
             </fileset>
             <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
+                <exclude name="module-info.java"/>
             </fileset>
             <!-- *** EclipseLink modules *** -->
             <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
@@ -1469,7 +1458,6 @@
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${mail.jar}"/>
                 <include name="${jaxb-core.jar}"/>
-                <include name="${jaxb-xjc.jar}"/>
                 <include name="${javax.validation.jar}"/>
                 <include name="${json-api.jar}"/>
                 <include name="${json-impl.jar}"/>
