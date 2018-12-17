@@ -158,7 +158,7 @@
                     </filter>
                     <filter>
                         <type>java-package</type>
-                        <id>jaxb-api</id>
+                        <id>jakarta.xml.bind-api</id>
                         <restrictTo>
                             <version>${jakarta.xml.bind.version}</version>
                         </restrictTo>

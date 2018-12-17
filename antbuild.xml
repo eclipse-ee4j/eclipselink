@@ -621,7 +621,7 @@
         <copy-plugin from="jakarta.servlet-api*.jar" to="jakarta.servlet-api.jar"/>
         <copy-plugin from="jakarta.transaction-api*.jar" to="jakarta.transaction-api.jar"/>
         <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="jakarta.validation-api.jar"/>
-        <copy-plugin from="javax.ws.rs*.jar" to="javax.ws.rs_2.0.1.v201504171603.jar"/>
+        <copy-plugin from="javax.ws.rs-api*.jar" to="javax.ws.rs_2.0.1.v201504171603.jar"/>
         <copy-plugin from="jakarta.xml.bind-api_*.jar" to="jakarta.xml.bind-api.jar"/>
         <copy-plugin from="jakarta.xml.soap-api*.jar" to="jakarta.xml.soap-api.jar"/>
         <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
@@ -977,14 +977,12 @@
                 <include name="**.jar"/>
                 <exclude name="javax.persistence*.jar"/>
                 <exclude name="*nosql*"/>
-                <exclude name="osgi.cmpn_4.1.0.jar"/>
-                <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
-                <exclude name="com.sun*.jar"/>
+                <exclude name="osgi.cmpn*.jar"/>
+                <exclude name="org.apache.ant*.zip"/>
                 <exclude name="*dynamic*.jar"/>
                 <!-- exclude test-only dependencies -->
                 <exclude name="*hk2*"/>
                 <exclude name="*jersey*"/>
-                <exclude name="javax.annotation*"/>
                 <exclude name="javax.inject*"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
