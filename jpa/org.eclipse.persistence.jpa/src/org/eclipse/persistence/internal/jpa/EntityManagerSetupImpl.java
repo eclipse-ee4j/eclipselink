@@ -66,6 +66,8 @@
  *       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
  *     11/05/2015 - Dalia Abo Sheasha
  *       - 480787 : Wrap several privileged method calls with a doPrivileged block
+ *     12/06/2018 - Will Dazey
+ *       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -2751,6 +2753,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (shouldBindString != null) {
                 session.getPlatform().setShouldBindAllParameters(Boolean.parseBoolean(shouldBindString));
             }
+
+            String shouldForceBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_FORCE_BIND_PARAMETERS, m, session);
+            if(shouldForceBindString != null) {
+                session.getPlatform().setShouldForceBindAllParameters(Boolean.parseBoolean(shouldForceBindString));
+            }
+
             updateLogins(m);
         }
         if (!session.getDatasourceLogin().shouldUseExternalTransactionController()) {
