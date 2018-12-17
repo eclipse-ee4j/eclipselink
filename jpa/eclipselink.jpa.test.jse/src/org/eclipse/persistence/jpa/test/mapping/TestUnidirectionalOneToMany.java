@@ -44,9 +44,13 @@ import org.junit.runner.RunWith;
  */
 @RunWith(EmfRunner.class)
 public class TestUnidirectionalOneToMany {
-    @Emf(createTables = DDLGen.DROP_CREATE, 
-            classes = { CommentA.class, CommentB.class, ComplexIdA.class, ComplexIdB.class, PostA.class, PostB.class }, 
-            properties = { @Property(name = "eclipselink.cache.shared.default", value = "false") })
+    @Emf(createTables = DDLGen.DROP_CREATE,
+            classes = { CommentA.class, CommentB.class, ComplexIdA.class, ComplexIdB.class, PostA.class, PostB.class },
+            properties = {
+                @Property(name = "eclipselink.cache.shared.default", value = "false"),
+                @Property(name = "eclipselink.logging.parameters", value = "true"),
+                @Property(name = "eclipselink.logging.exceptions", value = "true"),
+                @Property(name = "eclipselink.logging.level.sql", value = "FINEST")})
     private EntityManagerFactory emf;
 
     /**
