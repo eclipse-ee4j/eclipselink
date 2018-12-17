@@ -41,7 +41,7 @@
          version="@VERSION@.@QUALIFIER@"/>
 
    <plugin
-         id="javax.servlet"
+         id="jakarta.servlet-api"
          download-size="0"
          install-size="0"
          version="@SERVLET_VERSION@"
