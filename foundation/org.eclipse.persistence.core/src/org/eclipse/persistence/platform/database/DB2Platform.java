@@ -25,6 +25,8 @@
 //       - 491824: Setting lock timeout to 0 issues a NOWAIT causing an error in DB2
 //     08/22/2017 - Will Dazey
 //       - 521037: DB2 default schema is doubled for sequence queries
+//     12/06/2018 - Will Dazey
+//       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -741,6 +743,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      */
     @Override
     public boolean isDynamicSQLRequiredForFunctions() {
+        if(shouldForceBindAllParameters()) {
+            return false;
+        }
         return !isCastRequired();
     }
 
