@@ -84,7 +84,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ejb_3.1.0.v201205171433.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.ejb-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

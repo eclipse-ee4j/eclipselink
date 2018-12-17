@@ -8,22 +8,21 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind_2.2.11.v201406210428.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.mail_1.4.0.v201005080615.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind.jaxb-osgi.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.mail.jakarta.mail.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_2.0.1.v201504171603.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.xml.bind_2.2.12.v201410011542.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.xml.bind-api.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/pax-exam-3.0.0.M3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/javax.inject-1.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/pax-exam-spi-3.0.0.M3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/pax-exam-junit4-3.0.0.M3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/org.osgi.core-4.2.0.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.json-api_1.1.2.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jakarta.json.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-core_2.2.11.v201407311112.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-core.source_2.2.11.v201407311112.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation.api_2.0.1.Final.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-xjc_2.2.11.v201407311112.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-xjc.source_2.2.11.v201407311112.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind.jaxb-osgi.jar" sourcepath="/ECLIPSELINK_HOME/plugins/com.sun.xml.bind.jaxb-osgi.source.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.validation-api.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamicxjc"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/hibernate-validator-5.1.0.Final.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.json_1.1.2.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.glassfish.jakarta.json.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -3,10 +3,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.resource-api.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.mongodb.mongo-java-driver_3.2.0.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.mongodb.mongo-java-driver.source_3.2.0.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.jms_1.1.0.v200906010428.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.jms/src"/>
-        <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/kvclient.jar"/>
-        <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/ojdbc7.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.jms-api.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.jms/src"/>
+	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/kvclient.jar"/>
+	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/ojdbc8.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
