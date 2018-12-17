@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 201* Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -15,6 +15,8 @@
  *       - 458877 : Add national character support
  *     02/24/2016-2.6.0 Rick Curtis
  *       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
+ *     12/06/2018 - Will Dazey
+ *       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
  *****************************************************************************/
 package org.eclipse.persistence.platform.database;
 
@@ -51,7 +53,7 @@ import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
  * <li>Support for identity sequencing.
  * <li>Support for SEQUENCE sequencing.
  * </ul>
- * 
+ *
  * @since TOPLink/Java 1.0
  */
 public class DB2Platform extends org.eclipse.persistence.platform.database.DatabasePlatform {
@@ -60,7 +62,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         super();
         this.pingSQL = "VALUES(1)";
     }
-    
+
     @Override
     public void initializeConnectionData(Connection connection) throws SQLException {
         // DB2 database doesn't support NVARCHAR column types and as such doesn't support calling
@@ -290,7 +292,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         if(getUseNationalCharacterVaryingTypeForString()){
             fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE, "FOR MIXED DATA"));
         }else {
-            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));   
+            fieldTypeMapping.put(String.class, new FieldTypeDefinition("VARCHAR", DEFAULT_VARCHAR_SIZE));
         }
         fieldTypeMapping.put(Character.class, new FieldTypeDefinition("CHAR", 1));
         fieldTypeMapping.put(Byte[].class, new FieldTypeDefinition("BLOB", 64000));
@@ -324,7 +326,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public int getMaxForeignKeyNameSize() {
         return 18;
     }
-    
+
     /**
      * INTERNAL:
      * returns the maximum number of characters that can be used in a unique key
@@ -333,7 +335,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     @Override
     public int getMaxUniqueKeyNameSize() {
         return 18;
-    }    
+    }
 
     /**
      * INTERNAL:
@@ -624,7 +626,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             throw ValidationException.fileError(ioException);
         }
     }
-    
+
     @Override
     protected void printFieldTypeSize(Writer writer, FieldDefinition field, FieldTypeDefinition ftd) throws IOException {
         super.printFieldTypeSize(writer, field, ftd);
@@ -708,7 +710,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public boolean isNullAllowedInSelectClause() {
         return false;
     }
-    
+
     /**
      * INTERNAL
      * DB2 has some issues with using parameters on certain functions and relations.
@@ -717,6 +719,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      */
     @Override
     public boolean isDynamicSQLRequiredForFunctions() {
+        if(shouldForceBindAllParameters()) {
+            return false;
+        }
         return !isCastRequired();
     }
 
@@ -790,7 +795,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     public boolean isAlterSequenceObjectSupported() {
         return true;
     }
-    
+
     @Override
     public boolean shouldPrintForUpdateClause() {
         return false;
@@ -799,7 +804,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      * INTERNAL:
      * Print the SQL representation of the statement on a stream, storing the fields
      * in the DatabaseCall.  This implementation works MaxRows and FirstResult into the SQL using
-     * DB2's ROWNUMBER() OVER() to filter values if shouldUseRownumFiltering is true.  
+     * DB2's ROWNUMBER() OVER() to filter values if shouldUseRownumFiltering is true.
      */
     @Override
     public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement){
@@ -810,7 +815,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
             max = statement.getQuery().getMaxRows();
             firstRow = statement.getQuery().getFirstResult();
         }
-        
+
         if ( !(this.shouldUseRownumFiltering()) || ( !(max>0) && !(firstRow>0) ) ){
             super.printSQLSelectStatement(call, printer, statement);
             statement.appendForUpdateClause(printer);
@@ -837,5 +842,5 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
     }
-    
+
 }
