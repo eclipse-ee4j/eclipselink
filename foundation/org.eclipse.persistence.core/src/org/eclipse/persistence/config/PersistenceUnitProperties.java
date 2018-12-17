@@ -45,6 +45,8 @@
  *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
  *     04/11/2018 - Will Dazey
  *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
+ *     12/06/2018 - Will Dazey
+ *       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
  ******************************************************************************/
 package org.eclipse.persistence.config;
 
@@ -1021,6 +1023,22 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String JDBC_BIND_PARAMETERS = "eclipselink.jdbc.bind-parameters";
+
+    /**
+     * Property "<code>eclipselink.jdbc.force-bind-parameters</code>" enables parameter binding 
+     * in the creation of JDBC prepared statements. Some database platforms disable parameter binding 
+     * on certain functions and relations. This property allows the user to force parameter binding 
+     * to be enabled regardless. 
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT) - values will default to platform specific logic
+     * <li>"<code>true</code>" - bindings will use platform default
+     * </ul>
+     * 
+     * @see org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_BIND_PARAMETERS
+    */
+   public static final String JDBC_FORCE_BIND_PARAMETERS = "eclipselink.jdbc.force-bind-parameters";
 
     /**
      * The "<code>eclipselink.jdbc.exclusive-connection.mode</code>" property

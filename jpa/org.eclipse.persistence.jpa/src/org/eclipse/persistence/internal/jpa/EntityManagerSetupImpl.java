@@ -76,6 +76,8 @@
  *       - 522312: Add the eclipselink.sequencing.start-sequence-at-nextval property
  *     04/11/2018 - Will Dazey
  *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
+ *     12/06/2018 - Will Dazey
+ *       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
  *****************************************************************************/  
 package org.eclipse.persistence.internal.jpa;
 
@@ -2745,6 +2747,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (shouldBindString != null) {
                 session.getPlatform().setShouldBindAllParameters(Boolean.parseBoolean(shouldBindString));
             }
+
+            String shouldForceBindString = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.JDBC_FORCE_BIND_PARAMETERS, m, session);
+            if(shouldForceBindString != null) {
+                session.getPlatform().setShouldForceBindAllParameters(Boolean.parseBoolean(shouldForceBindString));
+            }
+
             updateLogins(m);
         }
         if (!session.getDatasourceLogin().shouldUseExternalTransactionController()) {
