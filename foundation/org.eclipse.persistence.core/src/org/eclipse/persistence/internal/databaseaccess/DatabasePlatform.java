@@ -28,6 +28,8 @@
 //       - 458877 : Add national character support
 //     02/23/2015-2.6 Dalia Abo Sheasha
 //       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
+//     11/12/2018 - Will Dazey
+//       - 540929 : 'jdbc.sql-cast' property does not copy
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
@@ -992,6 +994,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         //use the variable directly to avoid custom platform strings - only want to copy user set values.
         //specifically used for login platform detection
         databasePlatform.setTableCreationSuffix(this.tableCreationSuffix);
+        databasePlatform.setIsCastRequired(isCastRequired());
     }
 
     /**
