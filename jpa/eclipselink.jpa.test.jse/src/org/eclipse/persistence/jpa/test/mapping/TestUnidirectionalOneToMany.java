@@ -113,9 +113,9 @@ public class TestUnidirectionalOneToMany {
 
         PostB post = new PostB(new ComplexIdB(3, 4));
         post.setComments(new ArrayList<CommentB>());
-        post.getComments().add(new CommentB());
-        post.getComments().add(new CommentB());
-        post.getComments().add(new CommentB());
+        post.getComments().add(new CommentB("a"));
+        post.getComments().add(new CommentB("b"));
+        post.getComments().add(new CommentB("c"));
 
         em.persist(post);
 
@@ -134,9 +134,9 @@ public class TestUnidirectionalOneToMany {
         em.flush();
 
         post.setComments(new ArrayList<CommentB>());
-        post.getComments().add(new CommentB());
-        post.getComments().add(new CommentB());
-        post.getComments().add(new CommentB());
+        post.getComments().add(new CommentB("d"));
+        post.getComments().add(new CommentB("e"));
+        post.getComments().add(new CommentB("f"));
 
         em.persist(post);
 
