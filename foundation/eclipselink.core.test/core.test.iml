@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" value="MODULE_DIR/../../plugins/javax.transaction.api_1.3.0.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.transaction-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.transaction-api.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/javax.transaction/src" value="src:/MODULE_DIR/../../plugins/javax.transaction/src" />
     <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.2.1.v201807122140.jar!/" value="MODULE_DIR/../../jpa/plugins/javax.persistence_2.2.1.v201807122140.jar" />
     <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" value="src:/MODULE_DIR/../../jpa/plugins/javax.persistence.source_2.2.1.v201807122140.jar" />
@@ -32,7 +32,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.transaction-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>

@@ -114,7 +114,7 @@
         <pathelement path="${resource.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${jacocoagent.lib}"/>
-        <pathelement path="${sdotest.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${asm.jar}"/>
     </path>
 
     <!-- Set Compile/Run Paths using product OSGi bundles -->
@@ -144,7 +144,7 @@
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
         <pathelement path="../${classes.dir}"/>
         <pathelement path="../${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
-        <pathelement path="../${sdotest.2.common.plugins.dir}/javax.mail_1.4.0.jar"/>
+        <pathelement path="../${sdotest.2.common.plugins.dir}/com.sun.mail.jakarta.mail.jar"/>
     </path>
 
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
