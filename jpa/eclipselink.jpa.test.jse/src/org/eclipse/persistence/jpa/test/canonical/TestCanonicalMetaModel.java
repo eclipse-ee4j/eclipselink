@@ -71,7 +71,7 @@ public class TestCanonicalMetaModel {
     }
 
     /**
-     * Provides some small cleanup test helper facility
+     * Provides some small cleanup test helper facility.
      */
     static class AutoCloseableEntityManagerFactory implements AutoCloseable {
 
