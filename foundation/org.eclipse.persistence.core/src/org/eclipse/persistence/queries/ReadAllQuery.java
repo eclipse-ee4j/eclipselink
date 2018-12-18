@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,6 +36,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.InvalidObject;
@@ -50,6 +51,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
 import org.eclipse.persistence.internal.sessions.remote.Transporter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
@@ -302,10 +304,27 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Conform the result if specified.
      */
     protected Object conformResult(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, boolean buildDirectlyFromRows) {
-        if (getSelectionCriteria() != null) {
+        Expression selectionCriteria = getSelectionCriteria();
+        if (selectionCriteria != null) {
             ExpressionBuilder builder = getSelectionCriteria().getBuilder();
             builder.setSession(unitOfWork.getRootSession(null));
             builder.setQueryClass(getReferenceClass());
+            if (getQueryMechanism().isExpressionQueryMechanism() && selectionCriteria.isLogicalExpression()) {
+                // bug #526546
+                if (builder.derivedExpressions != null) {
+                    for (Expression e : builder.derivedExpressions) {
+                        if (e.isQueryKeyExpression() && ((QueryKeyExpression) e).shouldQueryToManyRelationship()) {
+                            DatabaseMapping mapping = ((QueryKeyExpression) e).getMapping();
+                            if (mapping.isOneToManyMapping()) {
+                                OneToManyMapping otm = (OneToManyMapping) mapping;
+                                Expression join = otm.buildSelectionCriteria();
+                                selectionCriteria = selectionCriteria.and(join);
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         // If the query is redirected then the collection returned might no longer
@@ -326,7 +345,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Let c be objects from cache.
         // Presently p intersect c = empty set, but later p subset c.
         // By checking cache now doesConform will be called p fewer times.
-        Map<Object, Object> indexedInterimResult = unitOfWork.scanForConformingInstances(getSelectionCriteria(), getReferenceClass(), arguments, this);
+        Map<Object, Object> indexedInterimResult = unitOfWork.scanForConformingInstances(selectionCriteria, getReferenceClass(), arguments, this);
 
         Cursor cursor = null;
         // In the case of cursors just conform/register the initially read collection.
