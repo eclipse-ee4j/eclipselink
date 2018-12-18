@@ -609,10 +609,9 @@
         <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="com.sun.xml.bind.jaxb-osgi.jar"/>
-        <copy-plugin from="gmbal-api-only*.jar" to="gmbal-api-only_3.2.0.b003.jar"/>
         <copy-plugin from="jakarta.annotation-api*.jar" to="jakarta.annotation-api.jar"/>
         <copy-plugin from="jakarta.ejb-api*.jar" to="jakarta.ejb-api.jar"/>
-        <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="javax.inject_1.0.0.v20091030.jar"/>
+        <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="jakarta.inject.jar"/>
         <copy-plugin from="jakarta.interceptor-api*.jar" to="jakarta.interceptor-api.jar"/>
         <copy-plugin from="jakarta.jms-api*.jar" to="jakarta.jms-api.jar"/>
         <copy-plugin from="org.glassfish.jakarta.json*.jar" to="org.glassfish.jakarta.json.jar"/>
@@ -621,10 +620,10 @@
         <copy-plugin from="jakarta.servlet-api*.jar" to="jakarta.servlet-api.jar"/>
         <copy-plugin from="jakarta.transaction-api*.jar" to="jakarta.transaction-api.jar"/>
         <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="jakarta.validation-api.jar"/>
-        <copy-plugin from="javax.ws.rs-api*.jar" to="javax.ws.rs_2.0.1.v201504171603.jar"/>
+        <copy-plugin from="jakarta.ws.rs-api*.jar" to="jakarta.ws.rs-api.jar"/>
         <copy-plugin from="jakarta.xml.bind-api_*.jar" to="jakarta.xml.bind-api.jar"/>
         <copy-plugin from="jakarta.xml.soap-api*.jar" to="jakarta.xml.soap-api.jar"/>
-        <copy-plugin from="javax.xml.ws*.jar" to="javax.xml.ws_2.0.0.v200902170419.jar"/>
+        <copy-plugin from="jakarta.xml.ws-api*.jar" to="jakarta.xml.ws-api.jar"/>
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
         <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
         <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar"/>
