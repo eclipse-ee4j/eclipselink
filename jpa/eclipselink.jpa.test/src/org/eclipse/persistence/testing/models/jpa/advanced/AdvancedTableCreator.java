@@ -25,6 +25,8 @@
 //       - 454917: Informix tables need to use INT fields when referencing SERIAL types, moved helper methods to parent class
 //     01/15/2015-2.6 Mythily Parthasarathy
 //       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
+//     09/04/2018-3.0 Ravi Babu Tummuru
+//       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -121,6 +123,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildBILL_ACTIONTable());
         addTableDefinition(buildORD_ENTITYATable());
         addTableDefinition(buildORD_ENTITYZTable());
+        addTableDefinition(buildMyTestEntityTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3355,6 +3358,23 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         fieldDESCRIPTION.setShouldAllowNull(false);
         table.addField(fieldDESCRIPTION);
         
+        return table;
+    }
+
+    public TableDefinition buildMyTestEntityTable() {
+
+        TableDefinition table = new TableDefinition();
+        table.setName("RBT_MYTESTENTITY");
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(false);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        table.addField(fieldID);
+
         return table;
     }
     
