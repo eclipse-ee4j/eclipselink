@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,7 +36,7 @@ public class VectorContainerPolicy extends ListContainerPolicy {
     public VectorContainerPolicy(Class containerClass) {
         super(containerClass);
     }
-    
+
     /**
      * INTERNAL:
      * Construct a new policy for the specified class name.
@@ -53,14 +53,14 @@ public class VectorContainerPolicy extends ListContainerPolicy {
         if (container == null) {
             return null;
         }
-        try {
-            return ((Vector)container).clone();
-        } catch (Exception notVector) {
-            // Could potentially be another Collection type as well.
-            return new Vector((Collection)container);
+        if (container.getClass() == Vector.class) {
+            return ((Vector) container).clone();
         }
+
+        // Could potentially be another Collection type as well.
+        return new Vector((Collection) container);
     }
-    
+
     /**
      * INTERNAL:
      * Just return the Vector.
@@ -68,7 +68,7 @@ public class VectorContainerPolicy extends ListContainerPolicy {
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
         return vector;
     }
-    
+
     /**
      * INTERNAL:
      * Return a new Vector.
@@ -76,7 +76,7 @@ public class VectorContainerPolicy extends ListContainerPolicy {
     public Object containerInstance() {
         return new Vector();
     }
-    
+
     /**
      * INTERNAL:
      * Return a new Vector.

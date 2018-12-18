@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -37,7 +37,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
     public ArrayListContainerPolicy(Class containerClass) {
         super(containerClass);
     }
-    
+
     /**
      * INTERNAL:
      * Construct a new policy for the specified class name.
@@ -54,14 +54,14 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
         if (container == null) {
             return null;
         }
-        try {
+        if (container.getClass() == ArrayList.class) {
             return ((ArrayList)container).clone();
-        } catch (Exception notArrayList) {
-            // Could potentially be another Collection type as well.
-            return new ArrayList((Collection)container);
         }
+
+        // Could potentially be another Collection type as well.
+        return new ArrayList((Collection) container);
     }
-    
+
     /**
      * INTERNAL:
      * Return an ArrayList from the Vector.
@@ -69,7 +69,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
     public Object buildContainerFromVector(Vector vector, AbstractSession session) {
         return new ArrayList(vector);
     }
-    
+
     /**
      * INTERNAL:
      * Return a new ArrayList.
@@ -77,7 +77,7 @@ public class ArrayListContainerPolicy extends ListContainerPolicy {
     public Object containerInstance() {
         return new ArrayList();
     }
-    
+
     /**
      * INTERNAL:
      * Return a new ArrayList.
