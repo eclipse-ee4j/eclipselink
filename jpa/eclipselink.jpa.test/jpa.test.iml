@@ -3,7 +3,7 @@
   <component name="EclipseModuleManager">
     <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence_2.2.1.v201807122140.jar!/" value="MODULE_DIR/../plugins/javax.persistence_2.2.1.v201807122140.jar" />
     <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" value="src:/MODULE_DIR/../plugins/javax.persistence.source_2.2.1.v201807122140.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" value="MODULE_DIR/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.ws.rs-api.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.validation-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.validation-api.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.ejb-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.ejb-api.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/javax.ejb/src" value="src:/MODULE_DIR/../../plugins/javax.ejb/src" />
@@ -43,7 +43,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
