@@ -255,7 +255,7 @@
         <property name="servlet.criteria" value="(3.99.99,5.0.0)"/>
         <property name="wsdl.prefix" value="javax.wsdl"/>
         <property name="wsdl.criteria" value="[1.0,9.0)"/>
-        <property name="jaxrs.prefix" value="javax.ws.rs-api"/>
+        <property name="jaxrs.prefix" value="jakarta.ws.rs-api"/>
         <property name="jaxrs.criteria" value="(2.1.2,3.0.0)"/>
         <property name="xml.bind.prefix" value="jakarta.xml.bind-api"/>
         <property name="xml.bind.criteria" value="(2.3.1,3.0.0)"/>
