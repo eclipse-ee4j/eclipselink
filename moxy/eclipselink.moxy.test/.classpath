@@ -10,7 +10,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.xml.bind.jaxb-osgi.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/com.sun.mail.jakarta.mail.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.ws.rs_2.0.1.v201504171603.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.ws.rs-api.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.xml.bind-api.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/pax-exam-3.0.0.M3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/javax.inject-1.jar"/>

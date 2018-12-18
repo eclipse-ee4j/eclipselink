@@ -41,7 +41,7 @@
    </requires>
 
    <plugin
-         id="javax.mail"
+         id="com.sun.mail.jakarta.mail"
          download-size="0"
          install-size="0"
          version="@MAIL_VERSION@"

@@ -86,7 +86,7 @@
         <jakarta.servlet.version>4.0.2</jakarta.servlet.version>
         <jakarta.transaction.version>1.3.2-SNAPSHOT</jakarta.transaction.version>
         <jakarta.validation.version>2.0.1</jakarta.validation.version>
-        <jakarta.ws.rs.version>2.1.3</jakarta.ws.rs.version>
+        <jakarta.ws.rs.version>2.1.4</jakarta.ws.rs.version>
         <jakarta.xml.bind.version>2.3.2</jakarta.xml.bind.version>
         <jakarta.xml.soap.version>1.4.1</jakarta.xml.soap.version>
         <jakarta.xml.ws-api.version>2.3.2</jakarta.xml.ws-api.version>
@@ -158,7 +158,7 @@
                     </filter>
                     <filter>
                         <type>java-package</type>
-                        <id>jaxb-api</id>
+                        <id>jakarta.xml.bind-api</id>
                         <restrictTo>
                             <version>${jakarta.xml.bind.version}</version>
                         </restrictTo>

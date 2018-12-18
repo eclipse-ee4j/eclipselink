@@ -46,7 +46,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.xml.ws_2.0.0.v200902170419.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.xml.ws-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -102,7 +102,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
