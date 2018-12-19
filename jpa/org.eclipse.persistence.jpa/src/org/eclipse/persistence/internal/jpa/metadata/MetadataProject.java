@@ -1865,7 +1865,7 @@ public class MetadataProject {
      */
     public void processStage2() {
         // process metamodel mappedSuperclasses separately from entity descriptors
-        for (MappedSuperclassAccessor msAccessor : getMappedSuperclasses()) {
+        for (MappedSuperclassAccessor msAccessor : getMetamodelMappedSuperclasses()) {
             if (! msAccessor.isProcessed()) {
                 msAccessor.processMetamodelDescriptor();
             }
