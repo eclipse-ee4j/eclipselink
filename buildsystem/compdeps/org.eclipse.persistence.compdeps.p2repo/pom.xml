@@ -59,6 +59,12 @@
                             <version>${jakarta.xml.bind.version}</version>
                             <classifier>sources</classifier>
                         </artifactItem>
+                        <artifactItem>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>jakarta.persistence</artifactId>
+                            <version>${jakarta.persistence.version}</version>
+                            <classifier>sources</classifier>
+                        </artifactItem>
                     </artifactItems>
                     <outputDirectory>${project.build.directory}/repository/plugins</outputDirectory>
                 </configuration>

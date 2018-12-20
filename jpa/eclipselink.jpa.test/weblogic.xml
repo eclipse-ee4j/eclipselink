@@ -72,7 +72,7 @@
             <exclude name="*.source_*"/>
         </fileset>
     </path>
-    <property name="eclipselink.lib.jpa" location="../../jpa/plugins/javax.persistence_2.2.1.v201807122140.jar"/>
+    <property name="eclipselink.lib.jpa" location="../../jpa/plugins/jakarta.persistence_2.2.2.jar"/>
     <property name="jdbc.driver.lib" value="${jdbc.driver.jar}"/>
     <property name="jdbc2.driver.lib" value="${jdbc2.driver.jar}"/>
     <property name="jdbc3.driver.lib" value="${jdbc3.driver.jar}"/>
