@@ -96,6 +96,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(TypeNameValueTestCases.class);
           suite.addTestSuite(TypePrefixTestCases.class);
           suite.addTestSuite(TypePropertyCustomNameTestCases.class);
+          suite.addTestSuite(TypePropertyCustomNameNamespaceTestCases.class);
           suite.addTestSuite(TypePropertyInheritanceTestCases.class);
           suite.addTestSuite(TypePropertyTestCases.class);
           suite.addTestSuite(JsonUnmappedTestCases.class);
