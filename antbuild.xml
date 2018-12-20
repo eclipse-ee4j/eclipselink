@@ -604,8 +604,9 @@
         <macrodef name="copy-plugin">
             <attribute name="from"/>
             <attribute name="to"/>
+            <attribute name="todir" default="${eclipselink.plugins}"/>
             <sequential>
-                <copy todir="${eclipselink.plugins}" overwrite="true">
+                <copy todir="@{todir}" overwrite="true">
                     <fileset dir="${eclipselink.compdeps.p2repo}"/>
                     <globmapper from="@{from}" to="@{to}"/>
                 </copy>
@@ -624,6 +625,7 @@
         <copy-plugin from="jakarta.jms-api*.jar" to="jakarta.jms-api.jar"/>
         <copy-plugin from="org.glassfish.jakarta.json*.jar" to="org.glassfish.jakarta.json.jar"/>
         <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="com.sun.mail.jakarta.mail.jar"/>
+        <copy-plugin from="jakarta.persistence_2.2.2*.jar" to="jakarta.persistence_2.2.2.jar" todir="${eclipselink.jpa.plugins}"/>
         <copy-plugin from="jakarta.resource-api*.jar" to="jakarta.resource-api.jar"/>
         <copy-plugin from="jakarta.servlet-api*.jar" to="jakarta.servlet-api.jar"/>
         <copy-plugin from="jakarta.transaction-api*.jar" to="jakarta.transaction-api.jar"/>
@@ -666,6 +668,7 @@
 
         <!-- Copy source jars -->
         <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="javax.xml.bind.source_2.2.12.v1410011542.jar"/>
+        <copy-plugin from="jakarta.persistence-2.2.2*sources.jar" to="jakarta.persistence.source_2.2.2.jar" todir="${eclipselink.jpa.plugins}"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
@@ -1115,7 +1118,7 @@
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
-                <exclude name="javax.persistence*.jar"/>
+                <exclude name="jakarta.persistence*.jar"/>
                 <exclude name="*nosql*"/>
                 <exclude name="osgi.cmpn*.jar"/>
                 <exclude name="org.apache.ant*.zip"/>
