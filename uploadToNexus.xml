@@ -169,9 +169,6 @@
     </target>
 
     <target name="discover-static-built-info" depends="init">
-        <property name="jpaapi.prefix"        value="javax.persistence"/>
-        <property name="jpaapi.criteria"      value="[2.0.100, 3.0.0)"/>
-        <property name="jpaapi.name"          value="Javax Persistence"/>
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
         <property name="sdoapi.name"          value="SDO API"/>
@@ -197,9 +194,6 @@
         <property name="extension.criteria"   value="[1.0.0,9.0.0)"/>
         <property name="extension.name"       value="EclipseLink Extensions"/>
 
-        <selectbundle basename="${jpaapi.prefix}"  directory="${maven.2.jpa.plugins.dir}"
-                      criterion="${jpaapi.criteria}" property="jpaapi.version" versiononly="true"
-                />
         <selectbundle basename="${sdoapi.prefix}"  directory="${maven.2.sdo.plugins.dir}"
                       criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
                 />
@@ -225,7 +219,6 @@
                       criterion="${extension.criteria}" property="extension.version" versiononly="true"
         />
 
-        <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
         <echo message="asm.version        = ${asm.version}"/>
@@ -238,7 +231,6 @@
         <!-- Maven standards state we should publish with a stripped down 3-part version rather -->
         <!-- than the 4-part OSGi version. So we need to generate "(bundle).mvn.version" from   -->
         <!-- the discovered "(bundle).version" (after release) -->
-        <stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/>
         <!-- However, if the bundle versioning is such that only the qualifier will change on   -->
         <!-- a rebuild (convenient for publishing OSGi-ified jars but against OSGi spec) then   -->
         <!-- we will either violate Maven's "once published, never changes" rule, or newer      -->
@@ -258,6 +250,21 @@
         <!--      publishing they will be published under the EclipseLink build version        -->
         <!--   In addition, in all these listed cases, the artifacts are EclipseLink specific, -->
         <!--   and won't be available separately anyway.                                       -->
+
+        <!-- since JPA API is treated as 3rd party dependency, we have to look up it's version -->
+        <!-- in the dependency management section of appropriate pom                           -->
+        <loadfile
+            encoding="UTF-8"
+            property="jpaapi.mvn.version"
+            srcFile="${maven.2.buildsys.dir}/compdeps/pom.xml" >
+                <filterchain>
+                    <tokenfilter>
+                        <containsregex
+                            pattern="&lt;jakarta.persistence.version&gt;(.*)&lt;/jakarta.persistence.version&gt;$"
+                            replace="\1" />
+                    </tokenfilter>
+                </filterchain>
+        </loadfile>
 
         <say  message="jpaapi.mvn.version = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
         <say  message="sdoapi.mvn.version = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
