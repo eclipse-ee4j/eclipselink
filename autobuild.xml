@@ -717,6 +717,7 @@
                 <include name="org.eclipse.persistence.*oracleddl*.jar"/>
             </fileset>
         </copy>
+        <copy todir="${tmp.maven.dir}/buildsystem/compdeps" file="${build.location}/buildsystem/compdeps/pom.xml"/>
     </target>
 
     <!--  =====     Milestone Publish   =====  -->
