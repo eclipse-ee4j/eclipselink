@@ -47,6 +47,6 @@ plugins/logback*.jar
 plugins/management*.jar
 plugins/mongo*.jar
 plugins/osgi*.jar
-plugins/pfl*.zip
+plugins/pfl*.jar
 plugins/slf4j*.jar
 plugins/sun-misc*.jar
