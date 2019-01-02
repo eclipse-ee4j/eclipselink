@@ -24,8 +24,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <tycho.version>1.2.0</tycho.version>
-        <!--<tycho.version>1.3.0-SNAPSHOT</tycho.version>-->
+        <tycho.version>1.3.0</tycho.version>
     </properties>
 
     <build>
@@ -53,8 +52,11 @@
                                         <include name="org.eclipse.persistence.oracleddlparser.source_*"/>
                                     </fileset>
                                     <fileset dir="../../../sdo/plugins">
-                                        <include name="commonj.sdo._*"/>
+                                        <include name="commonj.sdo_*"/>
                                         <include name="commonj.sdo.source_*"/>
+                                    </fileset>
+                                    <fileset dir="../../../utils/plugins">
+                                        <include name="javax.wsdl_*"/>
                                     </fileset>
                                 </copy>
                             </target>
