@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import javax.servlet.ServletContextListener;
 //java eXtension imports
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
-import javax.xml.ws.Provider;
 
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 
@@ -47,7 +45,7 @@ import _dbws.ProviderListener;
 /**
  * <p>
  * <b>INTERNAL:</b> ProviderPackager extends {@link XRPackager}. It is responsible for generating<br>
- * the {@link ServletContextListener} and the JAX-WS {@link Provider} and saves the generated WSDL
+ * the {@code javax.servlet.ServletContextListener} and the JAX-WS {@code javax.xml.ws.Provider} and saves the generated WSDL
  * to ${stageDir}
  * <pre>
  * ${PACKAGER_ROOT}

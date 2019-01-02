@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,11 @@
     <version>2.7.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <!-- tycho requires maven >= 3.0 -->
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
+
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
+        <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
+    </scm>
 
     <organization>
         <name>Eclipse.org - EclipseLink Project</name>
@@ -36,8 +37,7 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>1.2.0</tycho.version>
-        <!--<tycho.version>1.3.0-SNAPSHOT</tycho.version>-->
+        <tycho.version>1.3.0</tycho.version>
         <junit4-version>4.12</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
@@ -48,8 +48,6 @@
         <svn.revision>NA</svn.revision>
         <src>./src</src>
         <!-- BUILD Properties -->
-        <orbit.drop>R20180905201904</orbit.drop>
-        <eclipse.drop>2018-09</eclipse.drop>
         <findbugs.version>3.0.1</findbugs.version>
         <findbugs.threshold>Normal</findbugs.threshold>
     </properties>
@@ -60,69 +58,16 @@
         <module>../../foundation/org.eclipse.persistence.core</module>
     </modules>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>tycho-snapshots</id>
-            <url>https://repo.eclipse.org/content/repositories/tycho-snapshots/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <!-- Default repositories set and added to by all profiles -->
     <repositories>
         <repository>
-            <id>oss.sonatype.org</id>
-            <name>OSS Sonatype Staging</name>
-            <url>https://oss.sonatype.org/content/groups/staging</url>
-        </repository>
-        <repository>
-            <id>repository.jboss.org</id>
-            <name>JBoss Staging</name>
-            <url>https://repository.jboss.org/nexus/content/repositories/staging</url>
-        </repository>
-        <repository>
-            <id>Orbit</id>
+            <id>Local_CompDeps</id>
             <layout>p2</layout>
-            <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
-        </repository>
-        <repository>
-            <id>Eclipse</id>
-            <layout>p2</layout>
-            <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
+            <url>file:/${basedir}/../../buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/target/repository</url>
         </repository>
     </repositories>
+
     <profiles>
-        <profile>
-            <id>tycho.local.compdeps</id>
-            <activation>
-                <property>
-                    <name>local.compdeps</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <repositories>
-                <repository>
-                     <id>Local_CompDeps</id>
-                     <layout>p2</layout>
-                     <url>file:/${basedir}/../../buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/target/repository</url>
-                </repository>
-             </repositories>
-        </profile>
-        <profile>
-            <id>hosted.compdeps</id>
-            <activation>
-                <property>
-                    <name>local.compdeps</name>
-                    <value>false</value>
-                </property>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>EL_CompDeps</id>
-                    <layout>p2</layout>
-                    <url>http://archive.eclipse.org/rt/eclipselink/compdeps27-update</url>
-                </repository>
-             </repositories>
-        </profile>
         <profile>
             <id>full-build</id>
             <activation>
@@ -230,6 +175,19 @@
                 <artifactId>tycho-compiler-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+                    <target>1.8</target>
+                    <extraClasspathElements>
+                        <dependency>
+                            <groupId>com.sun.activation</groupId>
+                            <artifactId>jakarta.activation</artifactId>
+                            <version>1.2.1</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>jakarta.xml.bind</groupId>
+                            <artifactId>jakarta.xml.bind-api</artifactId>
+                            <version>2.3.2</version>
+                        </dependency>
+                    </extraClasspathElements>
                     <!-- Set to force OSGi Compatability settings (defaults to "false") (Only available as of Tycho 0.16.0) -->
                     <!-- requireJREPackageImports>true</requireJREPackageImports -->
                     <!-- compilerArgument>-nowarn</compilerArgument> <disable all warnings -->
@@ -253,7 +211,42 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+                    <dependency-resolution>
+                        <extraRequirements>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>com.sun.activation.jakarta.activation</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>jakarta.xml.bind-api</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>jakarta.xml.ws-api</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>jakarta.annotation-api</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>org.glassfish.corba.glassfish-corba-omgapi</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>jakarta.xml.soap-api</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                        </extraRequirements>
+                    </dependency-resolution>
                     <executionEnvironmentDefault>JavaSE-1.8</executionEnvironmentDefault>
+                    <resolveWithExecutionEnvironmentConstraints>false</resolveWithExecutionEnvironmentConstraints>
                     <pomDependencies>consider</pomDependencies>
                     <resolver>p2</resolver>
                     <environments>

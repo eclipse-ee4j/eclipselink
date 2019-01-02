@@ -9,6 +9,7 @@ Bundle-Version: 2.7.4.qualifier
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: org.eclipse.persistence.jpars
 Import-Package: javax.ejb,
+ javax.annotation,
  javax.ws.rs;resolution:=optional;version="2.0.1",
  javax.ws.rs.core;resolution:=optional;version="2.0.1"
 
