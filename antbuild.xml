@@ -500,7 +500,6 @@
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
              <arg value="clean"/>
              <classpath>
@@ -568,12 +567,12 @@
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
-        <echo message="    clean install"/>
+        <echo message="    clean verify"/>
         <java dir="${eclipselink.compdeps.internal}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-            <arg line="clean install"/>
+            <arg line="clean verify"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>
@@ -593,7 +592,7 @@
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
-            <arg line="${maven.goals}"/>
+            <arg line="clean verify"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>
@@ -635,7 +634,6 @@
         <copy-plugin from="jakarta.xml.soap-api*.jar" to="jakarta.xml.soap-api.jar"/>
         <copy-plugin from="jakarta.xml.ws-api*.jar" to="jakarta.xml.ws-api.jar"/>
         <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
-        <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
         <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar"/>
         <copy-plugin from="org.eclipse.persistence.sun-misc*.jar" to="org.eclipse.persistence.sun-misc_1.0.0.v20181030.jar"/>
         <!--Bundle-SymbolicName is not available-->
@@ -660,10 +658,10 @@
         <copy-plugin from="org.glassfish.pfl.pfl-tf*.jar" to="org.glassfish.pfl.pfl-tf_4.0.1.b003.jar"/>
         <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.mongodb.mongo-java-driver_3.2.0.jar"/>
         <copy-plugin from="osgi.core*.jar" to="org.osgi.core_1.2.0.jar"/>
-        <copy-plugin from="org.slf4j.api*.jar" to="org.slf4j.api_1.7.2.v20121108-1250.jar"/>
+        <copy-plugin from="slf4j.api*.jar" to="org.slf4j.api_1.7.2.v20121108-1250.jar"/>
         <!--Replacement for ch.qos.logback.slf4j-->
         <!--TODO Change dependency from ch.qos.logback.slf4j* to org.slf4j.nop*-->
-        <copy-plugin from="org.slf4j.nop*.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>
+        <copy-plugin from="slf4j.nop*.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>
         <copy-plugin from="osgi.cmpn*.jar" to="osgi.cmpn_4.1.0.jar"/>
 
         <!-- Copy source jars -->
@@ -679,7 +677,6 @@
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
-        <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
         <echo message="    -Declipselink.full=true"/>
         <echo message="    ${maven.goals}"/>
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
@@ -688,7 +685,6 @@
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
              <arg line="${maven.goals}"/>
              <classpath>
@@ -756,7 +752,6 @@
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
              <arg value="clean"/>
@@ -784,7 +779,6 @@
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
-        <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
         <echo message="    -D${oracle.target}=true"/>
         <echo message="    -Doracle.p2.url=${oracle.p2.url}"/>
         <echo message="    ${maven.goals}"/>
@@ -794,7 +788,6 @@
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
              <arg line="${maven.goals}"/>

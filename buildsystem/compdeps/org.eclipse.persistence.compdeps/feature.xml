@@ -82,6 +82,13 @@
             unpack="false"/>
 
     <plugin
+            id="javax.el-api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
             id="org.glassfish.hk2.external.jakarta.inject"
             download-size="0"
             install-size="0"
@@ -174,6 +181,13 @@
 
     <plugin
             id="jakarta.xml.ws-api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="javax.wsdl"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -343,13 +357,6 @@
             unpack="false"/>
 
     <plugin
-            id="org.glassfish.pfl.pfl-test"
-            download-size="0"
-            install-size="0"
-            version="0.0.0"
-            unpack="false"/>
-
-    <plugin
             id="org.glassfish.pfl.pfl-tf"
             download-size="0"
             install-size="0"
@@ -364,14 +371,42 @@
             unpack="false"/>
 
     <plugin
-            id="org.slf4j.api"
+            id="slf4j.api"
             download-size="0"
             install-size="0"
             version="0.0.0"
             unpack="false"/>
 
     <plugin
-            id="org.slf4j.nop"
+            id="slf4j.nop"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="commonj.sdo"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="commonj.sdo.source"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.jgroups"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.apache.servicemix.bundles.ant"
             download-size="0"
             install-size="0"
             version="0.0.0"
