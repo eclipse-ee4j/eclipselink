@@ -301,14 +301,13 @@ public class JsonStructureReader extends XMLReaderAdapter {
             }
             String uri = Constants.EMPTY_STRING;
             if (isNamespaceAware() && namespaces != null) {
-            	uri=null;
                 if (parentLocalName.length() > 2) {
                     int nsIndex = parentLocalName.indexOf(getNamespaceSeparator(), 1);
                     if (nsIndex > -1) {
                         String prefix = parentLocalName.substring(0, nsIndex);
                         uri = namespaces.resolveNamespacePrefix(prefix);
                     }
-                    if (uri == null) {
+                    if (uri == null || uri == Constants.EMPTY_STRING) {
                         uri = namespaces.getDefaultNamespaceURI();
                     } else {
                         parentLocalName = parentLocalName.substring(nsIndex + 1);
@@ -405,7 +404,6 @@ public class JsonStructureReader extends XMLReaderAdapter {
             String localName = name;
             String uri = Constants.EMPTY_STRING;
             if (isNamespaceAware() && namespaces != null) {
-            	uri=null;
                 if (localName.length() > 2) {
                     int nsIndex = localName.indexOf(getNamespaceSeparator(), 1);
                     String prefix = Constants.EMPTY_STRING;
@@ -413,7 +411,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                         prefix = localName.substring(0, nsIndex);
                     }
                     uri = namespaces.resolveNamespacePrefix(prefix);
-                    if (uri == null) {
+                    if (uri == null || uri == Constants.EMPTY_STRING) {
                         uri = namespaces.getDefaultNamespaceURI();
                     } else {
                         localName = localName.substring(nsIndex + 1);
@@ -453,12 +451,12 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 if(attributePrefix == null && nv !=null ){
                   return;
                 }
-			} else if (isUnmarshalRecordWithinAdapter()) {
-				@SuppressWarnings("rawtypes")
-				final UnmarshalRecord contentHandler_ = getUnmarshalRecordFromAdapter();
-				if (jsonTypeCompatibility) {
-					if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !contentHandler_.getXPathNode().hasTypeChild()) {
-						return;
+            } else if (isUnmarshalRecordWithinAdapter()) {
+                @SuppressWarnings("rawtypes")
+                final UnmarshalRecord contentHandler_ = getUnmarshalRecordFromAdapter();
+                if (jsonTypeCompatibility) {
+				    if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !contentHandler_.getXPathNode().hasTypeChild()) {
+				        return;
 					}
 				}
 				boolean isTextValue = isTextValue(localName, contentHandler_);
