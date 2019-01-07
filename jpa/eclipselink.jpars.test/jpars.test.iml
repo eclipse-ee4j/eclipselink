@@ -59,7 +59,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence.source_2.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence-source_2.2.2.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
