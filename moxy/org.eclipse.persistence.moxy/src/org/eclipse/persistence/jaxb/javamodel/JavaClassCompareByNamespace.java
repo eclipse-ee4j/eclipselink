@@ -21,9 +21,9 @@ import java.util.Map;
 
 public class JavaClassCompareByNamespace implements Comparator<JavaClass>{
 
-    Map<String, TypeInfo> typeInfo;
+    private final Map<String, TypeInfo> typeInfo;
 
-    public JavaClassCompareByNamespace(Map<String, TypeInfo> typeInfo) {
+    public JavaClassCompareByNamespace(final Map<String, TypeInfo> typeInfo) {
         this.typeInfo = typeInfo;
     }
 
