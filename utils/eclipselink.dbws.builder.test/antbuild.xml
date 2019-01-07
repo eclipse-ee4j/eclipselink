@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,7 +135,7 @@
                      criterion="${dbwsbldr.criteria}" property="dbwsbldr.jar"
         />
         <selectbundle basename="${servlet.prefix}"  directory="${dbwsbldrtest.2.common.plugins.dir}"
-                     criterion="${servlet.criteria}" property="servlet.jar"
+                     criterion="${servlet.criteria}" property="servlet-api.jar"
         />
         <selectbundle basename="${ddlparser.prefix}"  directory="${dbwsbldrtest.2.plugins.dir}"
                      criterion="${ddlparser.criteria}" property="ddlparser.jar"
@@ -148,13 +148,13 @@
         <echo message="dbwsbldr.jar ='${dbwsbldrtest.2.common.plugins.dir}/${dbwsbldr.jar}'"/>
         <!-- property name="dbwsbldr.jar"  value="${dbwsbldr.prefix}_${version.string}.jar"/>
         <echo message="dbwsbldr.jar ='${dbwsbldr.jar}'"/ -->
-        <echo message="servlet.jar  ='${dbwsbldrtest.2.common.plugins.dir}/${servlet.jar}'"/>
+        <echo message="servlet-api.jar  ='${dbwsbldrtest.2.common.plugins.dir}/${servlet-api.jar}'"/>
         <echo message="ddlparser.jar='${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}'"/>
         <echo message="wsdl.jar     ='${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}'"/>
         <echo message="persistence.jar ='${dbwsbldrtest.2.jpa.plugins.dir}/${persistence22.jar}'"/>
         <property name="eclipselink.lib"  value="${dbwsbldrtest.2.base.dir}/${eclipselink.jar}"/>
         <property name="asm.lib"          value="${dbwsbldrtest.2.common.plugins.dir}/${asm.jar}"/>
-        <property name="servlet.lib"      value="${dbwsbldrtest.2.common.plugins.dir}/${servlet.jar}"/>
+        <property name="servlet.lib"      value="${dbwsbldrtest.2.common.plugins.dir}/${servlet-api.jar}"/>
         <property name="dbwsbldr.lib"     value="${dbwsbldrtest.2.common.plugins.dir}/${dbwsbldr.jar}"/>
         <property name="ddlparser.lib"    value="${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}"/>

@@ -61,7 +61,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-osgi.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>

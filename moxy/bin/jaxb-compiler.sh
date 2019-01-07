@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,8 @@ JVM_ARGS="-Xmx256m"
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../jlib/moxy/com.sun.xml.bind.jaxb-osgi.jar:\
-`dirname $0`/../jlib/moxy/org.glassfish.jakarta.json.jar:\
+CLASSPATH=`dirname $0`/../jlib/moxy/jaxb-osgi.jar:\
+`dirname $0`/../jlib/moxy/jakarta.json.jar:\
 `dirname $0`/../jlib/moxy/jakarta.validation-api.jar:\
 `dirname $0`/../jlib/eclipselink.jar
 JAVA_ARGS="$@"

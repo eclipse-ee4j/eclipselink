@@ -1,5 +1,5 @@
 @REM
-@REM Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+@REM Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 @REM
 @REM This program and the accompanying materials are made available under the
 @REM terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,8 +25,8 @@ set JVM_ARGS=-Xmx256m
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\moxy\org.glassfish.jakarta.json.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\com.sun.xml.bind.jaxb-osgi.jar
+set CLASSPATH=%THIS%..\jlib\moxy\jakarta.json.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-osgi.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.validation-api.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
