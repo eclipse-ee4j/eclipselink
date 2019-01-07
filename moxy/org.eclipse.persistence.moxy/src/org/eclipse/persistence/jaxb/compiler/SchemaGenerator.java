@@ -76,6 +76,7 @@ import org.eclipse.persistence.jaxb.compiler.facets.PatternListFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.SizeFacet;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaClassCompareByNamespace;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema;
@@ -152,6 +153,8 @@ public class SchemaGenerator {
         this.schemaTypeInfo = new HashMap<String, SchemaTypeInfo>(typeInfo.size());
         this.arrayClassesToGeneratedClasses = arrayClassesToGeneratedClasses;
 
+        //sort input classes before schema name (like schema1.xsd, schema2.xsd....) is generated and assigned
+        typeInfoClasses.sort(new JavaClassCompareByNamespace(typeInfo));
         for (JavaClass javaClass : typeInfoClasses) {
             addSchemaComponents(javaClass);
         }
