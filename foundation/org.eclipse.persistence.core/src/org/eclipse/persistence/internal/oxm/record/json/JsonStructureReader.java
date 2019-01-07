@@ -320,8 +320,8 @@ public class JsonStructureReader extends XMLReaderAdapter {
             boolean isTextValue;
             int arraySize = jsonArray.size();
             if (arraySize == 0) {
-                if (contentHandler instanceof UnmarshalRecord  || isUnmarshalRecordWithinAdapter()) {
-    				final UnmarshalRecord ur = this.contentHandler instanceof UnmarshalRecord ? (UnmarshalRecord) this.contentHandler : getUnmarshalRecordFromAdapter();
+                if (contentHandler instanceof UnmarshalRecord || isUnmarshalRecordWithinAdapter()) {
+                    final UnmarshalRecord ur = this.contentHandler instanceof UnmarshalRecord ? (UnmarshalRecord) this.contentHandler : getUnmarshalRecordFromAdapter();
                     XPathNode node = ur.getNonAttributeXPathNode(uri, parentLocalName, parentLocalName, null);
                     if (node != null) {
                         NodeValue nv = node.getNodeValue();
@@ -339,7 +339,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             XPathFragment groupingXPathFragment = null;
             XPathFragment itemXPathFragment = null;
             if (contentHandler instanceof UnmarshalRecord || isUnmarshalRecordWithinAdapter()) {
-				final UnmarshalRecord contentHandler_ = contentHandler instanceof UnmarshalRecord ? (UnmarshalRecord) contentHandler : getUnmarshalRecordFromAdapter();
+                final UnmarshalRecord contentHandler_ = contentHandler instanceof UnmarshalRecord ? (UnmarshalRecord) contentHandler : getUnmarshalRecordFromAdapter();
                 isTextValue = isTextValue(parentLocalName, contentHandler_);
                 UnmarshalRecord unmarshalRecord = contentHandler_;
                 if (unmarshalRecord.getUnmarshaller().isWrapperAsCollectionName()) {
@@ -377,24 +377,24 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
                     if (!isTextValue) {
                         if (null != itemXPathFragment) {
-                            contentHandler.startElement(itemXPathFragment.getNamespaceURI(), itemXPathFragment.getLocalName(), itemXPathFragment.getLocalName(), attributes.setValue(nextArrayValue, attributePrefix,namespaces, getNamespaceSeparator(), isNamespaceAware()));
+                            contentHandler.startElement(itemXPathFragment.getNamespaceURI(), itemXPathFragment.getLocalName(), itemXPathFragment.getLocalName(), attributes.setValue(nextArrayValue, attributePrefix, namespaces, getNamespaceSeparator(), isNamespaceAware()));
                         } else {
-                            contentHandler.startElement(uri, parentLocalName,parentLocalName, attributes.setValue(nextArrayValue, attributePrefix,namespaces, getNamespaceSeparator(), isNamespaceAware()));
+                            contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setValue(nextArrayValue, attributePrefix, namespaces, getNamespaceSeparator(), isNamespaceAware()));
                         }
 
                     }
                     parseValue(nextArrayValue);
                     if (!isTextValue) {
                         if (null != itemXPathFragment) {
-                            contentHandler.endElement(itemXPathFragment.getNamespaceURI(),itemXPathFragment.getLocalName(),itemXPathFragment.getLocalName());
+                            contentHandler.endElement(itemXPathFragment.getNamespaceURI(), itemXPathFragment.getLocalName(), itemXPathFragment.getLocalName());
                         } else {
-                            contentHandler.endElement(uri, parentLocalName,parentLocalName);
+                            contentHandler.endElement(uri, parentLocalName, parentLocalName);
                         }
                     }
                 }
             }
             if (null != groupingXPathFragment) {
-                contentHandler.endElement(uri,groupingXPathFragment.getLocalName(),groupingXPathFragment.getLocalName());
+                contentHandler.endElement(uri, groupingXPathFragment.getLocalName(), groupingXPathFragment.getLocalName());
             }
             endCollection();
         } else {
@@ -442,33 +442,32 @@ public class JsonStructureReader extends XMLReaderAdapter {
                         return;
                     }
                 }
-                boolean isTextValue = isTextValue(localName,(UnmarshalRecord) contentHandler);
+                boolean isTextValue = isTextValue(localName, (UnmarshalRecord) contentHandler);
                 if (isTextValue) {
                     parseValue(jsonValue);
                     return;
                 }
-                NodeValue nv = ((UnmarshalRecord)contentHandler).getAttributeChildNodeValue(uri, localName);
-                if(attributePrefix == null && nv !=null ){
-                  return;
+                NodeValue nv = ((UnmarshalRecord) contentHandler).getAttributeChildNodeValue(uri, localName);
+                if (attributePrefix == null && nv != null) {
+                    return;
                 }
             } else if (isUnmarshalRecordWithinAdapter()) {
-                @SuppressWarnings("rawtypes")
-                final UnmarshalRecord contentHandler_ = getUnmarshalRecordFromAdapter();
+                @SuppressWarnings("rawtypes") final UnmarshalRecord contentHandler_ = getUnmarshalRecordFromAdapter();
                 if (jsonTypeCompatibility) {
-				    if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !contentHandler_.getXPathNode().hasTypeChild()) {
-				        return;
-					}
-				}
-				boolean isTextValue = isTextValue(localName, contentHandler_);
-				if (isTextValue) {
-					parseValue(jsonValue);
-					return;
-				}
-				NodeValue nv = contentHandler_.getAttributeChildNodeValue(uri, localName);
-				if (attributePrefix == null && nv != null) {
-					return;
-				}
-			}
+                    if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !contentHandler_.getXPathNode().hasTypeChild()) {
+                        return;
+                    }
+                }
+                boolean isTextValue = isTextValue(localName, contentHandler_);
+                if (isTextValue) {
+                    parseValue(jsonValue);
+                    return;
+                }
+                NodeValue nv = contentHandler_.getAttributeChildNodeValue(uri, localName);
+                if (attributePrefix == null && nv != null) {
+                    return;
+                }
+            }
 
             if (jsonValue.getValueType() == ValueType.NULL) {
                 contentHandler.setNil(true);
@@ -482,18 +481,18 @@ public class JsonStructureReader extends XMLReaderAdapter {
 
     }
 
-	private UnmarshalRecord getUnmarshalRecordFromAdapter() {
-		return (UnmarshalRecord) ((ValidatingContentHandler) ((ExtendedContentHandlerAdapter) contentHandler)
-				.getContentHandler()).getContentHandler();
-	}
+    private UnmarshalRecord getUnmarshalRecordFromAdapter() {
+        return (UnmarshalRecord) ((ValidatingContentHandler) ((ExtendedContentHandlerAdapter) contentHandler)
+                .getContentHandler()).getContentHandler();
+    }
 
-	private boolean isUnmarshalRecordWithinAdapter() {
-		return contentHandler instanceof ExtendedContentHandlerAdapter
-				&& ((ExtendedContentHandlerAdapter) contentHandler)
-						.getContentHandler() instanceof ValidatingContentHandler
-				&& ((ValidatingContentHandler) ((ExtendedContentHandlerAdapter) contentHandler).getContentHandler())
-						.getContentHandler() instanceof UnmarshalRecord;
-	}
+    private boolean isUnmarshalRecordWithinAdapter() {
+        return contentHandler instanceof ExtendedContentHandlerAdapter
+                && ((ExtendedContentHandlerAdapter) contentHandler)
+                .getContentHandler() instanceof ValidatingContentHandler
+                && ((ValidatingContentHandler) ((ExtendedContentHandlerAdapter) contentHandler).getContentHandler())
+                .getContentHandler() instanceof UnmarshalRecord;
+    }
 
     public boolean isNullRepresentedByXsiNil(AbstractNullPolicy nullPolicy) {
         return true;
@@ -519,10 +518,10 @@ public class JsonStructureReader extends XMLReaderAdapter {
         }
 
         return ((currentNode.getNonAttributeChildrenMap() == null
-                        || currentNode.getNonAttributeChildrenMap().size() == 0
-                        || (currentNode.getNonAttributeChildrenMap().size() == 1
-                                && currentNode.getTextNode() != null)
-                ) && textWrapper != null && textWrapper.equals(localName)
+                || currentNode.getNonAttributeChildrenMap().size() == 0
+                || (currentNode.getNonAttributeChildrenMap().size() == 1
+                && currentNode.getTextNode() != null)
+        ) && textWrapper != null && textWrapper.equals(localName)
         );
     }
 
