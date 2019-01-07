@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,7 +147,7 @@
 
     <!-- Add some modules required for javadoc JDK (=10.*). -->
     <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none -->
-    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
+    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction-api.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
         <matches string="${java.version}" pattern="9\..*|10\..*"/>
     </condition>
     <condition property="is.new.jdk" value="true" else="false">
@@ -186,15 +186,15 @@
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${json-api.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${javax.validation.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${ejb.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${jms.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${transaction.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${resource-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${json.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${validation-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jms-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${transaction-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${wsrs.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${slf4j.api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${wsrs-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${slf4j-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.nosql_${version.string}.jar"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.extension_${version.string}.jar"/>
         <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>
@@ -206,12 +206,12 @@
             dir="${eclipselink.plugins}"
             includes="*nosql*"
             excludes="*source*"/>
-        <pathelement path="${eclipselink.plugins}/org.mongodb.mongo-java-driver_3.2.0.jar"/>
+        <pathelement path="${eclipselink.plugins}/${mongo-java-driver.jar}"/>
     </path>
     <path id="jpars.javadoc.path">
         <path refid="javadoc.path"/>
         <pathelement path="${eclipselink.plugins}/com.sun.jersey_1.8.0.201204181614.jar"/>
-        <pathelement path="${eclipselink.plugins}/jakarta.ejb-api.jar"/>
+        <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
     </path>
 
 <!-- ================================================================================= -->
@@ -614,61 +614,54 @@
         </macrodef>
 
          <!--Populate plugins directory from local compdeps repository.-->
-        <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="cdi.api_1.0.0.v201105160744.jar"/>
-        <copy-plugin from="ch.qos.logback.classic*.jar" to="ch.qos.logback.classic_1.0.7.v20121108-1250.jar"/>
-        <copy-plugin from="ch.qos.logback.core*.jar" to="ch.qos.logback.core_1.0.7.v20121108-1250.jar"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="com.sun.xml.bind.jaxb-osgi.jar"/>
-        <copy-plugin from="jakarta.annotation-api*.jar" to="jakarta.annotation-api.jar"/>
-        <copy-plugin from="jakarta.ejb-api*.jar" to="jakarta.ejb-api.jar"/>
-        <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="jakarta.inject.jar"/>
-        <copy-plugin from="jakarta.interceptor-api*.jar" to="jakarta.interceptor-api.jar"/>
-        <copy-plugin from="jakarta.jms-api*.jar" to="jakarta.jms-api.jar"/>
-        <copy-plugin from="org.glassfish.jakarta.json*.jar" to="org.glassfish.jakarta.json.jar"/>
-        <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="com.sun.mail.jakarta.mail.jar"/>
-        <copy-plugin from="jakarta.persistence_2.2.2*.jar" to="jakarta.persistence_2.2.2.jar" todir="${eclipselink.jpa.plugins}"/>
-        <copy-plugin from="jakarta.resource-api*.jar" to="jakarta.resource-api.jar"/>
-        <copy-plugin from="jakarta.servlet-api*.jar" to="jakarta.servlet-api.jar"/>
-        <copy-plugin from="jakarta.transaction-api*.jar" to="jakarta.transaction-api.jar"/>
-        <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="jakarta.validation-api.jar"/>
-        <copy-plugin from="jakarta.ws.rs-api*.jar" to="jakarta.ws.rs-api.jar"/>
-        <copy-plugin from="jakarta.xml.bind-api_*.jar" to="jakarta.xml.bind-api.jar"/>
-        <copy-plugin from="jakarta.xml.soap-api*.jar" to="jakarta.xml.soap-api.jar"/>
-        <copy-plugin from="jakarta.xml.ws-api*.jar" to="jakarta.xml.ws-api.jar"/>
-        <copy-plugin from="org.glassfish.external.management-api*.jar" to="management-api_3.2.1.b003.jar"/>
-        <copy-plugin from="org.apache.ant*.jar" to="org.apache.ant_1.7.0.v20080627-1145.zip"/>
-        <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.eclipse.orbit.mongodb_2.10.1.v20130422-1135.jar"/>
-        <copy-plugin from="org.eclipse.persistence.sun-misc*.jar" to="org.eclipse.persistence.sun-misc_1.0.0.v20181030.jar"/>
-        <!--Bundle-SymbolicName is not available-->
-        <!--<copy-plugin from="org.glassfish.corba.exception-annotation-processor_4.2.0.b003.jar" to="org.glassfish.corba.exception-annotation-processor_4.2.0.b003.jar"/>-->
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-csiv2-idl*.jar" to="org.glassfish.corba.glassfish-corba-csiv2-idl_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-internal-api*.jar" to="org.glassfish.corba.glassfish-corba-internal-api_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-omgapi*.jar" to="org.glassfish.corba.glassfish-corba-omgapi_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.corba.glassfish-corba-orb*.jar" to="org.glassfish.corba.glassfish-corba-orb_4.2.0.b003.jar"/>
-        <copy-plugin from="org.glassfish.gmbal.gmbal*" to="org.glassfish.gmbal.gmbal_4.0.0.b002.jar"/>
-        <copy-plugin from="org.glassfish.hk2.api*.jar" to="org.glassfish.hk2.api_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.hk2.locator*.jar" to="org.glassfish.hk2.locator_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.hk2.utils*.jar" to="org.glassfish.hk2.utils_2.3.0.b10_201505192201.jar"/>
-        <copy-plugin from="org.glassfish.jersey.core.jersey-core*.jar*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>
-        <!--<copy-plugin from="org.glassfish.jersey.bundles.repackaged.jersey-guava*.jar" to="org.glassfish.jersey.bundles.repackaged.jersey-guava_2.14.0.v201504151636.jar"/>-->
-        <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="org.glassfish.jersey.core.jersey-client_2.14.0.v201504211925.jar"/>
-        <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="org.glassfish.jersey.core.jersey-common_2.14.0.v201504171603.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="org.glassfish.pfl.pfl-asm_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-basic*.jar" to="org.glassfish.pfl.pfl-basic_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-basic-tools*.jar" to="org.glassfish.pfl.pfl-basic-tools_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-dynamic*.jar" to="org.glassfish.pfl.pfl-dynamic_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-test*.jar" to="org.glassfish.pfl.pfl-test_4.0.1.b003.jar"/>
-        <copy-plugin from="org.glassfish.pfl.pfl-tf*.jar" to="org.glassfish.pfl.pfl-tf_4.0.1.b003.jar"/>
-        <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="org.mongodb.mongo-java-driver_3.2.0.jar"/>
-        <copy-plugin from="osgi.core*.jar" to="org.osgi.core_1.2.0.jar"/>
-        <copy-plugin from="org.slf4j.api*.jar" to="org.slf4j.api_1.7.2.v20121108-1250.jar"/>
-        <!--Replacement for ch.qos.logback.slf4j-->
-        <!--TODO Change dependency from ch.qos.logback.slf4j* to org.slf4j.nop*-->
-        <copy-plugin from="org.slf4j.nop*.jar" to="ch.qos.logback.slf4j_1.0.7.v20121108-1250.jar"/>
-        <copy-plugin from="osgi.cmpn*.jar" to="osgi.cmpn_4.1.0.jar"/>
+        <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="${cdi-api.jar}"/>
+        <copy-plugin from="ch.qos.logback.classic*.jar" to="${logback-classic.jar}"/>
+        <copy-plugin from="ch.qos.logback.core*.jar" to="${logback-core.jar}"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="${jaxb-core.jar}"/>
+        <copy-plugin from="jakarta.annotation-api*.jar" to="${annotation-api.jar}"/>
+        <copy-plugin from="jakarta.ejb-api*.jar" to="${ejb-api.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="${inject.jar}"/>
+        <copy-plugin from="jakarta.interceptor-api*.jar" to="${interceptor-api.jar}"/>
+        <copy-plugin from="jakarta.jms-api*.jar" to="${jms-api.jar}"/>
+        <copy-plugin from="org.glassfish.jakarta.json*.jar" to="${json.jar}"/>
+        <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="${mail.jar}"/>
+        <copy-plugin from="jakarta.persistence_2.2.2*.jar" to="${persistence22.jar}" todir="${eclipselink.jpa.plugins}"/>
+        <copy-plugin from="jakarta.resource-api*.jar" to="${resource-api.jar}"/>
+        <copy-plugin from="jakarta.servlet-api*.jar" to="${servlet-api.jar}"/>
+        <copy-plugin from="jakarta.transaction-api*.jar" to="${transaction-api.jar}"/>
+        <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="${validation-api.jar}"/>
+        <copy-plugin from="jakarta.ws.rs-api*.jar" to="${wsrs-api.jar}"/>
+        <copy-plugin from="jakarta.xml.bind-api_*.jar" to="${jaxb-api.jar}"/>
+        <copy-plugin from="jakarta.xml.soap-api*.jar" to="${soap-api.jar}"/>
+        <copy-plugin from="jakarta.xml.ws-api*.jar" to="${ws-api.jar}"/>
+        <copy-plugin from="org.glassfish.external.management-api*.jar" to="${management-api.jar}"/>
+        <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="${mongo-java-driver.jar}"/>
+        <copy-plugin from="org.eclipse.persistence.sun-misc*.jar" to="${sun-misc.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-csiv2-idl*.jar" to="${glassfish-corba-csiv2-idl.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-internal-api*.jar" to="${glassfish-corba-internal-api.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-omgapi*.jar" to="${glassfish-corba-omgapi.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-orb*.jar" to="${glassfish-corba-orb.jar}"/>
+        <copy-plugin from="org.glassfish.gmbal.gmbal*" to="${gmbal.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.api*.jar" to="${hk2-api.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.locator*.jar" to="${hk2-locator.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.utils*.jar" to="${hk2-utils.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-core*.jar*.jar" to="${jersey-core.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="${jersey-client.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="${jersey-common.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="${pfl-asm.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-basic*.jar" to="${pfl-basic.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-basic-tools*.jar" to="${pfl-basic-tools.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-dynamic*.jar" to="${pfl-dynamic.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-test*.jar" to="${pfl-test.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-tf*.jar" to="${pfl-tf.jar}"/>
+        <copy-plugin from="osgi.core*.jar" to="${osgi.core.jar}"/>
+        <copy-plugin from="osgi.cmpn*.jar" to="${osgi.cmpn.jar}"/>
+        <copy-plugin from="org.slf4j.api*.jar" to="${slf4j-api.jar}"/>
+        <copy-plugin from="org.slf4j.nop*.jar" to="${slf4j-nop.jar}"/>
 
         <!-- Copy source jars -->
-        <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="javax.xml.bind.source_2.2.12.v1410011542.jar"/>
-        <copy-plugin from="jakarta.persistence-2.2.2*sources.jar" to="jakarta.persistence.source_2.2.2.jar" todir="${eclipselink.jpa.plugins}"/>
+        <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="${jaxb-api.src.jar}"/>
+        <copy-plugin from="jakarta.persistence-2.2.2*sources.jar" to="${persistence22.src.jar}" todir="${eclipselink.jpa.plugins}"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
@@ -1599,9 +1592,8 @@
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${mail.jar}"/>
                 <include name="${jaxb-core.jar}"/>
-                <include name="${javax.validation.jar}"/>
-                <include name="${json-api.jar}"/>
-                <include name="${json-impl.jar}"/>
+                <include name="${validation-api.jar}"/>
+                <include name="${json.jar}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy/api">
                 <include name="${jaxb-api.jar}"/>
@@ -1612,7 +1604,7 @@
             <zipfileset dir="${build.dir}/"               includes="${dbws-util.jar}"             prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.dbws.builder}" includes="setenv.*, dbwsbuilder.*"      prefix="eclipselink/utils/dbws" filemode="755"/>
             <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}, *oracleddl*.jar" prefix="eclipselink/utils/dbws"/>
-            <zipfileset dir="${eclipselink.plugins}"      includes="${servlet.jar}"               prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.plugins}"      includes="${servlet-api.jar}"               prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
 <!--            <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>

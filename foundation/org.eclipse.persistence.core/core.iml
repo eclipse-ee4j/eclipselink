@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$MODULE_DIR$/../../plugins/cdi.api_1.0.0.v201105160744.jar!/" value="MODULE_DIR/../../plugins/cdi.api_1.0.0.v201105160744.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.enterprise.cdi-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.enterprise.cdi-api.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/javax.jms_1.1.0.v200906010428.jar!/" value="MODULE_DIR/../../plugins/jakarta.jms-api.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" value="MODULE_DIR/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" value="src:/MODULE_DIR/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" />
@@ -28,7 +28,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/cdi.api_1.0.0.v201105160744.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.enterprise.cdi-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -103,7 +103,7 @@
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence.source_2.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence-source_2.2.2.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
