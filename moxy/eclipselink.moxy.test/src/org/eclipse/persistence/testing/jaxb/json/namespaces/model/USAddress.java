@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.json.namespaces.model;
 
 import java.math.BigInteger;
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -185,4 +186,21 @@ public class USAddress {
         this.zip = value;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        USAddress usAddress = (USAddress) o;
+        return Objects.equals(getName(), usAddress.getName()) &&
+                Objects.equals(getStreet(), usAddress.getStreet()) &&
+                Objects.equals(getCity(), usAddress.getCity()) &&
+                Objects.equals(getState(), usAddress.getState()) &&
+                Objects.equals(getZip(), usAddress.getZip());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getName(), getStreet(), getCity(), getState(), getZip());
+    }
 }

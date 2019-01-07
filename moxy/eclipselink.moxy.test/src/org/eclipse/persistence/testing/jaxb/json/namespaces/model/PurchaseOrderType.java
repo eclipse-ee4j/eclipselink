@@ -16,10 +16,8 @@ package org.eclipse.persistence.testing.jaxb.json.namespaces.model;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import java.util.Objects;
+import javax.xml.bind.annotation.*;
 
 
 /**
@@ -47,6 +45,7 @@ import javax.xml.bind.annotation.XmlType;
     "shipTo",
     "billTo"
 })
+@XmlRootElement(name="PurchaseOrder")
 public class PurchaseOrderType {
 
     @XmlElement(name = "ShipTo", required = true)
@@ -119,4 +118,18 @@ public class PurchaseOrderType {
         this.shipTo = shipTo;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PurchaseOrderType that = (PurchaseOrderType) o;
+        return Objects.equals(getShipTo(), that.getShipTo()) &&
+                Objects.equals(getBillTo(), that.getBillTo());
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(getShipTo(), getBillTo());
+    }
 }
