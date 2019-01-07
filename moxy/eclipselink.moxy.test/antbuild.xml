@@ -380,6 +380,7 @@
             <arg line="-Djaxb-api.jar=${jaxb-api.jar}"/>
             <arg line="-Djaxrs.jar=${jaxrs.jar}"/>
             <arg line="-Dasm.jar=${asm.jar}"/>
+            <arg line="-Dasm.version=${asm.version}"/>
             <arg line="-Dtest.junit.jvm=${test.junit.jvm}"/>
             <arg line="-DargLine='${test.junit.osgi.jvm.modules.prop}'"/>
             <classpath>

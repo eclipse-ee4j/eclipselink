@@ -41,6 +41,9 @@ import org.osgi.framework.Version;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class OSGiBundleTest {
+    // ASM bundle symbolic name
+    private static final String ASM_BUNDLE_NAME = "org.eclipse.persistence.asm";
+
     // MOXy bundle symbolic name
     private static final String MOXY_BUNDLE_NAME = "org.eclipse.persistence.moxy";
 
@@ -58,7 +61,7 @@ public class OSGiBundleTest {
     @Test
     public void testAsmVersion() {
         Class<?> c = loadClass("org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.asm", "7.0.0.v201811131354");
+        assertClassLoadedByBundle(c, ASM_BUNDLE_NAME, System.getProperty("asm.version", "7.0.0.v201811131354"));
     }
 
     @Test
