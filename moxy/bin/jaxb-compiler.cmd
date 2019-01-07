@@ -27,7 +27,9 @@ call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
 set EL_PATH=%THIS%..\jlib\moxy\jakarta.json.jar
 set EL_PATH=%EL_PATH%;%THIS%..\jlib\moxy\jaxb-osgi.jar
+set EL_PATH=%EL_PATH%;%THIS%..\jlib\moxy\jakarta.activation.jar
 set EL_PATH=%EL_PATH%;%THIS%..\jlib\moxy\jakarta.validation-api.jar
+set EL_PATH=%EL_PATH%;%THIS%..\jlib\moxy\api\jakarta.xml.bind-api.jar
 set EL_PATH=%EL_PATH%;%THIS%..\jlib\eclipselink.jar
 set JAXB_API_PATH=%THIS%..\jlib\moxy\api\jakarta.xml.bind-api.jar
 set MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC

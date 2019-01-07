@@ -21,8 +21,10 @@ JVM_ARGS="-Xmx256m"
 
 # Please do not change any of the following lines:
 EL_PATH=`dirname $0`/../jlib/moxy/jaxb-osgi.jar:\
+`dirname $0`/../jlib/moxy/jakarta.activation.jar:\
 `dirname $0`/../jlib/moxy/jakarta.json.jar:\
 `dirname $0`/../jlib/moxy/jakarta.validation-api.jar:\
+`dirname $0`/../jlib/moxy/api/jakarta.xml.bind-api.jar:\
 `dirname $0`/../jlib/eclipselink.jar
 JAXB_API_PATH=`dirname $0`/../jlib/moxy/api/jakarta.xml.bind-api.jar
 MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC
