@@ -69,14 +69,14 @@ public class NamespaceOnXMLOnlyTestCases extends JAXBWithJSONTestCases {
     }
 
     @Override
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         super.setUp();
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         schema = sf.newSchema(Thread.currentThread().getContextClassLoader().getResource(XML_SCHEMA_RESOURCE));
     }
 
     @Override
-    public Map getProperties(){
+    public Map getProperties() {
         Map props = new HashMap();
         Map<String, String> namespaceMap = new HashMap<>();
         namespaceMap.put(NAMESPACE, "");
@@ -88,7 +88,7 @@ public class NamespaceOnXMLOnlyTestCases extends JAXBWithJSONTestCases {
 
     @Override
     public Unmarshaller getJAXBUnmarshaller() {
-        Unmarshaller unmarshaller =  super.getJAXBUnmarshaller();
+        Unmarshaller unmarshaller = super.getJAXBUnmarshaller();
         unmarshaller.setSchema(schema);
         return unmarshaller;
     }

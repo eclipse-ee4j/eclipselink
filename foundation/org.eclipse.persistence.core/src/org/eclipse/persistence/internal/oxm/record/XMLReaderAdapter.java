@@ -153,7 +153,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
         private ContentHandler contentHandler;
 
-		public ExtendedContentHandlerAdapter(ContentHandler contentHandler) {
+        public ExtendedContentHandlerAdapter(ContentHandler contentHandler) {
             this.contentHandler = contentHandler;
         }
 
