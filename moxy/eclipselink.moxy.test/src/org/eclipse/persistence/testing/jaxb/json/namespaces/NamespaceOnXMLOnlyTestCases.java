@@ -15,10 +15,13 @@
 package org.eclipse.persistence.testing.jaxb.json.namespaces;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.MarshallerProperties;
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.model.PurchaseOrderType;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.model.USAddress;
 
+import javax.xml.bind.PropertyException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +29,7 @@ import java.util.Map;
 
 public class NamespaceOnXMLOnlyTestCases extends JAXBWithJSONTestCases {
 
+    private static final String NAMESPACE = "http://tempuri.org/PurchaseOrderSchema.xsd";
     private final static String XML_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/namespaces/purchase_order.xml";
     private final static String JSON_RESOURCE = "org/eclipse/persistence/testing/jaxb/json/namespaces/purchase_order.json";
 
@@ -59,21 +63,33 @@ public class NamespaceOnXMLOnlyTestCases extends JAXBWithJSONTestCases {
         return purchaseOrder;
     }
 
+    public void setUp() throws Exception{
+        super.setUp();
+        Map<String, String> namespaces = new HashMap<String, String>();
+        namespaces.put(NAMESPACE, "");
+        try{
+            this.getJSONMarshaller().setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, true);
+            this.getJSONUnmarshaller().setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, true);
+            this.getJSONUnmarshaller().setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, namespaces);
+            this.getJSONUnmarshaller().setProperty(UnmarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
+            this.getJSONUnmarshaller().setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, "@");
+        }catch(PropertyException e){
+            e.printStackTrace();
+            fail("An error occurred setting properties during setup.");
+        }
+    }
 
     public Map getProperties(){
         Map props = new HashMap();
         props.put(JAXBContextProperties.JSON_ATTRIBUTE_PREFIX, "@");
-        /*
         Map<String, String> namespaceMap = new HashMap<String, String>();
 
-        namespaceMap.put("ns0", "namespace0");
-        namespaceMap.put("ns1", "namespace1");
-        namespaceMap.put("ns2", "namespace2");
-        namespaceMap.put("ns3", "namespace3");
-
-
-        props.put(JAXBContext.NAMESPACES, namespaceMap);*/
+        namespaceMap.put(NAMESPACE, "");
+        props.put(JAXBContextProperties.NAMESPACE_PREFIX_MAPPER, namespaceMap);
+        props.put(JAXBContextProperties.JSON_INCLUDE_ROOT, true);
+        props.put(JAXBContextProperties.JSON_WRAPPER_AS_ARRAY_NAME, true);
         return props;
     }
+
 
 }

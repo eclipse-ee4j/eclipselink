@@ -322,10 +322,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
             int arraySize = jsonArray.size();
             if (arraySize == 0) {
                 if (contentHandler instanceof UnmarshalRecord  || isUnmarshalRecordWithinAdapter()) {
-                    //UnmarshalRecord ur = (UnmarshalRecord) contentHandler;
-    				final UnmarshalRecord ur = this.contentHandler instanceof UnmarshalRecord
-    						? (UnmarshalRecord) this.contentHandler
-    						: getUnmarshalRecordFromAdapter();
+    				final UnmarshalRecord ur = this.contentHandler instanceof UnmarshalRecord ? (UnmarshalRecord) this.contentHandler : getUnmarshalRecordFromAdapter();
                     XPathNode node = ur.getNonAttributeXPathNode(uri, parentLocalName, parentLocalName, null);
                     if (node != null) {
                         NodeValue nv = node.getNodeValue();
@@ -343,11 +340,9 @@ public class JsonStructureReader extends XMLReaderAdapter {
             XPathFragment groupingXPathFragment = null;
             XPathFragment itemXPathFragment = null;
             if (contentHandler instanceof UnmarshalRecord || isUnmarshalRecordWithinAdapter()) {
-				final UnmarshalRecord contentHandler_ = contentHandler instanceof UnmarshalRecord
-						? (UnmarshalRecord) contentHandler
-						: getUnmarshalRecordFromAdapter();
-                isTextValue = isTextValue(parentLocalName, (UnmarshalRecord) contentHandler_);
-                UnmarshalRecord unmarshalRecord = (UnmarshalRecord) contentHandler_;
+				final UnmarshalRecord contentHandler_ = contentHandler instanceof UnmarshalRecord ? (UnmarshalRecord) contentHandler : getUnmarshalRecordFromAdapter();
+                isTextValue = isTextValue(parentLocalName, contentHandler_);
+                UnmarshalRecord unmarshalRecord = contentHandler_;
                 if (unmarshalRecord.getUnmarshaller().isWrapperAsCollectionName()) {
                     XPathNode unmarshalRecordXPathNode = unmarshalRecord.getXPathNode();
                     if (null != unmarshalRecordXPathNode) {
@@ -462,8 +457,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
 				@SuppressWarnings("rawtypes")
 				final UnmarshalRecord contentHandler_ = getUnmarshalRecordFromAdapter();
 				if (jsonTypeCompatibility) {
-					if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE)
-							&& !contentHandler_.getXPathNode().hasTypeChild()) {
+					if (!isNamespaceAware() && localName.equals(Constants.SCHEMA_TYPE_ATTRIBUTE) && !contentHandler_.getXPathNode().hasTypeChild()) {
 						return;
 					}
 				}

@@ -12,10 +12,7 @@
 
 -->
 
-<PurchaseOrder
-        xmlns="http://tempuri.org/PurchaseOrderSchema.xsd"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://tempuri.org/PurchaseOrderSchema.xsd">
+<PurchaseOrder xmlns="http://tempuri.org/PurchaseOrderSchema.xsd">
     <ShipTo>
         <name>Oracle Czech</name>
         <street>U Trezorky</street>
