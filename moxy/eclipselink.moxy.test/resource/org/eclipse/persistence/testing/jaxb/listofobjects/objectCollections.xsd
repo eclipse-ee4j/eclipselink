@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,20 @@
 
 -->
 
-<xsd:schema targetNamespace="http://jaxb.dev.java.net/array" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ns0="http://jaxb.dev.java.net/array">
-   <xsd:complexType name="anyTypeArray">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="objectObjectMap">
+      <xsd:sequence>
+         <xsd:element name="entry" minOccurs="0" maxOccurs="unbounded">
+            <xsd:complexType>
+               <xsd:sequence>
+                  <xsd:element name="key" type="xsd:anyType" minOccurs="0"/>
+                  <xsd:element name="value" type="xsd:anyType" minOccurs="0"/>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:element>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="arrayListOfObject">
       <xsd:sequence>
          <xsd:element name="item" type="xsd:anyType" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
