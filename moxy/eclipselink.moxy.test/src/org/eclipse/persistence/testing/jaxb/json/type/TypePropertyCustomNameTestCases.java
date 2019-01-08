@@ -14,6 +14,7 @@
 //     Radek Felcman - 2.7.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.json.type;
 
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
@@ -22,7 +23,9 @@ import org.eclipse.persistence.testing.jaxb.json.type.model.*;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Tests to marshall, unmarshal JSON with JSON_TYPE_ATTRIBUTE_NAME marshall and unmarshall property.
@@ -41,12 +44,24 @@ public class TypePropertyCustomNameTestCases extends JSONMarshalUnmarshalTestCas
 
     public void setUp() throws Exception{
         super.setUp();
+    }
 
-        jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
-        jsonMarshaller.setProperty(MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME, "mytype");
+    @Override
+    public Map getProperties() {
+        Map<String, Object> properties = new HashMap<String, Object>(3);
+        properties.put(JAXBContextProperties.JSON_INCLUDE_ROOT, false);
+        properties.put(JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME, "mytype");
+        return properties;
+    }
 
-        jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
-        jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME, "mytype");
+    public void testMarshallerProperty() throws Exception {
+        assertFalse((Boolean) jsonMarshaller.getProperty(MarshallerProperties.JSON_INCLUDE_ROOT));
+        assertEquals("mytype", jsonMarshaller.getProperty(MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME));
+    }
+
+    public void testUnmarshallerProperty() throws Exception {
+        assertFalse((Boolean) jsonUnmarshaller.getProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT));
+        assertEquals("mytype", jsonUnmarshaller.getProperty(MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME));
     }
 
     protected Object getControlObject() {

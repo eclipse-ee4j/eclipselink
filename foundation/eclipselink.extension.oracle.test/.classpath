@@ -10,7 +10,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.transaction-api.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.jms-api.jar" sourcepath="/ECLIPSELINK_HOME/plugins/javax.jms/src"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.2.1.v201807122140.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence_2.2.2.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/ojdbc8.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/ucp.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/aqapi.jar"/>

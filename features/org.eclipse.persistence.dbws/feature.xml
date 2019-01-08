@@ -37,14 +37,14 @@
    </url>
 
    <plugin
-         id="javax.mail"
+         id="com.sun.mail.jakarta.mail"
          download-size="0"
          install-size="0"
          version="@MAIL_VERSION@"
          unpack="false"/>
 
    <plugin
-         id="javax.servlet"
+         id="jakarta.servlet-api"
          download-size="0"
          install-size="0"
          version="@SERVLET_VERSION@"

@@ -4,7 +4,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
         <classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
-        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.slf4j.api_1.7.2.v20121108-1250.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.slf4j.api.source_1.7.2.v20121108-1250.jar"/>
+        <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/slf4j-api.jar" sourcepath="/ECLIPSELINK_HOME/plugins/slf4j-api.source.jar"/>
         <classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jgroups.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

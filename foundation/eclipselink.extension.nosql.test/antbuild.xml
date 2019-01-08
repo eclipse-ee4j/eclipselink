@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -185,9 +185,6 @@
         <mkdir dir="${nosql_test.report.dir}"/ -->
 
         <!-- Determine availability of compile dependencies   -->
-        <selectbundle basename="org.eclipse.orbit.mongodb" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,9.0.0)" property="mongo.lib" includepath="true"
-        />
         <selectbundle basename="org.mongodb.mongo-java-driver" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,9.0.0)" property="mongodb.lib" includepath="true"
         />
@@ -226,7 +223,6 @@
         <available file="${nosql_test.2.nosql.dir}/${resource.dir}"     type="dir"   property="nosql.resources.exist"/>
         <available file="${jdbc.driver.jar}"                                         property="jdbc.jar.exist"/>
 
-        <say  message="mongo.lib:         '${mongo.lib}'"            if="mongo.lib"/>
         <say  message="mongodb.lib:       '${mongodb.lib}'"          if="mongodb.lib"/>
         <say  message="persistence.lib:   '${persistence.lib}'"      if="persistence.lib"/>
         <say  message="resource.lib:      '${resource.lib}'"         if="resource.lib"/>
@@ -278,7 +274,6 @@
                 <isset property="test.framework.exist"/>
                 <isset property="jpatest.framework.exist"/>
                 <!--isset property="junit.lib.exist"/-->
-                <isset property="mongo.lib"/>
                 <isset property="mongodb.lib"/>
                 <isset property="resource.lib"/>
             </and>
@@ -372,7 +367,7 @@
         <path id="nosql_test.run.mongo.path">
             <path refid="nosql_test.compile.base.path"/>
             <path refid="nosql_test.nosql.dependency.base.path"/>
-            <pathelement path="${mongo.lib}"/>
+            <pathelement path="${mongodb.lib}"/>
             <path refid="nosql_test.runtime.only.path"/>
         </path>
     </target>
@@ -391,8 +386,6 @@
         <echo message="    dependency location:"/>
         <say  message="        found.   :: '${extensions.depend.dir}'"                                          if="ext.depend.dir.exist"/>
         <say  message="        missing! :: '${extensions.depend.dir}'"                                      unless="ext.depend.dir.exist"/>
-        <say  message="        found.   :: '${mongo.lib}'"                                                      if="mongo.lib"/>
-        <say  message="        missing! :: '${extensions.depend.dir}/${mongo.jar}'"                         unless="mongo.lib"/>
         <say  message="        found.   :: '${mongodb.lib}'"                                                      if="mongodb.lib"/>
         <say  message="        missing! :: '${extensions.depend.dir}/${mongodb.jar}'"                         unless="mongodb.lib"/>
         <fail message="Missing dependencies!" unless="dependency.ok"/>
