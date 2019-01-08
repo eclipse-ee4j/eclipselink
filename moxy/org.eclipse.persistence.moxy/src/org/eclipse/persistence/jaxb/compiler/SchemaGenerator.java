@@ -30,6 +30,9 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
 import javax.xml.bind.annotation.XmlSchemaType;
@@ -151,6 +154,21 @@ public class SchemaGenerator {
         this.schemaCount = 1;
         this.schemaTypeInfo = new HashMap<String, SchemaTypeInfo>(typeInfo.size());
         this.arrayClassesToGeneratedClasses = arrayClassesToGeneratedClasses;
+
+        //El Bug#543265 Bug#28854791  
+        //WSDL namespace order needs to be sorted to be in consistent across invocations.
+        Collections.sort(typeInfoClasses, new Comparator<JavaClass>() {
+            @Override
+            public int compare(JavaClass javaClass1, JavaClass javaClass2) {
+                String sourceName = javaClass1.getRawName();
+                String targetName = javaClass2.getRawName();
+                if(sourceName == null ||  targetName == null){
+                    return -1;
+                }
+
+                return sourceName.compareTo(targetName);
+            }
+        });
 
         for (JavaClass javaClass : typeInfoClasses) {
             addSchemaComponents(javaClass);
