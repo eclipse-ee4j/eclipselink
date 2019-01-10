@@ -1,0 +1,20 @@
+{
+   "PurchaseOrder":{
+      "ShipTo":[
+         {
+            "name":"Oracle Czech",
+            "street":"U Trezorky",
+            "city":"Prague",
+            "state":"Czech Republic",
+            "zip":15800
+         }
+      ],
+      "BillTo":{
+         "name":"Oracle US",
+         "street":"Oracle Parkway",
+         "city":"Redwood Shores",
+         "state":"California",
+         "zip":94065
+      }
+   }
+}
