@@ -618,6 +618,7 @@
         <copy-plugin from="ch.qos.logback.classic*.jar" to="${logback-classic.jar}"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="${logback-core.jar}"/>
         <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="${jaxb-core.jar}"/>
+        <copy-plugin from="com.sun.activation.jakarta.activation*.jar" to="${activation.jar}"/>
         <copy-plugin from="jakarta.annotation-api*.jar" to="${annotation-api.jar}"/>
         <copy-plugin from="jakarta.ejb-api*.jar" to="${ejb-api.jar}"/>
         <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="${inject.jar}"/>
@@ -1587,6 +1588,7 @@
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${mail.jar}"/>
                 <include name="${jaxb-core.jar}"/>
+                <include name="${activation.jar}"/>
                 <include name="${validation-api.jar}"/>
                 <include name="${json.jar}"/>
             </zipfileset>
