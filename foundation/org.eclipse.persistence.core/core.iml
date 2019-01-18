@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$MODULE_DIR$/../../plugins/cdi.api_1.0.0.v201105160744.jar!/" value="MODULE_DIR/../../plugins/cdi.api_1.0.0.v201105160744.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.jms_1.1.0.v200906010428.jar!/" value="MODULE_DIR/../../plugins/javax.jms_1.1.0.v200906010428.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.enterprise.cdi-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.enterprise.cdi-api.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.jms_1.1.0.v200906010428.jar!/" value="MODULE_DIR/../../plugins/jakarta.jms-api.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" value="MODULE_DIR/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" value="src:/MODULE_DIR/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.mail_1.4.0.v201005080615.jar!/" value="MODULE_DIR/../../plugins/javax.mail_1.4.0.v201005080615.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.resource_1.6.0.v201204270900.jar!/" value="MODULE_DIR/../../plugins/javax.resource_1.6.0.v201204270900.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" value="MODULE_DIR/../../plugins/javax.transaction.api_1.3.0.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041506.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041506.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041506.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041506.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/com.sun.mail.jakarta.mail.jar!/" value="MODULE_DIR/../../plugins/com.sun.mail.jakarta.mail.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.resource-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.resource-api.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.transaction-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.transaction-api.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
       <src_folder value="file://$MODULE_DIR$/resource" expected_position="1" />
     </src_description>
   </component>
-  <component name="NewModuleRootManager" inherit-compiler-output="false">
+  <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/target/classes" />
     <exclude-output />
     <content url="file://$MODULE_DIR$">
@@ -28,7 +28,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/cdi.api_1.0.0.v201105160744.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.enterprise.cdi-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -37,7 +37,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.jms_1.1.0.v200906010428.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.jms-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -48,18 +48,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.glassfish.javax.json_1.0.4.v201311181159.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.glassfish.javax.json.source_1.0.4.v201311181159.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.mail_1.4.0.v201005080615.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.glassfish.jakarta.json.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -68,7 +57,16 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.resource_1.6.0.v201204270900.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.mail.jakarta.mail.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.resource-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -79,7 +77,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.transaction-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -90,22 +88,22 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041506.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041506.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence_2.2.1.v201807122140.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence_2.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence-source_2.2.2.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

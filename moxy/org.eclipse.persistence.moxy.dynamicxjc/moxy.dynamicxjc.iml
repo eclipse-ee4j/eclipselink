@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" value="MODULE_DIR/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar!/" value="src:/MODULE_DIR/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/jaxb-core_2.2.11.v201407311112.jar!/" value="MODULE_DIR/../../plugins/jaxb-core_2.2.11.v201407311112.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" value="MODULE_DIR/../../plugins/com.sun.xml.bind.jaxb-osgi.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/jaxb-core.source_2.2.11.v201407311112.jar!/" value="src:/MODULE_DIR/../../plugins/jaxb-core.source_2.2.11.v201407311112.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
@@ -23,19 +21,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-core_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/com.sun.xml.bind.jaxb-osgi.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>

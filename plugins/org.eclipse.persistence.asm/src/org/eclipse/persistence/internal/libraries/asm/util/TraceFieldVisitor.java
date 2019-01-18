@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
 public final class TraceFieldVisitor extends FieldVisitor {
 
   /** The printer to convert the visited field into text. */
+  // DontCheck(MemberName): can't be renamed (for backward binary compatibility).
   public final Printer p;
 
   /**
@@ -55,11 +56,11 @@ public final class TraceFieldVisitor extends FieldVisitor {
   /**
    * Constructs a new {@link TraceFieldVisitor}.
    *
-   * @param fieldVisitor the field visitor to which to delegate calls. May be <tt>null</tt>.
+   * @param fieldVisitor the field visitor to which to delegate calls. May be {@literal null}.
    * @param printer the printer to convert the visited field into text.
    */
   public TraceFieldVisitor(final FieldVisitor fieldVisitor, final Printer printer) {
-    super(Opcodes.ASM6, fieldVisitor);
+    super(Opcodes.ASM7, fieldVisitor);
     this.p = printer;
   }
 

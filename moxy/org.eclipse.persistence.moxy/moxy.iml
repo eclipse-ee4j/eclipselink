@@ -2,9 +2,9 @@
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
     <libelement value="file://C:\eclipselink-runtime\moxy\org.eclipse.persistence.moxy\resource" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" value="MODULE_DIR/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041506.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041506.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041506.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041506.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.ws.rs-api.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar" />
     <src_description expected_position="0">
       <src_folder value="file://$MODULE_DIR$/src" expected_position="0" />
     </src_description>
@@ -32,7 +32,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -41,18 +41,18 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_6.2.0.v201808041506.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041506.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.validation-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -61,23 +61,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-core_2.2.11.v201407311112.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-osgi.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
           <root url="jar://$MODULE_DIR$/../../plugins/jaxb-core.source_2.2.11.v201407311112.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc.source_2.2.11.v201407311112.jar!/" />
-          <root url="jar://$MODULE_DIR$/../../plugins/jaxb-xjc_2.2.11.v201407311112.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>

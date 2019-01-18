@@ -28,6 +28,10 @@
 //       - 458877 : Add national character support
 //     02/23/2015-2.6 Dalia Abo Sheasha
 //       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
+//     11/12/2018 - Will Dazey
+//       - 540929 : 'jdbc.sql-cast' property does not copy
+//     12/06/2018 - Will Dazey
+//       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
@@ -133,6 +137,9 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /** Bind all arguments to any SQL statement. */
     protected boolean shouldBindAllParameters;
+
+    /** Bind all arguments to any SQL statement. */
+    protected boolean shouldForceBindAllParameters;
 
     /** Cache all prepared statements, this requires full parameter binding as well. */
     protected boolean shouldCacheAllStatements;
@@ -280,6 +287,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.stringBindingSize = 255;
         this.shouldTrimStrings = true;
         this.shouldBindAllParameters = true;
+        this.shouldForceBindAllParameters = false;
         this.shouldCacheAllStatements = false;
         this.shouldOptimizeDataConversion = true;
         this.statementCacheSize = 50;
@@ -974,6 +982,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setUsesByteArrayBinding(usesByteArrayBinding());
         databasePlatform.setUsesStringBinding(usesStringBinding());
         databasePlatform.setShouldBindAllParameters(shouldBindAllParameters());
+        databasePlatform.setShouldForceBindAllParameters(shouldForceBindAllParameters());
         databasePlatform.setShouldCacheAllStatements(shouldCacheAllStatements());
         databasePlatform.setStatementCacheSize(getStatementCacheSize());
         databasePlatform.setTransactionIsolation(getTransactionIsolation());
@@ -992,6 +1001,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         //use the variable directly to avoid custom platform strings - only want to copy user set values.
         //specifically used for login platform detection
         databasePlatform.setTableCreationSuffix(this.tableCreationSuffix);
+        databasePlatform.setIsCastRequired(isCastRequired());
     }
 
     /**
@@ -1938,6 +1948,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Used to enable parameter binding and override the platform default
+     */
+    public void setShouldForceBindAllParameters(boolean shouldForceBindAllParameters) {
+        this.shouldForceBindAllParameters = shouldForceBindAllParameters;
+    }
+
+    /**
      * Can be used if the app expects upper case but the database is not return consistent case, i.e. different databases.
      */
     public void setShouldForceFieldNamesToUpperCase(boolean shouldForceFieldNamesToUpperCase) {
@@ -2151,6 +2168,13 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void setShouldCreateIndicesOnForeignKeys(boolean shouldCreateIndicesOnForeignKeys) {
         this.shouldCreateIndicesOnForeignKeys = shouldCreateIndicesOnForeignKeys;
+    }
+
+    /**
+     * Used to enable parameter binding and override platform default
+     */
+    public boolean shouldForceBindAllParameters() {
+        return this.shouldForceBindAllParameters;
     }
 
     /**

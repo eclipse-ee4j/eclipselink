@@ -1,5 +1,5 @@
 @REM
-@REM Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+@REM Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 @REM
 @REM This program and the accompanying materials are made available under the
 @REM terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,17 +25,41 @@ set JVM_ARGS=-Xmx256m
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\moxy\javax.json-api_1.1.2.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.json_1.1.2.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-core_2.2.11.v201407311112.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-core_2.2.11.v201407311112.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-xjc_2.2.11.v201407311112.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\javax.validation.api_2.0.1.Final.jar
+set CLASSPATH=%THIS%..\jlib\moxy\jakarta.json.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-osgi.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.activation.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.validation-api.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
+set JAXB_API=%THIS%..\jlib\moxy\api\jakarta.xml.bind-api.jar
+set ENDORSED_DIR=..\jlib\moxy\api
+set MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC
 set JAVA_ARGS=%*
 
-%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH% -Djava.endorsed.dirs=..\jlib\moxy\api org.eclipse.persistence.jaxb.xjc.MOXyXJC %JAVA_ARGS%
+rem Set Java Version
+for /f "tokens=3" %%i in ('java -version 2^>^&1 ^| %SystemRoot%\system32\find.exe "version"') do (
+  set JAVA_VERSION1=%%i
+)
+for /f "tokens=1,2 delims=." %%j in ('echo %JAVA_VERSION1:~1,-1%') do (
+  if "1" EQU "%%j" (
+    set JAVA_VERSION2=%%k
+  ) else (
+    set JAVA_VERSION2=%%j
+  )
+)
 
+rem Remove -ea
+for /f "delims=-" %%i in ('echo %JAVA_VERSION2%') do set JAVA_VERSION=%%i
+echo Java major version: %JAVA_VERSION%
+
+if %JAVA_VERSION% GEQ 9 goto JDK9_OR_GREATER
+rem Java 8
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH% -Djava.endorsed.dirs=%ENDORSED_DIR% %MAIN_CLASS% %JAVA_ARGS%
+@endlocal
+goto :EOF
+
+:JDK9_OR_GREATER
+rem Java
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH%;%JAXB_API% %MAIN_CLASS% %JAVA_ARGS%
 @endlocal
 goto :EOF
 

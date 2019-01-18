@@ -173,19 +173,12 @@
         <property name="custom.selectbundle.task.class" value="org.eclipse.persistence.buildtools.ant.taskdefs.SelectBundle"/>
         <taskdef name="selectbundle" classname="${custom.selectbundle.task.class}" classpath="${custom.tasks.lib}"/>
 
-        <!-- Test for Third-party dependencies -->
-        <selectbundle basename="javax.xml.bind" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="jaxb-api.lib" includepath="true"/>
-        <selectbundle basename="javax.persistence" directory="${jparstest.build.location}/${jparstest.2.jpa.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="persistence20.lib" includepath="true"/>
-        <selectbundle basename="javax.ws.rs-api" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="javax.ws.rs.lib" includepath="true"/>
-        <selectbundle basename="javax.ejb" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[3.0.0,4.0.0)" property="javax.ejb.lib" includepath="true"/>
-        <selectbundle basename="javax.servlet" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[2.0.0,3.0.0)" property="javax.servlet.lib" includepath="true"/>
-        <selectbundle basename="javax.validation.api" directory="${jparstest.build.location}/${jparstest.2.common.plugins.dir}" separator="_"
-                      criterion="[1.0.0,5.0.0)" property="validation.lib" includepath="true"/>
+        <property name="jaxb-api.lib" value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+        <property name="persistence20.lib" value="${jparstest.build.location}/${jparstest.2.jpa.plugins.dir}/${persistence22.jar}"/>
+        <property name="javax.ws.rs.lib" value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${javax.ws.rs.jar}"/>
+        <property name="javax.ejb.lib" value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${ejb.jar}"/>
+        <property name="javax.servlet.lib" value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${servlet.jar}"/>
+        <property name="validation.lib" value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${javax.validation.jar}"/>
 
         <available file="${jaxb-api.lib}"           property="jaxb-api.lib.exist"/>
         <available file="${persistence20.lib}"      property="persistence20.lib.exist"/>

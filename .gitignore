@@ -36,3 +36,17 @@ test_*.properties
 .sonar
 /coverage-report/
 /jacoco.out
+jpa/plugins/jakarta*.jar
+plugins/glassfish*.jar
+plugins/gmbal*.jar
+plugins/hk2*.jar
+plugins/jakarta*.jar
+plugins/jersey*.jar
+plugins/jaxb-osgi*.jar
+plugins/logback*.jar
+plugins/management*.jar
+plugins/mongo*.jar
+plugins/osgi*.jar
+plugins/pfl*.jar
+plugins/slf4j*.jar
+plugins/sun-misc*.jar

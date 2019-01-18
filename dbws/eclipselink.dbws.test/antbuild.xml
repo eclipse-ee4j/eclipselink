@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -366,7 +366,7 @@
 
     <!-- package -->
     <target name="package" depends="compile" description="package DBWS Util Test Common jar">
-        <jar jarfile="./${eclipselink.dbws.test.common.jar}">
+        <jar jarfile="${dbws_test.build.location}/${eclipselink.dbws.test.common.jar}">
             <fileset dir="${dbws_test.classes.dir}">
                 <include name="dbws/testing/**/*.class"/>
             </fileset>

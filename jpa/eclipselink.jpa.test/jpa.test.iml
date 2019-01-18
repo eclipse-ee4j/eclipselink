@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence_2.2.1.v201807122140.jar!/" value="MODULE_DIR/../plugins/javax.persistence_2.2.1.v201807122140.jar" />
-    <varelement var="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" value="src:/MODULE_DIR/../plugins/javax.persistence.source_2.2.1.v201807122140.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" value="MODULE_DIR/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" value="MODULE_DIR/../../plugins/javax.validation.api_2.0.1.Final.jar" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.ejb_3.1.0.v201205171433.jar!/" value="MODULE_DIR/../../plugins/javax.ejb_3.1.0.v201205171433.jar" />
+    <varelement var="jar://$MODULE_DIR$/../plugins/jakarta.persistence_2.2.2.jar!/" value="MODULE_DIR/../plugins/jakarta.persistence_2.2.2.jar" />
+    <varelement var="jar://$MODULE_DIR$/../plugins/jakarta.persistence-source_2.2.2.jar!/" value="src:/MODULE_DIR/../plugins/jakarta.persistence-source_2.2.2.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.ws.rs-api.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.validation-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.validation-api.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.ejb-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.ejb-api.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/javax.ejb/src" value="src:/MODULE_DIR/../../plugins/javax.ejb/src" />
-    <varelement var="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" value="MODULE_DIR/../../plugins/javax.transaction.api_1.3.0.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.transaction-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.transaction-api.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/javax.transaction/src" value="src:/MODULE_DIR/../../plugins/javax.transaction/src" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.antlr_3.5.2.v201711011707.jar!/" value="MODULE_DIR/../../plugins/org.eclipse.persistence.antlr_3.5.2.v201711011707.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.antlr.source_3.5.2.v201711011707.jar!/" value="src:/MODULE_DIR/../../plugins/org.eclipse.persistence.antlr.source_3.5.2.v201711011707.jar" />
@@ -32,18 +32,18 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../plugins/javax.persistence_2.2.1.v201807122140.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence_2.2.2.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence-source_2.2.2.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -52,7 +52,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.validation.api_2.0.1.Final.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.validation-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -61,7 +61,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ejb_3.1.0.v201205171433.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.ejb-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
@@ -72,7 +72,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.transaction.api_1.3.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.transaction-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>

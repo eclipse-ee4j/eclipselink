@@ -205,7 +205,8 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             Descriptor xmlDescriptor = xmlContext.getDescriptor(rootQName);
 
             //if no match on root element look for xsi:type
-            if(xmlDescriptor == null){
+            if (xmlDescriptor == null || (unmarshaller.getMediaType() == MediaType.APPLICATION_JSON && unmarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName() != null &&
+                    !Constants.SCHEMA_TYPE_ATTRIBUTE.equals(unmarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName()))) {
                 boolean isPrimitiveType = false;
                 String type = null;
                 if(xmlReader.isNamespaceAware()){

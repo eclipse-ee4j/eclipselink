@@ -107,6 +107,7 @@
         <property name="feature.2.jpa.plugins.dir"    value="${feature.2.base.dir}/jpa/plugins"/>
         <property name="feature.2.sdo.plugins.dir"    value="${feature.2.base.dir}/sdo/plugins"/>
         <property name="feature.2.util.plugins.dir"   value="${feature.2.base.dir}/utils/plugins"/>
+        <property name="local.p2.repo.dir"            value="${feature.2.buildsys.dir}/compdeps/org.eclipse.persistence.compdeps.p2repo/target/repository/plugins"/>
         <echo message="ant.project.name            ='${ant.project.name}'"/>
         <echo message="basedir                     ='${basedir}'"/>
         <echo message="feature.build.location      ='${feature.build.location}'"/>
@@ -117,6 +118,7 @@
         <echo message="feature.2.jpa.plugins.dir   ='${feature.2.jpa.plugins.dir}'"/>
         <echo message="feature.2.sdo.plugins.dir   ='${feature.2.sdo.plugins.dir}'"/>
         <echo message="feature.2.util.plugins.dir  ='${feature.2.util.plugins.dir}'"/>
+        <echo message="local.p2.repo.dir           ='${local.p2.repo.dir}'"/>
         <echo message=" ---"/>
 
         <!-- Custom task definitions -->
@@ -243,24 +245,22 @@
         <!-- Defaults, set var in ${user.home}/build.properties if different version required -->
         <property name="sdo.prefix" value="commonj.sdo"/>
         <property name="sdo.criteria" value="[2.1.1,2.2.0)"/>
-        <property name="mail.prefix" value="javax.mail"/>
-        <property name="mail.criteria" value="[1.4.0,1.5.0)"/>
-        <property name="persistence.prefix" value="javax.persistence"/>
+        <property name="mail.prefix" value="com.sun.mail.jakarta.mail"/>
+        <property name="mail.criteria" value="(1.6.2,2.0.0)"/>
+        <property name="persistence.prefix" value="jakarta.persistence"/>
         <property name="persistence.criteria" value="[2.0.100,2.3.0)"/>
-        <property name="resource.prefix" value="javax.resource"/>
-        <property name="resource.criteria" value="[1.4.0,2.0.0)"/>
-        <property name="servlet.prefix" value="javax.servlet"/>
-        <property name="servlet.criteria" value="[2.4.0,2.5.0)"/>
+        <property name="resource.prefix" value="jakarta.resource-api"/>
+        <property name="resource.criteria" value="(1.7.2,2.0.0)"/>
+        <property name="servlet.prefix" value="jakarta.servlet-api"/>
+        <property name="servlet.criteria" value="(3.99.99,5.0.0)"/>
         <property name="wsdl.prefix" value="javax.wsdl"/>
         <property name="wsdl.criteria" value="[1.0,9.0)"/>
-        <property name="jaxrs.prefix" value="javax.ws.rs"/>
-        <property name="jaxrs.criteria" value="[2.0.1,9.0)"/>
-        <property name="xml.bind.prefix" value="javax.xml.bind"/>
-        <property name="xml.bind.criteria" value="[2.2.0,2.3.0)"/>
-        <property name="sun.tools.xjc.prefix" value="jaxb-xjc"/>
-        <property name="sun.tools.xjc.criteria" value="[2.2.11,5.0.0)"/>
-        <property name="sun.xml.bind.prefix" value="jaxb-core"/>
-        <property name="sun.xml.bind.criteria" value="[2.2.11,5.0.0)"/>
+        <property name="jaxrs.prefix" value="jakarta.ws.rs-api"/>
+        <property name="jaxrs.criteria" value="(2.1.2,3.0.0)"/>
+        <property name="xml.bind.prefix" value="jakarta.xml.bind-api"/>
+        <property name="xml.bind.criteria" value="(2.3.1,3.0.0)"/>
+        <property name="sun.xml.bind.prefix" value="com.sun.xml.bind.jaxb-osgi"/>
+        <property name="sun.xml.bind.criteria" value="(2.3.1,5.0.0)"/>
         <property name="org.glassfish.corba.orb.prefix" value="org.glassfish.corba.glassfish-corba-orb"/>
         <property name="org.glassfish.corba.csiv2.prefix" value="org.glassfish.corba.glassfish-corba-csiv2-idl"/>
         <property name="org.glassfish.corba.iapi.prefix" value="org.glassfish.corba.glassfish-corba-internal-api"/>
@@ -284,8 +284,8 @@
         <property name="management.api.criteria" value="[3.0.0,4.0.0)"/>
         <property name="mongodb.prefix" value="org.mongodb.mongo-java-driver"/>
         <property name="mongodb.criteria" value="[2.0.0,9.0.0)"/>
-        <property name="json.prefix" value="javax.json-api"/>
-        <property name="json.criteria" value="[1.1.0,5.0.0)"/>
+        <property name="json.prefix" value="org.glassfish.jakarta.json"/>
+        <property name="json.criteria" value="(1.1.4,5.0.0)"/>
         <!-- Export jdk.unsupported module. -->
         <property name="sun-misc.prefix" value="org.eclipse.persistence.sun-misc"/>
         <property name="sun-misc.criteria" value="[3.0,4.0)"/>
@@ -345,26 +345,23 @@
         <selectbundle basename="${sdo.prefix}" directory="${feature.2.sdo.plugins.dir}"
                      criterion="${sdo.criteria}" property="sdo.version" versiononly="true"
         />
-        <selectbundle basename="${mail.prefix}" directory="${feature.2.common.plugins.dir}"
+        <selectbundle basename="${mail.prefix}" directory="${local.p2.repo.dir}"
                      criterion="${mail.criteria}" property="mail.version" versiononly="true"
         />
         <selectbundle basename="${persistence.prefix}" directory="${feature.2.jpa.plugins.dir}"
                      criterion="${persistence.criteria}" property="persistence.version" versiononly="true"
         />
-        <selectbundle basename="${resource.prefix}" directory="${feature.2.common.plugins.dir}"
+        <selectbundle basename="${resource.prefix}" directory="${local.p2.repo.dir}"
                      criterion="${resource.criteria}" property="resource.version" versiononly="true"
         />
-        <selectbundle basename="${servlet.prefix}" directory="${feature.2.common.plugins.dir}"
+        <selectbundle basename="${servlet.prefix}" directory="${local.p2.repo.dir}"
                      criterion="${servlet.criteria}" property="servlet.version" versiononly="true"
         />
-        <selectbundle basename="${xml.bind.prefix}" directory="${feature.2.common.plugins.dir}"
+        <selectbundle basename="${xml.bind.prefix}" directory="${local.p2.repo.dir}"
                      criterion="${xml.bind.criteria}" property="xml.bind.version" versiononly="true"
         />
-        <selectbundle basename="${sun.xml.bind.prefix}"  directory="${feature.2.common.plugins.dir}"
+        <selectbundle basename="${sun.xml.bind.prefix}"  directory="${local.p2.repo.dir}"
                       criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
-        />
-        <selectbundle basename="${sun.tools.xjc.prefix}"  directory="${feature.2.common.plugins.dir}"
-                      criterion="${sun.tools.xjc.criteria}" property="sun.tools.xjc.version" versiononly="true"
         />
         <selectbundle basename="${org.glassfish.corba.orb.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                       criterion="${org.glassfish.corba.criteria}" property="org.glassfish.corba.orb.version" versiononly="true"
@@ -417,7 +414,7 @@
         <selectbundle basename="${mongodb.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${mongodb.criteria}" property="mongodb.version" versiononly="true"
         />
-        <selectbundle basename="${jaxrs.prefix}" directory="${feature.2.common.plugins.dir}"
+        <selectbundle basename="${jaxrs.prefix}" directory="${local.p2.repo.dir}"
                      criterion="${jaxrs.criteria}" property="jaxrs.version" versiononly="true"
         />
         <selectbundle basename="${sun-misc.prefix}"  directory="${compdeps.2.common.plugins.dir}"
@@ -444,7 +441,7 @@
         <selectbundle basename="${wsdl.prefix}" directory="${feature.2.util.plugins.dir}"
                      criterion="${wsdl.criteria}" property="wsdl.version" versiononly="true"
         />
-        <selectbundle basename="${json.prefix}"  directory="${feature.2.common.plugins.dir}"
+        <selectbundle basename="${json.prefix}"  directory="${local.p2.repo.dir}"
                      criterion="${json.criteria}" property="json.version" versiononly="true"
         />
         <echo message="Searching ${feature.2.util.plugins.dir}..."/>
@@ -467,8 +464,6 @@
         <say  message="   '${servlet.prefix}_${servlet.criteria}.jar' not found! Generated features will be invalid."         unless="servlet.version"/>
         <say  message="   xml.bind.version    = '${xml.bind.version}'"                                                        if="xml.bind.version"/>
         <say  message="   '${xml.bind.prefix}_${xml.bind.criteria}.jar' not found! Generated features will be invalid."       unless="xml.bind.version"/>
-        <say  message="   sun.tools.xjc.version    = '${sun.tools.xjc.version}'"                                                    if="sun.tools.xjc.version"/>
-        <say  message="   '${sun.tools.xjc.prefix}_${sun.tools.xjc.criteria}.jar' not found! Generated features will be invalid." unless="sun.tools.xjc.version"/>
         <say  message="   sun.xml.bind.version     = '${sun.xml.bind.version}'"                                                     if="sun.xml.bind.version"/>
         <say  message="   '${sun.xml.bind.prefix}_${sun.xml.bind.criteria}.jar' not found! Generated features will be invalid."   unless="sun.xml.bind.version"/>
         <say  message="   org.glassfish.corba.orb.version    = '${org.glassfish.corba.orb.version}'"                                                if="org.glassfish.corba.orb.version"/>
@@ -642,7 +637,7 @@
             <zipfileset dir="${feature.2.common.plugins.dir}" prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
             <zipfileset dir="${feature.2.util.plugins.dir}"   prefix="plugins"  includes="org.eclipse.persistence*.jar"/>
             <!-- see https://bugs.eclipse.org/bugs/show_bug.cgi?id=348829 -->
-            <zipfileset dir="${feature.2.jpa.plugins.dir}"    prefix="plugins"  includes="javax.persistence*.jar"/>
+            <zipfileset dir="${feature.2.jpa.plugins.dir}"    prefix="plugins"  includes="jakarta.persistence*.jar"/>
         </zip>
     </target>
 
@@ -730,12 +725,12 @@
                 dir="${p2.bundle.dir}"
                 includes="
                           *jms*.jar,
-                          com.sun*.jar,
                           eclipselink*.jar,
                           *ejb*.jar,
                           javax.persistence*_1.*.jar,
                           *preview*.jar,
                           *javax.transaction*.jar,
+                          *jakarta.transaction*.jar,
                           javax.xml.bind.source*.jar,
                           *modelgen*.jar,
                           *soap*.jar,

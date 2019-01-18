@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ import org.eclipse.persistence.testing.jaxb.json.namespaces.DifferentNamespacesT
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceSeparatorContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceSeparatorTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceInheritanceTestCases;
+import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespaceOnXMLOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnContextTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.NamespacesOnUnmarshalOnlyTestCases;
 import org.eclipse.persistence.testing.jaxb.json.namespaces.SeparatorInNameTestCases;
@@ -68,6 +69,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(JSONAttributeNoXmlRootElementJAXBElementTestCases.class);
           suite.addTestSuite(SimpleBeanAttrNullTestCases.class);
           suite.addTestSuite(DifferentNamespacesTestCases.class);
+          suite.addTestSuite(NamespaceOnXMLOnlyTestCases.class);
           suite.addTestSuite(NamespacesOnContextTestCases.class);
           suite.addTestSuite(NamespacesOnUnmarshalOnlyTestCases.class);
           suite.addTestSuite(NoRootElementTestCases.class);
@@ -96,6 +98,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(TypeNameValueTestCases.class);
           suite.addTestSuite(TypePrefixTestCases.class);
           suite.addTestSuite(TypePropertyCustomNameTestCases.class);
+          suite.addTestSuite(TypePropertyCustomNameNamespaceTestCases.class);
           suite.addTestSuite(TypePropertyInheritanceTestCases.class);
           suite.addTestSuite(TypePropertyTestCases.class);
           suite.addTestSuite(JsonUnmappedTestCases.class);

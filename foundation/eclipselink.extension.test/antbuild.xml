@@ -222,10 +222,9 @@
             <fileset dir="${eclipselink.plugins.dir}" includes="org.eclipse.persistence.extension_*.jar"/>
             <pathelement path="${core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.plugins.dir}/${org.slf4j.api.jar}"/>
-            <pathelement path="${eclipselink.plugins.dir}/${org.slf4j.api.jar}"/>
             <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.core.jar}"/>
             <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.classic.jar}"/>
-            <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.slf4j.jar}"/>
+            <pathelement path="${eclipselink.plugins.dir}/${org.slf4j.nop.jar}"/>
             <pathelement path="${junit.lib}"/>
         </path>
     </target>

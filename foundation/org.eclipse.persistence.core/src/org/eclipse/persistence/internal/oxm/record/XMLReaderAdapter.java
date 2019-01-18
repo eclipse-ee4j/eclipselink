@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,6 +12,7 @@
 
 // Contributors:
 //     Blaise Doughan = 2.1 - Initial implementation
+//     Juan Pablo Gardella = 2.7.4 - Fix for the bug #543063
 package org.eclipse.persistence.internal.oxm.record;
 
 import javax.xml.validation.Schema;
@@ -148,12 +149,16 @@ public abstract class XMLReaderAdapter extends XMLReader {
     /**
      * Convert a ContentHandler to an ExtendedContentHandler
      */
-    private static class ExtendedContentHandlerAdapter implements ExtendedContentHandler {
+    public static class ExtendedContentHandlerAdapter implements ExtendedContentHandler {
 
         private ContentHandler contentHandler;
 
         public ExtendedContentHandlerAdapter(ContentHandler contentHandler) {
             this.contentHandler = contentHandler;
+        }
+
+        public ContentHandler getContentHandler() {
+            return contentHandler;
         }
 
         @Override

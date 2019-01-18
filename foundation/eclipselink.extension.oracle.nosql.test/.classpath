@@ -9,9 +9,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.oracle.nosql"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.2.1.v201807122140.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.2.1.v201807122140.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.resource_1.6.0.v201204270900.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.jms_1.1.0.v200906010428.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence_2.2.2.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence-source_2.2.2.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.resource-api.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.jms-api.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/aqapi.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/kvclient.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/ojdbc7.jar"/>

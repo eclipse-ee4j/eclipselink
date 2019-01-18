@@ -41,7 +41,7 @@ Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.jpa
 Require-Capability: osgi.ee; filter:="(&(osgi.ee=JavaSE)(version>=1.8))"
 Require-Bundle: org.eclipse.persistence.core;bundle-version="3.0.0";visibility:=reexport,
- org.eclipse.persistence.asm;bundle-version="6.2.0";resolution:=optional
+ org.eclipse.persistence.asm;bundle-version="7.0.0";resolution:=optional
 Bundle-Vendor: Eclipse.org - EclipseLink Project
 Bundle-Version: 3.0.0.qualifier
 Bundle-ManifestVersion: 2
@@ -52,7 +52,7 @@ Import-Package: javax.naming;resolution:=optional,
  javax.persistence.spi;jpa="2.2";version="[1.1.0,2.3)",
  javax.sql;resolution:=optional,
  javax.transaction;version="[1.1.0,2.0)";resolution:=optional,
- javax.transaction.xa;version="[1.1.0,2.0)";resolution:=optional,
+ javax.transaction.xa;resolution:=optional,
  javax.validation;resolution:=optional,
  javax.validation.groups;resolution:=optional,
  javax.validation.metadata;resolution:=optional,
@@ -83,8 +83,8 @@ Import-Package: javax.naming;resolution:=optional,
  org.eclipse.persistence.internal.indirection;version="3.0.0",
  org.eclipse.persistence.internal.jpa.parsing;version="3.0.0",
  org.eclipse.persistence.internal.jpa.parsing.jpql;version="3.0.0",
- org.eclipse.persistence.internal.libraries.asm;version="[6.2.0,7.0)",
- org.eclipse.persistence.internal.libraries.asm.commons;version="[6.2.0,7.0)",
+ org.eclipse.persistence.internal.libraries.asm;version="[7.0,8.0)",
+ org.eclipse.persistence.internal.libraries.asm.commons;version="[7.0,8.0)",
  org.eclipse.persistence.internal.localization;version="3.0.0",
  org.eclipse.persistence.internal.mappings.converters;version="3.0.0",
  org.eclipse.persistence.internal.queries;version="3.0.0",

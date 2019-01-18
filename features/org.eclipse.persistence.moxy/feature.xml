@@ -37,52 +37,45 @@
    </url>
 
    <plugin
-         id="javax.mail"
+         id="com.sun.mail.jakarta.mail"
          download-size="0"
          install-size="0"
          version="@MAIL_VERSION@"
          unpack="false"/>
 
    <plugin
-         id="javax.persistence"
+         id="jakarta.persistence"
          download-size="0"
          install-size="0"
          version="@PERSISTENCE_VERSION@"
          unpack="false"/>
 
    <plugin
-         id="javax.xml.bind"
+         id="jakarta.xml.bind-api"
          download-size="0"
          install-size="0"
          version="@XMLBIND_VERSION@"
          unpack="false"/>
 
    <plugin
-         id="javax.ws.rs"
+         id="jakarta.ws.rs-api"
          download-size="0"
          install-size="0"
          version="@JAXRS_VERSION@"
          unpack="false"/>
 
    <plugin
-         id="org.glassfish.javax.json"
+         id="org.glassfish.jakarta.json"
          download-size="0"
          install-size="0"
          version="@JSON_VERSION@"
          unpack="false"/>
 
    <plugin
-         id="jaxb-core"
+         id="com.sun.xml.bind.jaxb-osgi"
          download-size="0"
          install-size="0"
          version="@JAXB_CORE_VERSION@"
-         unpack="false"/>
-
-   <plugin
-         id="jaxb-xjc"
-         download-size="0"
-         install-size="0"
-         version="@XJC_VERSION@"
          unpack="false"/>
 
    <plugin

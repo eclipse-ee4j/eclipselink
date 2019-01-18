@@ -4,16 +4,16 @@
 	<classpathentry kind="src" path="resource"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_6.2.0.v201808041506.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_6.2.0.v201808041506.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmh-core-0.9.3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmh-generator-annprocess-0.9.3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/commons-math3-3.3.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/javax.persistence_2.2.1.v201807122140.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/javax.persistence.source_2.2.1.v201807122140.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence_2.2.2.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence-source_2.2.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.json-api_1.1.2.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.validation.api_2.0.1.Final.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.json_1.1.2.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.json.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.validation-api.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.json.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
