@@ -227,30 +227,36 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
         this.value = value;
         isCoordinatedWithProperty = false;
         if(shouldCascadeDetachAfterInstantiation && value != null && session != null && session.isUnitOfWork()) {        	
-        	unregisterFromSession(value);
+        	unregisterValueFromUnitOfWork(value);
         }        
     }
 
-    private void unregisterFromSession(Object value) {
+    private void unregisterValueFromUnitOfWork(Object value) {
     	UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl)session;
     	if (value instanceof IndirectCollection)  {
-    		Object delegateObject = ((IndirectCollection)value).getDelegateObject();    		
-    		if(delegateObject != null) {
-    			if(delegateObject instanceof Map) {
-    				Map mappedElements = (Map)delegateObject;
-        			for (Object mappedElementValue : mappedElements.values()) {
-        				unitOfWork.unregisterObject(mappedElementValue, 0, true);
-    				}
-    			} else if(delegateObject instanceof Collection) {
-        			Collection addedElements = (Collection)delegateObject;
-        			for (Object addedElement : addedElements) {
-        				unitOfWork.unregisterObject(addedElement, 0, true);
-    				}    				
-    			}
-    		}        		
+    		Object delegateObject = ((IndirectCollection)value).getDelegateObject();
+    		unregisterCollectionFromUnitOfWork(unitOfWork, delegateObject);
+    	} else if (value instanceof Collection)  {
+    		unregisterCollectionFromUnitOfWork(unitOfWork, value);
     	} else {
     		unitOfWork.unregisterObject(value, 0, true);        		
     	}
+    }
+    
+    private void unregisterCollectionFromUnitOfWork(UnitOfWorkImpl unitOfWork, Object collection) {
+		if(collection != null) {
+			if(collection instanceof Map) {
+				Map mappedElements = (Map)collection;
+    			for (Object mappedElementValue : mappedElements.values()) {
+    				unitOfWork.unregisterObject(mappedElementValue, 0, true);
+				}
+			} else if(collection instanceof Collection) {
+    			Collection addedElements = (Collection)collection;
+    			for (Object addedElement : addedElements) {
+    				unitOfWork.unregisterObject(addedElement, 0, true);
+				}    				
+			}
+		}
     }
     
     /**
