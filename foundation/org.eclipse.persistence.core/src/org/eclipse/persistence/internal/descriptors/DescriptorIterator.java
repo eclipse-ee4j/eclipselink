@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,6 +67,7 @@ public abstract class DescriptorIterator {
     protected boolean shouldBreak;
     protected int cascadeDepth;// see static constants below
     protected CascadeCondition cascadeCondition;
+    protected boolean forDetach;
 
     /**
      * Construct a typical iterator:
@@ -260,7 +261,7 @@ public abstract class DescriptorIterator {
             internalIterateIndirectContainer(container);
         }
 
-        if (shouldIterateOverUninstantiatedIndirectionObjects() || (shouldIterateOverIndirectionObjects() && container.isInstantiated())) {
+        if (shouldIterateOverUninstantiatedIndirectionObjects() || (shouldIterateOverIndirectionObjects() && container.isInstantiated()) || isForDetach()) {
             // force instantiation only if specified
             mapping.iterateOnRealAttributeValue(this, container);
         } else if (shouldIterateOverIndirectionObjects()) {
@@ -677,5 +678,13 @@ public abstract class DescriptorIterator {
         public boolean shouldNotCascade(DatabaseMapping mapping){
             return !(shouldCascadeAllParts() || (shouldCascadePrivateParts() && mapping.isPrivateOwned()));
         }
+    }
+
+    public boolean isForDetach() {
+        return forDetach;
+    }
+
+    public void setForDetach(boolean forDetach) {
+        this.forDetach = forDetach;
     }
 }
