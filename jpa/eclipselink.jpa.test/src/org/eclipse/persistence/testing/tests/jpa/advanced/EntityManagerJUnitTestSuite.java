@@ -13148,7 +13148,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
     public void testDetachChildObjects() {
     	EntityManager em = createEntityManager();
-		em.getTransaction().begin();
+    	beginTransaction(em);
 		InitTestDetachChildObjects(em);
 		UnitOfWorkImpl uow = (UnitOfWorkImpl) em.unwrap(JpaEntityManager.class).getActiveSession();
 
@@ -13169,8 +13169,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 		for (PlanArbeitsgangHist pag : pagList) {
 			assertTrue(em.contains(pag));
 		}
-		em.getTransaction().rollback();
-		em.close();
+		rollbackTransaction(em);
+		closeEntityManager(em);
     
     }
     private void InitTestDetachChildObjects(EntityManager em) {
