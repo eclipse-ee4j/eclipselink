@@ -532,9 +532,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         for (String test : tests) {
             suite.addTest(new EntityManagerJUnitTestSuite(test));
         }
-        /*if (!isJPA10()) {
+        if (!isJPA10()) {
             suite.addTest(new EntityManagerJUnitTestSuite("testCascadeDetach"));
-        }*/
+        }
         // Test must be last as clears database.
         suite.addTest(new EntityManagerJUnitTestSuite("testDeleteEverything"));
         return suite;
