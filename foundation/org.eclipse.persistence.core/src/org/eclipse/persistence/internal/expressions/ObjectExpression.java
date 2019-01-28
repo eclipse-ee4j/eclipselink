@@ -211,7 +211,7 @@ public abstract class ObjectExpression extends DataExpression {
         } else {
             queryKey = derivedExpressionNamed(attributeName);
         }
-        queryKey.doQueryToManyRelationship();
+        queryKey.setShouldQueryToManyRelationship(true);
         return queryKey;
     }
 
@@ -235,8 +235,8 @@ public abstract class ObjectExpression extends DataExpression {
         } else {
             queryKey = derivedExpressionNamed(attributeName);
         }
-        queryKey.doUseOuterJoin();
-        queryKey.doQueryToManyRelationship();
+        queryKey.setShouldUseOuterJoin(true);
+        queryKey.setShouldQueryToManyRelationship(true);
         return queryKey;
     }
 
@@ -357,12 +357,12 @@ public abstract class ObjectExpression extends DataExpression {
 
     }
 
-    public void doNotUseOuterJoin() {
-        shouldUseOuterJoin = false;
+    public void setShouldUseOuterJoin(boolean shouldUseOuterJoin) {
+        this.shouldUseOuterJoin = shouldUseOuterJoin;
     }
 
-    public void doUseOuterJoin() {
-        shouldUseOuterJoin = true;
+    public boolean shouldUseOuterJoin() {
+        return shouldUseOuterJoin;
     }
 
     public QueryKeyExpression existingDerivedExpressionNamed(String attributeName) {
@@ -389,7 +389,7 @@ public abstract class ObjectExpression extends DataExpression {
     public Expression get(String attributeName, boolean forceInnerJoin) {
         ObjectExpression result = derivedExpressionNamed(attributeName);
         if (forceInnerJoin) {
-            result.doNotUseOuterJoin();
+            result.setShouldUseOuterJoin(false);
         }
         return result;
     }
@@ -400,7 +400,7 @@ public abstract class ObjectExpression extends DataExpression {
     @Override
     public Expression leftJoin(Expression target, Expression onClause) {
         join(target, onClause);
-        ((ObjectExpression)target).doUseOuterJoin();
+        ((ObjectExpression)target).setShouldUseOuterJoin(true);
         return this;
     }
 
@@ -428,7 +428,7 @@ public abstract class ObjectExpression extends DataExpression {
             return exp;
         }
         ObjectExpression result = derivedExpressionNamed(attributeName);
-        result.doUseOuterJoin();
+        result.setShouldUseOuterJoin(true);
         return result;
     }
 
@@ -729,10 +729,6 @@ public abstract class ObjectExpression extends DataExpression {
      */
     public void setShouldUseOuterJoinForMultitableInheritance(boolean shouldUseOuterJoinForMultitableInheritance) {
         this.shouldUseOuterJoinForMultitableInheritance = shouldUseOuterJoinForMultitableInheritance;
-    }
-
-    public boolean shouldUseOuterJoin() {
-        return shouldUseOuterJoin;
     }
 
     public boolean shouldUseOuterJoinForMultitableInheritance() {

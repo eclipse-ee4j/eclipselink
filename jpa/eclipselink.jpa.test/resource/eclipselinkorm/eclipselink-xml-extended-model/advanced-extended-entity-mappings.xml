@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 IBM Corporation. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +42,7 @@
         </secondary-table>
         <table-generator name="XML_EMPLOYEE_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_EMPLOYEE_SEQ"/>
         <named-query name="findAllXMLEmployeesByFirstName">
-            <query>SELECT OBJECT(employee) FROM XMLEmployee employee WHERE employee.firstName = :firstname</query>
+            <query>SELECT OBJECT(e) FROM XMLEmployee e WHERE e.firstName = :firstname</query>
         </named-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -144,7 +145,7 @@
         </secondary-table>
         <table-generator name="XML_EMPLOYEE_TABLE_GENERATOR" table="CMP3_XML_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="XML_EMPLOYEE_SEQ"/>
         <named-query name="findAllXMLEmployeesByFirstName">
-            <query>SELECT OBJECT(employee) FROM XMLEmployee employee WHERE employee.firstName = :firstname</query>
+            <query>SELECT OBJECT(e) FROM XMLEmployee e WHERE e.firstName = :firstname</query>
         </named-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -244,7 +245,7 @@
         <table name="CMP3_XML_ADDRESS"/>
         <sequence-generator name="XML_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ADDRESS_SEQ" allocation-size="25"/>
         <named-query name="findAllXMLAddressesByPostalCode">
-            <query>SELECT OBJECT(address) FROM XMLAddress address WHERE address.postalCode = :postalcode</query>
+            <query>SELECT OBJECT(a) FROM XMLAddress a WHERE a.postalCode = :postalcode</query>
         </named-query>
         <named-native-query name="findAllXMLAddresses" result-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address">
             <query>SELECT * FROM CMP3_XML_ADDRESS</query>
@@ -269,7 +270,7 @@
         <table name="CMP3_XML_ADDRESS"/>
         <sequence-generator name="XML_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ADDRESS_SEQ" allocation-size="25"/>
         <named-query name="findAllXMLAddressesByPostalCode">
-            <query>SELECT OBJECT(address) FROM XMLAddress address WHERE address.postalCode = :postalcode</query>
+            <query>SELECT OBJECT(a) FROM XMLAddress a WHERE a.postalCode = :postalcode</query>
         </named-query>
         <named-native-query name="findAllXMLAddresses" result-class="org.eclipse.persistence.testing.models.jpa.xml.advanced.Address">
             <query>SELECT * FROM CMP3_XML_ADDRESS</query>
@@ -340,7 +341,7 @@
         <table name="CMP3_XML_LPROJECT"/>
         <discriminator-value>L</discriminator-value>
         <named-query name="findXMLWithBudgetLargerThan">
-            <query>SELECT OBJECT(project) FROM XMLLargeProject project WHERE project.budget >= :amount</query>
+            <query>SELECT OBJECT(p) FROM XMLLargeProject p WHERE p.budget >= :amount</query>
         </named-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -349,7 +350,7 @@
         <table name="CMP3_XML_LPROJECT"/>
         <discriminator-value>L</discriminator-value>
         <named-query name="findXMLWithBudgetLargerThan">
-            <query>SELECT OBJECT(project) FROM XMLLargeProject project WHERE project.budget >= :amount</query>
+            <query>SELECT OBJECT(p) FROM XMLLargeProject p WHERE p.budget >= :amount</query>
         </named-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -373,7 +374,7 @@
         <discriminator-column name="PROJ_TYPE"/>
         <sequence-generator name="XML_PROJECT_SEQUENCE_GENERATOR" sequence-name="PROJECT_SEQ" allocation-size="10"/>
         <named-query name="findXMLProjectByName">
-            <query>SELECT OBJECT(project) FROM XMLProject project WHERE project.name = :name</query>
+            <query>SELECT OBJECT(p) FROM XMLProject p WHERE p.name = :name</query>
         </named-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>
@@ -418,7 +419,7 @@
         <discriminator-column name="PROJ_TYPE"/>
         <sequence-generator name="XML_PROJECT_SEQUENCE_GENERATOR" sequence-name="PROJECT_SEQ" allocation-size="10"/>
         <named-query name="findXMLProjectByName">
-            <query>SELECT OBJECT(project) FROM XMLProject project WHERE project.name = :name</query>
+            <query>SELECT OBJECT(p) FROM XMLProject p WHERE p.name = :name</query>
         </named-query>
         <exclude-default-listeners/>
         <exclude-superclass-listeners/>

@@ -85,11 +85,11 @@ public class TestPropertiesUtils {
     @Test
     public void testStoredProcedureTerminationToken() {
         DB2Platform db2 = new DB2Platform();
-        Assert.assertTrue(db2.getStoredProcedureTerminationToken().equals(";"));
+        Assert.assertEquals(";", db2.getStoredProcedureTerminationToken());
 
         String token = "test";
         PropertiesUtils.set(db2, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, "StoredProcedureTerminationToken=" + token);
 
-        Assert.assertTrue(db2.getStoredProcedureTerminationToken().equals(token));
+        Assert.assertEquals(token, db2.getStoredProcedureTerminationToken());
     }
 }

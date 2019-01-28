@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +24,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -111,10 +111,10 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager("delimited");
 
         Employee returnedEmp = (Employee)em.createQuery("select e from Employee e where e.firstName = 'Del' and e.lastName = 'Imited'").getSingleResult();
-        Assert.assertTrue("testCreateEmployee emp not properly persisted", getServerSession("delimited").compareObjects(emp, returnedEmp));
+        assertTrue("testCreateEmployee emp not properly persisted", getServerSession("delimited").compareObjects(emp, returnedEmp));
 
         Employee returnedWorker = (Employee)em.createQuery("select e from Employee e where e.firstName = 'Art' and e.lastName = 'Vandeleigh'").getSingleResult();
-        Assert.assertTrue("testCreateEmployee emp2 not properly persisted", getServerSession("delimited").compareObjects(emp2, returnedWorker));
+        assertTrue("testCreateEmployee emp2 not properly persisted", getServerSession("delimited").compareObjects(emp2, returnedWorker));
         closeEntityManager(em);
     }
 
@@ -128,7 +128,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
             query = em.createNativeQuery("select * from " + platform.getStartDelimiter() + "CMP3_DEL_EMPLOYEE" + platform.getEndDelimiter(), Employee.class);
         }
         List result = query.getResultList();
-        Assert.assertTrue("testNativeQuery did not return result ", result.size() >= 2);
+        assertTrue("testNativeQuery did not return result ", result.size() >= 2);
         closeEntityManager(em);
     }
 
@@ -147,9 +147,9 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
             em.flush();
             clearCache("delimited");
             returnedEmp = em.find(Employee.class, returnedEmp.getId());
-            Assert.assertTrue("testUpdateEmployee did not properly update firstName", returnedEmp.getFirstName().equals("Redel"));
-            Assert.assertTrue("testUpdateEmployee did not properly update address", returnedEmp.getAddress().getCity().equals("Reident"));
-            Assert.assertTrue("testUpdateEmployee did not properly add phone number", returnedEmp.getPhoneNumbers().size() == 2);;
+            assertEquals("testUpdateEmployee did not properly update firstName", "Redel", returnedEmp.getFirstName());
+            assertEquals("testUpdateEmployee did not properly update address", "Reident", returnedEmp.getAddress().getCity());
+            assertEquals("testUpdateEmployee did not properly add phone number", 2, returnedEmp.getPhoneNumbers().size());
             commitTransaction(em);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -169,7 +169,7 @@ public class DelimitedPUTestSuite extends JUnitTestCase {
             beginTransaction(em);
             SimpleImage returnedImage = (SimpleImage)em.createQuery("select e from SimpleImage e where e.id = "+simage.getId()).getSingleResult();
             em.refresh(returnedImage);
-            Assert.assertTrue("SimpleImage was not properly read back in", getServerSession("delimited").compareObjects(simage, returnedImage));
+            assertTrue("SimpleImage was not properly read back in", getServerSession("delimited").compareObjects(simage, returnedImage));
         } finally {
             if (isTransactionActive(em)){
                 rollbackTransaction(em);

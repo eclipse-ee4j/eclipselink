@@ -25,7 +25,6 @@ import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.samples.annotations.CycleA;
 import org.eclipse.samples.annotations.CycleB;
 import org.eclipse.samples.annotations.CycleSelf;
-import org.junit.Assert;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -52,12 +51,12 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
         MetadataAsmFactory fact = new MetadataAsmFactory(new MetadataLogger(null), MetadataASMFactoryTest.class.getClassLoader());
         MetadataClass metadataClass = fact.getMetadataClass(Employee.class.getName());
         MetadataAnnotation annotation = metadataClass.getAnnotation("javax.persistence.Entity");
-        Assert.assertNotNull(annotation);
-        Assert.assertTrue(PersistenceUnitProcessor.isEntity(metadataClass));
-        Assert.assertNotNull(PersistenceUnitProcessor.getEntityAnnotation(metadataClass));
+        assertNotNull(annotation);
+        assertTrue(PersistenceUnitProcessor.isEntity(metadataClass));
+        assertNotNull(PersistenceUnitProcessor.getEntityAnnotation(metadataClass));
 
         annotation = metadataClass.getAnnotation("javax.persistence.EntityListeners");
-        Assert.assertNotNull(annotation);
+        assertNotNull(annotation);
     }
 
     /**

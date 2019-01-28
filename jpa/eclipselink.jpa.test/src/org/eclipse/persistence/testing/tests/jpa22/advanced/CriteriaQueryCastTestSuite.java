@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +21,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
@@ -31,11 +33,11 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
-import org.eclipse.persistence.testing.models.jpa.advanced.Project;
-import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa22.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa22.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa22.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa22.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa22.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Boat;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
@@ -153,7 +155,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned, expected 1 but returned "+resultList.size(), resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -209,7 +211,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -263,7 +265,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -314,7 +316,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -370,7 +372,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -423,7 +425,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -459,7 +461,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -518,7 +520,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -569,7 +571,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -621,7 +623,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -684,7 +686,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -733,7 +735,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.or(qb.equal(s.get("maxSpeed"), 200), qb.equal(j.get("percentRust"), 20)));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -785,8 +787,8 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
-            assertTrue("Incorrect results returned", (Double)resultList.get(0) == 1000);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
+            assertEquals("Incorrect results returned", 1000, (Double)resultList.get(0));
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -816,7 +818,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             proj.addTeamMember(emp);
             emp.addProject(lp);
             lp.addTeamMember(emp);
-            emp.setSalary(10000);
+            emp.setSalary(10000L);
             em.persist(emp);
 
             emp = new Employee();
@@ -825,7 +827,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             emp.addProject(lp);
             lp.addTeamMember(emp);
             em.persist(emp);
-            emp.setSalary(100);
+            emp.setSalary(100L);
             em.flush();
 
             clearCache();
@@ -843,7 +845,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -889,8 +891,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
             Person person = (Person)resultList.get(0);
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
-            assertNotNull("The car was not fetched.", person.car);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
+            PersistenceUnitUtil unitUtil = em.getEntityManagerFactory().getPersistenceUnitUtil();
+            assertTrue("The car was not fetched.", unitUtil.isLoaded(person, "car"));
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -935,7 +938,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.or(qb.equal( qb.treat(root, SportsCar.class).get("maxSpeed"), 200), qb.equal( qb.treat(root, Jalopy.class).get("percentRust"), 20)));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -975,7 +978,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.or(qb.equal( qb.treat(root, PerformanceTireInfo.class).get("speedRating"), 110), qb.equal( qb.treat(root, PassengerPerformanceTireInfo.class).get("speedRating"), 120)));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1026,7 +1029,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1073,7 +1076,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.select(b.get("speedRating"));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1123,7 +1126,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1170,7 +1173,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.greaterThan(qb.treat(root.get("tires"), PerformanceTireInfo.class).<Integer>get("speedRating"), 100));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1339,7 +1342,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             for (Object result: resultList) {
                 assertTrue("query did not return intances of Company, instead it returned :"+result, (result instanceof Person));
             }
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);

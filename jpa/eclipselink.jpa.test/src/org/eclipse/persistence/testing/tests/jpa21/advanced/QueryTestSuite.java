@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -89,21 +90,21 @@ public class QueryTestSuite extends JUnitTestCase {
         Query query = em.createNamedQuery("jpa21Employee.findAllEmployeesByFirstNameAndLastNamePos").setParameter(1, "Bob").setParameter(2, "Way");
         int i = 0;
         for (Parameter parameter: query.getParameters()){
-            assertTrue("Parameter returned wrong position.", parameter.getPosition() != null );
-            assertTrue("Parameter returned name.", parameter.getName() == null );
+            assertNotNull("Parameter returned wrong position.", parameter.getPosition());
+            assertNull("Parameter returned name.", parameter.getName());
             i++;
-            assertTrue("Parameter returned wrong type.", parameter.getParameterType().equals(String.class));
+            assertEquals("Parameter returned wrong type.", String.class, parameter.getParameterType());
         }
 
 
-        TypedQuery<Employee> typedQuery = em.createQuery("SELECT employee FROM Employee employee WHERE employee.firstName = ?1 OR employee.lastName = ?2", Employee.class)/*.setParameter(1, "Bob").setParameter(2, "Way")*/;
+        TypedQuery<Employee> typedQuery = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = ?1 OR e.lastName = ?2", Employee.class)/*.setParameter(1, "Bob").setParameter(2, "Way")*/;
         i = 0;
         ArrayList<Parameter> params = new ArrayList<Parameter>(typedQuery.getParameters());
         for (Parameter parameter: params){
-            assertTrue("Parameter returned wrong position.", parameter.getPosition() != null );
-            assertTrue("Parameter returned name.", parameter.getName() == null );
+            assertNotNull("Parameter returned wrong position.", parameter.getPosition());
+            assertNull("Parameter returned name.", parameter.getName());
             i++;
-            assertTrue("Parameter returned wrong type.", parameter.getParameterType().equals(String.class));
+            assertEquals("Parameter returned wrong type.", String.class, parameter.getParameterType());
         }
         try{
             query.getParameter(1, Integer.class);
@@ -121,10 +122,10 @@ public class QueryTestSuite extends JUnitTestCase {
         Query query = em.createNamedQuery("jpa21Employee.findAllEmployeesByFirstNameAndLastNameName").setParameter("firstName", "Bob").setParameter("lastName", "Way");
         int i = 0;
         for (Parameter parameter: query.getParameters()){
-            assertTrue("Parameter returned wrong position.", parameter.getPosition() == null );
-            assertTrue("Parameter returned name.", parameter.getName() != null );
+            assertNull("Parameter returned wrong position.", parameter.getPosition());
+            assertNotNull("Parameter returned name.", parameter.getName());
             i++;
-            assertTrue("Parameter returned wrong type.", parameter.getParameterType().equals(String.class));
+            assertEquals("Parameter returned wrong type.", String.class, parameter.getParameterType());
         }
     }
 
@@ -132,7 +133,7 @@ public class QueryTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         TypedQuery<Employee> query = em.createQuery("select e from Employee e where e.firstName = :firstName", Employee.class);
         Parameter parameter = query.getParameter("firstName");
-        assertTrue("Parameter did not return correct type", parameter.getParameterType().equals(String.class));
+        assertEquals("Parameter did not return correct type", String.class, parameter.getParameterType());
     }
 
     public void testLockMode(){
@@ -199,7 +200,7 @@ public class QueryTestSuite extends JUnitTestCase {
                     throw exc;
                 }
                 QueryException e = (QueryException)exc.getCause();
-                assertTrue(e.getErrorCode() == QueryException.COLUMN_RESULT_NOT_FOUND);
+                assertEquals(QueryException.COLUMN_RESULT_NOT_FOUND, e.getErrorCode());
             } finally {
                 closeEntityManager(em);
             }
@@ -344,7 +345,7 @@ public class QueryTestSuite extends JUnitTestCase {
                     methodList = methodList +", "+methodName;
                 }
             }
-            this.fail("Expected IllegalStateException not thrown from Query methods "+methodList);
+            fail("Expected IllegalStateException not thrown from Query methods "+methodList);
         }
     }
 

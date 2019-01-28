@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +41,6 @@ import javax.persistence.EntityNotFoundException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -908,8 +908,8 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         JPADynamicHelper helper = new JPADynamicHelper(em);
         DynamicType type = helper.getType("DynamicEmployee");
 
-        Assert.assertNotNull(type);
-        Assert.assertTrue(DynamicEntity.class.isAssignableFrom(type.getJavaClass()));
+        assertNotNull(type);
+        assertTrue(DynamicEntity.class.isAssignableFrom(type.getJavaClass()));
 
         assertAccessors(type);
     }
@@ -919,8 +919,8 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
         JPADynamicHelper helper = new JPADynamicHelper(em);
         DynamicType type = helper.getType("DynamicAddress");
 
-        Assert.assertNotNull(type);
-        Assert.assertTrue(DynamicEntity.class.isAssignableFrom(type.getJavaClass()));
+        assertNotNull(type);
+        assertTrue(DynamicEntity.class.isAssignableFrom(type.getJavaClass()));
 
         assertAccessors(type);
     }
@@ -945,10 +945,10 @@ public class EntityMappingsDynamicAdvancedJUnitTestCase extends JUnitTestCase {
                 expectedReturnType = frMapping.getReferenceDescriptor().getJavaClass();
             }
 
-            Assert.assertNotNull("No classification for: " + mapping, expectedReturnType);
+            assertNotNull("No classification for: " + mapping, expectedReturnType);
 
             if (!expectedReturnType.isPrimitive()) {
-                Assert.assertTrue("Incorrect get" + propertyName + " return type: " + method.getReturnType(), method.getReturnType().isAssignableFrom(expectedReturnType));
+                assertTrue("Incorrect get" + propertyName + " return type: " + method.getReturnType(), method.getReturnType().isAssignableFrom(expectedReturnType));
             }
         }
     }

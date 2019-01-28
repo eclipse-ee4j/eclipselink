@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 IBM Corporation. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,10 +47,10 @@
         </object-type-converter>
         <table-generator name="DYNAMIC_EMPLOYEE_TABLE_GENERATOR" table="DYNAMIC_EMPLOYEE_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DYNAMIC_EMPLOYEE_SEQ"/>
         <named-query name="findAllDynamicEmployeesByFirstName">
-            <query>SELECT OBJECT(employee) FROM DynamicEmployee employee WHERE employee.firstName = :firstName</query>
+            <query>SELECT OBJECT(e) FROM DynamicEmployee e WHERE e.firstName = :firstName</query>
         </named-query>
         <named-query name="findDynamicEmployeeById">
-            <query>SELECT OBJECT(employee) FROM DynamicEmployee employee WHERE employee.id = :id</query>
+            <query>SELECT OBJECT(e) FROM DynamicEmployee e WHERE e.id = :id</query>
         </named-query>
         <entity-listeners>
             <entity-listener class="EmployeeListener">
@@ -180,7 +181,7 @@
         <table name="DYNAMIC_ADDRESS"/>
         <sequence-generator name="DYNAMIC_ADDRESS_SEQUENCE_GENERATOR" sequence-name="ADDRESS_SEQ" allocation-size="25"/>
         <named-query name="findAllDynamicAddressesByPostalCode">
-            <query>SELECT OBJECT(address) FROM DynamicAddress address WHERE address.postalCode = :postalCode</query>
+            <query>SELECT OBJECT(a) FROM DynamicAddress a WHERE a.postalCode = :postalCode</query>
         </named-query>
         <named-native-query name="findAllDynamicAddresses" result-class="Address">
             <query>SELECT * FROM DYNAMIC_ADDRESS</query>
@@ -242,7 +243,7 @@
         <table name="DYNAMIC_LPROJECT"/>
         <discriminator-value>L</discriminator-value>
         <named-query name="findDynamicLargeProjectWithBudgetLargerThan">
-            <query>SELECT OBJECT(project) FROM DynamicLargeProject project WHERE project.budget >= :amount</query>
+            <query>SELECT OBJECT(p) FROM DynamicLargeProject p WHERE p.budget >= :amount</query>
         </named-query>
         <attributes>
             <basic name="budget" attribute-type="Double"/>
@@ -265,7 +266,7 @@
         </optimistic-locking>
         <sequence-generator name="DYNAMIC_PROJECT_SEQUENCE_GENERATOR" sequence-name="PROJECT_SEQ" allocation-size="10"/>
         <named-query name="findDynamicProjectByName">
-            <query>SELECT OBJECT(project) FROM DynamicProject project WHERE project.name = :name</query>
+            <query>SELECT OBJECT(p) FROM DynamicProject p WHERE p.name = :name</query>
         </named-query>
         <attributes>
             <id name="id" attribute-type="Integer">

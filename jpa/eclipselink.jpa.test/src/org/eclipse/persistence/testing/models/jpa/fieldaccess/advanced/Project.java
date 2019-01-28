@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +33,7 @@ import static javax.persistence.InheritanceType.*;
 @DiscriminatorValue("P")
 @NamedQuery(
     name="findFieldAccessProjectByName",
-    query="SELECT OBJECT(project) FROM Project project WHERE project.name = :name"
+    query="SELECT OBJECT(p) FROM Project p WHERE p.name = :name"
 )
 public class Project implements Serializable {
     @Transient

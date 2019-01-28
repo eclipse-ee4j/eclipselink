@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +18,11 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import java.util.*;
 import java.io.Serializable;
 import javax.persistence.*;
-import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;
 import org.eclipse.persistence.annotations.ExistenceChecking;
+import org.eclipse.persistence.annotations.ExistenceType;
 
 /**
  * Employees have a many-to-many relationship with Projects through the
@@ -35,14 +34,14 @@ import org.eclipse.persistence.annotations.ExistenceChecking;
 @SuppressWarnings("deprecation")
 @Entity
 @Table(name="CMP3_PROJECT")
-@Inheritance(strategy=JOINED)
+@Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="PROJ_TYPE")
 @DiscriminatorValue("P")
 @NamedQuery(
     name="findProjectByName",
-    query="SELECT OBJECT(project) FROM Project project WHERE project.name = :name"
+    query="SELECT OBJECT(p) FROM Project p WHERE p.name = :name"
 )
-@ExistenceChecking(CHECK_CACHE)
+@ExistenceChecking(ExistenceType.CHECK_CACHE)
 public class Project implements Serializable {
     public int pre_update_count = 0;
     public int post_update_count = 0;
@@ -66,7 +65,7 @@ public class Project implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy=SEQUENCE, generator="PROJECT_SEQUENCE_GENERATOR")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="PROJECT_SEQUENCE_GENERATOR")
     @SequenceGenerator(name="PROJECT_SEQUENCE_GENERATOR", sequenceName="PROJECT_SEQ", allocationSize=10)
     @Column(name="PROJ_ID", length=37)
     public Integer getId() {
@@ -127,7 +126,7 @@ public class Project implements Serializable {
     }
 
     @ManyToMany(targetEntity=Employee.class, mappedBy="projects")
-    public Collection getTeamMembers() {
+    public Collection<Employee> getTeamMembers() {
         return m_teamMembers;
     }
 

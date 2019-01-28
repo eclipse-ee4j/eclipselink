@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -404,7 +405,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             commitTransaction(em);
 
             // Should be able to find the bus created through the listener.
-            List results = em.createQuery("select object(bus) from Bus bus where bus.description = 'Listener test Bus2'").getResultList();
+            List results = em.createQuery("select object(b) from Bus b where b.description = 'Listener test Bus2'").getResultList();
             assertTrue("Did not find the bus created by the session listener.", results.size() == 1);
         } catch (RuntimeException ex) {
             if (isTransactionActive(em)){

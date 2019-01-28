@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +25,7 @@ class CollectionMemberIdentifierNotEqualsTest extends JPQLParameterTestCase {
         emp = (Employee)employees.firstElement();
         PhoneNumber phoneNumber = (PhoneNumber)emp.getPhoneNumbers().elementAt(0);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp, IN (emp.phoneNumbers) phone " + "WHERE phone <> ?1";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e, IN (e.phoneNumbers) phone " + "WHERE phone <> ?1";
 
         setEjbqlString(ejbqlString);
 

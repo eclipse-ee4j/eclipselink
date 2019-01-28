@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,9 +13,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-
-
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Arrays;
@@ -24,7 +22,6 @@ import java.util.List;
 import java.util.Vector;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.expressions.Expression;
@@ -175,7 +172,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         Double result = (Double) em.createQuery(ejbqlString).getSingleResult();
 
-        Assert.assertEquals("Complex AVG test failed", expectedResult, result);
+        assertEquals("Complex AVG test failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -224,7 +221,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         List result =  em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexAVGOrderTest test failed", comparer.compareObjects(result, expectedResultVector));
+        assertTrue("complexAVGOrderTest test failed", comparer.compareObjects(result, expectedResultVector));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -256,7 +253,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         q.setParameter(1,havingFilterString);
         List result = q.getResultList();
 
-        Assert.assertTrue("Complex COUNT test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex COUNT test failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -286,7 +283,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Query q = em.createQuery(ejbqlString3);
         List result = q.getResultList();
 
-        Assert.assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -316,7 +313,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Query q = em.createQuery(ejbqlString3);
         List result = q.getResultList();
 
-        Assert.assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex COUNT(Distinct) with Group By test failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -346,7 +343,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
             "GROUP BY p.id HAVING COUNT(p.id)>1";
         List result = em.createQuery(jpql).getResultList();
 
-        Assert.assertTrue("Complex HAVING with aggregate function failed",
+        assertTrue("Complex HAVING with aggregate function failed",
                           comparer.compareObjects(result, expectedResult));
 
         // Test using the project itself in COUNT, GROUP BY and HAVING
@@ -366,7 +363,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
             "GROUP BY p HAVING COUNT(p)>1";
         result = em.createQuery(jpql).getResultList();
 
-        Assert.assertTrue("Complex HAVING with aggregate function failed",
+        assertTrue("Complex HAVING with aggregate function failed",
                           comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
@@ -394,7 +391,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
             String ejbqlString = "SELECT COUNT(emp) FROM Employee emp WHERE emp.lastName = \"Smith\"";
             Long result = (Long) em.createQuery(ejbqlString).getSingleResult();
 
-            Assert.assertEquals("Complex COUNT test failed", expectedResult, result);
+            assertEquals("Complex COUNT test failed", expectedResult, result);
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -425,7 +422,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Query q = em.createQuery(ejbqlString3);
         List result = q.getResultList();
 
-        Assert.assertTrue("Complex COUNT with Group By test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex COUNT with Group By test failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -452,7 +449,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT COUNT(DISTINCT emp.lastName) FROM Employee emp WHERE emp.lastName = \"Smith\"";
         Long result = (Long) em.createQuery(ejbqlString).getSingleResult();
 
-        Assert.assertEquals("Complex DISTINCT COUNT test failed", expectedResult, result);
+        assertEquals("Complex DISTINCT COUNT test failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -474,7 +471,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT MAX(DISTINCT emp.salary) FROM Employee emp";
         Number result = (Number) em.createQuery(ejbqlString).getSingleResult();
 
-        Assert.assertEquals("Complex MAX test failed", expectedResult, result);
+        assertEquals("Complex MAX test failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -496,7 +493,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT MIN(DISTINCT emp.salary) FROM Employee emp";
         Number result = (Number) em.createQuery(ejbqlString).getSingleResult();
 
-        Assert.assertEquals("Complex MIN test failed", expectedResult, result);
+        assertEquals("Complex MIN test failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -518,7 +515,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT SUM(DISTINCT emp.salary) FROM Employee emp";
         Long result = (Long) em.createQuery(ejbqlString).getSingleResult();
 
-        Assert.assertEquals("Complex SUMtest failed", expectedResult, result);
+        assertEquals("Complex SUMtest failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -537,7 +534,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Query q = em.createQuery(jpql);
         Long result = (Long) q.getSingleResult();
 
-        Assert.assertEquals("Complex COUNT DISTINCT on base query class ", expectedResult, result);
+        assertEquals("Complex COUNT DISTINCT on base query class ", expectedResult, result);
 
         rollbackTransaction(em);
         closeEntityManager(em);
@@ -561,14 +558,14 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         List result = q.getResultList();
         Collections.sort(result);
 
-        Assert.assertEquals("Complex COUNT on joined variable simple PK", expectedResult, result);
+        assertEquals("Complex COUNT on joined variable simple PK", expectedResult, result);
 
         jpql = "SELECT COUNT(DISTINCT o) FROM Customer c LEFT JOIN c.orders o GROUP BY c.name";
         q = em.createQuery(jpql);
         result = q.getResultList();
         Collections.sort(result);
 
-        Assert.assertEquals("Complex COUNT DISTINCT on joined variable simple PK", expectedResult, result);
+        assertEquals("Complex COUNT DISTINCT on joined variable simple PK", expectedResult, result);
     }
 
     /**
@@ -588,7 +585,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         List result = q.getResultList();
         Collections.sort(result);
 
-        Assert.assertEquals("Complex COUNT on outer joined variable composite PK", expectedResult, result);
+        assertEquals("Complex COUNT on outer joined variable composite PK", expectedResult, result);
 
         // COUNT DISTINCT with inner join
         jpql = "SELECT COUNT(DISTINCT p) FROM Employee e JOIN e.phoneNumbers p WHERE e.lastName LIKE 'S%' GROUP BY e.lastName";
@@ -596,7 +593,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         result = q.getResultList();
         Collections.sort(result);
 
-        Assert.assertEquals("Complex DISTINCT COUNT on inner joined variable composite PK", expectedResult, result);
+        assertEquals("Complex DISTINCT COUNT on inner joined variable composite PK", expectedResult, result);
 }
 
     /**
@@ -630,7 +627,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
             List result = q.getResultList();
             Collections.sort(result);
 
-            Assert.assertEquals("Complex COUNT on joined variable composite PK", expectedResult, result);
+            assertEquals("Complex COUNT on joined variable composite PK", expectedResult, result);
         }finally{
             rollbackTransaction(em);
         }
@@ -654,13 +651,13 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
 
         final String description = "Complex COUNT on joined variable over ManyToMany self refrenceing relationship";
 
-        Assert.assertEquals(description + " size mismatch", expectedResult.size(), result.size());
+        assertEquals(description + " size mismatch", expectedResult.size(), result.size());
 
         for (int i = 0; i < result.size(); i++) {
             Object[] expected = expectedResult.get(i);
             Object[] actual = result.get(i);
-            Assert.assertEquals(expected[0], actual[0]);
-            Assert.assertEquals(expected[1], actual[1]);
+            assertEquals(expected[0], actual[0]);
+            assertEquals(expected[1], actual[1]);
         }
     }
 
@@ -684,7 +681,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Query q = em.createQuery(jpql);
         List result = q.getResultList();
 
-        Assert.assertEquals("Complex COUNT on joined variable over ManyToMany self refrenceing relationship failed",
+        assertEquals("Complex COUNT on joined variable over ManyToMany self refrenceing relationship failed",
                             expectedResult, result);
     }
 
@@ -700,9 +697,9 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         Query q = em.createQuery(jpql);
         EmploymentPeriod result = (EmploymentPeriod)q.getSingleResult();
 
-        Assert.assertEquals("complexSelectAggregateTest failed - start dates don't match",
+        assertEquals("complexSelectAggregateTest failed - start dates don't match",
                             expectedResult.getStartDate(), result.getStartDate());
-        Assert.assertEquals("complexSelectAggregateTest failed - end dates don't match",
+        assertEquals("complexSelectAggregateTest failed - end dates don't match",
                 expectedResult.getEndDate(), result.getEndDate());
     }
 
@@ -710,10 +707,10 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         EntityManager em = createEntityManager();
         Query query = em.createQuery("SELECT SUM(COALESCE(e.roomNumber, 20)), SUM(COALESCE(e.salary, 10000)) FROM Employee e");
         List result = (List) query.getResultList();
-        Assert.assertNotNull("testMultipleCoalesce Test Failed - Unable to fetch employee data", result);
-        Assert.assertFalse("testMultipleCoalesce Test Failed - Unable to fetch employee data", result.isEmpty());
+        assertNotNull("testMultipleCoalesce Test Failed - Unable to fetch employee data", result);
+        assertFalse("testMultipleCoalesce Test Failed - Unable to fetch employee data", result.isEmpty());
         Object[] aggregateResult = (Object[])result.get(0);
-        Assert.assertFalse("testMultipleCoalesce Test Failed ", aggregateResult[0].equals(aggregateResult[1]));
+        assertFalse("testMultipleCoalesce Test Failed ", aggregateResult[0].equals(aggregateResult[1]));
         closeEntityManager(em);
     }
 }

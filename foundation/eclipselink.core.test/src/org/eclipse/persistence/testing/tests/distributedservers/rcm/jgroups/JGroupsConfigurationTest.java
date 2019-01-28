@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +20,6 @@ import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.testing.tests.distributedservers.rcm.ConfigurableCacheSyncDistributedTest;
-import org.junit.Assert;
 
 import java.lang.reflect.Field;
 
@@ -38,9 +38,9 @@ public class JGroupsConfigurationTest extends ConfigurableCacheSyncDistributedTe
         RemoteConnection connection = transport.getConnectionToLocalHost();
         try {
             int multicastPort = getMulticastPort(connection);
-            Assert.assertEquals("Default multicast port different than expected", 45588, multicastPort);
+            assertEquals("Default multicast port different than expected", 45588, multicastPort);
         } catch (Exception x) {
-            Assert.fail("Failed to retrieve multicast port: " + x.getMessage());
+            fail("Failed to retrieve multicast port: " + x.getMessage());
         } finally {
             connection.close();
         }
@@ -53,9 +53,9 @@ public class JGroupsConfigurationTest extends ConfigurableCacheSyncDistributedTe
         connection = transport.getConnectionToLocalHost();
         try {
             int multicastPort = getMulticastPort(connection);
-            Assert.assertEquals("Configured multicast port different than expected", 45678, multicastPort);
+            assertEquals("Configured multicast port different than expected", 45678, multicastPort);
         } catch (Exception x) {
-            Assert.fail("Failed to retrieve multicast port: " + x.getMessage());
+            fail("Failed to retrieve multicast port: " + x.getMessage());
         } finally {
             connection.close();
         }

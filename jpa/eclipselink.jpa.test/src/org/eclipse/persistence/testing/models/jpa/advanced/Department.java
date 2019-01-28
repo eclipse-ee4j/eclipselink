@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,8 +78,8 @@ public class Department implements Serializable {
 
     public Department(String name) {
         this.name = name;
-        this.employees = new ArrayList();
-        this.managers = new Vector();
+        this.employees = new ArrayList<Employee>();
+        this.managers = new Vector<Employee>();
         this.equipment = new HashMap<Integer, Equipment>();
     }
 

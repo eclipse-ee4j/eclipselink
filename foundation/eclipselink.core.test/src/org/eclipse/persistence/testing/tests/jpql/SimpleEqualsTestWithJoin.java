@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +31,7 @@ public class SimpleEqualsTestWithJoin extends JPQLTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
         String ejbqlString;
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp, IN(emp.managedEmployees) managedEmployees " + "WHERE managedEmployees.address.city = 'Ottawa'";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e, IN(e.managedEmployees) me " + "WHERE me.address.city = 'Ottawa'";
 
         setEjbqlString(ejbqlString);
         super.setup();

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -450,7 +451,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     public void testGetResultCollectionTest() {
         Collection returnedCustomers1, returnedCustomers2;
         QueryException expectedException1 = null;
-        String ejbql1 = "SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id";
+        String ejbql1 = "SELECT OBJECT(c) FROM Customer c WHERE c.customerId = :id";
         Integer[] cusIDs = new Integer[3];
 
         Customer cusClone1 = RelationshipsExamples.customerExample1();
@@ -532,7 +533,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
     public void testGetResultListTest() {
         Collection returnedCustomers1, returnedCustomers2;
         QueryException expectedException1 = null;
-        String ejbql1 = "SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id";
+        String ejbql1 = "SELECT OBJECT(c) FROM Customer c WHERE c.customerId = :id";
         Integer[] cusIDs = new Integer[3];
 
         Customer cusClone1 = RelationshipsExamples.customerExample1();
@@ -660,15 +661,15 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             result.toString();
 
             // check for single result found.
-            Query query3 = em.createQuery("SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id");
+            Query query3 = em.createQuery("SELECT OBJECT(c) FROM Customer c WHERE c.customerId = :id");
             returnedCustomer1 = (Customer) query3.setParameter("id", cusIDs[0]).getSingleResult();
 
             // check for single result using a ReadObjectQuery (tests previous
             // fix for 4202835)
-            EJBQueryImpl query4 = (EJBQueryImpl) em.createQuery("SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id");
+            EJBQueryImpl query4 = (EJBQueryImpl) em.createQuery("SELECT OBJECT(c) FROM Customer c WHERE c.customerId = :id");
             query4.setParameter("id", cusIDs[0]);
             ReadObjectQuery readObjectQuery = new ReadObjectQuery(Customer.class);
-            readObjectQuery.setEJBQLString("SELECT OBJECT(thecust) FROM Customer thecust WHERE thecust.customerId = :id");
+            readObjectQuery.setEJBQLString("SELECT OBJECT(c) FROM Customer c WHERE c.customerId = :id");
             query4.setDatabaseQuery(readObjectQuery);
             returnedCustomer2 = (Customer) query4.getSingleResult();
             commitTransaction(em);

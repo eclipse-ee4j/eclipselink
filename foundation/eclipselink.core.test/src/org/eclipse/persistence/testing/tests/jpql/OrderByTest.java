@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,9 +37,9 @@ public class OrderByTest extends JPQLTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName <> ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName <> ";
         ejbqlString = ejbqlString + "\"XXX\" ";
-        ejbqlString = ejbqlString + "ORDER BY emp.lastName ASC";
+        ejbqlString = ejbqlString + "ORDER BY e.lastName ASC";
 
         test.setEjbqlString(ejbqlString);
 
@@ -58,9 +59,9 @@ public class OrderByTest extends JPQLTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName <> ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName <> ";
         ejbqlString = ejbqlString + "\"XXX\" ";
-        ejbqlString = ejbqlString + "ORDER BY emp.lastName DESC";
+        ejbqlString = ejbqlString + "ORDER BY e.lastName DESC";
 
         test.setEjbqlString(ejbqlString);
 
@@ -81,9 +82,9 @@ public class OrderByTest extends JPQLTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName <> ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName <> ";
         ejbqlString = ejbqlString + "\"XXX\" ";
-        ejbqlString = ejbqlString + "ORDER BY emp.lastName";
+        ejbqlString = ejbqlString + "ORDER BY e.lastName";
 
         test.setEjbqlString(ejbqlString);
 
@@ -104,9 +105,9 @@ public class OrderByTest extends JPQLTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName <> ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName <> ";
         ejbqlString = ejbqlString + "\"XXX\" ";
-        ejbqlString = ejbqlString + "ORDER BY emp.lastName, emp.firstName";
+        ejbqlString = ejbqlString + "ORDER BY e.lastName, e.firstName";
 
         test.setEjbqlString(ejbqlString);
 
@@ -127,9 +128,9 @@ public class OrderByTest extends JPQLTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName <> ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName <> ";
         ejbqlString = ejbqlString + "\"XXX\" ";
-        ejbqlString = ejbqlString + "ORDER BY emp.lastName ASC, emp.firstName ASC";
+        ejbqlString = ejbqlString + "ORDER BY e.lastName ASC, e.firstName ASC";
 
         test.setEjbqlString(ejbqlString);
 
@@ -150,9 +151,9 @@ public class OrderByTest extends JPQLTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName <> ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName <> ";
         ejbqlString = ejbqlString + "\"XXX\" ";
-        ejbqlString = ejbqlString + "ORDER BY emp.lastName DESC, emp.firstName DESC";
+        ejbqlString = ejbqlString + "ORDER BY e.lastName DESC, e.firstName DESC";
 
         test.setEjbqlString(ejbqlString);
 
@@ -173,9 +174,9 @@ public class OrderByTest extends JPQLTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName <> ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName <> ";
         ejbqlString = ejbqlString + "\"XXX\" ";
-        ejbqlString = ejbqlString + "ORDER BY emp.lastName ASC, emp.firstName DESC";
+        ejbqlString = ejbqlString + "ORDER BY e.lastName ASC, e.firstName DESC";
 
         test.setEjbqlString(ejbqlString);
 

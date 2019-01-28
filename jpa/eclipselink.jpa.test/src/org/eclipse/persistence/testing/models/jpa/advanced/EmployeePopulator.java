@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1723,7 +1724,7 @@ public class EmployeePopulator {
         }
 
         MyTestEntity mytest = new MyTestEntity();
-        mytest.id = 2L;
+        mytest.setId(2L);
         registerObject(mytest, "0001");
         return mytest;
     }

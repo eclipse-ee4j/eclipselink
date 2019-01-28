@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -108,16 +109,16 @@ import org.eclipse.persistence.config.CacheIsolationType;
 @NamedQueries({
 @NamedQuery(
     name="findAllFieldAccessEmployeesByFirstName",
-    query="SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname"
+    query="SELECT OBJECT(e) FROM Employee e WHERE e.firstName = :firstname"
 ),
 @NamedQuery(
     name="constuctFieldAccessEmployees",
-    query="SELECT new org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee(employee.firstName, employee.lastName) FROM Employee employee"
+    query="SELECT new org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee(e.firstName, e.lastName) FROM Employee e"
 ),
 @NamedQuery(
     name="findFieldAccessEmployeeByPK",
     lockMode=LockModeType.PESSIMISTIC_READ,
-    query="SELECT OBJECT(employee) FROM Employee employee WHERE employee.id = :id"
+    query="SELECT OBJECT(e) FROM Employee e WHERE e.id = :id"
 ),
 @NamedQuery(
     name="findFieldAccessEmployeeByPostalCode",
@@ -235,8 +236,8 @@ public class Employee implements Serializable, Cloneable {
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name="formerCompany", column=@Column(name="FORMER_COMPANY", nullable=false)),
-        @AttributeOverride(name="startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
-        @AttributeOverride(name="endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
+        @AttributeOverride(name="period.startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
+        @AttributeOverride(name="period.endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
     })
     private FormerEmployment formerEmployment;
 

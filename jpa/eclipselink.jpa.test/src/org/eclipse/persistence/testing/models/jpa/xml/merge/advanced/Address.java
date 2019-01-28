@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +33,7 @@ import static javax.persistence.CascadeType.*;
 @Entity(name = "AnnMergeAddress")
 @Table(name = "CMP3_ANN_MERGE_ADDRESS")
 @NamedNativeQuery(name = "ann_merge_findAllSQLAddresses", query = "select * from CMP3_ANN_MERGE_ADDRESS", resultClass = Address.class)
-@NamedQuery(name = "ann_merge_findAllAddressesByPostalCode", query = "SELECT OBJECT(address) FROM Address address WHERE address.postalCode = :postalcode")
+@NamedQuery(name = "ann_merge_findAllAddressesByPostalCode", query = "SELECT OBJECT(a) FROM Address a WHERE a.postalCode = :postalcode")
 @TableGenerator(name = "ANN_MERGE_ADDRESS_SEQUENCE_GENERATOR", table = "ANN_MERGE_ADDRESS_SEQ", pkColumnValue = "ANN_MERGE_ADDRESS_SEQ", allocationSize = 25)
 public class Address implements Serializable {
     private Integer id;

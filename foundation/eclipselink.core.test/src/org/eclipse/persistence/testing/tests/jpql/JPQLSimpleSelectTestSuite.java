@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -84,8 +85,8 @@ public class JPQLSimpleSelectTestSuite extends TestSuite {
         //addTest(new SimpleSelectPhoneNumberNumberWithEmployeeWithExplicitJoin());
         //        addTest(new SimpleSelectPhoneNumberNumberWithEmployeeWithFirstNameFirst());
         //SELECT from CALLS
-        addTest(new ReadObjectCallTest(Employee.class, new JPQLCall("SELECT OBJECT(emp) FROM Employee emp")));
-        addTest(new ReadAllCallTest(Employee.class, 12, new JPQLCall("SELECT OBJECT(emp) FROM Employee emp")));
+        addTest(new ReadObjectCallTest(Employee.class, new JPQLCall("SELECT OBJECT(e) FROM Employee e")));
+        addTest(new ReadAllCallTest(Employee.class, 12, new JPQLCall("SELECT OBJECT(e) FROM Employee e")));
         addTest(new SelectSimpleMemberOfTest());
         addTest(new SelectSimpleMemberOfWithParameterTest());
         addTest(new SelectSimpleNotMemberOfWithParameterTest());

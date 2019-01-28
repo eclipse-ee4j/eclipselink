@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +25,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -125,7 +125,7 @@ public class SimpleTypes_OneToOne {
     @Test
     public void createSimpleA() {
         DynamicType simpleTypeA = dynamicHelper.getType("SimpleA");
-        Assert.assertNotNull(simpleTypeA);
+        assertNotNull(simpleTypeA);
 
         DynamicEntity simpleInstance = simpleTypeA.newDynamicEntity();
         simpleInstance.set("id", 1);
@@ -139,13 +139,13 @@ public class SimpleTypes_OneToOne {
         countQuery.addCount();
         countQuery.setShouldReturnSingleValue(true);
         int simpleCount = ((Number) session.executeQuery(countQuery)).intValue();
-        Assert.assertEquals(1, simpleCount);
+        assertEquals(1, simpleCount);
     }
 
     @Test
     public void createSimpleB() {
         DynamicType simpleTypeB = dynamicHelper.getType("SimpleB");
-        Assert.assertNotNull(simpleTypeB);
+        assertNotNull(simpleTypeB);
 
         DynamicEntity simpleInstance = simpleTypeB.newDynamicEntity();
         simpleInstance.set("id", 1);
@@ -159,16 +159,16 @@ public class SimpleTypes_OneToOne {
         countQuery.addCount();
         countQuery.setShouldReturnSingleValue(true);
         int simpleCount = ((Number) session.executeQuery(countQuery)).intValue();
-        Assert.assertEquals(1, simpleCount);
+        assertEquals(1, simpleCount);
     }
 
     @Test
     public void createSimpleAwithSimpleB() {
         DynamicType simpleTypeA = dynamicHelper.getType("SimpleA");
-        Assert.assertNotNull(simpleTypeA);
+        assertNotNull(simpleTypeA);
         DynamicType simpleTypeB = dynamicHelper.getType("SimpleB");
-        Assert.assertNotNull(simpleTypeB);
-        Assert.assertNotNull(session.getDescriptorForAlias("SimpleB"));
+        assertNotNull(simpleTypeB);
+        assertNotNull(session.getDescriptorForAlias("SimpleB"));
 
         DynamicEntity simpleInstanceB = simpleTypeB.newDynamicEntity();
         simpleInstanceB.set("id", 2);
@@ -191,12 +191,12 @@ public class SimpleTypes_OneToOne {
         ReportQuery countQuery = dynamicHelper.newReportQuery("SimpleB", new ExpressionBuilder());
         countQuery.addCount();
         countQuery.setShouldReturnSingleValue(true);
-        Assert.assertEquals(1, ((Number) session.executeQuery(countQuery)).intValue());
+        assertEquals(1, ((Number) session.executeQuery(countQuery)).intValue());
 
         countQuery = dynamicHelper.newReportQuery("SimpleA", new ExpressionBuilder());
         countQuery.addCount();
         countQuery.setShouldReturnSingleValue(true);
-        Assert.assertEquals(1, ((Number) session.executeQuery(countQuery)).intValue());
+        assertEquals(1, ((Number) session.executeQuery(countQuery)).intValue());
 
     }
 

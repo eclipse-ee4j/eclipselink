@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +37,7 @@ class SelectSimpleInClauseInFromEmployeeManagerAndPhoneNumbers extends org.eclip
         Vector employees;
         employees = (Vector)getSession().executeQuery(raq);
 
-        String ejbqlString = "SELECT OBJECT(employee) FROM Employee employee, IN (employee.manager.phoneNumbers) phone " + "WHERE phone.areaCode = \"613\"";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e, IN (e.manager.phoneNumbers) phone " + "WHERE phone.areaCode = \"613\"";
 
         setEjbqlString(ejbqlString);
         setOriginalOject(employees);

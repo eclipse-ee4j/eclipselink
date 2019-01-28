@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +31,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Greater Than test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.id > 12");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.id > 12");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -44,7 +45,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Greater Than Equal test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.id >= 12");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.id >= 12");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -58,7 +59,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Less Than Equal test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.id <= 1000000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.id <= 1000000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -72,7 +73,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Less Than test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.id < 1000000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.id < 1000000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -86,7 +87,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Plus test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary + 1000 <= 50000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.salary + 1000 <= 50000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -100,7 +101,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Plus test with brackets before comparison");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE (emp.salary + 1000) <= 50000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE (e.salary + 1000) <= 50000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -114,7 +115,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Plus test with brackets after comparison");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE 50000 > (emp.salary + 1000)");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE 50000 > (e.salary + 1000)");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -128,7 +129,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Minus test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary - 1000 <= 50000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.salary - 1000 <= 50000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -142,7 +143,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Minus test with Brackets Before Comparison");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE (emp.salary - 1000) <= 50000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE (e.salary - 1000) <= 50000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -156,7 +157,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Minus test with Brackets After Comparison");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE 50000 > (emp.salary - 1000)");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE 50000 > (e.salary - 1000)");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -170,7 +171,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Multiply test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary * 2 <= 100000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.salary * 2 <= 100000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -184,7 +185,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Multiply test with brackets before comparison");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE (emp.salary * 2) <= 100000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE (e.salary * 2) <= 100000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -198,7 +199,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Multiply test with brackets after comparison");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE 100000 > (emp.salary * 2)");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE 100000 > (e.salary * 2)");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -212,7 +213,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Divide test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary / 2 <= 20000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.salary / 2 <= 20000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -226,7 +227,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Divide test with brackets before comparison");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE (emp.salary / 2) <= 20000");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE (e.salary / 2) <= 20000");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -240,7 +241,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         BinaryOperatorTest theTest = new BinaryOperatorTest();
 
         theTest.setName("Simple Divide test with brackets after comparison");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE 20000 > (emp.salary / 2)");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE 20000 > (e.salary / 2)");
         theTest.setReferenceClass(Employee.class);
 
         ExpressionBuilder builder = new ExpressionBuilder();

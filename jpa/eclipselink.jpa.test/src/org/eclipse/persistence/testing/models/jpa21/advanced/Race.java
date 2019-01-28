@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,13 +40,13 @@ import org.eclipse.persistence.testing.models.jpa21.advanced.converters.Responsi
 public class Race {
     @Id
     @GeneratedValue
-    public Integer id;
+    private Integer id;
 
     @Basic
-    public String name;
+    private String name;
 
     @ManyToMany(mappedBy="races")
-    public List<Runner> runners;
+    private List<Runner> runners;
 
     @OneToMany(mappedBy="race")
     @Converts({

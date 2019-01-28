@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -115,7 +116,7 @@ public class EntityManagerTestSuite extends JUnitTestCase {
 
             order = em.find(Order.class, order.getOrderId());
 
-            assertTrue("The item pair was inserted", order.getItemPair() == null);
+            assertNull("The item pair was inserted", order.getItemPair());
             order.setItemPair(em.merge(itemPair));
 
             Item newItem = new Item();
@@ -130,8 +131,8 @@ public class EntityManagerTestSuite extends JUnitTestCase {
 
             order = em.find(Order.class, order.getOrderId());
 
-            assertTrue("The item pair was not updated.", order.getItemPair() != null);
-            assertTrue("Orginal item was replaced", order.getItem().getItemId().equals(item.getItemId()));
+            assertNotNull("The item pair was not updated.", order.getItemPair());
+            assertEquals("Orginal item was replaced", item.getItemId(), order.getItem().getItemId());
             assertFalse("New item replaced original item", order.getItem().getItemId().equals(newItem.getItemId()));
 
         } catch (IllegalStateException e) {

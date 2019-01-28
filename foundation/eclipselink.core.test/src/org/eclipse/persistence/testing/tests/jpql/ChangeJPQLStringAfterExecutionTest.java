@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,9 +36,9 @@ public class ChangeJPQLStringAfterExecutionTest extends JPQLTestCase {
 
         //Define the firstEJBQLString, which will NOT match the results expected, and the
         //secondEJBQLString which will match.
-        firstEJBQLString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = ";
+        firstEJBQLString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName = ";
         firstEJBQLString = firstEJBQLString + "\"WRONG\"";
-        secondEJBQLString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = ";
+        secondEJBQLString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName = ";
         secondEJBQLString = secondEJBQLString + "\"" + emp.getFirstName() + "\"";
 
         //start with the firstEJBQLString

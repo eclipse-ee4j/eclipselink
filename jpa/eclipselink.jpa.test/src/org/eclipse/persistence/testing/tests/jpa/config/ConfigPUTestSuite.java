@@ -1,5 +1,9 @@
 /*
  * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+<<<<<<< HEAD
+=======
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+>>>>>>> Fixing some minor warnings and errors in JPA tests
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +54,6 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -122,7 +125,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         emp.setTable().setName("CFGPU_EMPLOYEE");
         emp.addSecondaryTable().setName("CFGPU_SALARY").addPrimaryKeyJoinColumn().setName("E_ID").setReferencedColumnName("EMP_ID");
         emp.setTableGenerator().setName("CFGPU_EMPLOYEE_TABLE_GENERATOR").setTable("CFGPU_EMPLOYEE_SEQ").setPKColumnName("SEQ_NAME").setValueColumnName("SEQ_COUNT").setPKColumnValue("EMP_SEQ");
-        emp.addNamedQuery().setName("findAllEmployeesByFirstName").setQuery("SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname");
+        emp.addNamedQuery().setName("findAllEmployeesByFirstName").setQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = :firstname");
         emp.setChangeTracking().setType("AUTO");
         emp.setExcludeDefaultListeners(true);
         emp.setExcludeSuperclassListeners(true);
@@ -294,13 +297,13 @@ public class ConfigPUTestSuite extends JUnitTestCase {
     }
 
     public void testVerifyConfigPU() {
-        Assert.assertNotNull(emf);
+        assertNotNull(emf);
 
         JPADynamicHelper helper = new JPADynamicHelper(emf);
 
         DynamicType personType = helper.getType("Person");
 
-        Assert.assertNotNull(personType);
+        assertNotNull(personType);
     }
 
     public void testCRUDConfigPU() {

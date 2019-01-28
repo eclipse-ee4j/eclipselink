@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,12 +32,20 @@ import javax.persistence.Table;
 public class Loot implements Serializable {
     @Id
     @GeneratedValue
-    public int id;
+    private int id;
 
     @Embedded
     @AttributeOverrides ({
         @AttributeOverride(name="quantity.value", column=@Column(name="QTY_VALUE")),
         @AttributeOverride(name="cost.value", column=@Column(name="COST_VALUE"))
     })
-    public Bag bag;
+    private Bag bag;
+
+    public Bag getBag() {
+        return bag;
+    }
+
+    public void setBag(Bag bag) {
+        this.bag = bag;
+    }
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,8 +25,8 @@ public class SelectSimpleSqrtTest extends org.eclipse.persistence.testing.tests.
         double salarySquareRoot = Math.sqrt((new Double(emp.getSalary()).doubleValue()));
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "SQRT(emp.salary) = ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "SQRT(e.salary) = ";
         ejbqlString = ejbqlString + salarySquareRoot;
         setEjbqlString(ejbqlString);
         setOriginalOject(emp);

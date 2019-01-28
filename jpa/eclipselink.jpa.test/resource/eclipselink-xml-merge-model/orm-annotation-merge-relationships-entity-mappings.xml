@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 IBM Corporation. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,14 +19,14 @@
     <package>org.eclipse.persistence.testing.models.jpa.xml.merge.relationships</package>
     <access>PROPERTY</access>
     <named-query name="findAllXMLMergeCustomers">
-        <query>SELECT OBJECT(thecust) FROM XMLMergeCustomer thecust</query>
+        <query>SELECT OBJECT(c) FROM XMLMergeCustomer c</query>
         <hint name="refresh" value="true"/>
     </named-query>
     <named-query name="findAllXMLMergeOrdersByItem">
-        <query>SELECT OBJECT(theorder) FROM XMLMergeOrderBean theorder WHERE theorder.item.itemId = :id</query>
+        <query>SELECT OBJECT(b) FROM XMLMergeOrderBean b WHERE b.item.itemId = :id</query>
     </named-query>
     <named-query name="findAllXMLMergeItemsByName">
-        <query>SELECT OBJECT(item) FROM XMLMergeItem item WHERE item.name = ?1</query>
+        <query>SELECT OBJECT(i) FROM XMLMergeItem i WHERE i.name = ?1</query>
     </named-query>
     <entity name="XMLMergeCustomer" class="Customer">
         <table-generator name="XML_MERGE_CUSTOMER_TABLE_GENERATOR" table="CMP3_XML_MERGE_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUST_SEQ"/>

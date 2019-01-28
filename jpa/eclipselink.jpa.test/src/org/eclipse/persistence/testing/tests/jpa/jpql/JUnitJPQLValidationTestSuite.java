@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +27,6 @@ import javax.persistence.TransactionRequiredException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -174,7 +174,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             createEntityManager().createQuery(jpql).getResultList();
             fail("Illegal Argument Exception must be thrown");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -188,7 +188,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
     }
 
     public void recognitionExceptionTest() {
-        ensureInvalid("SELECT OBJECT(emp) FROW Employee emp");
+        ensureInvalid("SELECT OBJECT(e) FROW Employee e");
     }
 
     public void invalidCharTest() {
@@ -263,7 +263,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
    public void malformedJPQLExceptionTest1()
    {
 
-        String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName == \"F";
+        String ejbqlString =  "SELECT OBJECT(e) FROM Employee e WHERE e.firstName == \"F";
 
         try
         {
@@ -273,14 +273,14 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
    }
 
    public void malformedJPQLExceptionTest2()
    {
 
-        String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" AND 1";
+        String ejbqlString =  "SELECT OBJECT(e) FROM Employee e WHERE e.firstName = \"Fred\" AND 1";
 
         try
         {
@@ -290,14 +290,14 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
    }
 
     public void malformedJPQLExceptionTest3()
     {
 
-        String ejbqlString =  "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" OR \"Freda\"";
+        String ejbqlString =  "SELECT OBJECT(e) FROM Employee e WHERE e.firstName = \"Fred\" OR \"Freda\"";
 
         try
         {
@@ -307,7 +307,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -324,7 +324,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
     }
@@ -342,7 +342,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         ejbqlString =  "SELECT COUNT(c FROM Customer c";
@@ -355,7 +355,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         ejbqlString =  "SELECT c* FROM Customer c";
@@ -368,7 +368,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -385,7 +385,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertEquals(JPQLException.unexpectedToken, ((JPQLException) ex.getCause()).getErrorCode());
+            assertEquals(JPQLException.unexpectedToken, ((JPQLException) ex.getCause()).getErrorCode());
             assertTrue("Failed to throw expected IllegalArgumentException for a query having an unexpected keyword 1.", ex.getCause().getMessage().contains("unexpected token [1]"));
         }*/
 
@@ -399,7 +399,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name is net null";
@@ -412,7 +412,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name is EMPYT";
@@ -425,7 +425,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name in 3.5";
@@ -438,7 +438,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name MEMBER 6";
@@ -451,7 +451,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         ejbqlString =  "SELECT c FROM Customer c WHERE c.name NOT BETEEN 6 and 7";
@@ -464,7 +464,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
     }
@@ -482,7 +482,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
     }
@@ -501,7 +501,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
     }
@@ -519,7 +519,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -529,22 +529,22 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         try {
             // invalid identification variable in WHERE clause
-            ejbqlString = "SELECT employee FROM Employee employee WHERE emp.firstName = 'Fred'";
+            ejbqlString = "SELECT e FROM Employee e WHERE emp.firstName = 'Fred'";
             createEntityManager().createQuery(ejbqlString).getResultList();
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "using an invalid identification variable in the WHERE clause.");
         } catch(IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         try {
             // invalid identification variable in SELECT clause
-            ejbqlString = "SELECT OBJECT(nullRoot) FROM Employee emp";
+            ejbqlString = "SELECT OBJECT(nullRoot) FROM Employee e";
             createEntityManager().createQuery(ejbqlString).getResultList();
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "selecting an invalid identification variable.");
         } catch(IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         try {
@@ -554,7 +554,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "using an invalid identification variable in a JOIN clause.");
         } catch(IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -570,7 +570,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -587,7 +587,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         if (isHermesParser()) {
@@ -655,7 +655,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
     public void testModArgumentValidation()
     {
-        //Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
+        //assertFalse("Warning SQL/Sybase doesnot support MOD function",  JUnitTestCase.getServerSession().getPlatform().isSQLServer() || JUnitTestCase.getServerSession().getPlatform().isSybase() || JUnitTestCase.getServerSession().getPlatform().isSybase());
 
         String ejbqlString;
         List result;
@@ -668,7 +668,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         try
@@ -679,7 +679,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -695,7 +695,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -716,7 +716,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             query.getResultList();
             fail("Failed to throw expected IllegalArgumentException for a query having an ORDER BY item with a non-existent alias");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -727,14 +727,14 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "navigating a state field of type String in the SELECT clause.");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
         try {
             em.createQuery("SELECT e FROM Employee e WHERE e.firstName.invalid = 1").getResultList();
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "navigating a state field of type String in the WHERE clause.");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -746,7 +746,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "navigating a collection valued association field in the SELECT clause.");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
         try {
             String jpql =
@@ -755,7 +755,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "navigating a collection valued association field in the WHERE clause.");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -798,14 +798,14 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "selecting an unknown state or association field.");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
         try {
             em.createQuery("SELECT e FROM Employee e WHERE e.unknown = 1").getResultList();
             fail("Failed to throw expected IllegalArgumentException for a query " +
                  "using an unknown state or association field in the WHERE clause.");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -818,7 +818,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail("Failed to throw expected IllegalArgumentException for a query"+
                 "unknown enumerated class constant.");
         } catch (IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -835,7 +835,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         EntityManager firstEm = createEntityManager();
         EntityManager secondEm = createAlternateEntityManager();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName='Bob' ";
 
         secondEm.getTransaction().begin();
         try{
@@ -870,7 +870,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 //temporary logging
                 AbstractSessionLog.getLog().log(SessionLog.WARNING, "[TEMPORARY LOGGING]", new Object[] {}, false);
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
-                Assert.assertTrue("Got Exception type: " + e, e instanceof javax.persistence.OptimisticLockException);
+                assertTrue("Got Exception type: " + e, e instanceof javax.persistence.OptimisticLockException);
             }
         }
     }
@@ -887,7 +887,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         EntityManager firstEm = createEntityManager();
         EntityManager secondEm = createAlternateEntityManager();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName='Bob' ";
 
        secondEm.getTransaction().begin();
        try{
@@ -918,7 +918,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
             } else {
-                Assert.assertTrue("Exception not instance of opt Lock exception: " + e.getCause(), e.getCause() instanceof javax.persistence.OptimisticLockException);
+                assertTrue("Exception not instance of opt Lock exception: " + e.getCause(), e.getCause() instanceof javax.persistence.OptimisticLockException);
             }
             return;
         }
@@ -940,7 +940,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             beginTransaction(em);
             try {
 
-                Employee emp = (Employee) em.createQuery("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName='Bob' ").getSingleResult();
+                Employee emp = (Employee) em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName='Bob' ").getSingleResult();
                 em.createQuery("Update Employee set lastName = 'test-bad' WHERE firstName='Bob' ").executeUpdate();
                 emp.setLastName("test");
                 commitTransaction(em);
@@ -1024,7 +1024,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         {
             closeEntityManager(em);
         }
-        Assert.assertTrue("TransactionRequiredException is expected", testPass);
+        assertTrue("TransactionRequiredException is expected", testPass);
     }
 
     public void createNamedQueryThrowsIllegalArgumentExceptionTest()
@@ -1048,7 +1048,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
         catch (Exception e)
         {
-            Assert.assertTrue(e instanceof NoResultException);
+            assertTrue(e instanceof NoResultException);
         }
     }
 
@@ -1065,7 +1065,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         {
             testPass = true;
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
 
@@ -1082,7 +1082,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         {
             testPass = true;
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
     public void testExecuteUpdateOnSelect()
@@ -1100,7 +1100,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         } finally {
             closeEntityManagerAndTransaction(em);
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
 
@@ -1127,7 +1127,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 rollbackTransaction(em);
                 closeEntityManager(em);
             }
-            Assert.assertTrue(e instanceof RollbackException);
+            assertTrue(e instanceof RollbackException);
         } finally {
             em = createEntityManager();
             beginTransaction(em);
@@ -1155,7 +1155,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         } catch (Exception e) {
             testPass = false;
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
     //this test resets the last name of the employee Bob that is changed in some tests
@@ -1191,7 +1191,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail ("JOINing of embedded entities is not allowed must be thrown");
         } catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
 
         try
@@ -1201,7 +1201,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail ("JOINing of embedded entities is not allowed must be thrown");
         } catch(IllegalArgumentException ex)
         {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         }
     }
 
@@ -1215,7 +1215,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail ("Failed to throw expected IllegalArgumentException for query " +
                     " updating a collection valued relationship.");
         } catch(IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         } finally {
             closeEntityManagerAndTransaction(em);
         }
@@ -1232,7 +1232,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             fail ("Failed to throw expected IllegalArgumentException for query " +
                     " updating a sate field of a related instance.");
         } catch(IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         } finally {
             closeEntityManagerAndTransaction(em);
         }
@@ -1247,7 +1247,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                       " having a COUNT DISTINCT on a joined variable with a composite primary key.");
             }
         } catch(IllegalArgumentException ex) {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
+            assertTrue(ex.getCause() instanceof JPQLException);
         } catch(QueryException ex) {
             // OK
         }

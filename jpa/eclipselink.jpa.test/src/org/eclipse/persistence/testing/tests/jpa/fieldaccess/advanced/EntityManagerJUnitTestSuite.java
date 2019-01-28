@@ -125,7 +125,6 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.WorldRank;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 
-import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -2202,7 +2201,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
     public void testClose() {
@@ -2523,14 +2522,14 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         // pessimistic lock
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.Lock);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.LOCK, olrQuery.getLockMode());
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.NoLock);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.NO_LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.NO_LOCK, olrQuery.getLockMode());
         query.setHint(QueryHints.PESSIMISTIC_LOCK, PessimisticLock.LockNoWait);
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.LOCK_NOWAIT);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.LOCK_NOWAIT, olrQuery.getLockMode());
         // default state
         query.setHint(QueryHints.PESSIMISTIC_LOCK, "");
-        assertTrue("Lock not set.", olrQuery.getLockMode()==ObjectLevelReadQuery.NO_LOCK);
+        assertEquals("Lock not set.", ObjectLevelReadQuery.NO_LOCK, olrQuery.getLockMode());
 
         //refresh
         // set to original state - don't refresh.
@@ -2562,29 +2561,29 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         assertFalse("Read-only not set.", olrQuery.isReadOnly());
 
         query.setHint(QueryHints.JDBC_TIMEOUT, new Integer(100));
-        assertTrue("Timeout not set.", olrQuery.getQueryTimeout() == 100);
+        assertEquals("Timeout not set.", 100, olrQuery.getQueryTimeout());
         query.setHint(QueryHints.JDBC_FETCH_SIZE, new Integer(101));
-        assertTrue("Fetch-size not set.", olrQuery.getFetchSize() == 101);
+        assertEquals("Fetch-size not set.", 101, olrQuery.getFetchSize());
 
         query.setHint(QueryHints.JDBC_MAX_ROWS, new Integer(103));
-        assertTrue("Max-rows not set.", olrQuery.getMaxRows() == 103);
+        assertEquals("Max-rows not set.", 103, olrQuery.getMaxRows());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.NoCascading);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.NoCascading);
+        assertEquals(DatabaseQuery.NoCascading, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeByMapping);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
+        assertEquals(DatabaseQuery.CascadeByMapping, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadeAllParts);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeAllParts);
+        assertEquals(DatabaseQuery.CascadeAllParts, olrQuery.getCascadePolicy());
         query.setHint(QueryHints.REFRESH_CASCADE, CascadePolicy.CascadePrivateParts);
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadePrivateParts);
+        assertEquals(DatabaseQuery.CascadePrivateParts, olrQuery.getCascadePolicy());
         // reset to the original state
         query.setHint(QueryHints.REFRESH_CASCADE, "");
-        assertTrue(olrQuery.getCascadePolicy()==DatabaseQuery.CascadeByMapping);
+        assertEquals(DatabaseQuery.CascadeByMapping, olrQuery.getCascadePolicy());
 
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, java.util.ArrayList.class);
-        assertTrue("ArrayList not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.ArrayList.class.getName()));
+        assertEquals("ArrayList not set.", java.util.ArrayList.class.getName(), ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName());
 
         query.setHint(QueryHints.RESULT_COLLECTION_TYPE, "java.util.Vector");
-        assertTrue("Vector not set.", ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName().equals(java.util.Vector.class.getName()));
+        assertEquals("Vector not set.", java.util.Vector.class.getName(), ((ReadAllQuery)olrQuery).getContainerPolicy().getContainerClassName());
 
         closeEntityManager(em);
     }
@@ -2599,10 +2598,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
 
         //testing for query timeout specified in persistence.xml
-        assertTrue("Timeout overriden or not set in persistence.xml", olrQuery.getQueryTimeout() == 100000);
+        assertEquals("Timeout overriden or not set in persistence.xml", 100000, olrQuery.getQueryTimeout());
         query.setHint(QueryHints.JDBC_TIMEOUT, 500000);
         olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
-        assertTrue(olrQuery.getQueryTimeout() == 500000);
+        assertEquals(500000, olrQuery.getQueryTimeout());
 
         closeEntityManager(em);
 
@@ -2664,13 +2663,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getBatchReadAttributeExpressions();
-        assertTrue(expressions.size() == 2);
+        assertEquals(2, expressions.size());
         Expression exp = (Expression)expressions.get(0);
         assertTrue(exp.isQueryKeyExpression());
-        assertTrue(exp.getName().equals("phoneNumbers"));
+        assertEquals("phoneNumbers", exp.getName());
         exp = (Expression)expressions.get(1);
         assertTrue(exp.isQueryKeyExpression());
-        assertTrue(exp.getName().equals("phoneNumbers"));
+        assertEquals("phoneNumbers", exp.getName());
 
         List resultList = query.getResultList();
         emp = (Employee)resultList.get(0);
@@ -2748,11 +2747,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         query.setHint(QueryHints.FETCH, "e.manager");
         ReadAllQuery raq = (ReadAllQuery)query.getDatabaseQuery();
         List expressions = raq.getJoinedAttributeExpressions();
-        assertTrue(expressions.size() == 1);
+        assertEquals(1, expressions.size());
         Expression exp = (Expression)expressions.get(0);
-        assertTrue(exp.getName().equals("manager"));
+        assertEquals("manager", exp.getName());
         query.setHint(QueryHints.FETCH, "e.manager.phoneNumbers");
-        assertTrue(expressions.size() == 2);
+        assertEquals(2, expressions.size());
 
         List resultList = query.getResultList();
         emp = (Employee)resultList.get(0);
@@ -2785,7 +2784,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS, exception.getErrorCode());
         exception = null;
         try{
             Query query = em.createQuery("SELECT e FROM Employee e WHERE e.lastName = 'Malone' order by e.firstName");
@@ -2795,7 +2794,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -2806,7 +2805,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown when an incorrect relationship was navigated in a BATCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -2817,7 +2816,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_DID_NOT_CONTAIN_ENOUGH_TOKENS, exception.getErrorCode());
 
         exception = null;
         try{
@@ -2828,7 +2827,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown on an incorrect FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_NON_EXISTANT_RELATIONSHIP, exception.getErrorCode());
 
         exception = null;
         try{
@@ -2839,7 +2838,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             exception = exc;
         }
         assertNotNull("No exception was thrown when an incorrect relationship was navigated in a FETCH query hint.", exception);
-        assertTrue("Incorrect Exception thrown", exception.getErrorCode() == QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP);
+        assertEquals("Incorrect Exception thrown", QueryException.QUERY_HINT_NAVIGATED_ILLEGAL_RELATIONSHIP, exception.getErrorCode());
 
     }
 
@@ -3506,8 +3505,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             employee = em.find(Employee.class, new Integer(id));
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Shawshank"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Shawshank", employee.getAddress().getCity());
         } finally {
             employee.setAddress(null);
             em.remove(address);
@@ -3563,8 +3562,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             employee = em.find(Employee.class, new Integer(id));
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
         } finally {
             Address initialAddress = em.find(Address.class, new Integer(addressId));
             employee.setAddress(null);
@@ -3624,8 +3623,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             employee = em.find(Employee.class, new Integer(id));
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
         } finally {
             Address initialAddress = em.find(Address.class, new Integer(addressId));
             employee.setAddress(null);
@@ -3686,8 +3685,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             employee = em.find(Employee.class, new Integer(id));
             address = employee.getAddress();
 
-            assertTrue("The address was not persisted.", employee.getAddress() != null);
-            assertTrue("The address was not correctly persisted.", employee.getAddress().getCity().equals("Metropolis"));
+            assertNotNull("The address was not persisted.", employee.getAddress());
+            assertEquals("The address was not correctly persisted.", "Metropolis", employee.getAddress().getCity());
 
         } finally {
             Address initialAddress = em.find(Address.class, new Integer(addressId));
@@ -4586,10 +4585,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", lastNameToUse).getResultList();
 
-            assertTrue(results.size() == 1);
+            assertEquals(1, results.size());
             emp = (Employee)results.get(0);
-            assertTrue(emp.getFirstName().equals("Melvin"));
-            assertTrue(emp.getLastName().equals(lastNameToUse));
+            assertEquals("Melvin", emp.getFirstName());
+            assertEquals(lastNameToUse, emp.getLastName());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -4631,10 +4630,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
             List results = ejbQuery.setParameter("fName", "Melvin").setParameter("lName", "Malone").getResultList();
 
-            assertTrue(results.size() == 1);
+            assertEquals(1, results.size());
             emp = (Employee)results.get(0);
-            assertTrue(emp.getFirstName().equals("Melvin"));
-            assertTrue(emp.getLastName().equals("Malone"));
+            assertEquals("Melvin", emp.getFirstName());
+            assertEquals("Malone", emp.getLastName());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -4917,7 +4916,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         em.refresh(emp);
 
-        assertTrue("The employment period was not properly updated.", emp.getPeriod().getStartDate().equals(Date.valueOf("2010-11-14")) && emp.getPeriod().getEndDate().equals(Date.valueOf("2010-11-15")));
+        assertEquals("The employment period was not properly updated.", Date.valueOf("2010-11-14"), emp.getPeriod().getStartDate());
+        assertEquals("The employment period was not properly updated.", Date.valueOf("2010-11-15"), emp.getPeriod().getEndDate());
         rollbackTransaction(em);
         descriptor.getEventManager().removeListener(listener);
 
@@ -5427,7 +5427,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
 
-        assertTrue("Wrong emp.getPeriod() inserted into db", emp.getPeriod().equals(empRead.getPeriod()));
+        assertEquals("Wrong emp.getPeriod() inserted into db", empRead.getPeriod(), emp.getPeriod());
     }
 
     //  Bug 307433 - Regression in Auditing Support when using defaults.
@@ -5460,7 +5460,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         commitTransaction(em);
         closeEntityManager(em);
 
-        assertTrue("Wrong emp.getFormerEmployment().getPeriod() inserted into db", emp.getFormerEmployment().getPeriod().equals(empRead.getFormerEmployment().getPeriod()));
+        assertEquals("Wrong emp.getFormerEmployment().getPeriod() inserted into db", empRead.getFormerEmployment().getPeriod(), emp.getFormerEmployment().getPeriod());
     }
 
     //  Bug 336280 - Same object referenced from both EM cache and shared cache
@@ -5493,7 +5493,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // originalObjects should consist of just three objects: emp, emp1, emp2.
         // However if manager_vh is wrapped around manager instance from the shared cache (empShared),
         // the size will be 6: emp, emp1, emp2 and empShared, emp1Shared, emp2Shared.
-        assertTrue(originalObjects.size() == 3);
+        assertEquals(3, originalObjects.size());
     }
 
     //  Bug 336280 - Same object referenced from both EM cache and shared cache

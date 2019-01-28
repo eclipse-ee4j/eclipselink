@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,7 +183,6 @@ import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.Su
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
 
-import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -2090,7 +2089,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Lock timeout is only supported on Oracle.
         if (! isOnServer() && session.getPlatform().isOracle()) {
             EntityManager em = createEntityManager();
-            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            List result = em.createQuery("Select e from Employee e").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception lockTimeOutException = null;
 
@@ -2144,7 +2143,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Lock timeout is only supported on Oracle.
         if (! isOnServer() && session.getPlatform().isOracle()) {
             EntityManager em = createEntityManager();
-            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            List result = em.createQuery("Select e from Employee e").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception lockTimeOutException = null;
 
@@ -4683,7 +4682,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             factory.close();
         }
-        Assert.assertTrue(true);
+        assertTrue(true);
     }
 
     public void testPersistOnNonEntity()
@@ -4699,7 +4698,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
     //detach(nonentity) throws illegalArgumentException
@@ -4715,7 +4714,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
     public void testClose() {
@@ -8522,7 +8521,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
 
-        //Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  getPlatform(Address.class).isSybase());
+        //assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  getPlatform(Address.class).isSybase());
         if (getPlatform(Address.class).isSymfoware()) {
             getDatabaseSession().logMessage("Test testEMCloseAndOpen skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");
@@ -8739,7 +8738,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Uses DefaultConnector.
             return;
         }
-        //Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  getPlatform(Employee.class).isSybase());
+        //assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  getPlatform(Employee.class).isSybase());
 
         SessionBroker broker = ((JpaEntityManagerFactory)getEntityManagerFactory()).getSessionBroker();
         ServerSession ss = (ServerSession)broker.getSessionForClass(Employee.class);

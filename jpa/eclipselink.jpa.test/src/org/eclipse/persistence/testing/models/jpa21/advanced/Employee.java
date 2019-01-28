@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ package org.eclipse.persistence.testing.models.jpa21.advanced;
 import java.io.Serializable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Vector;
 
 import javax.persistence.AttributeOverride;
@@ -56,13 +55,11 @@ import javax.persistence.NamedStoredProcedureQueries;
 import javax.persistence.NamedStoredProcedureQuery;
 import javax.persistence.NamedSubgraph;
 import javax.persistence.OneToMany;
-import javax.persistence.ParameterMode;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.SqlResultSetMapping;
 import javax.persistence.SqlResultSetMappings;
 import javax.persistence.StoredProcedureParameter;
-import javax.persistence.StoredProcedureQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
 import javax.persistence.Version;
@@ -70,18 +67,11 @@ import javax.persistence.Version;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
-import org.eclipse.persistence.annotations.TypeConverter;
-
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.Session;
 
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 import static javax.persistence.ParameterMode.IN;
-import static javax.persistence.ParameterMode.INOUT;
-import static javax.persistence.ParameterMode.OUT;
 import static javax.persistence.ParameterMode.REF_CURSOR;
 
 @Entity
@@ -93,11 +83,11 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
 @NamedQueries({
 @NamedQuery(
     name="jpa21Employee.findAllEmployeesByFirstNameAndLastNamePos",
-    query="SELECT employee FROM Employee employee WHERE employee.firstName = ?1 AND employee.lastName = ?2"
+    query="SELECT e FROM Employee e WHERE e.firstName = ?1 AND e.lastName = ?2"
 ),
 @NamedQuery(
         name="jpa21Employee.findAllEmployeesByFirstNameAndLastNameName",
-        query="SELECT employee FROM Employee employee WHERE employee.firstName = :firstName AND employee.lastName = :lastName"
+        query="SELECT e FROM Employee e WHERE e.firstName = :firstName AND e.lastName = :lastName"
     )
 })
 @NamedStoredProcedureQueries({
@@ -246,9 +236,9 @@ public class Employee implements Serializable, Cloneable {
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.toString());
         }
-        clone.projects = new Vector(this.projects);
-        clone.managedEmployees = new Vector(this.managedEmployees);
-        clone.responsibilities = new Vector(this.responsibilities);
+        clone.projects = new Vector<Project>(this.projects);
+        clone.managedEmployees = new Vector<Employee>(this.managedEmployees);
+        clone.responsibilities = new Vector<String>(this.responsibilities);
         return clone;
     }
 
@@ -341,7 +331,7 @@ public class Employee implements Serializable, Cloneable {
         name="JPA21_RESPONS",
         joinColumns=@JoinColumn(name="EMP_ID")
     )
-    public Collection getResponsibilities() {
+    public Collection<String> getResponsibilities() {
         return responsibilities;
     }
 

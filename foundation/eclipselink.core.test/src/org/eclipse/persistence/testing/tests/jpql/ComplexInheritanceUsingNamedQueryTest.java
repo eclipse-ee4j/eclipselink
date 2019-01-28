@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +31,7 @@ an EJBQL finder executed on a base class gives an error regarding invalid table
 in context of a subclass table.
 
 UsingEmployee demo, the following EJBQL is executed on the Project class:
-"SELECT OBJECT(project) FROM Project project WHERE project.name = ?1");
+"SELECT OBJECT(p) FROM Project p WHERE p.name = ?1");
 with the value "Swirly Dirly", which is the name of the LargeProject
 (a subclass of the Project class).
 The following Exception is thrown:
@@ -104,7 +105,7 @@ public class ComplexInheritanceUsingNamedQueryTest extends org.eclipse.persisten
 
             //Named query must be built and registered with the session
             ReadObjectQuery query = new ReadObjectQuery();
-            query.setEJBQLString("SELECT OBJECT(project) FROM ProjectBaseClass project WHERE project.name = ?1");
+            query.setEJBQLString("SELECT OBJECT(pbc) FROM ProjectBaseClass pbc WHERE pbc.name = ?1");
             query.setName(queryName);
             query.addArgument("1");
             query.setReferenceClass(Project.class);

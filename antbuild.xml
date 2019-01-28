@@ -1581,10 +1581,10 @@
     <target name="test-jpa" description="run the jpa tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
     </target>
-    <target name="test-jpa21" description="run the jpa tests">
+    <target name="test-jpa21" description="run the jpa 21 tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg"/>
     </target>
-    <target name="test-jpa22" description="run the jpa tests">
+    <target name="test-jpa22" description="run the jpa 22 tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}" target="test-lrg22"/>
     </target>
     <!-- Run JPA SRG. -->

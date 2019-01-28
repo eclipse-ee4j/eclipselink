@@ -1,6 +1,7 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 IBM Corporation. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,6 +62,44 @@
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TagConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.TimeConverter</class>
         <class>org.eclipse.persistence.testing.models.jpa21.advanced.converters.ResponsibilityConverter</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Boat</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Bus</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Car</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Company</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Computer</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.ComputerPK</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Desktop</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Engineer</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.FueledVehicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Jalopy</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Laptop</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Lawyer</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.NonFueledVehicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.OffRoadTireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.PassengerPerformanceTireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.PerformanceTireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Person</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.SportsCar</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.TireInfo</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Vehicle</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.VehicleDirectory</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Alpine</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Becks</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.BecksTag</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Beer</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.BeerConsumer</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Beverage</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Blue</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.BlueLight</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Canadian</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Certification</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Consumable</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Corona</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Heineken</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.RedStripe</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.SerialNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.TelephoneNumber</class>
+        <class>org.eclipse.persistence.testing.models.jpa21.advanced.inherited.TelephoneNumberPK</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.target-server" value="@server-platform@"/>

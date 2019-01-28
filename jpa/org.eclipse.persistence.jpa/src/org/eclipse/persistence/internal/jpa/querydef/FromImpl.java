@@ -145,19 +145,19 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
      * @return the resulting fetch join
      */
     @Override
-    public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt){
-        if (((SingularAttribute)assoc).getType().getPersistenceType().equals(PersistenceType.BASIC)){
+    public <Y> Fetch<X, Y> fetch(SingularAttribute<? super X, Y> assoc, JoinType jt) {
+        if (((SingularAttribute)assoc).getType().getPersistenceType().equals(PersistenceType.BASIC)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
         }
         Class clazz = assoc.getBindableJavaType();
         Fetch<X, Y> join = null;
         ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(assoc.getName());
         if (jt.equals(JoinType.LEFT)){
-            exp.doUseOuterJoin();
-        }else if(jt.equals(JoinType.RIGHT)){
+            exp.setShouldUseOuterJoin(true);
+        } else if (jt.equals(JoinType.RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        }else{
-            exp.doNotUseOuterJoin();
+        } else {
+            exp.setShouldUseOuterJoin(false);
         }
         join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, assoc, jt);
         this.fetches.add(join);
@@ -365,18 +365,18 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
 
     @Override
     public <Y> Join<X, Y> join(SingularAttribute<? super X, Y> attribute, JoinType jt) {
-        if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)){
+        if (((SingularAttribute)attribute).getType().getPersistenceType().equals(PersistenceType.BASIC)) {
             throw new IllegalStateException(ExceptionLocalization.buildMessage("CAN_NOT_JOIN_TO_BASIC"));
         }
         Class clazz = attribute.getBindableJavaType();
         Join<X, Y> join = null;
         ObjectExpression exp = ((ObjectExpression)this.currentNode).newDerivedExpressionNamed(attribute.getName());
-        if (jt.equals(JoinType.LEFT)){
-            exp.doUseOuterJoin();
-        }else if(jt.equals(JoinType.RIGHT)){
+        if (jt.equals(JoinType.LEFT)) {
+            exp.setShouldUseOuterJoin(true);
+        } else if(jt.equals(JoinType.RIGHT)) {
             throw new UnsupportedOperationException(ExceptionLocalization.buildMessage("RIGHT_JOIN_NOT_SUPPORTED"));
-        }else{
-            exp.doNotUseOuterJoin();
+        } else {
+            exp.setShouldUseOuterJoin(false);
         }
         join = new JoinImpl<X, Y>(this, this.metamodel.managedType(clazz), this.metamodel, clazz, exp, attribute, jt);
         this.joins.add(join);

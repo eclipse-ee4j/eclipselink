@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +27,7 @@ import org.eclipse.persistence.annotations.CopyPolicy;
 @CopyPolicy(org.eclipse.persistence.testing.models.jpa.relationships.TestInstantiationCopyPolicy.class)
 @NamedQuery(
     name="findAllOrdersByItem",
-    query="SELECT OBJECT(theorder) FROM OrderBean theorder WHERE theorder.item.itemId = :id"
+    query="SELECT OBJECT(b) FROM OrderBean b WHERE b.item.itemId = :id"
 )
 @NamedNativeQueries({/*empty*/}) //Test for GF#1624 - Weaving failed if there is empty annotation array value
 public class Order implements java.io.Serializable {

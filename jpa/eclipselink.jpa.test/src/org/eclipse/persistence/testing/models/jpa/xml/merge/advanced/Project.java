@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +39,7 @@ import static javax.persistence.DiscriminatorType.*;
 @Inheritance(strategy = JOINED)
 @DiscriminatorColumn(name = "ANN_MERGE_PROJ_TYPE", discriminatorType = INTEGER)
 @DiscriminatorValue("0")
-@NamedQuery(name = "ann_merge_findProjectByName", query = "SELECT OBJECT(project) FROM Project project WHERE project.name = :name")
+@NamedQuery(name = "ann_merge_findProjectByName", query = "SELECT OBJECT(p) FROM Project p WHERE p.name = :name")
 public class Project implements Serializable {
     public int pre_update_count = 0;
     public int post_update_count = 0;

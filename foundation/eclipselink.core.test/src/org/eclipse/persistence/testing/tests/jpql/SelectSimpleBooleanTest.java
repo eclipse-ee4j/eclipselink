@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +27,8 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
     public static SelectSimpleBooleanTest getSimpleTrueTest() {
         SelectSimpleBooleanTest theTest = new SelectSimpleBooleanTest();
 
-        String ejbqlString = "SELECT OBJECT(ibmpc) FROM IBMPC ibmpc WHERE ";
-        ejbqlString = ejbqlString + "ibmpc.isClone = true";
+        String ejbqlString = "SELECT OBJECT(i) FROM IBMPC i WHERE ";
+        ejbqlString = ejbqlString + "i.isClone = true";
         theTest.setEjbqlString(ejbqlString);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -43,8 +44,8 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
     public static SelectSimpleBooleanTest getSimpleFalseTest() {
         SelectSimpleBooleanTest theTest = new SelectSimpleBooleanTest();
 
-        String ejbqlString = "SELECT OBJECT(ibmpc) FROM IBMPC ibmpc WHERE ";
-        ejbqlString = ejbqlString + "ibmpc.isClone = false";
+        String ejbqlString = "SELECT OBJECT(i) FROM IBMPC i WHERE ";
+        ejbqlString = ejbqlString + "i.isClone = false";
         theTest.setEjbqlString(ejbqlString);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -60,8 +61,8 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
     public static SelectSimpleBooleanTest getSimpleNotEqualsTrueTest() {
         SelectSimpleBooleanTest theTest = new SelectSimpleBooleanTest();
 
-        String ejbqlString = "SELECT OBJECT(ibmpc) FROM IBMPC ibmpc WHERE ";
-        ejbqlString = ejbqlString + "ibmpc.isClone <> true";
+        String ejbqlString = "SELECT OBJECT(i) FROM IBMPC i WHERE ";
+        ejbqlString = ejbqlString + "i.isClone <> true";
         theTest.setEjbqlString(ejbqlString);
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -77,8 +78,8 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
     public static SelectSimpleBooleanTest getSimpleNotEqualsFalseTest() {
         SelectSimpleBooleanTest theTest = new SelectSimpleBooleanTest();
 
-        String ejbqlString = "SELECT OBJECT(ibmpc) FROM IBMPC ibmpc WHERE ";
-        ejbqlString = ejbqlString + "ibmpc.isClone <> false";
+        String ejbqlString = "SELECT OBJECT(i) FROM IBMPC i WHERE ";
+        ejbqlString = ejbqlString + "i.isClone <> false";
         theTest.setEjbqlString(ejbqlString);
 
         ExpressionBuilder builder = new ExpressionBuilder();

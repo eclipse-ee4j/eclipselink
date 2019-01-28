@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,16 +19,12 @@ package org.eclipse.persistence.testing.models.jpa21.advanced;
 import java.io.Serializable;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Vector;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.GeneratedValue;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapKey;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -52,7 +49,7 @@ public class Department implements Serializable {
 
     public Department(String name) {
         this.name = name;
-        this.managers = new Vector();
+        this.managers = new Vector<Employee>();
     }
 
     public void addManager(Employee employee) {

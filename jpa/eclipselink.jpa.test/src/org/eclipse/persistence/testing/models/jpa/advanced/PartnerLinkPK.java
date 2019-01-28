@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,41 +20,40 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 public class PartnerLinkPK implements Serializable {
-    private int manId;
-    private Integer womanId;
+    private int man;
+    private Integer woman;
 
     public PartnerLinkPK() {}
 
-       public PartnerLinkPK(int manId, Integer womanId) {
-           this.manId = manId;
-           this.womanId = womanId;
+       public PartnerLinkPK(int man, Integer woman) {
+           this.man = man;
+           this.woman = woman;
        }
-
 
     @Id
     public int getMan() {
-        return manId;
+        return man;
     }
 
     @Id
     public Integer getWoman() {
-        return womanId;
+        return woman;
     }
 
-    public void setMan(int manId) {
-        this.manId = manId;
+    public void setMan(int man) {
+        this.man = man;
     }
 
-    public void setWoman(Integer womanId) {
-        this.womanId = womanId;
+    public void setWoman(Integer woman) {
+        this.woman = woman;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + manId;
-        result = prime * result + ((womanId == null) ? 0 : womanId.hashCode());
+        result = prime * result + man;
+        result = prime * result + ((woman == null) ? 0 : woman.hashCode());
         return result;
     }
 
@@ -66,18 +66,18 @@ public class PartnerLinkPK implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         PartnerLinkPK other = (PartnerLinkPK) obj;
-        if (manId != other.manId)
+        if (man != other.man)
             return false;
-        if (womanId == null) {
-            if (other.womanId != null)
+        if (woman == null) {
+            if (other.woman != null)
                 return false;
-        } else if (!womanId.equals(other.womanId))
+        } else if (!woman.equals(other.woman))
             return false;
         return true;
     }
 
     @Override
     public String toString() {
-        return "PartnerLinkPK [manId=" + manId + ", womanId=" + womanId + "]";
+        return "PartnerLinkPK [manId=" + man + ", womanId=" + woman + "]";
     }
 }

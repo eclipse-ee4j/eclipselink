@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -161,11 +162,11 @@ public class ConverterTestSuite extends JUnitTestCase {
             clearCache();
 
             Runner runnerRefreshed = em.find(Runner.class, runner.getId());
-            assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);
-            assertTrue("The embeddable health conversion did not work.", runnerRefreshed.getInfo().getHealth().equals(Health.HEALTHY));
-            assertTrue("The embeddable level conversion did not work.", runnerRefreshed.getInfo().getLevel().equals(Level.AMATEUR));
-            assertTrue("The nested embeddable running status conversion did not work.", runnerRefreshed.getInfo().getStatus().getRunningStatus().equals(RunningStatus.DOWN_TIME));
-            assertTrue("The number of personal bests for this runner is incorrect.", runnerRefreshed.getPersonalBests().size() == 2);
+            assertEquals("The age conversion did not work.", new Integer(52), runnerRefreshed.getAge());
+            assertEquals("The embeddable health conversion did not work.", Health.HEALTHY, runnerRefreshed.getInfo().getHealth());
+            assertEquals("The embeddable level conversion did not work.", Level.AMATEUR, runnerRefreshed.getInfo().getLevel());
+            assertEquals("The nested embeddable running status conversion did not work.", RunningStatus.DOWN_TIME, runnerRefreshed.getInfo().getStatus().getRunningStatus());
+            assertEquals("The number of personal bests for this runner is incorrect.", 2, runnerRefreshed.getPersonalBests().size());
             assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("10K"));
             assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("5K"));
             assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("47:34.0"));
@@ -174,10 +175,10 @@ public class ConverterTestSuite extends JUnitTestCase {
             Race raceRefreshed = em.find(Race.class, race.getId());
             Map<Responsibility, Organizer> organizers = raceRefreshed.getOrganizers();
             assertFalse("No race organizers returned.", organizers.isEmpty());
-            assertTrue("More than one race organizer returned.", organizers.size() == 1);
+            assertEquals("More than one race organizer returned.", 1, organizers.size());
 
             Responsibility resp = organizers.keySet().iterator().next();
-            assertTrue("Responsibility was not uppercased by the converter", resp.getDescription().equals("RAISE FUNDS"));
+            assertEquals("Responsibility was not uppercased by the converter", "RAISE FUNDS", resp.getDescription());
 
             for (String accomplishment : runnerRefreshed.getAccomplishments().keySet()) {
                 assertTrue("Accomplishment (map key) conversion did not work.", accomplishment.endsWith("!!!"));
@@ -232,7 +233,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                 }//else this error is expected and can be ignored
             } catch (RuntimeException unexpected) {
                 if (ResponsibilityConverter.THROW_EXCEPTION_IN_TO_ENTITY_ATTRIBUTE.equals(unexpected.getMessage())) {
-                    this.fail("Application exception thrown from convertToEntityAttribute was not wrapped in a PersistenceException");
+                    fail("Application exception thrown from convertToEntityAttribute was not wrapped in a PersistenceException");
                 }
                 throw unexpected;
             }
@@ -280,7 +281,7 @@ public class ConverterTestSuite extends JUnitTestCase {
 
             } catch (RuntimeException unexpected) {
                 if (ResponsibilityConverter.THROW_EXCEPTION_IN_TO_DATABASE_COLUMN.equals(unexpected.getMessage())) {
-                    this.fail("Application exception thrown from convertToDatabaseColumn was not wrapped in a PersistenceException");
+                    fail("Application exception thrown from convertToDatabaseColumn was not wrapped in a PersistenceException");
                 }
                 throw unexpected;
             }
@@ -324,10 +325,10 @@ public class ConverterTestSuite extends JUnitTestCase {
                     String dbCompetitionConverted = converter.convertToEntityAttribute(competition);
                     assertFalse("Entity and database values shall not match.",
                             competition.equals(entityVictory.getCompetition()));
-                    assertTrue("Manually converted entity value and plain database value shall match.",
-                            competition.equals(entityCompetitionConverted));
-                    assertTrue("Manually converted database value and plain entity value shall match.",
-                            entityVictory.getCompetition().equals(dbCompetitionConverted));
+                    assertEquals("Manually converted entity value and plain database value shall match.",
+                            entityCompetitionConverted, competition);
+                    assertEquals("Manually converted database value and plain entity value shall match.",
+                            dbCompetitionConverted, entityVictory.getCompetition());
                 }
             }
             for (Runner runner : runners) {
@@ -347,8 +348,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                     // Converter is missing so only entity to database conversion check makes sense.
                     String entityCompetitionConverted
                             = converter.convertToDatabaseColumn(entityVictory.getCompetition());
-                    assertTrue("Entity and database values shall match.",
-                            competition.equals(entityVictory.getCompetition()));
+                    assertEquals("Entity and database values shall match.", entityVictory.getCompetition(), competition);
                     assertFalse("Manually converted entity value and plain database value shall not match.",
                             competition.equals(entityCompetitionConverted));
                 }

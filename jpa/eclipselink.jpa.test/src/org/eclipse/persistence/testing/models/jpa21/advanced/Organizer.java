@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,12 +28,12 @@ import javax.persistence.Table;
 public class Organizer {
     @Id
     @GeneratedValue
-    public Integer id;
-    public String name;
+    private Integer id;
+    private String name;
 
     @ManyToOne
     @JoinColumn(name="RACE_ID")
-    public Race race;
+    private Race race;
 
     public Organizer() {}
 

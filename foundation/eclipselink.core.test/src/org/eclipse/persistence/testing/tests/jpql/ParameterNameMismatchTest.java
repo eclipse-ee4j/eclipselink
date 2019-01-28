@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +27,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 public class ParameterNameMismatchTest extends JPQLTestCase {
     public void setup() {
         // ?2 is used intentionally, with only "1" added to the query.
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp where emp.firstName = ?2";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e where e.firstName = ?2";
         setEjbqlString(ejbqlString);
 
         Vector myArgumentNames = new Vector();

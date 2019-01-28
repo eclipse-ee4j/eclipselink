@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +28,7 @@ public class SelectSimpleNullTest extends org.eclipse.persistence.testing.tests.
     }
 
     public static SelectSimpleNullTest getSimpleNotNullTest() {
-        SelectSimpleNullTest theTest = new SelectSimpleNullTest("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName IS NOT NULL");
+        SelectSimpleNullTest theTest = new SelectSimpleNullTest("SELECT OBJECT(e) FROM Employee e WHERE e.firstName IS NOT NULL");
         theTest.setName("Select EJBQL Not Null Test");
 
         ExpressionBuilder builder = new ExpressionBuilder();
@@ -38,7 +39,7 @@ public class SelectSimpleNullTest extends org.eclipse.persistence.testing.tests.
     }
 
     public static SelectSimpleNullTest getSimpleNullTest() {
-        SelectSimpleNullTest theTest = new SelectSimpleNullTest("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName IS NULL");
+        SelectSimpleNullTest theTest = new SelectSimpleNullTest("SELECT OBJECT(e) FROM Employee e WHERE e.firstName IS NULL");
         theTest.setName("Select EJBQL Null Test");
 
         ExpressionBuilder builder = new ExpressionBuilder();

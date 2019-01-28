@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +32,7 @@ class SelectSimpleOrTest extends org.eclipse.persistence.testing.tests.jpql.JPQL
         employeesUsed.add(emp2);
 
         //String partialFirstName = emp.getFirstName().substring(0, 3) + "%";
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.id + " OR emp.id = " + emp2.id;
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id = " + emp1.id + " OR e.id = " + emp2.id;
 
         //testEJBQL("FROM EmployeeBean employee WHERE employee.id = 456 OR employee.id = 756 ", false);
         setEjbqlString(ejbqlString);

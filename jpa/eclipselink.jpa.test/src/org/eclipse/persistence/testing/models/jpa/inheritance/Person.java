@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,8 +13,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import java.io.*;
@@ -39,11 +38,11 @@ import static javax.persistence.InheritanceType.*;
 @DiscriminatorColumn(discriminatorType=DiscriminatorType.INTEGER)
 @Cache(expiry=100000)
 public class Person implements Serializable {
-    public Number id;
-    public String name;
-    public Car car;
-    public Engineer bestFriend;
-    public Lawyer representitive;
+    private Number id;
+    private String name;
+    private Car car;
+    private Engineer bestFriend;
+    private Lawyer representitive;
 
     @Id
     @GeneratedValue(strategy=TABLE, generator="PERSON_TABLE_GENERATOR")

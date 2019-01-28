@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,12 +34,12 @@ public class SimpleEscapeUnderscoreTest extends JPQLTestCase {
         setOriginalOject(addressWithUnderscore);
 
         //test the apostrophe
-        ejbqlString = "SELECT OBJECT(address) FROM Address address WHERE ";
+        ejbqlString = "SELECT OBJECT(a) FROM Address a WHERE ";
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
         if (getSession().getLogin().getPlatform().isMySQL() || getSession().getLogin().getPlatform().isPostgreSQL()) {
-            ejbqlString = ejbqlString + "address.street LIKE '234 Wandering $_Way' ESCAPE '$'";
+            ejbqlString = ejbqlString + "a.street LIKE '234 Wandering $_Way' ESCAPE '$'";
         } else {
-            ejbqlString = ejbqlString + "address.street LIKE '234 Wandering \\_Way' ESCAPE '\\'";
+            ejbqlString = ejbqlString + "a.street LIKE '234 Wandering \\_Way' ESCAPE '\\'";
         }
         setEjbqlString(ejbqlString);
         setReferenceClass(Address.class);

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +37,6 @@ import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -122,7 +122,7 @@ public class SimpleTypes_MultiTable {
     @Test
     public void verifyProperties() {
         DynamicType simpleTypeA = dynamicHelper.getType("SimpleA");
-        Assert.assertNotNull(simpleTypeA);
+        assertNotNull(simpleTypeA);
 
         assertEquals(6, simpleTypeA.getNumberOfProperties());
         assertTrue(simpleTypeA.getPropertiesNames().contains("id"));
@@ -143,23 +143,23 @@ public class SimpleTypes_MultiTable {
     @Test
     public void createSimpleA() {
         DynamicType simpleTypeA = dynamicHelper.getType("SimpleA");
-        Assert.assertNotNull(simpleTypeA);
+        assertNotNull(simpleTypeA);
 
         DynamicEntity a = simpleTypeA.newDynamicEntity();
 
         assertNotNull(a);
         assertEquals(((Number) a.get("id")).intValue(), 0);
         assertFalse(a.isSet("value1"));
-        assertEquals(a.get("value2"), false);
+        assertEquals(false, a.get("value2"));
         assertFalse(a.isSet("value3"));
-        assertEquals(((Number) a.get("value4")).doubleValue(), 0.0, 0.01);
+        assertEquals(0.0, ((Number) a.get("value4")).doubleValue(), 0.01);
         assertFalse(a.isSet("value5"));
     }
 
     @Test
     public void persistSimpleA() {
         DynamicType simpleTypeA = dynamicHelper.getType("SimpleA");
-        Assert.assertNotNull(simpleTypeA);
+        assertNotNull(simpleTypeA);
 
         DynamicEntity simpleInstance = simpleTypeA.newDynamicEntity();
         simpleInstance.set("id", 1);
@@ -173,7 +173,7 @@ public class SimpleTypes_MultiTable {
         countQuery.addCount();
         countQuery.setShouldReturnSingleValue(true);
         int simpleCount = ((Number) session.executeQuery(countQuery)).intValue();
-        Assert.assertEquals(1, simpleCount);
+        assertEquals(1, simpleCount);
 
         session.release();
     }
@@ -182,7 +182,7 @@ public class SimpleTypes_MultiTable {
     public void verifyChangeTracking() {
         persistSimpleA();
         DynamicType simpleTypeA = dynamicHelper.getType("SimpleA");
-        Assert.assertNotNull(simpleTypeA);
+        assertNotNull(simpleTypeA);
 
         UnitOfWork uow = session.acquireUnitOfWork();
 

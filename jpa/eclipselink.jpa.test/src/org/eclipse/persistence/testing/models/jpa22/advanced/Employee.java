@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,11 +82,11 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
 )
 @NamedQuery(
     name="jpa22Employee.findAllEmployeesByFirstNameAndLastNamePos",
-    query="SELECT employee FROM Employee employee WHERE employee.firstName = ?1 AND employee.lastName = ?2"
+    query="SELECT e FROM Employee e WHERE e.firstName = ?1 AND e.lastName = ?2"
 )
 @NamedQuery(
         name="jpa22Employee.findAllEmployeesByFirstNameAndLastNameName",
-        query="SELECT employee FROM Employee employee WHERE employee.firstName = :firstName AND employee.lastName = :lastName"
+        query="SELECT e FROM Employee e WHERE e.firstName = :firstName AND e.lastName = :lastName"
 )
 @NamedStoredProcedureQuery(
     name="ReadUsingMultipleResultSetMappings",

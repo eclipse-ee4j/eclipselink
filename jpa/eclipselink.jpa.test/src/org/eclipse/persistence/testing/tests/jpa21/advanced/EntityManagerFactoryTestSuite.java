@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,7 +87,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         String name = (String) names.get(names.size()-1)[0];
         Query query = em.createQuery("Select e from Employee e where e.firstName = :p1 order by e.id");
         query.setParameter("p1", name);
-        assertTrue("Unable to retrieve parameter value from query", query.getParameterValue("p1").equals(name));
+        assertEquals("Unable to retrieve parameter value from query", name, query.getParameterValue("p1"));
         List<Employee> firstResult = query.getResultList();
         factory.addNamedQuery("Select_Employee_by_first_name", query);
         closeEntityManager(em);
@@ -126,11 +127,11 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         try {
             beginTransaction(em);
             namedQuery = em.createNamedQuery("Select_Employee_by_first_name");
-            assertTrue("LockMode not retained", namedQuery.getLockMode().equals(LockModeType.OPTIMISTIC_FORCE_INCREMENT));
-            assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
-            assertTrue("FirstResult not retained", namedQuery.getFirstResult() == 1);
+            assertEquals("LockMode not retained", LockModeType.OPTIMISTIC_FORCE_INCREMENT, namedQuery.getLockMode());
+            assertEquals("MaxResults not retained", 1, namedQuery.getMaxResults());
+            assertEquals("FirstResult not retained", 1, namedQuery.getFirstResult());
             namedQuery.setParameter("p1", names.get(names.size() - 1)[0]);
-            assertTrue("MaxResults not applied", namedQuery.getResultList().size() == 1);
+            assertEquals("MaxResults not applied", 1, namedQuery.getResultList().size());
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
@@ -146,7 +147,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         em = createEntityManager();
 
         namedQuery = em.createNamedQuery("Select_Employee_NATIVE");
-        assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
+        assertEquals("MaxResults not retained", 1, namedQuery.getMaxResults());
         query = em.createNativeQuery("SELECT EMP_ID FROM CMP3_EMPLOYEE", Employee.class);
         query.setMaxResults(1);
         factory.addNamedQuery("Select_Employee_NATIVE", query);
@@ -154,7 +155,7 @@ public class EntityManagerFactoryTestSuite extends JUnitTestCase {
         em = createEntityManager();
 
         namedQuery = em.createNamedQuery("Select_Employee_NATIVE");
-        assertTrue("MaxResults not retained", namedQuery.getMaxResults() == 1);
+        assertEquals("MaxResults not retained", 1, namedQuery.getMaxResults());
     }
 
     public void testGetPersistenceUnitUtilOnCloseEMF(){

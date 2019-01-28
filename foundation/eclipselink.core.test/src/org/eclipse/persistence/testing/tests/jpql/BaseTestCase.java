@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +23,7 @@ public class BaseTestCase extends JPQLTestCase {
         Vector employees = getSession().readAllObjects(Employee.class);
 
         setOriginalOject(employees);
-        setEjbqlString("SELECT OBJECT(emp) FROM Employee emp");
+        setEjbqlString("SELECT OBJECT(e) FROM Employee e");
 
         super.setup();
     }

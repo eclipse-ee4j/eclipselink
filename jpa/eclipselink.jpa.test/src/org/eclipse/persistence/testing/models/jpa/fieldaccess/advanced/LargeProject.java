@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +32,11 @@ import org.eclipse.persistence.annotations.CascadeOnDelete;
 @NamedQueries({
 @NamedQuery(
     name="findFieldAccessWithBudgetLargerThan",
-    query="SELECT OBJECT(project) FROM LargeProject project WHERE project.budget >= :amount"
+    query="SELECT OBJECT(p) FROM LargeProject p WHERE p.budget >= :amount"
 ),
 @NamedQuery(
     name="constructFieldAccessLProject",
-    query="SELECT new org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject(project.name) FROM LargeProject project")
+    query="SELECT new org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.LargeProject(p.name) FROM LargeProject p")
 }
 )
 public class LargeProject extends Project {

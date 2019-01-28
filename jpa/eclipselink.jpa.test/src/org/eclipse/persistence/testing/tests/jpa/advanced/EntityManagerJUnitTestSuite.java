@@ -223,7 +223,6 @@ import org.eclipse.persistence.testing.tests.feature.TestDataSource;
 import org.eclipse.persistence.testing.tests.jpa.unit.EMFProviderTest;
 import org.eclipse.persistence.testing.tests.weaving.SimpleSessionLogWrapper;
 import org.eclipse.persistence.tools.schemaframework.SequenceObjectDefinition;
-import org.junit.Assert;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
@@ -2051,7 +2050,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Lock timeout is only supported on Oracle.
         if (! isOnServer() && session.getPlatform().isOracle()) {
             EntityManager em = createEntityManager();
-            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            List result = em.createQuery("Select e from Employee e").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception lockTimeOutException = null;
 
@@ -2104,7 +2103,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         // Lock timeout is only supported on Oracle.
         if (! isOnServer() && session.getPlatform().isOracle()) {
             EntityManager em = createEntityManager();
-            List result = em.createQuery("Select employee from Employee employee").getResultList();
+            List result = em.createQuery("Select e from Employee e").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception lockTimeOutException = null;
 
@@ -4468,7 +4467,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             final Employee employee = em.find(Employee.class, empId);
-            Assert.assertNotNull("No Employee retrieved", employee);
+            assertNotNull("No Employee retrieved", employee);
             // Trigger Bug#474232
             employee.getAddress();
 
@@ -4476,9 +4475,9 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     setParameter("id", empId).
                     setHint(QueryHints.READ_ONLY, HintValues.TRUE).
                     getSingleResult();
-            Assert.assertNotNull("Employee not found", cachedEmployee);
+            assertNotNull("Employee not found", cachedEmployee);
             final Address address = cachedEmployee.getAddress();
-            Assert.assertNotNull("Address of employee not retrieved", address);
+            assertNotNull("Address of employee not retrieved", address);
         } finally {
             // Clean up
             if (empId != null) {
@@ -4524,7 +4523,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
 
             final Employee employee = em.find(Employee.class, empId);
-            Assert.assertNotNull("No Employee retrieved", employee);
+            assertNotNull("No Employee retrieved", employee);
             // Trigger Bug#474232
             employee.getFormerEmployment().getPeriod().getCompanyAddress();
 
@@ -4532,13 +4531,13 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     setParameter("id", empId).
                     setHint(QueryHints.READ_ONLY, HintValues.TRUE).
                     getSingleResult();
-            Assert.assertNotNull("Employee not found", cachedEmployee);
+            assertNotNull("Employee not found", cachedEmployee);
             final FormerEmployment formerEmployment = employee.getFormerEmployment();
-            Assert.assertNotNull("Former employment details not retrieved", formerEmployment);
+            assertNotNull("Former employment details not retrieved", formerEmployment);
             final EmploymentPeriod employmentPeriod = formerEmployment.getPeriod();
-            Assert.assertNotNull("Former employment period not retrieved", employmentPeriod);
+            assertNotNull("Former employment period not retrieved", employmentPeriod);
             final Address address = employmentPeriod.getCompanyAddress();
-            Assert.assertNotNull("Former employment address not retrieved", address);
+            assertNotNull("Former employment address not retrieved", address);
         } finally {
             // Clean up
             if (empId != null) {
@@ -4998,7 +4997,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             factory.close();
         }
-        Assert.assertTrue(true);
+        assertTrue(true);
     }
 
     public void testPersistOnNonEntity()
@@ -5014,7 +5013,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
     //detach(nonentity) throws illegalArgumentException
@@ -5030,7 +5029,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         } finally {
             rollbackTransaction(em);
         }
-        Assert.assertTrue(testPass);
+        assertTrue(testPass);
     }
 
     public void testClose() {
@@ -9651,7 +9650,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             return;
         }
 
-        //Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
+        //assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testEMCloseAndOpen skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");
@@ -9866,7 +9865,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             // Uses DefaultConnector.
             return;
         }
-        //Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
+        //assertFalse("Warning Sybase Driver does not work with DriverWrapper, testEMCloseAndOpen can't run on this platform.",  JUnitTestCase.getServerSession().getPlatform().isSybase());
 
         ServerSession ss = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
 
@@ -10002,7 +10001,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 
         ServerSession ss = ((JpaEntityManagerFactory)getEntityManagerFactory()).getServerSession();
 
-        //Assert.assertFalse("Warning Sybase Driver does not work with DriverWrapper, testPostAcquirePreReleaseEvents can't run on this platform.",  ss.getPlatform().isSybase());
+        //assertFalse("Warning Sybase Driver does not work with DriverWrapper, testPostAcquirePreReleaseEvents can't run on this platform.",  ss.getPlatform().isSybase());
         if (ss.getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testPostAcquirePreReleaseEvents skipped for this platform, "
                             + "Symfoware platform doesn't support failover.");
@@ -12583,7 +12582,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             q.setParameter("doorid", east.getId());
             q.setHint(QueryHints.LEFT_FETCH, "h.door");
             List<Hinge> hinges = q.getResultList();
-            Assert.assertEquals(2, hinges.size());
+            assertEquals(2, hinges.size());
         } catch (Exception e) {
             fail("Failed testForNPEInCloning due to " + e);
         } finally {

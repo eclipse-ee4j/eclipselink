@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,16 +20,16 @@ import javax.persistence.Id;
 
 @Entity
 public class SimpleRoom {
-    
+
     @Id
     protected int id;
     protected int width;
     protected int length;
-    
+
     public SimpleRoom() {
         super();
     }
-    
+
     public SimpleRoom(int id, int width, int length) {
         this();
         this.id = id;

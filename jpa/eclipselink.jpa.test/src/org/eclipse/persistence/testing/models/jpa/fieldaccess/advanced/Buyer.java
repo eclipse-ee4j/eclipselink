@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +50,7 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 @Inheritance(strategy=JOINED)
 @NamedQuery(
     name="findFieldAccessBuyerByName",
-    query="SELECT OBJECT(buyer) FROM Buyer buyer WHERE buyer.name = :name"
+    query="SELECT OBJECT(b) FROM Buyer b WHERE b.name = :name"
 )
 @OptimisticLocking(
     type=SELECTED_COLUMNS,

@@ -147,10 +147,10 @@ public class TreatAsExpression extends QueryKeyExpression {
             Expression twistedBase = this.typeExpressionBase.twistedForBaseAndContext(newBase, context, oldBase);
             TreatAsExpression result = (TreatAsExpression)twistedBase.treat(this.castClass);
             if (shouldUseOuterJoin) {
-                result.doUseOuterJoin();
+                result.setShouldUseOuterJoin(true);
             }
             if (shouldQueryToManyRelationship) {
-                result.doQueryToManyRelationship();
+                result.setShouldQueryToManyRelationship(true);
             }
             return result;
         }

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,7 +19,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -253,7 +253,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
         List result = em.createQuery("SELECT phone.areaCode FROM Employee employee, IN (employee.phoneNumbers) phone " +
             "WHERE phone.areaCode = \"613\"").getResultList();
 
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));
+        assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));
   }
 
 
@@ -290,7 +290,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+        assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
 
     }
 
@@ -328,7 +328,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+        assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
 
     }
 
@@ -364,7 +364,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+        assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
 
     }
 
@@ -378,7 +378,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             exception = e;
         }
 
-        Assert.assertNull("Exception was caught.", exception);
+        assertNull("Exception was caught.", exception);
     }
 
     /**
@@ -395,7 +395,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             exception = e;
         }
 
-        Assert.assertNull("Exception was caught.", exception);
+        assertNull("Exception was caught.", exception);
     }
 
     /**
@@ -416,8 +416,8 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             logThrowable(exception);
             exception = e;
         }
-        Assert.assertNull("Exception was caught: " + exception, exception);
-        Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+        assertNull("Exception was caught: " + exception, exception);
+        assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
 
     /**
@@ -438,8 +438,8 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             logThrowable(exception);
             exception = e;
         }
-        Assert.assertNull("Exception was caught.", exception);
-        Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+        assertNull("Exception was caught.", exception);
+        assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
 
     /**
@@ -460,8 +460,8 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             exception = e;
             logThrowable(exception);
         }
-        Assert.assertNull("Exception was caught.", exception);
-        Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+        assertNull("Exception was caught.", exception);
+        assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
     }
 
     /**
@@ -478,7 +478,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
             exception = e;
         }
 
-        Assert.assertNull("Exception was caught.", exception);
+        assertNull("Exception was caught.", exception);
     }
 
     /*

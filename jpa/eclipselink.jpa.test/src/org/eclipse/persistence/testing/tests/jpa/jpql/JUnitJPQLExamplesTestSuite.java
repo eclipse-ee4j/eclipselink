@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +23,6 @@ import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -158,8 +158,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT o FROM OrderBean o";
         List result = em.createQuery(ejbqlString).getResultList();
         // 4 orders returned
-        Assert.assertEquals("Find all orders test failed: data validation error", result.size(), 4);
-        Assert.assertTrue("Find all orders test failed", comparer.compareObjects(expectedResult, result));
+        assertEquals("Find all orders test failed: data validation error", 4, result.size());
+        assertTrue("Find all orders test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void findEmployeesInOntario() {
@@ -172,9 +172,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT e FROM Employee e WHERE e.address.province='ONT'";
         List result = em.createQuery(ejbqlString).getResultList();
         //9 employees returned
-        Assert.assertEquals("Find Employees in Ontario test failed: data validation error", result.size(), 9);
-        Assert.assertTrue("Find Employees in Ontario test failed", comparer.compareObjects(expectedResult, result));
-
+        assertEquals("Find Employees in Ontario test failed: data validation error", 9, result.size());
+        assertTrue("Find Employees in Ontario test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void findAllProvinceWithEmployees() {
@@ -197,8 +196,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         if (expectedResult.equals(result))
             testPass = true;
         //5 provinces returned
-        Assert.assertEquals("Find Province with employees test failed: data validation error", result.size(), 5);
-        Assert.assertTrue("Find Province with employees test failed", testPass);
+        assertEquals("Find Province with employees test failed: data validation error", 5, result.size());
+        assertTrue("Find Province with employees test failed", testPass);
     }
 
     public void findAllEmployeesWithPhoneNumbers() {
@@ -223,9 +222,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String alternateEjbqlString = "SELECT e FROM Employee e WHERE e.phoneNumbers IS NOT EMPTY";
         List secondResult = em.createQuery(alternateEjbqlString).getResultList();
         //14 employees returned
-        Assert.assertEquals("Ejbql statements returned different results: data validation error", firstResult.size(), 14);
-        Assert.assertTrue("Equivalent Ejbql statements returned different results", comparer.compareObjects(secondResult, firstResult));
-        Assert.assertTrue("Find all employees with phone numbers test failed", comparer.compareObjects(expectedResult, firstResult));
+        assertEquals("Ejbql statements returned different results: data validation error", 14, firstResult.size());
+        assertTrue("Equivalent Ejbql statements returned different results", comparer.compareObjects(secondResult, firstResult));
+        assertTrue("Find all employees with phone numbers test failed", comparer.compareObjects(expectedResult, firstResult));
     }
 
     public void findAllEmployeesWithOutPhoneNumbers() {
@@ -242,8 +241,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT DISTINCT e FROM Employee e WHERE e.phoneNumbers IS EMPTY";
         List result = em.createQuery(ejbqlString).getResultList();
         //1 employee w/o phone number returned
-        Assert.assertEquals("Find all employees WITHOUT phone numbers test failed: data validation error", result.size(), 1);
-        Assert.assertTrue("Find all employees WITHOUT phone numbers test failed", comparer.compareObjects(expectedResult, result));
+        assertEquals("Find all employees WITHOUT phone numbers test failed: data validation error", 1, result.size());
+        assertTrue("Find all employees WITHOUT phone numbers test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void findAllEmployeesWithCellPhones() {
@@ -278,9 +277,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         }
         List secondResult = em.createQuery(alternateEjbqlString).getResultList();
         //4 employees returned
-        Assert.assertEquals("Find all employees with cellular phone numbers test failed: data validation error", firstResult.size(), 4);
-        Assert.assertTrue("Find all employees with cellular phone numbers test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
-        Assert.assertTrue("Find all employees with cellular phone numbers test failed", comparer.compareObjects(expectedResult, secondResult));
+        assertEquals("Find all employees with cellular phone numbers test failed: data validation error", 4, firstResult.size());
+        assertTrue("Find all employees with cellular phone numbers test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
+        assertTrue("Find all employees with cellular phone numbers test failed", comparer.compareObjects(expectedResult, secondResult));
     }
 
     public void findOrdersWithDifferentBilledCustomer() {
@@ -299,8 +298,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String alternateEjbqlString = "SELECT o FROM OrderBean o WHERE NOT o.customer.customerId = o.billedCustomer.customerId";
         List secondResult = em.createQuery(alternateEjbqlString).getResultList();
         //2 orders returned
-        Assert.assertTrue("Find orders with different billed customers test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
-        Assert.assertTrue("Find orders with different billed customers test failed", comparer.compareObjects(expectedResult, firstResult));
+        assertTrue("Find orders with different billed customers test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
+        assertTrue("Find orders with different billed customers test failed", comparer.compareObjects(expectedResult, firstResult));
     }
 
     public void findEmployeeWithWorkPhone2258812() {
@@ -328,8 +327,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         }
         List result = em.createQuery(ejbqlString).getResultList();
         //8 employees
-        Assert.assertEquals("Find employee with 2258812 number test failed: data validation error", result.size(), 8);
-        Assert.assertTrue("Find employee with 2258812 number test failed", comparer.compareObjects(expectedResult, result));
+        assertEquals("Find employee with 2258812 number test failed: data validation error", 8, result.size());
+        assertTrue("Find employee with 2258812 number test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void parameterTest() {
@@ -356,10 +355,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         List firstResult = em.createQuery(ejbqlString).setParameter(1, phoneNumber).getResultList();
         List secondResult = em.createQuery(alternateEjbqlString).setParameter("number", phoneNumber).getResultList();
         //random test cant duplicate
-        Assert.assertTrue("Parameter test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
-        Assert.assertTrue("Parameter test failed", comparer.compareObjects(expectedEmployee, firstResult));
+        assertTrue("Parameter test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
+        assertTrue("Parameter test failed", comparer.compareObjects(expectedEmployee, firstResult));
     }
-
 
     public void getOrderLargerThan() {
         EntityManager em = createEntityManager();
@@ -382,8 +380,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT DISTINCT o1 FROM OrderBean o1, OrderBean o2 WHERE o1.quantity > o2.quantity AND" + " o2.customer.name = 'Jane Smith' ";
         List result = em.createQuery(ejbqlString).getResultList();
         //only 1 order
-        Assert.assertEquals("Get order larger than test failed: data validation error", result.size(), 1);
-        Assert.assertTrue("Get order larger than test failed", comparer.compareObjects(expectedResult, result));
+        assertEquals("Get order larger than test failed: data validation error", 1, result.size());
+        assertTrue("Get order larger than test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void getOrderForCustomer() {
@@ -403,9 +401,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         List secondResuslt = em.createQuery(alternateEjbqlString).getResultList();
 
         //only 1 order for this customer
-        Assert.assertEquals("Get order for customer test failed: data validation error", firstResult.size(), 1);
-        Assert.assertTrue("Get order for customer test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResuslt, firstResult));
-        Assert.assertTrue("Get order for customer test failed", comparer.compareObjects(expectedCustomer, firstResult));
+        assertEquals("Get order for customer test failed: data validation error", 1, firstResult.size());
+        assertTrue("Get order for customer test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResuslt, firstResult));
+        assertTrue("Get order for customer test failed", comparer.compareObjects(expectedCustomer, firstResult));
     }
 
     public void getSalesPersonForOrders() {
@@ -416,8 +414,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT DISTINCT o.salesPerson FROM Customer AS c, IN(c.orders) o";
         List result = em.createQuery(ejbqlString).getResultList();
         //2 sales person
-        Assert.assertEquals("Get SalesPerson for Orders test failed: data validation error", result.size(), 2);
-        Assert.assertTrue("Get SalesPerson for Orders test failed", comparer.compareObjects(expectedResult, result));
+        assertEquals("Get SalesPerson for Orders test failed: data validation error", 2, result.size());
+        assertTrue("Get SalesPerson for Orders test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void testOuterJoin() {
@@ -433,9 +431,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String alternateEjbqlString = "SELECT e FROM Employee e LEFT OUTER JOIN e.phoneNumbers p " + "WHERE p.type = 'Cellular'";
         List secondResult = em.createQuery(alternateEjbqlString).getResultList();
         //return 4 employees with cell phones
-        Assert.assertEquals("Get SalesPerson for Orders test failed: data validation error", firstResult.size(), 4);
-        Assert.assertTrue("Get Outer Join test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
-        Assert.assertTrue("Get Outer Join test failed", comparer.compareObjects(expectedResult, firstResult));
+        assertEquals("Get SalesPerson for Orders test failed: data validation error", 4, firstResult.size());
+        assertTrue("Get Outer Join test failed: two equivalent ejb queries return different results", comparer.compareObjects(secondResult, firstResult));
+        assertTrue("Get Outer Join test failed", comparer.compareObjects(expectedResult, firstResult));
     }
 
     public void testExistsExpression() {
@@ -461,11 +459,9 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT DISTINCT emp.id FROM Employee emp WHERE EXISTS ( SELECT managedEmp.id FROM Employee managedEmp WHERE managedEmp = emp.manager)";
         List result = em.createQuery(ejbqlString).getResultList();
 
-        if (result.containsAll(expectedResult) && expectedResult.containsAll(result))
-            testPass = true;
         //8 employees with managers
-        Assert.assertEquals("Exists Expression test failed: data validation error", result.size(), 8);
-        Assert.assertTrue("Exists Expression test failed", testPass);
+        assertEquals("Exists Expression test failed: data validation error", 8, result.size());
+        assertTrue("Exists Expression test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void testAllExpressions() {
@@ -501,7 +497,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
                 fail("All Expression test failed: data validation error: " + result.size() + " != " + 12);
             }
         }
-        Assert.assertTrue("All Expression test failed", testPass);
+        assertTrue("All Expression test failed", testPass);
     }
 
     public void testCountInSubQuery() {
@@ -520,8 +516,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         if (result.containsAll(expectedResult) && expectedResult.containsAll(result))
             testPass = true;
 
-        Assert.assertEquals("Count subquery test failed: data validation error", result.size(), 2);
-        Assert.assertTrue("Count subquery test failed", testPass);
+        assertEquals("Count subquery test failed: data validation error", 2, result.size());
+        assertTrue("Count subquery test failed", testPass);
     }
 
     public void testGroupByHavingExpression() {
@@ -550,7 +546,6 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         query.addAverage("salary", Double.class);
         query.addCount("id", Long.class);
 
-
         List expectedResult = (List)getServerSession().executeQuery(query);
 
         String ejbqlString = "SELECT e.manager.id, avg(e.salary), count(e) FROM Employee e" + " GROUP BY e.manager.id HAVING e.manager.id IN (" + firstManagerId + "," + secondManagerId + ")";
@@ -572,8 +567,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             testPass = false;
         }
 
-        Assert.assertEquals("GroupBy Having expression test failed: data validation error", employeesManaged, expectedEmployeesManaged);
-        Assert.assertTrue("GroupBy Having expression test failed", testPass);
+        assertEquals("GroupBy Having expression test failed: data validation error", expectedEmployeesManaged, employeesManaged);
+        assertTrue("GroupBy Having expression test failed", testPass);
 
     }
 
@@ -603,8 +598,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         } else {
             testPass = false;
         }
-        Assert.assertEquals("GroupBy Having count expression test failed: data validation error", result.size(), 1);
-        Assert.assertTrue("GroupBy Having Count expression test failed", testPass);
+        assertEquals("GroupBy Having count expression test failed: data validation error", 1, result.size());
+        assertTrue("GroupBy Having Count expression test failed", testPass);
     }
 
     public void testConstructorQuery() {
@@ -612,8 +607,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.models.jpa.relationships.CustomerDetails(c.customerId, o.quantity) FROM Customer " + "c JOIN c.orders o WHERE o.quantity > 100";
 
         List custDetails = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Constructor query test failed: not an instance of CustomerDetail", custDetails.get(0) instanceof CustomerDetails);
-        Assert.assertEquals("Constructor query test failed, expecting only 1 customer with order > 100", custDetails.size(), 1);
+        assertTrue("Constructor query test failed: not an instance of CustomerDetail", custDetails.get(0) instanceof CustomerDetails);
+        assertEquals("Constructor query test failed, expecting only 1 customer with order > 100", 1, custDetails.size());
     }
 
     public void testSumExpression() {
@@ -627,7 +622,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Long expectedResult = (Long)((List)getServerSession().executeQuery(query)).get(0);
         String ejbqlString = "SELECT SUM(p.id) FROM Employee e JOIN e.phoneNumbers p JOIN e.address a" + " WHERE a.province = 'QUE' ";
         Long result = (Long)em.createQuery(ejbqlString).getSingleResult();
-        Assert.assertEquals("Average expression test failed", expectedResult, result);
+        assertEquals("Average expression test failed", expectedResult, result);
     }
 
     public void testAvgExpression() {
@@ -639,11 +634,10 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         Double expectedResult = (Double)((ReportQueryResult)getServerSession().executeQuery(query)).get("average quantity");
         String ejbqlString = "SELECT AVG(o.quantity) FROM OrderBean o";
         Double result = (Double)em.createQuery(ejbqlString).getSingleResult();
-        Assert.assertEquals("Average expression test failed", expectedResult, result);
+        assertEquals("Average expression test failed", expectedResult, result);
     }
 
     //bug 5166658
-
     public void testCountExpression() {
         EntityManager em = createEntityManager();
 
@@ -661,11 +655,11 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String alternateEjbqlString = "SELECT COUNT(p) FROM Employee e JOIN e.phoneNumbers p JOIN e.address a " + " WHERE a.province='QUE' AND a.city='Montreal' AND p.areaCode IS NOT NULL";
         Long alternateResult = (Long)em.createQuery(alternateEjbqlString).getSingleResult();
 
-        Assert.assertTrue("Count expression test failed: data validation error, ReportQuery returned 0", expectedResult.intValue() > 0);
-        Assert.assertTrue("Count expression test failed: data validation error, first JPQL returned 0", result.intValue() > 0);
-        Assert.assertTrue("Count expression test failed: data validation error, second JPQL returned 0", alternateResult.intValue() > 0);
-        Assert.assertTrue("Count expression test failed: two equivalent ejb queries return different results", alternateResult.equals(result));
-        Assert.assertEquals("Count expression test failed", expectedResult, result);
+        assertTrue("Count expression test failed: data validation error, ReportQuery returned 0", expectedResult.intValue() > 0);
+        assertTrue("Count expression test failed: data validation error, first JPQL returned 0", result.intValue() > 0);
+        assertTrue("Count expression test failed: data validation error, second JPQL returned 0", alternateResult.intValue() > 0);
+        assertTrue("Count expression test failed: two equivalent ejb queries return different results", alternateResult.equals(result));
+        assertEquals("Count expression test failed", expectedResult, result);
     }
 
     public void testOrderByExpression() {
@@ -680,8 +674,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         String ejbqlString = "SELECT p FROM Employee e JOIN e.phoneNumbers p JOIN e.address a WHERE a.province = 'ONT' " + "ORDER BY p.areaCode, p.type";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertEquals("OrderBy expression test failed: data validation error", result.size(), 13);
-        Assert.assertTrue("OrderBy expression test failed", comparer.compareObjects(expectedResult, result));
+        assertEquals("OrderBy expression test failed: data validation error", 13, result.size());
+        assertTrue("OrderBy expression test failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void testOrderByExpressionWithSelect() {
@@ -713,8 +707,8 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             testPass = false;
         }
 
-        Assert.assertEquals("OrderBy expression test failed: data validation error", result.size(), 13);
-        Assert.assertTrue("OrderBy with Select expression test failed", testPass);
+        assertEquals("OrderBy expression test failed: data validation error", 13, result.size());
+        assertTrue("OrderBy with Select expression test failed", testPass);
     }
 
     public void testDeleteExpression() {
@@ -737,21 +731,20 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             em.createQuery(orderString).executeUpdate();
             String ejbqlString = "DELETE FROM Customer c WHERE c.name='Karen McDonald' ";
             int result = em.createQuery(ejbqlString).executeUpdate();
-            Assert.assertEquals("Delete Expression test failed: customer to delete not found", 1, result);
+            assertEquals("Delete Expression test failed: customer to delete not found", 1, result);
             em.flush();
 
             ReadAllQuery raq = new ReadAllQuery(Customer.class, new ExpressionBuilder());
             Expression whereClause = raq.getExpressionBuilder().get("name").equal("Karen McDonald");
             raq.setSelectionCriteria(whereClause);
             List customerFound = (List)em.getActiveSession().executeQuery(raq);
-            Assert.assertEquals("Delete Expression test failed", 0, customerFound.size());
+            assertEquals("Delete Expression test failed", 0, customerFound.size());
         } finally {
             rollbackTransaction(em);
         }
     }
 
     // Bug 5090182
-
     public void testEJBQLQueryString() {
         List<Object[]> emps = createEntityManager().createQuery("SELECT e, a FROM Employee e, Address a WHERE e.address = a").getResultList();
         assertFalse("No employees were read, debug and look at the SQL that was generated. ", emps.isEmpty());
@@ -777,7 +770,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             em.createQuery(orderString).executeUpdate();
             String ejbqlString = "DELETE FROM Customer c WHERE c.name='Karen McDonald' AND c.orders IS EMPTY";
             int result = em.createQuery(ejbqlString).executeUpdate();
-            Assert.assertEquals("Complex Delete Expression test failed: customer to delete not found", 1, result);
+            assertEquals("Complex Delete Expression test failed: customer to delete not found", 1, result);
             em.flush();
 
             ReadAllQuery raq = new ReadAllQuery(Customer.class, new ExpressionBuilder());
@@ -785,14 +778,13 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             Expression whereClause2 = raq.getExpressionBuilder().isEmpty("orders");
             raq.setSelectionCriteria(whereClause1.and(whereClause2));
             List customerFound = (List)em.getActiveSession().executeQuery(raq);
-            Assert.assertEquals("Complex Delete Expression test failed", 0, customerFound.size());
+            assertEquals("Complex Delete Expression test failed", 0, customerFound.size());
         } finally {
             rollbackTransaction(em);
         }
     }
 
     //bug 5159164, 5159198
-
     public void testUpdateExpression() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test testUpdateExpression skipped for this platform, "
@@ -812,11 +804,10 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
             }
         }
 
-        Assert.assertEquals("Update expression test failed", 1, result);
+        assertEquals("Update expression test failed", 1, result);
     }
 
     //Bug5097278 Test case for updating the manager of ALL employees that have a certain address
-
     public void updateAllTest() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isSymfoware()) {
             getServerSession().logMessage("Test updateAllTest skipped for this platform, "
@@ -845,7 +836,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
         String ejbqlString3 = "SELECT DISTINCT e.manager FROM Employee e WHERE e.lastName = '" + empName + "'";
         String result = ((Employee)em.createQuery(ejbqlString3).getSingleResult()).getLastName();
 
-        Assert.assertTrue("UpdateAll test failed", result.equals(manName));
+        assertEquals("UpdateAll test failed", manName, result);
 
     }
 
@@ -868,23 +859,19 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
 
     //Bug5040609  Test if EJBQuery makes a clone of the original DatabaseQuery from the session
-
     public void namedQueryCloneTest() {
         EntityManager em = createEntityManager();
 
         List result1 = em.createNamedQuery("findAllCustomers").getResultList();
-
         List result2 = em.createNamedQuery("findAllCustomers").setMaxResults(1).getResultList();
-
         List result3 = em.createNamedQuery("findAllCustomers").getResultList();
 
-        Assert.assertEquals("Named query clone test failed: the first result should be 4", result1.size(), 4);
-        Assert.assertEquals("Named query clone test failed: the second result should be 1", result2.size(), 1);
-        Assert.assertEquals("Named query clone test failed: the third result should be 4", result3.size(), 4);
+        assertEquals("Named query clone test failed: the first result should be 4", 4, result1.size());
+        assertEquals("Named query clone test failed: the second result should be 1", 1, result2.size());
+        assertEquals("Named query clone test failed: the third result should be 4", 4, result3.size());
     }
 
     //Bug5040609 Test case for aggregates as parameters in EJBQL
-
     public void aggregateParameterTest() {
         EntityManager em = createEntityManager();
 
@@ -911,7 +898,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
 
         List result = em.createQuery("SELECT e FROM Employee e WHERE e.period = :period ").setParameter("period", period).getResultList();
 
-        Assert.assertTrue("aggregateParameterTest failed", comparer.compareObjects(expectedResult, result));
+        assertTrue("aggregateParameterTest failed", comparer.compareObjects(expectedResult, result));
     }
 
 }
