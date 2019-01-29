@@ -12,6 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     01/29/2019-3.0 Sureshkumar Balakrishnan
+//       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.internal.descriptors;
 
 import java.util.*;

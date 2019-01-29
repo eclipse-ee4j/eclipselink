@@ -27,6 +27,8 @@
 //       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
 //     09/04/2018-3.0 Ravi Babu Tummuru
 //       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+//     01/29/2019-3.0 Sureshkumar Balakrishnan
+//       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import org.eclipse.persistence.exceptions.DatabaseException;

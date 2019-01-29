@@ -22,6 +22,8 @@
 //         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
 //     01/15/2015-2.6 Mythily Parthasarathy
 //       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
+//     01/29/2019-3.0 Sureshkumar Balakrishnan
+//       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.io.ByteArrayInputStream;

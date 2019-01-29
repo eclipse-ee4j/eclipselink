@@ -35,6 +35,8 @@
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
 //     09/03/2015 - Will Dazey
 //       - 456067 : Added support for defining query timeout units
+//     01/29/2019-3.0 Sureshkumar Balakrishnan
+//       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.internal.sessions;
 
 import java.io.StringWriter;
