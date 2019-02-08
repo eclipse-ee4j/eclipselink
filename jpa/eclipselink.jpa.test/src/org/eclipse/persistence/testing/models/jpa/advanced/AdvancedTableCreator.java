@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -27,6 +27,8 @@
 //       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
 //     09/04/2018-3.0 Ravi Babu Tummuru
 //       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+//     01/29/2019-3.0 Sureshkumar Balakrishnan
+//       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -124,6 +126,11 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildORD_ENTITYATable());
         addTableDefinition(buildORD_ENTITYZTable());
         addTableDefinition(buildMyTestEntityTable());
+        addTableDefinition(buildMaterialTable());
+        addTableDefinition(buildMaterialHistTable());
+        addTableDefinition(buildPlanarbeitsgangTable());
+        addTableDefinition(buildPlanarbeitsgangHistTable());
+        addTableDefinition(buildMaterialReignisTable());
     }
 
     public TableDefinition buildADDRESSTable() {
@@ -3376,6 +3383,273 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
         table.addField(fieldID);
 
         return table;
+    }
+    
+    public TableDefinition buildMaterialTable() {
+        TableDefinition tabledefinition = new TableDefinition();
+        tabledefinition.setName("MATERIAL");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldID);
+
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldVersion.setShouldAllowNull(false);
+        tabledefinition.addField(fieldVersion);
+
+        FieldDefinition fieldIDENT = new FieldDefinition();
+        fieldIDENT.setName("IDENT");
+        fieldIDENT.setTypeName("VARCHAR");
+        fieldIDENT.setSize(255);
+        fieldIDENT.setIsPrimaryKey(false);
+        fieldIDENT.setIsIdentity(false);
+        fieldIDENT.setUnique(false);
+        fieldIDENT.setShouldAllowNull(false);
+        tabledefinition.addField(fieldIDENT);
+
+        FieldDefinition fieldWERT = new FieldDefinition();
+        fieldWERT.setName("WERT");
+        fieldWERT.setTypeName("VARCHAR");
+        fieldWERT.setSize(255);
+        fieldWERT.setIsPrimaryKey(false);
+        fieldWERT.setIsIdentity(false);
+        fieldWERT.setUnique(false);
+        fieldWERT.setShouldAllowNull(false);
+        tabledefinition.addField(fieldWERT);
+
+        FieldDefinition histId = new FieldDefinition();
+        histId.setName("LASTHIST_ID");
+        histId.setTypeName("NUMBER");
+        histId.setSize(19);
+        tabledefinition.addField(histId);
+
+        return tabledefinition;
+
+    }
+
+    public TableDefinition buildMaterialHistTable() {
+        TableDefinition tabledefinition = new TableDefinition();
+        tabledefinition.setName("MATERIALHIST");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldID);
+
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldVersion.setUnique(false);
+        fieldVersion.setShouldAllowNull(false);
+        tabledefinition.addField(fieldVersion);
+
+        FieldDefinition fieldIDENT = new FieldDefinition();
+        fieldIDENT.setName("IDENT");
+        fieldIDENT.setTypeName("VARCHAR");
+        fieldIDENT.setSize(255);
+        fieldIDENT.setIsPrimaryKey(false);
+        fieldIDENT.setIsIdentity(false);
+        fieldIDENT.setUnique(false);
+        fieldIDENT.setShouldAllowNull(false);
+        tabledefinition.addField(fieldIDENT);
+
+        FieldDefinition fieldWERT = new FieldDefinition();
+        fieldWERT.setName("WERT");
+        fieldWERT.setTypeName("VARCHAR");
+        fieldWERT.setSize(255);
+        fieldWERT.setIsPrimaryKey(false);
+        fieldWERT.setIsIdentity(false);
+        fieldWERT.setUnique(false);
+        tabledefinition.addField(fieldWERT);
+
+        FieldDefinition fieldOrgID = new FieldDefinition();
+        fieldOrgID.setName("ORIGINAL_ID");
+        fieldOrgID.setTypeName("INTEGER");
+        fieldOrgID.setSize(19);
+        fieldOrgID.setIsIdentity(false);
+        fieldOrgID.setUnique(false);
+        fieldOrgID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldOrgID);
+
+        return tabledefinition;
+
+    }
+
+    public TableDefinition buildPlanarbeitsgangTable() {
+        TableDefinition tabledefinition = new TableDefinition();
+        tabledefinition.setName("PLANARBEITSGANG");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(0);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldID);
+
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMBER");
+        fieldVersion.setSize(19);
+        fieldVersion.setIsIdentity(false);
+        fieldVersion.setUnique(false);
+        fieldVersion.setShouldAllowNull(false);
+        tabledefinition.addField(fieldVersion);
+
+        FieldDefinition fieldIDENT = new FieldDefinition();
+        fieldIDENT.setName("NAME");
+        fieldIDENT.setTypeName("VARCHAR");
+        fieldIDENT.setSize(255);
+        fieldIDENT.setIsPrimaryKey(false);
+        fieldIDENT.setIsIdentity(false);
+        fieldIDENT.setUnique(false);
+        fieldIDENT.setShouldAllowNull(false);
+        tabledefinition.addField(fieldIDENT);
+
+        FieldDefinition fieldMaterial = new FieldDefinition();
+        fieldMaterial.setName("MATERIAL_ID");
+        fieldMaterial.setTypeName("NUMBER");
+        fieldMaterial.setSize(19);
+        fieldMaterial.setIsIdentity(false);
+        fieldMaterial.setUnique(false);
+        fieldMaterial.setShouldAllowNull(false);
+        tabledefinition.addField(fieldMaterial);
+
+        FieldDefinition histId = new FieldDefinition();
+        histId.setName("LASTHIST_ID");
+        histId.setTypeName("NUMBER");
+        histId.setSize(19);
+        tabledefinition.addField(histId);
+
+        return tabledefinition;
+
+    }
+
+    public TableDefinition buildPlanarbeitsgangHistTable() {
+        TableDefinition tabledefinition = new TableDefinition();
+        tabledefinition.setName("PLANARBEITSGANGHIST");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(0);
+        fieldID.setSubSize(0);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldID);
+
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMBER");
+        fieldVersion.setSize(19);
+        fieldVersion.setIsIdentity(false);
+        fieldVersion.setUnique(false);
+        fieldVersion.setShouldAllowNull(false);
+        tabledefinition.addField(fieldVersion);
+
+        FieldDefinition fieldIDENT = new FieldDefinition();
+        fieldIDENT.setName("NAME");
+        fieldIDENT.setTypeName("VARCHAR");
+        fieldIDENT.setSize(255);
+        fieldIDENT.setIsPrimaryKey(false);
+        fieldIDENT.setIsIdentity(false);
+        fieldIDENT.setUnique(false);
+        fieldIDENT.setShouldAllowNull(false);
+        tabledefinition.addField(fieldIDENT);
+
+        FieldDefinition fieldMaterial = new FieldDefinition();
+        fieldMaterial.setName("MATERIAL_ID");
+        fieldMaterial.setTypeName("NUMBER");
+        fieldMaterial.setSize(19);
+        fieldMaterial.setIsIdentity(false);
+        fieldMaterial.setUnique(false);
+        fieldMaterial.setShouldAllowNull(false);
+        tabledefinition.addField(fieldMaterial);
+
+        FieldDefinition fieldOrgID = new FieldDefinition();
+        fieldOrgID.setName("ORIGINAL_ID");
+        fieldOrgID.setTypeName("NUMBER");
+        fieldOrgID.setSize(19);
+        fieldOrgID.setIsIdentity(false);
+        fieldOrgID.setUnique(false);
+        fieldOrgID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldOrgID);
+
+        return tabledefinition;
+
+    }
+
+    public TableDefinition buildMaterialReignisTable() {
+        TableDefinition tabledefinition = new TableDefinition();
+        tabledefinition.setName("MATERIALEREIGNIS");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMBER");
+        fieldID.setSize(19);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setIsIdentity(true);
+        fieldID.setUnique(false);
+        fieldID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldID);
+
+        FieldDefinition fieldVersion = new FieldDefinition();
+        fieldVersion.setName("VERSION");
+        fieldVersion.setTypeName("NUMBER");
+        fieldVersion.setSize(19);
+        fieldVersion.setIsIdentity(false);
+        fieldVersion.setUnique(false);
+        fieldVersion.setShouldAllowNull(false);
+        tabledefinition.addField(fieldVersion);
+
+        FieldDefinition fieldAfChgID = new FieldDefinition();
+        fieldAfChgID.setName("AFTERCHANGE_ID");
+        fieldAfChgID.setTypeName("NUMBER");
+        fieldAfChgID.setSize(19);
+        fieldAfChgID.setIsIdentity(false);
+        fieldAfChgID.setUnique(false);
+        fieldAfChgID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldAfChgID);
+
+        FieldDefinition fieldBfrChgID = new FieldDefinition();
+        fieldBfrChgID.setName("BEFORECHANGE_ID");
+        fieldBfrChgID.setTypeName("NUMBER");
+        fieldBfrChgID.setSize(19);
+        fieldBfrChgID.setIsIdentity(false);
+        fieldBfrChgID.setUnique(false);
+        fieldBfrChgID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldBfrChgID);
+
+        FieldDefinition fieldChgObjID = new FieldDefinition();
+        fieldChgObjID.setName("CHANGEDOBJECT_ID");
+        fieldChgObjID.setTypeName("NUMBER");
+        fieldChgObjID.setSize(19);
+        fieldChgObjID.setIsIdentity(false);
+        fieldChgObjID.setUnique(false);
+        fieldChgObjID.setShouldAllowNull(false);
+        tabledefinition.addField(fieldChgObjID);
+
+        return tabledefinition;
     }
     
     @Override

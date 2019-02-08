@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,8 @@
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
 //     09/03/2015 - Will Dazey
 //       - 456067 : Added support for defining query timeout units
+//     01/29/2019-3.0 Sureshkumar Balakrishnan
+//       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.internal.sessions;
 
 import java.io.StringWriter;
@@ -5519,6 +5521,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
 
         iterator.setSession(this);
         iterator.setCascadeDepth(cascadeDepth);
+        iterator.setForDetach(forDetach);
         if (forDetach){
             CascadeCondition detached = iterator.new CascadeCondition(){
                 @Override

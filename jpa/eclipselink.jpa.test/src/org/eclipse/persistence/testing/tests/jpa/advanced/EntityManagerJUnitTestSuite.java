@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,6 +22,8 @@
 //         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
 //     01/15/2015-2.6 Mythily Parthasarathy
 //       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
+//     01/29/2019-3.0 Sureshkumar Balakrishnan
+//       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.io.ByteArrayInputStream;
@@ -212,6 +214,11 @@ import org.eclipse.persistence.testing.models.jpa.advanced.VegetablePK;
 import org.eclipse.persistence.testing.models.jpa.advanced.Woman;
 import org.eclipse.persistence.testing.models.jpa.advanced.WorldRank;
 import org.eclipse.persistence.testing.models.jpa.relationships.CustomerCollection;
+import org.eclipse.persistence.testing.models.jpa.advanced.Material;
+import org.eclipse.persistence.testing.models.jpa.advanced.MaterialHist;
+import org.eclipse.persistence.testing.models.jpa.advanced.PlanArbeitsgang;
+import org.eclipse.persistence.testing.models.jpa.advanced.MaterialEreignis;
+import org.eclipse.persistence.testing.models.jpa.advanced.PlanArbeitsgangHist;
 import org.eclipse.persistence.testing.tests.feature.TestDataSource;
 import org.eclipse.persistence.testing.tests.jpa.unit.EMFProviderTest;
 import org.eclipse.persistence.testing.tests.weaving.SimpleSessionLogWrapper;
@@ -520,6 +527,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testNestedFetchQueryHints");
             tests.add("testInheritanceFetchJoinSecondCall");
         }
+        tests.add("testDetachChildObjects");
 
 
         Collections.sort(tests);
@@ -13139,6 +13147,82 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             closeEntityManagerFactory();
         }
     }
+
+    public void testDetachChildObjects() {
+    	EntityManager em = createEntityManager();
+    	beginTransaction(em);
+		InitTestDetachChildObjects(em);
+		UnitOfWorkImpl uow = (UnitOfWorkImpl) em.unwrap(JpaEntityManager.class).getActiveSession();
+
+		Material mat = em.find(Material.class, 1L);
+		mat.setWert("WERT3");
+		MaterialEreignis matEreignis1 = new MaterialEreignis();
+		matEreignis1.setChangedObject(mat);
+		matEreignis1.setBeforeChange(mat.getLastHist());
+		MaterialHist afterMat1 = makeHistCopy(mat);
+		matEreignis1.setAfterChange(afterMat1);
+
+		em.persist(matEreignis1);
+		em.flush();
+		em.detach(matEreignis1);
+		
+		List<PlanArbeitsgangHist> pagList = getInstancesFromPC(PlanArbeitsgangHist.class, uow);
+		assertTrue(pagList.isEmpty());
+		for (PlanArbeitsgangHist pag : pagList) {
+			assertTrue(em.contains(pag));
+		}
+		rollbackTransaction(em);
+		closeEntityManager(em);
+    
+    }
+    private void InitTestDetachChildObjects(EntityManager em) {
+        // test data - manual creation
+        try {
+            em.createNativeQuery("INSERT INTO MATERIAL (ID, VERSION, IDENT, WERT) VALUES (1, 1, 'MAT', 'WERT2')").executeUpdate();
+			em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (1, 1, 'MAT', 'WERT1', 1)").executeUpdate();
+			em.createNativeQuery("INSERT INTO MATERIALHIST (ID, VERSION, IDENT, WERT, ORIGINAL_ID) VALUES (2, 1, 'MAT', 'WERT2', 1)").executeUpdate();
+			em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (1, 1, 'PAG1', 1)").executeUpdate();
+			em.createNativeQuery("INSERT INTO PLANARBEITSGANG (ID, VERSION, NAME, MATERIAL_ID) VALUES (2, 1, 'PAG2', 1)").executeUpdate();
+			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (1, 1, 'PAG1', 1, 1)").executeUpdate();
+			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (2, 1, 'PAG2', 1, 2)").executeUpdate();
+			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (3, 1, 'PAG1', 2, 1)").executeUpdate();
+			em.createNativeQuery("INSERT INTO PLANARBEITSGANGHIST (ID, VERSION, NAME, MATERIAL_ID, ORIGINAL_ID) VALUES (4, 1, 'PAG2', 2, 2)").executeUpdate();
+			em.createNativeQuery("UPDATE MATERIAL SET LASTHIST_ID = 2 WHERE ID = 1").executeUpdate();
+			em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 3 WHERE ID = 1").executeUpdate();
+			em.createNativeQuery("UPDATE PLANARBEITSGANG SET LASTHIST_ID = 4 WHERE ID = 2").executeUpdate();
+			em.createNativeQuery("INSERT INTO MATERIALEREIGNIS (ID, VERSION, AFTERCHANGE_ID, BEFORECHANGE_ID, CHANGEDOBJECT_ID) VALUES (1, 1, 2, 1, 1)").executeUpdate();
+        } catch (Exception e) {
+            fail("Error creating test data: " + e.getMessage());
+        } 
+    }
+    private MaterialHist makeHistCopy(Material mat) {
+		MaterialHist histCopy = new MaterialHist();
+		mat.setLastHist(histCopy);
+		histCopy.setOriginal(mat);
+		histCopy.setIdent(mat.getIdent());
+		histCopy.setWert(mat.getWert());
+		for (PlanArbeitsgang pag : mat.getRestproduktionsweg()) {
+			PlanArbeitsgangHist pagHistCopy = new PlanArbeitsgangHist();
+			pagHistCopy.setName(pag.getName());
+			pagHistCopy.setOriginal(pag);
+			pag.setLastHist(pagHistCopy);
+			histCopy.getRestproduktionsweg().add(pagHistCopy);
+			pagHistCopy.setMaterial(histCopy);
+		}
+		return histCopy;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> List<T> getInstancesFromPC(Class<T> type, UnitOfWorkImpl uow) {
+		Set<Object> pc = uow.getCloneMapping().keySet();
+		List<T> result = new ArrayList<>();
+		for (Object o : pc) {
+			if (type.isInstance(o)) {
+				result.add((T) o);
+			}
+		}
+		return result;
+	}
 
     public static final class Platform extends ServerPlatformBase {
 
