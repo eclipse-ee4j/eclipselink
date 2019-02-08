@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,6 +76,7 @@ import org.eclipse.persistence.jaxb.compiler.facets.PatternListFacet;
 import org.eclipse.persistence.jaxb.compiler.facets.SizeFacet;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.JavaClassCompareByNamespace;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElementWrapper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlJoinNodes.XmlJoinNode;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlVirtualAccessMethodsSchema;
@@ -152,6 +153,8 @@ public class SchemaGenerator {
         this.schemaTypeInfo = new HashMap<String, SchemaTypeInfo>(typeInfo.size());
         this.arrayClassesToGeneratedClasses = arrayClassesToGeneratedClasses;
 
+        //sort input classes before schema name (like schema1.xsd, schema2.xsd....) is generated and assigned
+        typeInfoClasses.sort(new JavaClassCompareByNamespace(typeInfo));
         for (JavaClass javaClass : typeInfoClasses) {
             addSchemaComponents(javaClass);
         }

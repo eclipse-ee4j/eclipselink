@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,6 +14,11 @@
 -->
 
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:complexType name="drivingLicense">
+      <xsd:sequence/>
+      <xsd:attribute name="id" type="xsd:int" use="required"/>
+      <xsd:attribute name="validThrough" type="xsd:dateTime"/>
+   </xsd:complexType>
    <xsd:complexType name="employee">
       <xsd:sequence>
          <xsd:element name="personalName" minOccurs="0">
@@ -37,13 +42,8 @@
       <xsd:attribute name="id" type="xsd:int"/>
       <xsd:attribute name="age" type="xsd:int" use="required"/>
    </xsd:complexType>
-   <xsd:complexType name="drivingLicense">
-      <xsd:sequence/>
-      <xsd:attribute name="id" type="xsd:int" use="required"/>
-      <xsd:attribute name="validThrough" type="xsd:dateTime"/>
-   </xsd:complexType>
-   <xsd:element name="employee" type="employee"/>
    <xsd:element name="department" type="department"/>
+   <xsd:element name="employee" type="employee"/>
    <xsd:simpleType name="department">
       <xsd:restriction base="xsd:string">
          <xsd:enumeration value="RDBMS"/>

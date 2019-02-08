@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<xsd:schema xmlns:ns0="http://first.temp.com/" xmlns:ns1="http://second.temp.com/" xmlns:ns2="http://third.temp.com/" xmlns:ns3="http://fourth.temp.com/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+   <xsd:import schemaLocation="schema2.xsd" namespace="http://first.temp.com/"/>
+   <xsd:import schemaLocation="schema4.xsd" namespace="http://second.temp.com/"/>
+   <xsd:import schemaLocation="schema5.xsd" namespace="http://third.temp.com/"/>
+   <xsd:import schemaLocation="schema3.xsd" namespace="http://fourth.temp.com/"/>
+   <xsd:complexType name="WithoutNamespaceType">
+      <xsd:sequence>
+         <xsd:element name="WithoutNamespaceSubElement" type="xsd:string"/>
+      </xsd:sequence>
+   </xsd:complexType>
+   <xsd:element name="RootElement">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="FirstElement" type="ns0:FirstType"/>
+            <xsd:element name="SecondElement" type="ns1:SecondType"/>
+            <xsd:element name="ThirdElement" type="ns2:ThirdType"/>
+            <xsd:element name="FourthElement" type="ns3:FourthType"/>
+            <xsd:element name="WithoutNamespaceSubElement" type="WithoutNamespaceType"/>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>

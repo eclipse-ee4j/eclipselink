@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,42 +14,31 @@
 // dmccann - June 11/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.classarray;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
-import javax.xml.transform.Result;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-
-import junit.framework.TestCase;
+import javax.xml.parsers.DocumentBuilder;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import org.eclipse.persistence.oxm.XMLConstants;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.ExternalizedMetadataTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.SchemaGenTestCases;
-import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref.Address;
-import org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementref.Thing;
 import org.eclipse.persistence.testing.jaxb.schemagen.deploymentxml.Employee;
 
 /**
  * Tests schema generation from a Class[].
- *
  */
 public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
     MySchemaOutputResolver outputResolver;
     boolean shouldGenerateSchema;
-    static String PATH="org/eclipse/persistence/testing/jaxb/schemagen/deploymentxml/";
+    static String PATH = "org/eclipse/persistence/testing/jaxb/schemagen/deploymentxml/";
+    protected DocumentBuilder parser;
 
     /**
      * This is the preferred (and only) constructor.
@@ -78,20 +67,19 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
                 fail("Additional global element Map setup failed: " + x.toString());
             }
             try {
-                Class[] classesToBeBound = new Class[] { Employee.class };
+                Class[] classesToBeBound = new Class[]{Employee.class};
                 generateSchema(classesToBeBound, outputResolver, additionalGlobalElements);
             } catch (Exception ex) {
                 fail("Schema generation failed unexpectedly: " + ex.toString());
             }
             assertTrue("No schemas were generated", outputResolver.schemaFiles.size() > 0);
-            assertTrue("Expected two schemas to be generated, but there were [ " + outputResolver.schemaFiles.size()  + "]", outputResolver.schemaFiles.size() == 2);
+            assertTrue("Expected two schemas to be generated, but there were [ " + outputResolver.schemaFiles.size() + "]", outputResolver.schemaFiles.size() == 2);
             shouldGenerateSchema = false;
         }
     }
 
     /**
      * Tests basic schema generation from deployment xml.
-     *
      */
     public void testSchemaGenFromClassArray() throws Exception {
         generateSchema();
@@ -138,5 +126,37 @@ public class ClassArraySchemaGenTestCases extends SchemaGenTestCases {
         generateSchema();
         String result = validateAgainstSchema(PATH + "ASingleInt.xml", outputResolver);
         assertTrue("Schema validation failed unxepectedly: " + result, result == null);
+    }
+
+    /**
+     * Test schema generation from multiple entities with different namespaces and verify generated schemas (by order and content).
+     */
+    public void testSchemaGenFromClassArrayVerifyOrder() throws Exception {
+        final Class[] inputClasses = new Class[]{SecondType.class, WithoutNamespaceType.class, RootElement.class, FourthType.class, ThirdType.class, FirstType.class};
+        final String[] xsdResources = new String[]{"schema1.xsd", "schema2.xsd", "schema3.xsd", "schema4.xsd", "schema5.xsd"};
+
+        JAXBContext jaxbContext;
+        MySchemaOutputResolver schemaOrderoutputResolver = new MySchemaOutputResolver();
+
+        try {
+            jaxbContext = (JAXBContext) JAXBContextFactory.createContext(inputClasses, null);
+            jaxbContext.generateSchema(schemaOrderoutputResolver);
+
+        } catch (Exception ex) {
+            fail("Schema generation failed unexpectedly: " + ex.toString());
+        }
+        assertTrue("No schemas were generated", schemaOrderoutputResolver.schemaFiles.size() > 0);
+        assertTrue("Expected five schemas to be generated, but there were [ " + schemaOrderoutputResolver.schemaFiles.size() + "]", schemaOrderoutputResolver.schemaFiles.size() == 5);
+        List<File> generatedSchemas = schemaOrderoutputResolver.schemaFiles;
+        List<File> controlSchemas = new ArrayList<>(xsdResources.length);
+        for (String controlSchema : xsdResources) {
+            URI controlSchemaURI = Thread.currentThread().getContextClassLoader().getResource(PATH + controlSchema).toURI();
+            controlSchemas.add(new File(controlSchemaURI));
+        }
+        for (int i = 0; i < controlSchemas.size(); i++) {
+            File nextControlValue = controlSchemas.get(i);
+            File nextGeneratedValue = generatedSchemas.get(i);
+            ExternalizedMetadataTestCases.compareSchemas(nextGeneratedValue, nextControlValue);
+        }
     }
 }

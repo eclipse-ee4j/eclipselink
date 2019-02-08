@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,20 +13,7 @@
 
 -->
 
-<xsd:schema xmlns:ns0="http://jaxb.dev.java.net/array" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://jaxb.dev.java.net/array">
-   <xsd:complexType name="intArrayArray">
-      <xsd:sequence>
-         <xsd:element name="item" type="ns0:intArray" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-   </xsd:complexType>
-   <xsd:complexType name="stringArray">
-      <xsd:sequence>
-         <xsd:element name="item" type="xsd:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-   </xsd:complexType>
-   <xsd:complexType name="intArray">
-      <xsd:sequence>
-         <xsd:element name="item" type="xsd:int" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
-      </xsd:sequence>
-   </xsd:complexType>
+<xsd:schema xmlns:ns0="urn:example" xmlns:ns1="listOfObjectsNamespace" xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="urn:example">
+   <xsd:import schemaLocation="schema2.xsd" namespace="listOfObjectsNamespace"/>
+   <xsd:element name="root" type="ns1:multiDimensionalArrayRoot"/>
 </xsd:schema>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -31,6 +32,7 @@ import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelProject;
 import org.eclipse.persistence.internal.oxm.schema.model.Schema;
+import org.eclipse.persistence.internal.oxm.schema.model.SchemaCompareByNamespace;
 import org.eclipse.persistence.jaxb.TypeMappingInfo;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
@@ -231,6 +233,10 @@ public class Generator {
         Descriptor schemaDescriptor = (Descriptor)proj.getDescriptor(Schema.class);
 
         java.util.Collection<Schema> schemas = schemaGenerator.getAllSchemas();
+        // make sure that schemas will be passed to the output in specified order
+        if (schemas instanceof List) {
+            ((List)schemas).sort(new SchemaCompareByNamespace());
+        }
         for(Schema schema : schemas) {
             try {
                 NamespaceResolver schemaNamespaces = schema.getNamespaceResolver();

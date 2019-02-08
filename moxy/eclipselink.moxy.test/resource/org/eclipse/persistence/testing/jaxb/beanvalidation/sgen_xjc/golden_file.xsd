@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,14 @@
          </xsd:element>
          <xsd:element name="someCollection" type="xsd:anyType" maxOccurs="unbounded"/>
       </xsd:sequence>
+   </xsd:complexType>
+   <xsd:complexType name="NumberWithHiddenValueAttribute">
+      <xsd:simpleContent>
+         <xsd:extension base="xsd:string">
+            <xsd:attribute name="code" type="xsd:string" use="required"/>
+            <xsd:attribute name="whatNumber" type="xsd:long" use="required"/>
+         </xsd:extension>
+      </xsd:simpleContent>
    </xsd:complexType>
    <xsd:complexType name="Numbers">
       <xsd:sequence>
@@ -76,14 +84,6 @@
          </xsd:element>
          <xsd:element name="NumberWithHiddenValueAttribute" type="ns0:NumberWithHiddenValueAttribute"/>
       </xsd:sequence>
-   </xsd:complexType>
-   <xsd:complexType name="NumberWithHiddenValueAttribute">
-      <xsd:simpleContent>
-         <xsd:extension base="xsd:string">
-            <xsd:attribute name="code" type="xsd:string" use="required"/>
-            <xsd:attribute name="whatNumber" type="xsd:long" use="required"/>
-         </xsd:extension>
-      </xsd:simpleContent>
    </xsd:complexType>
    <xsd:complexType name="Strings">
       <xsd:sequence>
