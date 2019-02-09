@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.util.Arrays;
@@ -20,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -314,13 +317,13 @@ public abstract class JPQLQueryBNF {
 
         // No need to synchronize if the map was calculated
         if (cachedExpressionFactories != null) {
-            return cachedExpressionFactories.get(identifier.toUpperCase());
+            return cachedExpressionFactories.get(identifier.toUpperCase(Locale.ROOT));
         }
 
         // Synchronize to make sure only one thread populates the list of JPQL identifiers
         calculateExpressionFactories();
 
-        return cachedExpressionFactories.get(identifier.toUpperCase());
+        return cachedExpressionFactories.get(identifier.toUpperCase(Locale.ROOT));
     }
 
     /**

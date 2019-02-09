@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,12 +13,15 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.jpa.jpql.tools.resolver;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -138,7 +141,7 @@ public class DeclarationResolver extends Resolver {
 
         // Always make the identification variable be upper case since it's
         // case insensitive, the get will also use upper case
-        String internalVariableName = variableName.toUpperCase();
+        String internalVariableName = variableName.toUpperCase(Locale.ROOT);
 
         // Make sure the identification variable was not declared more than once,
         // this could cause issues when trying to resolve it
@@ -297,7 +300,7 @@ public class DeclarationResolver extends Resolver {
      */
     public Resolver getResolver(String variableName) {
 
-        variableName = variableName.toUpperCase();
+        variableName = variableName.toUpperCase(Locale.ROOT);
         Resolver resolver = getResolverImp(variableName);
 
         if ((resolver == null) && (getParent() != null)) {
@@ -505,7 +508,7 @@ public class DeclarationResolver extends Resolver {
      * otherwise
      */
     public boolean isResultVariable(String variable) {
-        return resultVariables.containsValue(variable.toUpperCase());
+        return resultVariables.containsValue(variable.toUpperCase(Locale.ROOT));
     }
 
     /**
@@ -564,7 +567,7 @@ public class DeclarationResolver extends Resolver {
 
             // Always make the identification variable be upper case since it's
             // case insensitive, the get will also use upper case
-            String internalVariableName = variableName.toUpperCase();
+            String internalVariableName = variableName.toUpperCase(Locale.ROOT);
 
             // Make sure the identification variable was not declared more than once,
             // this could cause issues when trying to resolve it
@@ -688,7 +691,7 @@ public class DeclarationResolver extends Resolver {
         @Override
         public void visit(IdentificationVariable expression) {
             if (collectResultVariable) {
-                resultVariables.put(expression, expression.getText().toUpperCase());
+                resultVariables.put(expression, expression.getText().toUpperCase(Locale.ROOT));
             }
         }
 

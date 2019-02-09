@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,10 +27,13 @@
 //       - 329008: Support dynamic context creation without persistence.xml
 //     03/22/2016-2.6_WAS Nathan Rauh
 //       - 489787: Fixed NullPointerException when specifying non-entity object to PersistenceUnitUtil.isLoaded
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -441,7 +444,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
         }
         String commitOrder = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, properties, this.session, true);
         if (commitOrder != null) {
-            this.commitOrder = CommitOrderType.valueOf(commitOrder.toUpperCase());
+            this.commitOrder = CommitOrderType.valueOf(commitOrder.toUpperCase(Locale.ROOT));
         }
         String flushClearCache = PropertiesHandler.getPropertyValueLogDebug(EntityManagerProperties.FLUSH_CLEAR_CACHE, properties, this.session, true);
         if (flushClearCache != null) {

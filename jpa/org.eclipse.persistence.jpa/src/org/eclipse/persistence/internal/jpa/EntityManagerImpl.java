@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,8 @@
 //       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
 //     02/16/2017-2.6 Jody Grassel
 //       - 512255: Eclipselink JPA/Auditing capablity in EE Environment fails with JNDI name parameter type
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.ArrayList;
@@ -47,6 +49,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -317,7 +320,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             put(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, new PropertyProcessor() {
             @Override
             void process(String name, Object value, EntityManagerImpl em) {
-                em.commitOrder = CommitOrderType.valueOf(getPropertiesHandlerProperty(name, (String)value).toUpperCase());
+                em.commitOrder = CommitOrderType.valueOf(getPropertiesHandlerProperty(name, (String)value).toUpperCase(Locale.ROOT));
                 if (em.hasActivePersistenceContext()) {
                     em.extendedPersistenceContext.setCommitOrder(em.commitOrder);
                 }
