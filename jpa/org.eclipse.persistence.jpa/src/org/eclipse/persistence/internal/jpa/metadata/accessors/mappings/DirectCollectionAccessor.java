@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,11 +43,14 @@
 //       - 374688: JPA 2.1 Converter support
 //     07/16/2013-2.5.1 Guy Pelletier
 //       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+//     12/02/2019-3.0 Alexandre Jacob
+//       - 541046: @JoinFetch doesn't work with default value
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -116,7 +119,7 @@ public abstract class DirectCollectionAccessor extends DirectAccessor {
 
         // Set the join fetch if one is present.
         if (isAnnotationPresent(JoinFetch.class)) {
-            m_joinFetch = getAnnotation(JoinFetch.class).getAttributeString("value");
+            m_joinFetch = getAnnotation(JoinFetch.class).getAttributeString("value", JoinFetchType.INNER.name());
         }
 
         // Set the batch fetch if one is present.

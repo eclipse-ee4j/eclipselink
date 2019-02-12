@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,8 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 //     11/28/2012-2.5 Guy Pelletier
 //       - 374688: JPA 2.1 Converter support
+//     12/02/2019-3.0 Alexandre Jacob
+//       - 541046: @JoinFetch doesn't work with default value
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_COLUMN;
@@ -70,6 +72,7 @@ import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.Noncacheable;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -152,7 +155,7 @@ public abstract class RelationshipAccessor extends MappingAccessor {
 
         // Set the join fetch if one is present.
         if (isAnnotationPresent(JoinFetch.class)) {
-            m_joinFetch = getAnnotation(JoinFetch.class).getAttributeString("value");
+            m_joinFetch = getAnnotation(JoinFetch.class).getAttributeString("value", JoinFetchType.INNER.name());
         }
 
         // Set the batch fetch if one is present.
