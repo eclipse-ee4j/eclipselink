@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,9 @@ import org.osgi.framework.Version;
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
 public class OSGiBundleTest {
+    // ASM bundle symbolic name
+    private static final String ASM_BUNDLE_NAME = "org.eclipse.persistence.asm";
+
     // MOXy bundle symbolic name
     private static final String MOXY_BUNDLE_NAME = "org.eclipse.persistence.moxy";
 
@@ -58,7 +61,7 @@ public class OSGiBundleTest {
     @Test
     public void testAsmVersion() {
         Class<?> c = loadClass("org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
-        assertClassLoadedByBundle(c, "org.eclipse.persistence.asm", "7.0.0.v201811131354");
+        assertClassLoadedByBundle(c, ASM_BUNDLE_NAME, System.getProperty("asm.version", "7.0.0.v201811131354"));
     }
 
     @Test
