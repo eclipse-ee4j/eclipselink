@@ -219,9 +219,11 @@
         <condition property="M2_HOME" value="${env.M2_HOME}" else="~/apache-maven-3.5.2">
             <isset property="env.M2_HOME"/>
         </condition>
+        <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
         <java dir="${corba_test.run.dir}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.repo.local=${maven.repo.local}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${corba_test.run.dir}"/>
             <jvmarg value="-Dartifact=org.glassfish.main.appclient:gf-client:5.1.0"/>
             <arg value="dependency:get"/>
@@ -235,9 +237,10 @@
         <java dir="${corba_test.run.dir}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.repo.local=${maven.repo.local}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${corba_test.run.dir}"/>
             <jvmarg value="-DoutputDirectory=${corba_test.run.dir}/gf-corba"/>
-            <arg line="-f ${user.home}/.m2/repository/org/glassfish/main/appclient/gf-client/5.1.0/gf-client-5.1.0.pom"/>
+            <arg line="-f ${maven.repo.local}/org/glassfish/main/appclient/gf-client/5.1.0/gf-client-5.1.0.pom"/>
             <arg value="dependency:copy-dependencies"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">

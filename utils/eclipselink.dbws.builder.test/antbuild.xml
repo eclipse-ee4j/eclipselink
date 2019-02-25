@@ -114,9 +114,11 @@
         <condition property="M2_HOME" value="${env.M2_HOME}" else="~/apache-maven-3.5.2">
             <isset property="env.M2_HOME"/>
         </condition>
+        <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
         <java dir="${run.dir}/rt-libs" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.repo.local=${maven.repo.local}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${run.dir}/rt-libs"/>
             <jvmarg value="-Dartifact=com.sun.xml.ws:runtime:2.3.2"/>
             <arg value="dependency:get"/>
@@ -129,6 +131,7 @@
         <java dir="${run.dir}/rt-libs" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.repo.local=${maven.repo.local}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${run.dir}/rt-libs"/>
             <jvmarg value="-DoutputDirectory=${dbwsbldrtest.build.location}/${run.dir}/rt-libs"/>
             <!--<jvmarg value="-DincludeScope=provided"/>-->
@@ -140,7 +143,7 @@
                 </fileset>
             </classpath>
         </java>
-        <copy todir="${run.dir}/rt-libs" file="${user.home}/.m2/repository/com/sun/xml/ws/runtime/2.3.2/runtime-2.3.2.jar"/>
+        <copy todir="${run.dir}/rt-libs" file="${maven.repo.local}/com/sun/xml/ws/runtime/2.3.2/runtime-2.3.2.jar"/>
     </target>
 
     <!-- initialize varables and paths needed for compile -->
