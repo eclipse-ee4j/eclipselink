@@ -134,8 +134,7 @@
             <jvmarg value="-Dmaven.repo.local=${maven.repo.local}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${run.dir}/rt-libs"/>
             <jvmarg value="-DoutputDirectory=${dbwsbldrtest.build.location}/${run.dir}/rt-libs"/>
-            <!--<jvmarg value="-DincludeScope=provided"/>-->
-            <arg line="-f ${user.home}/.m2/repository/com/sun/xml/ws/runtime/2.3.2/runtime-2.3.2.pom"/>
+            <arg line="-f ${maven.repo.local}/com/sun/xml/ws/runtime/2.3.2/runtime-2.3.2.pom"/>
             <arg value="dependency:copy-dependencies"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
