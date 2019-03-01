@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,6 +12,8 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//     01/03/2019 - SureshKumar Balakrishnan
+//       - 544934 - Added Empty Check in the stack before doing peek() method. 
 package org.eclipse.persistence.sdo.helper;
 
 import commonj.sdo.DataObject;
@@ -99,9 +101,10 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (isInCharacterBlock) {
-            if (!currentBuffer.toString().trim().equals("")) {
+            if (!currentBuffer.toString().trim().equals("") && !currentDataObjects.empty()) {
                 DataObject dObj = (DataObject) currentDataObjects.peek();
                 dObj.getSequence().addText(currentBuffer.toString());
+
             }
             currentBuffer.reset();
         }
