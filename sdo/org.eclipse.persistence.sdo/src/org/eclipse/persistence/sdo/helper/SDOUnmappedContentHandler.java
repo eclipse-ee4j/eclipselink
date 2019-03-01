@@ -99,9 +99,10 @@ public class SDOUnmappedContentHandler implements UnmappedContentHandler {
     @Override
     public void startElement(String namespaceURI, String localName, String qName, Attributes atts) throws SAXException {
         if (isInCharacterBlock) {
-            if (!currentBuffer.toString().trim().equals("")) {
+            if (!currentBuffer.toString().trim().equals("") && !currentDataObjects.empty()) {
                 DataObject dObj = (DataObject) currentDataObjects.peek();
                 dObj.getSequence().addText(currentBuffer.toString());
+
             }
             currentBuffer.reset();
         }
