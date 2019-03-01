@@ -15,9 +15,8 @@
 package org.eclipse.persistence.testing.tests.sessionsxml;
 
 import org.eclipse.persistence.testing.framework.TestModel;
-import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.TestProblemException;
-
+import org.eclipse.persistence.testing.framework.TestSuite;
 
 public class SessionsXMLTestModel extends TestModel {
     public SessionsXMLTestModel() {
@@ -30,6 +29,7 @@ public class SessionsXMLTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addTests() {
         addTest(getSessionsXMLLoadingTestSuite());
         addTest(getSessionsXMLRCMTestSuite());
@@ -39,6 +39,7 @@ public class SessionsXMLTestModel extends TestModel {
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
 
+    @Override
     public void addSRGTests() {
         addTest(getSRGSessionXMLSchemaTestSuite());
     }
@@ -65,7 +66,6 @@ public class SessionsXMLTestModel extends TestModel {
         if (!getExecutor().isServer) {
             suite.addTest(new SessionsXMLSchemaReloadTest());
         }
-        suite.addTest(new SessionsXMLSchemaSunCORBATransportConfigTest());
         suite.addTest(new SessionsXMLSchemaJavaLogTest());
         suite.addTest(new SessionsXMLSchemaSequencingTest());
         suite.addTest(new SessionsXMLSchemaInvalidTagTest());

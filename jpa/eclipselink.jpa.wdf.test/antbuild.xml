@@ -129,6 +129,10 @@
             <pathelement path="${wdf_test.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${jacocoagent.lib}"/>
+            <!-- Java SE 11 specific - corba -->
+            <fileset dir="${wdf_test.2.common.plugins.dir}">
+                <include name="*corba*.jar"/>
+            </fileset>
             <!-- Needed for performance tests comparing with hibernate.>
             <fileset dir="${hibernate.dir}">
                 <include name="*.jar"/>

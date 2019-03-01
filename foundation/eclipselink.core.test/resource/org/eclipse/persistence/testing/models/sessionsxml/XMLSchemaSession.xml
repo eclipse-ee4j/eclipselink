@@ -44,9 +44,6 @@
     </session>
     <session xsi:type="database-session">
         <name>SunCorbaTransportManager</name>
-        <remote-command>
-         <transport xsi:type="sun-corba-transport"/>
-        </remote-command>
         <primary-project xsi:type="xml">org/eclipse/persistence/testing/models/insurance/insurance.xml</primary-project>
         <login xsi:type="database-login">
             <user-name>@dbUser@</user-name>

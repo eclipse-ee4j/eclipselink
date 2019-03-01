@@ -144,11 +144,7 @@
     <echo message="JDK version detected: '${java.version}'"/>
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
-    <!-- Add some modules required for javadoc JDK (=10.*). -->
-    <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none. (JDK 8: in case of javax/xml/bind/JAXBContext|JAXBContextFactory there is {@linkplain java.lang.Module...}-->
-    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction-api.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
-        <matches string="${java.version}" pattern="10.*"/>
-    </condition>
+    <property name="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none"/>
     <condition property="is.new.jdk" value="true" else="false">
         <not><matches pattern='"[1-8]\..*"' string="${java.version}"/></not>
     </condition>
@@ -182,6 +178,7 @@
         <pathelement path="${eclipselink.sdo.plugins}/${commonj.sdo.jar}"/>
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
+        <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
@@ -211,6 +208,7 @@
         <path refid="javadoc.path"/>
         <pathelement path="${eclipselink.plugins}/com.sun.jersey_1.8.0.201204181614.jar"/>
         <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${annotation-api.jar}"/>
     </path>
 
     <target name="check-maven" description="Verify the Maven tool is installed and configured">
@@ -516,6 +514,7 @@
     <target name="clean-testing" description="Clean the testing projects">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}"      target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.corba.test}"          target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"            target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
@@ -812,6 +811,7 @@
     <!-- Compiles tests (excluding dbws-util and Oracle extensions). -->
     <target name="build-core-test">
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"      target="build"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.corba.test}"     target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}" target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"       target="build"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"    target="build"/>
@@ -912,6 +912,7 @@
                 <include name="org.eclipse.persistence.asm*.jar"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
                 <include name="org.eclipse.persistence.oracle_*.jar"/>
+                <exclude name="*.corba*.jar"/>
                 <exclude name="*.jpa.jpql*.jar"/>
                 <exclude name="*source*.jar"/>
                 <exclude name="*modelgen*.jar"/>
@@ -1437,6 +1438,8 @@
             </zipfileset>
             <!-- extension jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.extension.prefix}_${version.string}.jar, ${eclipselink.extension.prefix}.source_${version.string}.jar" prefix="eclipselink/jlib/extension"/>
+            <!-- corba jar -->
+            <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.extension.corba.prefix}_${version.string}.jar, ${eclipselink.extension.corba.prefix}.source_${version.string}.jar" prefix="eclipselink/jlib/extension"/>
             <!-- modelgen processor jar -->
             <zipfileset dir="${eclipselink.plugins}/" includes="${eclipselink.modelgen.prefix}_${version.string}.jar, ${eclipselink.modelgen.prefix}.source_${version.string}.jar" prefix="eclipselink/jlib/jpa"/>
             <!-- jpa persistence 2.2 jars -->
@@ -1518,7 +1521,7 @@
             depends="clear-db, test-core-srg, test-jpa22-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg, generate-report"
             />
     <target name="test-lrg-only" description="run all the LRG test suites"
-            depends="test-core, test-ext, test-jpa22, test-jpa-jse, test-jpql, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-osgi"
+            depends="test-core, test-ext, test-jpa22, test-jpa-jse, test-jpql, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder, test-corba, test-osgi"
             />
     <target name="test-lrg" description="run all the LRG test suites"
             depends="clear-db, test-lrg-only, generate-report"
@@ -1546,6 +1549,10 @@
     <!-- Run core extension suite. -->
     <target name="test-ext" description="run the core extension tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}" target="test"/>
+    </target>
+    <!-- Run core extension suite. -->
+    <target name="test-corba" description="run the CORBA extension tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.corba.test}" target="test"/>
     </target>
     <!-- Run core SRG. -->
     <target name="test-core-srg" description="run the core srg tests">

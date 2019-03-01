@@ -48,6 +48,7 @@ public class TestRunModel extends TestModel {
      * You must add new tests to this method.
      * If the new tests should be part of SRG as well then contact QA to update the SRG model.
      */
+    @Override
     public void addTests() {
         if (!getTests().isEmpty()) {
             return;
@@ -145,8 +146,6 @@ public class TestRunModel extends TestModel {
 
             // Requires remote config.
             tests.add("org.eclipse.persistence.testing.tests.remote.RMIRemoteModel");
-            tests.add("org.eclipse.persistence.testing.tests.remote.rmi.IIOP.RMIIIOPRemoteModel");
-            tests.add("org.eclipse.persistence.testing.tests.remote.suncorba.SunCORBARemoteModel");
             tests.add("org.eclipse.persistence.testing.tests.distributedservers.DistributedSessionBrokerServersModel");
             tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.RCMDistributedServersModel");
 
@@ -169,6 +168,7 @@ public class TestRunModel extends TestModel {
 
         // Sort the tests alphabetically.
         Collections.sort(this.getTests(), new Comparator() {
+                @Override
                 public int compare(Object left, Object right) {
                     return Helper.getShortClassName(left.getClass()).compareTo(Helper.getShortClassName(right.getClass()));
                 }
@@ -442,6 +442,7 @@ public class TestRunModel extends TestModel {
     /**
      * Reset to the old login.
      */
+    @Override
     public void reset() {
         // Change the login if specified.
         if (login != null) {
@@ -455,6 +456,7 @@ public class TestRunModel extends TestModel {
     /**
      * Allow the login to be configured.
      */
+    @Override
     public void setup() {
         // Change the login if specified.
         if (login != null) {

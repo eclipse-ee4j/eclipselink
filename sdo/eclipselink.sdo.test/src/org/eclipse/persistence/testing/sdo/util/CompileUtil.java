@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,8 @@ public class CompileUtil {
     public int compile(String classpath, Object[] javaFiles) {
         int jv = JavaSEPlatform.CURRENT.getMajor();
         final String javaVersion = "" + ((jv >= 9) ? jv : JavaSEPlatform.CURRENT.toString());
-        final String[] args = new String[javaFiles.length + ((jv >= 9) ? 9 : 7)];
+//        final String[] args = new String[javaFiles.length + ((jv >= 9) ? 9 : 7)];
+        final String[] args = new String[javaFiles.length + 7];
         final String javac = getJavaC();
 
         args[0] = javac;
@@ -49,13 +50,13 @@ public class CompileUtil {
         args[4] = javaVersion;
         args[5] = "-target";
         args[6] = javaVersion;
-        if (jv >= 9) {
-            args[7] = "--add-modules";
-            args[8] = "java.activation";
-            System.arraycopy(javaFiles, 0, args, 9, javaFiles.length);
-        } else {
+//        if (jv >= 9) {
+//            args[7] = "--add-modules";
+//            args[8] = "java.activation";
+//            System.arraycopy(javaFiles, 0, args, 9, javaFiles.length);
+//        } else {
            System.arraycopy(javaFiles, 0, args, 7, javaFiles.length);
-        }
+//        }
 
         int exitVal = -1;
 

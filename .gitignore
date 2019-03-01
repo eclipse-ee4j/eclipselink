@@ -4,6 +4,7 @@
 *model.jar
 eclipselink*.jar
 org.eclipse.persistence.core*jar
+org.eclipse.persistence.corba*jar
 org.eclipse.persistence.dbws*jar
 org.eclipse.persistence.jpa*jar
 org.eclipse.persistence.moxy*jar

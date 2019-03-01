@@ -45,7 +45,8 @@ public class RemoteCommandManagerExceptionResource extends ListResourceBundle {
                                            { "22115", "{0}: failed to process remote command retrieved from message {1}, from {2}, command type {3}" },
                                            { "22116", "Received JMS message is null. Treating it as a JMSException" },
                                            { "22117", "Session''s RemoteCommandManager is closed or has not been initialized while processing incoming messages" },
-                                           { "22118", "Failed to create JGroups connection using config file: {0}" }
+                                           { "22118", "Failed to create JGroups connection using config file: {0}" },
+                                           { "22119", "Error initializing {0}, add org.eclipse.persistence.corba.jar to your classpath." }
     };
 
     /**

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/eclipselink.core.test"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.corba"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence_2.2.2.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence.source_2.2.2.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/glassfish-corba-omgapi.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/glassfish-corba-orb.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.transaction-api.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

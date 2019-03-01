@@ -7,5 +7,6 @@
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.validation-api.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence_2.2.2.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence.source_2.2.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

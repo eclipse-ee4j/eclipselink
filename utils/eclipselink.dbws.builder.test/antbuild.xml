@@ -108,9 +108,46 @@
         <delete file="${dbwsbldrtest.jar}" failonerror="false"/>
     </target>
 
+<target name="download-jaxwsrt">
+        <mkdir dir="${run.dir}"/>
+        <mkdir dir="${run.dir}/rt-libs"/>
+        <condition property="M2_HOME" value="${env.M2_HOME}" else="~/apache-maven-3.5.2">
+            <isset property="env.M2_HOME"/>
+        </condition>
+        <property name="maven.repo.local" value="${user.home}/.m2/repository"/>
+        <java dir="${run.dir}/rt-libs" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.repo.local=${maven.repo.local}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${run.dir}/rt-libs"/>
+            <jvmarg value="-Dartifact=com.sun.xml.ws:runtime:2.3.2"/>
+            <arg value="dependency:get"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+        <java dir="${run.dir}/rt-libs" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.repo.local=${maven.repo.local}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${run.dir}/rt-libs"/>
+            <jvmarg value="-DoutputDirectory=${dbwsbldrtest.build.location}/${run.dir}/rt-libs"/>
+            <arg line="-f ${maven.repo.local}/com/sun/xml/ws/runtime/2.3.2/runtime-2.3.2.pom"/>
+            <arg value="dependency:copy-dependencies"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+        <copy todir="${run.dir}/rt-libs" file="${maven.repo.local}/com/sun/xml/ws/runtime/2.3.2/runtime-2.3.2.jar"/>
+    </target>
+
     <!-- initialize varables and paths needed for compile -->
     <!-- the number of properties needed now is too great for lazy loading without a target -->
-    <target name="init">
+    <target name="init" depends="download-jaxwsrt">
         <property name="custom.tasks.lib" value="${dbwsbldrtest.2.buildsys.dir}/ant_customizations.jar"/>
         <available file="${custom.tasks.lib}" property="ant_customizations.exist"/>
         <fail unless="ant_customizations.exist" message="Cannot find custom tasks library: '${custom.tasks.lib}'"/>
@@ -158,6 +195,12 @@
         <property name="dbwsbldr.lib"     value="${dbwsbldrtest.2.common.plugins.dir}/${dbwsbldr.jar}"/>
         <property name="ddlparser.lib"    value="${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}"/>
+        <property name="activation.lib"   value="${dbwsbldrtest.2.common.plugins.dir}/${activation.jar}"/>
+        <property name="jaxb.lib"         value="${dbwsbldrtest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+        <property name="jaxb-impl.lib"    value="${dbwsbldrtest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+        <property name="annotation.lib"   value="${dbwsbldrtest.2.common.plugins.dir}/${annotation.jar}"/>
+        <property name="soap.lib"         value="${dbwsbldrtest.2.common.plugins.dir}/${soap-api.jar}"/>
+        <property name="jaxws.lib"        value="${dbwsbldrtest.2.common.plugins.dir}/${jaxws-api.jar}"/>
         <property name="persistence.lib"  value="${dbwsbldrtest.2.jpa.plugins.dir}/${persistence22.jar}"/>
         <property name="javax.validation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.validation.jar}"/>
 
@@ -191,6 +234,12 @@
             <pathelement path="${dbwsbldr.lib}"/>
             <pathelement path="${ddlparser.lib}"/>
             <pathelement path="${wsdl.lib}"/>
+            <pathelement path="${activation.lib}"/>
+            <pathelement path="${annotation.lib}"/>
+            <pathelement path="${jaxb.lib}"/>
+            <pathelement path="${jaxb-impl.lib}"/>
+            <pathelement path="${soap.lib}"/>
+            <pathelement path="${jaxws.lib}"/>
         </path>
     </target>
 
@@ -215,6 +264,7 @@
             <pathelement path="./${dbwsbldrtest.jar}"/>
             <pathelement path="${mail.lib}"/>
             <pathelement path="${javax.validation.lib}"/>
+            <fileset dir="${dbwsbldrtest.build.location}/${run.dir}/rt-libs" />
         </path>
 
         <!-- Set Run Condition -->

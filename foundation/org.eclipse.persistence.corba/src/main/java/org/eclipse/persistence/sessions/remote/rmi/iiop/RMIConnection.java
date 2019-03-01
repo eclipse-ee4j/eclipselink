@@ -14,15 +14,29 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.remote.rmi.iiop;
 
-import java.util.*;
-import java.rmi.*;
-import java.rmi.server.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.internal.sessions.remote.*;
-import org.eclipse.persistence.sessions.remote.*;
+import java.rmi.RemoteException;
+import java.rmi.server.ObjID;
+import java.util.Enumeration;
+import java.util.IdentityHashMap;
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.CommunicationException;
+import org.eclipse.persistence.internal.sessions.remote.RemoteCommand;
+import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
+import org.eclipse.persistence.internal.sessions.remote.RemoteCursoredStream;
+import org.eclipse.persistence.internal.sessions.remote.RemoteScrollableCursor;
+import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
+import org.eclipse.persistence.queries.CursoredStreamPolicy;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
 
 /**
  * This class exists on on the client side which talks to remote session controller through

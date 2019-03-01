@@ -37,6 +37,7 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
     public static final int ERROR_SERIALIZE_OR_DESERIALIZE_COMMAND = 22108;
     public static final int ERROR_RECEIVING_JMS_MESSAGE = 22109;
     public static final int ERROR_DISCOVERING_IP_ADDRESS = 22110;
+    public static final int ERROR_INIT_CORBA = 22119;
 
     //ServerPlatform exception
     public static final int ERROR_GETTING_SERVERPLATFORM = 22111;
@@ -166,6 +167,17 @@ public class RemoteCommandManagerException extends org.eclipse.persistence.excep
         Object[] args = { };
         RemoteCommandManagerException ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_DISCOVERING_IP_ADDRESS, args));
         ex.setErrorCode(ERROR_DISCOVERING_IP_ADDRESS);
+        if (internalEx != null) {
+            ex.setInternalException(internalEx);
+        }
+        return ex;
+    }
+
+    public static RemoteCommandManagerException errorInitCorba(String className, Exception internalEx) {
+        RemoteCommandManagerException ex;
+        Object[] args = { className };
+        ex = new RemoteCommandManagerException(ExceptionMessageGenerator.buildMessage(RemoteCommandManagerException.class, ERROR_INIT_CORBA, args));
+        ex.setErrorCode(ERROR_INIT_CORBA);
         if (internalEx != null) {
             ex.setInternalException(internalEx);
         }

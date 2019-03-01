@@ -15,15 +15,17 @@
 package org.eclipse.persistence.sessions.coordination.rmi;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.NoSuchObjectException;
 import java.rmi.server.UnicastRemoteObject;
 
 import javax.naming.Context;
-import javax.rmi.PortableRemoteObject;
 
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnection;
 import org.eclipse.persistence.internal.sessions.coordination.rmi.RMIRemoteCommandConnectionImpl;
@@ -45,8 +47,8 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
  */
 public class RMITransportManager extends TransportManager {
 
-    /** Determines whether RMI over IIOP or not */
-    public boolean isRMIOverIIOP;
+    private Method narrow;
+    private Constructor constructor;
 
     public RMITransportManager(RemoteCommandManager rcm) {
         this.rcm = rcm;
@@ -85,8 +87,9 @@ public class RMITransportManager extends TransportManager {
 
             //Use JNDI lookup(), rather than the RMI version,
             //AND replace the Java remote interface cast with a call to javax.rmi.PortableRemoteObject.narrow():
-            if (this.isRMIOverIIOP()) {
-                return new RMIRemoteConnection((RMIRemoteCommandConnection)PortableRemoteObject.narrow(context.lookup(remoteObjectIdentifier), RMIRemoteCommandConnection.class));
+            if (narrow != null) {
+                return new RMIRemoteConnection((RMIRemoteCommandConnection) narrow.invoke(
+                        null, context.lookup(remoteObjectIdentifier), RMIRemoteCommandConnection.class));
             } else {
                 return new RMIRemoteConnection((RMIRemoteCommandConnection)context.lookup(remoteObjectIdentifier));
             }
@@ -148,8 +151,22 @@ public class RMITransportManager extends TransportManager {
         try {
             // Register the remote connection in JNDI naming service
             RMIRemoteCommandConnection remoteConnectionObject;
-            if (this.isRMIOverIIOP()) {
-                remoteConnectionObject = new org.eclipse.persistence.internal.sessions.coordination.rmi.iiop.RMIRemoteCommandConnectionImpl(rcm);
+            if (narrow != null) {
+                if (constructor == null) {
+                    try {
+                        constructor = PrivilegedAccessHelper.getConstructorFor(
+                            Class.forName("org.eclipse.persistence.internal.sessions.coordination.rmi.iiop.RMIRemoteCommandConnectionImpl"),
+                            new Class[] {RemoteCommandManager.class}, false);
+                    } catch (ReflectiveOperationException e) {
+                        throw RemoteCommandManagerException.errorInitCorba("javax.rmi.PortableRemoteObject", e);
+                    }
+                }
+                try {
+                    remoteConnectionObject = (RMIRemoteCommandConnection) PrivilegedAccessHelper.invokeConstructor(constructor, new Object[] {rcm});
+                } catch (ReflectiveOperationException e) {
+                    // TODO Auto-generated catch block
+                    throw RemoteCommandManagerException.errorInitCorba("javax.rmi.PortableRemoteObject", e);
+                }
             } else {
                 remoteConnectionObject = new RMIRemoteCommandConnectionImpl(rcm);
             }
@@ -214,7 +231,7 @@ public class RMITransportManager extends TransportManager {
         try {
             // Look up the local host name and paste it in a default URL
             String localHost = InetAddress.getLocalHost().getHostName();
-            if (this.isRMIOverIIOP()) {
+            if (narrow != null) {
                 return DEFAULT_IIOP_URL_PROTOCOL + "::" + localHost + ":" + DEFAULT_IIOP_URL_PORT;
             } else {
                 return DEFAULT_URL_PROTOCOL + "://" + localHost + ":" + DEFAULT_URL_PORT;
@@ -276,18 +293,17 @@ public class RMITransportManager extends TransportManager {
         }
     }
 
-    /**
-     * INTERNAL
-     * Check whether RMI over IIOP or not
-     */
-    public boolean isRMIOverIIOP() {
-        return isRMIOverIIOP;
-    }
+    public void setIsRMIOverIIOP(boolean b) {
+        if (b) {
+            try {
+                narrow = PrivilegedAccessHelper.getDeclaredMethod(Class.forName("javax.rmi.PortableRemoteObject"), "narrow", new Class[] {Object.class, Class.class});
+            } catch (ReflectiveOperationException e) {
+                // TODO Auto-generated catch block
+                throw RemoteCommandManagerException.errorInitCorba("javax.rmi.PortableRemoteObject", e);
+            }
+        } else {
+            narrow = null;
+        }
 
-    /** INTERNAL
-     *  set RMI over IIOP
-     */
-    public void setIsRMIOverIIOP(boolean value) {
-        this.isRMIOverIIOP = value;
     }
 }

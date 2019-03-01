@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.testing.tests.security;
+package org.eclipse.persistence.testing.tests.security.corba;
 
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
@@ -22,6 +22,8 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.sessions.remote.corba.sun.CORBAConnection;
 import org.eclipse.persistence.sessions.remote.corba.sun.CORBARemoteSessionControllerDispatcher;
+import org.eclipse.persistence.testing.tests.security.ExceptionTestSaveSecurityManager;
+import org.eclipse.persistence.testing.tests.security.TestSecurityManager;
 
 //Created by Ian Reid
 //Date: April 25, 2k3
@@ -33,6 +35,7 @@ public class SecurityWhileConvertingToMethodTest extends ExceptionTestSaveSecuri
         super("This tests security while converting to method (TL-ERROR 85)", c);
     }
 
+    @Override
     protected void setup() {
         super.setup();
         expectedException = DescriptorException.securityWhileConvertingToMethod("getStartTime", mapping, new Exception());
@@ -49,6 +52,7 @@ public class SecurityWhileConvertingToMethodTest extends ExceptionTestSaveSecuri
         mapping.setDescriptor(getTestDescriptor());
     }
 
+    @Override
     public void test() {
         boolean orig = TestSecurityManager.TRIGGER_EX;
         TestSecurityManager.TRIGGER_EX = false;
@@ -77,20 +81,20 @@ public class SecurityWhileConvertingToMethodTest extends ExceptionTestSaveSecuri
         }
     }
 
-    static class ConvertMethodNoArg extends ConvertMethod {
+    public static class ConvertMethodNoArg extends ConvertMethod {
         public String getStartTime() {
             //do nothing security manager will cause error to occur
             return "";
         }
     }
 
-    static class ConvertMethodSession extends ConvertMethod {
+    public static class ConvertMethodSession extends ConvertMethod {
         public void getStartTime(Session session) {
             //do nothing security manager will cause error to occur
         }
     }
 
-    static class ConvertMethodAbstractSession extends ConvertMethod {
+    public class ConvertMethodAbstractSession extends ConvertMethod {
         public void getStartTime(AbstractSession session) {
             //do nothing security manager will cause error to occur
         }

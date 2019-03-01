@@ -250,6 +250,8 @@
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>  fwk.server, jta, sessionbean, 21/entitylistener, perf
             <pathelement path="${jpatest.2.common.plugins.dir}/${inject.jar}"/>  2.2 entitylistener, attributeconverter
             <pathelement path="${jacocoagent.lib}"/>-->
+            <pathelement path="${jpatest.2.common.plugins.dir}/${activation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jaxb-osgi.jar}"/>
             <pathelement path="${jdbc.driver.jar}"/>
         </path>
         <path id="jpa.run.common.path" cache="true">
@@ -591,6 +593,12 @@
             <pathelement path="${jpatest.build.dir}/${jpatest.framework}"/>
             <path refid="compile.core.path"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
+            <!-- Java SE 11 specific - corba, java.xml.bind, java.annotation -->
+            <fileset dir="${jpatest.2.common.plugins.dir}">
+                <include name="*corba*.jar"/>
+            </fileset>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jaxb-api.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${annotation.jar}"/>
             <!-- Needed for performance tests comparing with hibernate.>
             <fileset dir="${hibernate.dir}">
                 <include name="*.jar"/>

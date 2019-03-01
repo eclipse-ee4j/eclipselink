@@ -119,10 +119,6 @@
         <matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/>
     </condition>
 
-    <condition property="test.junit.osgi.jvm.modules.prop" value="-Dignore.modules.osgi=true" else="${test.junit.osgi.jvm.modules}">
-        <matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/>
-    </condition>
-
     <path id="xml.parser.path">
         <fileset
                 dir="${xml.parser.jar.dir}"
@@ -148,6 +144,7 @@
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="jaxb.run.path">
         <path refid="xml.parser.path"/>
@@ -172,9 +169,11 @@
         <pathelement path="${javax.el.lib}"/>
         <pathelement path="${classmate.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="oxm.compile.path">
         <path refid="xml.parser.path"/>
+        <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
@@ -185,6 +184,7 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${moxytest.2.moxy.dir}/target/${classes.dir}"/>
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="oxm.run.path">
         <path refid="xml.parser.path"/>
@@ -200,6 +200,7 @@
         <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
 
     <!-- The following compile/run paths reference eclipselink.jar for non-test classes and resources -->
@@ -220,6 +221,7 @@
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
         <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="jaxb.run.against.jar.path">
         <path refid="xml.parser.path"/>
@@ -241,6 +243,7 @@
         <pathelement path="${jboss-logging.lib}"/>
         <pathelement path="${javax.el.lib}"/>
         <pathelement path="${classmate.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="oxm.compile.against.jar.path">
         <path refid="xml.parser.path"/>
@@ -254,6 +257,7 @@
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${eclipselink.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="oxm.run.against.jar.path">
         <path refid="xml.parser.path"/>
@@ -271,6 +275,7 @@
         <pathelement path="${oep.nosql.lib}"/>
         <pathelement path="${build.dir}/${classes.dir}"/>
         <pathelement path="${eclipselink.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
 
     <mkdir dir="${build.dir}"/>
@@ -382,7 +387,6 @@
             <arg line="-Dasm.jar=${asm.jar}"/>
             <arg line="-Dasm.version=${asm.version}"/>
             <arg line="-Dtest.junit.jvm=${test.junit.jvm}"/>
-            <arg line="-DargLine='${test.junit.osgi.jvm.modules.prop}'"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>
@@ -1000,7 +1004,7 @@
                    optimize="${javac.optimize}"
                    source="${javac.version}"
                    deprecation="${javac.deprecation}"
-                   failonerror="false"
+                   failonerror="${fail.on.error}"
                    includes="org/eclipse/persistence/testing/@{subcomponent}/**/*.java">
                 <classpath>
                     <path refid="@{compilepathref}"/>
