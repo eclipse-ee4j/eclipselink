@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -201,6 +201,18 @@ public class DynamicClassLoader extends ClassLoader {
         return createDynamicClass(className, new DynamicClassWriter(parentClass));
     }
 
+    public void createDynamicAdapter(String javaClassName) {
+        // default no-op
+    }
+
+    public void createDynamicCollectionAdapter(String javaClassName) {
+        // default no-op
+    }
+
+    public void createDynamicReferenceAdapter(String javaClassName) {
+        // default no-op
+    }
+
     /**
      * Create a new dynamic class if a ClassWriter is registered for the
      * provided className. This code is single threaded to ensure only one class
@@ -297,4 +309,5 @@ public class DynamicClassLoader extends ClassLoader {
             }
         }
     }
+
 }

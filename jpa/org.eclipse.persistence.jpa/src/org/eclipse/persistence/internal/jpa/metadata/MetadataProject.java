@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -161,9 +161,6 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitDefaults;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLPersistenceUnitMetadata;
-import org.eclipse.persistence.internal.jpa.weaving.RestAdapterClassWriter;
-import org.eclipse.persistence.internal.jpa.weaving.RestCollectionAdapterClassWriter;
-import org.eclipse.persistence.internal.jpa.weaving.RestReferenceAdapterV2ClassWriter;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
 import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
@@ -323,33 +320,6 @@ public class MetadataProject {
     // Default listeners that need to be applied to each entity in the
     // persistence unit (unless they exclude them).
     private Set<EntityListenerMetadata> m_defaultListeners;
-
-    public void createRestInterfaces(ClassLoader loader) {
-        if (DynamicClassLoader.class.isAssignableFrom(loader.getClass())) {
-            DynamicClassLoader dcl = (DynamicClassLoader) loader;
-            for (EntityAccessor accessor : getEntityAccessors()) {
-                String className = accessor.getParentClassName();
-                if (className == null || getEntityAccessor(className) == null) {
-                    // Reference adapter for JPARS version < 2.0
-                    RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(accessor.getJavaClassName());
-                    dcl.addClass(restAdapter.getClassName(), restAdapter);
-                }
-            }
-
-            for (ClassAccessor classAccessor : getAllAccessors()) {
-                String className = classAccessor.getParentClassName();
-                if (className == null || getEntityAccessor(className) == null) {
-                    // Collection adapter for JPARS version >= 2.0
-                    RestCollectionAdapterClassWriter restCollectionAdapter = new RestCollectionAdapterClassWriter(classAccessor.getJavaClassName());
-                    dcl.addClass(restCollectionAdapter.getClassName(), restCollectionAdapter);
-
-                    // Reference adapter for JPARS version >= 2.0
-                    RestReferenceAdapterV2ClassWriter restReferenceAdapterV2 = new RestReferenceAdapterV2ClassWriter(classAccessor.getJavaClassName());
-                    dcl.addClass(restReferenceAdapterV2.getClassName(), restReferenceAdapterV2);
-                }
-            }
-        }
-    }
 
     /**
      * INTERNAL:
@@ -930,6 +900,27 @@ public class MetadataProject {
                 // If we have virtual classes that need creation and we do not
                 // have a dynamic class loader throw an exception.
                 throw ValidationException.invalidClassLoaderForDynamicPersistence();
+            }
+        }
+        createRestInterfaces(loader);
+    }
+
+    public void createRestInterfaces(ClassLoader loader) {
+        if (DynamicClassLoader.class.isAssignableFrom(loader.getClass())) {
+            DynamicClassLoader dcl = (DynamicClassLoader) loader;
+            for (EntityAccessor accessor : getEntityAccessors()) {
+                String className = accessor.getParentClassName();
+                if (className == null || getEntityAccessor(className) == null) {
+                    dcl.createDynamicAdapter(accessor.getJavaClassName());
+                }
+            }
+
+            for (ClassAccessor classAccessor : getAllAccessors()) {
+                String className = classAccessor.getParentClassName();
+                if (className == null || getEntityAccessor(className) == null) {
+                    dcl.createDynamicCollectionAdapter(classAccessor.getJavaClassName());
+                    dcl.createDynamicReferenceAdapter(classAccessor.getJavaClassName());
+                }
             }
         }
     }

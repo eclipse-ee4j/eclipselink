@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -668,9 +668,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                             this.processor.setClassLoader(classLoaderToUse);
                             this.processor.createDynamicClasses();
-                            if (classLoaderToUse instanceof DynamicClassLoader){
-                                this.processor.createRestInterfaces();
-                            }
 
                             this.processor.addEntityListeners();
 
