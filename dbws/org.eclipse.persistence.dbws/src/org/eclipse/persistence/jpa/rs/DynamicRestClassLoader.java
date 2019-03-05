@@ -19,6 +19,15 @@ import org.eclipse.persistence.internal.jpa.rs.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestCollectionAdapterClassWriter;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestReferenceAdapterV2ClassWriter;
 
+/**
+ * This custom ClassLoader provides support for dynamically generating classes
+ * within an JPA-RS EclipseLink application using byte codes created using a
+ * {@link DynamicClassWriter}. A DynamicClassLoader requires a parent or
+ * delegate class-loader which is provided to the constructor. This delegate
+ * class loader handles the lookup and storage of all created classes.
+ *
+ * @since EclipseLink 3.0
+ */
 public class DynamicRestClassLoader extends DynamicClassLoader {
 
     public DynamicRestClassLoader(ClassLoader delegate) {
@@ -29,21 +38,21 @@ public class DynamicRestClassLoader extends DynamicClassLoader {
         super(delegate, writer);
     }
 
-    public void createDynamicAdapter(String javaClassName) {
+    public void createDynamicAdapter(String className) {
         // Reference adapter for JPARS version < 2.0
-        RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(javaClassName);
+        RestAdapterClassWriter restAdapter = new RestAdapterClassWriter(className);
         addClass(restAdapter.getClassName(), restAdapter);
     }
 
-    public void createDynamicCollectionAdapter(String javaClassName) {
+    public void createDynamicCollectionAdapter(String className) {
         // Collection adapter for JPARS version >= 2.0
-        RestCollectionAdapterClassWriter restCollectionAdapter = new RestCollectionAdapterClassWriter(javaClassName);
+        RestCollectionAdapterClassWriter restCollectionAdapter = new RestCollectionAdapterClassWriter(className);
         addClass(restCollectionAdapter.getClassName(), restCollectionAdapter);
     }
 
-    public void createDynamicReferenceAdapter(String javaClassName) {
+    public void createDynamicReferenceAdapter(String className) {
         // Reference adapter for JPARS version >= 2.0
-        RestReferenceAdapterV2ClassWriter restReferenceAdapterV2 = new RestReferenceAdapterV2ClassWriter(javaClassName);
+        RestReferenceAdapterV2ClassWriter restReferenceAdapterV2 = new RestReferenceAdapterV2ClassWriter(className);
         addClass(restReferenceAdapterV2.getClassName(), restReferenceAdapterV2);
     }
 }

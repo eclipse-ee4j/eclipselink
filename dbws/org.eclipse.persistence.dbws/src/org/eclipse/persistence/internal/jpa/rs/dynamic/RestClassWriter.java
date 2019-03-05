@@ -14,6 +14,13 @@ package org.eclipse.persistence.internal.jpa.rs.dynamic;
 
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
 
+/**
+ * <p>
+ * <b>INTERNAL:</b> RestClassWriter uses ASM to dynamically generate subclasses of
+ * {@link DynamicRestEntityImpl}
+ *
+ * @since EclipseLink 3.0
+ */
 public class RestClassWriter extends DynamicClassWriter {
 
     public RestClassWriter() {

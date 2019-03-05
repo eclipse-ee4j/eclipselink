@@ -201,15 +201,30 @@ public class DynamicClassLoader extends ClassLoader {
         return createDynamicClass(className, new DynamicClassWriter(parentClass));
     }
 
-    public void createDynamicAdapter(String javaClassName) {
+    /**
+     * Create an adapter for given {@code className}
+     *
+     * @param className
+     */
+    public void createDynamicAdapter(String className) {
         // default no-op
     }
 
-    public void createDynamicCollectionAdapter(String javaClassName) {
+    /**
+     * Create a collection adapter for given {@code className}
+     *
+     * @param className
+     */
+    public void createDynamicCollectionAdapter(String className) {
         // default no-op
     }
 
-    public void createDynamicReferenceAdapter(String javaClassName) {
+    /**
+     * Create a reference for given {@code className}
+     *
+     * @param className
+     */
+    public void createDynamicReferenceAdapter(String className) {
         // default no-op
     }
 

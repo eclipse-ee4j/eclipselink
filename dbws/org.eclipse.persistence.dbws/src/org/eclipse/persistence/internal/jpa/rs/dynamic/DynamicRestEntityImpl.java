@@ -21,10 +21,15 @@ import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 
+/**
+ * <b>INTERNAL:</b> DynamicRestEntityImpl is used to model weaved entity for JPA-RS
+ *
+ * @since EclipseLink 3.0
+ */
 public abstract class DynamicRestEntityImpl extends DynamicEntityImpl implements PersistenceWeavedRest {
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_getRelationships()
+     * @see org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest#_persistence_getRelationships()
      */
     @Override
     public List<RelationshipInfo> _persistence_getRelationships() {
@@ -37,7 +42,7 @@ public abstract class DynamicRestEntityImpl extends DynamicEntityImpl implements
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_setRelationships(java.util.List)
+     * @see org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest#_persistence_setRelationships(java.util.List)
      */
     @Override
     public void _persistence_setRelationships(List<RelationshipInfo> relationships) {
@@ -45,7 +50,7 @@ public abstract class DynamicRestEntityImpl extends DynamicEntityImpl implements
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#getPersistence_href()
+     * @see org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest#getPersistence_href()
      */
     @Override
     public Link _persistence_getHref() {
@@ -53,7 +58,7 @@ public abstract class DynamicRestEntityImpl extends DynamicEntityImpl implements
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_setHref(org.eclipse.persistence.internal.jpa.rs.metadata.model.Link)
+     * @see org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest#_persistence_setHref(org.eclipse.persistence.internal.jpa.rs.metadata.model.Link)
      */
     @Override
     public void _persistence_setHref(Link href) {
@@ -61,7 +66,7 @@ public abstract class DynamicRestEntityImpl extends DynamicEntityImpl implements
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_getLinks()
+     * @see org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest#_persistence_getLinks()
      */
     @Override
     public ItemLinks _persistence_getLinks() {
@@ -69,7 +74,7 @@ public abstract class DynamicRestEntityImpl extends DynamicEntityImpl implements
     }
 
     /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_setLinks(org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks)
+     * @see org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest#_persistence_setLinks(org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks)
      */
     @Override
     public void _persistence_setLinks(ItemLinks links) {
