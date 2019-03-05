@@ -167,6 +167,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                 if (initializationProperties != null) {
                     properties.putAll(initializationProperties);
                 }
+                properties.putIfAbsent(PersistenceUnitProperties.WEAVING_REST, "true");
 
                 EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 ClassLoader sessionLoader = factory.getServerSession().getLoader();
@@ -177,6 +178,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                     if (initializationProperties != null) {
                         properties.putAll(initializationProperties);
                     }
+                    properties.putIfAbsent(PersistenceUnitProperties.WEAVING_REST, "true");
                     factory.refreshMetadata(properties);
                 }
 

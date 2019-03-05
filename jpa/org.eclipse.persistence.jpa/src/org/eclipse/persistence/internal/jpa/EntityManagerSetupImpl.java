@@ -1991,7 +1991,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
                     weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
-                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "true", session));
+                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "false", session));
                     weaveMappedSuperClass = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_MAPPEDSUPERCLASS, predeployProperties, "true", session));
                 }
 
