@@ -28,15 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonNumber;
-import javax.json.JsonException;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.json.JsonString;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
+import javax.json.*;
 import javax.json.JsonValue.ValueType;
 import javax.xml.namespace.QName;
 
@@ -382,6 +374,13 @@ public class JsonStructureReader extends XMLReaderAdapter {
                             contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setValue(nextArrayValue, attributePrefix, namespaces, getNamespaceSeparator(), isNamespaceAware()));
                         }
 
+                    }
+                    //Internally store each nested array it as JsonObject with name: "item"
+                    if (valueType == nextArrayValue.getValueType()) {
+                        JsonBuilderFactory factory = Json.createBuilderFactory(null);
+                        JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
+                        jsonObjectBuilder.add("item", nextArrayValue);
+                        nextArrayValue = jsonObjectBuilder.build();
                     }
                     parseValue(nextArrayValue);
                     if (!isTextValue) {
