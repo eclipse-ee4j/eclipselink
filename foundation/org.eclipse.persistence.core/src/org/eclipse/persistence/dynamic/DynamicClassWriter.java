@@ -52,6 +52,8 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.SIPUSH;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader.EnumInfo;
@@ -112,6 +114,8 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
      * order of class access is not known.
      */
     protected String parentClassName;
+
+    private List<String> interfaces;
 
     public DynamicClassWriter() {
         this(DynamicEntityImpl.class);
@@ -183,7 +187,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         // public class Foo extends DynamicEntityImpl {
-        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, null);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, interfaces != null ? interfaces.toArray(new String[interfaces.size()]) : null);
 
         // public static DynamicPropertiesManager DPM = new
         // DynamicPropertiesManager();
@@ -216,6 +220,19 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         cw.visitEnd();
         return cw.toByteArray();
 
+    }
+
+    /**
+     * Allow subclasses to add additional interfaces to the dynamic entity.
+     *
+     * @param cw
+     * @param parentClassType
+     */
+    protected void addInterface(String intf) {
+        if (interfaces == null) {
+            interfaces = new ArrayList<>();
+        }
+        interfaces.add(intf);
     }
 
     /**

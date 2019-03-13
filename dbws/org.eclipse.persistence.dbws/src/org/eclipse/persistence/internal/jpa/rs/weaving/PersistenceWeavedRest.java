@@ -26,15 +26,15 @@ import org.eclipse.persistence.internal.weaving.RelationshipInfo;
  * @author tware
  */
 public interface PersistenceWeavedRest {
-    public List<RelationshipInfo> _persistence_getRelationships();
+    List<RelationshipInfo> _persistence_getRelationships();
 
-    public void _persistence_setRelationships(List<RelationshipInfo> relationships);
+    void _persistence_setRelationships(List<RelationshipInfo> relationships);
 
     Link _persistence_getHref();
 
     void _persistence_setHref(Link href);
 
-    public ItemLinks _persistence_getLinks();
+    ItemLinks _persistence_getLinks();
 
-    public void _persistence_setLinks(ItemLinks links);
+    void _persistence_setLinks(ItemLinks links);
 }

@@ -1991,7 +1991,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
                     weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
-                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "false", session));
+                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, shouldWeaveRestByDefault(classLoaderToUse), session));
                     weaveMappedSuperClass = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_MAPPEDSUPERCLASS, predeployProperties, "true", session));
                 }
 
@@ -4616,6 +4616,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
         }
+    }
+
+    //JPA-RS feature may be provided by a jar on the path or missing
+    private static String shouldWeaveRestByDefault(ClassLoader cl) {
+        try {
+            cl.loadClass("org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest");
+            return "true";
+        } catch (Throwable t) {
+            //ignore
+        }
+        return "false";
     }
 }
 

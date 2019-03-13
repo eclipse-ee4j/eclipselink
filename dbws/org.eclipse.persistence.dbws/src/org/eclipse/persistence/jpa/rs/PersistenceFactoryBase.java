@@ -149,6 +149,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                 properties.put(entry.getKey(), entry.getValue());
             }
         }
+        properties.putIfAbsent(PersistenceUnitProperties.WEAVING_REST, "true");
         return properties;
     }
 

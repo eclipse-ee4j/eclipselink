@@ -14,7 +14,8 @@ package org.eclipse.persistence.jpa.rs;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
-import org.eclipse.persistence.internal.jpa.rs.dynamic.RestClassWriter;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDynamicClassWriter;
+import org.eclipse.persistence.internal.jpa.rs.dynamic.RestDynamicClassWriter;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestCollectionAdapterClassWriter;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestReferenceAdapterV2ClassWriter;
@@ -31,7 +32,7 @@ import org.eclipse.persistence.internal.jpa.rs.weaving.RestReferenceAdapterV2Cla
 public class DynamicRestClassLoader extends DynamicClassLoader {
 
     public DynamicRestClassLoader(ClassLoader delegate) {
-        this(delegate, new RestClassWriter());
+        super(delegate);
     }
 
     public DynamicRestClassLoader(ClassLoader delegate, DynamicClassWriter writer) {
@@ -55,4 +56,15 @@ public class DynamicRestClassLoader extends DynamicClassLoader {
         RestReferenceAdapterV2ClassWriter restReferenceAdapterV2 = new RestReferenceAdapterV2ClassWriter(className);
         addClass(restReferenceAdapterV2.getClassName(), restReferenceAdapterV2);
     }
+
+    @Override
+    public Class<?> createDynamicClass(String className, DynamicClassWriter writer) {
+        DynamicClassWriter w = writer;
+        if (MetadataDynamicClassWriter.class.isAssignableFrom(writer.getClass())) {
+            w = new RestDynamicClassWriter(MetadataDynamicClassWriter.class.cast(writer));
+        }
+        return super.createDynamicClass(className, w);
+    }
+
+
 }
