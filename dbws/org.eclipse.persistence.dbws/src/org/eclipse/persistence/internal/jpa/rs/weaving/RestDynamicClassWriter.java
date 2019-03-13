@@ -10,7 +10,7 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-package org.eclipse.persistence.internal.jpa.rs.dynamic;
+package org.eclipse.persistence.internal.jpa.rs.weaving;
 
 import static org.eclipse.persistence.internal.jpa.weaving.ClassWeaver.ITEM_LINKS_SIGNATURE;
 import static org.eclipse.persistence.internal.jpa.weaving.ClassWeaver.LINK_SIGNATURE;

@@ -15,9 +15,9 @@ package org.eclipse.persistence.jpa.rs;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDynamicClassWriter;
-import org.eclipse.persistence.internal.jpa.rs.dynamic.RestDynamicClassWriter;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestAdapterClassWriter;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestCollectionAdapterClassWriter;
+import org.eclipse.persistence.internal.jpa.rs.weaving.RestDynamicClassWriter;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RestReferenceAdapterV2ClassWriter;
 
 /**
