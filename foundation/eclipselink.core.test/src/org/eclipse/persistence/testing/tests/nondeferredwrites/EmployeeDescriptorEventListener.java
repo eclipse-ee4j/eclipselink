@@ -1,25 +1,22 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * This program and the accompanying materials are made available under the 
+ * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
+ * which accompanies this distribution. 
  * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
  * and the Eclipse Distribution License is available at 
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
- *     12/14/2017-2.6.6 Tomas Kraus
- *       - 291546: Performance degradation due to usage of Vector in DescriptorEventManager
- ******************************************************************************/
+ ******************************************************************************/  
 package org.eclipse.persistence.testing.tests.nondeferredwrites;
 
-import java.util.List;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
-import org.eclipse.persistence.descriptors.DescriptorEventManager;
-import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.*;
 
 public class EmployeeDescriptorEventListener implements DescriptorEventListener {
     public boolean postInsertExecuted = false;
@@ -102,11 +99,10 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
     }
 
     /**
-     * Implementers should define this method if they need or want to restrict
+     * Implementers should define this method if they need or want to restrict 
      * the calling of inherited events.
      */
-    @Override
-    public boolean isOverriddenEvent(DescriptorEvent event, List<DescriptorEventManager> eventManagers) {
+    public boolean isOverriddenEvent(DescriptorEvent event, Vector eventManagers) {
         return false;
     }
 
