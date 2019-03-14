@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,8 +82,11 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     public static final String LONG_SIGNATURE = "J";
 
     // REST
-    public static final String WEAVED_REST_LAZY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeavedRest";
+    public static final String WEAVED_REST_LAZY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/jpa/rs/weaving/PersistenceWeavedRest";
     public static final String LIST_RELATIONSHIP_INFO_SIGNATURE = "Ljava/util/List;";
+    public static final String LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE = "Ljava/util/List<Lorg/eclipse/persistence/internal/weaving/RelationshipInfo;>;";
+    public static final String LINK_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/Link;";
+    public static final String ITEM_LINKS_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/ItemLinks;";
 
     // Cloneable
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
@@ -105,9 +108,6 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
 
     /** Store if JAXB is on the classpath, true since Java SE 6 */
     protected static Boolean isJAXBOnPath = true;
-
-    public static final String LINK_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/Link;";
-    public static final String ITEM_LINKS_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/ItemLinks;";
 
     /**
      * Stores information on the class gathered from the temp class loader and
@@ -790,51 +790,72 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     }
 
     public void addPersistenceRestMethods(ClassDetails classDetails) {
-        MethodVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_getRelationships", "()" + LIST_RELATIONSHIP_INFO_SIGNATURE, null, null);
+        // public List<RelationshipInfo> _persistence_getRelationships() {
+        //   return this._persistence_relationshipInfo;
+        // }
+        MethodVisitor cv_getPKVector = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getRelationships", "()" + LIST_RELATIONSHIP_INFO_SIGNATURE, "()" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
         cv_getPKVector.visitVarInsn(ALOAD, 0);
         cv_getPKVector.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
         cv_getPKVector.visitInsn(ARETURN);
         cv_getPKVector.visitMaxs(0, 0);
 
-        MethodVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, "_persistence_setRelationships", "(" + LIST_RELATIONSHIP_INFO_SIGNATURE + ")V", null, null);
+        // public void _persistence_setRelationships(List<RelationshipInfo> paramList) {
+        //   this._persistence_relationshipInfo = paramList;
+        // }
+        MethodVisitor cv_setPKVector = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setRelationships", "(" + LIST_RELATIONSHIP_INFO_SIGNATURE + ")V", "(" + LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE + ")V", null);
         cv_setPKVector.visitVarInsn(ALOAD, 0);
         cv_setPKVector.visitVarInsn(ALOAD, 1);
-        cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
+        cv_setPKVector.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE);
         cv_setPKVector.visitInsn(RETURN);
         cv_setPKVector.visitMaxs(0, 0);
 
-        MethodVisitor cv_getHref = cv.visitMethod(ACC_PUBLIC, "_persistence_getHref", "()" + LINK_SIGNATURE, null, null);
+        // public Link _persistence_getHref() {
+        //   return this._persistence_href;
+        // }
+        MethodVisitor cv_getHref = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getHref", "()" + LINK_SIGNATURE, null, null);
         cv_getHref.visitVarInsn(ALOAD, 0);
-        cv_getHref.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_href", LINK_SIGNATURE);
+        cv_getHref.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
         cv_getHref.visitInsn(ARETURN);
         cv_getHref.visitMaxs(0, 0);
 
-        MethodVisitor cv_setHref = cv.visitMethod(ACC_PUBLIC, "_persistence_setHref", "(" + LINK_SIGNATURE + ")V", null, null);
+        // public void _persistence_setHref(Link paramLink)
+        //   this._persistence_href = paramLink;
+        // }
+        MethodVisitor cv_setHref = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setHref", "(" + LINK_SIGNATURE + ")V", null, null);
         cv_setHref.visitVarInsn(ALOAD, 0);
         cv_setHref.visitVarInsn(ALOAD, 1);
-        cv_setHref.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_href", LINK_SIGNATURE);
+        cv_setHref.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE);
         cv_setHref.visitInsn(RETURN);
         cv_setHref.visitMaxs(0, 0);
 
-        MethodVisitor cv_getLinks = cv.visitMethod(ACC_PUBLIC, "_persistence_getLinks", "()" + ITEM_LINKS_SIGNATURE, null, null);
+        // public ItemLinks _persistence_getLinks() {
+        //   return this._persistence_links;
+        // }
+        MethodVisitor cv_getLinks = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "getLinks", "()" + ITEM_LINKS_SIGNATURE, null, null);
         cv_getLinks.visitVarInsn(ALOAD, 0);
-        cv_getLinks.visitFieldInsn(GETFIELD, classDetails.getClassName(), "_persistence_links", ITEM_LINKS_SIGNATURE);
+        cv_getLinks.visitFieldInsn(GETFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
         cv_getLinks.visitInsn(ARETURN);
         cv_getLinks.visitMaxs(0, 0);
 
-        MethodVisitor cv_setLinks = cv.visitMethod(ACC_PUBLIC, "_persistence_setLinks", "(" + ITEM_LINKS_SIGNATURE + ")V", null, null);
+        // public void _persistence_setLinks(ItemLinks paramItemLinks) {
+        //   this._persistence_links = paramItemLinks;
+        // }
+        MethodVisitor cv_setLinks = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_FIELDNAME_PREFIX + "setLinks", "(" + ITEM_LINKS_SIGNATURE + ")V", null, null);
         cv_setLinks.visitVarInsn(ALOAD, 0);
         cv_setLinks.visitVarInsn(ALOAD, 1);
-        cv_setLinks.visitFieldInsn(PUTFIELD, classDetails.getClassName(), "_persistence_links", ITEM_LINKS_SIGNATURE);
+        cv_setLinks.visitFieldInsn(PUTFIELD, classDetails.getClassName(), PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE);
         cv_setLinks.visitInsn(RETURN);
         cv_setLinks.visitMaxs(0, 0);
 
     }
 
     public void addPersistenceRestVariables() {
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, null, null);
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_href", LINK_SIGNATURE, null, null);
-        cv.visitField(ACC_PROTECTED + ACC_TRANSIENT, "_persistence_links", ITEM_LINKS_SIGNATURE, null, null);
+        // protected transient List<RelationshipInfo> _persistence_relationshipInfo;
+        cv.visitField(ACC_PROTECTED | ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "relationshipInfo", LIST_RELATIONSHIP_INFO_SIGNATURE, LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE, null);
+        // protected transient Link _persistence_href;
+        cv.visitField(ACC_PROTECTED | ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "href", LINK_SIGNATURE, null, null);
+        // protected transient ItemLinks _persistence_links;
+        cv.visitField(ACC_PROTECTED | ACC_TRANSIENT, PERSISTENCE_FIELDNAME_PREFIX + "links", ITEM_LINKS_SIGNATURE, null, null);
     }
 
     /**

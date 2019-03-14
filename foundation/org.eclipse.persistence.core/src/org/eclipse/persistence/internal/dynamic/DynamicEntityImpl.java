@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,9 +22,7 @@ import static org.eclipse.persistence.internal.helper.Helper.getShortClassName;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -37,8 +35,6 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
-import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -46,8 +42,6 @@ import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
-import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -77,7 +71,7 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
  * @since EclipseLink 1.2
  */
 public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEntity,
-        ChangeTracker, FetchGroupTracker, PersistenceWeavedRest {
+        ChangeTracker, FetchGroupTracker {
 
     /**
      * Fetch properties manager.
@@ -564,43 +558,6 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     public void _persistence_resetFetchGroup() {
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_getRelationships()
-     */
-    @Override
-    public List<RelationshipInfo> _persistence_getRelationships() {
-        List<RelationshipInfo> relationships = (List<RelationshipInfo>) get("_persistence_relationshipInfo");
-        if (relationships == null) {
-            relationships = new ArrayList<RelationshipInfo>();
-            _persistence_setRelationships(relationships);
-        }
-        return relationships;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_setRelationships(java.util.List)
-     */
-    @Override
-    public void _persistence_setRelationships(List<RelationshipInfo> relationships) {
-        set("_persistence_relationshipInfo", relationships, false);
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#getPersistence_href()
-     */
-    @Override
-    public Link _persistence_getHref() {
-        return get("_persistence_href");
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_setHref(org.eclipse.persistence.internal.jpa.rs.metadata.model.Link)
-     */
-    @Override
-    public void _persistence_setHref(Link href) {
-        set("_persistence_href", href, false);
-    }
-
     /**
      * Session cached by
      * {@link FetchGroupTracker#_persistence_setSession(Session)}
@@ -621,22 +578,6 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
     @Override
     public void _persistence_setSession(Session session) {
         this.session = session;
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_getLinks()
-     */
-    @Override
-    public ItemLinks _persistence_getLinks() {
-        return get("_persistence_links");
-    }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.persistence.internal.weaving.PersistenceWeavedRest#_persistence_setLinks(org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks)
-     */
-    @Override
-    public void _persistence_setLinks(ItemLinks links) {
-        set("_persistence_links", links, false);
     }
 
     /**

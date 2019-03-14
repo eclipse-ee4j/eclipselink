@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -668,9 +668,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                             this.processor.setClassLoader(classLoaderToUse);
                             this.processor.createDynamicClasses();
-                            if (classLoaderToUse instanceof DynamicClassLoader){
-                                this.processor.createRestInterfaces();
-                            }
 
                             this.processor.addEntityListeners();
 
@@ -1994,7 +1991,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
                     weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
-                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "true", session));
+                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, shouldWeaveRestByDefault(classLoaderToUse), session));
                     weaveMappedSuperClass = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_MAPPEDSUPERCLASS, predeployProperties, "true", session));
                 }
 
@@ -4619,6 +4616,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
         }
+    }
+
+    //JPA-RS feature may be provided by a jar on the path or missing
+    private static String shouldWeaveRestByDefault(ClassLoader cl) {
+        try {
+            cl.loadClass("org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest");
+            return "true";
+        } catch (Throwable t) {
+            //ignore
+        }
+        return "false";
     }
 }
 
