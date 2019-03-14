@@ -340,7 +340,7 @@
         <selectbundle basename="${sun.xml.bind.prefix}"  directory="${local.p2.repo.dir}"
                       criterion="${sun.xml.bind.criteria}" property="sun.xml.bind.version" versiononly="true"
         />
-        <selectbundle basename="${mongodb.prefix}" directory="${feature.2.common.plugins.dir}"
+        <selectbundle basename="${mongodb.prefix}" directory="${local.p2.repo.dir}"
                      criterion="${mongodb.criteria}" property="mongodb.version" versiononly="true"
         />
         <selectbundle basename="${jaxrs.prefix}" directory="${local.p2.repo.dir}"
