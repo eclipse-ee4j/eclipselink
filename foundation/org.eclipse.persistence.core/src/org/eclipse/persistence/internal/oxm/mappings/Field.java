@@ -197,4 +197,18 @@ public interface Field<
      * @return True if the items in the collection are in a single node or false if each of the items in the collection is in its own node.
      */
      boolean usesSingleNode();
+
+    /**
+     * Set nested array flag. Used in JSON marshalling.
+     *
+     * @param nestedArray flag.
+     */
+    public void setNestedArray(boolean nestedArray);
+
+    /**
+     * INTERNAL:
+     *
+     * @return True if content is nested array.
+     */
+    public boolean isNestedArray();
 }

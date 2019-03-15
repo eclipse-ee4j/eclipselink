@@ -2170,6 +2170,7 @@ public class MappingsGenerator {
     }
 
     public CompositeCollectionMapping generateCompositeCollectionMapping(Property property, Descriptor descriptor, JavaClass javaClass, NamespaceInfo namespaceInfo, String referenceClassName) {
+        boolean nestedArray = false;
         CompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         initializeXMLMapping((XMLMapping)mapping, property);
         initializeXMLContainerMapping(mapping, property.getType().isArray());
@@ -2201,6 +2202,7 @@ public class MappingsGenerator {
                 referenceClassName = adaptedClass.getName();
                 accessor.setAdaptedClassName(referenceClassName);
                 JavaClass baseComponentType = getBaseComponentType(componentType);
+                nestedArray = true;
                 if (baseComponentType.isPrimitive()){
                     Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
                     accessor.setComponentClass(primitiveClass);
@@ -2246,6 +2248,7 @@ public class MappingsGenerator {
             ((Field) mapping.getField()).setRequired(true);
         }
 
+        ((Field) mapping.getField()).setNestedArray(nestedArray);
         return mapping;
     }
 
