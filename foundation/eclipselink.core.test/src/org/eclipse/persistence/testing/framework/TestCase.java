@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.framework;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Writer;
 import java.lang.ref.WeakReference;
 
-import javax.persistence.*;
-import org.eclipse.persistence.exceptions.*;
+import javax.persistence.EntityManager;
+
+import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.server.Server;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
@@ -680,8 +683,8 @@ public abstract class TestCase extends junit.framework.TestCase implements TestE
             throw new TestWarningException("This test requires transaction isolation setup on SQLAnywhere database which is currently not set");
         } else if (platform.isDB2()) {
             throw new TestWarningException("This test requires transaction isolation setup on DB2 database which is currently not set");
-        } else if (platform.isSymfoware()) {
-            listener = new TransactionIsolationLevelSwitchListener();
+        } else if (platform.isDerby() || platform.isSymfoware()) {
+            listener = new TransactionIsolationLevelSwitchListener(platform);
         } else if (platform.isMaxDB()) {
             listener = new JDBCIsoLevelSwitchListener();
         } else {

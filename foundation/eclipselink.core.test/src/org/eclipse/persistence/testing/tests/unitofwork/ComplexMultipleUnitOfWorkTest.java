@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.tests.remote.RemoteModel;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Address;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.EmploymentPeriod;
@@ -43,7 +44,7 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
     public UnitOfWork firstUnitOfWork;
     public UnitOfWork secondUnitOfWork;
     public UnitOfWork thirdUnitOfWork;
-    // On some platforms (Sybase) if conn1 updates a row but hasn't yet committed transaction then
+    // On some platforms (Sybase/Derby) if conn1 updates a row but hasn't yet committed transaction then
     // reading the row through conn2 may hang.
     // To avoid this problem the listener would decrement transaction isolation level,
     // then reading through conn2 no longer hangs, however may result (results on Sybase)
@@ -287,6 +288,9 @@ public class ComplexMultipleUnitOfWorkTest extends AutoVerifyTestCase {
     public void setup() {
         if (getSession().isClientSession()) {
             listener = checkTransactionIsolation();
+        }
+        if (getSession().isRemoteSession() && getSession().getDatasourcePlatform().isDerby()) {
+            throw new TestWarningException("This test uses functionality that does not work over remote sessions in Apache Derby.");
         }
         getAbstractSession().beginTransaction();
     }
