@@ -168,7 +168,7 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             numberOfTabs++;
             isLastEventText = false;
             charactersAllowed = true;
-            if (xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray()) {
+            if (xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray() && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
                 level = new Level(true, true, true, level);
             } else {
                 level = new Level(true, true, false, level);

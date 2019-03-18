@@ -27,6 +27,8 @@ public class ArrayTestCases extends TestSuite {
         suite.addTestSuite(IntegerListTestCases.class);
         suite.addTestSuite(StringArrayTestCases.class);
         suite.addTestSuite(StringListTestCases.class);
+        suite.addTestSuite(Nested2dArrayTestCases.class);
+        suite.addTestSuite(Nested3dArrayTestCases.class);
         return suite;
     }
 

@@ -285,7 +285,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
 
             charactersAllowed = true;
-            if (xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray()) {
+            if (xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray() && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
                 level = new Level(true, true, true, level);
             } else {
                 level = new Level(true, true, false, level);
@@ -991,7 +991,6 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         public void setNestedArray(boolean nestedArray) {
             this.nestedArray = nestedArray;
         }
-
     }
 
     protected static interface Output {
