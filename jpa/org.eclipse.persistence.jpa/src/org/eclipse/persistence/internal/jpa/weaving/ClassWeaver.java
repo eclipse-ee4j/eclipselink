@@ -106,8 +106,8 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     public static final String VIRTUAL_GETTER_SIGNATURE = "(" + ClassWeaver.STRING_SIGNATURE + ")" + ClassWeaver.OBJECT_SIGNATURE;
     public static final String VIRTUAL_SETTER_SIGNATURE = "(" + ClassWeaver.STRING_SIGNATURE + ClassWeaver.OBJECT_SIGNATURE + ")" + ClassWeaver.OBJECT_SIGNATURE;
 
-    /** Store if JAXB is on the classpath, true since Java SE 6 */
-    protected static Boolean isJAXBOnPath = true;
+    /** Store if JAXB is on the classpath, true in Java SE 6 - 8, maybe true from 9 */
+    private static Boolean isJAXBOnPath = null;
 
     /**
      * Stores information on the class gathered from the temp class loader and
@@ -203,6 +203,14 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      * XmlTransient annotation is added).
      */
     public static boolean isJAXBOnPath() {
+        if (isJAXBOnPath == null) {
+            try {
+                Class.forName("javax.xml.bind.annotation.XmlTransient");
+                isJAXBOnPath = true;
+            } catch (Exception notThere) {
+                isJAXBOnPath = false;
+            }
+        }
         return isJAXBOnPath;
     }
 
