@@ -24,7 +24,7 @@ public class MenuItem implements ChangeTracker {
     private String name;
     private float price = 0.0f;
     private java.math.BigDecimal id;
-    private ValueHolderInterface menu = new ValueHolder();
+    private ValueHolderInterface<Menu> menu = new ValueHolder<>();
     public PropertyChangeListener listener;
 
     public MenuItem() {
@@ -205,10 +205,10 @@ public class MenuItem implements ChangeTracker {
     }
 
     public Menu getMenu() {
-        return (Menu)getMenuHolder().getValue();
+        return getMenuHolder().getValue();
     }
 
-    public ValueHolderInterface getMenuHolder() {
+    public ValueHolderInterface<Menu> getMenuHolder() {
         return menu;
     }
 
@@ -225,7 +225,7 @@ public class MenuItem implements ChangeTracker {
         this.id = newValue;
     }
 
-    public void setMenu(ValueHolderInterface newValue) {
+    public void setMenu(ValueHolderInterface<Menu> newValue) {
         this.menu = newValue;
     }
 
@@ -234,7 +234,7 @@ public class MenuItem implements ChangeTracker {
         getMenuHolder().setValue(newValue);
     }
 
-    public void setMenuHolder(ValueHolderInterface newValue) {
+    public void setMenuHolder(ValueHolderInterface<Menu> newValue) {
         this.menu = newValue;
     }
 

@@ -38,7 +38,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     protected transient ObjectLevelReadQuery query;
 
     // The server side original value holder.
-    protected transient ValueHolderInterface wrappedServerValueHolder;
+    protected transient ValueHolderInterface<Object> wrappedServerValueHolder;
 
     // point back to the object holding the remote value holder;
     // for the moment, used only by TransparentIndirection
@@ -149,7 +149,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * This is how we know whether the remote value holder is
      * being invoked on the client or on the server.
      */
-    public ValueHolderInterface getWrappedServerValueHolder() {
+    public ValueHolderInterface<Object> getWrappedServerValueHolder() {
         return wrappedServerValueHolder;
     }
 

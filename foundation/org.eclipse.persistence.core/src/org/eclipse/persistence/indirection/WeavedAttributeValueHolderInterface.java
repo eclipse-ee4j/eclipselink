@@ -25,7 +25,7 @@ package org.eclipse.persistence.indirection;
  * @author tware
  *
  */
-public interface WeavedAttributeValueHolderInterface extends ValueHolderInterface {
+public interface WeavedAttributeValueHolderInterface<T> extends ValueHolderInterface<T> {
 
     /**
      * When a valueholder is triggered, the weaved code will ensure its value is

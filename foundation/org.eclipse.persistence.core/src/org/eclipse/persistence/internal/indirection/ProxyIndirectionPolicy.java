@@ -359,11 +359,11 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             return this.getMapping().buildBackupCloneForPartObject(attributeValue, clone, backup, unitOfWork);
         }
         ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
-        ValueHolderInterface unitOfWorkValueHolder = handler.getValueHolder();
-        ValueHolderInterface backupValueHolder = null;
+        ValueHolderInterface<?> unitOfWorkValueHolder = handler.getValueHolder();
+        ValueHolderInterface<?> backupValueHolder = null;
 
         if ((!(unitOfWorkValueHolder instanceof UnitOfWorkValueHolder)) || unitOfWorkValueHolder.isInstantiated()) {
-            backupValueHolder = (ValueHolderInterface) super.backupCloneAttribute(unitOfWorkValueHolder, clone, backup, unitOfWork);
+            backupValueHolder = (ValueHolderInterface<?>) super.backupCloneAttribute(unitOfWorkValueHolder, clone, backup, unitOfWork);
         } else {
             // CR#2852176 Use a BackupValueHolder to handle replacing of the original.
             backupValueHolder = new BackupValueHolder(unitOfWorkValueHolder);
@@ -381,7 +381,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         if (attributeValue instanceof Proxy) {
             ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
-            ValueHolderInterface valueHolder = handler.getValueHolder();
+            ValueHolderInterface<?> valueHolder = handler.getValueHolder();
 
             iterator.iterateValueHolderForMapping(valueHolder, this.getMapping());
         } else {

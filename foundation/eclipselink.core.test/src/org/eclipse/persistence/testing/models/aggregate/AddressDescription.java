@@ -18,11 +18,11 @@ import java.io.*;
 import org.eclipse.persistence.indirection.*;
 
 public class AddressDescription implements Serializable {
-    public ValueHolderInterface address;
+    public ValueHolderInterface<Address> address;
     public PeriodDescription periodDescription;
 
     public AddressDescription() {
-        address = new ValueHolder();
+        address = new ValueHolder<>();
     }
 
     public static AddressDescription example1() {
@@ -73,7 +73,7 @@ public class AddressDescription implements Serializable {
         return example;
     }
 
-    public ValueHolderInterface getAddress() {
+    public ValueHolderInterface<Address> getAddress() {
         return address;
     }
 

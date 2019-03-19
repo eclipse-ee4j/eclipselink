@@ -23,9 +23,9 @@ import org.eclipse.persistence.indirection.*;
 
 public class Menu implements ChangeTracker{
     private String type;
-    public ValueHolderInterface items = new ValueHolder(new Vector());
+    public ValueHolderInterface<Collection<MenuItem>> items = new ValueHolder<>(new Vector<>());
     private java.math.BigDecimal id;
-    private ValueHolderInterface owner = new ValueHolder();
+    private ValueHolderInterface<Restaurant> owner = new ValueHolder<>();
     public PropertyChangeListener listener;
 
     public Menu() {
@@ -149,7 +149,7 @@ public class Menu implements ChangeTracker{
         return (Collection)getItemsHolder().getValue();
     }
 
-    public ValueHolderInterface getItemsHolder() {
+    public ValueHolderInterface<Collection<MenuItem>> getItemsHolder() {
         return items;
     }
 
@@ -158,10 +158,10 @@ public class Menu implements ChangeTracker{
     }
 
     public Restaurant getOwner() {
-        return (Restaurant)getOwnerHolder().getValue();
+        return getOwnerHolder().getValue();
     }
 
-    public ValueHolderInterface getOwnerHolder() {
+    public ValueHolderInterface<Restaurant> getOwnerHolder() {
         return owner;
     }
 
@@ -173,16 +173,16 @@ public class Menu implements ChangeTracker{
         this.id = newValue;
     }
 
-    public void setItems(Collection value) {
+    public void setItems(Collection<MenuItem> value) {
         propertyChange("items", this.getItemsHolder().getValue(), value);
         getItemsHolder().setValue(value);
     }
 
-    public void setItemsHolder(ValueHolderInterface newValue) {
+    public void setItemsHolder(ValueHolderInterface<Collection<MenuItem>> newValue) {
         this.items = newValue;
     }
 
-    public void setOwner(ValueHolderInterface newValue) {
+    public void setOwner(ValueHolderInterface<Restaurant> newValue) {
         this.owner = newValue;
     }
 
@@ -191,7 +191,7 @@ public class Menu implements ChangeTracker{
         getOwnerHolder().setValue(newValue);
     }
 
-    public void setOwnerHolder(ValueHolderInterface newValue) {
+    public void setOwnerHolder(ValueHolderInterface<Restaurant> newValue) {
         this.owner = newValue;
     }
 
