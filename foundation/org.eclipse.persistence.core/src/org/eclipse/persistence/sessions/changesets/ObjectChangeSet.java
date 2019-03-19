@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.sessions.changesets;
 
 import java.util.List;
-import java.util.Vector;
+
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -66,15 +66,6 @@ public interface ObjectChangeSet {
      * This is old relevant for collection mappings that use a Map.
      */
     Object getNewKey();
-
-    /**
-     * ADVANCED:
-     * This method returns the primary key for the object that this change set represents.
-     * @deprecated since EclipseLink 2.1, replaced by getId()
-     * @see #getId()
-     */
-    @Deprecated
-    Vector getPrimaryKeys();
 
     /**
      * ADVANCED:

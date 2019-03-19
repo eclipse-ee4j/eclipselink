@@ -125,9 +125,6 @@ public interface SessionLog extends Cloneable {
     public static final String MISC = "misc";
     public static final String MOXY = "moxy";
 
-    /** @deprecated use {@link #METADATA}. */
-    @Deprecated
-    public static final String EJB_OR_METADATA = METADATA;
     public static final String METAMODEL = "metamodel";
     public static final String WEAVER = "weaver";
     public static final String PROPERTIES = "properties";
@@ -305,7 +302,6 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EJB_OR_METADATA}</td> <td>&nbsp;</td><td>= {@value #EJB_OR_METADATA}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
@@ -370,7 +366,6 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EJB_OR_METADATA}</td> <td>&nbsp;</td><td>= {@value #EJB_OR_METADATA}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>
@@ -436,7 +431,6 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EJB}</td>             <td>&nbsp;</td><td>= {@value #EJB}</td></tr>
-     * <tr><td>&nbsp;</td><td>{@link #EJB_OR_METADATA}</td> <td>&nbsp;</td><td>= {@value #EJB_OR_METADATA}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #EVENT}</td>           <td>&nbsp;</td><td>= {@value #EVENT}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DBWS}</td>            <td>&nbsp;</td><td>= {@value #DBWS}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #JPARS}</td>           <td>&nbsp;</td><td>= {@value #JPARS}</td></tr>

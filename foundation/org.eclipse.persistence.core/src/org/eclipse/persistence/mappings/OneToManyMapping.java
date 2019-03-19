@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -506,18 +507,6 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             targetForeignKeysToSourceKeys = new HashMap<>(2);
         }
         return targetForeignKeysToSourceKeys;
-    }
-
-    /**
-     * INTERNAL:
-     * Maintain for backward compatibility.
-     * This is 'public' so StoredProcedureGenerator
-     * does not have to use the custom query expressions.
-     * @deprecated since 2.7 replaced by {@link #getTargetForeignKeysToSourceKeys()}
-     */
-    @Deprecated
-    public Map getTargetForeignKeyToSourceKeys() {
-        return getTargetForeignKeysToSourceKeys();
     }
 
     /**

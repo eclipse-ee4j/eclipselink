@@ -6100,28 +6100,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
     }
 
-    /**
-     * ADVANCED:
-     * Return if updates should be ordered by primary key to avoid possible database deadlocks.
-     */
-    @Override
-    public boolean shouldOrderUpdates() {
-        return this.commitOrder != CommitOrderType.NONE;
-    }
-
-    /**
-     * ADVANCED:
-     * Set updates should be ordered by primary key to avoid possible database deadlocks.
-     */
-    @Override
-    public void setShouldOrderUpdates(boolean shouldOrderUpdates) {
-        if (shouldOrderUpdates) {
-            this.commitOrder = CommitOrderType.ID;
-        } else {
-            this.commitOrder = CommitOrderType.NONE;
-        }
-    }
-
     @Override
     public DatabaseValueHolder createCloneQueryValueHolder(ValueHolderInterface attributeValue, Object clone, AbstractRecord row, ForeignReferenceMapping mapping) {
         return new UnitOfWorkQueryValueHolder(attributeValue, clone, mapping, row, this);

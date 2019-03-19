@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Vector;
 
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * PUBLIC:
@@ -75,16 +77,6 @@ public interface IdentityMapAccessor {
      * key and Class type of the given domainObject.
      */
     public boolean containsObjectInIdentityMap(Object domainObject);
-
-    /**
-     * ADVANCED:
-     * Returns true if the identity map contains an Object with the same
-     * primary key and Class type as those specified.
-     * @deprecated since EclipseLink 2.1, replaced by containsObjectInIdentityMap(Object, Class)
-     * @see #containsObjectInIdentityMap(Object, Class)
-     */
-    @Deprecated
-    public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -177,17 +169,6 @@ public interface IdentityMapAccessor {
      * Returns the Object from the identity map with the same primary key
      * and Class type as those specified.
      * @return Object from identity map, may be null.
-     * @deprecated since EclipseLink 2.1, replaced by getFromIdentityMap(Object, Class)
-     * @see #getFromIdentityMap(Object, Class)
-     */
-    @Deprecated
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass);
-
-    /**
-     * ADVANCED:
-     * Returns the Object from the identity map with the same primary key
-     * and Class type as those specified.
-     * @return Object from identity map, may be null.
      */
     public Object getFromIdentityMap(Object primaryKey, Class theClass);
 
@@ -200,18 +181,6 @@ public interface IdentityMapAccessor {
      * @return Object from identity map, may be null.
      */
     public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass);
-
-    /**
-     * ADVANCED:
-     * Returns the Object from the identity map with the same primary key and Class type
-     * as specified. May return null and will only return an Object that is invalidated
-     * if specified with the boolean shouldReturnInvalidatedObjects.
-     * @return Object from identity map, may be null.
-     * @deprecated since EclipseLink 2.1, replaced by getFromIdentityMap(Object, Class, boolean)
-     * @see #getFromIdentityMap(Object, Class, boolean)
-     */
-    @Deprecated
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
 
     /**
      * ADVANCED:
@@ -302,16 +271,6 @@ public interface IdentityMapAccessor {
      * ADVANCED:
      * Extracts the write lock value from the identity map through the passed in primaryKey and Class type.
      * Write lock values are used when optimistic locking is stored in the cache instead of the object.
-     * @deprecated since EclipseLink 2.1, replaced by getWriteLockValue(Object, Class)
-     * @see #getWriteLockValue(Object, Class)
-     */
-    @Deprecated
-    public Object getWriteLockValue(Vector primaryKey, Class theClass);
-
-    /**
-     * ADVANCED:
-     * Extracts the write lock value from the identity map through the passed in primaryKey and Class type.
-     * Write lock values are used when optimistic locking is stored in the cache instead of the object.
      */
     public Object getWriteLockValue(Object primaryKey, Class theClass);
 
@@ -367,29 +326,8 @@ public interface IdentityMapAccessor {
      * Sets an Object with the specified primary key and Class type to be invalid in
      * the cache. If the Object does not exist in the cache,
      * this method will return without any action.
-     * @deprecated since EclipseLink 2.1, replaced by invalidateObject(Object, Class)
-     * @see #invalidateObject(Object, Class)
-     */
-    @Deprecated
-    public void invalidateObject(Vector primaryKey, Class theClass);
-
-    /**
-     * ADVANCED:
-     * Sets an Object with the specified primary key and Class type to be invalid in
-     * the cache. If the Object does not exist in the cache,
-     * this method will return without any action.
      */
     public void invalidateObject(Object primaryKey, Class theClass);
-
-    /**
-     * ADVANCED:
-     * Set an object to be invalid in the cache.
-     * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
-     * @deprecated since EclipseLink 2.1, replaced by invalidateObject(Object, Class, boolean)
-     * @see #invalidateObject(Object, Class, boolean)
-     */
-    @Deprecated
-    public void invalidateObject(Vector primaryKey, Class theClass, boolean invalidateCluster);
 
     /**
      * ADVANCED:
@@ -489,16 +427,6 @@ public interface IdentityMapAccessor {
      * ADVANCED:
      * Returns true if the Object described by the given primary key and Class type is valid
      * in the cache.
-     * @deprecated since EclipseLink 2.1, replaced by isValid(Object, Class)
-     * @see #isValid(Object, Class)
-     */
-    @Deprecated
-    public boolean isValid(Vector primaryKey, Class theClass);
-
-    /**
-     * ADVANCED:
-     * Returns true if the Object described by the given primary key and Class type is valid
-     * in the cache.
      */
     public boolean isValid(Object primaryKey, Class theClass);
 
@@ -543,16 +471,6 @@ public interface IdentityMapAccessor {
      * ADVANCED:
      * Registers the Object and given key with the identity map.
      * The Object must always be registered with its version number if optimistic locking is used.
-     * @deprecated since EclipseLink 2.1, replaced by putInIdentityMap(Object, Object)
-     * @see #putInIdentityMap(Object, Object)
-     */
-    @Deprecated
-    public Object putInIdentityMap(Object domainObject, Vector key);
-
-    /**
-     * ADVANCED:
-     * Registers the Object and given key with the identity map.
-     * The Object must always be registered with its version number if optimistic locking is used.
      */
     public Object putInIdentityMap(Object domainObject, Object key);
 
@@ -560,34 +478,8 @@ public interface IdentityMapAccessor {
      * ADVANCED:
      * Registers the Object and given key with the identity map.
      * The Object must always be registered with its version number if optimistic locking is used.
-     * @deprecated since EclipseLink 2.1, replaced by putInIdentityMap(Object, Object, Object)
-     * @see #putInIdentityMap(Object, Object, Object)
-     */
-    @Deprecated
-    public Object putInIdentityMap(Object domainObject, Vector key, Object writeLockValue);
-
-    /**
-     * ADVANCED:
-     * Registers the Object and given key with the identity map.
-     * The Object must always be registered with its version number if optimistic locking is used.
      */
     public Object putInIdentityMap(Object domainObject, Object key, Object writeLockValue);
-
-    /**
-     * ADVANCED:
-     * Registers the given Object with the identity map.
-     * The Object must always be registered with its version number if optimistic locking is used.
-     * The readTime may also be included in the cache key as it is constructed.
-     * @param domainObject Object
-     * @param key Object
-     * @param writeLockValue Object for versioning
-     * @param readTime long, time in milliseconds
-     * @return Object the Object put into the identity map
-     * @deprecated since EclipseLink 2.1, replaced by putInIdentityMap(Object, Object, Object, long)
-     * @see #putInIdentityMap(Object, Object, Object, long)
-     */
-    @Deprecated
-    public Object putInIdentityMap(Object domainObject, Vector key, Object writeLockValue, long readTime);
 
     /**
      * ADVANCED:
@@ -612,17 +504,6 @@ public interface IdentityMapAccessor {
      */
     public Object removeFromIdentityMap(Object domainObject);
 
-    /**
-     * ADVANCED:
-     * Removes the Object with given primary key and Class from the Object cache.
-     * <p> NOTE: Caution should be used when calling to avoid violating Object identity.
-     * The application should only call this if its known that no references to the Object exist.
-     * @return Object the Object removed from the identity map
-     * @deprecated since EclipseLink 2.1, replaced by removeFromIdentityMap(Object, Class)
-     * @see #removeFromIdentityMap(Object, Class)
-     */
-    @Deprecated
-    public Object removeFromIdentityMap(Vector key, Class theClass);
 
     /**
      * ADVANCED:
@@ -641,16 +522,6 @@ public interface IdentityMapAccessor {
      * @param writeLockValue Object for versioning
      */
     public void updateWriteLockValue(Object domainObject, Object writeLockValue);
-
-    /**
-     * ADVANCED:
-     * Updates the write lock value in the cache for the Object with same primary key as the given Object.
-     * The write lock values is used when optimistic locking is stored in the cache instead of in the object.
-     * @deprecated since EclipseLink 2.1, replaced by updateWriteLockValue(Object, Class, Object)
-     * @see #updateWriteLockValue(Object, Class, Object)
-     */
-    @Deprecated
-    public void updateWriteLockValue(Vector primaryKey, Class theClass, Object writeLockValue);
 
     /**
      * ADVANCED:

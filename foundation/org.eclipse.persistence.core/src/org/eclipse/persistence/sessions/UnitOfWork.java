@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
 
 /**
@@ -693,22 +696,6 @@ public interface UnitOfWork extends Session {
      * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
     public Object getReference(Class theClass, Object primaryKey);
-
-    /**
-     * ADVANCED:
-     * Return if updates should be ordered by primary key to avoid possible database deadlocks.
-     * @deprecated since 2.6 replaced by #getCommitOrder()
-     */
-    @Deprecated
-    public boolean shouldOrderUpdates();
-
-    /**
-     * ADVANCED:
-     * Set if updates should be ordered by primary key to avoid possible database deadlocks.
-     * @deprecated since 2.6 replaced by #setCommitOrder(CommitOrderType)
-     */
-    @Deprecated
-    public void setShouldOrderUpdates(boolean shouldOrderUpdates);
 
     /**
      * ADVANCED:

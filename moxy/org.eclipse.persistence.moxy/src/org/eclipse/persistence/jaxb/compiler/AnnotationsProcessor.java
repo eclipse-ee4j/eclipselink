@@ -137,7 +137,6 @@ import org.eclipse.persistence.oxm.XMLNameTransformer;
 import org.eclipse.persistence.oxm.annotations.XmlAccessMethods;
 import org.eclipse.persistence.oxm.annotations.XmlCDATA;
 import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
-import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
 import org.eclipse.persistence.oxm.annotations.XmlCustomizer;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorNode;
 import org.eclipse.persistence.oxm.annotations.XmlDiscriminatorValue;
@@ -2668,12 +2667,7 @@ public final class AnnotationsProcessor {
             property.setMixedContent(true);
             findAndProcessObjectFactory(cls);
         }
-        if (helper.isAnnotationPresent(propertyElement, XmlContainerProperty.class)) {
-            XmlContainerProperty container = (XmlContainerProperty) helper.getAnnotation(propertyElement, XmlContainerProperty.class);
-            property.setInverseReferencePropertyName(container.value());
-            property.setInverseReferencePropertyGetMethodName(container.getMethodName());
-            property.setInverseReferencePropertySetMethodName(container.setMethodName());
-        } else if (helper.isAnnotationPresent(propertyElement, XmlInverseReference.class)) {
+        if (helper.isAnnotationPresent(propertyElement, XmlInverseReference.class)) {
             XmlInverseReference inverseReference = (XmlInverseReference) helper.getAnnotation(propertyElement, XmlInverseReference.class);
             property.setInverseReferencePropertyName(inverseReference.mappedBy());
 

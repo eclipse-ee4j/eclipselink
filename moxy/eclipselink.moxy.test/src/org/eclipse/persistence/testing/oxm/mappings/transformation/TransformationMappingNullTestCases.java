@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.transformation;
 
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
 
 public class TransformationMappingNullTestCases extends XMLMappingTestCases
@@ -27,7 +24,8 @@ public class TransformationMappingNullTestCases extends XMLMappingTestCases
     setControlDocument("org/eclipse/persistence/testing/oxm/mappings/transformation/employee_null.xml");
   }
 
-  public Object getControlObject()
+    @Override
+    public Object getControlObject()
   {
     Employee emp = new Employee();
     emp.setName("John Smith");

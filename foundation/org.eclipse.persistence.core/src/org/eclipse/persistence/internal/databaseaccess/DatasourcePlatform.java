@@ -913,20 +913,6 @@ public class DatasourcePlatform implements Platform {
 
     /**
      * INTERNAL:
-     * Returns the correct quote character to use around SQL Identifiers that contain
-     * Space characters
-     * @deprecated
-     * @see getStartDelimiter()
-     * @see getEndDelimiter()
-     * @return The quote character for this platform
-     */
-    @Deprecated
-    public String getIdentifierQuoteCharacter() {
-        return "";
-    }
-
-    /**
-     * INTERNAL:
      */
     public ConnectionCustomizer createConnectionCustomizer(Accessor accessor, AbstractSession session) {
         return null;

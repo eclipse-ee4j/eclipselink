@@ -1242,21 +1242,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * INTERNAL:
-     * Returns the correct quote character to use around SQL Identifiers that contain
-     * Space characters
-     * @deprecated
-     * @see getStartDelimiter()
-     * @see getEndDelimiter()
-     * @return The quote character for this platform
-     */
-    @Deprecated
-    @Override
-    public String getIdentifierQuoteCharacter() {
-        return "\"";
-    }
-
-    /**
      * This method is used to print the output parameter token when stored
      * procedures are called
      */

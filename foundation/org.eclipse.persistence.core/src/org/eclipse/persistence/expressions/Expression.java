@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -406,16 +405,6 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression anyOfAllowingNone(String attributeName, boolean shouldJoinBeIndependent) {
         throw new UnsupportedOperationException("anyOfAllowingNone");
-    }
-
-    /**
-     * ADVANCED:
-     * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base.
-     * @deprecated replaced by {@link #treat(Class)}
-     */
-    @Deprecated
-    public Expression as(Class castClass) {
-        return treat(castClass);
     }
 
     /**
@@ -1342,7 +1331,7 @@ public abstract class Expression implements Serializable, Cloneable {
         anOperator.setType(ExpressionOperator.FunctionOperator);
         anOperator.bePrefix();
 
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(decodeableItems.size() + 1);
+        List<String> v = new ArrayList<>(decodeableItems.size() + 1);
         v.add("DECODE(");
         for (int i = 0; i < ((decodeableItems.size() * 2) + 1); i++) {
             v.add(", ");
@@ -1796,8 +1785,8 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Vector getFields() {
-        return org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+    public List<DatabaseField> getFields() {
+        return new ArrayList<>(1);
     }
 
     /**
@@ -1909,23 +1898,6 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * ADVANCED:
-     * This can be used for accessing user defined functions that have arguments.
-     * The operator must be defined in ExpressionOperator to be able to reference it.
-     * @see ExpressionOperator
-     * <p> Example:
-     * <blockquote><pre>
-     *    List arguments = new ArrayList();
-     *    arguments.add("blee");
-     *  builder.get("name").getFunction(MyFunctions.FOO_BAR, arguments).greaterThan(100);
-     * </pre></blockquote>
-     */
-    @Deprecated
-    public Expression getFunction(int selector, Vector arguments) {
-        return getFunction(selector, (List)arguments);
-    }
-
-    /**
-     * ADVANCED:
      * Return a user defined function accepting the argument.
      * The function is assumed to be a normal prefix function and will print like, UPPER(base).
      * <p> Example:
@@ -1953,20 +1925,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return a user defined function accepting all of the arguments.
      * The function is assumed to be a normal prefix function like, CONCAT(base, value1, value2, value3, ...).
      */
-    @Deprecated
-    public Expression getFunctionWithArguments(String functionName, Vector arguments) {
-        return getFunctionWithArguments(functionName, (List)arguments);
-    }
-
-    /**
-     * ADVANCED:
-     * Return a user defined function accepting all of the arguments.
-     * The function is assumed to be a normal prefix function like, CONCAT(base, value1, value2, value3, ...).
-     */
     public Expression getFunctionWithArguments(String functionName, List arguments) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(arguments.size());
+        List<String> v = new ArrayList<>(arguments.size());
         v.add(functionName + "(");
         for (int index = 0; index < arguments.size(); index++) {
             v.add(", ");
@@ -1988,7 +1950,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression sql(String sql, List arguments) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(arguments.size());
+        List<String> v = new ArrayList<>(arguments.size());
         int start = 0;
         int index = sql.indexOf('?');
         while (index != -1) {
@@ -3868,7 +3830,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression postfixSQL(String sqlString) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        List<String> v = new ArrayList<>(1);
         v.add(sqlString);
         anOperator.printsAs(v);
         anOperator.bePostfix();
@@ -3888,7 +3850,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression prefixSQL(String sqlString) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        List<String> v = new ArrayList<>(1);
         v.add(sqlString);
         anOperator.printsAs(v);
         anOperator.bePrefix();
@@ -4789,7 +4751,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * INTERNAL:
      * called from SQLSelectStatement.writeFieldsFromExpression(...)
      */
-    public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+    public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         for (DatabaseField field : getSelectionFields(statement.getQuery())) {
             newFields.add(field);
             writeField(printer, field, statement);
@@ -4940,24 +4902,6 @@ public abstract class Expression implements Serializable, Cloneable {
         }
 
         return any(values);
-    }
-
-    /**
-     * PUBLIC:
-     * Return an expression that checks if the receivers value is contained in the collection.
-     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
-     * <p>Example:
-     * <blockquote><pre>
-     *     EclipseLink: employee.get("age").in(ages)
-     *     Java: ages.contains(employee.getAge())
-     *     SQL: AGE IN (55, 18, 30)
-     * </pre></blockquote>
-     * @deprecated since 2.4 replaced by any(List)
-     * @see #any(List)
-     */
-    @Deprecated
-    public Expression any(Vector theObjects) {
-        return any((List)theObjects);
     }
 
     /**
@@ -5233,24 +5177,6 @@ public abstract class Expression implements Serializable, Cloneable {
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
      * </pre></blockquote>
-     * @deprecated since 2.4 replaced by some(List)
-     * @see #some(List)
-     */
-    @Deprecated
-    public Expression some(Vector theObjects) {
-        return some(new ConstantExpression(theObjects, this));
-    }
-
-    /**
-     * PUBLIC:
-     * Return an expression that checks if the receivers value is contained in the collection.
-     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
-     * <p>Example:
-     * <blockquote><pre>
-     *     EclipseLink: employee.get("age").in(ages)
-     *     Java: ages.contains(employee.getAge())
-     *     SQL: AGE IN (55, 18, 30)
-     * </pre></blockquote>
      */
     public Expression some(List theObjects) {
         return some(new ConstantExpression(theObjects, this));
@@ -5401,24 +5327,6 @@ public abstract class Expression implements Serializable, Cloneable {
         }
 
         return all(values);
-    }
-
-    /**
-     * PUBLIC:
-     * Return an expression that checks if the receivers value is contained in the collection.
-     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
-     * <p>Example:
-     * <blockquote><pre>
-     *     EclipseLink: employee.get("age").in(ages)
-     *     Java: ages.contains(employee.getAge())
-     *     SQL: AGE IN (55, 18, 30)
-     * </pre></blockquote>
-     * @deprecated since 2.4 replaced by all(List)
-     * @see #all(List)
-     */
-    @Deprecated
-    public Expression all(Vector theObjects) {
-        return all((List)theObjects);
     }
 
     /**

@@ -16,14 +16,12 @@ package org.eclipse.persistence.internal.sessions;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -31,7 +29,6 @@ import org.eclipse.persistence.descriptors.TimestampLockingPolicy;
 import org.eclipse.persistence.descriptors.VersionLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -388,21 +385,6 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     @Override
     public Object getNewKey() {
         return this.newKey;
-    }
-
-    /**
-     * ADVANCED:
-     * This method returns the primary keys for the object that this change set represents.
-     */
-    @Override
-    @Deprecated
-    public Vector getPrimaryKeys() {
-        if (this.id instanceof CacheId) {
-            return new Vector(Arrays.asList(((CacheId)this.id).getPrimaryKey()));
-        }
-        Vector primaryKey = new Vector(1);
-        primaryKey.add(this.id);
-        return primaryKey;
     }
 
     /**

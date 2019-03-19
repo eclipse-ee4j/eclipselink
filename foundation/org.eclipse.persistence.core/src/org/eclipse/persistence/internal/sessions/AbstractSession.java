@@ -124,7 +124,6 @@ import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.ExternalTransactionController;
 import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.SessionEventManager;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -1160,40 +1159,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     }
 
     /**
-     * PUBLIC:
-     * Return a complete copy of the object.
-     * This can be used to obtain a scratch copy of an object,
-     * or for templatizing an existing object into another new object.
-     * The object and all of its privately owned parts will be copied, the object's primary key will be reset to null.
-     *
-     * @see #copyObject(Object, ObjectCopyingPolicy)
-     * @deprecated since EclipseLink 2.1, replaced by copy(Object)
-     * @see #copy(Object)
-     */
-    @Deprecated
-    @Override
-    public Object copyObject(Object original) {
-        CopyGroup copyGroup = new CopyGroup();
-        copyGroup.setShouldResetPrimaryKey(true);
-        return copy(original, copyGroup);
-    }
-
-    /**
-     * PUBLIC:
-     * Return a complete copy of the object.
-     * This can be used to obtain a scratch copy of an object,
-     * or for templatizing an existing object into another new object.
-     * The object copying policy allow for the depth, and reseting of the primary key to null, to be specified.
-     * @deprecated since EclipseLink 2.1, replaced by copy(Object, AttributeGroup)
-     * @see #copy(Object, AttributeGroup)
-     */
-    @Deprecated
-    @Override
-    public Object copyObject(Object original, ObjectCopyingPolicy policy) {
-        return copy(original, policy);
-    }
-
-    /**
      * INTERNAL:
      * Copy the read only classes from the unit of work
      *
@@ -1345,24 +1310,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     public void deleteAllObjects(Collection domainObjects) throws DatabaseException, OptimisticLockException {
         for (Iterator objectsEnum = domainObjects.iterator(); objectsEnum.hasNext();) {
             deleteObject(objectsEnum.next());
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * delete all of the objects and all of their privately owned parts in the database.
-     * The allows for a group of objects to be deleted as a unit.
-     * The objects will be deleted through a single transactions.
-     *
-     * @exception DatabaseException if an error occurs on the database,
-     * these include constraint violations, security violations and general database errors.
-     * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
-     * the object has been updated or deleted by another user since it was last read.
-     */
-    @Deprecated
-    public void deleteAllObjects(Vector domainObjects) throws DatabaseException, OptimisticLockException {
-        for (Enumeration objectsEnum = domainObjects.elements(); objectsEnum.hasMoreElements();) {
-            deleteObject(objectsEnum.nextElement());
         }
     }
 
@@ -3605,19 +3552,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * ADVANCED:
      * Extract and return the primary key from the object.
-     * @deprecated since EclipseLink 2.1, replaced by getId(Object)
-     * @see #getId(Object)
-     */
-    @Override
-    @Deprecated
-    public Vector keyFromObject(Object domainObject) throws ValidationException {
-        ClassDescriptor descriptor = getDescriptor(domainObject);
-        return (Vector)keyFromObject(domainObject, descriptor);
-    }
-
-    /**
-     * ADVANCED:
-     * Extract and return the primary key from the object.
      */
     public Object keyFromObject(Object domainObject, ClassDescriptor descriptor) throws ValidationException {
         if (descriptor == null) {
@@ -4883,60 +4817,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (shouldLog(level, category)) {
             startOperationProfile(SessionProfiler.Logging);
             log(new SessionLogEntry(level, category, this, message, params, accessor, shouldTranslate));
-            endOperationProfile(SessionProfiler.Logging);
-        }
-    }
-
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with level, parameters and accessor that needs to be translated.
-     * </p><p>
-     *
-     * @param level  the log request level value
-     * </p><p>
-     * @param message  the string message
-     * </p><p>
-     * @param params  array of parameters to the message
-     * </p><p>
-     * @param accessor  the connection that generated the log entry
-     * </p>
-     * @deprecated since 2.6 replaced by log with category, log(int, String, String, Object[], Accessor)
-     */
-    @Deprecated
-    public void log(int level, String message, Object[] params, Accessor accessor) {
-        if (this.isLoggingOff) {
-            return;
-        }
-        log(level, message, params, accessor, true);
-    }
-
-    /**
-     * PUBLIC:
-     * <p>
-     * Log a message with level, parameters and accessor.  shouldTranslate determines if the message needs to be translated.
-     * </p><p>
-     *
-     * @param level  the log request level value
-     * </p><p>
-     * @param message  the string message
-     * </p><p>
-     * @param params  array of parameters to the message
-     * </p><p>
-     * @param accessor  the connection that generated the log entry
-     * </p><p>
-     * @param shouldTranslate  true if the message needs to be translated.
-     * </p>
-     * @deprecated since 2.6 replaced by log with category, log(int, String, String, Object[], Accessor, boolean)
-     */
-    @Deprecated
-    public void log(int level, String message, Object[] params, Accessor accessor, boolean shouldTranslate) {
-        if (this.isLoggingOff) {
-            return;
-        }
-        if (shouldLog(level, null)) {
-            startOperationProfile(SessionProfiler.Logging);
-            log(new SessionLogEntry(level, this, message, params, accessor, shouldTranslate));
             endOperationProfile(SessionProfiler.Logging);
         }
     }

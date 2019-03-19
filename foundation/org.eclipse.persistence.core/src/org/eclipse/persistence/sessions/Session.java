@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,24 +18,36 @@
 //       - 494610: Session Properties map should be Map<String, Object>
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
+import java.io.Writer;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.TimeUnit;
-import java.io.*;
 
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.partitioning.PartitioningPolicy;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.serializers.Serializer;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.EclipseLinkException;
+import org.eclipse.persistence.exceptions.ExceptionHandler;
+import org.eclipse.persistence.exceptions.IntegrityChecker;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.server.ServerPlatform;
+import org.eclipse.persistence.queries.AttributeGroup;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.JPQLCall;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 
 /**
  * <p>
@@ -191,32 +203,6 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Otherwise only the attributes included into the group will be copied.
      */
     public Object copy(Object originalObjectOrObjects, AttributeGroup group);
-
-    /**
-     * PUBLIC:
-     * Return a complete copy of the object.
-     * This can be used to obtain a scratch copy of an object,
-     * or for templatizing an existing object into another new object.
-     * The object and all of its privately owned parts will be copied, the object's primary key will be reset to null.
-     *
-     * @see #copyObject(Object, ObjectCopyingPolicy)
-     * @deprecated since EclipseLink 2.1, replaced by copy(Object)
-     * @see #copy(Object)
-     */
-    @Deprecated
-    public Object copyObject(Object original);
-
-    /**
-     * PUBLIC:
-     * Return a complete copy of the object.
-     * This can be used to obtain a scratch copy of an object,
-     * or for templatizing an existing object into another new object.
-     * The object copying policy allow for the depth, and reseting of the primary key to null, to be specified.
-     * @deprecated since EclipseLink 2.1, replaced by copy(Object, AttributeGroup)
-     * @see #copy(Object, AttributeGroup)
-     */
-    @Deprecated
-    public Object copyObject(Object original, ObjectCopyingPolicy policy);
 
     /**
      * PUBLIC:
@@ -729,15 +715,6 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Extract and return the Id from the object.
      */
     public Object getId(Object domainObject) throws ValidationException;
-
-    /**
-     * ADVANCED:
-     * Extract and return the primary key from the object.
-     * @deprecated since EclipseLink 2.1, replaced by getId(Object)
-     * @see #getId(Object)
-     */
-    @Deprecated
-    public Vector keyFromObject(Object domainObject) throws ValidationException;
 
     /**
      * PUBLIC:
