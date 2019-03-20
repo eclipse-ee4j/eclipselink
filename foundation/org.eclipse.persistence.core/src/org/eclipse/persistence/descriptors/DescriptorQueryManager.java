@@ -182,7 +182,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * it will be replaced.
      */
     public synchronized void addQuery(DatabaseQuery query) {
-        if (query instanceof ObjectLevelReadQuery && (((ObjectLevelReadQuery)query).getReferenceClassName() == null)) {
+        if (query instanceof ObjectLevelReadQuery && (query.getReferenceClassName() == null)) {
             ((ObjectLevelReadQuery)query).setReferenceClassName(getDescriptor().getJavaClassName());
 
             // try to set the reference ClassNotFoundException since it should only happen on the MW in which

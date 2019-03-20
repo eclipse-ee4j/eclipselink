@@ -38,7 +38,6 @@ import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
@@ -247,7 +246,7 @@ public class ReportQueryResult implements Serializable, Map {
                 if (item.getAttributeExpression().isMapEntryExpression() && mapping.isCollectionMapping()){
                     Object rowKey = null;
                     if (mapping.getContainerPolicy().isMapPolicy() && !mapping.getContainerPolicy().isMappedKeyMapPolicy()){
-                        rowKey = ((MapContainerPolicy)mapping.getContainerPolicy()).keyFrom(value, query.getSession());
+                        rowKey = mapping.getContainerPolicy().keyFrom(value, query.getSession());
                     } else {
                         rowKey = mapping.getContainerPolicy().buildKey(subRow, query, null, query.getSession(), true);
                     }

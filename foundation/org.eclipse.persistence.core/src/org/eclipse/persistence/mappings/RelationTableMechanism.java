@@ -29,7 +29,6 @@ import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.FieldExpression;
@@ -184,7 +183,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         }
 
         if (shouldAddFieldsToQuery && mapping.isCollectionMapping()) {
-            ((CollectionMapping)mapping).getContainerPolicy().addAdditionalFieldsToQuery(mapping.getSelectionQuery(), linkTable);
+            mapping.getContainerPolicy().addAdditionalFieldsToQuery(mapping.getSelectionQuery(), linkTable);
         }
 
         return criteria;
@@ -531,8 +530,8 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
 
         if (getRelationTable().getName().indexOf(' ') != -1) {
             //table names contains a space so needs to be quoted.
-            String beginQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getStartDelimiter();
-            String endQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getEndDelimiter();
+            String beginQuote = session.getDatasourcePlatform().getStartDelimiter();
+            String endQuote = session.getDatasourcePlatform().getEndDelimiter();
             //Ensure this table name hasn't already been quoted.
             if (getRelationTable().getName().indexOf(beginQuote) == -1) {
                 getRelationTable().setName(beginQuote + getRelationTable().getName() + endQuote);
@@ -540,7 +539,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         }
 
         if (mapping.isCollectionMapping()) {
-            ((CollectionMapping)mapping).getContainerPolicy().initialize(session, getRelationTable());
+            mapping.getContainerPolicy().initialize(session, getRelationTable());
         }
 
         initializeInsertQuery(session, mapping);

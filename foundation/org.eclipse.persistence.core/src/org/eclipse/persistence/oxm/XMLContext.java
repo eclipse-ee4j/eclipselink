@@ -46,7 +46,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
@@ -528,7 +527,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                             if(refDescriptor != null) {
                                 DatabaseMapping backpointerMapping =refDescriptor.getMappingForAttributeName(refMapping.getInverseReferenceMapping().getAttributeName());
                                 if(backpointerMapping != null && backpointerMapping.isCollectionMapping()) {
-                                    refMapping.getInverseReferenceMapping().getContainerPolicy().setContainerClass(((CollectionMapping)backpointerMapping).getContainerPolicy().getContainerClass());
+                                    refMapping.getInverseReferenceMapping().getContainerPolicy().setContainerClass(backpointerMapping.getContainerPolicy().getContainerClass());
                                 }
                             }
                         }

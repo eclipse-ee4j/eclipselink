@@ -1647,8 +1647,8 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
         for(Iterator it = getPartialAttributeExpressions().iterator();it.hasNext();){
             Expression expression = (Expression)it.next();
             if (expression.isQueryKeyExpression()) {
-                ((QueryKeyExpression)expression).getBuilder().setSession(session.getRootSession(null));
-                ((QueryKeyExpression)expression).getBuilder().setQueryClass(getDescriptor().getJavaClass());
+                expression.getBuilder().setSession(session.getRootSession(null));
+                expression.getBuilder().setQueryClass(getDescriptor().getJavaClass());
                 DatabaseMapping mapping = ((QueryKeyExpression)expression).getMapping();
                 if (!((QueryKeyExpression)expression).getBaseExpression().isExpressionBuilder()) {
                     if(foreignFields==null){

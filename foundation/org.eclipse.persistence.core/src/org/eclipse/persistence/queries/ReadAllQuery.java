@@ -239,7 +239,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             // but we do not currently allow this.
             AbstractSession rootSession = session;
             while (rootSession.isUnitOfWork()) {
-                rootSession = ((UnitOfWorkImpl)rootSession).getParent();
+                rootSession = rootSession.getParent();
             }
             Vector allCachedVector = rootSession.getIdentityMapAccessor().getAllFromIdentityMap(getSelectionCriteria(), getReferenceClass(), translationRow, getInMemoryQueryIndirectionPolicyState(), false);
 

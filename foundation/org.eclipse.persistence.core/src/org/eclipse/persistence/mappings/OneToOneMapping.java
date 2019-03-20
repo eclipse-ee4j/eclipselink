@@ -143,7 +143,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             if (selectionQuery.isObjectLevelReadQuery()){
                 ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
             } else if (selectionQuery.isDataReadQuery()){
-                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(field);
+                ((SQLSelectStatement) selectionQuery.getSQLStatement()).addField(field);
             }
         }
     }
@@ -845,7 +845,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     protected Object checkCacheForBatchKey(AbstractRecord sourceRow, Object foreignKey, Map batchObjects, ReadQuery batchQuery, ObjectLevelReadQuery originalQuery, AbstractSession session) {
-        if (((ReadAllQuery)batchQuery).shouldRefreshIdentityMapResult() || (!((ReadAllQuery)batchQuery).shouldMaintainCache())) {
+        if (((ReadAllQuery)batchQuery).shouldRefreshIdentityMapResult() || (!batchQuery.shouldMaintainCache())) {
             return null;
         }
         // Check the cache using the source row and selection query.

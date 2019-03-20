@@ -331,7 +331,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((oldValueHolder instanceof DatabaseValueHolder)
-                    && (! ((DatabaseValueHolder) oldValueHolder).isInstantiated())
+                    && (! oldValueHolder.isInstantiated())
                     && (((DatabaseValueHolder) oldValueHolder).getSession() == null)
                     && (! ((DatabaseValueHolder) oldValueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, getMapping());

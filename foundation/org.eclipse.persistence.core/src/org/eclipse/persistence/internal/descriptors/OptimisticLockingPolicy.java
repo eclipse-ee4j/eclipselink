@@ -280,7 +280,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
     public enum LockOnChange{
         OWNING, // update version when an owning mapping changes
         NONE,
-        ALL;
+        ALL
     }
 
 }

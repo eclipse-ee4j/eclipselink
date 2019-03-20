@@ -4298,7 +4298,7 @@ public abstract class Expression implements Serializable, Cloneable {
             outerWriter.flush();
             return innerWriter.toString();
         } catch (IOException e) {
-            return ToStringLocalization.buildMessage("error_printing_expression", (Object[])null);
+            return ToStringLocalization.buildMessage("error_printing_expression", null);
         }
     }
 

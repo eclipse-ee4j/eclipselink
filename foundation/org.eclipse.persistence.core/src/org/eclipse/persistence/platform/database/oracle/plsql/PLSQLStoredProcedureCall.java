@@ -732,7 +732,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append(INDENT);sb.append(INDENT);
                 sb.append("aSqlItem.");
                 sb.append(argument.name);
-                if (argument.databaseType.isComplexDatabaseType() && !((ComplexDatabaseType)argument.databaseType).isJDBCType()) {
+                if (argument.databaseType.isComplexDatabaseType() && !argument.databaseType.isJDBCType()) {
                     sb.append(" := ");
                     sb.append(getPl2SQLName((ComplexDatabaseType)argument.databaseType));
                     sb.append("(aPlsqlItem.");
@@ -786,7 +786,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 sb.append(INDENT);sb.append(INDENT);
                 sb.append("aPlsqlItem.");
                 sb.append(argument.name);
-                if (argument.databaseType.isComplexDatabaseType() && !((ComplexDatabaseType)argument.databaseType).isJDBCType()) {
+                if (argument.databaseType.isComplexDatabaseType() && !argument.databaseType.isJDBCType()) {
                     sb.append(" := ");
                     sb.append(getSQL2PlName((ComplexDatabaseType)argument.databaseType));
                     sb.append("(aSqlItem.");
@@ -854,7 +854,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
             sb.append(NL);
             sb.append(INDENT);sb.append(INDENT);sb.append(INDENT);
             sb.append("aSqlItem(I + 1 - aPlsqlItem.FIRST) := ");
-            if (collection.nestedType != null && (collection.nestedType.isComplexDatabaseType() && !((ComplexDatabaseType)collection.nestedType).isJDBCType())) {
+            if (collection.nestedType != null && (collection.nestedType.isComplexDatabaseType() && !collection.nestedType.isJDBCType())) {
                 sb.append(getPl2SQLName((ComplexDatabaseType)collection.nestedType));
                 sb.append("(aPlsqlItem(I));");
             }

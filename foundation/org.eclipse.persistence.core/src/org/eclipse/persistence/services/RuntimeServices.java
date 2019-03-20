@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -682,7 +682,7 @@ public abstract class RuntimeServices {
       *
       */
      protected void updateDeploymentTimeData() {
-         this.deployedSessionLog = (SessionLog)((AbstractSessionLog)session.getSessionLog()).clone();
+         this.deployedSessionLog = (SessionLog) session.getSessionLog().clone();
          if (session.getProfiler() == null) {
              this.deployedSessionProfileWeight = -1;//there is no profiler
          } else {
@@ -872,7 +872,7 @@ public abstract class RuntimeServices {
       * Default behavior is to return "unknown" - we override this behavior here for WebLogic.
       */
      public String getModuleName() {
-         return ((DatabaseSessionImpl)getSession())
+         return getSession()
              .getServerPlatform().getModuleName();
      }
 
@@ -883,7 +883,7 @@ public abstract class RuntimeServices {
       * Default behavior is to return "unknown" - we override this behavior here for all platform implementors of JMXEnabledPlatform
       */
      public String getApplicationName() {
-         return ((JMXEnabledPlatform)((DatabaseSessionImpl)getSession())
+         return ((JMXEnabledPlatform) getSession()
                  .getServerPlatform()).getApplicationName();
      }
 
@@ -906,7 +906,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
              return Integer.valueOf(0);
          }
-         if (!((DatabaseLogin)getSession().getDatasourceLogin()).getPlatform().usesStringBinding()) {
+         if (!getSession().getDatasourceLogin().getPlatform().usesStringBinding()) {
              return Integer.valueOf(0);
          }
          return Integer.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).getStringBindingSize());
@@ -974,7 +974,7 @@ public abstract class RuntimeServices {
          if (!(getSession().getDatasourceLogin() instanceof DatabaseLogin)) {
              return Boolean.FALSE;
          }
-         return Boolean.valueOf(((DatabaseLogin)getSession().getDatasourceLogin()).getPlatform().usesStringBinding());
+         return Boolean.valueOf(getSession().getDatasourceLogin().getPlatform().usesStringBinding());
      }
 
      /**

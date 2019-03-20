@@ -2030,7 +2030,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                             }
                             values.add(exp);
                         } else {
-                            values.add(((OneToOneMapping)mapping).getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(valueObject, targetField, getSession()));
+                            values.add(mapping.getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(valueObject, targetField, getSession()));
                         }
                     }
                     baseExpressions.add(new FieldExpression((DatabaseField)fields.elementAt(i), ((QueryKeyExpression)baseExpression).getBaseExpression()));

@@ -365,14 +365,14 @@ public class ConnectionPolicy implements Cloneable, Serializable {
     public String toString() {
         String type = "";
         if (isPooled()) {
-            type = "(" + ToStringLocalization.buildMessage("pooled", (Object[])null) + ": " + getPoolName();
+            type = "(" + ToStringLocalization.buildMessage("pooled", null) + ": " + getPoolName();
         } else {
-            type = "(" + ToStringLocalization.buildMessage("login", (Object[])null) + ": " + getLogin();
+            type = "(" + ToStringLocalization.buildMessage("login", null) + ": " + getLogin();
         }
         if (isLazy()) {
-            type = type + "," + ToStringLocalization.buildMessage("lazy", (Object[])null) + ")";
+            type = type + "," + ToStringLocalization.buildMessage("lazy", null) + ")";
         } else {
-            type = type + "," + ToStringLocalization.buildMessage("non-lazy", (Object[])null) + ")";
+            type = type + "," + ToStringLocalization.buildMessage("non-lazy", null) + ")";
         }
 
         return Helper.getShortClassName(getClass()) + type;

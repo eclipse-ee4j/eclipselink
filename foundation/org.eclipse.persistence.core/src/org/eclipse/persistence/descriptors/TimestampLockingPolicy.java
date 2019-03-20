@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,7 +114,7 @@ public class TimestampLockingPolicy extends VersionLockingPolicy {
         if (usesServerTime()) {
             AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
             while (readSession.isUnitOfWork()) {
-                readSession = ((UnitOfWorkImpl)readSession).getParent().getSessionForClass(getDescriptor().getJavaClass());
+                readSession = readSession.getParent().getSessionForClass(getDescriptor().getJavaClass());
             }
 
             return readSession.getDatasourceLogin().getDatasourcePlatform().getTimestampFromServer(session, readSession.getName());

@@ -99,7 +99,6 @@ import org.eclipse.persistence.internal.sessions.TransformationMappingChangeReco
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.ContainerMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
@@ -1152,7 +1151,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         }
         if (query instanceof ObjectLevelReadQuery) {
-            LoadGroup group = ((ObjectLevelReadQuery)query).getLoadGroup();
+            LoadGroup group = query.getLoadGroup();
             if (group != null) {
                 session.load(domainObject, group, query.getDescriptor(), false);
             }
@@ -1398,7 +1397,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             databaseRowsIn.add(databaseRow);
                         }
                     }
-                    policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, (CacheKey)null, true);
+                    policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, null, true);
                 } else {
                     boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
                     for (int index = 0; index < size; index++) {
@@ -1410,7 +1409,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                             if (quickAdd) {
                                 ((Collection)domainObjects).add(domainObject);
                             } else {
-                                policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
+                                policy.addInto(domainObject, domainObjects, session, databaseRow, query, null, true);
                             }
                         }
 
@@ -1532,7 +1531,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         databaseRowsIn.add(databaseRow);
                     }
                 }
-                policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, (CacheKey)null, true);
+                policy.addAll(domainObjectsIn, domainObjects, session, databaseRowsIn, query, null, true);
             } else {
                 boolean quickAdd = (domainObjects instanceof Collection) && !this.hasWrapperPolicy;
                 for (Enumeration iterator = ((Vector)databaseRows).elements(); iterator.hasMoreElements(); ) {
@@ -1544,7 +1543,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                         if (quickAdd) {
                             ((Collection)domainObjects).add(domainObject);
                         } else {
-                            policy.addInto(domainObject, domainObjects, session, databaseRow, query, (CacheKey)null, true);
+                            policy.addInto(domainObject, domainObjects, session, databaseRow, query, null, true);
                         }
                     }
                 }
@@ -3316,7 +3315,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         while (mapping.isAggregateObjectMapping()) {
             String attributeName = mapping.getAttributeName();
             Object aggregate = mapping.getAttributeValueFromObject(object);
-            ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+            ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
             AggregateChangeRecord aggregateChangeRecord = (AggregateChangeRecord)objectChangeSet.getChangesForAttributeNamed(attributeName);
             if (aggregateChangeRecord == null) {
                 aggregateChangeRecord = new AggregateChangeRecord(objectChangeSet);
@@ -3368,7 +3367,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
         // Drill down through the mappings until we get the direct mapping to the databaseField.
         while ((mapping != null) && mapping.isAggregateObjectMapping()) {
-            mapping = ((AggregateObjectMapping)mapping).getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
+            mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
         }
         return mapping;
     }
@@ -3383,7 +3382,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         // Drill down through the aggregate mappings to get to the direct to field mapping.
         while (mapping.isAggregateObjectMapping()) {
             valueIntoObject = mapping.getAttributeValueFromObject(valueIntoObject);
-            mapping = ((AggregateMapping)mapping).getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
+            mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
         }
         // Bug 422610
         if (valueIntoObject == null) {
@@ -3608,7 +3607,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         // Drill down through the aggregate mappings to get to the direct to field mapping.
         while (mapping.isAggregateObjectMapping()) {
             valueIntoObject = mapping.getAttributeValueFromObject(valueIntoObject);
-            mapping = ((AggregateMapping)mapping).getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
+            mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(databaseField);
         }
         return valueIntoObject;
     }
@@ -3663,7 +3662,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public DatabaseField getTargetFieldForQueryKeyName(String queryKeyName) {
         DatabaseMapping mapping = getMappingForAttributeName(queryKeyName);
         if ((mapping != null) && mapping.isAbstractColumnMapping()) {
-            return ((AbstractColumnMapping)mapping).getField();
+            return mapping.getField();
         }
 
         //mapping is either null or not direct to field.
@@ -3736,7 +3735,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     if (mapping.isAggregateObjectMapping()) {
                         // For Embeddable class, we need to test read-only
                         // status of individual fields in the embeddable.
-                        ObjectBuilder aggregateObjectBuilder = ((AggregateObjectMapping)mapping).getReferenceDescriptor().getObjectBuilder();
+                        ObjectBuilder aggregateObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
 
                         // Look in the non-read-only fields mapping
                         DatabaseMapping aggregatedFieldMapping = aggregateObjectBuilder.getMappingForField(field);

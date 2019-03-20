@@ -16,6 +16,7 @@
 //       - 437578: Added cacheable field and updated setting isolation from parent.
 package org.eclipse.persistence.descriptors;
 
+import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.HashMap;
@@ -23,14 +24,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.io.*;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.DatabaseChangeNotificationType;
 import org.eclipse.persistence.config.CacheIsolationType;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -41,9 +42,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.sessions.DatabaseSession;
 
 /**
@@ -236,7 +235,7 @@ public class CachePolicy implements Cloneable, Serializable {
             }
 
             if (mapping.isForeignReferenceMapping()) {
-                ClassDescriptor referencedDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referencedDescriptor = mapping.getReferenceDescriptor();
                 if (referencedDescriptor!= null) {
                     if (isSharedIsolation() && !referencedDescriptor.getCachePolicy().isSharedIsolation()) {
                         setCacheIsolation(CacheIsolationType.PROTECTED);
@@ -245,7 +244,7 @@ public class CachePolicy implements Cloneable, Serializable {
             }
 
             if (mapping.isAggregateObjectMapping()) {
-                ClassDescriptor referencedDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referencedDescriptor = mapping.getReferenceDescriptor();
                 if (referencedDescriptor != null) {
                     if (isSharedIsolation() && !referencedDescriptor.getCachePolicy().isSharedIsolation()) {
                         setCacheIsolation(CacheIsolationType.PROTECTED);

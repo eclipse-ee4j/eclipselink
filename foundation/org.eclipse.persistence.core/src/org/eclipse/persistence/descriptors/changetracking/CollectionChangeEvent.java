@@ -66,7 +66,7 @@ public class CollectionChangeEvent extends PropertyChangeEvent {
      *
      */
     public CollectionChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementChanged, int changeType, boolean isChangeApplied) {
-        this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, (Integer)null, false, isChangeApplied);
+        this(collectionOwner, propertyName, collectionChanged, elementChanged, changeType, null, false, isChangeApplied);
     }
 
     /**

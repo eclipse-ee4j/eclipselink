@@ -112,7 +112,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
         Object cachedObject = null;
 
         if (getMapping().isOneToOneMapping()) {
-            ClassDescriptor descriptor = ((ObjectReferenceMapping)getMapping()).getReferenceDescriptor();
+            ClassDescriptor descriptor = getMapping().getReferenceDescriptor();
             cachedObject = getSession().getIdentityMapAccessorInstance().getFromIdentityMap(getTargetObjectPrimaryKeys(), descriptor.getJavaClass(), descriptor);
         }
 

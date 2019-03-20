@@ -166,7 +166,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public void addField(Expression expression) {
         if (expression instanceof FunctionExpression) {
-            if (((FunctionExpression)expression).getOperator().isAggregateOperator()) {
+            if (expression.getOperator().isAggregateOperator()) {
                 setIsAggregateSelect(true);
             }
         }

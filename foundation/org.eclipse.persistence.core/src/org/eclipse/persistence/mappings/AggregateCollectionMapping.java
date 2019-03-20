@@ -2707,7 +2707,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (collectionChangeRecord == null) {
             //if there is no change for this attribute then create a changeSet for it. no need to modify the resulting
             // change record as it should be built from the clone which has the changes allready
-            Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
+            Object cloneObject = changeSet.getUOWChangeSet().getUOWCloneForObjectChangeSet(changeSet);
             Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
             collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, containerPolicy.containerInstance(), changeSet, session);
             changeSet.addChange(collectionChangeRecord);
@@ -2729,7 +2729,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (collectionChangeRecord == null) {
             //if there is no change for this attribute then create a changeSet for it. no need to modify the resulting
             // change record as it should be built from the clone which has the changes allready
-            Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
+            Object cloneObject = changeSet.getUOWChangeSet().getUOWCloneForObjectChangeSet(changeSet);
             Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
             collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, containerPolicy.containerInstance(), changeSet, session);
             changeSet.addChange(collectionChangeRecord);

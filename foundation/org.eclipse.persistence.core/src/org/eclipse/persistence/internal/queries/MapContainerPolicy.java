@@ -51,7 +51,6 @@ import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
@@ -417,7 +416,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         ClassDescriptor descriptor = baseMapping.getReferenceDescriptor();
         DatabaseMapping mapping = descriptor.getMappingForAttributeName(Helper.getAttributeNameFromMethodName(keyName));
         if (mapping.isAbstractDirectMapping()){
-            return ((AbstractDirectMapping)mapping).getField();
+            return mapping.getField();
         }
         return null;
     }
@@ -535,7 +534,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
         // Should only run through this once ...
         if (keyName != null && keyMethod == null && keyField == null) {
             try {
-                keyMethod = Helper.getDeclaredMethod(elementClass, keyName, (Class[]) null);
+                keyMethod = Helper.getDeclaredMethod(elementClass, keyName, null);
             } catch (NoSuchMethodException ex) {
                 try {
                     keyField = Helper.getField(elementClass, keyName);
@@ -570,7 +569,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        return AccessController.doPrivileged(new PrivilegedMethodInvoker(keyMethod, keyElement, (Object[])null));
+                        return AccessController.doPrivileged(new PrivilegedMethodInvoker(keyMethod, keyElement, null));
                     } catch (PrivilegedActionException exception) {
                         Exception throwableException = exception.getException();
                         if (throwableException instanceof IllegalAccessException) {
@@ -580,7 +579,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
                         }
                     }
                 } else {
-                    return PrivilegedAccessHelper.invokeMethod(keyMethod, keyElement, (Object[])null);
+                    return PrivilegedAccessHelper.invokeMethod(keyMethod, keyElement, null);
                 }
             } catch (IllegalAccessException e) {
                 throw QueryException.cannotAccessMethodOnObject(keyMethod, keyElement);

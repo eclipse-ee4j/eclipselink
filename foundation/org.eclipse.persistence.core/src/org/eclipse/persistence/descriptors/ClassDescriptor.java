@@ -125,7 +125,6 @@ import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -3206,14 +3205,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if(((ForeignReferenceMapping)mapping).getIndirectionPolicy() instanceof ProxyIndirectionPolicy) {
                     session.getProject().setHasProxyIndirection(true);
                 }
-                ClassDescriptor referencedDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referencedDescriptor = mapping.getReferenceDescriptor();
                 if (referencedDescriptor!= null){
                     referencedDescriptor.referencingClasses.add(this);
                 }
             }
 
             if (mapping.isAggregateObjectMapping()) {
-                ClassDescriptor referencedDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referencedDescriptor = mapping.getReferenceDescriptor();
                 if (referencedDescriptor!= null){
                     referencedDescriptor.referencingClasses.add(this);
                 }
@@ -3332,7 +3331,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if ((mapping != null) && mapping.isAbstractColumnMapping()) {
                     getMappings().remove(mapping);
                     getMappings().add(0, mapping);
-                    DatabaseField field = ((AbstractColumnMapping)mapping).getField();
+                    DatabaseField field = mapping.getField();
                     getFields().remove(field);
                     getFields().add(0, field);
                     getAllFields().remove(field);
@@ -6834,7 +6833,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     mapping.isAbstractCompositeDirectCollectionMapping()) {
                 return true;
             } else if (mapping.isAggregateObjectMapping()) {
-                ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
                 if (referenceDescriptor == null) {
                     // the mapping has not been initialized yet
                     referenceDescriptor = session.getDescriptor(((AggregateObjectMapping)mapping).getReferenceClass());

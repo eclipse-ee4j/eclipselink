@@ -3589,7 +3589,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         if (this.isLoggingOff) {
             return;
         }
-        log(SessionLog.FINER, SessionLog.MISC, message, (Object[])null, null, false);
+        log(SessionLog.FINER, SessionLog.MISC, message, null, null, false);
     }
 
     /**
@@ -4564,7 +4564,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                 break;
             default:
                 level = SessionLog.ALL;
-                ;
             }
             log(level, SessionLog.PROPAGATION, message, null, null, false);
         }

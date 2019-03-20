@@ -30,7 +30,6 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
@@ -148,7 +147,7 @@ public class ParameterExpression extends BaseExpression {
         if (localBase == null) {
             //Bug#5097278 Need to return the builder from the base expression if nested.
             if (getBaseExpression() != null) {
-                return ((ParameterExpression)getBaseExpression()).getBuilder();
+                return getBaseExpression().getBuilder();
             } else {
                 return null;
             }
@@ -462,7 +461,7 @@ public class ParameterExpression extends BaseExpression {
             if (mapping != null) {
                 if (mapping.isCollectionMapping() && queryKey.isMapEntryExpression() && !((MapEntryExpression)queryKey).shouldReturnMapEntry()){
                     // this is a map key expression, operate on the key
-                    ContainerPolicy cp = ((CollectionMapping)mapping).getContainerPolicy();
+                    ContainerPolicy cp = mapping.getContainerPolicy();
                     Object keyType = cp.getKeyType();
                     Class keyTypeClass = keyType instanceof Class ? (Class)keyType: ((ClassDescriptor)keyType).getJavaClass();
                     if (!keyTypeClass.isInstance(value)){

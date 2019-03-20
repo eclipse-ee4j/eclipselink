@@ -398,7 +398,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         try {
             if (shouldLogProfile()) {
                 writeNestingTabs(writer);
-                writer.write(ToStringLocalization.buildMessage("begin_profile_of", (Object[])null) + "{" + query.toString() + Helper.cr());
+                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query.toString() + Helper.cr());
                 writer.flush();
             }
 
@@ -443,7 +443,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                     profile.write(writer, this);
                     writer.write(Helper.cr());
                     writeNestingTabs(writer);
-                    writer.write("}" + ToStringLocalization.buildMessage("end_profile", (Object[])null));
+                    writer.write("}" + ToStringLocalization.buildMessage("end_profile", null));
                     writer.write(Helper.cr());
                     writer.flush();
                 }

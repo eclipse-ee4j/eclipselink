@@ -58,11 +58,9 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.MappedKeyMapContainerPolicy;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
@@ -178,7 +176,7 @@ public class DefaultTableGenerator {
 
             if ((descriptor instanceof XMLDescriptor) || (descriptor instanceof EISDescriptor) || (descriptor instanceof ObjectRelationalDataTypeDescriptor)) {
                 //default table generator does not support ox, eis and object-relational descriptor
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.DDL, "relational_descriptor_support_only", (Object[])null, true);
+                AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.DDL, "relational_descriptor_support_only", null, true);
 
                 return tblCreator;
             }
@@ -228,7 +226,7 @@ public class DefaultTableGenerator {
                 //acquire a connection from the pool
                 conn = ((ServerSession)session).getDefaultConnectionPool().acquireConnection().getConnection();
             } else if (session.isDatabaseSession()) {
-                conn = ((DatabaseSessionImpl)session).getAccessor().getConnection();
+                conn = session.getAccessor().getConnection();
             }
             if (conn == null) {
                 //TODO: this is not pretty, connection is not obtained for some reason.
@@ -374,13 +372,13 @@ public class DefaultTableGenerator {
                     }
                 } else if (mapping.isOneToManyMapping()) {
                     addForeignKeyFieldToSourceTargetTable((OneToManyMapping) mapping);
-                    TableDefinition targTblDef = getTableDefFromDBTable(((OneToManyMapping)mapping).getReferenceDescriptor().getDefaultTable());
+                    TableDefinition targTblDef = getTableDefFromDBTable(mapping.getReferenceDescriptor().getDefaultTable());
                     addFieldsForMappedKeyMapContainerPolicy(mapping.getContainerPolicy(), targTblDef);
                 }
             } else if (mapping.isTransformationMapping()) {
                 resetTransformedFieldType((TransformationMapping) mapping);
             } else if (mapping.isAggregateObjectMapping()){
-                postInitTableSchema(((AggregateObjectMapping)mapping).getReferenceDescriptor());
+                postInitTableSchema(mapping.getReferenceDescriptor());
             }
         }
 

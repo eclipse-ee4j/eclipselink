@@ -319,7 +319,7 @@ public class SchemaManager {
         try {
             // Handle the table definitions first.
             if (definition.isTableSequenceDefinition()) {
-                TableDefinition tableDefinition = ((TableSequenceDefinition) definition).buildTableDefinition();
+                TableDefinition tableDefinition = definition.buildTableDefinition();
                 // Check that we haven't already created the table.
                 if (! createdTableNames.contains(tableDefinition.getFullName())) {
                     createdTableNames.add(tableDefinition.getFullName());

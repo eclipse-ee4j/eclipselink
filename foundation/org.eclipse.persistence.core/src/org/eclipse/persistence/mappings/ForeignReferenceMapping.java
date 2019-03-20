@@ -977,7 +977,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             if (sourceFetchGroup != null) {
                 FetchGroup targetFetchGroup = sourceFetchGroup.getGroup(getAttributeName());
                 if (targetFetchGroup != null) {
-                    ((ObjectLevelReadQuery)batchQuery).setFetchGroup(targetFetchGroup);
+                    batchQuery.setFetchGroup(targetFetchGroup);
                 }
             }
         }
@@ -1350,7 +1350,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * A subclass should implement this method if it wants non default behavior.
      */
     protected void initializeSelectionQuery(AbstractSession session) throws DescriptorException {
-        if (((ObjectLevelReadQuery)getSelectionQuery()).getReferenceClass() == null) {
+        if (getSelectionQuery().getReferenceClass() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);
         }
         getSelectionQuery().setName(getAttributeName());

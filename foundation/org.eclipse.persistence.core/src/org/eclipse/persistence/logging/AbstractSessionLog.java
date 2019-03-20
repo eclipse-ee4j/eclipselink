@@ -363,7 +363,7 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
             return;
         }
         //Bug#4566524  Pass in false for external use
-        log(level, message, (Object[])null, false);
+        log(level, message, null, false);
     }
 
     /**

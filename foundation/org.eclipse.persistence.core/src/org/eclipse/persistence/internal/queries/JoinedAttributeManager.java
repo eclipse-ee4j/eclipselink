@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.Cursor;
@@ -309,7 +308,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     getJoinedMappingQueries_().put(mapping, nestedQuery);
                 }
                 if (mapping.isCollectionMapping()){
-                    ((CollectionMapping)mapping).getContainerPolicy().addNestedJoinsQueriesForMapKey(this, readQuery, session);
+                    mapping.getContainerPolicy().addNestedJoinsQueriesForMapKey(this, readQuery, session);
                 }
             }
         }
@@ -382,7 +381,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             if (mapping.isCollectionMapping()){
                 // map keys are indexed within the collection's row.
                 // Therefore we use an offset from within the collections row
-                numberOfFields += ((CollectionMapping)mapping).getContainerPolicy()
+                numberOfFields += mapping.getContainerPolicy()
                         .updateJoinedMappingIndexesForMapKey(getJoinedMappingIndexes_(), numberOfFields);
             }
             currentIndex = currentIndex + numberOfFields;

@@ -346,7 +346,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     @Override
     public Class getClassType(org.eclipse.persistence.sessions.Session session) {
         if (classType == null) {
-            classType = (Class)((AbstractSession)session).getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
+            classType = (Class) session.getDatasourcePlatform().getConversionManager().convertObject(getClassName(), ClassConstants.CLASS);
         }
         return classType;
     }

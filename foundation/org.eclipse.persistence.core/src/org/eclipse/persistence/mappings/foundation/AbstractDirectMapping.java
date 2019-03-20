@@ -109,7 +109,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (selectionQuery.isObjectLevelReadQuery()){
             ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(getField()));
         } else if (selectionQuery.isDataReadQuery()){
-            ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getField(getField()));
+            ((SQLSelectStatement) selectionQuery.getSQLStatement()).addField(baseExpression.getField(getField()));
         }
     }
 

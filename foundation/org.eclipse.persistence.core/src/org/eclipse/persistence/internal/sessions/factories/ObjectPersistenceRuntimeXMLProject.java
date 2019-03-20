@@ -123,7 +123,6 @@ import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
@@ -762,7 +761,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 }
 
                 Object attributeValue;
-                Class attributeClass = (Class)((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+                Class attributeClass = (Class) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {

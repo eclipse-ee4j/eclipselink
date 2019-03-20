@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,31 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.structures;
 
-import java.util.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 
 /**
  * <p><b>Purpose:</b>
@@ -343,13 +358,13 @@ public class NestedTableMapping extends CollectionMapping {
 
         java.sql.Array array;
         try {
-            ((DatabaseAccessor)session.getAccessor()).incrementCallCount(session);
-            java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
+            session.getAccessor().incrementCallCount(session);
+            java.sql.Connection connection = session.getAccessor().getConnection();
             array = session.getPlatform().createArray(getStructureName(), fields, session,connection);
         } catch (java.sql.SQLException exception) {
             throw DatabaseException.sqlException(exception, session.getAccessor(), session, false);
         } finally {
-            ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
+            session.getAccessor().decrementCallCount();
         }
 
         record.put(getField(), array);
@@ -382,13 +397,13 @@ public class NestedTableMapping extends CollectionMapping {
 
         java.sql.Array array;
         try {
-            ((DatabaseAccessor)session.getAccessor()).incrementCallCount(session);
-            java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
+            session.getAccessor().incrementCallCount(session);
+            java.sql.Connection connection = session.getAccessor().getConnection();
             array = session.getPlatform().createArray(getStructureName(), fields, session, connection);
         } catch (java.sql.SQLException exception) {
             throw DatabaseException.sqlException(exception, session.getAccessor(), session, false);
         } finally {
-            ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
+            session.getAccessor().decrementCallCount();
         }
 
         record.put(getField(), array);

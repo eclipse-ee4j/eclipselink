@@ -498,7 +498,7 @@ public class PrivilegedAccessHelper {
      * parameters. Wrap in a doPrivileged block if necessary.
      */
     public static Object invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
-        return invokeMethod(method, object, (Object[]) null);
+        return invokeMethod(method, object, null);
     }
 
     /**

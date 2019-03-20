@@ -860,7 +860,7 @@ public class SchemaModelGenerator {
         if (!collection) {
             isNillable = mapping.getNullPolicy().isNullRepresentedByXsiNil();
         } else {
-            isNillable = ((CompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
+            isNillable = mapping.getNullPolicy().isNullRepresentedByXsiNil();
         }
         element.setNillable(isNillable);
 

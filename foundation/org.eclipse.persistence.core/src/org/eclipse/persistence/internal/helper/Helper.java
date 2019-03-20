@@ -1026,7 +1026,7 @@ public class Helper extends CoreHelper implements Serializable {
      * access private/package/protected methods.
      */
     public static Method getDeclaredMethod(Class javaClass, String methodName) throws NoSuchMethodException {
-        return getDeclaredMethod(javaClass, methodName, (Class[]) null);
+        return getDeclaredMethod(javaClass, methodName, null);
     }
 
     /**

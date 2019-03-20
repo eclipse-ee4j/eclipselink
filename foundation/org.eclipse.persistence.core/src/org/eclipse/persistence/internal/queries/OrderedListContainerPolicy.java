@@ -743,7 +743,7 @@ public class OrderedListContainerPolicy extends ListContainerPolicy {
             if (selectionQuery.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(this.listOrderField));
             } else {
-                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getField(this.listOrderField));
+                ((SQLSelectStatement) selectionQuery.getSQLStatement()).addField(baseExpression.getField(this.listOrderField));
             }
         }
     }

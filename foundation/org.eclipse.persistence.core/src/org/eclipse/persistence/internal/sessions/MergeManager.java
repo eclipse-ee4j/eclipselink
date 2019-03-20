@@ -642,7 +642,7 @@ public class MergeManager {
         Object primaryKey = descriptor.getObjectBuilder().extractPrimaryKeyFromObject(clone, this.session, true);
         CacheKey parentCacheKey = null;
         if (primaryKey != null){
-            parentCacheKey = ((UnitOfWorkImpl)this.session).getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
+            parentCacheKey = this.session.getParentIdentityMapSession(descriptor, false, false).getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, clone.getClass(), descriptor);
         }
         Object original = null;
         if (parentCacheKey != null){

@@ -776,7 +776,7 @@ public class FunctionExpression extends BaseExpression {
         if (getOperator().getSelector() == ExpressionOperator.Count) {
             Expression baseExp = getBaseExpression();
             boolean distinctUsed = false;
-            if (baseExp.isFunctionExpression() && (((FunctionExpression)baseExp).getOperator().getSelector() == ExpressionOperator.Distinct)) {
+            if (baseExp.isFunctionExpression() && (baseExp.getOperator().getSelector() == ExpressionOperator.Distinct)) {
                 distinctUsed = true;
                 baseExp = ((FunctionExpression)baseExp).getBaseExpression();
             }

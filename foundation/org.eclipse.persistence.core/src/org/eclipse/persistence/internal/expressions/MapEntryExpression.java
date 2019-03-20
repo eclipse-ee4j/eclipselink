@@ -55,7 +55,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      */
     @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
-        return ((DataExpression)getBaseExpression()).aliasForTable(table);
+        return getBaseExpression().aliasForTable(table);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,17 +16,25 @@
 //       - 357474: Address primaryKey option from tenant discriminator column
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * <p><b>Purpose</b>:Used for all relation operators except for between.
@@ -274,7 +282,7 @@ public class RelationExpression extends CompoundExpression {
                 if (!mapping.isAbstractColumnMapping()) {
                     return false;
                 }
-                field = ((AbstractColumnMapping)mapping).getField();
+                field = mapping.getField();
             } else {
                 // Only get field for the source object.
                 field = descriptorForChild.getObjectBuilder().getFieldForQueryKeyName(child.getName());
@@ -310,7 +318,7 @@ public class RelationExpression extends CompoundExpression {
                 if (!mapping.isAbstractColumnMapping()) {
                     return false;
                 }
-                field = ((AbstractColumnMapping)mapping).getField();
+                field = mapping.getField();
             } else {
                 field = descriptorForChild.getObjectBuilder().getFieldForQueryKeyName(child.getName());
             }
@@ -389,7 +397,7 @@ public class RelationExpression extends CompoundExpression {
                 if (!mapping.isAbstractColumnMapping()) {
                     return false;
                 }
-                field = ((AbstractColumnMapping)mapping).getField();
+                field = mapping.getField();
             } else {
                 // Only get field for the source object.
                 field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
@@ -424,7 +432,7 @@ public class RelationExpression extends CompoundExpression {
                 if (!mapping.isAbstractColumnMapping()) {
                     return false;
                 }
-                field = ((AbstractColumnMapping)mapping).getField();
+                field = mapping.getField();
             } else {
                 field = descriptor.getObjectBuilder().getFieldForQueryKeyName(child.getName());
             }
@@ -826,7 +834,7 @@ public class RelationExpression extends CompoundExpression {
             // An example is the "back-ref" query key for batch reads.  Must not
             // attempt the optimization for these.
             (!first.isExpressionBuilder() && !((QueryKeyExpression)first).shouldQueryToManyRelationship() &&
-             (((QueryKeyExpression)first).getMapping() != null)) {
+             (first.getMapping() != null)) {
             // Normalize firstChild's base only, as firstChild will be optimized out.
             if (first.getBaseExpression() != null) {
                 first.setBaseExpression(first.getBaseExpression().normalize(normalizer));

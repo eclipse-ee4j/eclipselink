@@ -1275,7 +1275,7 @@ public class SessionsFactory {
      * INTERNAL:
      */
     protected SessionLog buildServerLogConfig(ServerLogConfig serverLogConfig, AbstractSession session) {
-        SessionLog serverLog = ((DatabaseSessionImpl)session).getServerPlatform().getServerLog();
+        SessionLog serverLog = session.getServerPlatform().getServerLog();
 
         return serverLog;
     }

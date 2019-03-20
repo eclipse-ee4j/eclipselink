@@ -34,9 +34,7 @@ import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.queries.EntityFetchGroup;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -270,7 +268,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                 FetchGroup nestedFetchGroup = (FetchGroup)entry.getValue().getGroup();
                 if(nestedFetchGroup != null) {
                    if(mapping.isForeignReferenceMapping()) {
-                       ClassDescriptor referenceDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                       ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
                        if(referenceDescriptor != null) {
                            FetchGroupManager nestedFetchGroupManager = referenceDescriptor.getFetchGroupManager();
                            if(nestedFetchGroupManager != null) {
@@ -284,7 +282,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
                            throw ValidationException.fetchGroupHasWrongReferenceAttribute(fetchGroup, name);
                        }
                    } else if (mapping.isAggregateObjectMapping()){
-                       ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                       ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
                        if(referenceDescriptor != null) {
                            FetchGroupManager nestedFetchGroupManager = referenceDescriptor.getFetchGroupManager();
                            if(nestedFetchGroupManager != null) {

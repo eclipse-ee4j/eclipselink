@@ -96,7 +96,7 @@ public class NodeRecord extends MarshalRecord {
      * Create a record with the local root element name, that is a child of the parent.
      */
     public NodeRecord(String localRootElementName, Node parent) {
-        this(localRootElementName, (NamespaceResolver)null, parent);
+        this(localRootElementName, null, parent);
     }
 
     /**

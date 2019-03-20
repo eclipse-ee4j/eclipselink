@@ -287,7 +287,7 @@ public class FieldExpression extends DataExpression {
         // Check for possible table per class rebuild and translate fields to correct table.
         // TODO: JPA also allows for field to be renamed in subclasses, this needs to account for that (never has...).
         if (getBaseExpression().isExpressionBuilder() && newBase.isObjectExpression()) {
-            if (((ObjectExpression)newBase).getSession() != null) {
+            if (newBase.getSession() != null) {
                 descriptor = ((ObjectExpression)newBase).getDescriptor();
             }
             if ((descriptor != null) && descriptor.hasTablePerClassPolicy()) {
@@ -324,7 +324,7 @@ public class FieldExpression extends DataExpression {
         // TODO: JPA also allows for field to be renamed in subclasses, this needs to account for that (never has...).
         if (this.baseExpression.isExpressionBuilder() && newBase.isObjectExpression()
                 && ((this.baseExpression == oldBase) || (oldBase == null))) {
-            if (((ObjectExpression)newBase).getSession() != null) {
+            if (newBase.getSession() != null) {
                 descriptor = ((ObjectExpression)newBase).getDescriptor();
             }
             if ((descriptor != null) && descriptor.hasTablePerClassPolicy()) {

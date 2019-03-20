@@ -16,12 +16,12 @@
 //       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.queries;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.helper.StringHelper;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 
@@ -175,7 +174,7 @@ public class ConstructorReportItem extends ReportItem  {
                         if (((MapEntryExpression)argumentItem.getAttributeExpression()).shouldReturnMapEntry()){
                             constructorArgTypes[index] = Map.Entry.class;
                         } else {
-                            constructorArgTypes[index] = (Class)((CollectionMapping)mapping).getContainerPolicy().getKeyType();
+                            constructorArgTypes[index] = (Class) mapping.getContainerPolicy().getKeyType();
                         }
                     } else {
                         constructorArgTypes[index] = mapping.getAttributeClassification();

@@ -2959,7 +2959,7 @@ public class DatabasePlatform extends DatasourcePlatform {
          try{
              sessionForProfile.startOperationProfile(SessionProfiler.ConnectionPing);
              if (sessionForProfile.shouldLog(SessionLog.FINE, SessionLog.SQL)) {// Avoid printing if no logging required.
-                 sessionForProfile.log(SessionLog.FINE, SessionLog.SQL, getPingSQL(), (Object[])null, null, false);
+                 sessionForProfile.log(SessionLog.FINE, SessionLog.SQL, getPingSQL(), null, null, false);
              }
              statement = connection.prepareStatement(getPingSQL());
              ResultSet result = statement.executeQuery();

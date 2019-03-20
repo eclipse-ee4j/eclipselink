@@ -78,7 +78,6 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
 import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
-import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DeleteObjectQuery;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.FetchGroupTracker;
@@ -185,7 +184,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
              if (selectionQuery.isObjectLevelReadQuery()) {
                  ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(field));
              } else if (selectionQuery.isDataReadQuery()) {
-                ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getField(field));
+                ((SQLSelectStatement) selectionQuery.getSQLStatement()).addField(baseExpression.getField(field));
             }
         }
     }
@@ -998,7 +997,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public void collectQueryParameters(Set<DatabaseField> record){
         for (DatabaseMapping mapping : getReferenceDescriptor().getMappings()){
             if ((mapping.isForeignReferenceMapping() && !mapping.isCacheable()) || (mapping.isAggregateObjectMapping() && mapping.getReferenceDescriptor().hasNoncacheableMappings())){
-                ((ForeignReferenceMapping) mapping).collectQueryParameters(record);
+                mapping.collectQueryParameters(record);
             }
         }
     }

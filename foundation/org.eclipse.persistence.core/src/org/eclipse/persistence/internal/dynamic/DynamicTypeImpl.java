@@ -30,7 +30,6 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
@@ -187,7 +186,7 @@ public class DynamicTypeImpl implements DynamicType, Cloneable {
         Class<?> expectedType = mapping.getAttributeClassification();
         if (mapping.isForeignReferenceMapping()) {
             if (mapping.isCollectionMapping()) {
-                if (((CollectionMapping) mapping).getContainerPolicy().isMapPolicy()) {
+                if (mapping.getContainerPolicy().isMapPolicy()) {
                     expectedType = Map.class;
                 } else {
                     expectedType = Collection.class;
