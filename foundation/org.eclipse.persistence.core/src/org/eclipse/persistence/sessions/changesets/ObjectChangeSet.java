@@ -115,12 +115,12 @@ public interface ObjectChangeSet {
      * Returns true if this ObjectChangeSet should be recalculated after changes in event
      * @return
      */
-    public boolean shouldRecalculateAfterUpdateEvent();
+    boolean shouldRecalculateAfterUpdateEvent();
 
     /**
      * ADVANCED
      * Set whether this ObjectChangeSet should be recalculated after changes in event
      */
-    public void setShouldRecalculateAfterUpdateEvent(boolean shouldRecalculateAfterUpdateEvent);
+    void setShouldRecalculateAfterUpdateEvent(boolean shouldRecalculateAfterUpdateEvent);
 
 }

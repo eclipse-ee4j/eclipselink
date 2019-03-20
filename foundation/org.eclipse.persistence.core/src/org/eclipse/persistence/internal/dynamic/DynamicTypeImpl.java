@@ -53,7 +53,7 @@ public class DynamicTypeImpl implements DynamicType, Cloneable {
      * This includes properties that are primitives as well as relationships
      * requiring indirection ValueHolders or collections.
      */
-    protected Set<DatabaseMapping> mappingsRequiringInitialization = new HashSet<DatabaseMapping>();
+    protected Set<DatabaseMapping> mappingsRequiringInitialization = new HashSet<>();
 
     protected DynamicTypeImpl() {
         super();

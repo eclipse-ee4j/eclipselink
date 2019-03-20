@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,8 +68,8 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     public ObjectTypeConverter() {
         this.attributeToFieldValues = new HashMap(10);
         this.fieldToAttributeValues = new HashMap(10);
-        this.conversionValueStrings = new HashMap<String, String>(10);
-        this.addToAttributeOnlyConversionValueStrings = new HashMap<String, String>(10);
+        this.conversionValueStrings = new HashMap<>(10);
+        this.addToAttributeOnlyConversionValueStrings = new HashMap<>(10);
     }
 
     /**

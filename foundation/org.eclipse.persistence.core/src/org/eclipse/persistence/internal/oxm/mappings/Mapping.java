@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,63 +31,63 @@ public interface Mapping<
     FIELD extends CoreField,
     XML_RECORD extends XMLRecord> {
 
-    public void convertClassNamesToClasses(ClassLoader classLoader);
+    void convertClassNamesToClasses(ClassLoader classLoader);
 
-    public ATTRIBUTE_ACCESSOR getAttributeAccessor();
+    ATTRIBUTE_ACCESSOR getAttributeAccessor();
 
     /**
      * The classification type for the attribute this mapping represents
      */
-    public abstract Class getAttributeClassification();
+    Class getAttributeClassification();
 
     /**
      * Return the name of the attribute set in the mapping.
      */
-    public abstract String getAttributeName();
+    String getAttributeName();
 
-    public Object getAttributeValueFromObject(Object object);
+    Object getAttributeValueFromObject(Object object);
 
-    public abstract CONTAINER_POLICY getContainerPolicy();
+    CONTAINER_POLICY getContainerPolicy();
 
     /**
      * Return the descriptor to which this mapping belongs
      */
-    public DESCRIPTOR getDescriptor();
+    DESCRIPTOR getDescriptor();
 
-    public FIELD getField();
+    FIELD getField();
 
-    public DESCRIPTOR getReferenceDescriptor();
-
-    /**
-     * Related mapping should implement this method to return true.
-     */
-    public abstract boolean isAbstractCompositeCollectionMapping();
+    DESCRIPTOR getReferenceDescriptor();
 
     /**
      * Related mapping should implement this method to return true.
      */
-    public abstract boolean isAbstractCompositeDirectCollectionMapping();
+    boolean isAbstractCompositeCollectionMapping();
 
     /**
      * Related mapping should implement this method to return true.
      */
-    public abstract boolean isAbstractCompositeObjectMapping();
+    boolean isAbstractCompositeDirectCollectionMapping();
 
     /**
      * Related mapping should implement this method to return true.
      */
-    public boolean isAbstractDirectMapping();
-
-    public boolean isCollectionMapping();
-
-    public boolean isReadOnly();
-
-    public boolean isReferenceMapping();
+    boolean isAbstractCompositeObjectMapping();
 
     /**
      * Related mapping should implement this method to return true.
      */
-    public abstract boolean isTransformationMapping();
+    boolean isAbstractDirectMapping();
+
+    boolean isCollectionMapping();
+
+    boolean isReadOnly();
+
+    boolean isReferenceMapping();
+
+    /**
+     * Related mapping should implement this method to return true.
+     */
+    boolean isTransformationMapping();
 
     /**
      * ADVANCED:
@@ -97,29 +97,29 @@ public interface Mapping<
      * This can be set to an implementor of AttributeAccessor if the attribute
      * requires advanced conversion of the mapping value, or a real attribute does not exist.
      */
-    public void setAttributeAccessor(ATTRIBUTE_ACCESSOR attributeAccessor);
+    void setAttributeAccessor(ATTRIBUTE_ACCESSOR attributeAccessor);
 
 
     /**
      * Sets the name of the attribute in the mapping.
      */
-    public void setAttributeName(String attributeName);
+    void setAttributeName(String attributeName);
 
-    public void setAttributeValueInObject(Object object, Object value);
+    void setAttributeValueInObject(Object object, Object value);
 
-    public void writeSingleValue(Object value, Object object, XML_RECORD record, ABSTRACT_SESSION session);
+    void writeSingleValue(Object value, Object object, XML_RECORD record, ABSTRACT_SESSION session);
     /**
      * This method is invoked reflectively on the reference object to return the value of the
      * attribute in the object. This method sets the name of the getMethodName.
      */
-    public void setGetMethodName(String methodName);
+    void setGetMethodName(String methodName);
 
     /**
      * Set this mapping to be read only.
      * Read-only mappings can be used if two attributes map to the same field.
      * Read-only mappings cannot be used for the primary key or other required fields.
      */
-    public void setIsReadOnly(boolean aBoolean);
+    void setIsReadOnly(boolean aBoolean);
 
 
 
@@ -127,11 +127,11 @@ public interface Mapping<
      * INTERNAL:
      * Allow user defined properties.
      */
-    public void setProperties(Map properties);
+    void setProperties(Map properties);
 
     /**
      * Set the methodName used to set the value for the mapping's attribute into the object.
      */
-    public void setSetMethodName(String methodName);
+    void setSetMethodName(String methodName);
 
 }

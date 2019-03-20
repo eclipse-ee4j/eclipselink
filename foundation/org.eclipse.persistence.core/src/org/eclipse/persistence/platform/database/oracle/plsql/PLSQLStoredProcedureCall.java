@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,7 +77,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     /**
      * List of procedure IN/OUT/INOUT arguments.
      */
-    protected List<PLSQLargument> arguments = new ArrayList<PLSQLargument>();
+    protected List<PLSQLargument> arguments = new ArrayList<>();
 
     /**
      * Keeps track of the next procedure argument index.
@@ -486,7 +486,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
         List<PLSQLargument> inOutArguments = getArguments(arguments, INOUT);
         inArguments.addAll(inOutArguments);
         int newIndex = 1;
-        List<PLSQLargument> expandedArguments = new ArrayList<PLSQLargument>();
+        List<PLSQLargument> expandedArguments = new ArrayList<>();
         // Must move any expanded types to the end, as they are assigned after
         // in the BEGIN clause.
         for (ListIterator<PLSQLargument> inArgsIter = inArguments.listIterator(); inArgsIter.hasNext();) {
@@ -961,8 +961,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * nested functions.
      */
     protected void buildNestedFunctions(StringBuilder stream, List<PLSQLargument> arguments) {
-        List<String> nestedFunctions = new ArrayList<String>();
-        Set<DatabaseType> processed = new HashSet<DatabaseType>();
+        List<String> nestedFunctions = new ArrayList<>();
+        Set<DatabaseType> processed = new HashSet<>();
         for (PLSQLargument arg : arguments) {
             DatabaseType type = arg.databaseType;
             addNestedFunctionsForArgument(nestedFunctions, arg, type, processed);
@@ -1026,7 +1026,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     protected void prepareInternal(AbstractSession session) {
         // build any and all required type conversion routines for
         // complex PL/SQL types in packages
-        this.typesInfo = new HashMap<String, TypeInfo>();
+        this.typesInfo = new HashMap<>();
         // Rest parameters to be recomputed if being reprepared.
         this.parameters = null;
         // create a copy of the arguments re-ordered with different indices
@@ -1040,7 +1040,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 DatabaseField queryArgument = new DatabaseField(argument.name);
                 if (this.optionalArguments.contains(queryArgument) && (row.get(queryArgument) == null)) {
                     if (specifiedArguments == this.arguments) {
-                        specifiedArguments = new ArrayList<PLSQLargument>(this.arguments);
+                        specifiedArguments = new ArrayList<>(this.arguments);
                     }
                     specifiedArguments.remove(argument);
                 }
@@ -1138,7 +1138,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
                 DatabaseField queryArgument = new DatabaseField(argument.name);
                 if (this.optionalArguments.contains(queryArgument) && (row.get(queryArgument) == null)) {
                     if (specifiedArguments == this.arguments) {
-                        specifiedArguments = new ArrayList<PLSQLargument>(this.arguments);
+                        specifiedArguments = new ArrayList<>(this.arguments);
                     }
                     specifiedArguments.remove(argument);
                 }
@@ -1191,7 +1191,7 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
      * @return list of arguments with the specified direction
      */
     protected static List<PLSQLargument> getArguments(List<PLSQLargument> args, Integer direction) {
-        List<PLSQLargument> inArgs = new ArrayList<PLSQLargument>();
+        List<PLSQLargument> inArgs = new ArrayList<>();
         for (PLSQLargument arg : args) {
             if (arg.direction == direction) {
                 inArgs.add(arg);

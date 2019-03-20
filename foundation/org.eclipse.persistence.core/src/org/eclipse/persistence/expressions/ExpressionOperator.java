@@ -1428,7 +1428,7 @@ public class ExpressionOperator implements Serializable {
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
     public static Map<Integer, String> initializePlatformOperatorNames() {
-        Map<Integer, String> platformOperatorNames = new HashMap<Integer, String>();
+        Map<Integer, String> platformOperatorNames = new HashMap<>();
         platformOperatorNames.put(Integer.valueOf(ToUpperCase), "ToUpperCase");
         platformOperatorNames.put(Integer.valueOf(ToLowerCase), "ToLowerCase");
         platformOperatorNames.put(Integer.valueOf(Chr), "Chr");
@@ -1534,7 +1534,7 @@ public class ExpressionOperator implements Serializable {
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
     public static Map<String, Integer> initializePlatformOperatorSelectors() {
-        Map<String, Integer> platformOperatorNames = new HashMap<String, Integer>();
+        Map<String, Integer> platformOperatorNames = new HashMap<>();
         platformOperatorNames.put("ToUpperCase", Integer.valueOf(ToUpperCase));
         platformOperatorNames.put("ToLowerCase", Integer.valueOf(ToLowerCase));
         platformOperatorNames.put("Chr", Integer.valueOf(Chr));

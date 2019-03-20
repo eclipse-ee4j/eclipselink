@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -114,7 +114,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     protected List<String> argumentTypeNames;
 
     /** Used for parameter retreival in JPQL **/
-    public enum ParameterType {POSITIONAL, NAMED};
+    public enum ParameterType {POSITIONAL, NAMED}
 
     protected List<ParameterType> argumentParameterTypes;
 
@@ -745,7 +745,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         // note: normally we would fix the argument types here, but they are
         // already
         // lazily instantiated
-    };
+    }
 
     /**
      * PUBLIC: Do not Bind all arguments to any SQL statement.
@@ -952,7 +952,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List<String> getArguments() {
         if (this.arguments == null) {
-            this.arguments = new ArrayList<String>();
+            this.arguments = new ArrayList<>();
         }
         return this.arguments;
     }
@@ -964,7 +964,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List<ParameterType> getArgumentParameterTypes(){
         if (argumentParameterTypes == null){
-            this.argumentParameterTypes = new ArrayList<ParameterType>();
+            this.argumentParameterTypes = new ArrayList<>();
         }
         return this.argumentParameterTypes;
     }
@@ -975,7 +975,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List<Class> getArgumentTypes() {
         if ((this.argumentTypes == null) || (this.argumentTypes.isEmpty() && (this.argumentTypeNames != null) && !this.argumentTypeNames.isEmpty())) {
-            this.argumentTypes = new ArrayList<Class>();
+            this.argumentTypes = new ArrayList<>();
             // Bug 3256198 - lazily initialize the argument types from their
             // class names
             if (this.argumentTypeNames != null) {
@@ -1026,9 +1026,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Maintain the argumentTypes as well.
      */
     public void setArguments(List<String> arguments) {
-        List<Class> types = new ArrayList<Class>(arguments.size());
-        List<String> typeNames = new ArrayList<String>(arguments.size());
-        List<DatabaseField> typeFields = new ArrayList<DatabaseField>(arguments.size());
+        List<Class> types = new ArrayList<>(arguments.size());
+        List<String> typeNames = new ArrayList<>(arguments.size());
+        List<DatabaseField> typeFields = new ArrayList<>(arguments.size());
         int size = arguments.size();
         for (int index = 0; index < size; index++) {
             types.add(Object.class);
@@ -1047,7 +1047,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List<Object> getArgumentValues() {
         if (this.argumentValues == null) {
-            this.argumentValues = new ArrayList<Object>();
+            this.argumentValues = new ArrayList<>();
         }
         return this.argumentValues;
     }
@@ -2774,7 +2774,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      */
     public List<DatabaseField> getNullableArguments() {
         if (this.nullableArguments == null) {
-            this.nullableArguments = new ArrayList<DatabaseField>();
+            this.nullableArguments = new ArrayList<>();
         }
         return nullableArguments;
     }

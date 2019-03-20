@@ -35,7 +35,7 @@ public interface IndirectContainer<C> {
      * UOW clone of the container.
      * @return org.eclipse.persistence.indirection.ValueHolderInterface A representation of the valueholder  * which this container uses
      */
-    public ValueHolderInterface<C> getValueHolder();
+    ValueHolderInterface<C> getValueHolder();
 
     /**
      * PUBLIC:
@@ -43,7 +43,7 @@ public interface IndirectContainer<C> {
      * This is used periodically by the indirection policy to determine whether
      * to trigger the database read.
      */
-    public boolean isInstantiated();
+    boolean isInstantiated();
 
     /**
      * PUBLIC:
@@ -51,5 +51,5 @@ public interface IndirectContainer<C> {
      * This is used by the indirection policy to build the
      * UOW clone of the container.
      */
-    public void setValueHolder(ValueHolderInterface<C> valueHolder);
+    void setValueHolder(ValueHolderInterface<C> valueHolder);
 }

@@ -339,7 +339,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     @Override
     public List getNullCapableValues() {
         if (null == nullCapableValues) {
-            this.nullCapableValues = new ArrayList<NullCapableValue>();
+            this.nullCapableValues = new ArrayList<>();
         }
         return this.nullCapableValues;
     }
@@ -620,7 +620,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
             if (null != xPathNode.getSelfChildren()) {
                 int selfChildrenSize = xPathNode.getSelfChildren().size();
-                selfRecords = new ArrayList<UnmarshalRecord>(selfChildrenSize);
+                selfRecords = new ArrayList<>(selfChildrenSize);
                 for (int x = 0; x < selfChildrenSize; x++) {
                     NodeValue nv = xPathNode.getSelfChildren().get(x).getNodeValue();
                     if (null != nv) {
@@ -749,7 +749,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                         if (unmarshaller.getIDResolver() != null) {
                             try {
                                 if (primaryKeyFieldsSize > 1) {
-                                    Map<String, Object> idWrapper = new HashMap<String, Object>();
+                                    Map<String, Object> idWrapper = new HashMap<>();
                                     for (int x = 0; x < primaryKeyFieldsSize; x++) {
                                         String idName = (String) xmlDescriptor.getPrimaryKeyFieldNames().get(x);
                                         Object idValue = pk.getPrimaryKey()[x];
@@ -1668,7 +1668,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     @Override
     public Map<String, String> getPrefixesForFragment() {
     if(prefixesForFragment == null){
-        prefixesForFragment = new HashMap<String, String>();
+        prefixesForFragment = new HashMap<>();
     }
 
         return prefixesForFragment;

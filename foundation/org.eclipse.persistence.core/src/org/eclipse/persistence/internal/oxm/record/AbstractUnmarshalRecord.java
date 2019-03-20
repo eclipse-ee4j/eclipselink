@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,10 +27,10 @@ public interface AbstractUnmarshalRecord<
     FIELD extends CoreField,
     UNMARSHALLER extends Unmarshaller> extends XMLRecord<ABSTRACT_SESSION> {
 
-    public Object get(FIELD field);
+    Object get(FIELD field);
 
-    public UNMARSHALLER getUnmarshaller();
+    UNMARSHALLER getUnmarshaller();
 
-    public String resolveNamespacePrefix(String prefix);
+    String resolveNamespacePrefix(String prefix);
 
 }

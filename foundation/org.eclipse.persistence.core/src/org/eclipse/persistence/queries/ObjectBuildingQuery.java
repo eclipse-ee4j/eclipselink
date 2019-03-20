@@ -160,7 +160,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
         }
         setReferenceClass(referenceClass);
-    };
+    }
 
     /**
      * INTERNAL:

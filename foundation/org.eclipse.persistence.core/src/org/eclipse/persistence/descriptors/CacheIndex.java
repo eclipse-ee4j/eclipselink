@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,18 +39,18 @@ public class CacheIndex implements Cloneable, Serializable {
     protected Class cacheType = ClassConstants.WeakIdentityMap_Class;
 
     public CacheIndex() {
-        this.fields = new ArrayList<DatabaseField>();
+        this.fields = new ArrayList<>();
     }
 
     public CacheIndex(DatabaseField fields[]) {
-        this.fields = new ArrayList<DatabaseField>(fields.length);
+        this.fields = new ArrayList<>(fields.length);
         for (DatabaseField field : fields) {
             this.fields.add(field);
         }
     }
 
     public CacheIndex(String... fields) {
-        this.fields = new ArrayList<DatabaseField>(fields.length);
+        this.fields = new ArrayList<>(fields.length);
         for (String field : fields) {
             this.fields.add(new DatabaseField(field));
         }

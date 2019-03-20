@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,7 +57,7 @@ abstract class AbstractRangeDeclaration extends Declaration {
      */
     void addJoin(Join join) {
         if (joins == null) {
-            joins = new LinkedList<Join>();
+            joins = new LinkedList<>();
         }
         joins.add(join);
     }

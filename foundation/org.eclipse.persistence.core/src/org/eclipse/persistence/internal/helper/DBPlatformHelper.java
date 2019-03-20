@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,7 +82,7 @@ public class DBPlatformHelper {
     private static List<String[]> initializeNameToVendorPlatform(SessionLog logger) {
         synchronized(DBPlatformHelper.class) {
             if(_nameToVendorPlatform == null) {
-                _nameToVendorPlatform = new ArrayList<String[]>();
+                _nameToVendorPlatform = new ArrayList<>();
                 try {
                     loadFromResource(_nameToVendorPlatform, VENDOR_NAME_TO_PLATFORM_RESOURCE_NAME,
                                             DBPlatformHelper.class.getClassLoader() );

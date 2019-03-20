@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,13 +33,13 @@ public interface MBeanDevelopmentServicesMBean {
      * aware that if any of these objects are in use when this action is completed they will lose object identity.
      * If ClassNotFoundException is thrown then the IdenityMap for that class name could not be found
      */
-    public void initializeIdentityMap(String className) throws ClassNotFoundException;
+    void initializeIdentityMap(String className) throws ClassNotFoundException;
 
     /**
      *        This method is used to clear the contents of all identity maps.  Users should be
      * aware that if any of these objects are in use when this action is completed they will lose object identity.
      */
-    public void initializeAllIdentityMaps();
+    void initializeAllIdentityMaps();
 
     /**
      *        This method will be used to set a new type of identity map for a particular class type.  If objects
@@ -47,106 +47,106 @@ public interface MBeanDevelopmentServicesMBean {
      * initialize all identity maps first.
      * If ClassNotFoundException is thrown then the IdenityMap for that class name could not be found
      */
-    public void setIdentityMapForClass(String className, String identityMapClassType, int maxSize) throws ClassNotFoundException;
+    void setIdentityMapForClass(String className, String identityMapClassType, int maxSize) throws ClassNotFoundException;
 
     /**
      *        This method used to reset a project in a session. All connected clients will get errors.
      * project must be of the xml type.  This attribute will not be stored on a save.
      */
-    public void refreshProject(String projectFilePath);
+    void refreshProject(String projectFilePath);
 
     /**
      *        This method is used to update the cache size of a particular Identity Map
      * If ClassNotFoundException is thrown then the IdenityMap for that class name could not be found
      */
-    public void updateCacheSize(String className, int newSize) throws ClassNotFoundException;
+    void updateCacheSize(String className, int newSize) throws ClassNotFoundException;
 
     /**
      *     This method is used to control if All parameters should be bound
      */
-    public void setShouldBindAllParameters(boolean shouldBindAllParameters);
+    void setShouldBindAllParameters(boolean shouldBindAllParameters);
 
     /**
      *     Method returns if all Parameters should be bound or not
      */
-    public boolean getShouldBindAllParameters();
+    boolean getShouldBindAllParameters();
 
     /**
      *        Sets the size of strings after which they will be bound into the statement
      */
-    public void setStringBindingSize(int size);
+    void setStringBindingSize(int size);
 
     /**
      *     Return the size of strings after which will be bound into the statement
      */
-    public int getStringBindingSize();
+    int getStringBindingSize();
 
     /**
      *        This method is used to turn on TopLink Batch Writing.  Please note that toggling this
      * setting while a transaction is open may result in mis-ordered sql statements or loss of statements.
      * Also please note that TopLink Batch Writing may not work with all JDBC Drivers
      */
-    public void setUsesBatchWriting(boolean usesBatchWriting);
+    void setUsesBatchWriting(boolean usesBatchWriting);
 
     /**
      *        This method will return if batchWriting is in use or not.
      */
-    public boolean getUsesBatchWriting();
+    boolean getUsesBatchWriting();
 
     /**
      *        This method is used to turn on JDBC Batch Writing.  Please note that toggling this
      * setting while a transaction is open may result in mis-ordered sql statements or loss of statements.
      *
      */
-    public void setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting);
+    void setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting);
 
     /**
      *        This method will return if batchWriting is in use or not.
      */
-    public boolean getUsesJDBCBatchWriting();
+    boolean getUsesJDBCBatchWriting();
 
     /**
      *        This method allows control of whether byte arrays should be bound into the statement or not.
      * Toggling this attribute while an SQL statement is being built, or if you are caching statements, will
      * result in errors.
      */
-    public void setUsesByteArrayBinding(boolean usesByteArrayBinding);
+    void setUsesByteArrayBinding(boolean usesByteArrayBinding);
 
     /**
      *     Shows if Byte Array Binding is turned on or not
      */
-    public boolean getUsesByteArrayBinding();
+    boolean getUsesByteArrayBinding();
 
     /**
      *     This method allows the client to set if Native SQL should be used.
      */
-    public void setUsesNativeSQL(boolean usesNativeSQL);
+    void setUsesNativeSQL(boolean usesNativeSQL);
 
     /**
      *     Shows if native SQL is being used
      */
-    public boolean getUsesNativeSQL();
+    boolean getUsesNativeSQL();
 
     /**
      *     This method is used to set if streams should be used for binding.  Please note that toggling this
      * attribute while a statement is being built will result in errors.
      */
-    public void setUsesStreamsForBinding(boolean usesStreamsForBinding);
+    void setUsesStreamsForBinding(boolean usesStreamsForBinding);
 
     /**
      *     This method indicates if streams are being used for binding
      */
-    public boolean getUsesStreamsForBinding();
+    boolean getUsesStreamsForBinding();
 
     /**
      *     Allows the client to set if String should be bound into the statement or not.  Please note that
      * toggling this attribute while a statement is being built, or if statement caching is being used, will result
      * in errors.
      */
-    public void setUsesStringBinding(boolean usesStringBinding);
+    void setUsesStringBinding(boolean usesStringBinding);
 
     /**
      *     This method indicates if Strings are being bound
      */
-    public boolean getUsesStringBinding();
+    boolean getUsesStringBinding();
 }

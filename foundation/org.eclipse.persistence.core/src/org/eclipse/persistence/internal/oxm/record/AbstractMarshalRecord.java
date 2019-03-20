@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,66 +39,66 @@ public interface AbstractMarshalRecord<
     MARSHALLER extends Marshaller,
     NAMESPACE_RESOLVER extends NamespaceResolver> extends XMLRecord<ABSTRACT_SESSION> {
 
-    public List addExtraNamespacesToNamespaceResolver(Descriptor descriptor, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers);
+    List addExtraNamespacesToNamespaceResolver(Descriptor descriptor, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers);
 
-    public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement);
+    boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField, boolean isRootElement);
 
-    public boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField,Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement);
+    boolean addXsiTypeAndClassIndicatorIfRequired(Descriptor descriptor, Descriptor referenceDescriptor, Field xmlField,Object originalObject, Object obj, boolean wasXMLRoot, boolean isRootElement);
 
-    public void attribute(String namespaceURI, String localName, String qualifiedName, String value);
+    void attribute(String namespaceURI, String localName, String qualifiedName, String value);
 
-    public void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value);
+    void attributeWithoutQName(String namespaceURI, String localName, String prefix, String value);
 
-    public Node getDOM();
+    Node getDOM();
 
-    public XPathQName getLeafElementType();
+    XPathQName getLeafElementType();
 
-    public MARSHALLER getMarshaller();
+    MARSHALLER getMarshaller();
 
-    public NAMESPACE_RESOLVER getNamespaceResolver();
+    NAMESPACE_RESOLVER getNamespaceResolver();
 
-    public Object getOwningObject();
+    Object getOwningObject();
 
-    public boolean hasCustomNamespaceMapper();
+    boolean hasCustomNamespaceMapper();
 
-    public boolean hasEqualNamespaceResolvers();
+    boolean hasEqualNamespaceResolvers();
 
     /**
      * Determine if namespaces will be considered during marshal/unmarshal operations.
      */
     @Override
-    public boolean isNamespaceAware();
+    boolean isNamespaceAware();
 
-    public boolean isXOPPackage();
+    boolean isXOPPackage();
 
-    public void namespaceDeclaration(String prefix, String typeUri);
+    void namespaceDeclaration(String prefix, String typeUri);
 
-    public Object put(FIELD field, Object object);
+    Object put(FIELD field, Object object);
 
-    public void removeExtraNamespacesFromNamespaceResolver(List<Namespace> extraNamespaces, CoreAbstractSession session);
+    void removeExtraNamespacesFromNamespaceResolver(List<Namespace> extraNamespaces, CoreAbstractSession session);
 
-    public String resolveNamespacePrefix(String prefix);
+    String resolveNamespacePrefix(String prefix);
 
-    public void setCustomNamespaceMapper(boolean customNamespaceMapper);
+    void setCustomNamespaceMapper(boolean customNamespaceMapper);
 
-    public void setEqualNamespaceResolvers(boolean equalNRs);
+    void setEqualNamespaceResolvers(boolean equalNRs);
 
-    public void setLeafElementType(QName leafElementType);
+    void setLeafElementType(QName leafElementType);
 
-    public void setLeafElementType(XPathQName leafElementType);
+    void setLeafElementType(XPathQName leafElementType);
 
-    public void setMarshaller(MARSHALLER marshaller);
+    void setMarshaller(MARSHALLER marshaller);
 
-    public void setNamespaceResolver(NAMESPACE_RESOLVER namespaceResolver);
+    void setNamespaceResolver(NAMESPACE_RESOLVER namespaceResolver);
 
-    public void setOwningObject(Object owningObject);
+    void setOwningObject(Object owningObject);
 
-    public void setSession(ABSTRACT_SESSION session);
+    void setSession(ABSTRACT_SESSION session);
 
-    public void setXOPPackage(boolean isXOPPackage);
+    void setXOPPackage(boolean isXOPPackage);
 
-    public void writeXsiTypeAttribute(Descriptor descriptor, String typeUri,  String  typeLocal, String typePrefix, boolean addToNamespaceResolver);
+    void writeXsiTypeAttribute(Descriptor descriptor, String typeUri,  String  typeLocal, String typePrefix, boolean addToNamespaceResolver);
 
-    public void writeXsiTypeAttribute(Descriptor xmlDescriptor, XMLSchemaReference xmlRef, boolean addToNamespaceResolver);
+    void writeXsiTypeAttribute(Descriptor xmlDescriptor, XMLSchemaReference xmlRef, boolean addToNamespaceResolver);
 
 }

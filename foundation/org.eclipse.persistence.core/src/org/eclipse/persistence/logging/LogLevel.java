@@ -77,7 +77,7 @@ public enum LogLevel {
     public static final int length = LogLevel.values().length;
 
     /** {@link Map} for {@link String} to {@link LogLevel} case insensitive lookup. */
-    private static final Map<String, LogLevel> stringValuesMap = new HashMap<String, LogLevel>(2 * length);
+    private static final Map<String, LogLevel> stringValuesMap = new HashMap<>(2 * length);
 
     // Initialize String to LogLevel case insensitive lookup Map.
     static {

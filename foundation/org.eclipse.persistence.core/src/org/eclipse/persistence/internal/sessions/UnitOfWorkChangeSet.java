@@ -175,7 +175,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
                         Map<ObjectChangeSet, ObjectChangeSet> map = getObjectChanges().get(objectChanges.getClassType());
 
                         if (map == null) {
-                            map = new HashMap<ObjectChangeSet, ObjectChangeSet>();
+                            map = new HashMap<>();
                             getObjectChanges().put(objectChanges.getClassType(), map);
                             map.put(objectChanges, objectChanges);
                         } else {
@@ -200,7 +200,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         Map<ObjectChangeSet, ObjectChangeSet> changeSetTable = getNewObjectChangeSets().get(objectChanges.getClassType(session));
         if (changeSetTable == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            changeSetTable = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
+            changeSetTable = new IdentityHashMap<>();
             getNewObjectChangeSets().put(objectChanges.getClassType(session), changeSetTable);
         }
         changeSetTable.put(objectChanges, objectChanges);
@@ -294,7 +294,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public Map<ObjectChangeSet, ObjectChangeSet> getAggregateChangeSets() {
         if (this.aggregateChangeSets == null) {
-            this.aggregateChangeSets = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
+            this.aggregateChangeSets = new IdentityHashMap<>();
         }
         return this.aggregateChangeSets;
     }
@@ -307,7 +307,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public Map<ObjectChangeSet, ObjectChangeSet> getAllChangeSets() {
         if (this.allChangeSets == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            this.allChangeSets = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
+            this.allChangeSets = new IdentityHashMap<>();
         }
         return this.allChangeSets;
     }
@@ -428,7 +428,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> getObjectChanges() {
         if (objectChanges == null) {
-            objectChanges = new HashMap<Class, Map<ObjectChangeSet, ObjectChangeSet>>();
+            objectChanges = new HashMap<>();
         }
         return objectChanges;
     }
@@ -441,7 +441,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
         if (this.objectChanges == null || this.objectChanges.isEmpty()) {
             return null;
         }
-        HashSet<ClassDescriptor> updatedObjectsClasses = new HashSet<ClassDescriptor>(getObjectChanges().size());
+        HashSet<ClassDescriptor> updatedObjectsClasses = new HashSet<>(getObjectChanges().size());
         for (Map<ObjectChangeSet, ObjectChangeSet> objectChanges : getObjectChanges().values()) {
             for (ObjectChangeSet changeSet : objectChanges.values()) {
                 // any change set will do
@@ -477,7 +477,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     protected Map<ObjectChangeSet, Object> getObjectChangeSetToUOWClone() {
         if (this.objectChangeSetToUOWClone == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            this.objectChangeSetToUOWClone = new IdentityHashMap<ObjectChangeSet, Object>();
+            this.objectChangeSetToUOWClone = new IdentityHashMap<>();
         }
         return objectChangeSetToUOWClone;
     }
@@ -691,7 +691,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> getNewObjectChangeSets() {
         if (this.newObjectChangeSets == null) {
-            this.newObjectChangeSets = new HashMap<Class, Map<ObjectChangeSet, ObjectChangeSet>>();
+            this.newObjectChangeSets = new HashMap<>();
         }
         return this.newObjectChangeSets;
     }

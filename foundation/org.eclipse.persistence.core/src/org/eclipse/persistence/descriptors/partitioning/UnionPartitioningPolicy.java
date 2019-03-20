@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,7 @@ public class UnionPartitioningPolicy extends ReplicationPartitioningPolicy {
         if (!this.replicateWrites && query.isModifyQuery()) {
             return null;
         }
-        List<Accessor> accessors = new ArrayList<Accessor>(this.connectionPools.size());
+        List<Accessor> accessors = new ArrayList<>(this.connectionPools.size());
         for (String poolName : this.connectionPools) {
             accessors.add(getAccessor(poolName, session, query, false));
         }

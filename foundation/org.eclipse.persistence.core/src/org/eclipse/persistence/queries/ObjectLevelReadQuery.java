@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -297,7 +297,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public List<Expression> getUnionExpressions() {
         if (unionExpressions == null) {
-            unionExpressions = new ArrayList<Expression>();
+            unionExpressions = new ArrayList<>();
         }
         return unionExpressions;
     }
@@ -1323,7 +1323,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public List<Object> getAdditionalFields() {
         if (this.additionalFields == null) {
-            this.additionalFields = new ArrayList<Object>();
+            this.additionalFields = new ArrayList<>();
         }
         return this.additionalFields;
     }
@@ -1479,7 +1479,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public List<Expression> getOrderByExpressions() {
         if (orderByExpressions == null) {
-            orderByExpressions = new ArrayList<Expression>();
+            orderByExpressions = new ArrayList<>();
         }
         return orderByExpressions;
     }
@@ -1544,7 +1544,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public List<Expression> getNonFetchJoinAttributeExpressions() {
         if (this.nonFetchJoinAttributeExpressions == null){
-            this.nonFetchJoinAttributeExpressions = new ArrayList<Expression>();
+            this.nonFetchJoinAttributeExpressions = new ArrayList<>();
         }
         return nonFetchJoinAttributeExpressions;
     }
@@ -1555,7 +1555,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
      */
     public List<Expression> getPartialAttributeExpressions() {
         if (this.partialAttributeExpressions == null) {
-            this.partialAttributeExpressions = new ArrayList<Expression>();
+            this.partialAttributeExpressions = new ArrayList<>();
         }
         return this.partialAttributeExpressions;
     }

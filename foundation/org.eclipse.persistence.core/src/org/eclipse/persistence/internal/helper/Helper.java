@@ -454,7 +454,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Example: "WebLogic Server 10.3.3.0" -&gt; {10, 3, 3, 0}
      */
     static protected List<Integer> version(String version) {
-        ArrayList<Integer> list = new ArrayList<Integer>(5);
+        ArrayList<Integer> list = new ArrayList<>(5);
         // first char - a digit - in the string corresponding to the current list index
         int iBegin = -1;
         // used to remove a non-digital prefix

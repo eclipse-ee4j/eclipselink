@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -136,7 +136,7 @@ public class ClientSession extends AbstractSession {
         // If we have table per tenant descriptors, they will need to be
         // cloned as we will be changing the descriptors per tenant.
         if (parent.hasTablePerTenantDescriptors()) {
-            this.descriptors = new HashMap<Class, ClassDescriptor>();
+            this.descriptors = new HashMap<>();
             this.descriptors.putAll(parent.getDescriptors());
 
             for (ClassDescriptor descriptor : parent.getTablePerTenantDescriptors()) {

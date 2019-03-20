@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2009, 2018 Fujitsu Limited. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -168,7 +168,7 @@ public class SymfowarePlatform extends DatabasePlatform {
      */
     @Override
     protected Hashtable<Class<?>, FieldTypeDefinition> buildFieldTypes() {
-        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<Class<?>, FieldTypeDefinition>();
+        Hashtable<Class<?>, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
 
         // boolean type
         fieldTypeMapping.put(java.lang.Boolean.class, new FieldTypeDefinition(

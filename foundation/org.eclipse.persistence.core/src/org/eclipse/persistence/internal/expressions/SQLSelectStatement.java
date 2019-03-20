@@ -890,7 +890,7 @@ public class SQLSelectStatement extends SQLStatement {
     public Map<Expression, Expression> getOptimizedClonedExpressions() {
         // Lazily Initialized only to be used by subqueries.
         if (optimizedClonedExpressions == null) {
-            optimizedClonedExpressions = new IdentityHashMap<Expression, Expression>();
+            optimizedClonedExpressions = new IdentityHashMap<>();
         }
 
         return optimizedClonedExpressions;
@@ -903,7 +903,7 @@ public class SQLSelectStatement extends SQLStatement {
     public void addOptimizedClonedExpressions(Expression originalKey, Expression optimizedValue) {
         // Lazily Initialized only to be used by subqueries.
         if (optimizedClonedExpressions == null) {
-            optimizedClonedExpressions = new IdentityHashMap<Expression, Expression>();
+            optimizedClonedExpressions = new IdentityHashMap<>();
         }
 
         optimizedClonedExpressions.put(originalKey, optimizedValue);
@@ -1084,7 +1084,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public List<Expression> getGroupByExpressions() {
         if (groupByExpressions == null) {
-            groupByExpressions = new ArrayList<Expression>();
+            groupByExpressions = new ArrayList<>();
         }
 
         return groupByExpressions;

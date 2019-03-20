@@ -224,7 +224,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * Return the freshly-built delegate.
      */
     protected Set<E> buildDelegate() {
-        Set<E> newDelegate = (Set<E>)getValueHolder().getValue();
+        Set<E> newDelegate = getValueHolder().getValue();
         if (newDelegate == null) {
             newDelegate = new HashSet<>(this.initialCapacity, this.loadFactor);
         }

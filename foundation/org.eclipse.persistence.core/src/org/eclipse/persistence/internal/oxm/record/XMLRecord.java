@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,9 +31,9 @@ public interface XMLRecord<ABSTRACT_SESSION extends CoreAbstractSession> {
     /**
      * Nil: This is used to indicate that this field represents xsi:nil="true"
      */
-    public static final XMLRecord.Nil NIL = new XMLRecord.Nil();
+    XMLRecord.Nil NIL = new XMLRecord.Nil();
 
-    public static final CoreAttributeGroup DEFAULT_ATTRIBUTE_GROUP = new CoreAttributeGroup() {
+    CoreAttributeGroup DEFAULT_ATTRIBUTE_GROUP = new CoreAttributeGroup() {
         @Override
         public boolean containsAttributeInternal(String attribute) {
             return true;
@@ -43,13 +43,13 @@ public interface XMLRecord<ABSTRACT_SESSION extends CoreAbstractSession> {
     /**
      * @since EclipseLink 2.6.0
      */
-    public ConversionManager getConversionManager();
+    ConversionManager getConversionManager();
 
-    public char getNamespaceSeparator();
+    char getNamespaceSeparator();
 
-    public ABSTRACT_SESSION getSession();
+    ABSTRACT_SESSION getSession();
 
-    public boolean isNamespaceAware();
+    boolean isNamespaceAware();
 
 
 }

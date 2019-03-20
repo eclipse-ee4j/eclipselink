@@ -397,14 +397,14 @@ public class QueryKeyExpression extends ObjectExpression {
     @Override
     public List<DatabaseField> getSelectionFields(ReadQuery query) {
         if (isAttribute()) {
-            List<DatabaseField> result = new ArrayList<DatabaseField>(1);
+            List<DatabaseField> result = new ArrayList<>(1);
             DatabaseField field = getField();
             if (field != null) {
                 result.add(field);
             }
             return result;
         } else {
-            List<DatabaseField> result = new ArrayList<DatabaseField>();
+            List<DatabaseField> result = new ArrayList<>();
             result.addAll(super.getSelectionFields(query));
             if ((this.mapping != null) && this.mapping.isCollectionMapping()){
                 List<DatabaseField> fields = this.mapping.getContainerPolicy().getAdditionalFieldsForJoin((CollectionMapping)this.mapping);

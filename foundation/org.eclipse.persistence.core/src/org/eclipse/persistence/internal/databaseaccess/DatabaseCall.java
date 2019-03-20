@@ -524,7 +524,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public List<DatabaseField> getOutputCursors() {
         if (outputCursors == null) {
-            outputCursors = new ArrayList<DatabaseField>();
+            outputCursors = new ArrayList<>();
         }
 
         return outputCursors;

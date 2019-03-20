@@ -80,7 +80,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      */
     public abstract DynamicPropertiesManager fetchPropertiesManager();
 
-    protected Map<String, PropertyWrapper> propertiesMap = new HashMap<String, PropertyWrapper>();
+    protected Map<String, PropertyWrapper> propertiesMap = new HashMap<>();
 
     /**
      * Instantiates a new dynamic entity impl.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,8 +90,8 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * Keep track of which fields are insertable and updatable.
      */
-    protected HashSet<DatabaseField> insertableFields = new HashSet<DatabaseField>();
-    protected HashSet<DatabaseField> updatableFields = new HashSet<DatabaseField>();
+    protected HashSet<DatabaseField> insertableFields = new HashSet<>();
+    protected HashSet<DatabaseField> updatableFields = new HashSet<>();
 
     /**
      * Keep a reference to the source and target expressions to post initialize
@@ -103,7 +103,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     /**
      * Mode for writeFromObjectIntoRowInternal method
      */
-    protected static enum ShallowMode {
+    protected enum ShallowMode {
         Insert,
         UpdateAfterInsert,
         UpdateBeforeDelete
@@ -539,7 +539,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session){
-        List<Object> orderedResult = new ArrayList<Object>(keyInfo.length);
+        List<Object> orderedResult = new ArrayList<>(keyInfo.length);
         Map<Object, Object> fromCache = session.getIdentityMapAccessorInstance().getAllFromIdentityMapWithEntityPK(keyInfo, referenceDescriptor);
         List foreignKeyValues = new ArrayList(keyInfo.length - fromCache.size());
 
@@ -795,7 +795,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             int size = this.sourceToTargetKeyFields.size();
             if (size > 1) {
                 // Support composite keys using nested IN.
-                List<Expression> fields = new ArrayList<Expression>(size);
+                List<Expression> fields = new ArrayList<>(size);
                 for (DatabaseField targetForeignKeyField : this.sourceToTargetKeyFields.values()) {
                     fields.add(builder.getField(targetForeignKeyField));
                 }
@@ -873,7 +873,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
      */
     @Override
     public List<DatabaseTable> getAdditionalTablesForJoinQuery(){
-        List<DatabaseTable> tables = new ArrayList<DatabaseTable>(getReferenceDescriptor().getTables().size() + 1);
+        List<DatabaseTable> tables = new ArrayList<>(getReferenceDescriptor().getTables().size() + 1);
         tables.addAll(getReferenceDescriptor().getTables());
         if (keyTableForMapKey != null){
             tables.add(keyTableForMapKey);
@@ -1913,7 +1913,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                     }
                 } else {
                     if (nonNullableFields == null) {
-                        nonNullableFields = new ArrayList<DatabaseField>();
+                        nonNullableFields = new ArrayList<>();
                     }
 
                     nonNullableFields.add(field);
@@ -1938,7 +1938,7 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
                         return;
                     } else {
                         // all nullable foreignKeyFields will be processed
-                        foreignKeyFields = new ArrayList<DatabaseField>(foreignKeyFields);
+                        foreignKeyFields = new ArrayList<>(foreignKeyFields);
                         foreignKeyFields.removeAll(nonNullableFields);
                     }
                 }

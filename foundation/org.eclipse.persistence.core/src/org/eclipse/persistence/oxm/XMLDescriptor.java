@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -304,7 +304,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
     @Override
     public Vector<String> getPrimaryKeyFieldNames() {
         if(null == primaryKeyFields) {
-            return new Vector<String>(0);
+            return new Vector<>(0);
         }
         return super.getPrimaryKeyFieldNames();
     }
@@ -453,7 +453,7 @@ public class XMLDescriptor extends ClassDescriptor implements Descriptor<Attribu
             field = new XMLField(fieldName);
         }
         if(null == primaryKeyFields) {
-            primaryKeyFields = new ArrayList<DatabaseField>(1);
+            primaryKeyFields = new ArrayList<>(1);
         }
         super.addPrimaryKeyField(field);
     }

@@ -179,7 +179,7 @@ public final class JavaVersion {
      * Get major version number.
      * @return Major version number.
      */
-    public final int getMajor() {
+    public int getMajor() {
         return major;
     }
 
@@ -187,7 +187,7 @@ public final class JavaVersion {
      * Get minor version number.
      * @return Minor version number.
      */
-    public final int getMinor() {
+    public int getMinor() {
         return minor;
     }
 
@@ -204,7 +204,7 @@ public final class JavaVersion {
      *         and supplied <code>version</code> values are equal.</li>
      *         </ul>
      */
-    public final int comapreTo(final JavaVersion version) {
+    public int comapreTo(final JavaVersion version) {
         return this.major > version.major ? 1 :
                 this.major < version.major ? -1 :
                 this.minor > version.minor ? 1 :
@@ -216,7 +216,7 @@ public final class JavaVersion {
      * @return Java VM version string.
      */
     @Override
-    public final String toString() {
+    public String toString() {
         final StringBuilder sb = new StringBuilder(3);
         sb.append(major);
         sb.append(SEPARATOR);
@@ -229,7 +229,7 @@ public final class JavaVersion {
      * @return {@link JavaSEPlatform} matching this Java SE specification version
      *         or {@code JavaSEPlatform.DEFAULT} as default when platform matching fails.
      */
-    public final JavaSEPlatform toPlatform() {
+    public JavaSEPlatform toPlatform() {
         return JavaSEPlatform.toValue(major, minor);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -119,7 +119,7 @@ public class MergeManager {
         this.objectsAlreadyMerged = new IdentityHashMap();
         this.cascadePolicy = CASCADE_ALL_PARTS;
         this.mergePolicy = WORKING_COPY_INTO_ORIGINAL;
-        this.acquiredLocks = new ArrayList<CacheKey>();
+        this.acquiredLocks = new ArrayList<>();
     }
 
     /**
@@ -436,7 +436,7 @@ public class MergeManager {
             // Iterate over each clone and let the object build merge to clones into the originals.
             this.session.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(this, uowChangeSet);
             Iterator objectChangeEnum = uowChangeSet.getAllChangeSets().keySet().iterator();
-            Set<Class> classesChanged = new HashSet<Class>();
+            Set<Class> classesChanged = new HashSet<>();
             while (objectChangeEnum.hasNext()) {
                 ObjectChangeSet objectChangeSet = (ObjectChangeSet)objectChangeEnum.next();
                 // Don't read the object here.  If it is null then we won't merge it at this stage, unless it

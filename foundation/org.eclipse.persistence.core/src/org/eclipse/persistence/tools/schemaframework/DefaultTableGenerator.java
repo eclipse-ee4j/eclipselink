@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2015 Sei Syvalta. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -711,8 +711,8 @@ public class DefaultTableGenerator {
             return;
         }
 
-        List<DatabaseField> fkFields = new ArrayList<DatabaseField>();
-        List<DatabaseField> targetFields = new ArrayList<DatabaseField>();
+        List<DatabaseField> fkFields = new ArrayList<>();
+        List<DatabaseField> targetFields = new ArrayList<>();
 
         for (Map.Entry<DatabaseField, DatabaseField> field : srcFields.entrySet()) {
             fkFields.add(field.getKey());
@@ -883,8 +883,8 @@ public class DefaultTableGenerator {
             if ((null != srcFields) && srcFields.size() > 0) {
                 // srcFields is from the secondary field to the primary key field
                 // Let's make fk constraint from the secondary field to the primary key field
-                List<DatabaseField> fkFields = new ArrayList<DatabaseField>();
-                List<DatabaseField> pkFields = new ArrayList<DatabaseField>();
+                List<DatabaseField> fkFields = new ArrayList<>();
+                List<DatabaseField> pkFields = new ArrayList<>();
 
                 for (Map.Entry<DatabaseField, DatabaseField> field : srcFields.entrySet()) {
                     pkFields.add(field.getKey());
@@ -978,7 +978,7 @@ public class DefaultTableGenerator {
             boolean resolved = false;
             boolean error = false;
 
-            Map<String, String> targetToFkField = new LinkedHashMap<String, String>();
+            Map<String, String> targetToFkField = new LinkedHashMap<>();
             for (int index = 0; index < fkFields.size(); index++) {
                 String targetField = targetFields.get(index);
                 if (targetToFkField.containsKey(targetField)) {
@@ -989,8 +989,8 @@ public class DefaultTableGenerator {
                 targetToFkField.put(targetField, fkFields.get(index));
             }
 
-            List<String> orderedFkFields = new ArrayList<String>(fkFields.size());
-            List<String> orderedTargetFields = new ArrayList<String>(targetFields.size());
+            List<String> orderedFkFields = new ArrayList<>(fkFields.size());
+            List<String> orderedTargetFields = new ArrayList<>(targetFields.size());
 
             if (!error) {
                 // if target fields are primary keys

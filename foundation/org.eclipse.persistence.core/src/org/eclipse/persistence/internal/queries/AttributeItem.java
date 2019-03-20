@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,13 +61,13 @@ public class AttributeItem extends CoreAttributeItem<AttributeGroup> implements 
         }
         clone.parent = parentClone;
         if (this.subGroups != null){
-            clone.subGroups = new HashMap<Object, AttributeGroup>();
+            clone.subGroups = new HashMap<>();
             for (Entry<Object, AttributeGroup> group : this.subGroups.entrySet()){
                 clone.subGroups.put(group.getKey(), group.getValue().toCopyGroup(cloneMap, copies));
             }
         }
         if (this.keyGroups != null){
-            clone.keyGroups = new HashMap<Object, AttributeGroup>();
+            clone.keyGroups = new HashMap<>();
             for (Entry<Object, AttributeGroup> group : this.keyGroups.entrySet()){
                 clone.keyGroups.put(group.getKey(), group.getValue().toCopyGroup(cloneMap, copies));
             }
@@ -87,13 +87,13 @@ public class AttributeItem extends CoreAttributeItem<AttributeGroup> implements 
         }
         clone.parent = parentClone;
         if (this.subGroups != null){
-            clone.subGroups = new HashMap<Object, AttributeGroup>();
+            clone.subGroups = new HashMap<>();
             for (Entry<Object, AttributeGroup> group : this.subGroups.entrySet()){
                 clone.subGroups.put(group.getKey(), group.getValue().toFetchGroup(cloneMap));
             }
         }
         if (this.keyGroups != null){
-            clone.keyGroups = new HashMap<Object, AttributeGroup>();
+            clone.keyGroups = new HashMap<>();
             for (Entry<Object, AttributeGroup> group : this.keyGroups.entrySet()){
                 clone.keyGroups.put(group.getKey(), group.getValue().toFetchGroup(cloneMap));
             }
@@ -113,13 +113,13 @@ public class AttributeItem extends CoreAttributeItem<AttributeGroup> implements 
         }
         clone.parent = parentClone;
         if (this.subGroups != null){
-            clone.subGroups = new HashMap<Object, AttributeGroup>();
+            clone.subGroups = new HashMap<>();
             for (Entry<Object, AttributeGroup> group : this.subGroups.entrySet()){
                 clone.subGroups.put(group.getKey(), group.getValue().toLoadGroup(cloneMap, loadOnly));
             }
         }
         if (this.keyGroups != null){
-            clone.keyGroups = new HashMap<Object, AttributeGroup>();
+            clone.keyGroups = new HashMap<>();
             for (Entry<Object, AttributeGroup> group : this.keyGroups.entrySet()){
                 clone.keyGroups.put(group.getKey(), group.getValue().toLoadGroup(cloneMap, loadOnly));
             }

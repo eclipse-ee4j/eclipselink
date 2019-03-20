@@ -44,53 +44,53 @@ public interface IdentityMapAccessor {
      * ADVANCED:
      * Clear all the query caches
      */
-    public void clearQueryCache();
+    void clearQueryCache();
 
     /**
      * ADVANCED:
      * Clear the query class associated with the passed-in read query.
      */
-    public void clearQueryCache(ReadQuery query);
+    void clearQueryCache(ReadQuery query);
 
     /**
      * ADVANCED:
      * Clear the query cache associated with the named query on the session.
      */
-    public void clearQueryCache(String sessionQueryName);
+    void clearQueryCache(String sessionQueryName);
 
     /**
      * ADVANCED:
      * Clear the query cache associated with the named query on the descriptor for the given class.
      */
-    public void clearQueryCache(String descriptorQueryName, Class queryClass);
+    void clearQueryCache(String descriptorQueryName, Class queryClass);
 
     /**
      * ADVANCED:
      * Invalidate/remove any results for any query for the class from the query cache.
      * This is used to invalidate the query cache on any change.
      */
-    public void invalidateQueryCache(Class classThatChanged);
+    void invalidateQueryCache(Class classThatChanged);
 
     /**
      * ADVANCED:
      * Returns true if the identity map contains an Object with the same primary
      * key and Class type of the given domainObject.
      */
-    public boolean containsObjectInIdentityMap(Object domainObject);
+    boolean containsObjectInIdentityMap(Object domainObject);
 
     /**
      * ADVANCED:
      * Returns true if the identity map contains an Object with the same
      * primary key and Class type as those specified.
      */
-    public boolean containsObjectInIdentityMap(Object primaryKey, Class theClass);
+    boolean containsObjectInIdentityMap(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
      * Returns true if the identity map contains an Object with the same primary key
      * of the specified row (i.e. the database record) and Class type.
      */
-    public boolean containsObjectInIdentityMap(Record rowContainingPrimaryKey, Class theClass);
+    boolean containsObjectInIdentityMap(Record rowContainingPrimaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -107,7 +107,7 @@ public interface IdentityMapAccessor {
      * @return Vector of Objects
      * @throws QueryException
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
+    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
 
     /**
      * ADVANCED:
@@ -124,7 +124,7 @@ public interface IdentityMapAccessor {
      * @return Vector of Objects
      * @throws QueryException
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
+    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy, boolean shouldReturnInvalidatedObjects) throws QueryException;
 
     /**
      * ADVANCED:
@@ -138,7 +138,7 @@ public interface IdentityMapAccessor {
      * @return Vector of Objects with type theClass and matching the selectionCriteria
      * @throws QueryException
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
+    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
 
     /**
      * ADVANCED:
@@ -152,7 +152,7 @@ public interface IdentityMapAccessor {
      * @return Vector of Objects with type theClass and matching the selectionCriteria
      * @throws QueryException
      */
-    public Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException;
+    Vector getAllFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException;
 
     /**
      * ADVANCED:
@@ -161,7 +161,7 @@ public interface IdentityMapAccessor {
      * @param domainObject Object
      * @return Object from identity map, may be null.
      */
-    public Object getFromIdentityMap(Object domainObject);
+    Object getFromIdentityMap(Object domainObject);
 
 
     /**
@@ -170,7 +170,7 @@ public interface IdentityMapAccessor {
      * and Class type as those specified.
      * @return Object from identity map, may be null.
      */
-    public Object getFromIdentityMap(Object primaryKey, Class theClass);
+    Object getFromIdentityMap(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -180,7 +180,7 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @return Object from identity map, may be null.
      */
-    public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass);
+    Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass);
 
     /**
      * ADVANCED:
@@ -189,7 +189,7 @@ public interface IdentityMapAccessor {
      * if specified with the boolean shouldReturnInvalidatedObjects.
      * @return Object from identity map, may be null.
      */
-    public Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
+    Object getFromIdentityMap(Object primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
 
     /**
      * ADVANCED:
@@ -201,7 +201,7 @@ public interface IdentityMapAccessor {
      * @param shouldReturnInvalidatedObjects boolean
      * @return Object from identity map, may be null.
      */
-    public Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
+    Object getFromIdentityMap(Record rowContainingPrimaryKey, Class theClass, boolean shouldReturnInvalidatedObjects);
 
     /**
      * ADVANCED:
@@ -214,7 +214,7 @@ public interface IdentityMapAccessor {
      * @return Object from identity map, may be null
      * @throws QueryException
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException;
+    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow) throws QueryException;
 
     /**
      * ADVANCED:
@@ -230,7 +230,7 @@ public interface IdentityMapAccessor {
      * @return Object from identity map, may be null
      * @throws QueryException
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
+    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, InMemoryQueryIndirectionPolicy valueHolderPolicy) throws QueryException;
 
     /**
      * ADVANCED:
@@ -246,7 +246,7 @@ public interface IdentityMapAccessor {
      * @return Object from identity map, may be null
      * @throws QueryException
      */
-    public Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException;
+    Object getFromIdentityMap(Expression selectionCriteria, Class theClass, Record translationRow, int valueHolderPolicy) throws QueryException;
 
     /**
      * ADVANCED:
@@ -256,7 +256,7 @@ public interface IdentityMapAccessor {
      * @param object Object under consideration
      * @return long time in milliseconds
      */
-    public long getRemainingValidTime(Object object);
+    long getRemainingValidTime(Object object);
 
     /**
      * ADVANCED:
@@ -265,14 +265,14 @@ public interface IdentityMapAccessor {
      * @param domainObject Object
      * @return Object for versioning
      */
-    public Object getWriteLockValue(Object domainObject);
+    Object getWriteLockValue(Object domainObject);
 
     /**
      * ADVANCED:
      * Extracts the write lock value from the identity map through the passed in primaryKey and Class type.
      * Write lock values are used when optimistic locking is stored in the cache instead of the object.
      */
-    public Object getWriteLockValue(Object primaryKey, Class theClass);
+    Object getWriteLockValue(Object primaryKey, Class theClass);
 
     /**
      * PUBLIC:
@@ -283,7 +283,7 @@ public interface IdentityMapAccessor {
      * be maintained for any Objects currently read in.  This should only be called
      * if the application knows that it no longer has references to Objects held in the cache.
      */
-    public void initializeAllIdentityMaps();
+    void initializeAllIdentityMaps();
 
     /**
      * PUBLIC:
@@ -293,7 +293,7 @@ public interface IdentityMapAccessor {
      * are not referenced from other Objects of other classes or from the application.
      * @param theClass Class
      */
-    public void initializeIdentityMap(Class theClass);
+    void initializeIdentityMap(Class theClass);
 
     /**
      * PUBLIC:
@@ -303,7 +303,7 @@ public interface IdentityMapAccessor {
      * be maintained for any Objects currently read in.  This should only be called
      * if the application knows that it no longer has references to Objects held in the cache.
      */
-    public void initializeIdentityMaps();
+    void initializeIdentityMaps();
 
     /**
      * ADVANCED:
@@ -312,14 +312,14 @@ public interface IdentityMapAccessor {
      * without any action.
      * @param object Object
      */
-    public void invalidateObject(Object object);
+    void invalidateObject(Object object);
 
     /**
      * ADVANCED:
      * Set an object to be invalid in the cache.
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
-    public void invalidateObject(Object object, boolean invalidateCluster);
+    void invalidateObject(Object object, boolean invalidateCluster);
 
     /**
      * ADVANCED:
@@ -327,14 +327,14 @@ public interface IdentityMapAccessor {
      * the cache. If the Object does not exist in the cache,
      * this method will return without any action.
      */
-    public void invalidateObject(Object primaryKey, Class theClass);
+    void invalidateObject(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
      * Set an object to be invalid in the cache.
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
-    public void invalidateObject(Object primaryKey, Class theClass, boolean invalidateCluster);
+    void invalidateObject(Object primaryKey, Class theClass, boolean invalidateCluster);
 
     /**
      * ADVANCED:
@@ -342,14 +342,14 @@ public interface IdentityMapAccessor {
      * be invalid in the cache. If the Object does not exist in the cache,
      * this method will return without any action.
      */
-    public void invalidateObject(Record rowContainingPrimaryKey, Class theClass);
+    void invalidateObject(Record rowContainingPrimaryKey, Class theClass);
 
     /**
      * ADVANCED:
      * Set an object to be invalid in the cache.
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
-    public void invalidateObject(Record rowContainingPrimaryKey, Class theClass, boolean invalidateCluster);
+    void invalidateObject(Record rowContainingPrimaryKey, Class theClass, boolean invalidateCluster);
 
     /**
      * ADVANCED:
@@ -357,14 +357,14 @@ public interface IdentityMapAccessor {
      * This method will take no action for any Objects in the collection that do not exist in the cache.
      * @param collection objects to be invalidated
      */
-    public void invalidateObjects(Collection collection);
+    void invalidateObjects(Collection collection);
 
     /**
      * ADVANCED:
      * Set all of the objects in the given collection to be invalid in the cache.
      * @param invalidateCluster if true the invalidation will be broadcast to each server in the cluster.
      */
-    public void invalidateObjects(Collection collection, boolean invalidateCluster);
+    void invalidateObjects(Collection collection, boolean invalidateCluster);
 
     /**
      * ADVANCED:
@@ -379,7 +379,7 @@ public interface IdentityMapAccessor {
      * </code>
      * @param selectionCriteria Expression
      */
-    public void invalidateObjects(Expression selectionCriteria);
+    void invalidateObjects(Expression selectionCriteria);
 
     /**
      * ADVANCED:
@@ -390,21 +390,21 @@ public interface IdentityMapAccessor {
      * @param translationRow Record
      * @param shouldInvalidateOnException boolean indicates weather to invalidate the object if conform threw exception.
      */
-    public void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException);
+    void invalidateObjects(Expression selectionCriteria, Class theClass, Record translationRow, boolean shouldInvalidateOnException);
 
     /**
      * ADVANCED:
      * Sets all of the Objects for all classes to be invalid in the cache.
      * It will recurse on inheritance.
      */
-    public void invalidateAll();
+    void invalidateAll();
 
     /**
      * ADVANCED:
      * Sets all of the Objects of the specified Class type to be invalid in the cache.
      * Will set the recurse on inheritance to true.
      */
-    public void invalidateClass(Class theClass);
+    void invalidateClass(Class theClass);
 
     /**
      * ADVANCED:
@@ -414,49 +414,49 @@ public interface IdentityMapAccessor {
      * @param theClass Class
      * @param recurse boolean
      */
-    public void invalidateClass(Class theClass, boolean recurse);
+    void invalidateClass(Class theClass, boolean recurse);
 
     /**
      * ADVANCED:
      * Returns true if an Object with the same primary key and Class type of the
      * the given Object is valid in the cache.
      */
-    public boolean isValid(Object object);
+    boolean isValid(Object object);
 
     /**
      * ADVANCED:
      * Returns true if the Object described by the given primary key and Class type is valid
      * in the cache.
      */
-    public boolean isValid(Object primaryKey, Class theClass);
+    boolean isValid(Object primaryKey, Class theClass);
 
     /**
      * ADVANCED:
      * Returns true if this Object with the given primary key of the Row and Class type
      * given is valid in the cache.
      */
-    public boolean isValid(Record rowContainingPrimaryKey, Class theClass);
+    boolean isValid(Record rowContainingPrimaryKey, Class theClass);
 
     /**
      * PUBLIC:
      * Used to print all the Objects in the identity map of the given Class type.
      * The output of this method will be logged to this session's SessionLog at SEVERE level.
      */
-    public void printIdentityMap(Class theClass);
+    void printIdentityMap(Class theClass);
 
     /**
      * PUBLIC:
      * Used to print all the Objects in every identity map in this session.
      * The output of this method will be logged to this session's SessionLog at SEVERE level.
      */
-    public void printIdentityMaps();
+    void printIdentityMaps();
 
     /**
      * PUBLIC:
      * Used to print all the locks in every identity map in this session.
      * The output of this method will be logged to this session's SessionLog at FINEST level.
      */
-    public void printIdentityMapLocks();
+    void printIdentityMapLocks();
 
     /**
      * ADVANCED:
@@ -465,21 +465,21 @@ public interface IdentityMapAccessor {
      * @param domainObject Object
      * @return Object
      */
-    public Object putInIdentityMap(Object domainObject);
+    Object putInIdentityMap(Object domainObject);
 
     /**
      * ADVANCED:
      * Registers the Object and given key with the identity map.
      * The Object must always be registered with its version number if optimistic locking is used.
      */
-    public Object putInIdentityMap(Object domainObject, Object key);
+    Object putInIdentityMap(Object domainObject, Object key);
 
     /**
      * ADVANCED:
      * Registers the Object and given key with the identity map.
      * The Object must always be registered with its version number if optimistic locking is used.
      */
-    public Object putInIdentityMap(Object domainObject, Object key, Object writeLockValue);
+    Object putInIdentityMap(Object domainObject, Object key, Object writeLockValue);
 
     /**
      * ADVANCED:
@@ -492,7 +492,7 @@ public interface IdentityMapAccessor {
      * @param readTime long, time in milliseconds
      * @return Object the Object put into the identity map
      */
-    public Object putInIdentityMap(Object domainObject, Object key, Object writeLockValue, long readTime);
+    Object putInIdentityMap(Object domainObject, Object key, Object writeLockValue, long readTime);
 
     /**
      * ADVANCED:
@@ -502,7 +502,7 @@ public interface IdentityMapAccessor {
      * @param domainObject Object
      * @return Object the Object removed from the identity map
      */
-    public Object removeFromIdentityMap(Object domainObject);
+    Object removeFromIdentityMap(Object domainObject);
 
 
     /**
@@ -512,7 +512,7 @@ public interface IdentityMapAccessor {
      * The application should only call this if its known that no references to the Object exist.
      * @return Object the Object removed from the identity map
      */
-    public Object removeFromIdentityMap(Object key, Class theClass);
+    Object removeFromIdentityMap(Object key, Class theClass);
 
     /**
      * ADVANCED:
@@ -521,14 +521,14 @@ public interface IdentityMapAccessor {
      * @param domainObject Object
      * @param writeLockValue Object for versioning
      */
-    public void updateWriteLockValue(Object domainObject, Object writeLockValue);
+    void updateWriteLockValue(Object domainObject, Object writeLockValue);
 
     /**
      * ADVANCED:
      * Updates the write lock value in the cache for the Object with same primary key as the given Object.
      * The write lock values is used when optimistic locking is stored in the cache instead of in the object.
      */
-    public void updateWriteLockValue(Object primaryKey, Class theClass, Object writeLockValue);
+    void updateWriteLockValue(Object primaryKey, Class theClass, Object writeLockValue);
 
     /**
      * ADVANCED:
@@ -537,5 +537,5 @@ public interface IdentityMapAccessor {
      * Object that is not in the cache. This method will validate that all cached
      * Objects are in a correct state.
      */
-    public void validateCache();
+    void validateCache();
 }

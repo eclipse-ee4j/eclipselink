@@ -282,8 +282,8 @@ public class ReportQueryResult implements Serializable, Map {
      */
     @Override
     public void clear() {
-        this.names = new ArrayList<String>();
-        this.results = new ArrayList<Object>();
+        this.names = new ArrayList<>();
+        this.results = new ArrayList<>();
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,7 +70,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
 
     protected XPathFragment textWrapperFragment;
 
-    private CycleDetectionStack<Object> cycleDetectionStack = new CycleDetectionStack<Object>();
+    private CycleDetectionStack<Object> cycleDetectionStack = new CycleDetectionStack<>();
 
     private Stack<CoreAttributeGroup> attributeGroupStack;
 
@@ -84,7 +84,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
     }
 
     @Override
-    public void forceValueWrapper(){};
+    public void forceValueWrapper(){}
 
     public HashMap getPositionalNodes() {
         if (positionalNodes == null) {
@@ -833,7 +833,7 @@ public abstract class MarshalRecord<MARSHALLER extends Marshaller> extends Abstr
             return;
         }
         if(this.attributeGroupStack == null) {
-            this.attributeGroupStack = new Stack<CoreAttributeGroup>();
+            this.attributeGroupStack = new Stack<>();
         }
         this.attributeGroupStack.push(group);
     }

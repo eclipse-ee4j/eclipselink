@@ -231,7 +231,7 @@ public final class ReferenceResolver {
      *  &gt; }
      *
      */
-    public final void addReference(final Reference ref) {
+    public void addReference(final Reference ref) {
         final ReferenceKey key = new ReferenceKey(ref);
         /* If an entry with equal key is already present in map, we preserve the original entry and
          * note the position of the new entry into the list of positions and put the new misfit value
@@ -250,7 +250,7 @@ public final class ReferenceResolver {
     /**
      * Retrieve the reference for a given mapping instance. If more keys match, returns the first occurrence.
      */
-    public final Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject) {
+    public Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject) {
         refKey.setMapping(mapping);
         refKey.setSourceObject(sourceObject);
         final Reference reference = referencesMap.get(refKey);
@@ -272,7 +272,7 @@ public final class ReferenceResolver {
      * Return a reference for the given mapping and source object, that doesn't already
      * contain an entry for the provided field.
      */
-    public final Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject,
+    public Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject,
                                         final Field xmlField) {
         final Field targetField = (Field) mapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
         String tgtXpath = null;
@@ -304,7 +304,7 @@ public final class ReferenceResolver {
      *
      * @since EclipseLink 2.5.0
      */
-    public final void putValue(final Class clazz, final Object key, final Object object) {
+    public void putValue(final Class clazz, final Object key, final Object object) {
         Map<Object, Object> keyToObject = cache.get(clazz);
         if (null == keyToObject) {
             keyToObject = new HashMap<>();
@@ -320,7 +320,7 @@ public final class ReferenceResolver {
      * @param session               typically will be a unit of work
      * @param userSpecifiedResolver a user-provided subclass of IDResolver, may be null
      */
-    public final void resolveReferences(final CoreAbstractSession session, final IDResolver userSpecifiedResolver,
+    public void resolveReferences(final CoreAbstractSession session, final IDResolver userSpecifiedResolver,
                                         final ErrorHandler handler) {
         final Collection<Reference> luckyReferences = referencesMap.values();
         final Iterator<Reference> mapIterator = luckyReferences.iterator();
@@ -668,14 +668,14 @@ public final class ReferenceResolver {
         }
 
         @Override
-        public final int hashCode() {
+        public int hashCode() {
             int result = System.identityHashCode(sourceObject);
             result = 31 * result + System.identityHashCode(mapping);
             return result;
         }
 
         @Override
-        public final boolean equals(final Object o) {
+        public boolean equals(final Object o) {
             if (this == o) return true;
             if (!(o instanceof ReferenceKey)) return false;
 

@@ -180,7 +180,7 @@ public class DatasourcePlatform implements Platform {
             clone.sequencesAfterCloneCleanup();
             return clone;
         } catch (CloneNotSupportedException exception) {
-            ;//Do nothing
+            //Do nothing
         }
 
         return null;

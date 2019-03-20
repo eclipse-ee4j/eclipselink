@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -133,7 +133,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public DirectCollectionMapping() {
         this.insertQuery = new DataModifyQuery();
-        this.orderByExpressions = new ArrayList<Expression>();
+        this.orderByExpressions = new ArrayList<>();
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.referenceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.selectionQuery = new DirectReadQuery();
@@ -249,7 +249,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Expression originalSelectionCriteria = null;
 
         // 2612538 - the default size of Map (32) is appropriate
-        Map<Expression, Expression> clonedExpressions = new IdentityHashMap<Expression, Expression>();
+        Map<Expression, Expression> clonedExpressions = new IdentityHashMap<>();
         builder = new ExpressionBuilder();
         // For flashback.
         if (query.hasAsOfClause()) {
@@ -1012,7 +1012,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Expression table = builder.getTable(this.referenceTable);
         if (size > 1) {
             // Support composite keys using nested IN.
-            List<Expression> fields = new ArrayList<Expression>(size);
+            List<Expression> fields = new ArrayList<>(size);
             for (DatabaseField referenceKeyField : this.referenceKeyFields) {
                 fields.add(table.getField(referenceKeyField));
             }

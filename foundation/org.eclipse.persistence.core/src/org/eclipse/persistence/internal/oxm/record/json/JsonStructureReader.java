@@ -512,7 +512,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
     }
 
     private boolean isTextValue(String localName, UnmarshalRecord contentHandler_) {
-        XPathNode currentNode = ((UnmarshalRecord) contentHandler_).getXPathNode();
+        XPathNode currentNode = contentHandler_.getXPathNode();
         if (currentNode == null) {
             return textWrapper != null && textWrapper.equals(localName);
         }

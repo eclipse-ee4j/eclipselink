@@ -40,7 +40,7 @@ import org.eclipse.persistence.sessions.Session;
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
 public interface Platform extends CorePlatform<ConversionManager>, Serializable, Cloneable {
-    public Object clone();
+    Object clone();
 
     /**
      * Convert the object to the appropriate type by invoking the appropriate
@@ -50,118 +50,116 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * @exception ConversionException all exceptions will be thrown as this type.
      * @return the newly converted object
      */
-    @Override
-    public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException;
+    @Override Object convertObject(Object sourceObject, Class javaClass) throws ConversionException;
 
     /**
      * Copy the state into the new platform.
      */
-    public void copyInto(Platform platform);
+    void copyInto(Platform platform);
 
     /**
      * The platform hold its own instance of conversion manager to allow customization.
      */
-    @Override
-    public ConversionManager getConversionManager();
+    @Override ConversionManager getConversionManager();
 
     /**
      * The platform hold its own instance of conversion manager to allow customization.
      */
-    public void setConversionManager(ConversionManager conversionManager);
+    void setConversionManager(ConversionManager conversionManager);
 
     /**
      * Return the qualifier for the table. Required by some
      * databases such as Oracle and DB2
      */
-    public String getTableQualifier();
+    String getTableQualifier();
 
     /**
      * Answer the timestamp from the server.
      */
-    public java.sql.Timestamp getTimestampFromServer(AbstractSession session, String sessionName);
+    java.sql.Timestamp getTimestampFromServer(AbstractSession session, String sessionName);
 
     /**
      * This method can be overridden by subclasses to return a
      * query that will return the timestamp from the server.
      * return null if the time should be the local time.
      */
-    public ValueReadQuery getTimestampQuery();
+    ValueReadQuery getTimestampQuery();
 
-    public boolean isH2();
+    boolean isH2();
 
-    public boolean isAccess();
+    boolean isAccess();
 
-    public boolean isAttunity();
+    boolean isAttunity();
 
-    public boolean isCloudscape();
+    boolean isCloudscape();
 
-    public boolean isDerby();
+    boolean isDerby();
 
-    public boolean isDB2();
+    boolean isDB2();
 
-    public boolean isDBase();
+    boolean isDBase();
 
-    public boolean isHANA();
+    boolean isHANA();
 
-    public boolean isHSQL();
+    boolean isHSQL();
 
-    public boolean isInformix();
+    boolean isInformix();
 
-    public boolean isMaxDB();
+    boolean isMaxDB();
 
-    public boolean isMySQL();
+    boolean isMySQL();
 
-    public boolean isODBC();
+    boolean isODBC();
 
-    public boolean isOracle();
+    boolean isOracle();
 
-    public boolean isOracle9();
+    boolean isOracle9();
 
-    public boolean isOracle12();
+    boolean isOracle12();
 
-    public boolean isPointBase();
+    boolean isPointBase();
 
-    public boolean isSQLAnywhere();
+    boolean isSQLAnywhere();
 
-    public boolean isSQLServer();
+    boolean isSQLServer();
 
-    public boolean isSybase();
+    boolean isSybase();
 
-    public boolean isSymfoware();
+    boolean isSymfoware();
 
-    public boolean isTimesTen();
+    boolean isTimesTen();
 
-    public boolean isTimesTen7();
+    boolean isTimesTen7();
 
-    public boolean isPostgreSQL();
+    boolean isPostgreSQL();
 
     /**
      * Allow the platform to initialize itself after login/init.
      */
-    public void initialize();
+    void initialize();
 
     /**
      * Set the qualifier for the table. Required by some
      * databases such as Oracle and DB2
      */
-    public void setTableQualifier(String qualifier);
+    void setTableQualifier(String qualifier);
 
     /**
      * Can override the default query for returning a timestamp from the server.
      * See: getTimestampFromServer
      */
-    public void setTimestampQuery(ValueReadQuery tsQuery);
+    void setTimestampQuery(ValueReadQuery tsQuery);
 
     /**
      * Add the parameter.
      * Convert the parameter to a string and write it.
      */
-    public void appendParameter(Call call, Writer writer, Object parameter);
+    void appendParameter(Call call, Writer writer, Object parameter);
 
     /**
      * Allow for the platform to handle the representation of parameters specially.
      */
-    public Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind);
+    Object getCustomModifyValueForCall(Call call, Object value, DatabaseField field, boolean shouldBind);
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
@@ -169,7 +167,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the end of the value.
      */
-    public String getEndDelimiter();
+    String getEndDelimiter();
 
     /**
      * Delimiter to use for fields and tables using spaces or other special values.
@@ -177,19 +175,19 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * Some databases use different delimiters for the beginning and end of the value.
      * This delimiter indicates the start of the value.
      */
-    public String getStartDelimiter();
+    String getStartDelimiter();
 
     /**
      * Allow for the platform to handle the representation of parameters specially.
      */
-    public boolean shouldUseCustomModifyForCall(DatabaseField field);
+    boolean shouldUseCustomModifyForCall(DatabaseField field);
 
     /**
      * Get default sequence.
      * Sequence name shouldn't be altered -
      * don't do: getDefaultSequence().setName(newName).
      */
-    public Sequence getDefaultSequence();
+    Sequence getDefaultSequence();
 
     /**
      * Set default sequence.
@@ -199,7 +197,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * Default constructors for Sequence subclasses
      * set name to "SEQ".
      */
-    public void setDefaultSequence(Sequence sequence);
+    void setDefaultSequence(Sequence sequence);
 
     /**
      * Add sequence.
@@ -208,7 +206,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * don't do: getSequence(name).setName(newName))
      * Don't use if the session is connected.
      */
-    public void addSequence(Sequence sequence);
+    void addSequence(Sequence sequence);
 
     /**
      * Add sequence.
@@ -220,56 +218,56 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * If sequencing is connected then the sequence is added only
      * if there is no sequence with the same name already in use.
      */
-    public void addSequence(Sequence sequence, boolean isConnected);
+    void addSequence(Sequence sequence, boolean isConnected);
 
     /**
      * Get sequence corresponding to the name.
      * The name shouldn't be altered -
      * don't do: getSequence(name).setName(newName)
      */
-    public Sequence getSequence(String seqName);
+    Sequence getSequence(String seqName);
 
     /**
      * Remove sequence corresponding to the name
      * (the sequence was added through addSequence method)
      * Don't use if the session is connected.
      */
-    public Sequence removeSequence(String seqName);
+    Sequence removeSequence(String seqName);
 
     /**
      * Remove all sequences that were added through addSequence method.
      */
-    public void removeAllSequences();
+    void removeAllSequences();
 
     /**
      * INTERNAL:
      * Returns a map of sequence names to Sequences (may be null).
      */
-    public Map getSequences();
+    Map getSequences();
 
     /**
      * INTERNAL:
      * Used only for writing into XML or Java.
      */
-    public Map getSequencesToWrite();
+    Map getSequencesToWrite();
 
     /**
      * INTERNAL:
      * Used only for writing into XML or Java.
      */
-    public Sequence getDefaultSequenceToWrite();
+    Sequence getDefaultSequenceToWrite();
 
     /**
      * INTERNAL:
      * Used only for reading from XML.
      */
-    public void setSequences(Map sequences);
+    void setSequences(Map sequences);
 
     /**
      * INTERNAL:
      * Indicates whether defaultSequence is the same as platform default sequence.
      */
-    public boolean usesPlatformDefaultSequence();
+    boolean usesPlatformDefaultSequence();
 
     /**
      * INTERNAL:
@@ -280,7 +278,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * @param defaultIdentityGenerator Default identity generator sequence name.
      * @since 2.7
      */
-    public void initIdentitySequences(final Session session, final String defaultIdentityGenerator);
+    void initIdentitySequences(final Session session, final String defaultIdentityGenerator);
 
     /**
      * INTERNAL:
@@ -291,7 +289,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * @param tableNames Set of table names to check for identity sequence removal.
      * @since 2.7
      */
-    public void removeIdentitySequences(
+    void removeIdentitySequences(
             final Session session, final String defaultIdentityGenerator, final Set<String> tableNames);
 
 }

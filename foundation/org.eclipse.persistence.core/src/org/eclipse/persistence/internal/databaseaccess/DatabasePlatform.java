@@ -380,7 +380,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public Map<Class, StructConverter> getTypeConverters() {
         if (typeConverters == null){
-            typeConverters = new HashMap<Class, StructConverter>();
+            typeConverters = new HashMap<>();
         }
         return this.typeConverters;
     }
@@ -395,10 +395,10 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void addStructConverter(StructConverter converter) {
         if (structConverters == null){
-            structConverters = new HashMap<String, StructConverter>();
+            structConverters = new HashMap<>();
         }
         if (typeConverters == null){
-            typeConverters = new HashMap<Class, StructConverter>();
+            typeConverters = new HashMap<>();
         }
         structConverters.put(converter.getStructName(), converter);
         typeConverters.put(converter.getJavaType(), converter);
@@ -674,7 +674,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Return the mapping of class types to database types for the schema framework.
      */
     protected Map<String, Class> buildClassTypes() {
-        Map<String, Class> classTypeMapping = new HashMap<String, Class>();
+        Map<String, Class> classTypeMapping = new HashMap<>();
         // Key the Map the other way for table creation.
         classTypeMapping.put("NUMBER", java.math.BigInteger.class);
         classTypeMapping.put("DECIMAL", java.math.BigDecimal.class);

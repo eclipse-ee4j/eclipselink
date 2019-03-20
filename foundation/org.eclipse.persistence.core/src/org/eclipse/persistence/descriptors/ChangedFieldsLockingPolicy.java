@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public class ChangedFieldsLockingPolicy extends FieldsLockingPolicy {
     @Override
     protected List<DatabaseField> getFieldsToCompare(DatabaseTable table, AbstractRecord transRow, AbstractRecord modifyRow) {
         List<DatabaseField> fields = getAllNonPrimaryKeyFields(table);
-        List<DatabaseField> returnedFields = new ArrayList<DatabaseField>();
+        List<DatabaseField> returnedFields = new ArrayList<>();
         for (DatabaseField field : fields) {
             if (modifyRow.containsKey(field)) {
                 returnedFields.add(field);

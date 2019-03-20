@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1484,7 +1484,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
      */
     private void visitArithmeticExpression(ArithmeticExpression expression) {
 
-        List<Class<?>> types = new ArrayList<Class<?>>(2);
+        List<Class<?>> types = new ArrayList<>(2);
 
         // Visit the first expression
         expression.getLeftExpression().accept(this);
@@ -1519,7 +1519,7 @@ final class TypeResolver implements EclipseLinkExpressionVisitor {
     private void visitCollectionEquivalentExpression(Expression expression,
                                                      Expression extraExpression) {
 
-        List<Class<?>> types = new ArrayList<Class<?>>();
+        List<Class<?>> types = new ArrayList<>();
         CollectionExpression collectionExpression = getCollectionExpression(expression);
 
         // Gather the resolver for all children

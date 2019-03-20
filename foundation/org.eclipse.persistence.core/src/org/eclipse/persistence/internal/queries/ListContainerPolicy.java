@@ -237,7 +237,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             query.addArgument(ForeignReferenceMapping.QUERY_BATCH_PARAMETER);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             int pkCount = foreignKeyValues.size();
-            Collection<Object> temp = new ArrayList<Object>();
+            Collection<Object> temp = new ArrayList<>();
             List arguments = new ArrayList();
             arguments.add(foreignKeyValues);
             if (pkCount > 1000){

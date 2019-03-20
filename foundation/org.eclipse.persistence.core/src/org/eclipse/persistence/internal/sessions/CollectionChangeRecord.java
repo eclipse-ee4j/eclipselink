@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -294,7 +294,7 @@ public class CollectionChangeRecord extends DeferrableChangeRecord implements or
             ObjectChangeSet mergingObject = changeObject.getChangeSet();
             ObjectChangeSet localChangeSet = mergeToChangeSet.findOrIntegrateObjectChangeSet(mergingObject, mergeFromChangeSet);
 
-            OrderedChangeObject orderedChangeObject = new OrderedChangeObject(changeObject.getChangeType(), changeObject.getIndex(), localChangeSet);;
+            OrderedChangeObject orderedChangeObject = new OrderedChangeObject(changeObject.getChangeType(), changeObject.getIndex(), localChangeSet);
             orderedChangeSets.add(orderedChangeObject);
         }
         getOrderedChangeObjectList().addAll(orderedChangeSets);

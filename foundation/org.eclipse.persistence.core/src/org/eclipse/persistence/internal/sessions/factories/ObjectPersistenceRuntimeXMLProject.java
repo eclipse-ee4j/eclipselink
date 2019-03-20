@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1373,9 +1373,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseQuery query = (DatabaseQuery)object;
                 List queryArguments = (List)value;
-                List<String> arguments = new ArrayList<String>(queryArguments.size());
-                List<Class> types = new ArrayList<Class>(queryArguments.size());
-                List<Object> values = new ArrayList<Object>(queryArguments.size());
+                List<String> arguments = new ArrayList<>(queryArguments.size());
+                List<Class> types = new ArrayList<>(queryArguments.size());
+                List<Object> values = new ArrayList<>(queryArguments.size());
                 for (int index = 0; index < queryArguments.size(); index++) {
                     QueryArgument queryArgument = (QueryArgument)queryArguments.get(index);
                     arguments.add((String)queryArgument.getKey());

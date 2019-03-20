@@ -437,7 +437,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         List<Object> list = deletedPrivateOwnedObjects.get(mapping);
         if(list == null){
-            list = new ArrayList<Object>();
+            list = new ArrayList<>();
             deletedPrivateOwnedObjects.put(mapping, list);
         }
         list.add(object);
@@ -2417,7 +2417,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     private Map<DatabaseMapping, Set> getPrivateOwnedObjects() {
         if (privateOwnedObjects == null) {
-            privateOwnedObjects = new IdentityHashMap<DatabaseMapping, Set>();
+            privateOwnedObjects = new IdentityHashMap<>();
         }
         return privateOwnedObjects;
     }
@@ -3359,7 +3359,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 //If we are merging into the shared cache acquire all required locks before merging.
                 this.parent.getIdentityMapAccessorInstance().getWriteLockManager().acquireRequiredLocks(getMergeManager(), (UnitOfWorkChangeSet)getUnitOfWorkChangeSet());
             }
-            Set<Class> classesChanged = new HashSet<Class>();
+            Set<Class> classesChanged = new HashSet<>();
             if (! shouldStoreBypassCache()) {
                 for (Map<ObjectChangeSet, ObjectChangeSet> objectChangesList : ((UnitOfWorkChangeSet)getUnitOfWorkChangeSet()).getObjectChanges().values()) {
                     // May be no changes for that class type.
@@ -4816,7 +4816,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (policy != InMemoryQueryIndirectionPolicy.SHOULD_TRIGGER_INDIRECTION) {
             policy = InMemoryQueryIndirectionPolicy.SHOULD_IGNORE_EXCEPTION_RETURN_NOT_CONFORMED;
         }
-        Map<Object, Object> indexedInterimResult = new IdentityHashMap<Object, Object>();
+        Map<Object, Object> indexedInterimResult = new IdentityHashMap<>();
         try {
             List fromCache = null;
             if (selectionCriteria != null) {
@@ -4981,7 +4981,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return;
         }
         int size = classes.size();
-        this.readOnlyClasses = new HashSet<Class>(size);
+        this.readOnlyClasses = new HashSet<>(size);
         for (int index = 0; index < size; index++) {
             this.readOnlyClasses.add(classes.get(index));
         }
@@ -5320,7 +5320,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void storeModifyAllQuery(DatabaseQuery query) {
         if (this.modifyAllQueries == null) {
-            this.modifyAllQueries = new ArrayList<ModifyAllQuery>();
+            this.modifyAllQueries = new ArrayList<>();
         }
 
         this.modifyAllQueries.add((ModifyAllQuery)query);
@@ -6117,7 +6117,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public Map<Object, Set<Object>> getDeletionDependencies() {
         if (this.deletionDependencies == null) {
-            this.deletionDependencies = new HashMap<Object, Set<Object>>();
+            this.deletionDependencies = new HashMap<>();
         }
         return this.deletionDependencies;
     }
@@ -6129,11 +6129,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     public void addDeletionDependency(Object target, Object source) {
         if (this.deletionDependencies == null) {
-            this.deletionDependencies = new HashMap<Object, Set<Object>>();
+            this.deletionDependencies = new HashMap<>();
         }
         Set<Object> dependencies = this.deletionDependencies.get(target);
         if (dependencies == null) {
-            dependencies = new HashSet<Object>();
+            dependencies = new HashSet<>();
             this.deletionDependencies.put(target, dependencies);
         }
         dependencies.add(source);

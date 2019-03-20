@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,41 +44,41 @@ public interface ChoiceObjectMapping<
     XML_MAPPING extends Mapping,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    public void addChoiceElement(List<XML_FIELD> srcFields, String elementTypeName, List<XML_FIELD> tgtFields);
+    void addChoiceElement(List<XML_FIELD> srcFields, String elementTypeName, List<XML_FIELD> tgtFields);
 
-    public void addChoiceElement(String srcXpath, String elementTypeName, String tgtXpath);
+    void addChoiceElement(String srcXpath, String elementTypeName, String tgtXpath);
 
-    public void addChoiceElement(XML_FIELD field, String elementTypeName);
+    void addChoiceElement(XML_FIELD field, String elementTypeName);
 
-    public void addConverter(XML_FIELD field, CONVERTER converter);
+    void addConverter(XML_FIELD field, CONVERTER converter);
 
-    public Map<XML_FIELD, XML_MAPPING> getChoiceElementMappings();
+    Map<XML_FIELD, XML_MAPPING> getChoiceElementMappings();
 
-    public Map<Class, XML_MAPPING> getChoiceElementMappingsByClass();
+    Map<Class, XML_MAPPING> getChoiceElementMappingsByClass();
 
-    public List<XMLChoiceFieldToClassAssociation> getChoiceFieldToClassAssociations();
+    List<XMLChoiceFieldToClassAssociation> getChoiceFieldToClassAssociations();
 
-    public Map<String, XML_FIELD> getClassNameToFieldMappings();
+    Map<String, XML_FIELD> getClassNameToFieldMappings();
 
-    public Map<Class, XML_FIELD> getClassToFieldMappings();
+    Map<Class, XML_FIELD> getClassToFieldMappings();
 
-    public Map<Class, List<XML_FIELD>> getClassToSourceFieldsMappings();
+    Map<Class, List<XML_FIELD>> getClassToSourceFieldsMappings();
 
-    public CONVERTER getConverter();
+    CONVERTER getConverter();
 
-    public CONVERTER getConverter(XML_FIELD field);
+    CONVERTER getConverter(XML_FIELD field);
 
-    public List<FIELD> getFields();
+    List<FIELD> getFields();
 
-    public Map<XML_FIELD, Class> getFieldToClassMappings();
+    Map<XML_FIELD, Class> getFieldToClassMappings();
 
-    public Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord marshalRecord);
+    Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord marshalRecord);
 
     /**
      * Set the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
-    public void setConverter(CONVERTER converter);
+    void setConverter(CONVERTER converter);
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 }

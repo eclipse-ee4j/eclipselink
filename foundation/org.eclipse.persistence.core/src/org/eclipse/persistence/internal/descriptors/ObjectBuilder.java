@@ -3098,7 +3098,7 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             }
         } else {
             AbstractRecord databaseRow = createRecordForPKExtraction(size, session);
-            Set<DatabaseMapping> writtenMappings = new HashSet<DatabaseMapping>(size);
+            Set<DatabaseMapping> writtenMappings = new HashSet<>(size);
             // PERF: use index not enumeration
             for (int index = 0; index < size; index++) {
                 DatabaseMapping mapping = mappings.get(index);

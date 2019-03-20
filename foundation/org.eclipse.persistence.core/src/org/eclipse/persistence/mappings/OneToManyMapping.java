@@ -1167,7 +1167,7 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         int size = this.targetForeignKeyFields.size();
         if (size > 1) {
             // Support composite keys using nested IN.
-            List<Expression> fields = new ArrayList<Expression>(size);
+            List<Expression> fields = new ArrayList<>(size);
             for (DatabaseField targetForeignKeyField : this.targetForeignKeyFields) {
                 fields.add(builder.getField(targetForeignKeyField));
             }

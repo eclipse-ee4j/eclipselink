@@ -115,7 +115,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setAsOfClause(org.eclipse.persistence.history.AsOfClause)
      * @see org.eclipse.persistence.history.HistoryPolicy
      */
-    public Session acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause pastTime);
+    Session acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause pastTime);
 
     /**
      * PUBLIC:
@@ -126,7 +126,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see UnitOfWork
      */
-    public UnitOfWork acquireUnitOfWork();
+    UnitOfWork acquireUnitOfWork();
 
     /**
      * PUBLIC:
@@ -144,39 +144,39 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * clone may be garbage collected.  If the clone
      * has uncommitted changes then those changes will be lost.
      */
-    public UnitOfWork acquireUnitOfWork(ReferenceMode referenceMode);
+    UnitOfWork acquireUnitOfWork(ReferenceMode referenceMode);
     /**
      * PUBLIC:
      * Add the query to the session queries with the given name.
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
-    public void addQuery(String name, DatabaseQuery query);
+    void addQuery(String name, DatabaseQuery query);
 
     /**
      * ADVANCED:
      * Add a pre-defined not yet parsed JPQL String/query to the session to be parsed
      * after descriptors are initialized.
      */
-    public void addJPAQuery(DatabaseQuery query);
+    void addJPAQuery(DatabaseQuery query);
 
     /**
      * PUBLIC:
      * clear the integrityChecker, the integrityChecker holds all the ClassDescriptor Exceptions.
      */
-    public void clearIntegrityChecker();
+    void clearIntegrityChecker();
 
     /**
      * PUBLIC:
      * Clear the profiler, this will end the current profile operation.
      */
-    public void clearProfile();
+    void clearProfile();
 
 
     /**
      * PUBLIC:
      * Return true if the pre-defined query is defined on the session.
      */
-    public boolean containsQuery(String queryName);
+    boolean containsQuery(String queryName);
 
     /**
      * PUBLIC:
@@ -189,7 +189,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #copy(Object, AttributeGroup)
      */
-    public Object copy(Object originalObjectOrObjects);
+    Object copy(Object originalObjectOrObjects);
 
     /**
      * PUBLIC:
@@ -202,20 +202,20 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * then the object and all of its privately owned parts will be copied.
      * Otherwise only the attributes included into the group will be copied.
      */
-    public Object copy(Object originalObjectOrObjects, AttributeGroup group);
+    Object copy(Object originalObjectOrObjects, AttributeGroup group);
 
     /**
      * PUBLIC:
      * Return if the object exists on the database or not.
      * This always checks existence on the database.
      */
-    public boolean doesObjectExist(Object object) throws DatabaseException;
+    boolean doesObjectExist(Object object) throws DatabaseException;
 
     /**
      * PUBLIC:
      * Turn off logging
      */
-    public void dontLogMessages();
+    void dontLogMessages();
 
     /**
      * PUBLIC:
@@ -227,7 +227,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #executeSelectingCall(Call)
      */
-    public int executeNonSelectingCall(Call call);
+    int executeNonSelectingCall(Call call);
 
     /**
      * PUBLIC:
@@ -235,7 +235,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Warning: Allowing an unverified SQL string to be passed into this
      * method makes your application vulnerable to SQL injection attacks.
      */
-    public void executeNonSelectingSQL(String sqlString);
+    void executeNonSelectingSQL(String sqlString);
 
     /**
      * PUBLIC:
@@ -244,7 +244,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName);
+    Object executeQuery(String queryName);
 
     /**
      * PUBLIC:
@@ -254,7 +254,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Class domainClass);
+    Object executeQuery(String queryName, Class domainClass);
 
     /**
      * PUBLIC:
@@ -264,7 +264,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Class domainClass, Object arg1);
+    Object executeQuery(String queryName, Class domainClass, Object arg1);
 
     /**
      * PUBLIC:
@@ -274,7 +274,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2);
+    Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2);
 
     /**
      * PUBLIC:
@@ -284,7 +284,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2, Object arg3);
+    Object executeQuery(String queryName, Class domainClass, Object arg1, Object arg2, Object arg3);
 
     /**
      * PUBLIC:
@@ -294,7 +294,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see org.eclipse.persistence.descriptors.DescriptorQueryManager#addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Class domainClass, List argumentValues);
+    Object executeQuery(String queryName, Class domainClass, List argumentValues);
 
     /**
      * PUBLIC:
@@ -303,7 +303,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Object arg1);
+    Object executeQuery(String queryName, Object arg1);
 
     /**
      * PUBLIC:
@@ -312,7 +312,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Object arg1, Object arg2);
+    Object executeQuery(String queryName, Object arg1, Object arg2);
 
     /**
      * PUBLIC:
@@ -321,7 +321,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, Object arg1, Object arg2, Object arg3);
+    Object executeQuery(String queryName, Object arg1, Object arg2, Object arg3);
 
     /**
      * PUBLIC:
@@ -330,7 +330,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #addQuery(String, DatabaseQuery)
      */
-    public Object executeQuery(String queryName, List argumentValues);
+    Object executeQuery(String queryName, List argumentValues);
 
     /**
      * PUBLIC:
@@ -341,14 +341,14 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see DatabaseQuery
      */
-    public Object executeQuery(DatabaseQuery query) throws EclipseLinkException;
+    Object executeQuery(DatabaseQuery query) throws EclipseLinkException;
 
     /**
      * PUBLIC:
      * Return the results from executing the database query.
      * the arguments are passed in as a vector
      */
-    public Object executeQuery(DatabaseQuery query, List argumentValues);
+    Object executeQuery(DatabaseQuery query, List argumentValues);
 
     /**
      * PUBLIC:
@@ -361,7 +361,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #executeNonSelectingCall(Call)
      */
-    public Vector executeSelectingCall(Call call);
+    Vector executeSelectingCall(Call call);
 
     /**
      * PUBLIC:
@@ -370,21 +370,21 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Warning: Allowing an unverified SQL string to be passed into this
      * method makes your application vulnerable to SQL injection attacks.
      */
-    public Vector executeSQL(String sqlString);
+    Vector executeSQL(String sqlString);
 
     /**
      * PUBLIC:
      * Return the active session for the current active external (JTS) transaction.
      * This should only be used with JTS and will return the session if no external transaction exists.
      */
-    public Session getActiveSession();
+    Session getActiveSession();
 
     /**
      * PUBLIC:
      * Return the active unit of work for the current active external (JTS) transaction.
      * This should only be used with JTS and will return null if no external transaction exists.
      */
-    public UnitOfWork getActiveUnitOfWork();
+    UnitOfWork getActiveUnitOfWork();
 
     /**
      * ADVANCED:
@@ -393,19 +393,19 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * by one of the classes stored in the map, that descriptor will be stored under the
      * new class.
      */
-    public ClassDescriptor getClassDescriptor(Class theClass);
+    ClassDescriptor getClassDescriptor(Class theClass);
 
     /**
      * ADVANCED:
      * Return the descriptor specified for the object's class.
      */
-    public ClassDescriptor getClassDescriptor(Object domainObject);
+    ClassDescriptor getClassDescriptor(Object domainObject);
 
     /**
      * PUBLIC:
      * Return the descriptor for the alias.
      */
-    public ClassDescriptor getClassDescriptorForAlias(String alias);
+    ClassDescriptor getClassDescriptorForAlias(String alias);
 
 
     /**
@@ -417,14 +417,14 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * <code>null</code> if no clause set, or this a regular session.
      * @see #acquireHistoricalSession(org.eclipse.persistence.history.AsOfClause)
      */
-    public org.eclipse.persistence.history.AsOfClause getAsOfClause();
+    org.eclipse.persistence.history.AsOfClause getAsOfClause();
 
     /**
      *  Stores the default Session wide reference mode that a UnitOfWork will use when referencing
      *  managed objects.
      *  @see org.eclipse.persistence.config.ReferenceMode
      */
-    public ReferenceMode getDefaultReferenceMode();
+    ReferenceMode getDefaultReferenceMode();
 
     /**
      * ADVANCED:
@@ -433,49 +433,45 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * by one of the classes stored in the map, that descriptor will be stored under the
      * new class.
      */
-    @Override
-    public ClassDescriptor getDescriptor(Class theClass);
+    @Override ClassDescriptor getDescriptor(Class theClass);
 
     /**
      * ADVANCED:
      * Return the descriptor specified for the object's class.
      */
-    @Override
-    public ClassDescriptor getDescriptor(Object domainObject);
+    @Override ClassDescriptor getDescriptor(Object domainObject);
 
     /**
      * PUBLIC:
      * Return the descriptor for  the alias.
      * UnitOfWork delegates this to the parent
      */
-    public ClassDescriptor getDescriptorForAlias(String alias);
+    ClassDescriptor getDescriptorForAlias(String alias);
 
     /**
      * ADVANCED:
      * Return all registered descriptors.
      */
-    @Override
-    public Map<Class, ClassDescriptor> getDescriptors();
+    @Override Map<Class, ClassDescriptor> getDescriptors();
 
     /**
      * ADVANCED:
      * Return all pre-defined not yet parsed EJBQL queries.
      */
-    public List<DatabaseQuery> getJPAQueries();
+    List<DatabaseQuery> getJPAQueries();
 
     /**
      * PUBLIC:
      * Return the event manager.
      * The event manager can be used to register for various session events.
      */
-    @Override
-    public SessionEventManager getEventManager();
+    @Override SessionEventManager getEventManager();
 
     /**
      * PUBLIC:
      * Return the ExceptionHandler.Exception handler can catch errors that occur on queries or during database access.
      */
-    public ExceptionHandler getExceptionHandler();
+    ExceptionHandler getExceptionHandler();
 
     /**
      * PUBLIC:
@@ -483,7 +479,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * external transaction controller must be specified.  EclipseLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
-    public ExternalTransactionController getExternalTransactionController();
+    ExternalTransactionController getExternalTransactionController();
 
 
     /**
@@ -492,13 +488,13 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * This will return an object which implements an interface which exposes all public
      * IdentityMap functions.
      */
-    public IdentityMapAccessor getIdentityMapAccessor();
+    IdentityMapAccessor getIdentityMapAccessor();
 
     /**
      * PUBLIC:
      * Returns the integrityChecker,the integrityChecker holds all the ClassDescriptor Exceptions.
      */
-    public IntegrityChecker getIntegrityChecker();
+    IntegrityChecker getIntegrityChecker();
 
     /**
      * PUBLIC:
@@ -508,7 +504,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #logMessage
      */
-    public Writer getLog();
+    Writer getLog();
 
     /**
      * PUBLIC:
@@ -517,15 +513,14 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * NOTE: this must only be used for relational specific usage,
      * it will fail for non-relational datasources.
      */
-    public DatabasePlatform getPlatform();
+    DatabasePlatform getPlatform();
 
     /**
      * PUBLIC:
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      */
-    @Override
-    public Platform getDatasourcePlatform();
+    @Override Platform getDatasourcePlatform();
 
     /**
      * PUBLIC:
@@ -533,28 +528,27 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * NOTE: this must only be used for relational specific usage,
      * it will fail for non-relational datasources.
      */
-    public DatabaseLogin getLogin();
+    DatabaseLogin getLogin();
 
     /**
      * PUBLIC:
      * Return the login, the login holds any database connection information given.
      * This return the Login interface and may need to be cast to the datasource specific implementation.
      */
-    @Override
-    public Login getDatasourceLogin();
+    @Override Login getDatasourceLogin();
 
     /**
      * PUBLIC:
      * Return the name of the session.
      * This is used with the session broker, or to give the session a more meaningful name.
      */
-    public String getName();
+    String getName();
 
     /**
      * ADVANCED:
      * Return the sequence number from the database.
      */
-    public Number getNextSequenceNumberValue(Class domainClass);
+    Number getNextSequenceNumberValue(Class domainClass);
 
     /**
      * PUBLIC:
@@ -562,54 +556,53 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * The profiler is a tool that can be used to determine performance bottlenecks.
      * The profiler can be queries to print summaries and configure for logging purposes.
      */
-    public SessionProfiler getProfiler();
+    SessionProfiler getProfiler();
 
     /**
      * PUBLIC:
      * Return the project.
      * The project includes the login and descriptor and other configuration information.
      */
-    @Override
-    public org.eclipse.persistence.sessions.Project getProject();
+    @Override org.eclipse.persistence.sessions.Project getProject();
 
     /**
      * ADVANCED:
      * Allow for user defined properties.
      */
-    public Map<String, Object> getProperties();
+    Map<String, Object> getProperties();
 
     /**
      * ADVANCED:
      * Returns the user defined property.
      */
-    public Object getProperty(String name);
+    Object getProperty(String name);
 
     /**
      * ADVANCED:
      * Return all pre-defined queries.
      */
-    public Map<String, List<DatabaseQuery>> getQueries();
+    Map<String, List<DatabaseQuery>> getQueries();
 
     /**
      * PUBLIC:
      * Return the query from the session pre-defined queries with the given name.
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
-    public DatabaseQuery getQuery(String name);
+    DatabaseQuery getQuery(String name);
 
     /**
      * PUBLIC:
      * Return the query from the session pre-defined queries with the given name.
      * This allows for common queries to be pre-defined, reused and executed by name.
      */
-    public DatabaseQuery getQuery(String name, List arguments);
+    DatabaseQuery getQuery(String name, List arguments);
 
     /**
      * PUBLIC:
      * Return the server platform currently used.
      * The server platform is used for application server specific behavior.
      */
-    public ServerPlatform getServerPlatform();
+    ServerPlatform getServerPlatform();
 
     /**
      * PUBLIC:
@@ -619,27 +612,27 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #logMessage
      */
-    public SessionLog getSessionLog();
+    SessionLog getSessionLog();
 
 
     /**
      * PUBLIC:
      * Allow any WARNING level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
-    public Object handleException(RuntimeException exception) throws RuntimeException;
+    Object handleException(RuntimeException exception) throws RuntimeException;
 
 
     /**
      * ADVANCED:
      * Return true if a descriptor exists for the given class.
      */
-    public boolean hasDescriptor(Class theClass);
+    boolean hasDescriptor(Class theClass);
 
     /**
      * PUBLIC:
      * Return if an exception handler is present.
      */
-    public boolean hasExceptionHandler();
+    boolean hasExceptionHandler();
 
     /**
      * PUBLIC:
@@ -647,85 +640,85 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * external transaction controller must be specified.  EclipseLink provides JTS controllers for JTS 1.0 and Weblogic's JTS.
      * @see org.eclipse.persistence.transaction.JTATransactionController
      */
-    public boolean hasExternalTransactionController();
+    boolean hasExternalTransactionController();
 
 
     /**
      * PUBLIC:
      * Return if this session is a client session.
      */
-    public boolean isClientSession();
+    boolean isClientSession();
 
     /**
      * PUBLIC:
      * Return if this session is connected to the database.
      */
-    public boolean isConnected();
+    boolean isConnected();
 
     /**
      * PUBLIC:
      * Return if this session is a database session.
      */
-    public boolean isDatabaseSession();
+    boolean isDatabaseSession();
 
     /**
      * PUBLIC:
      * Return if this session is a distributed session.
      */
-    public boolean isDistributedSession();
+    boolean isDistributedSession();
 
     /**
      * PUBLIC:
      * Return if a profiler is being used.
      */
-    public boolean isInProfile();
+    boolean isInProfile();
 
     /**
      * PUBLIC:
      * Return if this session is a remote session.
      */
-    public boolean isRemoteSession();
+    boolean isRemoteSession();
 
     /**
      * PUBLIC:
      * Return if this session is a server session.
      */
-    public boolean isServerSession();
+    boolean isServerSession();
 
     /**
      * PUBLIC:
      * Return if this session is a session broker.
      */
-    public boolean isSessionBroker();
+    boolean isSessionBroker();
 
     /**
      * PUBLIC:
      * Return if this session is a unit of work.
      */
-    public boolean isUnitOfWork();
+    boolean isUnitOfWork();
 
     /**
      * PUBLIC:
      * Return if this session is a remote unit of work.
      */
-    public boolean isRemoteUnitOfWork();
+    boolean isRemoteUnitOfWork();
 
     /**
      * ADVANCED:
      * Extract and return the Id from the object.
      */
-    public Object getId(Object domainObject) throws ValidationException;
+    Object getId(Object domainObject) throws ValidationException;
 
     /**
      * PUBLIC:
      * Log the log entry.
      */
-    public void log(SessionLogEntry entry);
+    void log(SessionLogEntry entry);
 
     /**
      * Log a untranslated message to the EclipseLink log at FINER level.
      */
-    public void logMessage(String message);
+    void logMessage(String message);
 
 
     /**
@@ -737,7 +730,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see ReadAllQuery
      * @see #readAllObjects(Class, Expression)
      */
-    public Vector readAllObjects(Class domainClass) throws DatabaseException;
+    Vector readAllObjects(Class domainClass) throws DatabaseException;
 
 
     /**
@@ -749,7 +742,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see SQLCall
      * @see JPQLCall
      */
-    public Vector readAllObjects(Class domainClass, Call aCall) throws DatabaseException;
+    Vector readAllObjects(Class domainClass, Call aCall) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -758,7 +751,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see ReadAllQuery
      */
-    public Vector readAllObjects(Class domainClass, Expression selectionCriteria) throws DatabaseException;
+    Vector readAllObjects(Class domainClass, Expression selectionCriteria) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -774,7 +767,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see ReadObjectQuery
      * @see #readAllObjects(Class, Expression)
      */
-    public Object readObject(Class domainClass) throws DatabaseException;
+    Object readObject(Class domainClass) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -785,7 +778,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * @see SQLCall
      * @see JPQLCall
      */
-    public Object readObject(Class domainClass, Call aCall) throws DatabaseException;
+    Object readObject(Class domainClass, Call aCall) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -794,7 +787,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see ReadObjectQuery
      */
-    public Object readObject(Class domainClass, Expression selectionCriteria) throws DatabaseException;
+    Object readObject(Class domainClass, Expression selectionCriteria) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -802,7 +795,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * This will read the object from the database with the same primary key as the object
      * or null if no object is found.
      */
-    public Object readObject(Object object) throws DatabaseException;
+    Object readObject(Object object) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -811,27 +804,27 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * Caution should be used when using this to make sure the application has no uncommitted
      * changes to the object.
      */
-    public Object refreshObject(Object object);
+    Object refreshObject(Object object);
 
     /**
      * PUBLIC:
      * Release the session.
      * This does nothing by default, but allows for other sessions such as the ClientSession to do something.
      */
-    public void release();
+    void release();
 
 
     /**
      * PUBLIC:
      * Remove the user defined property.
      */
-    public void removeProperty(String property);
+    void removeProperty(String property);
 
     /**
      * PUBLIC:
      * Remove the query name from the set of pre-defined queries
      */
-    public void removeQuery(String queryName);
+    void removeQuery(String queryName);
 
 
     /**
@@ -839,14 +832,14 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *  managed objects.
      *  @see org.eclipse.persistence.config.ReferenceMode
      */
-   public void setDefaultReferenceMode(ReferenceMode defaultReferenceMode);
+   void setDefaultReferenceMode(ReferenceMode defaultReferenceMode);
 
    /**
      * PUBLIC:
      * Set the exceptionHandler.
      * Exception handler can catch errors that occur on queries or during database access.
      */
-    public void setExceptionHandler(ExceptionHandler exceptionHandler);
+    void setExceptionHandler(ExceptionHandler exceptionHandler);
 
     /**
      * OBSOLETE:
@@ -864,13 +857,13 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      */
     //@deprecated was removed from this method as there is no viable alternative bug 5637867 was filed to
     // have this resolved.
-    public void setExternalTransactionController(ExternalTransactionController externalTransactionController);
+    void setExternalTransactionController(ExternalTransactionController externalTransactionController);
 
     /**
      * PUBLIC:
      * Set the integrityChecker, the integrityChecker holds all the ClassDescriptor Exceptions.
      */
-    public void setIntegrityChecker(IntegrityChecker integrityChecker);
+    void setIntegrityChecker(IntegrityChecker integrityChecker);
 
     /**
      * PUBLIC:
@@ -880,27 +873,27 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #logMessage
      */
-    public void setLog(Writer log);
+    void setLog(Writer log);
 
     /**
      * PUBLIC:
      * Set the name of the session.
      * This is used with the session broker, or to give the session a more meaningful name.
      */
-    public void setName(String name);
+    void setName(String name);
 
     /**
      * PUBLIC:
      * Set the profiler for the session.
      * This allows for performance operations to be profiled.
      */
-    public void setProfiler(SessionProfiler profiler);
+    void setProfiler(SessionProfiler profiler);
 
     /**
      * PUBLIC:
      * Allow for user defined properties.
      */
-    public void setProperty(String propertyName, Object propertyValue);
+    void setProperty(String propertyName, Object propertyValue);
 
     /**
      * PUBLIC:
@@ -910,13 +903,13 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      *
      * @see #logMessage
      */
-    public void setSessionLog(SessionLog sessionLog);
+    void setSessionLog(SessionLog sessionLog);
 
     /**
      * PUBLIC:
      * Return if logging is enabled (false if log level is OFF)
      */
-    public boolean shouldLogMessages();
+    boolean shouldLogMessages();
 
 
     /**
@@ -925,7 +918,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * An object identity problem is when an object in the cache references an object not in the cache.
      * This method will validate that all cached objects are in a correct state.
      */
-    public void validateCache();
+    void validateCache();
 
     /**
      * PUBLIC:
@@ -933,7 +926,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * <br>Possible values for log level and category are listed in SessionLog.
      * @see org.eclipse.persistence.logging.SessionLog
      */
-    public int getLogLevel(String category);
+    int getLogLevel(String category);
 
     /**
      * PUBLIC:
@@ -941,7 +934,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * <br>Possible values for log level are listed in SessionLog.
      * @see org.eclipse.persistence.logging.SessionLog
      */
-    public int getLogLevel();
+    int getLogLevel();
 
     /**
      * PUBLIC:
@@ -949,8 +942,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * <br>Possible values for log level are listed in SessionLog.
      * @see org.eclipse.persistence.logging.SessionLog
      */
-    @Override
-    public void setLogLevel(int level);
+    @Override void setLogLevel(int level);
 
     /**
      * PUBLIC:
@@ -958,13 +950,13 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * <br>Possible values for log level and category are listed in SessionLog.
      * @see org.eclipse.persistence.logging.SessionLog
      */
-    public boolean shouldLog(int Level, String category);
+    boolean shouldLog(int Level, String category);
 
     /**
      * PUBLIC:
      * Allow any SEVERE level exceptions that occur within EclipseLink to be logged and handled by the exception handler.
      */
-    public Object handleSevere(RuntimeException exception) throws RuntimeException;
+    Object handleSevere(RuntimeException exception) throws RuntimeException;
 
     /**
      * PUBLIC:
@@ -972,7 +964,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * The allows certain finalizers such as in ClientSession to be enabled.
      * These are disable by default for performance reasons.
      */
-    public boolean isFinalizersEnabled();
+    boolean isFinalizersEnabled();
 
     /**
      * PUBLIC:
@@ -980,7 +972,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * The allows certain finalizers such as in ClientSession to be enabled.
      * These are disable by default for performance reasons.
      */
-    public void setIsFinalizersEnabled(boolean isFinalizersEnabled);
+    void setIsFinalizersEnabled(boolean isFinalizersEnabled);
 
     /**
      * PUBLIC:
@@ -988,7 +980,7 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * This timeout will apply to any queries that do not have a timeout set,
      * and that do not have a default timeout defined in their descriptor.
      */
-    public void setQueryTimeoutDefault(int queryTimeoutDefault);
+    void setQueryTimeoutDefault(int queryTimeoutDefault);
 
     /**
      * PUBLIC:
@@ -996,13 +988,13 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * This timeout unit will apply to any queries that do not have a unit value set,
      * and that do not have a default timeout unit defined in their descriptor.
      */
-    public void setQueryTimeoutUnitDefault(TimeUnit queryTimeoutDefault);
+    void setQueryTimeoutUnitDefault(TimeUnit queryTimeoutDefault);
 
     /**
      * PUBLIC:
      * Return the session's partitioning policy.
      */
-    public PartitioningPolicy getPartitioningPolicy();
+    PartitioningPolicy getPartitioningPolicy();
 
     /**
      * PUBLIC:
@@ -1011,15 +1003,15 @@ public interface Session extends CoreSession<ClassDescriptor, Login, Platform, P
      * or across a database cluster such as Oracle RAC.
      * Partitioning can provide improved scalability by allowing multiple database machines to service requests.
      */
-    public void setPartitioningPolicy(PartitioningPolicy partitioningPolicy);
+    void setPartitioningPolicy(PartitioningPolicy partitioningPolicy);
 
     /**
      * Return the Serializer to use by default for serialization.
      */
-    public Serializer getSerializer();
+    Serializer getSerializer();
 
     /**
      * Set the Serializer to use by default for serialization.
      */
-    public void setSerializer(Serializer serializer);
+    void setSerializer(Serializer serializer);
 }

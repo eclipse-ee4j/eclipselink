@@ -309,7 +309,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      */
     @Override
     public List<String> getChangedAttributeNames() {
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
         for (org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord : getChanges()) {
             names.add(changeRecord.getAttribute());
         }
@@ -323,7 +323,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
     @Override
     public List<org.eclipse.persistence.sessions.changesets.ChangeRecord> getChanges() {
         if (this.changes == null) {
-            this.changes = new ArrayList<org.eclipse.persistence.sessions.changesets.ChangeRecord>();
+            this.changes = new ArrayList<>();
         }
         return changes;
     }
@@ -1151,7 +1151,7 @@ public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet
      */
     public Set<String> getDeferredSet() {
         if (deferredSet == null){
-            this.deferredSet = new HashSet<String>();
+            this.deferredSet = new HashSet<>();
         }
         return deferredSet;
     }

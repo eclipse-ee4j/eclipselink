@@ -386,7 +386,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.cachePolicy = new CachePolicy();
 
         this.additionalWritableMapKeyFields = new ArrayList(2);
-        this.foreignKeyValuesForCaching = new HashSet<DatabaseField>();
+        this.foreignKeyValuesForCaching = new HashSet<>();
     }
 
     /**
@@ -604,7 +604,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         setAdditionalTablePrimaryKeyFields(sourceForeignKeyField.getTable(), targetPrimaryKeyField, sourceForeignKeyField);
         Set<DatabaseTable> sourceTables = getMultipleTableForeignKeys().get(targetPrimaryKeyField.getTable());
         if(sourceTables == null) {
-            sourceTables = new HashSet<DatabaseTable>(3);
+            sourceTables = new HashSet<>(3);
             getMultipleTableForeignKeys().put(targetPrimaryKeyField.getTable(), sourceTables);
         }
         sourceTables.add(sourceForeignKeyField.getTable());
@@ -691,7 +691,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Add an unconverted property (to be initialiazed at runtime)
      */
     public void addUnconvertedProperty(String propertyName, String propertyValue, String propertyType) {
-        List<String> valuePair = new ArrayList<String>(2);
+        List<String> valuePair = new ArrayList<>(2);
         valuePair.add(propertyValue);
         valuePair.add(propertyType);
         getUnconvertedProperties().put(propertyName, valuePair);
@@ -859,7 +859,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         int size = getPrimaryKeyFields().size();
         if (size > 1) {
             // Support composite keys using nested IN.
-            List<Expression> fields = new ArrayList<Expression>(size);
+            List<Expression> fields = new ArrayList<>(size);
             for (DatabaseField targetForeignKeyField : primaryKeyFields) {
                 fields.add(builder.getField(targetForeignKeyField));
             }
@@ -1984,7 +1984,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseField> getAdditionalAggregateCollectionKeyFields(){
         if (additionalAggregateCollectionKeyFields == null){
-            additionalAggregateCollectionKeyFields = new ArrayList<DatabaseField>();
+            additionalAggregateCollectionKeyFields = new ArrayList<>();
         }
         return additionalAggregateCollectionKeyFields;
     }
@@ -2642,7 +2642,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseMapping> getPreDeleteMappings() {
         if (this.preDeleteMappings == null) {
-            this.preDeleteMappings = new ArrayList<DatabaseMapping>();
+            this.preDeleteMappings = new ArrayList<>();
         }
         return this.preDeleteMappings;
     }
@@ -4886,7 +4886,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Map<String, List<String>> getUnconvertedProperties() {
         if (unconvertedProperties == null) {
-            unconvertedProperties = new HashMap<String, List<String>>(5);
+            unconvertedProperties = new HashMap<>(5);
         }
 
         return unconvertedProperties;
@@ -6697,7 +6697,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseMapping> getMappingsPostCalculateChanges() {
         if(mappingsPostCalculateChanges == null) {
-            mappingsPostCalculateChanges = new ArrayList<DatabaseMapping>();
+            mappingsPostCalculateChanges = new ArrayList<>();
         }
         return mappingsPostCalculateChanges;
     }
@@ -6725,7 +6725,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseMapping> getMappingsPostCalculateChangesOnDeleted() {
         if (mappingsPostCalculateChangesOnDeleted == null) {
-            mappingsPostCalculateChangesOnDeleted = new ArrayList<DatabaseMapping>();
+            mappingsPostCalculateChangesOnDeleted = new ArrayList<>();
         }
         return mappingsPostCalculateChangesOnDeleted;
     }
@@ -6809,7 +6809,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      **/
     public List<VirtualAttributeMethodInfo> getVirtualAttributeMethods() {
         if (this.virtualAttributeMethods == null) {
-            this.virtualAttributeMethods = new ArrayList<VirtualAttributeMethodInfo>();
+            this.virtualAttributeMethods = new ArrayList<>();
         }
         return this.virtualAttributeMethods;
     }

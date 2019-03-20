@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -313,7 +313,7 @@ public class CachePolicy implements Cloneable, Serializable {
 
     public Map<List<DatabaseField>, CacheIndex> getCacheIndexes() {
         if (this.cacheIndexes == null) {
-            this.cacheIndexes = new HashMap<List<DatabaseField>, CacheIndex>();
+            this.cacheIndexes = new HashMap<>();
         }
         return this.cacheIndexes;
     }

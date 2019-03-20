@@ -1447,7 +1447,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected synchronized Map<String, Statement> getStatementCache() {
         if (statementCache == null) {
-            statementCache = new HashMap<String, Statement>(50);
+            statementCache = new HashMap<>(50);
         }
         return statementCache;
     }

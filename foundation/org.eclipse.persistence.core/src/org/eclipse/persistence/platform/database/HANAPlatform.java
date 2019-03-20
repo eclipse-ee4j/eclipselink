@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2012, 2018 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -133,8 +133,8 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected final Hashtable buildFieldTypes() {
-        final Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<Class, FieldTypeDefinition>();
+    protected Hashtable buildFieldTypes() {
+        final Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO
                                                                                          // boolean
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE", false));
@@ -192,7 +192,7 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected final void initializePlatformOperators() {
+    protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         this.addOperator(HANAPlatform.createConcatExpressionOperator());
         this.addOperator(HANAPlatform.createNullifOperator());
@@ -206,7 +206,7 @@ public final class HANAPlatform extends DatabasePlatform {
         this.addNonBindingOperator(HANAPlatform.createNullValueOperator());
     }
 
-    private static final ExpressionOperator createConcatExpressionOperator() {
+    private static ExpressionOperator createConcatExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "||");
     }
 
@@ -217,7 +217,7 @@ public final class HANAPlatform extends DatabasePlatform {
      * @return the expression operator representing the JPQL function current_timestamp as defined
      *         by 4.6.17.2.3 of the JPA 2.0 specification
      */
-    private static final ExpressionOperator createTodayExpressionOperator() {
+    private static ExpressionOperator createTodayExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Today,
                 "CURRENT_TIMESTAMP");
     }
@@ -229,7 +229,7 @@ public final class HANAPlatform extends DatabasePlatform {
      * @return the expression operator representing the JPQL function current_date as defined by
      *         4.6.17.2.3 of the JPA 2.0 specification
      */
-    private static final ExpressionOperator createCurrentDateExpressionOperator() {
+    private static ExpressionOperator createCurrentDateExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.CurrentDate,
                 "CURRENT_DATE");
     }
@@ -241,7 +241,7 @@ public final class HANAPlatform extends DatabasePlatform {
      * @return the expression operator representing the JPQL function current_timestamp as defined
      *         by 4.6.17.2.3 of the JPA 2.0 specification
      */
-    private static final ExpressionOperator createCurrentTimeExpressionOperator() {
+    private static ExpressionOperator createCurrentTimeExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.CurrentTime,
                 "CURRENT_TIME");
     }
@@ -251,14 +251,14 @@ public final class HANAPlatform extends DatabasePlatform {
      *
      * @return the expression operator representing the JPQL function variance
      */
-    private static final ExpressionOperator createVarianceOperator() {
+    private static ExpressionOperator createVarianceOperator() {
         return ExpressionOperator.simpleAggregate(ExpressionOperator.Variance, "VAR", "variance");
     }
 
     /**
      * Create the log operator for this platform
      */
-    private static final ExpressionOperator createLogOperator() {
+    private static ExpressionOperator createLogOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Log);
         Vector v = NonSynchronizedVector.newInstance(2);
@@ -300,7 +300,7 @@ public final class HANAPlatform extends DatabasePlatform {
         return expOperator;
     }
 
-    private static final ExpressionOperator createNullifOperator() {
+    private static ExpressionOperator createNullifOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.NullIf);
@@ -317,7 +317,7 @@ public final class HANAPlatform extends DatabasePlatform {
         return exOperator;
     }
 
-    private static final ExpressionOperator createNullValueOperator() {
+    private static ExpressionOperator createNullValueOperator() {
         return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "IFNULL");
     }
 
@@ -371,22 +371,22 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     @Override
-    public final boolean supportsNativeSequenceNumbers() {
+    public boolean supportsNativeSequenceNumbers() {
         return true;
     }
 
     @Override
-    public final ValueReadQuery buildSelectQueryForSequenceObject(final String sequenceName, final Integer size) {
+    public ValueReadQuery buildSelectQueryForSequenceObject(final String sequenceName, final Integer size) {
         return new ValueReadQuery("SELECT " + sequenceName + ".NEXTVAL FROM DUMMY");
     }
 
     @Override
-    public final boolean supportsGlobalTempTables() {
+    public boolean supportsGlobalTempTables() {
         return false;
     }
 
     @Override
-    protected final String getCreateTempTableSqlPrefix() {
+    protected String getCreateTempTableSqlPrefix() {
         return "CREATE LOCAL TEMPORARY TABLE ";
     }
 
@@ -401,32 +401,32 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     @Override
-    public final int getMaxFieldNameSize() {
+    public int getMaxFieldNameSize() {
         return 120;
     }
 
     @Override
-    public final boolean supportsLocalTempTables() {
+    public boolean supportsLocalTempTables() {
         return true;
     }
 
     @Override
-    public final boolean shouldAlwaysUseTempStorageForModifyAll() {
+    public boolean shouldAlwaysUseTempStorageForModifyAll() {
         return false;
     }
 
     @Override
-    public final boolean shouldBindLiterals() {
+    public boolean shouldBindLiterals() {
         return false;
     }
 
     @Override
-    public final boolean shouldPrintOuterJoinInWhereClause() {
+    public boolean shouldPrintOuterJoinInWhereClause() {
         return false;
     }
 
     @Override
-    public final boolean shouldUseJDBCOuterJoinSyntax() {
+    public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
 

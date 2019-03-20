@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,14 +57,14 @@ public interface MapKeyMapping extends MapComponentMapping {
      * Used when initializing queries for mappings that use a Map
      * Called when the selection query is being initialized to add the fields for the map key to the query
      */
-    public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression);
+    void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression);
 
     /**
      * INTERNAL:
      * Used when initializing queries for mappings that use a Map
      * Called when the insert query is being initialized to ensure the fields for the map key are in the insert query
      */
-    public void addFieldsForMapKey(AbstractRecord joinRow);
+    void addFieldsForMapKey(AbstractRecord joinRow);
 
     /**
      * INTERNAL:
@@ -76,7 +76,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @param object
      * @param deletedObjects
      */
-    public void addKeyToDeletedObjectsList(Object object, Map deletedObjects);
+    void addKeyToDeletedObjectsList(Object object, Map deletedObjects);
 
     /**
      * Build a clone of the given element in a unitOfWork
@@ -85,7 +85,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @param isExisting
      * @return
      */
-    public Object buildElementClone(Object element, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache);
+    Object buildElementClone(Object element, Object parent, CacheKey cacheKey, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache);
 
     /**
      * INTERNAL:
@@ -93,59 +93,59 @@ public interface MapKeyMapping extends MapComponentMapping {
      * map when the map is based on a DirectCollectionMapping
      * @return
      */
-    public ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy);
+    ReadQuery buildSelectionQueryForDirectCollectionKeyMapping(ContainerPolicy containerPolicy);
 
     /**
      * INTERNAL:
      * Cascade discover and persist new objects during commit to the map key
      */
-    public void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject, Set cascadeErrors);
+    void cascadeDiscoverAndPersistUnregisteredNewObjects(Object object, Map newObjects, Map unregisteredExistingObjects, Map visitedObjects, UnitOfWorkImpl uow, boolean getAttributeValueFromObject, Set cascadeErrors);
 
     /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade
      */
-    public void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject);
+    void cascadePerformRemoveIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject);
 
     /**
      * INTERNAL:
      * Cascade registerNew for Create through mappings that require the cascade
      */
-    public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject);
+    void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects, boolean getAttributeValueFromObject);
 
     /**
      * INTERNAL
      * Called when a DatabaseMapping is used to map the key in a collection and a join query is used.
      * Returns the key.
      */
-    public Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected);
+    Object createMapComponentFromJoinedRow(AbstractRecord dbRow, JoinedAttributeManager joinManager, ObjectBuildingQuery query, CacheKey parentCacheKey, AbstractSession session, boolean isTargetProtected);
 
     /**
      * INTERNAL:
      * Create a query key that links to the map key
      * @return
      */
-    public QueryKey createQueryKeyForMapKey();
+    QueryKey createQueryKeyForMapKey();
 
     /**
      * INTERNAL:
      * Creates the Array of simple types used to recreate this map.
      */
-    public Object createSerializableMapKeyInfo(Object key, AbstractSession session);
+    Object createSerializableMapKeyInfo(Object key, AbstractSession session);
 
     /**
      * INTERNAL:
      * Create an instance of the Key object from the key information extracted from the map.
      * This may return the value directly in case of a simple key or will be used as the FK to load a related entity.
      */
-    public List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session);
+    List<Object> createMapComponentsFromSerializableKeyInfo(Object[] keyInfo, AbstractSession session);
 
     /**
      * INTERNAL:
      * Create an instance of the Key object from the key information extracted from the map.
      * This key object may be a shallow stub of the actual object if the key is an Entity type.
      */
-    public Object createStubbedMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session);
+    Object createStubbedMapComponentFromSerializableKeyInfo(Object keyInfo, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -156,34 +156,34 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @param objectDeleted
      * @param session
      */
-    public void deleteMapKey(Object objectDeleted, AbstractSession session);
+    void deleteMapKey(Object objectDeleted, AbstractSession session);
 
     /**
      * INTERNAL:
      * Return any tables that will be required when this mapping is used as part of a join query
      * @return
      */
-    public List<DatabaseTable> getAdditionalTablesForJoinQuery();
+    List<DatabaseTable> getAdditionalTablesForJoinQuery();
 
     /**
      * INTERNAL:
      * Get all the fields for the map key
      */
-    public List<DatabaseField> getAllFieldsForMapKey();
+    List<DatabaseField> getAllFieldsForMapKey();
 
     /**
      * INTERNAL:
      * Return a Map of any foreign keys defined within the the MapKey
      * @return
      */
-    public Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey();
+    Map<DatabaseField, DatabaseField> getForeignKeyFieldsForMapKey();
 
     /**
      * INTERNAL:
      * Get the descriptor for the Map Key
      * @return
      */
-    public ClassDescriptor getReferenceDescriptor();
+    ClassDescriptor getReferenceDescriptor();
 
     /**
      * INTERNAL:
@@ -192,35 +192,35 @@ public interface MapKeyMapping extends MapComponentMapping {
      * a primary key it will likely be all the fields
      * @return
      */
-    public List<DatabaseField> getIdentityFieldsForMapKey();
+    List<DatabaseField> getIdentityFieldsForMapKey();
 
     /**
      * INTERNAL:
      * Return the query that is used when this mapping is part of a joined relationship
      * @return
      */
-    public ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session);
+    ObjectLevelReadQuery getNestedJoinQuery(JoinedAttributeManager joinManager, ObjectLevelReadQuery query, AbstractSession session);
 
     /**
      * INTERNAL:
      * Return the selection criteria necessary to select the target object
      * @return
      */
-    public Expression getAdditionalSelectionCriteriaForMapKey();
+    Expression getAdditionalSelectionCriteriaForMapKey();
 
     /**
      * INTERNAL:
      * If required, get the targetVersion of the source object from the merge manager
      * @return
      */
-    public Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession);
+    Object getTargetVersionOfSourceObject(Object object, Object parent, MergeManager mergeManager, AbstractSession targetSession);
 
     /**
      * INTERNAL:
      * Return the class this key mapping maps or the descriptor for it
      * @return
      */
-    public Object getMapKeyTargetType();
+    Object getMapKeyTargetType();
 
     /**
      * INTERNAL:
@@ -228,26 +228,26 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @param iterator
      * @param element
      */
-    public void iterateOnMapKey(DescriptorIterator iterator, Object element);
+    void iterateOnMapKey(DescriptorIterator iterator, Object element);
 
     /**
      * INTERNAL:
      * Extract the fields for the Map key from the object to use in a query
      * @return
      */
-    public Map extractIdentityFieldsForQuery(Object key, AbstractSession session);
+    Map extractIdentityFieldsForQuery(Object key, AbstractSession session);
 
     /**
      * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key prior to initializing the mapping
      */
-    public void preinitializeMapKey(DatabaseTable table) throws DescriptorException;
+    void preinitializeMapKey(DatabaseTable table) throws DescriptorException;
 
     /**
      * INTERNAL:
      * Making any mapping changes necessary to use a the mapping as a map key after initializing the mapping
      */
-    public void postInitializeMapKey(MappedKeyMapContainerPolicy policy) throws DescriptorException;
+    void postInitializeMapKey(MappedKeyMapContainerPolicy policy) throws DescriptorException;
 
     /**
      * INTERNAL:
@@ -255,7 +255,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * used as a key in a map.  This will typically be true if there are any parts to this mapping
      * that are not read-only.
      */
-    public boolean requiresDataModificationEventsForMapKey();
+    boolean requiresDataModificationEventsForMapKey();
 
     /**
      * INTERNAL:
@@ -265,7 +265,7 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @return
      */
 
-    public Object unwrapKey(Object key, AbstractSession session);
+    Object unwrapKey(Object key, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -274,6 +274,6 @@ public interface MapKeyMapping extends MapComponentMapping {
      * @param session
      * @return
      */
-    public Object wrapKey(Object key, AbstractSession session);
+    Object wrapKey(Object key, AbstractSession session);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1026,7 +1026,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 else {
                     if (argument instanceof Object[]) {
                        Object first = ((Object[])argument)[0];
-                       DatabaseField secondField = (DatabaseField)((Object[])argument)[1];;
+                       DatabaseField secondField = (DatabaseField)((Object[])argument)[1];
                        if (first instanceof DatabaseField) {
                            DatabaseField firstField = (DatabaseField)first;
                            spa.setDatabaseField(firstField);

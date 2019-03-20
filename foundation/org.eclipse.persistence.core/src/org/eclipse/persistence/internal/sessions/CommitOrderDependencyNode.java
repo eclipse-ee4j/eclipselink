@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -211,7 +211,7 @@ public class CommitOrderDependencyNode {
             InheritancePolicy policy = node.getDescriptor().getInheritancePolicy();
 
             // For bug 3019934 replace getChildDescriptors with getAllChildDescriptors.
-            List<ClassDescriptor> childDescriptors = new ArrayList<ClassDescriptor>();
+            List<ClassDescriptor> childDescriptors = new ArrayList<>();
             childDescriptors.addAll(policy.getAllChildDescriptors());
 
             // Sort Child Descriptors before adding them to related nodes.

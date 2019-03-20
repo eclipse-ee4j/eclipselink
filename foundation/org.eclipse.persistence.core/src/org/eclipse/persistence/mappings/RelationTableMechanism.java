@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -341,7 +341,7 @@ public class RelationTableMechanism  implements Cloneable, java.io.Serializable 
         size = this.sourceRelationKeyFields.size();
         if (size > 1) {
             // Support composite keys using nested IN.
-            List<Expression> fields = new ArrayList<Expression>(size);
+            List<Expression> fields = new ArrayList<>(size);
             for (DatabaseField sourceRelationKeyField : this.sourceRelationKeyFields) {
                 fields.add(linkTable.getField(sourceRelationKeyField));
             }

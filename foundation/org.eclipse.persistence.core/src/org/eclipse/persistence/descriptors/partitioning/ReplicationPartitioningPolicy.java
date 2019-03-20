@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ public class ReplicationPartitioningPolicy extends PartitioningPolicy {
     protected List<String> connectionPools;
 
     public ReplicationPartitioningPolicy() {
-        this.connectionPools = new ArrayList<String>();
+        this.connectionPools = new ArrayList<>();
     }
 
     public ReplicationPartitioningPolicy(String... pools) {
@@ -95,7 +95,7 @@ public class ReplicationPartitioningPolicy extends PartitioningPolicy {
         if (!query.isModifyQuery()) {
             return null;
         }
-        List<Accessor> accessors = new ArrayList<Accessor>(this.connectionPools.size());
+        List<Accessor> accessors = new ArrayList<>(this.connectionPools.size());
         for (String poolName : this.connectionPools) {
             Accessor accessor = getAccessor(poolName, session, query, true);
             // Do not replicate to dead connection pools.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void addLockFieldsToUpdateRow(AbstractRecord databaseRow, AbstractSession session);
+    void addLockFieldsToUpdateRow(AbstractRecord databaseRow, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -43,7 +43,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void addLockValuesToTranslationRow(ObjectLevelModifyQuery query);
+    void addLockValuesToTranslationRow(ObjectLevelModifyQuery query);
 
     /**
      * INTERNAL:
@@ -53,7 +53,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public Expression buildDeleteExpression(org.eclipse.persistence.internal.helper.DatabaseTable table, Expression mainExpression, AbstractRecord row);
+    Expression buildDeleteExpression(org.eclipse.persistence.internal.helper.DatabaseTable table, Expression mainExpression, AbstractRecord row);
 
     /**
      * INTERNAL:
@@ -63,9 +63,9 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public Expression buildUpdateExpression(org.eclipse.persistence.internal.helper.DatabaseTable table, Expression mainExpression, AbstractRecord translationRow, AbstractRecord modifyRow);
+    Expression buildUpdateExpression(org.eclipse.persistence.internal.helper.DatabaseTable table, Expression mainExpression, AbstractRecord translationRow, AbstractRecord modifyRow);
 
-    public Object clone();
+    Object clone();
 
     /**
      * INTERNAL:
@@ -87,7 +87,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * Use compareWriteLockValues method only if this method returns true.
      */
-    public boolean supportsWriteLockValuesComparison();
+    boolean supportsWriteLockValuesComparison();
 
     /**
      * INTERNAL:
@@ -102,21 +102,21 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *  NullPointerException if the passed value is null;
      *  ClassCastException if the passed value is of a wrong type.
      */
-    public int compareWriteLockValues(Object value1, Object value2);
+    int compareWriteLockValues(Object value1, Object value2);
 
     /**
      * INTERNAL:
      * This is the base value that is older than all other values, it is used in the place of
      * null in some situations.
      */
-    abstract public Object getBaseValue();
+    Object getBaseValue();
 
     /**
      * ADVANCED:
      * returns the LockOnChange mode for this policy.  This mode specifies if a
      * Optimistic Write lock should be enforced on this entity when a set of mappings are changed.
      */
-    public LockOnChange getLockOnChangeMode();
+    LockOnChange getLockOnChangeMode();
 
     /**
      * INTERNAL:
@@ -125,13 +125,13 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public Object getValueToPutInCache(AbstractRecord row, AbstractSession session);
+    Object getValueToPutInCache(AbstractRecord row, AbstractSession session);
 
     /**
      * PUBLIC:
      * Return the number of versions different between these objects.
      */
-    public int getVersionDifference(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session);
+    int getVersionDifference(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -139,7 +139,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
     *
     * #see this method in VersionLockingPolicy
      */
-    public DatabaseField getWriteLockField();
+    DatabaseField getWriteLockField();
 
     /**
      * INTERNAL:
@@ -147,7 +147,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session);
+    Object getWriteLockValue(Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -155,7 +155,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session);
+    Expression getWriteLockUpdateExpression(ExpressionBuilder builder, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -163,7 +163,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void initialize(AbstractSession session);
+    void initialize(AbstractSession session);
 
     /**
      * INTERNAL:
@@ -171,19 +171,19 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void initializeProperties();
+    void initializeProperties();
 
     /**
      * INTERNAL:
      * Return true if the lock value is stored in the cache.
      */
-    public boolean isStoredInCache();
+    boolean isStoredInCache();
 
     /**
      * INTERNAL:
      * Specify if the policy cascade locks.
      */
-    public boolean isCascaded();
+    boolean isCascaded();
 
     /**
      * INTERNAL:
@@ -192,7 +192,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session);
+    boolean isNewerVersion(Object currentValue, Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -203,7 +203,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, Object primaryKey, AbstractSession session);
+    boolean isNewerVersion(AbstractRecord databaseRow, Object domainObject, Object primaryKey, AbstractSession session);
 
     /**
      * INTERNAL:
@@ -211,7 +211,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object);
+    void mergeIntoParentCache(UnitOfWorkImpl uow, Object primaryKey, Object object);
 
     /**
      * INTERNAL:
@@ -219,20 +219,20 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void mergeIntoParentCache(CacheKey unitOfWorkCacheKey, CacheKey parentSessionCacheKey);
+    void mergeIntoParentCache(CacheKey unitOfWorkCacheKey, CacheKey parentSessionCacheKey);
 
     /**
      * INTERNAL:
      * provide a way to set the descriptor for this policy
      */
-    public void setDescriptor(ClassDescriptor descriptor);
+    void setDescriptor(ClassDescriptor descriptor);
 
     /**
      * ADVANCED:
      * Sets the LockOnChange mode for this policy.  This mode specifies if a
      * Optimistic Write lock should be enforced on this entity when set of mappings are changed.
      */
-    public void setLockOnChangeMode(LockOnChange lockOnChangeMode);
+    void setLockOnChangeMode(LockOnChange lockOnChangeMode);
 
     /**
      * INTERNAL:
@@ -242,7 +242,7 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void setupWriteFieldsForInsert(ObjectLevelModifyQuery query);
+    void setupWriteFieldsForInsert(ObjectLevelModifyQuery query);
 
     /**
      * INTERNAL:
@@ -251,23 +251,23 @@ public interface OptimisticLockingPolicy extends Cloneable, Serializable {
      *
      * #see this method in VersionLockingPolicy
      */
-    public void updateRowAndObjectForUpdate(ObjectLevelModifyQuery query, Object object);
+    void updateRowAndObjectForUpdate(ObjectLevelModifyQuery query, Object object);
 
     /**
      * INTERNAL:
      * Returns true if the policy has been set to set an optimistic read lock when a owning mapping changes.
      */
-    public boolean shouldUpdateVersionOnOwnedMappingChange();
+    boolean shouldUpdateVersionOnOwnedMappingChange();
 
     /**
      * INTERNAL:
      * Returns true if the policy has been set to set an optimistic read lock when any mapping changes.
      */
-    public boolean shouldUpdateVersionOnMappingChange();
+    boolean shouldUpdateVersionOnMappingChange();
 
-    public void validateDelete(int rowCount, Object object, DeleteObjectQuery query);
+    void validateDelete(int rowCount, Object object, DeleteObjectQuery query);
 
-    public void validateUpdate(int rowCount, Object object, WriteObjectQuery query);
+    void validateUpdate(int rowCount, Object object, WriteObjectQuery query);
 
     /**
      * Advanced:

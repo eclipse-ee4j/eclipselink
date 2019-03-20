@@ -679,7 +679,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void addStaticMetamodelClass(String modelClassName, String metamodelClassName) {
         if (staticMetamodelClasses == null) {
-            staticMetamodelClasses = new HashMap<String, String>();
+            staticMetamodelClasses = new HashMap<>();
         }
 
         staticMetamodelClasses.put(modelClassName, metamodelClassName);
@@ -1291,7 +1291,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public void deferEvent(DescriptorEvent event){
         if (this.deferredEvents == null){
-            this.deferredEvents = new ArrayList<DescriptorEvent>();
+            this.deferredEvents = new ArrayList<>();
         }
         this.deferredEvents.add(event);
     }
@@ -2731,7 +2731,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public Set<String> getMultitenantContextProperties() {
         if (this.multitenantContextProperties == null) {
-            this.multitenantContextProperties = new HashSet<String>();
+            this.multitenantContextProperties = new HashSet<>();
         }
 
         return this.multitenantContextProperties;
@@ -2972,7 +2972,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public Map<String, AttributeGroup> getAttributeGroups(){
         if (this.attributeGroups == null){
-            this.attributeGroups = new HashMap<String, AttributeGroup>(5);
+            this.attributeGroups = new HashMap<>(5);
         }
         return this.attributeGroups;
     }
@@ -3140,7 +3140,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public List<ClassDescriptor> getTablePerTenantDescriptors() {
         if (tablePerTenantDescriptors == null) {
-            tablePerTenantDescriptors = new ArrayList<ClassDescriptor>();
+            tablePerTenantDescriptors = new ArrayList<>();
         }
 
         return tablePerTenantDescriptors;
@@ -3152,7 +3152,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      */
     public List<DatabaseQuery> getTablePerTenantQueries() {
         if (tablePerTenantQueries == null) {
-            tablePerTenantQueries = new ArrayList<DatabaseQuery>();
+            tablePerTenantQueries = new ArrayList<>();
         }
 
         return tablePerTenantQueries;

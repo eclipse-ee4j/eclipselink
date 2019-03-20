@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -140,7 +140,7 @@ public class ConstructorReportItem extends ReportItem  {
 
     public List<ReportItem> getReportItems(){
         if (reportItems == null) {
-            reportItems = new ArrayList<ReportItem>();
+            reportItems = new ArrayList<>();
         }
         return reportItems;
     }
@@ -152,7 +152,7 @@ public class ConstructorReportItem extends ReportItem  {
     @Override
     public void initialize(ReportQuery query) throws QueryException {
         int size= getReportItems().size();
-        List<DatabaseMapping> mappings = new ArrayList<DatabaseMapping>();
+        List<DatabaseMapping> mappings = new ArrayList<>();
         for (int index = 0; index < size; index++) {
             ReportItem item = reportItems.get(index);
             item.initialize(query);

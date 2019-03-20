@@ -3868,7 +3868,7 @@ public class PersistenceUnitProperties {
      * INTERNAL: The following properties will not be displayed through logging
      * but instead have an alternate value shown in the log.
      */
-    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
+    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<>(1);
 
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");

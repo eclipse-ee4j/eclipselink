@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,11 +27,11 @@ public interface CollectionChangeTracker extends ChangeTracker{
      * PUBLIC:
      * Return the Attribute name this collection is mapped under.
      */
-    public String getTrackedAttributeName();
+    String getTrackedAttributeName();
 
     /**
      * PUBLIC:
      * Set the Attribute name this collection is mapped under.
      */
-    public void setTrackedAttributeName(String attributeName);
+    void setTrackedAttributeName(String attributeName);
 }

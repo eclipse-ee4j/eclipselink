@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,7 +107,7 @@ public class FetchGroupManager implements Cloneable, java.io.Serializable {
     public Map<String, FetchGroup> getFetchGroups() {
         if (this.fetchGroups == null) {
             //lazy initialized
-            this.fetchGroups = new HashMap<String, FetchGroup>(2);
+            this.fetchGroups = new HashMap<>(2);
         }
 
         return this.fetchGroups;

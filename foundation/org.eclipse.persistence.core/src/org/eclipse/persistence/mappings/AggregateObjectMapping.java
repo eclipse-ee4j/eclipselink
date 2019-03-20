@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -158,11 +158,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
      */
     public AggregateObjectMapping() {
         aggregateToSourceFields = new HashMap(5);
-        nestedFieldTranslations = new HashMap<String, Object[]>();
-        mapsIdMappings = new ArrayList<DatabaseMapping>();
-        overrideManyToManyMappings = new ArrayList<ManyToManyMapping>();
-        overrideUnidirectionalOneToManyMappings = new ArrayList<UnidirectionalOneToManyMapping>();
-        converters = new HashMap<String, Converter>();
+        nestedFieldTranslations = new HashMap<>();
+        mapsIdMappings = new ArrayList<>();
+        overrideManyToManyMappings = new ArrayList<>();
+        overrideUnidirectionalOneToManyMappings = new ArrayList<>();
+        converters = new HashMap<>();
         isNullAllowed = true;
     }
 
@@ -956,11 +956,11 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     public Object clone() {
         AggregateObjectMapping mappingObject = (AggregateObjectMapping) super.clone();
 
-        Map<String, DatabaseField> aggregateToSourceFields = new HashMap<String, DatabaseField>();
+        Map<String, DatabaseField> aggregateToSourceFields = new HashMap<>();
         aggregateToSourceFields.putAll(getAggregateToSourceFields());
         mappingObject.setAggregateToSourceFields(aggregateToSourceFields);
 
-        Map<String, Object[]> nestedTranslations = new HashMap<String, Object[]>();
+        Map<String, Object[]> nestedTranslations = new HashMap<>();
         nestedTranslations.putAll(getNestedFieldTranslations());
         mappingObject.setNestedFieldTranslations(nestedTranslations);
 
@@ -1389,7 +1389,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         if (accessorTree == null){
             accessorTree = new ArrayList();
         }else{
-            accessorTree = new ArrayList<AttributeAccessor>(accessorTree);
+            accessorTree = new ArrayList<>(accessorTree);
         }
         accessorTree.add(getAttributeAccessor());
         clonedDescriptor.setAccessorTree(accessorTree);
@@ -1562,7 +1562,7 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
     protected void initializeReferenceDescriptor(ClassDescriptor clonedDescriptor, AbstractSession session) {
         if (aggregateKeyTable != null){
             clonedDescriptor.setDefaultTable(aggregateKeyTable);
-            Vector<DatabaseTable> tables = new Vector<DatabaseTable>(1);
+            Vector<DatabaseTable> tables = new Vector<>(1);
             tables.add(aggregateKeyTable);
             clonedDescriptor.setTables(tables);
         } else {
