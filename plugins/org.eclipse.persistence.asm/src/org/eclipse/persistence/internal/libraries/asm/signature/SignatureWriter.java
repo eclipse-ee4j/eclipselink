@@ -62,15 +62,15 @@ public class SignatureWriter extends SignatureVisitor {
    *       SignatureWriter instances),
    * </ol>
    *
-   * we need a stack to properly balance these 'parentheses'. A new element is pushed on this stack
-   * for each new visited type, and popped when the visit of this type ends (either is visitEnd, or
-   * because visitInnerClassType is called).
+   * <p>we need a stack to properly balance these 'parentheses'. A new element is pushed on this
+   * stack for each new visited type, and popped when the visit of this type ends (either is
+   * visitEnd, or because visitInnerClassType is called).
    */
   private int argumentStack;
 
   /** Constructs a new {@link SignatureWriter}. */
   public SignatureWriter() {
-    super(Opcodes.ASM6);
+    super(Opcodes.ASM7);
   }
 
   // -----------------------------------------------------------------------------------------------

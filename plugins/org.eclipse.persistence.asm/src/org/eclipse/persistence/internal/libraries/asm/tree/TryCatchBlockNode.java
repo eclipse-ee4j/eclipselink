@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 
 /**
@@ -48,15 +47,17 @@ public class TryCatchBlockNode {
   public LabelNode handler;
 
   /**
-   * The internal name of the type of exceptions handled by the handler. May be <tt>null</tt> to
+   * The internal name of the type of exceptions handled by the handler. May be {@literal null} to
    * catch any exceptions (for "finally" blocks).
    */
   public String type;
 
-  /** The runtime visible type annotations on the exception handler type. May be <tt>null</tt>. */
+  /** The runtime visible type annotations on the exception handler type. May be {@literal null}. */
   public List<TypeAnnotationNode> visibleTypeAnnotations;
 
-  /** The runtime invisible type annotations on the exception handler type. May be <tt>null</tt>. */
+  /**
+   * The runtime invisible type annotations on the exception handler type. May be {@literal null}.
+   */
   public List<TypeAnnotationNode> invisibleTypeAnnotations;
 
   /**
@@ -65,8 +66,8 @@ public class TryCatchBlockNode {
    * @param start the beginning of the exception handler's scope (inclusive).
    * @param end the end of the exception handler's scope (exclusive).
    * @param handler the beginning of the exception handler's code.
-   * @param type the internal name of the type of exceptions handled by the handler, or
-   *     <tt>null</tt> to catch any exceptions (for "finally" blocks).
+   * @param type the internal name of the type of exceptions handled by the handler, or {@literal
+   *     null} to catch any exceptions (for "finally" blocks).
    */
   public TryCatchBlockNode(
       final LabelNode start, final LabelNode end, final LabelNode handler, final String type) {

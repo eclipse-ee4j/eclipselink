@@ -25,58 +25,47 @@
 // CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
-package org.eclipse.persistence.internal.libraries.asm.tree;
-
-import java.util.Map;
-import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
+package org.eclipse.persistence.internal.libraries.asm;
 
 /**
- * A node that represents a local variable instruction. A local variable instruction is an
- * instruction that loads or stores the value of a local variable.
+ * Exception thrown when the constant pool of a class produced by a {@link ClassWriter} is too
+ * large.
  *
- * @author Eric Bruneton
+ * @author Jason Zaugg
  */
-public class VarInsnNode extends AbstractInsnNode {
+public final class ClassTooLargeException extends IndexOutOfBoundsException {
+  private static final long serialVersionUID = 160715609518896765L;
 
-  /** The operand of this instruction. This operand is the index of a local variable. */
-  public int var;
-
-  /**
-   * Constructs a new {@link VarInsnNode}.
-   *
-   * @param opcode the opcode of the local variable instruction to be constructed. This opcode must
-   *     be ILOAD, LLOAD, FLOAD, DLOAD, ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE or RET.
-   * @param var the operand of the instruction to be constructed. This operand is the index of a
-   *     local variable.
-   */
-  public VarInsnNode(final int opcode, final int var) {
-    super(opcode);
-    this.var = var;
-  }
+  private final String className;
+  private final int constantPoolCount;
 
   /**
-   * Sets the opcode of this instruction.
+   * Constructs a new {@link ClassTooLargeException}.
    *
-   * @param opcode the new instruction opcode. This opcode must be ILOAD, LLOAD, FLOAD, DLOAD,
-   *     ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE or RET.
+   * @param className the internal name of the class.
+   * @param constantPoolCount the number of constant pool items of the class.
    */
-  public void setOpcode(final int opcode) {
-    this.opcode = opcode;
+  public ClassTooLargeException(final String className, final int constantPoolCount) {
+    super("Class too large: " + className);
+    this.className = className;
+    this.constantPoolCount = constantPoolCount;
   }
 
-  @Override
-  public int getType() {
-    return VAR_INSN;
+  /**
+   * Returns the internal name of the class.
+   *
+   * @return the internal name of the class.
+   */
+  public String getClassName() {
+    return className;
   }
 
-  @Override
-  public void accept(final MethodVisitor methodVisitor) {
-    methodVisitor.visitVarInsn(opcode, var);
-    acceptAnnotations(methodVisitor);
-  }
-
-  @Override
-  public AbstractInsnNode clone(final Map<LabelNode, LabelNode> clonedLabels) {
-    return new VarInsnNode(opcode, var).cloneAnnotations(this);
+  /**
+   * Returns the number of constant pool items of the class.
+   *
+   * @return the number of constant pool items of the class.
+   */
+  public int getConstantPoolCount() {
+    return constantPoolCount;
   }
 }

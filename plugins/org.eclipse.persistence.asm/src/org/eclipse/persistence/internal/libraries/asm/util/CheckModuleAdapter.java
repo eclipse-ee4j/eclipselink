@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.util;
 
 import java.util.HashSet;
-
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
@@ -42,23 +41,23 @@ public class CheckModuleAdapter extends ModuleVisitor {
   private final boolean isOpen;
 
   /** The fully qualified names of the dependencies of the visited module. */
-  private final HashSet<String> requiredModules = new HashSet<String>();
+  private final NameSet requiredModules = new NameSet("Modules requires");
 
   /** The internal names of the packages exported by the visited module. */
-  private final HashSet<String> exportedPackages = new HashSet<String>();
+  private final NameSet exportedPackages = new NameSet("Module exports");
 
   /** The internal names of the packages opened by the visited module. */
-  private final HashSet<String> openedPackages = new HashSet<String>();
+  private final NameSet openedPackages = new NameSet("Module opens");
 
   /** The internal names of the services used by the visited module. */
-  private final HashSet<String> usedServices = new HashSet<String>();
+  private final NameSet usedServices = new NameSet("Module uses");
 
   /** The internal names of the services provided by the visited module. */
-  private final HashSet<String> providedServices = new HashSet<String>();
+  private final NameSet providedServices = new NameSet("Module provides");
 
   /** The class version number. */
   int classVersion;
-  
+
   /** Whether the {@link #visitEnd} method has been called. */
   private boolean visitEndCalled;
 
@@ -72,7 +71,7 @@ public class CheckModuleAdapter extends ModuleVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public CheckModuleAdapter(final ModuleVisitor moduleVisitor, final boolean isOpen) {
-    this(Opcodes.ASM6, moduleVisitor, isOpen);
+    this(Opcodes.ASM7, moduleVisitor, isOpen);
     if (getClass() != CheckModuleAdapter.class) {
       throw new IllegalStateException();
     }
@@ -82,7 +81,7 @@ public class CheckModuleAdapter extends ModuleVisitor {
    * Constructs a new {@link CheckModuleAdapter}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    * @param moduleVisitor the module visitor to which this adapter must delegate calls.
    * @param isOpen whether the visited module is open. Open modules have their {@link
    *     Opcodes#ACC_OPEN} access flag set in {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitModule}.
@@ -95,31 +94,35 @@ public class CheckModuleAdapter extends ModuleVisitor {
 
   @Override
   public void visitMainClass(final String mainClass) {
-    CheckMethodAdapter.checkInternalName(mainClass, "module main class");
+    // Modules can only appear in V9 or more classes.
+    CheckMethodAdapter.checkInternalName(Opcodes.V9, mainClass, "module main class");
     super.visitMainClass(mainClass);
   }
 
   @Override
   public void visitPackage(final String packaze) {
-    CheckMethodAdapter.checkInternalName(packaze, "module package");
+    CheckMethodAdapter.checkInternalName(Opcodes.V9, packaze, "module package");
     super.visitPackage(packaze);
   }
 
   @Override
   public void visitRequire(final String module, final int access, final String version) {
     checkVisitEndNotCalled();
-    CheckClassAdapter.checkFullyQualifiedName(module, "required module");
-    checkNameNotAlreadyDeclared(module, requiredModules, "Modules requires");
+    CheckClassAdapter.checkFullyQualifiedName(Opcodes.V9, module, "required module");
+    requiredModules.checkNameNotAlreadyDeclared(module);
     CheckClassAdapter.checkAccess(
         access,
         Opcodes.ACC_STATIC_PHASE
             | Opcodes.ACC_TRANSITIVE
             | Opcodes.ACC_SYNTHETIC
             | Opcodes.ACC_MANDATED);
-    if (classVersion >= Opcodes.V10 && module.equals("java.base") &&
-        (access & (Opcodes.ACC_STATIC_PHASE | Opcodes.ACC_TRANSITIVE)) != 0) {
-      throw new IllegalArgumentException("Invalid access flags: " + access +
-          " java.base can not be declared ACC_TRANSITIVE or ACC_STATIC_PHASE");
+    if (classVersion >= Opcodes.V10
+        && module.equals("java.base")
+        && (access & (Opcodes.ACC_STATIC_PHASE | Opcodes.ACC_TRANSITIVE)) != 0) {
+      throw new IllegalArgumentException(
+          "Invalid access flags: "
+              + access
+              + " java.base can not be declared ACC_TRANSITIVE or ACC_STATIC_PHASE");
     }
     super.visitRequire(module, access, version);
   }
@@ -127,12 +130,12 @@ public class CheckModuleAdapter extends ModuleVisitor {
   @Override
   public void visitExport(final String packaze, final int access, final String... modules) {
     checkVisitEndNotCalled();
-    CheckMethodAdapter.checkInternalName(packaze, "package name");
-    checkNameNotAlreadyDeclared(packaze, exportedPackages, "Module exports");
+    CheckMethodAdapter.checkInternalName(Opcodes.V9, packaze, "package name");
+    exportedPackages.checkNameNotAlreadyDeclared(packaze);
     CheckClassAdapter.checkAccess(access, Opcodes.ACC_SYNTHETIC | Opcodes.ACC_MANDATED);
     if (modules != null) {
       for (String module : modules) {
-        CheckClassAdapter.checkFullyQualifiedName(module, "module export to");
+        CheckClassAdapter.checkFullyQualifiedName(Opcodes.V9, module, "module export to");
       }
     }
     super.visitExport(packaze, access, modules);
@@ -144,12 +147,12 @@ public class CheckModuleAdapter extends ModuleVisitor {
     if (isOpen) {
       throw new UnsupportedOperationException("An open module can not use open directive");
     }
-    CheckMethodAdapter.checkInternalName(packaze, "package name");
-    checkNameNotAlreadyDeclared(packaze, openedPackages, "Module opens");
+    CheckMethodAdapter.checkInternalName(Opcodes.V9, packaze, "package name");
+    openedPackages.checkNameNotAlreadyDeclared(packaze);
     CheckClassAdapter.checkAccess(access, Opcodes.ACC_SYNTHETIC | Opcodes.ACC_MANDATED);
     if (modules != null) {
       for (String module : modules) {
-        CheckClassAdapter.checkFullyQualifiedName(module, "module open to");
+        CheckClassAdapter.checkFullyQualifiedName(Opcodes.V9, module, "module open to");
       }
     }
     super.visitOpen(packaze, access, modules);
@@ -158,21 +161,21 @@ public class CheckModuleAdapter extends ModuleVisitor {
   @Override
   public void visitUse(final String service) {
     checkVisitEndNotCalled();
-    CheckMethodAdapter.checkInternalName(service, "service");
-    checkNameNotAlreadyDeclared(service, usedServices, "Module uses");
+    CheckMethodAdapter.checkInternalName(Opcodes.V9, service, "service");
+    usedServices.checkNameNotAlreadyDeclared(service);
     super.visitUse(service);
   }
 
   @Override
   public void visitProvide(final String service, final String... providers) {
     checkVisitEndNotCalled();
-    CheckMethodAdapter.checkInternalName(service, "service");
-    checkNameNotAlreadyDeclared(service, providedServices, "Module provides");
+    CheckMethodAdapter.checkInternalName(Opcodes.V9, service, "service");
+    providedServices.checkNameNotAlreadyDeclared(service);
     if (providers == null || providers.length == 0) {
       throw new IllegalArgumentException("Providers cannot be null or empty");
     }
     for (String provider : providers) {
-      CheckMethodAdapter.checkInternalName(provider, "provider");
+      CheckMethodAdapter.checkInternalName(Opcodes.V9, provider, "provider");
     }
     super.visitProvide(service, providers);
   }
@@ -184,16 +187,26 @@ public class CheckModuleAdapter extends ModuleVisitor {
     super.visitEnd();
   }
 
-  private static void checkNameNotAlreadyDeclared(
-      final String name, final HashSet<String> declaredNames, final String message) {
-    if (!declaredNames.add(name)) {
-      throw new IllegalArgumentException(message + " " + name + " already declared");
-    }
-  }
-
   private void checkVisitEndNotCalled() {
     if (visitEndCalled) {
       throw new IllegalStateException("Cannot call a visit method after visitEnd has been called");
+    }
+  }
+
+  private static class NameSet {
+
+    private final String type;
+    private final HashSet<String> names;
+
+    NameSet(final String type) {
+      this.type = type;
+      this.names = new HashSet<String>();
+    }
+
+    void checkNameNotAlreadyDeclared(final String name) {
+      if (!names.add(name)) {
+        throw new IllegalArgumentException(type + " " + name + " already declared");
+      }
     }
   }
 }

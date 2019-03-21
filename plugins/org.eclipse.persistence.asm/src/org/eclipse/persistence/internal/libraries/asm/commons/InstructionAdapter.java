@@ -28,6 +28,7 @@
 
 package org.eclipse.persistence.internal.libraries.asm.commons;
 
+import org.eclipse.persistence.internal.libraries.asm.ConstantDynamic;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
@@ -41,17 +42,18 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  */
 public class InstructionAdapter extends MethodVisitor {
 
+  /** The type of the java.lang.Object class. */
   public static final Type OBJECT_TYPE = Type.getType("Ljava/lang/Object;");
 
   /**
    * Constructs a new {@link InstructionAdapter}. <i>Subclasses must not use this constructor</i>.
    * Instead, they must use the {@link #InstructionAdapter(int, MethodVisitor)} version.
    *
-   * @param mv the method visitor to which this adapter delegates calls.
+   * @param methodVisitor the method visitor to which this adapter delegates calls.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
-  public InstructionAdapter(final MethodVisitor mv) {
-    this(Opcodes.ASM6, mv);
+  public InstructionAdapter(final MethodVisitor methodVisitor) {
+    this(Opcodes.ASM7, methodVisitor);
     if (getClass() != InstructionAdapter.class) {
       throw new IllegalStateException();
     }
@@ -61,11 +63,11 @@ public class InstructionAdapter extends MethodVisitor {
    * Constructs a new {@link InstructionAdapter}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
-   * @param mv the method visitor to which this adapter delegates calls.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   * @param methodVisitor the method visitor to which this adapter delegates calls.
    */
-  protected InstructionAdapter(final int api, final MethodVisitor mv) {
-    super(api, mv);
+  protected InstructionAdapter(final int api, final MethodVisitor methodVisitor) {
+    super(api, methodVisitor);
   }
 
   @Override
@@ -88,16 +90,16 @@ public class InstructionAdapter extends MethodVisitor {
         break;
       case Opcodes.LCONST_0:
       case Opcodes.LCONST_1:
-        lconst(opcode - Opcodes.LCONST_0);
+        lconst((long) (opcode - Opcodes.LCONST_0));
         break;
       case Opcodes.FCONST_0:
       case Opcodes.FCONST_1:
       case Opcodes.FCONST_2:
-        fconst(opcode - Opcodes.FCONST_0);
+        fconst((float) (opcode - Opcodes.FCONST_0));
         break;
       case Opcodes.DCONST_0:
       case Opcodes.DCONST_1:
-        dconst(opcode - Opcodes.DCONST_0);
+        dconst((double) (opcode - Opcodes.DCONST_0));
         break;
       case Opcodes.IALOAD:
         aload(Type.INT_TYPE);
@@ -464,19 +466,19 @@ public class InstructionAdapter extends MethodVisitor {
 
   @Override
   public void visitTypeInsn(final int opcode, final String type) {
-    Type t = Type.getObjectType(type);
+    Type objectType = Type.getObjectType(type);
     switch (opcode) {
       case Opcodes.NEW:
-        anew(t);
+        anew(objectType);
         break;
       case Opcodes.ANEWARRAY:
-        newarray(t);
+        newarray(objectType);
         break;
       case Opcodes.CHECKCAST:
-        checkcast(t);
+        checkcast(objectType);
         break;
       case Opcodes.INSTANCEOF:
-        instanceOf(t);
+        instanceOf(objectType);
         break;
       default:
         throw new IllegalArgumentException();
@@ -485,34 +487,39 @@ public class InstructionAdapter extends MethodVisitor {
 
   @Override
   public void visitFieldInsn(
-      final int opcode, final String owner, final String name, final String desc) {
+      final int opcode, final String owner, final String name, final String descriptor) {
     switch (opcode) {
       case Opcodes.GETSTATIC:
-        getstatic(owner, name, desc);
+        getstatic(owner, name, descriptor);
         break;
       case Opcodes.PUTSTATIC:
-        putstatic(owner, name, desc);
+        putstatic(owner, name, descriptor);
         break;
       case Opcodes.GETFIELD:
-        getfield(owner, name, desc);
+        getfield(owner, name, descriptor);
         break;
       case Opcodes.PUTFIELD:
-        putfield(owner, name, desc);
+        putfield(owner, name, descriptor);
         break;
       default:
         throw new IllegalArgumentException();
     }
   }
 
+  /**
+   * Deprecated.
+   *
+   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
+   */
   @Deprecated
   @Override
   public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String desc) {
+      final int opcode, final String owner, final String name, final String descriptor) {
     if (api >= Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, desc);
+      super.visitMethodInsn(opcode, owner, name, descriptor);
       return;
     }
-    doVisitMethodInsn(opcode, owner, name, desc, opcode == Opcodes.INVOKEINTERFACE);
+    doVisitMethodInsn(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
   }
 
   @Override
@@ -520,29 +527,33 @@ public class InstructionAdapter extends MethodVisitor {
       final int opcode,
       final String owner,
       final String name,
-      final String desc,
-      final boolean itf) {
+      final String descriptor,
+      final boolean isInterface) {
     if (api < Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, desc, itf);
+      super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
       return;
     }
-    doVisitMethodInsn(opcode, owner, name, desc, itf);
+    doVisitMethodInsn(opcode, owner, name, descriptor, isInterface);
   }
 
   private void doVisitMethodInsn(
-      int opcode, final String owner, final String name, final String desc, final boolean itf) {
+      final int opcode,
+      final String owner,
+      final String name,
+      final String descriptor,
+      final boolean isInterface) {
     switch (opcode) {
       case Opcodes.INVOKESPECIAL:
-        invokespecial(owner, name, desc, itf);
+        invokespecial(owner, name, descriptor, isInterface);
         break;
       case Opcodes.INVOKEVIRTUAL:
-        invokevirtual(owner, name, desc, itf);
+        invokevirtual(owner, name, descriptor, isInterface);
         break;
       case Opcodes.INVOKESTATIC:
-        invokestatic(owner, name, desc, itf);
+        invokestatic(owner, name, descriptor, isInterface);
         break;
       case Opcodes.INVOKEINTERFACE:
-        invokeinterface(owner, name, desc);
+        invokeinterface(owner, name, descriptor);
         break;
       default:
         throw new IllegalArgumentException();
@@ -550,8 +561,12 @@ public class InstructionAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitInvokeDynamicInsn(String name, String desc, Handle bsm, Object... bsmArgs) {
-    invokedynamic(name, desc, bsm, bsmArgs);
+  public void visitInvokeDynamicInsn(
+      final String name,
+      final String descriptor,
+      final Handle bootstrapMethodHandle,
+      final Object... bootstrapMethodArguments) {
+    invokedynamic(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
   }
 
   @Override
@@ -626,38 +641,35 @@ public class InstructionAdapter extends MethodVisitor {
     if (api < Opcodes.ASM5
         && (value instanceof Handle
             || (value instanceof Type && ((Type) value).getSort() == Type.METHOD))) {
-      throw new UnsupportedOperationException();
+      throw new UnsupportedOperationException("This feature requires ASM5");
+    }
+    if (api != Opcodes.ASM7 && value instanceof ConstantDynamic) {
+      throw new UnsupportedOperationException("This feature requires ASM7");
     }
     if (value instanceof Integer) {
-      int val = ((Integer) value).intValue();
-      iconst(val);
+      iconst((Integer) value);
     } else if (value instanceof Byte) {
-      int val = ((Byte) value).intValue();
-      iconst(val);
+      iconst(((Byte) value).intValue());
     } else if (value instanceof Character) {
-      int val = ((Character) value).charValue();
-      iconst(val);
+      iconst(((Character) value).charValue());
     } else if (value instanceof Short) {
-      int val = ((Short) value).intValue();
-      iconst(val);
+      iconst(((Short) value).intValue());
     } else if (value instanceof Boolean) {
-      int val = ((Boolean) value).booleanValue() ? 1 : 0;
-      iconst(val);
+      iconst(((Boolean) value).booleanValue() ? 1 : 0);
     } else if (value instanceof Float) {
-      float val = ((Float) value).floatValue();
-      fconst(val);
+      fconst((Float) value);
     } else if (value instanceof Long) {
-      long val = ((Long) value).longValue();
-      lconst(val);
+      lconst((Long) value);
     } else if (value instanceof Double) {
-      double val = ((Double) value).doubleValue();
-      dconst(val);
+      dconst((Double) value);
     } else if (value instanceof String) {
       aconst(value);
     } else if (value instanceof Type) {
       tconst((Type) value);
     } else if (value instanceof Handle) {
       hconst((Handle) value);
+    } else if (value instanceof ConstantDynamic) {
+      cconst((ConstantDynamic) value);
     } else {
       throw new IllegalArgumentException();
     }
@@ -680,68 +692,118 @@ public class InstructionAdapter extends MethodVisitor {
   }
 
   @Override
-  public void visitMultiANewArrayInsn(final String desc, final int dims) {
-    multianewarray(desc, dims);
+  public void visitMultiANewArrayInsn(final String descriptor, final int numDimensions) {
+    multianewarray(descriptor, numDimensions);
   }
 
-  // -----------------------------------------------------------------------
+  // -----------------------------------------------------------------------------------------------
 
+  /** Generates a nop instruction. */
   public void nop() {
     mv.visitInsn(Opcodes.NOP);
   }
 
-  public void aconst(final Object cst) {
-    if (cst == null) {
+  /**
+   * Generates the instruction to push the given value on the stack.
+   *
+   * @param value the constant to be pushed on the stack. This parameter must be an {@link Integer},
+   *     a {@link Float}, a {@link Long}, a {@link Double}, a {@link String}, a {@link Type} of
+   *     OBJECT or ARRAY sort for {@code .class} constants, for classes whose version is 49, a
+   *     {@link Type} of METHOD sort for MethodType, a {@link Handle} for MethodHandle constants,
+   *     for classes whose version is 51 or a {@link ConstantDynamic} for a constant dynamic for
+   *     classes whose version is 55.
+   */
+  public void aconst(final Object value) {
+    if (value == null) {
       mv.visitInsn(Opcodes.ACONST_NULL);
     } else {
-      mv.visitLdcInsn(cst);
+      mv.visitLdcInsn(value);
     }
   }
 
-  public void iconst(final int cst) {
-    if (cst >= -1 && cst <= 5) {
-      mv.visitInsn(Opcodes.ICONST_0 + cst);
-    } else if (cst >= Byte.MIN_VALUE && cst <= Byte.MAX_VALUE) {
-      mv.visitIntInsn(Opcodes.BIPUSH, cst);
-    } else if (cst >= Short.MIN_VALUE && cst <= Short.MAX_VALUE) {
-      mv.visitIntInsn(Opcodes.SIPUSH, cst);
+  /**
+   * Generates the instruction to push the given value on the stack.
+   *
+   * @param intValue the constant to be pushed on the stack.
+   */
+  public void iconst(final int intValue) {
+    if (intValue >= -1 && intValue <= 5) {
+      mv.visitInsn(Opcodes.ICONST_0 + intValue);
+    } else if (intValue >= Byte.MIN_VALUE && intValue <= Byte.MAX_VALUE) {
+      mv.visitIntInsn(Opcodes.BIPUSH, intValue);
+    } else if (intValue >= Short.MIN_VALUE && intValue <= Short.MAX_VALUE) {
+      mv.visitIntInsn(Opcodes.SIPUSH, intValue);
     } else {
-      mv.visitLdcInsn(cst);
+      mv.visitLdcInsn(intValue);
     }
   }
 
-  public void lconst(final long cst) {
-    if (cst == 0L || cst == 1L) {
-      mv.visitInsn(Opcodes.LCONST_0 + (int) cst);
+  /**
+   * Generates the instruction to push the given value on the stack.
+   *
+   * @param longValue the constant to be pushed on the stack.
+   */
+  public void lconst(final long longValue) {
+    if (longValue == 0L || longValue == 1L) {
+      mv.visitInsn(Opcodes.LCONST_0 + (int) longValue);
     } else {
-      mv.visitLdcInsn(cst);
+      mv.visitLdcInsn(longValue);
     }
   }
 
-  public void fconst(final float cst) {
-    int bits = Float.floatToIntBits(cst);
-    if (bits == 0L || bits == 0x3f800000 || bits == 0x40000000) { // 0..2
-      mv.visitInsn(Opcodes.FCONST_0 + (int) cst);
+  /**
+   * Generates the instruction to push the given value on the stack.
+   *
+   * @param floatValue the constant to be pushed on the stack.
+   */
+  public void fconst(final float floatValue) {
+    int bits = Float.floatToIntBits(floatValue);
+    if (bits == 0L || bits == 0x3F800000 || bits == 0x40000000) { // 0..2
+      mv.visitInsn(Opcodes.FCONST_0 + (int) floatValue);
     } else {
-      mv.visitLdcInsn(cst);
+      mv.visitLdcInsn(floatValue);
     }
   }
 
-  public void dconst(final double cst) {
-    long bits = Double.doubleToLongBits(cst);
-    if (bits == 0L || bits == 0x3ff0000000000000L) { // +0.0d and 1.0d
-      mv.visitInsn(Opcodes.DCONST_0 + (int) cst);
+  /**
+   * Generates the instruction to push the given value on the stack.
+   *
+   * @param doubleValue the constant to be pushed on the stack.
+   */
+  public void dconst(final double doubleValue) {
+    long bits = Double.doubleToLongBits(doubleValue);
+    if (bits == 0L || bits == 0x3FF0000000000000L) { // +0.0d and 1.0d
+      mv.visitInsn(Opcodes.DCONST_0 + (int) doubleValue);
     } else {
-      mv.visitLdcInsn(cst);
+      mv.visitLdcInsn(doubleValue);
     }
   }
 
+  /**
+   * Generates the instruction to push the given type on the stack.
+   *
+   * @param type the type to be pushed on the stack.
+   */
   public void tconst(final Type type) {
     mv.visitLdcInsn(type);
   }
 
+  /**
+   * Generates the instruction to push the given handle on the stack.
+   *
+   * @param handle the handle to be pushed on the stack.
+   */
   public void hconst(final Handle handle) {
     mv.visitLdcInsn(handle);
+  }
+
+  /**
+   * Generates the instruction to push the given constant dynamic on the stack.
+   *
+   * @param constantDynamic the constant dynamic to be pushed on the stack.
+   */
+  public void cconst(final ConstantDynamic constantDynamic) {
+    mv.visitLdcInsn(constantDynamic);
   }
 
   public void load(final int var, final Type type) {
@@ -848,6 +910,12 @@ public class InstructionAdapter extends MethodVisitor {
     mv.visitIincInsn(var, increment);
   }
 
+  /**
+   * Generates the instruction to cast from the first given type to the other.
+   *
+   * @param from a Type.
+   * @param to a Type.
+   */
   public void cast(final Type from, final Type to) {
     if (from != to) {
       if (from == Type.DOUBLE_TYPE) {
@@ -983,133 +1051,212 @@ public class InstructionAdapter extends MethodVisitor {
     mv.visitLookupSwitchInsn(dflt, keys, labels);
   }
 
-  public void areturn(final Type t) {
-    mv.visitInsn(t.getOpcode(Opcodes.IRETURN));
+  public void areturn(final Type type) {
+    mv.visitInsn(type.getOpcode(Opcodes.IRETURN));
   }
 
-  public void getstatic(final String owner, final String name, final String desc) {
-    mv.visitFieldInsn(Opcodes.GETSTATIC, owner, name, desc);
+  public void getstatic(final String owner, final String name, final String descriptor) {
+    mv.visitFieldInsn(Opcodes.GETSTATIC, owner, name, descriptor);
   }
 
-  public void putstatic(final String owner, final String name, final String desc) {
-    mv.visitFieldInsn(Opcodes.PUTSTATIC, owner, name, desc);
+  public void putstatic(final String owner, final String name, final String descriptor) {
+    mv.visitFieldInsn(Opcodes.PUTSTATIC, owner, name, descriptor);
   }
 
-  public void getfield(final String owner, final String name, final String desc) {
-    mv.visitFieldInsn(Opcodes.GETFIELD, owner, name, desc);
+  public void getfield(final String owner, final String name, final String descriptor) {
+    mv.visitFieldInsn(Opcodes.GETFIELD, owner, name, descriptor);
   }
 
-  public void putfield(final String owner, final String name, final String desc) {
-    mv.visitFieldInsn(Opcodes.PUTFIELD, owner, name, desc);
+  public void putfield(final String owner, final String name, final String descriptor) {
+    mv.visitFieldInsn(Opcodes.PUTFIELD, owner, name, descriptor);
   }
 
+  /**
+   * Deprecated.
+   *
+   * @param owner the internal name of the method's owner class.
+   * @param name the method's name.
+   * @param descriptor the method's descriptor (see {@link Type}).
+   * @deprecated use {@link #invokevirtual(String, String, String, boolean)} instead.
+   */
   @Deprecated
-  public void invokevirtual(final String owner, final String name, final String desc) {
+  public void invokevirtual(final String owner, final String name, final String descriptor) {
     if (api >= Opcodes.ASM5) {
-      invokevirtual(owner, name, desc, false);
+      invokevirtual(owner, name, descriptor, false);
       return;
     }
-    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, name, desc);
+    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, name, descriptor);
   }
 
+  /**
+   * Generates the instruction to call the given virtual method.
+   *
+   * @param owner the internal name of the method's owner class (see {@link
+   *     Type#getInternalName()}).
+   * @param name the method's name.
+   * @param descriptor the method's descriptor (see {@link Type}).
+   * @param isInterface if the method's owner class is an interface.
+   */
   public void invokevirtual(
-      final String owner, final String name, final String desc, final boolean itf) {
+      final String owner, final String name, final String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
-      if (itf) {
+      if (isInterface) {
         throw new IllegalArgumentException("INVOKEVIRTUAL on interfaces require ASM 5");
       }
-      invokevirtual(owner, name, desc);
+      invokevirtual(owner, name, descriptor);
       return;
     }
-    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, name, desc, itf);
+    mv.visitMethodInsn(Opcodes.INVOKEVIRTUAL, owner, name, descriptor, isInterface);
   }
 
+  /**
+   * Deprecated.
+   *
+   * @param owner the internal name of the method's owner class.
+   * @param name the method's name.
+   * @param descriptor the method's descriptor (see {@link Type}).
+   * @deprecated use {@link #invokespecial(String, String, String, boolean)} instead.
+   */
   @Deprecated
-  public void invokespecial(final String owner, final String name, final String desc) {
+  public void invokespecial(final String owner, final String name, final String descriptor) {
     if (api >= Opcodes.ASM5) {
-      invokespecial(owner, name, desc, false);
+      invokespecial(owner, name, descriptor, false);
       return;
     }
-    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, owner, name, desc, false);
+    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, owner, name, descriptor, false);
   }
 
+  /**
+   * Generates the instruction to call the given special method.
+   *
+   * @param owner the internal name of the method's owner class (see {@link
+   *     Type#getInternalName()}).
+   * @param name the method's name.
+   * @param descriptor the method's descriptor (see {@link Type}).
+   * @param isInterface if the method's owner class is an interface.
+   */
   public void invokespecial(
-      final String owner, final String name, final String desc, final boolean itf) {
+      final String owner, final String name, final String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
-      if (itf) {
+      if (isInterface) {
         throw new IllegalArgumentException("INVOKESPECIAL on interfaces require ASM 5");
       }
-      invokespecial(owner, name, desc);
+      invokespecial(owner, name, descriptor);
       return;
     }
-    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, owner, name, desc, itf);
+    mv.visitMethodInsn(Opcodes.INVOKESPECIAL, owner, name, descriptor, isInterface);
   }
 
+  /**
+   * Deprecated.
+   *
+   * @param owner the internal name of the method's owner class.
+   * @param name the method's name.
+   * @param descriptor the method's descriptor (see {@link Type}).
+   * @deprecated use {@link #invokestatic(String, String, String, boolean)} instead.
+   */
   @Deprecated
-  public void invokestatic(final String owner, final String name, final String desc) {
+  public void invokestatic(final String owner, final String name, final String descriptor) {
     if (api >= Opcodes.ASM5) {
-      invokestatic(owner, name, desc, false);
+      invokestatic(owner, name, descriptor, false);
       return;
     }
-    mv.visitMethodInsn(Opcodes.INVOKESTATIC, owner, name, desc, false);
+    mv.visitMethodInsn(Opcodes.INVOKESTATIC, owner, name, descriptor, false);
   }
 
+  /**
+   * Generates the instruction to call the given static method.
+   *
+   * @param owner the internal name of the method's owner class (see {@link
+   *     Type#getInternalName()}).
+   * @param name the method's name.
+   * @param descriptor the method's descriptor (see {@link Type}).
+   * @param isInterface if the method's owner class is an interface.
+   */
   public void invokestatic(
-      final String owner, final String name, final String desc, final boolean itf) {
+      final String owner, final String name, final String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
-      if (itf) {
+      if (isInterface) {
         throw new IllegalArgumentException("INVOKESTATIC on interfaces require ASM 5");
       }
-      invokestatic(owner, name, desc);
+      invokestatic(owner, name, descriptor);
       return;
     }
-    mv.visitMethodInsn(Opcodes.INVOKESTATIC, owner, name, desc, itf);
+    mv.visitMethodInsn(Opcodes.INVOKESTATIC, owner, name, descriptor, isInterface);
   }
 
-  public void invokeinterface(final String owner, final String name, final String desc) {
-    mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, owner, name, desc, true);
+  /**
+   * Generates the instruction to call the given interface method.
+   *
+   * @param owner the internal name of the method's owner class (see {@link
+   *     Type#getInternalName()}).
+   * @param name the method's name.
+   * @param descriptor the method's descriptor (see {@link Type}).
+   */
+  public void invokeinterface(final String owner, final String name, final String descriptor) {
+    mv.visitMethodInsn(Opcodes.INVOKEINTERFACE, owner, name, descriptor, true);
   }
 
-  public void invokedynamic(String name, String desc, Handle bsm, Object[] bsmArgs) {
-    mv.visitInvokeDynamicInsn(name, desc, bsm, bsmArgs);
+  /**
+   * Generates the instruction to call the given dynamic method.
+   *
+   * @param name the method's name.
+   * @param descriptor the method's descriptor (see {@link Type}).
+   * @param bootstrapMethodHandle the bootstrap method.
+   * @param bootstrapMethodArguments the bootstrap method constant arguments. Each argument must be
+   *     an {@link Integer}, {@link Float}, {@link Long}, {@link Double}, {@link String}, {@link
+   *     Type}, {@link Handle} or {@link ConstantDynamic} value. This method is allowed to modify
+   *     the content of the array so a caller should expect that this array may change.
+   */
+  public void invokedynamic(
+      final String name,
+      final String descriptor,
+      final Handle bootstrapMethodHandle,
+      final Object[] bootstrapMethodArguments) {
+    mv.visitInvokeDynamicInsn(name, descriptor, bootstrapMethodHandle, bootstrapMethodArguments);
   }
 
   public void anew(final Type type) {
     mv.visitTypeInsn(Opcodes.NEW, type.getInternalName());
   }
 
+  /**
+   * Generates the instruction to create and push on the stack an array of the given type.
+   *
+   * @param type an array Type.
+   */
   public void newarray(final Type type) {
-    int typ;
+    int arrayType;
     switch (type.getSort()) {
       case Type.BOOLEAN:
-        typ = Opcodes.T_BOOLEAN;
+        arrayType = Opcodes.T_BOOLEAN;
         break;
       case Type.CHAR:
-        typ = Opcodes.T_CHAR;
+        arrayType = Opcodes.T_CHAR;
         break;
       case Type.BYTE:
-        typ = Opcodes.T_BYTE;
+        arrayType = Opcodes.T_BYTE;
         break;
       case Type.SHORT:
-        typ = Opcodes.T_SHORT;
+        arrayType = Opcodes.T_SHORT;
         break;
       case Type.INT:
-        typ = Opcodes.T_INT;
+        arrayType = Opcodes.T_INT;
         break;
       case Type.FLOAT:
-        typ = Opcodes.T_FLOAT;
+        arrayType = Opcodes.T_FLOAT;
         break;
       case Type.LONG:
-        typ = Opcodes.T_LONG;
+        arrayType = Opcodes.T_LONG;
         break;
       case Type.DOUBLE:
-        typ = Opcodes.T_DOUBLE;
+        arrayType = Opcodes.T_DOUBLE;
         break;
       default:
         mv.visitTypeInsn(Opcodes.ANEWARRAY, type.getInternalName());
         return;
     }
-    mv.visitIntInsn(Opcodes.NEWARRAY, typ);
+    mv.visitIntInsn(Opcodes.NEWARRAY, arrayType);
   }
 
   public void arraylength() {
@@ -1136,8 +1283,8 @@ public class InstructionAdapter extends MethodVisitor {
     mv.visitInsn(Opcodes.MONITOREXIT);
   }
 
-  public void multianewarray(final String desc, final int dims) {
-    mv.visitMultiANewArrayInsn(desc, dims);
+  public void multianewarray(final String descriptor, final int numDimensions) {
+    mv.visitMultiANewArrayInsn(descriptor, numDimensions);
   }
 
   public void ifnull(final Label label) {

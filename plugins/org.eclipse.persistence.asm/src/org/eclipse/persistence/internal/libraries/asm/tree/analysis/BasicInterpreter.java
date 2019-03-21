@@ -28,7 +28,7 @@
 package org.eclipse.persistence.internal.libraries.asm.tree.analysis;
 
 import java.util.List;
-
+import org.eclipse.persistence.internal.libraries.asm.ConstantDynamic;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
@@ -50,17 +50,18 @@ import org.eclipse.persistence.internal.libraries.asm.tree.TypeInsnNode;
 public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes {
 
   /**
-   * Special type used for the <tt>null</tt> literal. This is an object reference type with
+   * Special type used for the {@literal null} literal. This is an object reference type with
    * descriptor 'Lnull;'.
    */
   public static final Type NULL_TYPE = Type.getObjectType("null");
 
   /**
-   * Constructs a new {@link BasicInterpreter} for the latest ASM API version. <i>Subclasses must not
-   * use this constructor</i>. Instead, they must use the {@link #BasicInterpreter(int)} version.
+   * Constructs a new {@link BasicInterpreter} for the latest ASM API version. <i>Subclasses must
+   * not use this constructor</i>. Instead, they must use the {@link #BasicInterpreter(int)}
+   * version.
    */
   public BasicInterpreter() {
-    super(ASM6);
+    super(ASM7);
     if (getClass() != BasicInterpreter.class) {
       throw new IllegalStateException();
     }
@@ -70,8 +71,8 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
    * Constructs a new {@link BasicInterpreter}.
    *
    * @param api the ASM API version supported by this interpreter. Must be one of {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5} or {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}.
    */
   protected BasicInterpreter(final int api) {
     super(api);
@@ -154,6 +155,8 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
           }
         } else if (value instanceof Handle) {
           return newValue(Type.getObjectType("java/lang/invoke/MethodHandle"));
+        } else if (value instanceof ConstantDynamic) {
+          return newValue(Type.getType(((ConstantDynamic) value).getDescriptor()));
         } else {
           throw new AnalyzerException(insn, "Illegal LDC value " + value);
         }

@@ -24,7 +24,7 @@ Created-By: 1.6.0_21 (Sun Microsystems Inc.)
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 HK2-Bundle-Name: org.eclipse.persistence:org.eclipse.persistence.dbws
 Require-Bundle: org.eclipse.persistence.core;bundle-version="2.6.8.WAS",
- org.eclipse.persistence.asm;bundle-version="6.2.0",
+ org.eclipse.persistence.asm;bundle-version="7.0.0",
  org.eclipse.persistence.jpa;bundle-version="2.6.8.WAS",
  org.eclipse.persistence.moxy;bundle-version="2.6.8.WAS"
 Bundle-Vendor: Eclipse.org - EclipseLink Project

@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.util;
 
 import java.util.EnumSet;
-
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.signature.SignatureVisitor;
 
@@ -110,7 +109,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
   /** Whether the visited signature can be 'V'. */
   private boolean canBeVoid;
 
-  /** The visitor to which this adapter must delegate calls. May be <tt>null</tt>. */
+  /** The visitor to which this adapter must delegate calls. May be {@literal null}. */
   private final SignatureVisitor signatureVisitor;
 
   /**
@@ -120,22 +119,22 @@ public class CheckSignatureAdapter extends SignatureVisitor {
    *
    * @param type the type of signature to be checked. See {@link #CLASS_SIGNATURE}, {@link
    *     #METHOD_SIGNATURE} and {@link #TYPE_SIGNATURE}.
-   * @param signatureVisitor the visitor to which this adapter must delegate calls. May be
-   *     <tt>null</tt>.
+   * @param signatureVisitor the visitor to which this adapter must delegate calls. May be {@literal
+   *     null}.
    */
   public CheckSignatureAdapter(final int type, final SignatureVisitor signatureVisitor) {
-    this(Opcodes.ASM6, type, signatureVisitor);
+    this(Opcodes.ASM7, type, signatureVisitor);
   }
 
   /**
    * Constructs a new {@link CheckSignatureAdapter}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    * @param type the type of signature to be checked. See {@link #CLASS_SIGNATURE}, {@link
    *     #METHOD_SIGNATURE} and {@link #TYPE_SIGNATURE}.
-   * @param signatureVisitor the visitor to which this adapter must delegate calls. May be
-   *     <tt>null</tt>.
+   * @param signatureVisitor the visitor to which this adapter must delegate calls. May be {@literal
+   *     null}.
    */
   protected CheckSignatureAdapter(
       final int api, final int type, final SignatureVisitor signatureVisitor) {
