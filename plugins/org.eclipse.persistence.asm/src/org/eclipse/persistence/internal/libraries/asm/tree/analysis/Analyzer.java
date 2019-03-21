@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.tree.AbstractInsnNode;
@@ -97,8 +96,8 @@ public class Analyzer<V extends Value> implements Opcodes {
    * @param method the method to be analyzed.
    * @return the symbolic state of the execution stack frame at each bytecode instruction of the
    *     method. The size of the returned array is equal to the number of instructions (and labels)
-   *     of the method. A given frame is <tt>null</tt> if and only if the corresponding instruction
-   *     cannot be reached (dead code).
+   *     of the method. A given frame is {@literal null} if and only if the corresponding
+   *     instruction cannot be reached (dead code).
    * @throws AnalyzerException if a problem occurs during the analysis.
    */
   @SuppressWarnings("unchecked")
@@ -191,10 +190,12 @@ public class Analyzer<V extends Value> implements Opcodes {
           if (insnNode instanceof JumpInsnNode) {
             JumpInsnNode jumpInsn = (JumpInsnNode) insnNode;
             if (insnOpcode != GOTO && insnOpcode != JSR) {
+              currentFrame.initJumpTarget(insnOpcode, /* target = */ null);
               merge(insnIndex + 1, currentFrame, subroutine);
               newControlFlowEdge(insnIndex, insnIndex + 1);
             }
             int jumpInsnIndex = insnList.indexOf(jumpInsn.label);
+            currentFrame.initJumpTarget(insnOpcode, jumpInsn.label);
             if (insnOpcode == JSR) {
               merge(
                   jumpInsnIndex,
@@ -207,20 +208,26 @@ public class Analyzer<V extends Value> implements Opcodes {
           } else if (insnNode instanceof LookupSwitchInsnNode) {
             LookupSwitchInsnNode lookupSwitchInsn = (LookupSwitchInsnNode) insnNode;
             int targetInsnIndex = insnList.indexOf(lookupSwitchInsn.dflt);
+            currentFrame.initJumpTarget(insnOpcode, lookupSwitchInsn.dflt);
             merge(targetInsnIndex, currentFrame, subroutine);
             newControlFlowEdge(insnIndex, targetInsnIndex);
             for (int i = 0; i < lookupSwitchInsn.labels.size(); ++i) {
-              targetInsnIndex = insnList.indexOf(lookupSwitchInsn.labels.get(i));
+              LabelNode label = lookupSwitchInsn.labels.get(i);
+              targetInsnIndex = insnList.indexOf(label);
+              currentFrame.initJumpTarget(insnOpcode, label);
               merge(targetInsnIndex, currentFrame, subroutine);
               newControlFlowEdge(insnIndex, targetInsnIndex);
             }
           } else if (insnNode instanceof TableSwitchInsnNode) {
             TableSwitchInsnNode tableSwitchInsn = (TableSwitchInsnNode) insnNode;
             int targetInsnIndex = insnList.indexOf(tableSwitchInsn.dflt);
+            currentFrame.initJumpTarget(insnOpcode, tableSwitchInsn.dflt);
             merge(targetInsnIndex, currentFrame, subroutine);
             newControlFlowEdge(insnIndex, targetInsnIndex);
             for (int i = 0; i < tableSwitchInsn.labels.size(); ++i) {
-              targetInsnIndex = insnList.indexOf(tableSwitchInsn.labels.get(i));
+              LabelNode label = tableSwitchInsn.labels.get(i);
+              currentFrame.initJumpTarget(insnOpcode, label);
+              targetInsnIndex = insnList.indexOf(label);
               merge(targetInsnIndex, currentFrame, subroutine);
               newControlFlowEdge(insnIndex, targetInsnIndex);
             }
@@ -264,8 +271,7 @@ public class Analyzer<V extends Value> implements Opcodes {
 
         List<TryCatchBlockNode> insnHandlers = handlers[insnIndex];
         if (insnHandlers != null) {
-          for (int i = 0; i < insnHandlers.size(); ++i) {
-            TryCatchBlockNode tryCatchBlock = insnHandlers.get(i);
+          for (TryCatchBlockNode tryCatchBlock : insnHandlers) {
             Type catchType;
             if (tryCatchBlock.type == null) {
               catchType = Type.getObjectType("java/lang/Throwable");
@@ -273,9 +279,9 @@ public class Analyzer<V extends Value> implements Opcodes {
               catchType = Type.getObjectType(tryCatchBlock.type);
             }
             if (newControlFlowExceptionEdge(insnIndex, tryCatchBlock)) {
-              Frame<V> handler = new Frame<V>(oldFrame);
+              Frame<V> handler = newFrame(oldFrame);
               handler.clearStack();
-              handler.push(interpreter.newValue(catchType));
+              handler.push(interpreter.newExceptionValue(tryCatchBlock, handler, catchType));
               merge(insnList.indexOf(tryCatchBlock.handler), handler, subroutine);
             }
           }
@@ -283,7 +289,8 @@ public class Analyzer<V extends Value> implements Opcodes {
       } catch (AnalyzerException e) {
         throw new AnalyzerException(
             e.node, "Error at instruction " + insnIndex + ": " + e.getMessage(), e);
-      } catch (Exception e) {
+      } catch (RuntimeException e) {
+        // DontCheck(IllegalCatch): can't be fixed, for backward compatibility.
         throw new AnalyzerException(
             insnNode, "Error at instruction " + insnIndex + ": " + e.getMessage(), e);
       }
@@ -306,52 +313,54 @@ public class Analyzer<V extends Value> implements Opcodes {
   private void findSubroutine(
       final int insnIndex, final Subroutine subroutine, final List<AbstractInsnNode> jsrInsns)
       throws AnalyzerException {
-    int currentInsnIndex = insnIndex;
-    while (true) {
+    ArrayList<Integer> instructionIndicesToProcess = new ArrayList<Integer>();
+    instructionIndicesToProcess.add(insnIndex);
+    while (!instructionIndicesToProcess.isEmpty()) {
+      int currentInsnIndex =
+          instructionIndicesToProcess.remove(instructionIndicesToProcess.size() - 1);
       if (currentInsnIndex < 0 || currentInsnIndex >= insnListSize) {
         throw new AnalyzerException(null, "Execution can fall off the end of the code");
       }
       if (subroutines[currentInsnIndex] != null) {
-        return;
+        continue;
       }
       subroutines[currentInsnIndex] = new Subroutine(subroutine);
       AbstractInsnNode currentInsn = insnList.get(currentInsnIndex);
 
-      // Call findSubroutine recursively on the normal successors of currentInsn.
+      // Push the normal successors of currentInsn onto instructionIndicesToProcess.
       if (currentInsn instanceof JumpInsnNode) {
         if (currentInsn.getOpcode() == JSR) {
           // Do not follow a jsr, it leads to another subroutine!
           jsrInsns.add(currentInsn);
         } else {
           JumpInsnNode jumpInsn = (JumpInsnNode) currentInsn;
-          findSubroutine(insnList.indexOf(jumpInsn.label), subroutine, jsrInsns);
+          instructionIndicesToProcess.add(insnList.indexOf(jumpInsn.label));
         }
       } else if (currentInsn instanceof TableSwitchInsnNode) {
         TableSwitchInsnNode tableSwitchInsn = (TableSwitchInsnNode) currentInsn;
         findSubroutine(insnList.indexOf(tableSwitchInsn.dflt), subroutine, jsrInsns);
         for (int i = tableSwitchInsn.labels.size() - 1; i >= 0; --i) {
-          LabelNode l = tableSwitchInsn.labels.get(i);
-          findSubroutine(insnList.indexOf(l), subroutine, jsrInsns);
+          LabelNode labelNode = tableSwitchInsn.labels.get(i);
+          instructionIndicesToProcess.add(insnList.indexOf(labelNode));
         }
       } else if (currentInsn instanceof LookupSwitchInsnNode) {
         LookupSwitchInsnNode lookupSwitchInsn = (LookupSwitchInsnNode) currentInsn;
         findSubroutine(insnList.indexOf(lookupSwitchInsn.dflt), subroutine, jsrInsns);
         for (int i = lookupSwitchInsn.labels.size() - 1; i >= 0; --i) {
-          LabelNode l = lookupSwitchInsn.labels.get(i);
-          findSubroutine(insnList.indexOf(l), subroutine, jsrInsns);
+          LabelNode labelNode = lookupSwitchInsn.labels.get(i);
+          instructionIndicesToProcess.add(insnList.indexOf(labelNode));
         }
       }
 
-      // Call findSubroutine recursively on the exception handler successors of currentInsn.
+      // Push the exception handler successors of currentInsn onto instructionIndicesToProcess.
       List<TryCatchBlockNode> insnHandlers = handlers[currentInsnIndex];
       if (insnHandlers != null) {
-        for (int i = 0; i < insnHandlers.size(); ++i) {
-          TryCatchBlockNode tryCatchBlock = insnHandlers.get(i);
-          findSubroutine(insnList.indexOf(tryCatchBlock.handler), subroutine, jsrInsns);
+        for (TryCatchBlockNode tryCatchBlock : insnHandlers) {
+          instructionIndicesToProcess.add(insnList.indexOf(tryCatchBlock.handler));
         }
       }
 
-      // If currentInsn does not fall through to the next instruction, return.
+      // Push the next instruction, if the control flow can go from currentInsn to the next.
       switch (currentInsn.getOpcode()) {
         case GOTO:
         case RET:
@@ -364,11 +373,11 @@ public class Analyzer<V extends Value> implements Opcodes {
         case ARETURN:
         case RETURN:
         case ATHROW:
-          return;
+          break;
         default:
+          instructionIndicesToProcess.add(currentInsnIndex + 1);
           break;
       }
-      currentInsnIndex++;
     }
   }
 
@@ -382,21 +391,29 @@ public class Analyzer<V extends Value> implements Opcodes {
   private Frame<V> computeInitialFrame(final String owner, final MethodNode method) {
     Frame<V> frame = newFrame(method.maxLocals, method.maxStack);
     int currentLocal = 0;
-    if ((method.access & ACC_STATIC) == 0) {
+    boolean isInstanceMethod = (method.access & ACC_STATIC) == 0;
+    if (isInstanceMethod) {
       Type ownerType = Type.getObjectType(owner);
-      frame.setLocal(currentLocal++, interpreter.newValue(ownerType));
+      frame.setLocal(
+          currentLocal, interpreter.newParameterValue(isInstanceMethod, currentLocal, ownerType));
+      currentLocal++;
     }
     Type[] argumentTypes = Type.getArgumentTypes(method.desc);
-    for (int i = 0; i < argumentTypes.length; ++i) {
-      frame.setLocal(currentLocal++, interpreter.newValue(argumentTypes[i]));
-      if (argumentTypes[i].getSize() == 2) {
-        frame.setLocal(currentLocal++, interpreter.newValue(null));
+    for (Type argumentType : argumentTypes) {
+      frame.setLocal(
+          currentLocal,
+          interpreter.newParameterValue(isInstanceMethod, currentLocal, argumentType));
+      currentLocal++;
+      if (argumentType.getSize() == 2) {
+        frame.setLocal(currentLocal, interpreter.newEmptyValue(currentLocal));
+        currentLocal++;
       }
     }
     while (currentLocal < method.maxLocals) {
-      frame.setLocal(currentLocal++, interpreter.newValue(null));
+      frame.setLocal(currentLocal, interpreter.newEmptyValue(currentLocal));
+      currentLocal++;
     }
-    frame.setReturn(interpreter.newValue(Type.getReturnType(method.desc)));
+    frame.setReturn(interpreter.newReturnTypeValue(Type.getReturnType(method.desc)));
     return frame;
   }
 
@@ -405,8 +422,8 @@ public class Analyzer<V extends Value> implements Opcodes {
    *
    * @return the symbolic state of the execution stack frame at each bytecode instruction of the
    *     method. The size of the returned array is equal to the number of instructions (and labels)
-   *     of the method. A given frame is <tt>null</tt> if the corresponding instruction cannot be
-   *     reached, or if an error occured during the analysis of the method.
+   *     of the method. A given frame is {@literal null} if the corresponding instruction cannot be
+   *     reached, or if an error occurred during the analysis of the method.
    */
   public Frame<V>[] getFrames() {
     return frames;
@@ -437,12 +454,12 @@ public class Analyzer<V extends Value> implements Opcodes {
   /**
    * Constructs a new frame with the given size.
    *
-   * @param nLocals the maximum number of local variables of the frame.
-   * @param nStack the maximum stack size of the frame.
+   * @param numLocals the maximum number of local variables of the frame.
+   * @param numStack the maximum stack size of the frame.
    * @return the created frame.
    */
-  protected Frame<V> newFrame(final int nLocals, final int nStack) {
-    return new Frame<V>(nLocals, nStack);
+  protected Frame<V> newFrame(final int numLocals, final int numStack) {
+    return new Frame<V>(numLocals, numStack);
   }
 
   /**
@@ -457,7 +474,7 @@ public class Analyzer<V extends Value> implements Opcodes {
 
   /**
    * Creates a control flow graph edge. The default implementation of this method does nothing. It
-   * can be overriden in order to construct the control flow graph of a method (this method is
+   * can be overridden in order to construct the control flow graph of a method (this method is
    * called by the {@link #analyze} method during its visit of the method's code).
    *
    * @param insnIndex an instruction index.

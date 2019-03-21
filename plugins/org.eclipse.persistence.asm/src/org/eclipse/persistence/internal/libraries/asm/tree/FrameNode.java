@@ -30,7 +30,6 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
@@ -80,34 +79,34 @@ public class FrameNode extends AbstractInsnNode {
    * @param type the type of this frame. Must be {@link Opcodes#F_NEW} for expanded frames, or
    *     {@link Opcodes#F_FULL}, {@link Opcodes#F_APPEND}, {@link Opcodes#F_CHOP}, {@link
    *     Opcodes#F_SAME} or {@link Opcodes#F_APPEND}, {@link Opcodes#F_SAME1} for compressed frames.
-   * @param nLocal number of local variables of this stack map frame.
+   * @param numLocal number of local variables of this stack map frame.
    * @param local the types of the local variables of this stack map frame. Elements of this list
    *     can be Integer, String or LabelNode objects (for primitive, reference and uninitialized
    *     types respectively - see {@link MethodVisitor}).
-   * @param nStack number of operand stack elements of this stack map frame.
+   * @param numStack number of operand stack elements of this stack map frame.
    * @param stack the types of the operand stack elements of this stack map frame. Elements of this
    *     list can be Integer, String or LabelNode objects (for primitive, reference and
    *     uninitialized types respectively - see {@link MethodVisitor}).
    */
   public FrameNode(
       final int type,
-      final int nLocal,
+      final int numLocal,
       final Object[] local,
-      final int nStack,
+      final int numStack,
       final Object[] stack) {
     super(-1);
     this.type = type;
     switch (type) {
       case Opcodes.F_NEW:
       case Opcodes.F_FULL:
-        this.local = Util.asArrayList(nLocal, local);
-        this.stack = Util.asArrayList(nStack, stack);
+        this.local = Util.asArrayList(numLocal, local);
+        this.stack = Util.asArrayList(numStack, stack);
         break;
       case Opcodes.F_APPEND:
-        this.local = Util.asArrayList(nLocal, local);
+        this.local = Util.asArrayList(numLocal, local);
         break;
       case Opcodes.F_CHOP:
-        this.local = Util.asArrayList(nLocal);
+        this.local = Util.asArrayList(numLocal);
         break;
       case Opcodes.F_SAME:
         break;

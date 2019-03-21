@@ -31,7 +31,7 @@ public class CriteriaServerTestSuite extends TestSuite {
             suite.addTest(AdvancedQueryTestSuite.suite());
             suite.addTest(JUnitCriteriaSimpleTestSuite.suite());
             suite.addTest(JUnitCriteriaUnitTestSuite.suite());
-            suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
+            //suite.addTest(org.eclipse.persistence.testing.tests.jpa.criteria.metamodel.JUnitCriteriaSimpleTestSuite.suite());  
         }        
         return suite;
     }

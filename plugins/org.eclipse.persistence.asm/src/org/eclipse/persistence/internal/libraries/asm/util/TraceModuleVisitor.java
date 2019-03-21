@@ -38,6 +38,7 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 public final class TraceModuleVisitor extends ModuleVisitor {
 
   /** The printer to convert the visited module into text. */
+  // DontCheck(MemberName): can't be renamed (for backward binary compatibility).
   public final Printer p;
 
   /**
@@ -52,11 +53,11 @@ public final class TraceModuleVisitor extends ModuleVisitor {
   /**
    * Constructs a new {@link TraceModuleVisitor}.
    *
-   * @param moduleVisitor the module visitor to which to delegate calls. May be <tt>null</tt>.
+   * @param moduleVisitor the module visitor to which to delegate calls. May be {@literal null}.
    * @param printer the printer to convert the visited module into text.
    */
   public TraceModuleVisitor(final ModuleVisitor moduleVisitor, final Printer printer) {
-    super(Opcodes.ASM6, moduleVisitor);
+    super(Opcodes.ASM7, moduleVisitor);
     this.p = printer;
   }
 

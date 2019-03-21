@@ -35,14 +35,14 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  * that is returned by a method of this interface):
  *
  * <ul>
- *   <li><i>ClassSignature</i> = ( <tt>visitFormalTypeParameter</tt> <tt>visitClassBound</tt>?
- *       <tt>visitInterfaceBound</tt>* )* ( <tt>visitSuperclass</tt> <tt>visitInterface</tt>* )
- *   <li><i>MethodSignature</i> = ( <tt>visitFormalTypeParameter</tt> <tt>visitClassBound</tt>?
- *       <tt>visitInterfaceBound</tt>* )* ( <tt>visitParameterType</tt>* <tt>visitReturnType</tt>
- *       <tt>visitExceptionType</tt>* )
- *   <li><i>TypeSignature</i> = <tt>visitBaseType</tt> | <tt>visitTypeVariable</tt> |
- *       <tt>visitArrayType</tt> | ( <tt>visitClassType</tt> <tt>visitTypeArgument</tt>* (
- *       <tt>visitInnerClassType</tt> <tt>visitTypeArgument</tt>* )* <tt>visitEnd</tt> ) )
+ *   <li><i>ClassSignature</i> = ( {@code visitFormalTypeParameter} {@code visitClassBound}? {@code
+ *       visitInterfaceBound}* )* ({@code visitSuperclass} {@code visitInterface}* )
+ *   <li><i>MethodSignature</i> = ( {@code visitFormalTypeParameter} {@code visitClassBound}? {@code
+ *       visitInterfaceBound}* )* ({@code visitParameterType}* {@code visitReturnType} {@code
+ *       visitExceptionType}* )
+ *   <li><i>TypeSignature</i> = {@code visitBaseType} | {@code visitTypeVariable} | {@code
+ *       visitArrayType} | ( {@code visitClassType} {@code visitTypeArgument}* ( {@code
+ *       visitInnerClassType} {@code visitTypeArgument}* )* {@code visitEnd} ) )
  * </ul>
  *
  * @author Thomas Hallgren
@@ -61,7 +61,7 @@ public abstract class SignatureVisitor {
 
   /**
    * The ASM API version implemented by this visitor. The value of this field must be one of {@link
-   * Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7_EXPERIMENTAL}.
+   * Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   protected final int api;
 
@@ -69,14 +69,10 @@ public abstract class SignatureVisitor {
    * Constructs a new {@link SignatureVisitor}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link
-   *     Opcodes#ASM7_EXPERIMENTAL}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   public SignatureVisitor(final int api) {
-    if (api != Opcodes.ASM6
-        && api != Opcodes.ASM5
-        && api != Opcodes.ASM4
-        && api != Opcodes.ASM7_EXPERIMENTAL) {
+    if (api != Opcodes.ASM6 && api != Opcodes.ASM5 && api != Opcodes.ASM4 && api != Opcodes.ASM7) {
       throw new IllegalArgumentException();
     }
     this.api = api;
@@ -155,7 +151,7 @@ public abstract class SignatureVisitor {
   /**
    * Visits a signature corresponding to a primitive type.
    *
-   * @param descriptor the descriptor of the primitive type, or 'V' for <tt>void</tt> .
+   * @param descriptor the descriptor of the primitive type, or 'V' for {@code void} .
    */
   public void visitBaseType(final char descriptor) {}
 

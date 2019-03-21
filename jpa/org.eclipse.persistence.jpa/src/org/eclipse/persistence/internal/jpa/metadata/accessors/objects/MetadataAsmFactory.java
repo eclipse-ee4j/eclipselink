@@ -223,7 +223,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         private MetadataClass classMetadata;
 
         ClassMetadataVisitor(MetadataClass metadataClass, boolean isLazy) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM7);
             this.isLazy = isLazy;
             this.classMetadata = metadataClass;
         }
@@ -294,14 +294,14 @@ public class MetadataAsmFactory extends MetadataFactory {
         private MetadataAnnotation annotation;
 
         MetadataAnnotationVisitor(MetadataAnnotatedElement element, String name) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM7);
             this.element = element;
             this.annotation = new MetadataAnnotation();
             this.annotation.setName(processDescription(name, false).get(0));
         }
 
         public MetadataAnnotationVisitor(MetadataAnnotation annotation) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM7);
             this.annotation = annotation;
         }
 
@@ -344,7 +344,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         private List<Object> values;
 
         public MetadataAnnotationArrayVisitor(MetadataAnnotation annotation, String name) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM7);
             this.annotation = annotation;
             this.attributeName = name;
             this.values = new ArrayList<Object>();
@@ -379,7 +379,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         private MetadataField field;
 
         public MetadataFieldVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, Object value) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM7);
         	this.field = new MetadataField(classMetadata);
             this.field.setModifiers(access);
             this.field.setName(name);
@@ -411,7 +411,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         private MetadataMethod method;
 
         public MetadataMethodVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, String[] exceptions) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM7);
             this.method = new MetadataMethod(MetadataAsmFactory.this, classMetadata);
 
             this.method.setName(name);
