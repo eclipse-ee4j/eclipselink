@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,6 +62,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
     protected String attributeConverterClassName;
     protected AttributeConverter<X,Y> attributeConverter;
     protected AbstractSession session;
+    private Class<T> attributeConverterClass;
 
     /**
      * INTERNAL:
@@ -82,12 +84,11 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
      * that has been built with class names to a project with classes.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        constructAttributeConverter(classLoader);
+        attributeConverterClass = getAttributeConverterClass(classLoader);
         constructFieldClassification(classLoader);
     }
 
-    private void constructAttributeConverter(ClassLoader classLoader) {
-        Class<T> attributeConverterClass = getAttributeConverterClass(classLoader);
+    private void constructAttributeConverter() {
         T attributeConverterInstance = getAttributeConverterInstance(attributeConverterClass);
         
         try {
@@ -160,7 +161,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
     @SuppressWarnings("unchecked")
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         try {
-            return attributeConverter.convertToEntityAttribute((Y)dataValue);
+            return getAttributeConverter().convertToEntityAttribute((Y)dataValue);
         } catch (RuntimeException re) {
             throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception",
                     new Object[]{"convertToEntityAttribute", attributeConverterClassName, dataValue}), re);
@@ -174,7 +175,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
     @SuppressWarnings("unchecked")
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         try {
-            return attributeConverter.convertToDatabaseColumn((X) objectValue);
+            return getAttributeConverter().convertToDatabaseColumn((X) objectValue);
         } catch (RuntimeException re) {
             throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception",
                     new Object[]{"convertToDatabaseColumn", attributeConverterClassName, objectValue}), re);
@@ -232,5 +233,12 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
 
     public void setSession(AbstractSession session) {
         this.session = session;
+    }
+
+    protected AttributeConverter<X, Y> getAttributeConverter() {
+        if (attributeConverter == null) {
+            constructAttributeConverter();
+        }
+        return attributeConverter;
     }
 }
