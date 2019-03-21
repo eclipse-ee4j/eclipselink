@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -35,7 +36,6 @@ import org.eclipse.persistence.queries.FetchGroupTracker;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.server.ServerSession;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
@@ -43,7 +43,6 @@ import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EmployeeP
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.EquipmentCode;
 import org.eclipse.persistence.testing.tests.jpa.dynamic.QuerySQLTracker;
 import org.eclipse.persistence.testing.tests.jpa.fetchgroups.FetchGroupAssert;
-
 import org.junit.Test;
 
 /**
@@ -75,6 +74,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
     /*
      * Fetch Group tests require weaving.
      */
+    @Override
     public void runBare() throws Throwable {
         if (this.shouldRunTestOnServer()) {
             super.runBare();
@@ -90,6 +90,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
      * Descriptors should not be isolated.
      * Clear cache, install QuerySQLTracker.
      */
+    @Override
     public void setUp() {
         Session session = getServerSession("fieldaccess");
 
@@ -114,7 +115,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
 
         employeeDescriptorIsIsolatedOriginal = employeeDescriptor.isIsolated();
         if(employeeDescriptorIsIsolatedOriginal) {
-            employeeDescriptor.setIsIsolated(false);
+            employeeDescriptor.setCacheIsolation(CacheIsolationType.SHARED);
         }
 
         clearCache("fieldaccess");
@@ -128,6 +129,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
      * Reset isolated flag on Employee descriptor.
      * Clear cache, uninstall QuerySQLTracker.
      */
+    @Override
     public void tearDown() {
         Session session = getServerSession("fieldaccess");
 
@@ -142,7 +144,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
         clearReadQueries(phoneDescriptor);
         clearReadQueries(addressDescriptor);
         if(employeeDescriptorIsIsolatedOriginal) {
-            employeeDescriptor.setIsIsolated(true);
+            employeeDescriptor.setCacheIsolation(CacheIsolationType.ISOLATED);
         }
 
         clearCache("fieldaccess");
@@ -499,6 +501,7 @@ public abstract class BaseFetchGroupTests extends JUnitTestCase {
 
     public static class PhoneCustomizer implements DescriptorCustomizer {
 
+        @Override
         public void customize(ClassDescriptor descriptor) throws Exception {
             defaultPhoneFG = new FetchGroup("PhoneNumber.default");
             defaultPhoneFG.addAttribute("number");

@@ -4794,22 +4794,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     /**
-     * PUBLIC:
-     * Used to set if the class that this descriptor represents should be isolated from the shared cache.
-     * Isolated objects will only be cached locally in the ClientSession, never in the ServerSession cache.
-     * This is the best method for disabling caching.
-     * Note: Calling this method with true will also set the cacheSynchronizationType to DO_NOT_SEND_CHANGES
-     * since isolated objects cannot be sent by  cache synchronization.
-     *
-     * @deprecated as of EclipseLink 2.2
-     * @see #setCacheIsolation(CacheIsolationType)
-     */
-    @Deprecated
-    public void setIsIsolated(boolean isIsolated) {
-        getCachePolicy().setCacheIsolation( isIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED);
-    }
-
-    /**
      * INTERNAL:
      * Set entity @Cacheable annotation value in cache configuration object.
      * @param cacheable Entity @Cacheable annotation value for current class
@@ -5981,7 +5965,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Note: This map does not maintain object identity.
      * In general if caching is not desired a WeakIdentityMap should be used with an isolated descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
-     * @see #setIsIsolated(boolean)
+     * @see #setCacheIsolation(CacheIsolationType)
      */
     public void useNoIdentityMap() {
         getCachePolicy().useNoIdentityMap();

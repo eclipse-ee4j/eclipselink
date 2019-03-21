@@ -1055,7 +1055,7 @@ public class CachePolicy implements Cloneable, Serializable {
      * Note: This map does not maintain object identity.
      * In general if caching is not desired a WeakIdentityMap should be used with an isolated descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
-     * @see ClassDescriptor#setIsIsolated(boolean)
+     * @see ClassDescriptor#setCacheIsolation(CacheIsolationType)
      */
     public void useNoIdentityMap() {
         setIdentityMapClass(ClassConstants.NoIdentityMap_Class);

@@ -739,7 +739,6 @@ public class PersistenceUnitProcessor {
      */
     private static boolean isValidRootInArchive(String file, String rootEntry) {
         String extension = file.substring(Math.max(0, file.length() - 4));
-        boolean valid;
         if (extension.equalsIgnoreCase(".jar")) {
             // For a JAR, the root can only be the archive itself.
             return rootEntry.isEmpty();

@@ -680,16 +680,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * PUBLIC:
-     * Return default value for whether descriptor should use isolated cache.
-     * @deprecated see getDefaultCacheIsolation()
-     */
-    @Deprecated
-    public boolean getDefaultIsIsolated() {
-        return this.defaultCacheIsolation.equals(CacheIsolationType.ISOLATED);
-    }
-
-    /**
-     * PUBLIC:
      * Return the project level default for class cache isolation;
      */
     public CacheIsolationType getDefaultCacheIsolation(){
@@ -896,16 +886,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setDefaultIdentityMapSize(int defaultIdentityMapSize) {
         this.defaultIdentityMapSize = defaultIdentityMapSize;
-    }
-
-    /**
-     * PUBLIC:
-     * Set default value for whether descriptor should use isolated cache.
-     * @deprecated see setDefaultCacheIsolation(CacheIsolationType)
-     */
-    @Deprecated
-    public void setDefaultIsIsolated(boolean defaultIsIsolated) {
-        this.defaultCacheIsolation = defaultIsIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED;
     }
 
     /**

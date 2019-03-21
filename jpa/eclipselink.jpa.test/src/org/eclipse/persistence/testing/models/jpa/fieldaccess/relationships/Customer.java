@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,28 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
-import java.util.HashSet;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.GenerationType.TABLE;
+
 import java.util.Collection;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
+import java.util.HashSet;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Version;
+
 import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.config.CacheIsolationType;
 
 @Entity(name="FieldAccessCustomer")
 @Table(name="CMP3_FIELDACCESS_CUSTOMER")
@@ -34,7 +50,7 @@ import org.eclipse.persistence.annotations.Cache;
         query="INSERT INTO CMP3_FIELDACCESS_CUSTOMER (CUST_ID, NAME, CITY, CUST_VERSION) VALUES (1111, NULL, NULL, 1)"),
     @NamedNativeQuery(name="deleteCustomer1111SQLFieldAccess",
         query="DELETE FROM CMP3_FIELDACCESS_CUSTOMER WHERE (CUST_ID=1111)")})
-@Cache(shared=false)
+@Cache(isolation=CacheIsolationType.ISOLATED)
 public class Customer implements java.io.Serializable{
     @Id
     @GeneratedValue(strategy=TABLE, generator="FIELDACCESS_CUSTOMER_TABLE_GENERATOR")

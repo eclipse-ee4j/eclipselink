@@ -32,6 +32,7 @@ import java.util.Vector;
 // Java extension imports
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.config.CacheIsolationType;
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.CMPPolicy;
@@ -2293,12 +2294,17 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.addMapping(shouldAlwaysConformResultsInUnitOfWorkMapping);
 
         XMLDirectMapping isIsolatedMapping = new XMLDirectMapping();
-        isIsolatedMapping.setAttributeName("isIsolated");
-        isIsolatedMapping.setGetMethodName("isIsolated");
-        isIsolatedMapping.setSetMethodName("setIsIsolated");
+        isIsolatedMapping.setAttributeName("cacheIsolation");
+        isIsolatedMapping.setGetMethodName("getCacheIsolation");
+        isIsolatedMapping.setSetMethodName("setCacheIsolation");
         isIsolatedMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "isolated/text()");
-        isIsolatedMapping.setNullValue(Boolean.FALSE);
+        ObjectTypeConverter isIsolatedConverter = new ObjectTypeConverter();
+        isIsolatedConverter.addConversionValue("true", CacheIsolationType.ISOLATED);
+        isIsolatedConverter.addConversionValue("false", CacheIsolationType.SHARED);
+        isIsolatedMapping.setConverter(isIsolatedConverter);
+        isIsolatedMapping.setNullValue(CacheIsolationType.SHARED);
         descriptor.addMapping(isIsolatedMapping);
+
         XMLDirectMapping unitOfWorkCacheIsolationLevelMapping = new XMLDirectMapping();
         unitOfWorkCacheIsolationLevelMapping.setAttributeName("unitOfWorkCacheIsolationLevel");
         unitOfWorkCacheIsolationLevelMapping.setGetMethodName("getUnitOfWorkCacheIsolationLevel");

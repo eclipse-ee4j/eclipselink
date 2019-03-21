@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,14 @@
 //     ailitchev - bug  235433: Can't customize ConnectionPolicy through JPA + some comments.
 package org.eclipse.persistence.sessions.server;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.internal.localization.*;
 
 /**
  * <p>
@@ -321,40 +322,6 @@ public class ConnectionPolicy implements Cloneable, Serializable {
         } else {
             this.exclusiveMode = exclusiveMode;
         }
-    }
-
-    /**
-     * OBSOLETE:
-     * If set to true the acquired client session should acquire an exclusive connection
-     * for all database interaction.  Currently this is only supported with Isolated
-     * data, but required for Oracle VPD support.
-     *
-     * This method has been replaced with setExclusiveMode method:
-     * true corresponds to ExclusiveMode.Isolated,
-     * false - to ExclusiveMode.Transactional.
-     * @deprecated
-     */
-    @Deprecated
-    public void setShouldUseExclusiveConnection(boolean useExclusiveConnection) {
-        if(useExclusiveConnection) {
-            exclusiveMode = ExclusiveMode.Isolated;
-        } else {
-            exclusiveMode = ExclusiveMode.Transactional;
-        }
-    }
-
-    /**
-     * OBSOLETE:
-     * Returns true if the acquired client session should acquire an exclusive connection
-     * for all database interaction.  Currently this is only supported with Isolated
-     * data, but required for Oracle VPD support.
-     *
-     * This method has been replaced with isExclusiveIsolated method.
-     * @deprecated
-     */
-    @Deprecated
-    public boolean shouldUseExclusiveConnection() {
-        return isExclusiveIsolated();
     }
 
     /**
