@@ -653,7 +653,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                                 if (attributeLocalName.startsWith(attributePrefix)) {
                                     attributeLocalName = attributeLocalName.substring(attributePrefix.length());
                                 } else {
-                                    break;
+                                    continue;
                                 }
                             }
 
