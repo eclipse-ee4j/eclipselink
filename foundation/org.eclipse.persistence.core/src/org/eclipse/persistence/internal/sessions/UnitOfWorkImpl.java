@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -324,6 +324,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         this.exceptionHandler = parent.exceptionHandler;
         this.pessimisticLockTimeoutDefault = parent.pessimisticLockTimeoutDefault;
+        this.pessimisticLockTimeoutUnitDefault = parent.pessimisticLockTimeoutUnitDefault;
         this.queryTimeoutDefault = parent.queryTimeoutDefault;
         this.queryTimeoutUnitDefault = parent.queryTimeoutUnitDefault;
         this.shouldOptimizeResultSetAccess = parent.shouldOptimizeResultSetAccess;

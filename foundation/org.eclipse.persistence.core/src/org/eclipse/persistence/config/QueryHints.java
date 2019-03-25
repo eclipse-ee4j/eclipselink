@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -228,7 +228,7 @@ public class QueryHints {
      * @see javax.persistence.Query (setLockMode())
      */
     public static final String PESSIMISTIC_LOCK = "eclipselink.pessimistic-lock";
-    
+
     /**
      * "javax.persistence.lock.timeout"
      * <p>Configures the WAIT timeout used in pessimistic locking, if the database 
@@ -241,7 +241,20 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeout(Integer)
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
-    
+
+    /**
+     * "eclipselink.pessimistic.lock.timeout.unit"
+     * <p>Configures the pessimistic lock timeout unit value. Allows users more refinement.
+     * <b>Valid Values:</b>
+     * <ul>
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * </ul>
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeoutUnit(TimeUnit)
+     */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = "eclipselink.pessimistic.lock.timeout.unit";
+
     /**
      * "eclipselink.refresh"
      * <p>Configures the query to refresh the resulting objects in the cache and persistent context with the current state of the database.
