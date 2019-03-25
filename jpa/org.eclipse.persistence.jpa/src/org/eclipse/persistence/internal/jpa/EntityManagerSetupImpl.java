@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2846,6 +2846,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             updateIdValidation(m);
             updatePessimisticLockTimeout(m);
+            updatePessimisticLockTimeoutUnit(m);
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
@@ -3470,6 +3471,23 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.setPessimisticLockTimeoutDefault(Integer.parseInt(pessimisticLockTimeout));
             } catch (NumberFormatException invalid) {
                 session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeout, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT, invalid));
+            }
+        }
+    }
+
+    /**
+     * Update the default pessimistic lock timeout unit value.
+     * @param persistenceProperties the properties map
+     */
+    protected void updatePessimisticLockTimeoutUnit(Map persistenceProperties) {
+        String pessimisticLockTimeoutUnit = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, persistenceProperties, session);
+
+        if (pessimisticLockTimeoutUnit != null) {
+            try {
+                TimeUnit unit = TimeUnit.valueOf(pessimisticLockTimeoutUnit);
+                session.setPessimisticLockTimeoutUnitDefault(unit);
+            } catch (NumberFormatException invalid) {
+                session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeoutUnit, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, invalid));
             }
         }
     }

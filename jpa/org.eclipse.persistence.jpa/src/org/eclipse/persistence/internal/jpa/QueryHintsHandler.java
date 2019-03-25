@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -248,6 +249,7 @@ public class QueryHintsHandler {
             addHint(new PessimisticLockHint());
             addHint(new PessimisticLockScope());
             addHint(new PessimisticLockTimeoutHint());
+            addHint(new PessimisticLockTimeoutUnitHint());
             addHint(new RefreshHint());
             addHint(new CascadePolicyHint());
             addHint(new BatchHint());
@@ -808,6 +810,23 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setWaitTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+
+            return query;
+        }
+    }
+
+    protected static class PessimisticLockTimeoutUnitHint extends Hint {
+        PessimisticLockTimeoutUnitHint() {
+            super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "");
+        }
+
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
+                ((ObjectLevelReadQuery) query).setWaitTimeoutUnit(unit);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
