@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -243,6 +243,7 @@ public class QueryHintsHandler {
             addHint(new PessimisticLockHint());
             addHint(new PessimisticLockScope());
             addHint(new PessimisticLockTimeoutHint());
+            addHint(new PessimisticLockTimeoutUnitHint());
             addHint(new RefreshHint());
             addHint(new CascadePolicyHint());
             addHint(new BatchHint());
@@ -810,7 +811,24 @@ public class QueryHintsHandler {
             return query;
         }
     }
-    
+
+    protected static class PessimisticLockTimeoutUnitHint extends Hint {
+        PessimisticLockTimeoutUnitHint() {
+            super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "");
+        }
+
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
+                ((ObjectLevelReadQuery) query).setWaitTimeoutUnit(unit);
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+
+            return query;
+        }
+    }
+
     protected static class RefreshHint extends Hint {
         RefreshHint() {
             super(QueryHints.REFRESH, HintValues.FALSE);

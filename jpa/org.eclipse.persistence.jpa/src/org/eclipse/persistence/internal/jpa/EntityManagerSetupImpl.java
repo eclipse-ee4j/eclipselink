@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -2809,6 +2809,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
             updateIdValidation(m);
             updatePessimisticLockTimeout(m);
+            updatePessimisticLockTimeoutUnit(m);
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
@@ -3434,7 +3435,24 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         }
     }
-    
+
+    /**
+     * Update the default pessimistic lock timeout unit value.
+     * @param persistenceProperties the properties map
+     */
+    protected void updatePessimisticLockTimeoutUnit(Map persistenceProperties) {
+        String pessimisticLockTimeoutUnit = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, persistenceProperties, session);
+
+        if (pessimisticLockTimeoutUnit != null) {
+            try {
+                TimeUnit unit = TimeUnit.valueOf(pessimisticLockTimeoutUnit);
+                session.setPessimisticLockTimeoutUnitDefault(unit);
+            } catch (NumberFormatException invalid) {
+                session.handleException(ValidationException.invalidValueForProperty(pessimisticLockTimeoutUnit, PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, invalid));
+            }
+        }
+    }
+
     /**
      * Enable or disable statements cached, update statements cache size. 
      * The method needs to be called in deploy stage. 

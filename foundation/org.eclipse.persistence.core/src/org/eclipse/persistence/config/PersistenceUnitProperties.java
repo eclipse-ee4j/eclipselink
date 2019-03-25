@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -3081,6 +3081,21 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT;
+
+    /**
+     * The "<code>eclipselink.pessimistic.lock.timeout.unit</code>" property
+     * configures the query timeout unit value. Allows users more refinement.
+     * Used in combination with PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * </ul>
+     * @see #PESSIMISTIC_LOCK_TIMEOUT_UNIT
+    */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT;
 
     /**
      * The "<code>javax.persistence.query.timeout</code>" property configures

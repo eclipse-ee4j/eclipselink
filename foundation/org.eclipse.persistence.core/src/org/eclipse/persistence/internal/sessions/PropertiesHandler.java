@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -230,6 +230,7 @@ public class PropertiesHandler {
             addProp(new BooleanProp(PersistenceUnitProperties.MULTITENANT_SHARED_EMF, "true"));
             //Enhancement
             addProp(new QueryTimeoutUnitProp());
+            addProp(new PessimisticLockTimeoutUnitProp());
             addProp(new BooleanProp(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.SQL_CALL_DEFERRAL, "true"));
         }
@@ -698,6 +699,17 @@ public class PropertiesHandler {
     protected static class QueryTimeoutUnitProp extends Prop {
         QueryTimeoutUnitProp() {
             super(PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, DescriptorQueryManager.DefaultTimeoutUnit.toString());
+            valueArray = new Object[] {
+                TimeUnit.MILLISECONDS.toString(),
+                TimeUnit.SECONDS.toString(),
+                TimeUnit.MINUTES.toString()
+            };
+        }
+    }
+
+    protected static class PessimisticLockTimeoutUnitProp extends Prop {
+        PessimisticLockTimeoutUnitProp() {
+            super(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, DescriptorQueryManager.DefaultTimeoutUnit.toString());
             valueArray = new Object[] {
                 TimeUnit.MILLISECONDS.toString(),
                 TimeUnit.SECONDS.toString(),

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -2590,7 +2590,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
                 queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
             }
-            
+            if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT)) {
+                queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT));
+            }
+
             // Ignore the JPA cache settings if the eclipselink setting has
             // been specified.
             if (! properties.containsKey(QueryHints.CACHE_USAGE)) { 
