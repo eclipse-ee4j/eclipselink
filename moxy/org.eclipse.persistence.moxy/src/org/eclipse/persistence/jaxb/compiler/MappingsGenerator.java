@@ -2202,7 +2202,6 @@ public class MappingsGenerator {
                 referenceClassName = adaptedClass.getName();
                 accessor.setAdaptedClassName(referenceClassName);
                 JavaClass baseComponentType = getBaseComponentType(componentType);
-                nestedArray = true;
                 if (baseComponentType.isPrimitive()){
                     Class primitiveClass = XMLConversionManager.getDefaultManager().convertClassNameToClass(baseComponentType.getRawName());
                     accessor.setComponentClass(primitiveClass);
@@ -2218,6 +2217,14 @@ public class MappingsGenerator {
             referenceClassName = generatedClass.getName();
             String mapClassName = property.getType().getRawName();
             mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName, helper.getClassLoader()));
+        }
+        //Nested array check (used in JSON marshalling)
+        if (collectionType.getComponentType() == null) {
+            if ((collectionType.isArray() || helper.isCollectionType(collectionType)) && (referenceClassName != null && referenceClassName.contains(AnnotationsProcessor.ARRAY_PACKAGE_NAME))) {
+                nestedArray = true;
+            }
+        } else if ((collectionType.isArray() || helper.isCollectionType(collectionType)) && (collectionType.getComponentType().isArray() || helper.isCollectionType(collectionType.getComponentType()))) {
+            nestedArray = true;
         }
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
