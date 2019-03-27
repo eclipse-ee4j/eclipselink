@@ -18,6 +18,10 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONTestCases;
 
+import javax.xml.bind.Marshaller;
+import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
+
 /**
  * Tests marshall/unmarshal of 3d array (int[]).
  *
@@ -30,20 +34,46 @@ public class Nested3dArrayTestCases extends JSONTestCases {
 
     public Nested3dArrayTestCases(String name) throws Exception {
         super(name);
-        setClasses(new Class[]{Integer.class});
+        setClasses(new Class[]{Root3DArray.class});
         setControlJSON(JSON_RESOURCE);
     }
 
     public void setUp() throws Exception{
         super.setUp();
-        jsonMarshaller.setProperty(MarshallerProperties.JSON_INCLUDE_ROOT, false);
         jsonMarshaller.setProperty(MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME, true);
         jsonUnmarshaller.setProperty(UnmarshallerProperties.JSON_INCLUDE_ROOT, false);
     }
 
     protected Object getControlObject() {
-        Integer[][][] intArray = {{{1, 2}, {3, 4}, {5, 6}}, {{7, 8}, {9, 10}, {11,12}}};
-        return intArray;
+        Root3DArray root3DArray = new Root3DArray();
+        Integer[][][] int3DArray = {{{1, 2}, {3, 4}, {5, 6}}, {{7, 8}, {9, 10}, {11,12}}};
+        root3DArray.setArray3d(int3DArray);
+        return root3DArray;
     }
+
+    @Override
+    public void testJSONMarshalToGeneratorResult() throws Exception{
+    }
+
+    @Override
+    public void testObjectToJSONStringWriter() throws Exception {
+    }
+
+    @Override
+    public void testJSONMarshalToOutputStream() throws Exception{
+    }
+
+    @Override
+    public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
+    }
+
+    @Override
+    public void testJSONMarshalToStringWriter() throws Exception{
+    }
+
+    @Override
+    public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
+    }
+
 
 }
