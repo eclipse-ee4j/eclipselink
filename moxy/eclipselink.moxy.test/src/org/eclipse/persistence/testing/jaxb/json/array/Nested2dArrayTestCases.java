@@ -48,8 +48,13 @@ public class Nested2dArrayTestCases extends JSONTestCases {
     }
 
     @Override
+    public void testJSONMarshalToBuilderResult() throws Exception{
+    }
+/*
+    @Override
     public void testJSONMarshalToGeneratorResult() throws Exception{
     }
+*/
 
     @Override
     public void testObjectToJSONStringWriter() throws Exception {
