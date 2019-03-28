@@ -2313,7 +2313,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL: Returns the set of read-only classes that gets assigned to each newly created UnitOfWork.
      *
-     * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Vector)
+     * @see org.eclipse.persistence.sessions.Project#setDefaultReadOnlyClasses(Collection)
      */
     @Override
     public Vector getDefaultReadOnlyClasses() {
@@ -4850,7 +4850,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     /**
      * INTERNAL:
      * Used to set the collections of all objects in the UnitOfWork.
-     * @param newUnregisteredExistingObjects Map
+     * @param objects
      */
     protected void setAllClonesCollection(Map objects) {
         this.allClones = objects;
@@ -5307,7 +5307,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * This is a JPA setting that is off by default in regular EclipseLink. It's
      * used to avoid updating the shared cache when the cacheStoreMode property
      * is set to BYPASS.
-     * @see RepeatableWriteUnitOfWork.
+     * @see org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork
      */
     public boolean shouldStoreBypassCache() {
         return false;
@@ -5992,7 +5992,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      * Get an instance, whose state may be lazily fetched.
      * If the requested instance does not exist in the database, null is returned, or the object will fail when accessed.
      * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
-     * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
+     * @param id The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
     @Override
     public Object getReference(Class theClass, Object id) {

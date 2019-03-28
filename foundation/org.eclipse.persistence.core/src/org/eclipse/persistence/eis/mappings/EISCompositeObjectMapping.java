@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,12 @@ import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.foundation.AbstractCompositeObjectMapping;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 
@@ -35,10 +35,11 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
  * <p>EIS Composite Object Mappings map a Java object to a privately owned, one-to-one
  * relationship to an EIS Record according to its descriptor's record type.
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>Record formats</caption>
  * <tr>
- * <th id="c1" align="left">Record Type</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">Record Type</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1">Indexed</td>

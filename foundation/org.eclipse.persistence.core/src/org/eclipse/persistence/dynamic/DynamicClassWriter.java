@@ -225,8 +225,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
     /**
      * Allow subclasses to add additional interfaces to the dynamic entity.
      *
-     * @param cw
-     * @param parentClassType
+     * @param intf additional interface
      */
     protected void addInterface(String intf) {
         if (interfaces == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1564,7 +1564,6 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * INTERNAL:
      * Release (if required) connection after call.
      * @param query
-     * @return
      */
     public void releaseConnectionAfterCall(DatabaseQuery query) {
     }
@@ -4695,20 +4694,17 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Check if a message of the given level would actually be logged.
-     * </p><p>
      *
      * @return true if the given message level will be logged
-     * </p><p>
      * @param level  the log request level
      * @param category  the string representation of a EclipseLink category
-     * </p>
      */
     @Override
-    public boolean shouldLog(int Level, String category) {
+    public boolean shouldLog(int level, String category) {
         if (this.isLoggingOff) {
             return false;
         }
-        return getSessionLog().shouldLog(Level, category);
+        return getSessionLog().shouldLog(level, category);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,24 +17,24 @@ package org.eclipse.persistence.internal.sessions.coordination.jms;
 
 import java.io.Serializable;
 
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
-import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
-import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
-import org.eclipse.persistence.sessions.serializers.JavaSerializer;
-import org.eclipse.persistence.sessions.serializers.Serializer;
-import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
-
 import javax.jms.BytesMessage;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
 import javax.jms.Topic;
 import javax.jms.TopicConnection;
 import javax.jms.TopicConnectionFactory;
 import javax.jms.TopicPublisher;
 import javax.jms.TopicSession;
 import javax.jms.TopicSubscriber;
-import javax.jms.JMSException;
-import javax.jms.ObjectMessage;
-import javax.jms.Message;
+
+import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.coordination.broadcast.BroadcastRemoteConnection;
+import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
+import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
+import org.eclipse.persistence.sessions.serializers.JavaSerializer;
+import org.eclipse.persistence.sessions.serializers.Serializer;
 
 /**
  * <p>
@@ -495,8 +495,6 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
      * INTERNAL:
      * Set the Topic.  The Topic is required with the TopicConnectionFactory to obtain connections
      * if the TopicPublisher is not set.
-     *
-     * @see
      */
     public void setTopic(Topic topic){
         this.topic = topic;

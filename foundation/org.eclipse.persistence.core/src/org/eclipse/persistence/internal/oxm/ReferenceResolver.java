@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,12 +147,12 @@ public final class ReferenceResolver {
      * Processing the 9th key:
      *
      * 1. Attempt to insert Entry#7 with key '14' into map of references.
-     * > h(14) = 5;
+     * &gt; h(14) = 5;
      * HashMap buckets:
      * position     | 0 1 2 3 4 5 6 7 8
      * entry(key)   | 0 1   3   5   7 8
      *                          ^
-     * > Bucket 5 is taken.
+     * &gt; Bucket 5 is taken.
      *
      * 2. Store the entry in a separate list.
      * List for unlucky references:
@@ -180,13 +180,13 @@ public final class ReferenceResolver {
      * #####################################################
      * Retrieve entry with key '14'
      * 1. Attempt to retrieve it from map
-     * > h(14) = 5;
+     * &gt; h(14) = 5;
      * HashMap buckets:
      * position     | 0 1 2 3 4 5 6 7 8
      * entry(key)   | 0 1   3   5   7 8
      *                          ^
      * Hash function points to bucket # 5. Stored key is 5.
-     * > key 5 != 14.
+     * &gt; key 5 != 14.
      *
      * 2. Iterate through list of unluckyReferences, comparing
      * key to all keys in the list.
@@ -194,19 +194,19 @@ public final class ReferenceResolver {
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                ^
-     * > key 5 != 14
+     * &gt; key 5 != 14
      *
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                  ^
      *
-     * > key 5 != 14
+     * &gt; key 5 != 14
      *
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                    ^
      *
-     * > key 14 = 14, retrieve entry.
+     * &gt; key 14 = 14, retrieve entry.
      *
      * ##################################################
      * # Iterate through all elements - O(n) guaranteed #
@@ -214,21 +214,21 @@ public final class ReferenceResolver {
      *
      * 1. Create boolean array of size n that keeps track
      *  of unlucky positions:
-     * > boolean[] a = new boolean[lastPosition + 1];
+     * &gt; boolean[] a = new boolean[lastPosition + 1];
      *
      * 2. Set a[p] = true for elements that did not fit into
      *  hash map, p = position # of element.
      *
-     * > for (Integer p : unluckyRefPositions) {
-     *   > a[p] = true;
-     * > }
+     * &gt; for (Integer p : unluckyRefPositions) {
+     *   &gt; a[p] = true;
+     * &gt; }
      *
      * 3. Iterate through LinkedMap and List as if they were one joined collection
      * of size s = map.size() + list.size(), ordered by p = position # of element:
-     *  > for (p = 0; p < s; p ++) {
-     *    > if a[p] = false, take next element from linked map iterator,
-     *    > if a[p] = true,  take next element from list iterator,
-     *  > }
+     *  &gt; for (p = 0; p &lt; s; p ++) {
+     *    &gt; if a[p] = false, take next element from linked map iterator,
+     *    &gt; if a[p] = true,  take next element from list iterator,
+     *  &gt; }
      *
      */
     public final void addReference(final Reference ref) {

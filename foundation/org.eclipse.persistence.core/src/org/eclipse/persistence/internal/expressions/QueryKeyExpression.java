@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -258,11 +258,11 @@ public class QueryKeyExpression extends ObjectExpression {
      *
      * downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
-     * <pre><blockquote>
+     * <pre>
      *     EclipseLink: employee.get("project").treat(LargeProject.class).get("budget").equal(1000)
      *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
      *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000 AND PROJ.TYPE = "L"
-     * </blockquote></pre>
+     * </pre>
      */
     @Override
     public Expression treat(Class castClass){

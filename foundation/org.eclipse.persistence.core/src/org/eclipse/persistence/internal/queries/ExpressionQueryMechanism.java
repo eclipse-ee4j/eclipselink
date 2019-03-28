@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,37 +22,83 @@
 //       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.internal.queries;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorQueryManager;
+import org.eclipse.persistence.descriptors.InheritancePolicy;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.DataExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionIterator;
+import org.eclipse.persistence.internal.expressions.FieldExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
+import org.eclipse.persistence.internal.expressions.SQLDeleteAllStatement;
+import org.eclipse.persistence.internal.expressions.SQLDeleteAllStatementForTempTable;
+import org.eclipse.persistence.internal.expressions.SQLDeleteStatement;
+import org.eclipse.persistence.internal.expressions.SQLInsertStatement;
+import org.eclipse.persistence.internal.expressions.SQLModifyAllStatementForTempTable;
+import org.eclipse.persistence.internal.expressions.SQLModifyStatement;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.internal.expressions.SQLUpdateAllStatement;
+import org.eclipse.persistence.internal.expressions.SQLUpdateAllStatementForOracleAnonymousBlock;
+import org.eclipse.persistence.internal.expressions.SQLUpdateAllStatementForTempTable;
+import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.ManyToManyMapping;
-import org.eclipse.persistence.mappings.RelationTableMechanism;
-import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.mappings.OneToOneMapping;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.descriptors.InheritancePolicy;
-import org.eclipse.persistence.descriptors.DescriptorQueryManager;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.mappings.RelationTableMechanism;
+import org.eclipse.persistence.queries.ConstructorReportItem;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ModifyAllQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.UpdateAllQuery;
 
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for all expression read queries.
  * ExpressionQueryInterface  understands how to deal with expressions.
- * <p>
  * <p><b>Responsibilities</b>:
  * Translates the expression and creates the appropriate SQL  statements.
  * Retrieves the data from the database and return the results to the query.
@@ -342,7 +388,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * NOTE: A similar pattern also used in method buildDeleteAllStatementsForMappingsWithTempTable():
      *  if you are updating this method consider applying a similar update to that method as well.
      *
-     * @return Vector<SQLDeleteAllStatement>
+     * @return {@code Vector<SQLDeleteAllStatement>}
      */
     protected SQLDeleteStatement buildDeleteAllStatementForMapping(SQLCall selectCallForExist, SQLSelectStatement selectStatementForExist, Vector sourceFields, Vector targetFields) {
         DatabaseTable targetTable = ((DatabaseField)targetFields.firstElement()).getTable();
@@ -373,7 +419,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * NOTE: A similar pattern also used in method buildDeleteAllStatementsForMappings():
      *  if you are updating this method consider applying a similar update to that method as well.
      *
-     * @return Vector<SQLDeleteAllStatementForTempTable>
+     * @return {@code Vector<SQLDeleteAllStatementForTempTable>}
      */
     protected Vector buildDeleteAllStatementsForMappingsWithTempTable(ClassDescriptor descriptor, DatabaseTable rootTable, boolean dontCheckDescriptor) {
         Vector deleteStatements = new Vector();
@@ -1534,7 +1580,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
      * NOTE: A similar pattern also used in method buildDeleteAllStatementsForMappingsWithTempTable:
      *  if you are updating this method consider applying a similar update to that method as well.
      *
-     * @return Vector<SQLDeleteAllStatement>
+     * @return {@code Vector<SQLDeleteAllStatement>}
      */
     protected Vector buildDeleteAllStatementsForMappings(SQLCall selectCallForExist, SQLSelectStatement selectStatementForExist, boolean dontCheckDescriptor) {
         Vector deleteStatements = new Vector();
@@ -2468,7 +2514,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
     /**
      * Build SQLStatements for delete all using temporary table.
-     * @return Vector<SQLStatement>
+     * @return {@code Vector<SQLStatement>}
      */
     protected Vector buildStatementsForDeleteAllForTempTables() {
         Vector statements = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();

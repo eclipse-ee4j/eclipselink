@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -23,7 +23,7 @@ package org.eclipse.persistence.exceptions.i18n;
  * English ResourceBundle for EclipseLinkException messages.
  *
  * Creation date: (12/6/00 9:47:38 AM)
- * @author: Rick Barkhouse
+ * @author Rick Barkhouse
  */
 public class ExceptionResource extends java.util.ListResourceBundle {
     static final Object[][] contents = {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.jpql.Assert;
@@ -72,7 +73,7 @@ public class JPQLQueryHelper {
      *
      * @param jpqlQuery The JPQL query used to gather the descriptors defined in the declaration clause
      * @param session The {@link AbstractSession} is used to retrieve the descriptors
-     * @return The list of {@link ClassDescriptors descriptors} used in the JPQL query or an empty
+     * @return The list of {@link ClassDescriptor descriptors} used in the JPQL query or an empty
      * list if the JPQL query is invalid or incomplete
      */
     public List<ClassDescriptor> getClassDescriptors(CharSequence jpqlQuery, AbstractSession session) {

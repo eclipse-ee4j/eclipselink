@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.core.queries;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 
 public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSession> {
 
@@ -67,7 +69,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * The iterator is the one returned from #iteratorFor().
      * Valid for some subclasses only.
      *
-     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     * @see ContainerPolicy#iteratorFor(Object)
      */
     public boolean hasNext(Object iterator);
 
@@ -85,8 +87,8 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * This iterator can then be used as a parameter to #hasNext()
      * and #next().
      *
-     * @see ContainerPolicy#hasNext(java.lang.Object)
-     * @see ContainerPolicy#next(java.lang.Object)
+     * @see ContainerPolicy#hasNext(Object)
+     * @see ContainerPolicy#next(Object, org.eclipse.persistence.internal.sessions.AbstractSession)
      */
     public Object iteratorFor(Object container);
 
@@ -105,8 +107,8 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      *
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
-     * @see ContainerPolicy#iteratorFor(java.lang.Object)
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see ContainerPolicy#iteratorFor(Object)
+     * @see MapContainerPolicy#unwrapIteratorResult(Object)
      */
     public Object nextEntry(Object iterator);
 
@@ -117,8 +119,8 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      *
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
-     * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see ContainerPolicy#iteratorFor(Object)
+     * @see MapContainerPolicy#unwrapIteratorResult(Object)
      */
     public Object nextEntry(Object iterator, ABSTRACT_SESSION session);
 

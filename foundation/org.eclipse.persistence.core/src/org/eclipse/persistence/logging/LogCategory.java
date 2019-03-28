@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,8 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 /**
  * EclipseLink categories used for logging name space.
  * The EclipseLink categories for the logging name space are:<br>
- * <table summary="">
+ * <table>
+ * <caption>Logging categories</caption>
  * <tr><td>&nbsp;</td><td>ALL</td>            <td>&nbsp;</td><td>= "all"</td></tr>
  * <tr><td>&nbsp;</td><td>CACHE</td>          <td>&nbsp;</td><td>= "cache"</td></tr>
  * <tr><td>&nbsp;</td><td>CONNECTION</td>     <td>&nbsp;</td><td>= "connection"</td></tr>

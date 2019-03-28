@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,29 @@
 //           from [Class] down.  Previously only the single Class inside the tree was invalidated.
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.WriteLockManager;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
@@ -331,7 +341,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
      * In certain circumstances this can have large performance improvements over loading each item individually.
      * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
@@ -344,7 +354,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
      * In certain circumstances this can have large performance improvements over loading each item individually.
      * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */

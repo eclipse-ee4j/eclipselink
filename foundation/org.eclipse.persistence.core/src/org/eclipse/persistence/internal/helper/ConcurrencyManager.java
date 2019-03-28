@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-import java.io.*;
+import java.io.Serializable;
 import java.security.AccessController;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.config.SystemProperties;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.exceptions.ConcurrencyException;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
-import org.eclipse.persistence.logging.*;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -386,7 +390,7 @@ public class ConcurrencyManager implements Serializable {
     /**
      * Decrement the depth for the active thread.
      * Assume the current thread is the active one.
-     * Raise an error if the depth become < 0.
+     * Raise an error if the depth become &lt; 0.
      * The notify will release the first thread waiting on the object,
      * if no threads are waiting it will do nothing.
      */

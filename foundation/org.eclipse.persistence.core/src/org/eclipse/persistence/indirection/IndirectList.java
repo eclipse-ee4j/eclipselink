@@ -101,7 +101,7 @@ public class IndirectList<E> extends Vector<E> implements CollectionChangeTracke
     /**
      * PUBLIC:
      * Construct an empty IndirectList so that its internal data array
-     * has size <tt>10</tt> and its standard capacity increment is zero.
+     * has size <code>10</code> and its standard capacity increment is zero.
      */
     public IndirectList() {
         super(0, 0);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,49 +14,70 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
 
-import java.util.*;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
+import org.eclipse.persistence.annotations.CacheKeyType;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
+import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
+import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.Expression;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
-import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.annotations.CacheKeyType;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
-import org.eclipse.persistence.indirection.IndirectCollection;
-import org.eclipse.persistence.indirection.IndirectCollectionsFactory;
-import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.ComplexQueryResult;
+import org.eclipse.persistence.queries.CursoredStreamPolicy;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.DirectReadQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 
 /**
  * <p><b>Purpose</b>:
  * Used to support collections in read queries.
- * <p>
  * <p><b>Responsibilities</b>:
  * Map the results into the appropriate collection instance.
  * Generically support special collections like cursored stream and virtual collection.
@@ -103,7 +124,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Called when the selection query is being initialized to add any required additional fields to the
      * query.  By default, there are not additional fields required but this method is overridden by subclasses.
      *
-     * @see MappedKeyMapContinerPolicy
+     * @see MappedKeyMapContainerPolicy
      */
     public void addAdditionalFieldsToQuery(ReadQuery selectionQuery, Expression baseExpression){
     }
@@ -212,7 +233,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * @param valuesIterator
      * @param toCollection
      * @param mapping
-     * @param unitOfWork
      * @param isExisting
      */
     public void addNextValueFromIteratorInto(Object valuesIterator, Object parent, CacheKey parentCacheKey, Object toCollection, CollectionMapping mapping, Integer refreshCascade, AbstractSession cloningSession, boolean isExisting, boolean isFromSharedCache){
@@ -284,8 +304,8 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * This method will access the target relationship and create a list of information to rebuild the collection.
      * This method is used in combination with the CachedValueHolder to store references to PK's to be loaded
      * from a cache instead of a query.
-     * @see ContainerPolicy.buildReferencesPKList()
-     * @see MappedKeyMapContainerPolicy.buildReferencesPKList()
+     * @see ContainerPolicy#buildReferencesPKList(Object, AbstractSession)
+     * @see MappedKeyMapContainerPolicy#buildReferencesPKList(Object, AbstractSession)
      */
     public Object[] buildReferencesPKList(Object container, AbstractSession session){
         Object[] result = new Object[this.sizeFor(container)];
@@ -1199,7 +1219,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see MapContainerPolicy#unwrapElement(Object)
      */
     @Override
     public Object nextEntry(Object iterator){
@@ -1213,8 +1233,8 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      *
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
-     * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see ContainerPolicy#iteratorFor(Object)
+     * @see MapContainerPolicy#unwrapIteratorResult(Object)
      */
     @Override
     public Object nextEntry(Object iterator, AbstractSession session) {
@@ -1241,8 +1261,6 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * This may be overridden by subclasses to process a composite object
      *
      * @see MappedKeyMapContainerPolicy
-     * @param object
-     * @param manager
      */
     public void postCalculateChanges(ObjectChangeSet ocs, ClassDescriptor referenceDescriptor, DatabaseMapping mapping, UnitOfWorkImpl uow){
         if (mapping.isForeignReferenceMapping()){
@@ -1598,7 +1616,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * MapContainerPolicy's iterator iterates on the Entries of a Map.
      * This method returns the object from the iterator
      *
-     * @see MapContainerPolicy.nextWrapped(Object iterator)
+     * @see MapContainerPolicy#unwrapElement(Object)
      */
     public Object unwrapElement(Object object){
        return object;
@@ -1609,7 +1627,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * Depending on the container, the entries returned of iteration using the ContainerPolicy.iteratorFor() method
      * may be wrapped.  This method unwraps the values.
      *
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see MapContainerPolicy#unwrapIteratorResult(Object)
      */
     public Object unwrapIteratorResult(Object object){
         return object;

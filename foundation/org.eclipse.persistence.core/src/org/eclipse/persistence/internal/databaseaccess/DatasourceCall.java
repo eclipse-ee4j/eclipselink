@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * INTERNAL:
- * <b>Purpose<b>: Used as an abstraction of a datasource invocation.
+ * <b>Purpose</b>: Used as an abstraction of a datasource invocation.
  *
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)

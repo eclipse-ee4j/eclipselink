@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,36 +17,43 @@
 //       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
 package org.eclipse.persistence.internal.queries;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
-import java.lang.reflect.*;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedGetValueFromField;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.changetracking.MapChangeEvent;
-import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
 import org.eclipse.persistence.mappings.Association;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * <p><b>Purpose</b>: A MapContainerPolicy is ContainerPolicy whose container class
@@ -193,8 +200,8 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * This method will access the target relationship and create a list of information to rebuild the collection.
      * For the MapContainerPolicy this return will consist of an array with serial Map entry key and value elements.
-     * @see ObjectReferenceMapping.buildReferencesPKList
-     * @see ContainerPolicy.buildReferencesPKList
+     * @see ObjectReferenceMapping#buildReferencesPKList(Object, Object, AbstractSession)
+     * @see ContainerPolicy#buildReferencesPKList(Object, AbstractSession)
      */
     @Override
     public Object[] buildReferencesPKList(Object container, AbstractSession session){
@@ -638,7 +645,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * This will return a MapEntry to allow use of the key
      *
      * @see ContainerPolicy#iteratorFor(java.lang.Object)
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see #unwrapIteratorResult(Object)
      */
     @Override
     public Object nextEntry(Object iterator){
@@ -652,8 +659,8 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      *
      * This will return a MapEntry to allow use of the key
      *
-     * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see ContainerPolicy#iteratorFor(Object)
+     * @see #unwrapIteratorResult(Object)
      */
     @Override
     public Object nextEntry(Object iterator, AbstractSession session) {
@@ -673,7 +680,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * MapContainerPolicy's iterator iterates on the Entries of a Map.
      * This method returns the object from the iterator
      *
-     * @see MapContainerPolicy.nextWrapped(Object iterator)
+     * @see #unwrapIteratorResult(Object)
      */
     @Override
     public Object unwrapElement(Object object) {
@@ -689,7 +696,7 @@ public class MapContainerPolicy extends InterfaceContainerPolicy {
      * MapContainerPolicy's iterator iterates on the Entries of a Map.
      * This method returns the object from the iterator
      *
-     * @see MapContainerPolicy.nextWrapped(Object iterator)
+     * @see #nextEntry(Object)
      */
     @Override
     public Object unwrapIteratorResult(Object object) {

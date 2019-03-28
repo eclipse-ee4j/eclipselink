@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,7 +36,7 @@ import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * An EntityType provides a metadata facade into the EclipseLink
- * object-relational metadata (descriptors & mappings) with specific knowledge
+ * object-relational metadata (descriptors &amp; mappings) with specific knowledge
  * of the entity types being dynamic.
  *
  * @author dclarke, mnorman

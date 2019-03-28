@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ public class XPathEngine <
     *
     * @return The last <code>XMLNode</code> in the path
     *
-    * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
+    * @exception XMLMarshalException Thrown if passed an invalid XPath string
     */
     public Node create(Field xmlField, Node element, CoreAbstractSession session) throws XMLMarshalException {
         return create(xmlField, element, this, session);
@@ -107,7 +107,7 @@ public class XPathEngine <
     *
     * @return The last <code>XMLNode</code> in the path
     *
-    * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
+    * @exception XMLMarshalException Thrown if passed an invalid XPath string
     */
     public Node create(Field xmlField, Node element, Object value, Field lastUpdated, DocumentPreservationPolicy docPresPolicy, CoreAbstractSession session) throws XMLMarshalException {
         if (null == value) {
@@ -823,7 +823,7 @@ public class XPathEngine <
     *
     * @return <code>NodeList</code> containing the nodes that were removed.
     *
-    * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
+    * @exception XMLMarshalException Thrown if passed an invalid XPath string
     */
     public NodeList remove(Field xmlField, Node element) throws XMLMarshalException {
         return remove(xmlField, element, false);
@@ -838,7 +838,7 @@ public class XPathEngine <
     *
     * @return <code>NodeList</code> containing the nodes that were removed.
     *
-    * @exception org.eclipse.persistence.oxm.exceptions.XMLMarshalException Thrown if passed an invalid XPath string
+    * @exception XMLMarshalException Thrown if passed an invalid XPath string
     */
     public NodeList remove(Field xmlField, Node element, boolean forceRemove) throws XMLMarshalException {
         String xpathString = xmlField.getXPath();

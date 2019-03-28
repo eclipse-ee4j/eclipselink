@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.exceptions.DynamicException;
  * <p>
  * The purpose of dynamic persistent objects is to enable (simple) data access when only mapping
  * information is available <br>
- * and no concrete Java model is present (specifically, no <tt>.class</tt> files .)
+ * and no concrete Java model is present (specifically, no <code>.class</code> files .)
  * <p>
  * Applications using <code>DynamicEntity</code>'s can access the persistent state using property names
  * which correspond <br>

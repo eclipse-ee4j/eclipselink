@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,8 +28,9 @@ import org.eclipse.persistence.sessions.Session;
  * to supplement debugging; or the entries could be stored
  * in a database instead of logged to System.out, etc.
  * <p>
- * This class defines Eclipselink logging levels (that are used throughout EclipseLink code) with the following integer values:
- * <table summary="">
+ * This class defines EclipseLink logging levels (that are used throughout EclipseLink code) with the following integer values:
+ * <table>
+ * <caption>Logging levels</caption>
  * <tr><td>&nbsp;</td><td>ALL</td>    <td>&nbsp;</td><td>= {@value #ALL}</td></tr>
  * <tr><td>&nbsp;</td><td>FINEST</td> <td>&nbsp;</td><td>= {@value #FINEST}</td></tr>
  * <tr><td>&nbsp;</td><td>FINER</td>  <td>&nbsp;</td><td>= {@value #FINER}</td></tr>
@@ -42,7 +43,8 @@ import org.eclipse.persistence.sessions.Session;
  * </table>
  * <p>
  * In addition, EclipseLink categories used for logging name space are defined with the following String values:
- * <table summary="">
+ * <table>
+ * <caption>Logging categories</caption>
  * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>         <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>    <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #DMS}</td>           <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
@@ -255,7 +257,8 @@ public interface SessionLog extends Cloneable {
      * Return the log level.  Used when session is not available.
      * <p>
      * The EclipseLink logging levels returned correspond to:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -282,7 +285,8 @@ public interface SessionLog extends Cloneable {
      * is available.
      * <p>
      * The EclipseLink logging levels returned correspond to:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -295,7 +299,8 @@ public interface SessionLog extends Cloneable {
      * </table>
      * <p>
      * The EclipseLink categories for the logging name space are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging categories</caption>
      * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>           <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
@@ -324,7 +329,8 @@ public interface SessionLog extends Cloneable {
      * Set the log level.  Used when session is not available.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -344,7 +350,8 @@ public interface SessionLog extends Cloneable {
      * is available.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -357,7 +364,8 @@ public interface SessionLog extends Cloneable {
      * </table>
      * <p>
      * The EclipseLink categories for the logging name space are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging categories</caption>
      * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>           <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
@@ -387,7 +395,8 @@ public interface SessionLog extends Cloneable {
      * Used when session is not available.
      * <p>
      * The EclipseLink logging levels available are:
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -407,7 +416,8 @@ public interface SessionLog extends Cloneable {
      * Category is only needed where name space is available.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -420,7 +430,8 @@ public interface SessionLog extends Cloneable {
      * </table>
      * <p>
      * The EclipseLink categories for the logging name space are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging categories</caption>
      * <tr><td>&nbsp;</td><td>{@link #CACHE}</td>           <td>&nbsp;</td><td>= {@value #CACHE}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #CONNECTION}</td>      <td>&nbsp;</td><td>= {@value #CONNECTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #DMS}</td>             <td>&nbsp;</td><td>= {@value #DMS}</td></tr>
@@ -450,7 +461,8 @@ public interface SessionLog extends Cloneable {
      * external use when logging messages are wanted within the EclipseLink output.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -469,7 +481,8 @@ public interface SessionLog extends Cloneable {
      * Log a message with one parameter that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -488,7 +501,8 @@ public interface SessionLog extends Cloneable {
      * Log a message with one parameter that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -507,7 +521,8 @@ public interface SessionLog extends Cloneable {
      * Log a message with two parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -526,7 +541,8 @@ public interface SessionLog extends Cloneable {
      * Log a message with two parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -545,7 +561,8 @@ public interface SessionLog extends Cloneable {
      * Log a message with three parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -564,7 +581,8 @@ public interface SessionLog extends Cloneable {
      * Log a message with three parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -583,7 +601,8 @@ public interface SessionLog extends Cloneable {
      * Log a message with four parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -602,7 +621,8 @@ public interface SessionLog extends Cloneable {
      * Log a message with four parameters that needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -622,7 +642,8 @@ public interface SessionLog extends Cloneable {
      * The message needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -642,7 +663,8 @@ public interface SessionLog extends Cloneable {
      * The message needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -662,7 +684,8 @@ public interface SessionLog extends Cloneable {
      * shouldTranslate flag determines if the message needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -682,7 +705,8 @@ public interface SessionLog extends Cloneable {
      * shouldTranslate flag determines if the message needs to be translated.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -756,7 +780,8 @@ public interface SessionLog extends Cloneable {
      * Log a {@link Throwable} with level.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>
@@ -775,7 +800,8 @@ public interface SessionLog extends Cloneable {
      * Log a throwable with level.
      * <p>
      * The EclipseLink logging levels available are:<br>
-     * <table summary="">
+     * <table>
+     * <caption>Logging levels</caption>
      * <tr><td>{@link #ALL}</td>    <td>&nbsp;</td><td>= {@value #ALL}</td>
      * <tr><td>{@link #FINEST}</td> <td>&nbsp;</td><td>= {@value #FINEST}</td>
      * <tr><td>{@link #FINER}</td>  <td>&nbsp;</td><td>= {@value #FINER}</td>

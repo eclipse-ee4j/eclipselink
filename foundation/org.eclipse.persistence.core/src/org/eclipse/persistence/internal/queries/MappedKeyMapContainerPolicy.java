@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,10 +54,11 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
+import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
 import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -275,8 +276,8 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
      * INTERNAL:
      * This method will access the target relationship and create a list of information to rebuild the collection.
      * For the MapContainerPolicy this return will consist of an array with serial Map entry key and value elements.
-     * @see ObjectReferenceMapping.buildReferencesPKList
-     * @see ContainerPolicy.buildReferencesPKList
+     * @see ObjectReferenceMapping#buildReferencesPKList(Object, Object, AbstractSession)
+     * @see ContainerPolicy#buildReferencesPKList(Object, AbstractSession)
      */
     @Override
     public Object[] buildReferencesPKList(Object container, AbstractSession session){

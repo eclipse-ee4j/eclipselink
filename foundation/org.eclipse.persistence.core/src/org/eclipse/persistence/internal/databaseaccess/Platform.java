@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,10 +45,10 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
     /**
      * Convert the object to the appropriate type by invoking the appropriate
      * ConversionManager method
-     * @param object - the object that must be converted
-     * @param javaClass - the class that the object must be converted to
-     * @exception - ConversionException, all exceptions will be thrown as this type.
-     * @return - the newly converted object
+     * @param sourceObject the object that must be converted
+     * @param javaClass the class that the object must be converted to
+     * @exception ConversionException all exceptions will be thrown as this type.
+     * @return the newly converted object
      */
     @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException;
@@ -286,7 +286,7 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
      * INTERNAL:
      * Remove platform specific identity sequences for specified tables. Default identity sequences are restored.
      * Method is also called from {@code TableCreator} class during tables removal.
-     * @param dbSession Active database session (in connected state).
+     * @param session Active database session (in connected state).
      * @param defaultIdentityGenerator Default identity generator sequence name.
      * @param tableNames Set of table names to check for identity sequence removal.
      * @since 2.7

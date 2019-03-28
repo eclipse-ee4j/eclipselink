@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,7 +30,6 @@ public class CompositeCollectionMappingContentHandler extends CompositeMappingCo
     /**
      * @param parentRecord
      * @param aNodeValue
-     * @param aNullPolicy
      */
     public CompositeCollectionMappingContentHandler(UnmarshalRecord parentRecord, //
             XMLCompositeCollectionMappingNodeValue aNodeValue, CompositeCollectionMapping aMapping, //
