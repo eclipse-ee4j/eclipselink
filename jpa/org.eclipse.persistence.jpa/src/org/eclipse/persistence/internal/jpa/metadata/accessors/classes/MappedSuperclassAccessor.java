@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,78 +81,12 @@
 //       - 531528: IdentifiableType.hasSingleIdAttribute() returns true when IdClass references an inner class
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.persistence.annotations.AdditionalCriteria;
-import org.eclipse.persistence.annotations.Cache;
-import org.eclipse.persistence.annotations.CacheIndex;
-import org.eclipse.persistence.annotations.CacheIndexes;
-import org.eclipse.persistence.annotations.CacheInterceptor;
-import org.eclipse.persistence.annotations.FetchGroup;
-import org.eclipse.persistence.annotations.FetchGroups;
-import org.eclipse.persistence.annotations.NamedStoredFunctionQueries;
-import org.eclipse.persistence.annotations.NamedStoredFunctionQuery;
-import org.eclipse.persistence.annotations.PrimaryKey;
-import org.eclipse.persistence.annotations.QueryRedirectors;
-import org.eclipse.persistence.annotations.ExistenceChecking;
-import org.eclipse.persistence.annotations.Multitenant;
-import org.eclipse.persistence.annotations.OptimisticLocking;
-import org.eclipse.persistence.annotations.ReadOnly;
-import org.eclipse.persistence.annotations.SerializedObject;
-import org.eclipse.persistence.annotations.UuidGenerator;
-import org.eclipse.persistence.annotations.UuidGenerators;
-
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
-import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
-import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.cache.CacheIndexMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.multitenant.MultitenantMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
-import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
-import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.sop.SerializedObjectPolicyMetadata;
-
-import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
-import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredFunctionQueries;
-import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredFunctionQuery;
-import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredProcedureQueries;
-import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredProcedureQuery;
-import org.eclipse.persistence.queries.FetchGroupTracker;
-
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_PROPERTY;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_CACHEABLE;
+import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_LISTENERS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EXCLUDE_DEFAULT_LISTENERS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_EXCLUDE_SUPERCLASS_LISTENERS;
-import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ENTITY_LISTENERS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ID_CLASS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_NATIVE_QUERIES;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_NAMED_NATIVE_QUERY;
@@ -167,6 +101,67 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE_GENERATOR;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TABLE_GENERATORS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_TRANSIENT;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.persistence.annotations.AdditionalCriteria;
+import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.annotations.CacheIndex;
+import org.eclipse.persistence.annotations.CacheIndexes;
+import org.eclipse.persistence.annotations.CacheInterceptor;
+import org.eclipse.persistence.annotations.ExistenceChecking;
+import org.eclipse.persistence.annotations.FetchGroup;
+import org.eclipse.persistence.annotations.FetchGroups;
+import org.eclipse.persistence.annotations.Multitenant;
+import org.eclipse.persistence.annotations.NamedStoredFunctionQueries;
+import org.eclipse.persistence.annotations.NamedStoredFunctionQuery;
+import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.annotations.PrimaryKey;
+import org.eclipse.persistence.annotations.QueryRedirectors;
+import org.eclipse.persistence.annotations.ReadOnly;
+import org.eclipse.persistence.annotations.SerializedObject;
+import org.eclipse.persistence.annotations.UuidGenerator;
+import org.eclipse.persistence.annotations.UuidGenerators;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
+import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
+import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
+import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
+import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheIndexMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.multitenant.MultitenantMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.FetchGroupMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedNativeQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredFunctionQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedPLSQLStoredProcedureQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredFunctionQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.NamedStoredProcedureQueryMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sop.SerializedObjectPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
+import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredFunctionQueries;
+import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredFunctionQuery;
+import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredProcedureQueries;
+import org.eclipse.persistence.platform.database.oracle.annotations.NamedPLSQLStoredProcedureQuery;
+import org.eclipse.persistence.queries.FetchGroupTracker;
 
 /**
  * INTERNAL:
@@ -975,7 +970,7 @@ public class MappedSuperclassAccessor extends ClassAccessor {
     /**
      * INTERNAL:
      * Process a caching metadata. This method will be called on an entity's
-     * mapped superclasses (bottom --> up). We go through the mapped
+     * mapped superclasses (bottom --&gt; up). We go through the mapped
      * superclasses to not only apply a cache setting but log ignore messages.
      */
     protected void processCaching() {

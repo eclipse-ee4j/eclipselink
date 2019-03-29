@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,13 +100,13 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * <p><b>INTERNAL</b>: helper class that knows how to build a {@link XRServiceAdapter} (a.k.a DBWS). An
  * <code>XRService</code> requires the following resources:
  * <ul>
- * <li>metadata in the form of a descriptor file called <tt><b>eclipselink-dbws.xml</b></tt><br>
+ * <li>metadata in the form of a descriptor file called <code><b>eclipselink-dbws.xml</b></code><br>
  * </li>
- * <li>an XML Schema Definition (<tt>.xsd</tt>) file called <tt><b>eclipselink-dbws-schema.xsd</b></tt>
+ * <li>an XML Schema Definition (<code>.xsd</code>) file called <code><b>eclipselink-dbws-schema.xsd</b></code>
  * </li>
- * <li>a TopLink <tt>sessions.xml</tt> file called <tt><b>eclipselink-dbws-sessions.xml</b></tt><br>
- * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overriden by the
- * <b>optional</b> <tt>&lt;sessions-file&gt;</tt> entry in the <code>eclipselink-dbws.xml</code>
+ * <li>a TopLink <code>sessions.xml</code> file called <code><b>eclipselink-dbws-sessions.xml</b></code><br>
+ * &nbsp; the naming convention for the <code>sessions.xml</code> files can be overriden by the
+ * <b>optional</b> <code>&lt;sessions-file&gt;</code> entry in the <code>eclipselink-dbws.xml</code>
  * descriptor file.
  * </li>
  * <li>EclipseLink metadata in the form of a EclipseLink {@link Project} (either deployment XML or Java classes).
@@ -148,7 +148,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * </pre>
  * </li>
  * </ul>
- * An example <tt><b>eclipselink-dbws.xml</b></tt> descriptor file:
+ * An example <code><b>eclipselink-dbws.xml</b></code> descriptor file:
  * <pre>
  * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  * &lt;dbws
@@ -218,7 +218,7 @@ public class XRServiceFactory  {
      * <p><b>INTERNAL</b>: Initialize the various components (of the <code>XRService</code>}
      * (O-R Project, O-X Project, Schema definitions, auto-generated classes, etc.)
      * @param parentClassLoader  the parent <code>ClassLoader</code> for the auto-generated classes.
-     * @param xrSchemaStream   stream resource for the <code>XRService</code>'s <tt>.xsd</tt> file.
+     * @param xrSchemaStream   stream resource for the <code>XRService</code>'s <code>.xsd</code> file.
      */
     public void initializeService(ClassLoader parentClassLoader, InputStream xrSchemaStream) {
         this.parentClassLoader = parentClassLoader;
@@ -239,8 +239,8 @@ public class XRServiceFactory  {
 
     /**
      * <p>INTERNAL:
-     * Read and unmarshal <code>XRService</code>'s <tt>.xsd</tt> file.
-     * @param xrSchemaStream Stream resource for the <code>XRService</code>'s <tt>.xsd</tt> file.
+     * Read and unmarshal <code>XRService</code>'s <code>.xsd</code> file.
+     * @param xrSchemaStream Stream resource for the <code>XRService</code>'s <code>.xsd</code> file.
      */
     public void loadXMLSchema(InputStream xrSchemaStream) {
         SchemaModelProject schemaProject = new SchemaModelProject();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,21 +53,21 @@ import org.xml.sax.EntityResolver;
 
 /**
  * <p>
- * A specialized <tt>JAXBContext</tt> for marshalling and unmarshalling <tt>DynamicEntities</tt>.
+ * A specialized <code>JAXBContext</code> for marshalling and unmarshalling <code>DynamicEntities</code>.
  * </p>
  *
  * <p>
- * <tt>DynamicJAXBContext</tt> also provides methods to:
+ * <code>DynamicJAXBContext</code> also provides methods to:
  * </p>
  * <ul>
- *      <li>get the <tt>DynamicType</tt> associated with a given Java name
- *      <li>get the <tt>DynamicType</tt> associated with a given XML name
- *      <li>create a new <tt>DynamicEntity</tt> given the Java name of its <tt>DynamicType</tt>
- *      <li>create a new <tt>DynamicEntity</tt> given the XML name of its <tt>DynamicType</tt>
+ *      <li>get the <code>DynamicType</code> associated with a given Java name
+ *      <li>get the <code>DynamicType</code> associated with a given XML name
+ *      <li>create a new <code>DynamicEntity</code> given the Java name of its <code>DynamicType</code>
+ *      <li>create a new <code>DynamicEntity</code> given the XML name of its <code>DynamicType</code>
  * </ul>
  *
  * <p>
- * New instances of <tt>DynamicJAXBContext</tt> must be created with <tt>DynamicJAXBContextFactory</tt>.
+ * New instances of <code>DynamicJAXBContext</code> must be created with <code>DynamicJAXBContextFactory</code>.
  * </p>
  *
  * @see javax.xml.bind.JAXBContext
@@ -94,14 +94,14 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
     }
 
     /**
-     * Obtain a reference to the <tt>DynamicType</tt> object for a given Java name.  If one has
-     * not been generated, this method will return <tt>null</tt>.
+     * Obtain a reference to the <code>DynamicType</code> object for a given Java name.  If one has
+     * not been generated, this method will return <code>null</code>.
      *
      * @param javaName
-     *      A Java class name, used to look up its <tt>DynamicType</tt>.
+     *      A Java class name, used to look up its <code>DynamicType</code>.
      *
      * @return
-     *      The <tt>DynamicType</tt> for this Java class name.
+     *      The <code>DynamicType</code> for this Java class name.
      */
     public DynamicType getDynamicType(String javaName) {
         for (DynamicHelper helper : getHelpers()) {
@@ -114,15 +114,15 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
     }
 
     /**
-     * Create a new instance of <tt>DynamicEntity</tt> for a given Java name.  If a
-     * <tt>DynamicType</tt> for this Java class name has not been generated, this
-     * method will return <tt>null</tt>.
+     * Create a new instance of <code>DynamicEntity</code> for a given Java name.  If a
+     * <code>DynamicType</code> for this Java class name has not been generated, this
+     * method will return <code>null</code>.
      *
      * @param javaName
-     *      The Java class name to create a new <tt>DynamicEntity</tt> for.
+     *      The Java class name to create a new <code>DynamicEntity</code> for.
      *
      * @return
-     *      A new <tt>DynamicEntity</tt> for this Java class name.
+     *      A new <code>DynamicEntity</code> for this Java class name.
      */
     public DynamicEntity newDynamicEntity(String javaName) throws IllegalArgumentException {
         IllegalArgumentException ex = null;
@@ -137,20 +137,20 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
     }
 
     /**
-     * Create a new instance of <tt>DynamicEntity</tt> for a given <tt>DynamicType</tt>.
+     * Create a new instance of <code>DynamicEntity</code> for a given <code>DynamicType</code>.
      *
      * @param dynamicType
-     *      The <tt>DynamicType</tt> to create a new <tt>DynamicEntity</tt> for.
+     *      The <code>DynamicType</code> to create a new <code>DynamicEntity</code> for.
      *
      * @return
-     *      A new <tt>DynamicEntity</tt> for this <tt>DynamicType</tt>.
+     *      A new <code>DynamicEntity</code> for this <code>DynamicType</code>.
      */
     public DynamicEntity newDynamicEntity(DynamicType dynamicType) {
         return dynamicType.newDynamicEntity();
     }
 
     /**
-     * Returns the constant named <tt>constantName</tt> from the enum class specified by <tt>enumName</tt>.
+     * Returns the constant named <code>constantName</code> from the enum class specified by <code>enumName</code>.
      *
      * @param enumName
      *      Java class name of an enum.
@@ -158,7 +158,7 @@ public class DynamicJAXBContext extends org.eclipse.persistence.jaxb.JAXBContext
      *      Name of the constant to get from the specified enum.
      *
      * @return
-     *      An <tt>Object</tt>, the constant from the specified enum.
+     *      An <code>Object</code>, the constant from the specified enum.
      */
     public Object getEnumConstant(String enumName, String constantName) throws ClassNotFoundException, JAXBException {
         Object valueToReturn = null;

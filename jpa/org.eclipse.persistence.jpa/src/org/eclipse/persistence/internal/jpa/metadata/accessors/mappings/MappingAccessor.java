@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -562,7 +562,8 @@ public abstract class MappingAccessor extends MetadataAccessor {
      * return the appropriate ColumnMetadata to process based on the context
      * provided.
      *
-     * @See BasicCollectionAccessor and BasicMapAccessor.
+     * @see BasicCollectionAccessor
+     * @see BasicMapAccessor
      */
     protected DatabaseField getDatabaseField(DatabaseTable defaultTable, String loggingCtx) {
         // Check if we have an attribute override first, otherwise process for a column

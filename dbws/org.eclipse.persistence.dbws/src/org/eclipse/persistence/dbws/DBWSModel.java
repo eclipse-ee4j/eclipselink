@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,25 +27,25 @@ import org.eclipse.persistence.internal.xr.XRServiceModel;
  * <p><b>PUBLIC</b>: model object for eclipselink-dbws.xml descriptor file. A DBWS (also known as
  * an {@link XRServiceAdapter}) requires the following resources:
  * <ul>
- * <li>metadata in the form of a descriptor file called <tt><b>eclipselink-dbws.xml</b></tt> in the
+ * <li>metadata in the form of a descriptor file called <code><b>eclipselink-dbws.xml</b></code> in the
  * <code>META-INF/</code> directory<br>
- * (inside a <tt>.jar</tt> file, as an external 'exploded' directory on the classpath<br>
- * or in the WEB-INF/classes/META-INF/ directory inside a <tt>.war</tt> file).<br>
+ * (inside a <code>.jar</code> file, as an external 'exploded' directory on the classpath<br>
+ * or in the WEB-INF/classes/META-INF/ directory inside a <code>.war</code> file).<br>
  * </li>
- * <li>an XML Schema Definition (<tt>.xsd</tt>) file called <tt><b>eclipselink-dbws-schema.xsd</b></tt><br>
- * located at the root directory of a <tt>.jar</tt> file, at the root of the first directory on the<br>
- * classpath or in the <code>WEB-INF/wsdl/</code> directory of a <tt>.war</tt> file
+ * <li>an XML Schema Definition (<code>.xsd</code>) file called <code><b>eclipselink-dbws-schema.xsd</b></code><br>
+ * located at the root directory of a <code>.jar</code> file, at the root of the first directory on the<br>
+ * classpath or in the <code>WEB-INF/wsdl/</code> directory of a <code>.war</code> file
  * </li>
- * <li>an EclipseLink <tt>sessions.xml</tt> file called <tt><b>eclipselink-dbws-sessions.xml</b></tt> (in the
+ * <li>an EclipseLink <code>sessions.xml</code> file called <code><b>eclipselink-dbws-sessions.xml</b></code> (in the
  * <code>META-INF/</code> directory)<br>
- * &nbsp; the naming convention for the <tt>sessions.xml</tt> files can be overridden by the<br>
- * <b>optional</b> <tt>&lt;sessions-file&gt;</tt> entry in the <code>eclipselink-dbws.xml</code>
+ * &nbsp; the naming convention for the <code>sessions.xml</code> files can be overridden by the<br>
+ * <b>optional</b> <code>&lt;sessions-file&gt;</code> entry in the <code>eclipselink-dbws.xml</code>
  * descriptor file.
  * </li>
  * <li>EclipseLink metadata in the form of a EclipseLink {@link org.eclipse.persistence.sessions.Project Project}
  * (either deployment XML located<br>
  * in the <code>META-INF/</code> directory or Java classes on the classpath or in the<br>
- * <code>WEB-INF/classes</code> directory inside a <tt>.war</tt> file).<br>
+ * <code>WEB-INF/classes</code> directory inside a <code>.war</code> file).<br>
  * &nbsp;<br>
  * <p>A typical <code>DBWS</code> requires two projects: one to represent the O-R side, the other to
  * represent the O-X side.<br>
@@ -85,7 +85,7 @@ import org.eclipse.persistence.internal.xr.XRServiceModel;
  * </pre>
  * </li>
  * </ul>
- * An example <tt><b>eclipselink-dbws.xml</b></tt> descriptor file:
+ * An example <code><b>eclipselink-dbws.xml</b></code> descriptor file:
  * <pre>
  * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  * &lt;dbws

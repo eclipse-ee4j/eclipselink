@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -31,11 +31,9 @@ import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JP
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_MAPPED_SUPERCLASS;
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_STATIC_METAMODEL;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -164,7 +162,7 @@ public class PersistenceUnitProcessor {
     /**
      * Determine the URL path to the persistence unit
      * @param pxmlURL - URL of a resource belonging to the PU (obtained for
-     * {@code descriptorLocation} via {@link Classloader#getResource(String)}).
+     * {@code descriptorLocation} via {@code Classloader.getResource(String)}).
      * @param descriptorLocation - the name of the resource.
      * @return The URL of the PU root containing the resource.
      * @throws IOException

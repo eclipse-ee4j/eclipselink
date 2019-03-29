@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -865,9 +865,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     /**
      * Find by primary key.
      *
-     * @param entityClass
+     * @param descriptor
      *            - the entity class to find.
-     * @param primaryKey
+     * @param id
      *            - the entity primary key value, or primary key class, or a
      *            List of primary key values.
      * @return the found entity instance or null, if the entity does not exist.
