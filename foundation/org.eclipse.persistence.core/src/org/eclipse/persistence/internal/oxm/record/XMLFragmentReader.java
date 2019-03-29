@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ import javax.xml.XMLConstants;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
-
 import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -37,11 +36,12 @@ import org.xml.sax.SAXException;
  *  Internal:
  *  <p><b>Purpose:</b> An implementation of XMLReader for parsing XMLFragment Nodes
  *  into SAX events.
- *  <p><b>Responsibilities:</b><ul>
+ *  <p><b>Responsibilities:</b>
+ *  <ul>
  *  <li>Walk the XMLFragment node's DOM tree and report sax events to the provided
  *  content handler</li>
  *  <li>Report lexical events to the lexical handler if it's provided</li>
- *
+ *  </ul>
  */
 public class XMLFragmentReader extends DOMReader {
     protected NamespaceResolver nsresolver;

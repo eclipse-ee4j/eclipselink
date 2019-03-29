@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,17 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.internal.helper;
 
+import java.util.Collections;
+import java.util.Comparator;
+
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
+
 /**
  * <p><b>Purpose</b>: A helper class for sorting index/object pairs.
- * <p>
  * <p><b>Responsibilities</b>:
  * Allows to sort a list of index/object pairs either directly
- * or with Collections.sort(List<IndexedObject>) - using IndexedObject.compareTo;
- * or with Collections.sort(List<IndexedObject>, Comparator<IndexedObject>) - using custom-defined Comparator<IndexedObject>.
+ * or with {@code Collections.sort(List<IndexedObject>)} - using {@code IndexedObject.compareTo};
+ * or with {@code Collections.sort(List<IndexedObject>, Comparator<IndexedObject>)} - using custom-defined {@code Comparator<IndexedObject>}.
  *
  * @see Collections
  * @see Comparator

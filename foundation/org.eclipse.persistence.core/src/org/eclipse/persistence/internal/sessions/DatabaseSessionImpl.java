@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -394,7 +394,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * descriptors are added is dependent on inheritance and references unless the addDescriptors
      * method is used.
      *
-     * @see #addDescriptors(Vector)
+     * @see #addDescriptors(Collection)
      * @see #addDescriptors(org.eclipse.persistence.sessions.Project)
      */
     @Override
@@ -451,8 +451,6 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * if there is no sequence with the same name already in use.
      * Call this method before addDescriptor(s) if need to add new descriptor
      * with a new non-default sequence to connected session.
-     *
-     * @see #addSequences(Collection)
      */
     @Override
     public void addSequence(Sequence sequence) {

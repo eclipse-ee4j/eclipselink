@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -5116,7 +5116,7 @@ public final class AnnotationsProcessor {
      * Indicates whether this AnnotationsProcessor has been configured to enable
      * processing of XmlAccessorFactory annotations.
      *
-     * @see com.sun.xml.internal.bind.XmlAccessorFactory
+     * @see "com.sun.xml.bind.XmlAccessorFactory"
      */
     public boolean isXmlAccessorFactorySupport() {
         return xmlAccessorFactorySupport;
@@ -5125,7 +5125,7 @@ public final class AnnotationsProcessor {
     /**
      * Sets whether this AnnotationsProcessor should process XmlAccessorFactory annotations.
      *
-     * @see com.sun.xml.internal.bind.XmlAccessorFactory
+     * @see "com.sun.xml.bind.XmlAccessorFactory"
      */
     public void setXmlAccessorFactorySupport(boolean value) {
         this.xmlAccessorFactorySupport = value;

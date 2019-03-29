@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,7 +37,7 @@ import org.eclipse.persistence.config.QueryHints;
 /**
  * INTERNAL: English ResourceBundle for QueryException messages.
  *
- * @author: Xi Chen
+ * @author Xi Chen
  */
 public class QueryExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {

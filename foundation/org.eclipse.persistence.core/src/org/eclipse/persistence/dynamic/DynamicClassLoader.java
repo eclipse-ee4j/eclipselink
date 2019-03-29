@@ -260,8 +260,8 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     * Converts an array of bytes into an instance of class <tt>Class</tt>.
-     * Before the <tt>Class</tt> can be used it must be resolved.
+     * Converts an array of bytes into an instance of class <code>Class</code>.
+     * Before the <code>Class</code> can be used it must be resolved.
      *
      * @param name
      * @param b

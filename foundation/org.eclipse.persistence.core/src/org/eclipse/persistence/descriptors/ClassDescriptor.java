@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -5369,9 +5369,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Set to false to have queries conform to a UnitOfWork without registering
      * any additional objects not already in that UnitOfWork.
      * @see #shouldRegisterResultsInUnitOfWork
-     * @bug 2612601
      */
     public void setShouldRegisterResultsInUnitOfWork(boolean shouldRegisterResultsInUnitOfWork) {
+        //bug 2612601
         this.shouldRegisterResultsInUnitOfWork = shouldRegisterResultsInUnitOfWork;
     }
 
@@ -5647,9 +5647,9 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * @return true by default.
      * @see #setShouldRegisterResultsInUnitOfWork
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#shouldRegisterResultsInUnitOfWork
-     * @bug 2612601
      */
     public boolean shouldRegisterResultsInUnitOfWork() {
+        // bug 2612601
         return shouldRegisterResultsInUnitOfWork;
     }
 

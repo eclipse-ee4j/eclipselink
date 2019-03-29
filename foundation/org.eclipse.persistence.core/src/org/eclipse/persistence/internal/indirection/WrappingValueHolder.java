@@ -20,7 +20,8 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
  * WrappingValueHolder is an interface type that implementors use when they will be
  * wrapping another ValueHolder that has the original value.
  *
- * @see UnitOfWorkValueHolder, ProtectedValueHolder
+ * @see UnitOfWorkValueHolder
+ * @see ProtectedValueHolder
  * @author    Gordon Yorke
  */
 public interface WrappingValueHolder {

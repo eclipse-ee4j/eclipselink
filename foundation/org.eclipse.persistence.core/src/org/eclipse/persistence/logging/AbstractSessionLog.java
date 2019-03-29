@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -912,9 +912,9 @@ public abstract class AbstractSessionLog implements SessionLog, java.lang.Clonea
     /**
      * PUBLIC:
      * Set the date format to be used when printing a log entry date.
-     * <p>Note: the JDK's <tt>java.text.SimpleDateFormat</tt> is <b>NOT</b> thread-safe.<br>
+     * <p>Note: the JDK's <code>java.text.SimpleDateFormat</code> is <b>NOT</b> thread-safe.<br>
      * The user is <b>strongly</b> advised to consider using Apache Commons<br>
-     * <tt>org.apache.commons.lang.time.FastDateFormat</tt> instead.</p>
+     * <code>org.apache.commons.lang.time.FastDateFormat</code> instead.</p>
      *
      * @param dateFormat java.text.DateFormat
      */

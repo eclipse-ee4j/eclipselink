@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,8 @@
 package org.eclipse.persistence.internal.history;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * INTERNAL:
@@ -30,7 +31,7 @@ import org.eclipse.persistence.internal.helper.*;
  * This class is used in temporal versioning, where every update to one table
  * triggers an update to a nearly identical historical table.  This second update
  * is almost identical to the first, save that the table names are
- * different (i.e. EMPLOYEE -> EMPLOYEE_HIST).  It is much easier just to switch
+ * different (i.e. EMPLOYEE -&gt; EMPLOYEE_HIST).  It is much easier just to switch
  * the table names at the last minute, as database fields in the descriptors
  * and expressions have hardcoded table names.
  * @since OracleAS TopLink 10<i>g</i> (10.1.3)

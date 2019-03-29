@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.mappings.querykeys.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 
@@ -65,11 +73,11 @@ public abstract class ObjectExpression extends DataExpression {
      *
      * downcast uses Expression.type() internally to guarantee the results are of the specified class.
      * <p>Example:
-     * <pre><blockquote>
+     * <pre>
      *     Expression: employee.get("project").as(LargeProject.class).get("budget").equal(1000)
      *     Java: ((LargeProject)employee.getProjects().get(0)).getBudget() == 1000
      *     SQL: LPROJ.PROJ_ID (+)= PROJ.PROJ_ID AND L_PROJ.BUDGET = 1000 AND PROJ.TYPE = "L"
-     * </blockquote></pre>
+     * </pre>
      */
     @Override
     public Expression treat(Class castClass){
@@ -188,12 +196,12 @@ public abstract class ObjectExpression extends DataExpression {
      * Return an expression representing traversal of a 1:many or many:many relationship.
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
-     * <pre><blockquote>
+     * <pre>
      *     Expression: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
      *     Java: no direct equivalent
      *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID = t1.ID) AND (t2.F_NAME = 'Bob')
-     * </pre></blockquote>
-     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
+     * </pre>
+     * @param shouldJoinBeIndependent indicates whether a new expression should be created.
      */
     @Override
     public Expression anyOf(String attributeName, boolean shouldJoinBeIndependent) {
@@ -212,12 +220,12 @@ public abstract class ObjectExpression extends DataExpression {
      * Return an expression representing traversal of a 1:many or many:many relationship.
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
-     * <pre><blockquote>
+     * <pre>
      *     Expression: employee.anyOf("managedEmployees").get("firstName").equal("Bob")
      *     Java: no direct equivalent
      *     SQL: SELECT DISTINCT ... WHERE (t2.MGR_ID (+) = t1.ID) AND (t2.F_NAME = 'Bob')
-     * </pre></blockquote>
-     * @parameter shouldJoinBeIndependent indicates whether a new expression should be created.
+     * </pre>
+     * @param shouldJoinBeIndependent indicates whether a new expression should be created.
      */
     @Override
     public Expression anyOfAllowingNone(String attributeName, boolean shouldJoinBeIndependent) {
@@ -432,9 +440,9 @@ public abstract class ObjectExpression extends DataExpression {
      * PUBLIC:
      * Return an expression that wraps the inheritance type field in an expression.
      * <p>Example:
-     * <pre><blockquote>
+     * <pre>
      *  builder.getClassForInheritance().equal(SmallProject.class);
-     * </blockquote></pre>
+     * </pre>
      */
     @Override
     public Expression type() {
@@ -684,9 +692,9 @@ public abstract class ObjectExpression extends DataExpression {
      * The method was added to circumvent derivedFields and derivedTables being
      * protected.
      * @see org.eclipse.persistence.expressions.ExpressionBuilder#registerIn(Map alreadyDone)
-     * @bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
      */
     public void postCopyIn(Map alreadyDone, List<Expression> oldDerivedFields, List<Expression> oldDerivedTables) {
+        // bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
         if (oldDerivedFields != null) {
             if (this.derivedFields == null) {
                 this.derivedFields = copyCollection(oldDerivedFields, alreadyDone);

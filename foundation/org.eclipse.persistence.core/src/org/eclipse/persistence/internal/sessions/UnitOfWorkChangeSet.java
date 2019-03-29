@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,7 +129,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * Add to the changes for 'object' object to this changeSet. This method
      * will not add to the lists that are used for identity lookups.
      * The passed change set *must* either have changes or forced changes.
-     * @see addObjectChangeSetForIdentity()
+     * @see #addObjectChangeSetForIdentity(ObjectChangeSet, Object)
      * @param forceToNewObjectList - Any pre commit actions should pass in true
      * since new objects have extra-handling. Anything post commit, pass in
      * false.
@@ -193,7 +193,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * add to the lists that are used for identity lookups.  It is called specifically
      * for new objects, and new object will be moved to the standard changes list by
      * the QueryMechanism after insert.
-     * @see addObjectChangeSetForIdentity()
+     * @see #addObjectChangeSetForIdentity(ObjectChangeSet, Object)
      * @param objectChanges the new object change set
      */
     protected void addNewObjectChangeSet(ObjectChangeSet objectChanges, AbstractSession session) {
@@ -271,7 +271,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * Add change records to the lists used to maintain identity.  This will not actually
      * add the changes to 'object' to the change set.
-     * @see addObjectChangeSet()
+     * @see #addObjectChangeSet(ObjectChangeSet, AbstractSession, boolean)
      * @param objectChanges prototype.changeset.ObjectChanges
      */
     public void addObjectChangeSetForIdentity(ObjectChangeSet objectChanges, Object object) {
@@ -436,7 +436,6 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * Returns the set of classes corresponding to updated objects in objectChanges.
-     * @return HashSet<Class>
      */
     public Set<ClassDescriptor> findUpdatedObjectsClasses() {
         if (this.objectChanges == null || this.objectChanges.isEmpty()) {

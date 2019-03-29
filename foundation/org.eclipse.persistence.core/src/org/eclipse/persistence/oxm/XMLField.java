@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,10 +45,11 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * <p>The following XPath statements may be used to specify the location of XML data relating to an object's
  * name attribute:
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>XPath statements</caption>
  * <tr>
- * <th id="c1" align="left">XPath</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">XPath</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1">@name</td>
@@ -116,11 +117,11 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * addXMLConversion api.  For example by default a java.util.Calendar is mapped to the dateTime schema type
  * so the XML will be formated based on that type.  Below are the default schema type to java type conversion pairs
  * and the default java type to schema type conversion pairs.
- * <p><b>XML schema type to Java type default conversion pairs</b>
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>XML schema type to Java type default conversion pairs</caption>
  * <tr>
- * <th id="c3" align="left">Schema Type</th>
- * <th id="c4" align="left">Java Type</th>
+ * <th id="c3">Schema Type</th>
+ * <th id="c4">Java Type</th>
  * </tr>
  * <tr>
  * <td headers="c3">base64Binary</td>
@@ -196,11 +197,11 @@ import org.eclipse.persistence.internal.oxm.record.AbstractUnmarshalRecord;
  * </tr>
  * </table>
  *
- * <p><b>Java type to XML schema type default conversion pairs</b>
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>Java type to XML schema type default conversion pairs</caption>
  * <tr>
- * <th id="c5" align="left">Java Type</th>
- * <th id="c6" align="left">Schema Type</th>
+ * <th id="c5">Java Type</th>
+ * <th id="c6">Schema Type</th>
  * </tr>
  * <tr>
  * <td headers="c5">byte[]</td>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,8 +34,16 @@ package org.eclipse.persistence.internal.helper;
  */
 
 // J2SE imports
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.AbstractCollection;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 public class IdentityHashSet extends AbstractCollection implements Set, Cloneable, Serializable {
     static final long serialVersionUID = 1619330892277906704L;
@@ -54,13 +62,13 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     protected float loadFactor = 0;
 
     /**
-     * Constructs a new <tt>IdentityHashSet</tt> with the given initial
+     * Constructs a new <code>IdentityHashSet</code> with the given initial
      * capacity and the given loadFactor.
      *
      * @param initialCapacity the initial capacity of the
-     * <tt>IdentityHashSet</tt>.
-     * @param loadFactor the loadFactor of the <tt>IdentityHashSet</tt>.
-     * @throws <tt>IllegalArgumentException</tt> if the initial capacity is less
+     * <code>IdentityHashSet</code>.
+     * @param loadFactor the loadFactor of the <code>IdentityHashSet</code>.
+     * @throws IllegalArgumentException if the initial capacity is less
      * than zero, or if the loadFactor is nonpositive.
      */
     public IdentityHashSet(int initialCapacity, float loadFactor) {
@@ -85,11 +93,11 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Constructs a new <tt>IdentityHashSet</tt> with the given
-     * initial capacity and a default loadFactor of <tt>0.75</tt>.
+     * Constructs a new <code>IdentityHashSet</code> with the given
+     * initial capacity and a default loadFactor of <code>0.75</code>.
      *
      * @param initialCapacity the initial capacity of the IdentityHashSet.
-     * @throws <tt>IllegalArgumentException</tt> if the initial capacity is less
+     * @throws IllegalArgumentException if the initial capacity is less
      * than zero.
      */
     public IdentityHashSet(int initialCapacity) {
@@ -97,8 +105,8 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Constructs a new <tt>IdentityHashSet</tt> with a default initial
-     * capacity of <tt>32</tt> and a loadfactor of <tt>0.75</tt>.
+     * Constructs a new <code>IdentityHashSet</code> with a default initial
+     * capacity of <code>32</code> and a loadfactor of <code>0.75</code>.
      */
     public IdentityHashSet() {
         loadFactor = DEFAULT_LOAD_FACTOR;
@@ -107,13 +115,13 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Constructs a new <tt>IdentityHashSet</tt> with the same contents
-     * as the given <tt>Collection</tt>. The new <tt>IdentityHashSet</tt>
+     * Constructs a new <code>IdentityHashSet</code> with the same contents
+     * as the given <code>Collection</code>. The new <code>IdentityHashSet</code>
      * is created with an initial capacity sufficient to hold the elements of
-     * the given <tt>Collection</tt>.
+     * the given <code>Collection</code>.
      *
-     * @param c the <tt>Collection</tt> whose contents are to be placed in the
-     * new <tt>IdentityHashSet</tt>.
+     * @param c the <code>Collection</code> whose contents are to be placed in the
+     * new <code>IdentityHashSet</code>.
      */
     public IdentityHashSet(Collection c) {
         this(Math.max((int)(c.size() / DEFAULT_LOAD_FACTOR) + 1, DEFAULT_INITIAL_CAPACITY), DEFAULT_LOAD_FACTOR);
@@ -121,7 +129,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * @return the size of this <tt>IdentityHashSet</tt>.
+     * @return the size of this <code>IdentityHashSet</code>.
      */
     @Override
     public int size() {
@@ -129,7 +137,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * @return <tt>true</tt> if this <tt>IdentityHashSet</tt> is empty.
+     * @return <code>true</code> if this <code>IdentityHashSet</code> is empty.
      */
     @Override
     public boolean isEmpty() {
@@ -137,11 +145,11 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Returns <tt>true</tt> if this <tt>IdentityHashSet</tt> contains
+     * Returns <code>true</code> if this <code>IdentityHashSet</code> contains
      * the given object.
      *
      * @param obj the object to find.
-     * @return <tt>true</tt> if this <tt>IdentityHashSet</tt> contains
+     * @return true if this <code>IdentityHashSet</code> contains
      * obj by reference.
      */
     @Override
@@ -186,12 +194,12 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Adds the given object to this <tt>IdentityHashSet</tt>.
+     * Adds the given object to this <code>IdentityHashSet</code>.
      *
      * @param obj object to add.
-     * @return <tt>true</tt> if this <tt>IdentityHashSet</tt> did not
+     * @return <code>true</code> if this <code>IdentityHashSet</code> did not
      * already contain obj.
-     * @throws <tt>NullPointerException</tt> if obj is null.
+     * @throws NullPointerException if obj is null.
      */
     @Override
     public boolean add(Object obj) {
@@ -224,11 +232,11 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Removes the given object from this <tt>IdentityHashSet</tt>, if
+     * Removes the given object from this <code>IdentityHashSet</code>, if
      * present.
      *
-     * @param obj the object to be removed from this <tt>IdentityHashSet</tt>.
-     * @return <tt>true</tt> if this <tt>IdentityHashSet</tt> contained
+     * @param obj the object to be removed from this <code>IdentityHashSet</code>.
+     * @return <code>true</code> if this <code>IdentityHashSet</code> contained
      * obj.
      */
     @Override
@@ -255,8 +263,8 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * This implementation throws an <tt>UnsupportedOperationException</tt>
-     * because <tt>removeAll</tt> does not work correctly with reference
+     * This implementation throws an <code>UnsupportedOperationException</code>
+     * because <code>removeAll</code> does not work correctly with reference
      * equality testing.<p>
      */
     @Override
@@ -265,8 +273,8 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * This implementation throws an <tt>UnsupportedOperationException</tt>.
-     * The Javadocs for {@link AbstractCollection} indicates that <tt>retainAll</tt>
+     * This implementation throws an <code>UnsupportedOperationException</code>.
+     * The Javadocs for {@link AbstractCollection} indicates that <code>retainAll</code>
      * is an optional method.<p>
      */
     @Override
@@ -275,7 +283,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Removes all of the objects from this <tt>IdentityHashSet</tt>.
+     * Removes all of the objects from this <code>IdentityHashSet</code>.
      */
     @Override
     public void clear() {
@@ -289,10 +297,10 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Returns a shallow copy of this <tt>IdentityHashSet</tt> (the
+     * Returns a shallow copy of this <code>IdentityHashSet</code> (the
      * elements are not cloned).
      *
-     * @return a shallow copy of this <tt>IdentityHashSet</tt>.
+     * @return a shallow copy of this <code>IdentityHashSet</code>.
      */
     @Override
     public Object clone() {
@@ -311,7 +319,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Get an iterator for this <tt>IdentityHashSet</tt>
+     * Get an iterator for this <code>IdentityHashSet</code>
      */
     @Override
     public Iterator iterator() {
@@ -414,11 +422,11 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Serialize the state of this <tt>IdentityHashSet</tt> to a stream.
+     * Serialize the state of this <code>IdentityHashSet</code> to a stream.
      *
-     * @serialData The <i>capacity</i> of the <tt>IdentityHashSet</tt>
+     * @serialData The <i>capacity</i> of the <code>IdentityHashSet</code>
      * (the length of the bucket array) is emitted (int), followed by the
-     * <i>size</i> of the <tt>IdentityHashSet</tt>, followed by the
+     * <i>size</i> of the <code>IdentityHashSet</code>, followed by the
      * contents (in no particular order).
      */
     private void writeObject(ObjectOutputStream s) throws IOException, ClassNotFoundException {
@@ -436,7 +444,7 @@ public class IdentityHashSet extends AbstractCollection implements Set, Cloneabl
     }
 
     /**
-     * Deserialize the <tt>IdentityHashSet</tt> from a stream.
+     * Deserialize the <code>IdentityHashSet</code> from a stream.
      */
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         // Read in the threshold, loadfactor (and any hidden 'magic' stuff).

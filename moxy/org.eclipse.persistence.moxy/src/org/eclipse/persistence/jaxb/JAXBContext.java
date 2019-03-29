@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,44 @@
 //     Marcel Valovy - 2.6 - added ci unmarshalling & BV in JAXB
 //     Dmitry Kornilov - 2.6.1 - BeanValidationHelper refactoring
 package org.eclipse.persistence.jaxb;
+
+import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
+
+import java.awt.Image;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.transform.Source;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
@@ -64,43 +102,6 @@ import org.eclipse.persistence.oxm.platform.SAXPlatform;
 import org.eclipse.persistence.oxm.platform.XMLPlatform;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.SessionEventListener;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.transform.Source;
-import java.awt.*;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
 
 /**
  * <p><b>Purpose:</b>Provide a EclipseLink implementation of the JAXBContext interface.
@@ -637,7 +638,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @param xPath
      *      The XPath statement.
      * @param namespaceResolver
-     *      A <tt>NamespaceResolver</tt> containing the prefix/URI pairings from the XPath statement.
+     *      A <code>NamespaceResolver</code> containing the prefix/URI pairings from the XPath statement.
      * @param returnType
      *      The return type.
      *
@@ -656,7 +657,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @param xPath
      *      The XPath statement.
      * @param namespaceResolver
-     *      A <tt>NamespaceResolver</tt> containing the prefix/URI pairings from the XPath statement.
+     *      A <code>NamespaceResolver</code> containing the prefix/URI pairings from the XPath statement.
      * @param value
      *      The value to be set.
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,12 +31,12 @@ import org.xml.sax.SAXException;
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * Null Composite Objects are marshalled in 2 ways when the input XML node is
+ * <li>Null Composite Objects are marshalled in 2 ways when the input XML node is
  * empty. (1) as null - isNullRepresentedByEmptyNode = true (2) as empty object -
  * isNullRepresentedByEmptyNode = false A deferred contentHandler is used to
  * queue events until we are able to determine whether we are in one of
  * empty/simple/complex state. Control is returned to the UnmarshalHandler after
- * creation of (1) or (2) above is started.
+ * creation of (1) or (2) above is started.</li>
  * </ul>
  */
 public class CompositeObjectMappingContentHandler extends CompositeMappingContentHandler {

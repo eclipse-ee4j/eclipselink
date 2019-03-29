@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,19 +16,48 @@
 //       - 345962: Join fetch query when using tenant discriminator column fails.
 package org.eclipse.persistence.expressions;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
+import org.eclipse.persistence.internal.expressions.BaseExpression;
+import org.eclipse.persistence.internal.expressions.CollectionExpression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionIterator;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionNormalizer;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.LiteralExpression;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.expressions.SubSelectExpression;
+import org.eclipse.persistence.internal.expressions.TableAliasLookup;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * <p>
@@ -229,7 +258,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
      * </p>
-     * <table border=0 summary="This table compares an example EclipseLink anyOf Expression to Java and SQL">
+     * <table>
+     * <caption>This table compares an example EclipseLink anyOf Expression to Java and SQL</caption>
      * <tr>
      * <th id="c1">Format</th>
      * <th id="c2">Equivalent</th>
@@ -265,7 +295,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
      * </p>
-     * <table border=0 summary="This table compares an example EclipseLink anyOf Expression to Java and SQL">
+     * <table>
+     * <caption>This table compares an example EclipseLink anyOf Expression to Java and SQL</caption>
      * <tr>
      * <th id="c3">Format</th>
      * <th id="c4">Equivalent</th>
@@ -305,7 +336,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * NOTE: outer joins are not supported on all database and have differing semantics.
      * <p>Example:
      * </p>
-     * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
+     * <table>
+     * <caption>This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL</caption>
      * <tr>
      * <th id="c5">Format</th>
      * <th id="c6">Equivalent</th>
@@ -344,7 +376,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * NOTE: outer joins are not supported on all database and have differing semantics.
      * <p>Example:
      * </p>
-     * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
+     * <table>
+     * <caption>This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL</caption>
      * <tr>
      * <th id="c7">Format</th>
      * <th id="c8">Equivalent</th>
@@ -915,12 +948,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * Also it will rebuild using anyOf as appropriate not get.
      * @see org.eclipse.persistence.mappings.ForeignReferenceMapping#batchedValueFromRow
      * @see #rebuildOn(Expression)
-     * @bug 2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
-     * @bug 2612567 CR4298- NULLPOINTEREXCEPTION WHEN USING SUBQUERY AND BATCH READING IN 4.6
-     * @bug 2612140 CR2973- BATCHATTRIBUTE QUERIES WILL FAIL WHEN THE INITIAL QUERY HAS A SUBQUERY
-     * @bug 2720149 INVALID SQL WHEN USING BATCH READS AND MULTIPLE ANYOFS
      */
     public Expression cloneUsing(Expression newBase) {
+        // 2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
+        // 2612567 CR4298- NULLPOINTEREXCEPTION WHEN USING SUBQUERY AND BATCH READING IN 4.6
+        // 2612140 CR2973- BATCHATTRIBUTE QUERIES WILL FAIL WHEN THE INITIAL QUERY HAS A SUBQUERY
+        // 2720149 INVALID SQL WHEN USING BATCH READS AND MULTIPLE ANYOFS
         // 2612538 - the default size of Map (32) is appropriate
         Map alreadyDone = new IdentityHashMap();
 

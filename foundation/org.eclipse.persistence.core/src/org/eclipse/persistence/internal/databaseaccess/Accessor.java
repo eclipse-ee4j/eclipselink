@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,15 @@
 package org.eclipse.persistence.internal.databaseaccess;
 
 import java.util.Vector;
+
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.sequencing.SequencingCallback;
 import org.eclipse.persistence.internal.sequencing.SequencingCallbackFactory;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.sessions.Login;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
-import org.eclipse.persistence.queries.Call;
 
 /**
  * INTERNAL:
@@ -110,7 +111,7 @@ public interface Accessor extends Cloneable {
      * executed after all insert calls are executed).
      * Bug 2804663.
      *
-     * @see org.eclipse.persistence.internal.helper.LOBValueWriter#buildAndExecuteCallForLocator(DatabaseCall,Session,Accessor)
+     * @see org.eclipse.persistence.internal.helper.LOBValueWriter#buildAndExecuteSelectCalls(AbstractSession)
      */
     void flushSelectCalls(AbstractSession session);
 

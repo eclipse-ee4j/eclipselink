@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -126,7 +126,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected transient Map<Class, FieldTypeDefinition> fieldTypes;
 
     /** Indicates that native SQL should be used for literal values instead of ODBC escape format
-    Only used with Oracle, Sybase & DB2 */
+    Only used with Oracle, Sybase &amp; DB2 */
     protected boolean usesNativeSQL;
 
     /** Indicates that binding will be used for BLOB data. NOTE: does not work well with ODBC. */
@@ -769,8 +769,10 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * Returns true iff:
-     * <li>tThe current driver supports calling get/setNString
-     * <li> Strings are globally mapped to a national character varying type (useNationalCharacterVarying()).
+     * <ul>
+     * <li>tThe current driver supports calling get/setNString</li>
+     * <li> Strings are globally mapped to a national character varying type (useNationalCharacterVarying()).</li>
+     * </ul>
      */
     public boolean shouldUseGetSetNString() {
         return getDriverSupportsNVarChar() && getUseNationalCharacterVaryingTypeForString();
@@ -883,7 +885,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      * By default, we assume case 1 and simply return the value of maxResults.  Subclasses
      * may provide an override
      *
-     * @param readQuery
      * @param firstResultIndex
      * @param maxResults
      *
@@ -1418,7 +1419,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * INTERNAL:
      * Get the object from the JDBC Result set.  Added to allow other platforms to
      * override.
-     * @see org.eclipse.persistence.oraclespecific.Oracle9Platform
+     * @see "org.eclipse.persistence.platform.database.oracle.Oracle9Plaform"
      */
     public Object getObjectFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session) throws java.sql.SQLException {
         Object objectFromResultSet = resultSet.getObject(columnNumber);
@@ -1445,7 +1446,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * Used to allow platforms to define their own index prefixes
-     * @param isUniqueField
+     * @param isUniqueSetOnField
      * @return
      */
     public String getIndexNamePrefix(boolean isUniqueSetOnField){
@@ -1645,7 +1646,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      *
      * By default though, this method return false.
      *
-     * @see OraclePlatform.
+     * @see OraclePlatform
      */
     public boolean isLockTimeoutException(DatabaseException e) {
         return false;
@@ -1670,7 +1671,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      *    Builds a table of maximum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
-     * <p><b>NOTE</b>: BigInteger & BigDecimal maximums are dependent upon their precision & Scale
+     * <p><b>NOTE</b>: BigInteger &amp; BigDecimal maximums are dependent upon their precision &amp; Scale
      */
     public Hashtable maximumNumericValues() {
         Hashtable values = new Hashtable();
@@ -1689,7 +1690,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      *    Builds a table of minimum numeric values keyed on java class. This is used for type testing but
      * might also be useful to end users attempting to sanitize values.
-     * <p><b>NOTE</b>: BigInteger & BigDecimal minimums are dependent upon their precision & Scale
+     * <p><b>NOTE</b>: BigInteger &amp; BigDecimal minimums are dependent upon their precision &amp; Scale
      */
     public Hashtable minimumNumericValues() {
         Hashtable values = new Hashtable();
@@ -1709,7 +1710,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Internal: Allows setting the batch size on the statement
      *  Is used with parameterized SQL, and should only be passed in prepared statements
      *
-     * @return - statement to be used for batch writing
+     * @return statement to be used for batch writing
      */
     public Statement prepareBatchStatement(Statement statement, int maxBatchWritingSize) throws java.sql.SQLException {
         return statement;
@@ -1821,7 +1822,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * TABLE syntax to add/drop unique constraints (like Symfoware), overriding
      * this method will allow the constraint to be specified in the CREATE TABLE
      * statement.
-     * <p/>
+     * <p>
      * This only affects unique constraints specified using the UniqueConstraint
      * annotation or equivalent method. Columns for which the 'unique' attribute
      * is set to true will be declared 'UNIQUE' in the CREATE TABLE statement
@@ -2723,8 +2724,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * INTERNAL:
      * May override this method if the platform support temporary tables.
-     * @parameter DatabaseTable table is original table for which temp table is created.
-     * @return DatabaseTable temorary table
+     * @param table is original table for which temp table is created.
+     * @return temporary table
      */
      public DatabaseTable getTempTableForTable(DatabaseTable table) {
          return new DatabaseTable("TL_" + table.getName(), table.getTableQualifier(), table.shouldUseDelimiters(), getStartDelimiter(), getEndDelimiter());
@@ -2754,8 +2755,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * getCreateTempTableSqlBodyForTable(table) + getCreateTempTableSqlSuffix().
      * Don't forget to begin it with a space.
      * Example: " LIKE " + table.getQualifiedName();
-     * @parameter DatabaseTable table is original table for which temp table is created.
-     * @result String
+     * @param table is original table for which temp table is created.
+     * @return String
      */
      protected String getCreateTempTableSqlBodyForTable(DatabaseTable table) {
          return null;
@@ -2782,12 +2783,12 @@ public class DatabasePlatform extends DatasourcePlatform {
      * therefore global temp table should contain all mapped fields (allFields).
      * Precondition: supportsTempTables() == true.
      * Precondition: pkFields contained in usedFields contained in allFields
-     * @parameter Writer writer for writing the sql
-     * @parameter DatabaseTable table is original table for which temp table is created.
-     * @parameter AbstractSession session.
-     * @parameter Collection pkFields - primary key fields for the original table.
-     * @parameter Collection usedFields - fields that will be used by operation for which temp table is created.
-     * @parameter Collection allFields - all mapped fields for the original table.
+     * @param writer for writing the sql
+     * @param table is original table for which temp table is created.
+     * @param session.
+     * @param pkFields primary key fields for the original table.
+     * @param usedFields fields that will be used by operation for which temp table is created.
+     * @param allFields all mapped fields for the original table.
      */
      public void writeCreateTempTableSql(Writer writer, DatabaseTable table, AbstractSession session,
                                         Collection pkFields,
@@ -2842,9 +2843,9 @@ public class DatabasePlatform extends DatasourcePlatform {
      * and the generated sql doesn't work.
      * Write an sql string for insertion into the temporary table.
      * Precondition: supportsTempTables() == true.
-     * @parameter Writer writer for writing the sql
-     * @parameter DatabaseTable table is original table for which temp table is created.
-     * @parameter Collection usedFields - fields that will be used by operation for which temp table is created.
+     * @param writer for writing the sql
+     * @param table is original table for which temp table is created.
+     * @param usedFields fields that will be used by operation for which temp table is created.
      */
      public void writeInsertIntoTableSql(Writer writer, DatabaseTable table, Collection usedFields) throws IOException {
         writer.write("INSERT INTO ");
@@ -2894,10 +2895,10 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Write an sql string for updating the original table from the temporary table.
      * Precondition: supportsTempTables() == true.
      * Precondition: pkFields and assignFields don't intersect.
-     * @parameter Writer writer for writing the sql
-     * @parameter DatabaseTable table is original table for which temp table is created.
-     * @parameter Collection pkFields - primary key fields for the original table.
-     * @parameter Collection assignedFields - fields to be assigned a new value.
+     * @param writer for writing the sql
+     * @param table is original table for which temp table is created.
+     * @param pkFields primary key fields for the original table.
+     * @param assignedFields fields to be assigned a new value.
      */
      public void writeUpdateOriginalFromTempTableSql(Writer writer, DatabaseTable table,
                                                      Collection pkFields,
@@ -2931,12 +2932,11 @@ public class DatabasePlatform extends DatasourcePlatform {
      * shouldAlwaysUseTempStorageForModifyAll()==true
      * May need to override this method in case it generates sql that doesn't work on the platform.
      * Precondition: supportsTempTables() == true.
-     * @parameter Writer writer for writing the sql
-     * @parameter DatabaseTable table is original table for which temp table is created.
-     * @parameter DatabaseTable targetTable is a table from which to delete.
-     * @parameter Collection pkFields - primary key fields for the original table.
-     * @parameter Collection targetPkFields - primary key fields for the target table.
-     * @parameter Collection assignedFields - fields to be assigned a new value.
+     * @param writer for writing the sql
+     * @param table is original table for which temp table is created.
+     * @param targetTable is a table from which to delete.
+     * @param pkFields primary key fields for the original table.
+     * @param targetPkFields primary key fields for the target table.
      */
      public void writeDeleteFromTargetTableUsingTempTableSql(Writer writer, DatabaseTable table, DatabaseTable targetTable,
                                                      Collection pkFields,
@@ -3001,8 +3001,8 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Drop a local temp table or delete all from a global temp table (so that it's
      * ready to be used again in the same transaction).
      * Precondition: supportsTempTables() == true.
-     * @parameter Writer writer for writing the sql
-     * @parameter DatabaseTable table is original table for which temp table is created.
+     * @param writer for writing the sql
+     * @param table is original table for which temp table is created.
      */
      public void writeCleanUpTempTableSql(Writer writer, DatabaseTable table) throws IOException {
         if(supportsLocalTempTables()) {

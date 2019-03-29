@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,15 +17,28 @@
 //       - 445546: NullPointerException thrown when an Array of Bytes contains null values
 package org.eclipse.persistence.internal.helper;
 
-import java.math.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
-import java.util.*;
-import java.io.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
@@ -82,10 +95,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     /**
      * Convert the object to the appropriate type by invoking the appropriate
      * ConversionManager method
-     * @param object - the object that must be converted
-     * @param javaClass - the class that the object must be converted to
-     * @exception - ConversionException, all exceptions will be thrown as this type.
-     * @return - the newly converted object
+     * @param sourceObject the object that must be converted
+     * @param javaClass the class that the object must be converted to
+     * @exception ConversionException all exceptions will be thrown as this type.
+     * @return the newly converted object
      */
     @Override
     public Object convertObject(Object sourceObject, Class javaClass) throws ConversionException {
@@ -259,8 +272,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
     /**
      *    Build a valid instance of Boolean from the source object.
-     *    't', 'T', "true", "TRUE", 1,'1'             -> Boolean(true)
-     *    'f', 'F', "false", "FALSE", 0 ,'0'        -> Boolean(false)
+     *    't', 'T', "true", "TRUE", 1,'1'             -&gt; Boolean(true)
+     *    'f', 'F', "false", "FALSE", 0 ,'0'        -&gt; Boolean(false)
      */
     protected Boolean convertObjectToBoolean(Object sourceObject) {
         if (sourceObject instanceof Character) {
@@ -294,9 +307,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     /**
      * Build a valid instance of Byte from the provided sourceObject
      * @param sourceObject    Valid instance of String or any Number
-     * @caught exception        The Byte(String) constructor throws a
-     *     NumberFormatException if the String does not contain a
-     *        parsable byte.
+     * @throws ConversionException   The Byte(String) constructor throws a
+     *     NumberFormatException if the String does not contain a parsable byte.
      *
      */
     protected Byte convertObjectToByte(Object sourceObject) throws ConversionException {
@@ -494,9 +506,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     /**
       * Convert the object to an instance of Double.
       * @param                    sourceObject Object of type String or Number.
-      * @caught exception    The Double(String) constructor throws a
-      *         NumberFormatException if the String does not contain a
-      *        parsable double.
+      * @throws ConversionException The Double(String) constructor throws a
+      *         NumberFormatException if the String does not contain a parsable double.
       */
     protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
         try {
@@ -514,9 +525,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
     /**
      * Build a valid Float instance from a String or another Number instance.
-     * @caught exception    The Float(String) constructor throws a
-     *         NumberFormatException if the String does not contain a
-     *        parsable Float.
+     * @throws ConversionException The Float(String) constructor throws a
+     *         NumberFormatException if the String does not contain a parsable Float.
      */
     protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
         try {
@@ -535,9 +545,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
     /**
      * Build a valid Integer instance from a String or another Number instance.
-     * @caught exception    The Integer(String) constructor throws a
-     *         NumberFormatException if the String does not contain a
-     *        parsable integer.
+     * @throws ConversionException The Integer(String) constructor throws a
+     *         NumberFormatException if the String does not contain a parsable integer.
      */
     protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {
         try {
@@ -565,9 +574,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
     /**
       * Build a valid Long instance from a String or another Number instance.
-      * @caught exception    The Long(String) constructor throws a
-      *         NumberFormatException if the String does not contain a
-      *        parsable long.
+      * @throws ConversionException  The Long(String) constructor throws a
+      *         NumberFormatException if the String does not contain a parsable long.
       *
       */
     protected Long convertObjectToLong(Object sourceObject) throws ConversionException {
@@ -604,9 +612,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
      * Build a valid BigDecimal instance from a String or another
      * Number instance.  BigDecimal is the most general type so is
      * must be returned when an object is converted to a number.
-     * @caught exception    The BigDecimal(String) constructor throws a
-     *     NumberFormatException if the String does not contain a
-     *    parsable BigDecimal.
+     * @throws ConversionException The BigDecimal(String) constructor throws a
+     *     NumberFormatException if the String does not contain a parsable BigDecimal.
      */
     protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {
         try {
@@ -635,9 +642,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     /**
      * INTERNAL:
      * Build a valid Short instance from a String or another Number instance.
-     * @caught exception    The Short(String) constructor throws a
-     *     NumberFormatException if the String does not contain a
-     *    parsable short.
+     * @throws ConversionException The Short(String) constructor throws a
+     *     NumberFormatException if the String does not contain a parsable short.
      */
     protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
         try {
@@ -1228,7 +1234,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
 
     /**
      * INTERNAL:
-     * @parameter java.lang.ClassLoader
+     * @param classLoader
      */
     public void setLoader(ClassLoader classLoader) {
         shouldUseClassLoaderFromCurrentThread = false;
@@ -1238,7 +1244,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     /**
      * INTERNAL:
      * Set the default class loader to use if no instance-level loader is set
-     * @parameter java.lang.ClassLoader
+     * @param classLoader
      */
     public static void setDefaultLoader(ClassLoader classLoader) {
         defaultLoader = classLoader;

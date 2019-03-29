@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -600,7 +600,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
      * In certain circumstances this can have large performance improvements over loading each item individually.
      * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
@@ -613,7 +613,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
      * In certain circumstances this can have large performance improvements over loading each item individually.
      * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */

@@ -15,32 +15,35 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.rmi.server.ObjID;
-import java.util.*;
+import java.util.Map;
 
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.DistributedSession;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.IntegrityChecker;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
-import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
-import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <h2>Purpose</h2>:
  * BasicIndirectionPolicy implements the behavior necessary for a
- * a ForeignReferenceMapping (or TransformationMapping) to
+ * a <code>org.eclipse.persistence.mappings.ForeignReferenceMapping</code> (or TransformationMapping) to
  * use ValueHolders to delay the reading of objects from the database
  * until they are actually needed.
  *
- * @see ForeignReferenceMapping
  * @author Mike Norman
  * @since TOPLink/Java 2.5
  */

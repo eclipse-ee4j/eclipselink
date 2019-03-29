@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,23 +23,24 @@ import org.eclipse.persistence.internal.jpa.parsing.TemporalLiteralNode.Temporal
  * INTERNAL
  * <p><b>Purpose</b>: Implements a node factory used by the EJBQLParser
  * class.
- * <p><b>Responsibilities</b>:<ul>
+ * <p><b>Responsibilities</b>:
+ * <ul>
  * <li> Create EJBQLParseTree instances for EJBQL SELECT-, UPDATE- and DELETE
  * statements (see methods newSelectStatement, newUpdateStatement and
- * newDeleteStatement).
- * <li> Any new<XXX> method returns an instance of the appropriate Node
- * subclass.
+ * newDeleteStatement).</li>
+ * <li> Any new&lt;XXX&gt; method returns an instance of the appropriate Node
+ * subclass.</li>
  * <li> The relationship to the child nodes passed as arguments are
- * automatically initialized.
+ * automatically initialized.</li>
  * <li>Note, this implementation has a state managing the parse tree context
  * and a list of parameter names for the current parse tree. This state needs
  * to be initialized before the same node factory implementation instance may
  * be used to create a second parse tree (see methods initContext and
- * initParameters).
+ * initParameters).</li>
  * <li> The implementation automatically adds the list of parameters to the
- * created parse tree.
+ * created parse tree.</li>
  * <li> The implementation automatically sets the parse tree context for any
- * created major node.
+ * created major node.</li>
  * </ul>
  */
 public class NodeFactoryImpl implements NodeFactory {

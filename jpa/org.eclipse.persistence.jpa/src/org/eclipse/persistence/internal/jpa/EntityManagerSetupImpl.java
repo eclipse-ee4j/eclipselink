@@ -380,13 +380,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     // factoryCount==0; session==null
     // only composite member persistence unit can be in this state
     public static final String STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER = "HalfPredeployedCompositeMember";
+
     /**
-     *     Initial -----> HalfPredeployedCompositeMember -----> PredeployFailed
+     *     Initial -----&gt; HalfPredeployedCompositeMember -----&gt; PredeployFailed
      *                    |        ^                   |
-     *                    V------->|                   V
+     *                    V-------&gt;|                   V
      *                                                Predeployed
      */
-
     protected String state = STATE_INITIAL;
 
     /**

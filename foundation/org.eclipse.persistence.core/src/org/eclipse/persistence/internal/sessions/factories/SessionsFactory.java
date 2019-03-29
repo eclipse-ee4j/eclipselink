@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,6 +110,7 @@ import org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportM
 import org.eclipse.persistence.sessions.coordination.jms.JMSTopicTransportManager;
 import org.eclipse.persistence.sessions.coordination.rmi.RMITransportManager;
 import org.eclipse.persistence.sessions.factories.XMLProjectReader;
+import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
 import org.eclipse.persistence.sessions.server.ReadConnectionPool;
@@ -123,7 +124,6 @@ import org.eclipse.persistence.tools.profiler.PerformanceProfiler;
  *
  * @author Guy Pelletier
  * @version 1.0
- * @date November 18, 2003
  */
 public class SessionsFactory {
     protected Map<String, Session> m_sessions;
@@ -150,10 +150,10 @@ public class SessionsFactory {
      * INTERNAL:
      * To build EclipseLink sessions, users must call this method with a
      * SessionConfigs object returned from an OX read in the
-     * {@link XMLSessionsConfigLoader}.
+     * {@link XMLSessionConfigLoader}.
      *
-     * @param eclipseLinkSessions object returned from an OX read in the XMLSessionsConfigLoader
-     * @param classLoader class loader used in the XMLSessionsConfigLoader
+     * @param eclipseLinkSessions object returned from an OX read in the XMLSessionConfigLoader
+     * @param classLoader class loader used in the XMLSessionConfigLoader
      * @return EclipseLink sessions
      */
     public Map<String, Session> buildSessionConfigs(SessionConfigs eclipseLinkSessions, ClassLoader classLoader) {

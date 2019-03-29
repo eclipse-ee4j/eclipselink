@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,29 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions.remote.rmi;
 
-import java.util.*;
-import java.rmi.*;
-import java.rmi.server.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.internal.sessions.remote.*;
-import org.eclipse.persistence.sessions.remote.*;
+import java.rmi.RemoteException;
+import java.rmi.server.ObjID;
+import java.util.Enumeration;
+import java.util.IdentityHashMap;
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.CommunicationException;
+import org.eclipse.persistence.internal.sessions.remote.RemoteCommand;
+import org.eclipse.persistence.internal.sessions.remote.RemoteConnection;
+import org.eclipse.persistence.internal.sessions.remote.RemoteCursoredStream;
+import org.eclipse.persistence.internal.sessions.remote.RemoteScrollableCursor;
+import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
+import org.eclipse.persistence.internal.sessions.remote.Transporter;
+import org.eclipse.persistence.queries.CursoredStreamPolicy;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
+import org.eclipse.persistence.sessions.Login;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
+import org.eclipse.persistence.sessions.remote.RemoteSession;
 
 /**
  * This class exists on on the client side which talks to remote session controller through
@@ -44,7 +58,7 @@ public class RMIConnection extends RemoteConnection {
     /**
      * ADVANCED:
      * This method will send the command to the remote session for processing
-     * @param command RemoteCOmmand Contains a command that will be executed on the remote session
+     * @param command Contains a command that will be executed on the remote session
      * @see org.eclipse.persistence.internal.sessions.remote.RemoteCommand
      */
     @Override

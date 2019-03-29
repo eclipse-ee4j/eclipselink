@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,16 +49,17 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 /**
- * <p>Class used to unmarshal XML & JSON to objects.
+ * <p>Class used to unmarshal XML &amp; JSON to objects.
  *
  * <p>Create an XMLUnmarshaller from an XMLContext.<br>
  *  <em>Code Sample</em><br>
  *  <code>
  *  XMLContext context = new XMLContext("mySessionName");<br>
  *  XMLUnmarshaller unmarshaller = context.createUnmarshaller();<br>
- *  <code>
+ *  </code>
  *
- * <p>XML can be unmarshalled from the following inputs:<ul>
+ * <p>XML can be unmarshalled from the following inputs:
+ * <ul>
  * <li>java.io.File</li>
  * <li>java.io.InputStream</li>
  * <li>java.io.Reader</li>
@@ -604,7 +605,7 @@ public class XMLUnmarshaller<
     /**
      * Return the property for a given key, if one exists.
      *
-     * @parm key
+     * @param key
      * @return
      */
     @Override
@@ -765,7 +766,6 @@ public class XMLUnmarshaller<
     /**
      * Determine if the @XMLRootElement should be marshalled when present.
      * Ignored unmarshalling XML.
-     * @return
      * @since 2.4
      */
     public void setIncludeRoot(boolean includeRoot) {

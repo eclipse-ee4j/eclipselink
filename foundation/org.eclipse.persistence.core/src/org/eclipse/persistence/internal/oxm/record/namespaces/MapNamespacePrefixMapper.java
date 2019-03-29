@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import java.util.Map;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
 
 /**
- * Implementation of NamespacePrefixMapper.  Allows user to set a Map<String, String>
+ * Implementation of NamespacePrefixMapper.  Allows user to set a {@code Map<String, String>}
  * or uris to prefixes for to be used during marshal/unmarshal.
  * @since 2.3.3
  */

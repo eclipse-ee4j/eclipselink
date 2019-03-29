@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -100,7 +100,7 @@ import org.eclipse.persistence.sessions.Session;
 import org.w3c.dom.Element;
 
 /**
- * <p><b>INTERNAL:</b>An XR QueryOperation is an executable representation of a <tt>SELECT</tt>
+ * <p><b>INTERNAL:</b>An XR QueryOperation is an executable representation of a <code>SELECT</code>
  * operation on the database.
  *
  * @author Mike Norman - michael.norman@oracle.com
@@ -358,11 +358,11 @@ public class QueryOperation extends Operation {
     }
 
     /**
-     * Execute <tt>SELECT</tt> operation on the database
+     * Execute <code>SELECT</code> operation on the database
      * @param   xrService parent <code>XRService</code> that owns this <code>Operation</code>
      * @param   invocation contains runtime argument values to be bound to the list of
      *          {@link Parameter}'s.
-     * @return  result - the result of the underlying <tt>SELECT</tt> operation on
+     * @return  result - the result of the underlying <code>SELECT</code> operation on
      *          the database, or <code>null</code>.
      *
      * @see  Operation

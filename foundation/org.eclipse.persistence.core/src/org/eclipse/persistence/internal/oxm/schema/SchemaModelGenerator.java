@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -597,7 +597,7 @@ public class SchemaModelGenerator {
      * @param seq
      * @param isCollection
      * @see Any
-     * @see Occurs.UNBOUNDED
+     * @see Occurs#UNBOUNDED
      */
     protected void processAnyMapping(Sequence seq, boolean isCollection) {
         Any any = new Any();
@@ -1229,7 +1229,7 @@ public class SchemaModelGenerator {
     /**
      * Build and return an Attribute for a given XPathFragment.
      *
-     * @param mapping
+     * @param frag
      * @param schemaType
      * @return
      */
@@ -1282,8 +1282,8 @@ public class SchemaModelGenerator {
      * equal according to the equals() method, if one is null and the other is "", or
      * both are null.
      *
-     * @param uri
-     * @param defaultNS
+     * @param ns1
+     * @param ns2
      * @return
      */
     public boolean areNamespacesEqual(String ns1, String ns2) {
