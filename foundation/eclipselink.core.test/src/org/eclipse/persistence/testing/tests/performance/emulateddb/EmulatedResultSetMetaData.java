@@ -36,7 +36,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return the number of columns
      * @exception SQLException if a database access error occurs
      */
-    public int getColumnCount() {
+    public int getColumnCount() throws SQLException {
         if (resultSet.getRows().isEmpty()) {
             return 1;
         }
@@ -50,7 +50,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isAutoIncrement(int column) {
+    public boolean isAutoIncrement(int column) throws SQLException {
         return false;
     }
 
@@ -61,7 +61,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isCaseSensitive(int column) {
+    public boolean isCaseSensitive(int column) throws SQLException {
         return true;
     }
 
@@ -72,7 +72,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isSearchable(int column) {
+    public boolean isSearchable(int column) throws SQLException {
         return true;
     }
 
@@ -83,7 +83,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isCurrency(int column) {
+    public boolean isCurrency(int column) throws SQLException {
         return false;
     }
 
@@ -95,7 +95,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      *          <code>columnNullable</code> or <code>columnNullableUnknown</code>
      * @exception SQLException if a database access error occurs
      */
-    public int isNullable(int column) {
+    public int isNullable(int column) throws SQLException {
         return 0;
     }
 
@@ -106,7 +106,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isSigned(int column) {
+    public boolean isSigned(int column) throws SQLException {
         return true;
     }
 
@@ -118,7 +118,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      *          of the designated column
      * @exception SQLException if a database access error occurs
      */
-    public int getColumnDisplaySize(int column) {
+    public int getColumnDisplaySize(int column) throws SQLException {
         return 0;
     }
 
@@ -130,7 +130,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return the suggested column title
      * @exception SQLException if a database access error occurs
      */
-    public String getColumnLabel(int column) {
+    public String getColumnLabel(int column) throws SQLException {
         return "";
     }
 
@@ -141,7 +141,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return column name
      * @exception SQLException if a database access error occurs
      */
-    public String getColumnName(int column) {
+    public String getColumnName(int column) throws SQLException {
         return ((DatabaseField)((DatabaseRecord)resultSet.getRows().get(0)).getFields().get(column - 1)).getName();
     }
 
@@ -152,7 +152,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return schema name or "" if not applicable
      * @exception SQLException if a database access error occurs
      */
-    public String getSchemaName(int column) {
+    public String getSchemaName(int column) throws SQLException {
         return "";
     }
 
@@ -163,7 +163,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return precision
      * @exception SQLException if a database access error occurs
      */
-    public int getPrecision(int column) {
+    public int getPrecision(int column) throws SQLException {
         return 0;
     }
 
@@ -174,7 +174,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return scale
      * @exception SQLException if a database access error occurs
      */
-    public int getScale(int column) {
+    public int getScale(int column) throws SQLException {
         return 0;
     }
 
@@ -185,7 +185,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return table name or "" if not applicable
      * @exception SQLException if a database access error occurs
      */
-    public String getTableName(int column) {
+    public String getTableName(int column) throws SQLException {
         return "";
     }
 
@@ -197,7 +197,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      *          appears or "" if not applicable
      * @exception SQLException if a database access error occurs
      */
-    public String getCatalogName(int column) {
+    public String getCatalogName(int column) throws SQLException {
         return "";
     }
 
@@ -209,7 +209,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @exception SQLException if a database access error occurs
      * @see Types
      */
-    public int getColumnType(int column) {
+    public int getColumnType(int column) throws SQLException {
         return 0;
     }
 
@@ -221,7 +221,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * a user-defined type, then a fully-qualified type name is returned.
      * @exception SQLException if a database access error occurs
      */
-    public String getColumnTypeName(int column) {
+    public String getColumnTypeName(int column) throws SQLException {
         return "";
     }
 
@@ -232,7 +232,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isReadOnly(int column) {
+    public boolean isReadOnly(int column) throws SQLException {
         return false;
     }
 
@@ -243,7 +243,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isWritable(int column) {
+    public boolean isWritable(int column) throws SQLException {
         return true;
     }
 
@@ -254,7 +254,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @return <code>true</code> if so; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isDefinitelyWritable(int column) {
+    public boolean isDefinitelyWritable(int column) throws SQLException {
         return true;
     }
 
@@ -275,7 +275,7 @@ public class EmulatedResultSetMetaData implements ResultSetMetaData {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public String getColumnClassName(int column) {
+    public String getColumnClassName(int column) throws SQLException {
         return "";
     }
 

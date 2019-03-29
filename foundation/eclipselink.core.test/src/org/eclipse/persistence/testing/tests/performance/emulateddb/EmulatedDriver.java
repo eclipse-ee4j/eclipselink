@@ -77,7 +77,7 @@ public class EmulatedDriver implements Driver {
      *         <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean acceptsURL(String url) {
+    public boolean acceptsURL(String url) throws SQLException {
         return url.indexOf("emulate:") != -1;
     }
 
@@ -100,7 +100,7 @@ public class EmulatedDriver implements Driver {
      *          no properties are required.
      * @exception SQLException if a database access error occurs
      */
-    public DriverPropertyInfo[] getPropertyInfo(String url, java.util.Properties info) {
+    public DriverPropertyInfo[] getPropertyInfo(String url, java.util.Properties info) throws SQLException {
         return null;
     }
 

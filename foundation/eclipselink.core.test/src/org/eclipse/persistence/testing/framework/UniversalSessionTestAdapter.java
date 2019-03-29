@@ -21,9 +21,9 @@ import org.eclipse.persistence.sessions.*;
  *  on any session configuration.
  *  @author  Stephen McRitchie
  *  @since   10 used for testing flashback queries on different sessions.
- *  @see org.eclipse.persistence.testing.ClientServerTests.ClientSessionTestAdapter
- *  @see org.eclipse.persistence.testing.tests.sessionbroker.ClientSessionBrokerTestAdapter
- *  @see org.eclipse.persistence.testing.tests.flashback.HistoricalSessionTest
+ *  @see "org.eclipse.persistence.testing.ClientServerTests.ClientSessionTestAdapter"
+ *  @see "org.eclipse.persistence.testing.tests.sessionbroker.ClientSessionBrokerTestAdapter"
+ *  @see "org.eclipse.persistence.testing.tests.flashback.HistoricalSessionTest"
  */
 public abstract class UniversalSessionTestAdapter extends TestAdapter {
     protected Session oldSession;

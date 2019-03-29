@@ -108,7 +108,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param sqlType the SQL type code defined in <code>java.sql.Types</code>
      * @exception SQLException if a database access error occurs
      */
-    public void setNull(int parameterIndex, int sqlType) {
+    public void setNull(int parameterIndex, int sqlType) throws SQLException {
         setObject(parameterIndex, null);
     }
 
@@ -121,7 +121,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setBoolean(int parameterIndex, boolean x) {
+    public void setBoolean(int parameterIndex, boolean x) throws SQLException {
     }
 
     /**
@@ -133,7 +133,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setByte(int parameterIndex, byte x) {
+    public void setByte(int parameterIndex, byte x) throws SQLException {
     }
 
     /**
@@ -145,7 +145,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setShort(int parameterIndex, short x) {
+    public void setShort(int parameterIndex, short x) throws SQLException {
     }
 
     /**
@@ -157,7 +157,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setInt(int parameterIndex, int x) {
+    public void setInt(int parameterIndex, int x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -170,7 +170,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setLong(int parameterIndex, long x) {
+    public void setLong(int parameterIndex, long x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -183,7 +183,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setFloat(int parameterIndex, float x) {
+    public void setFloat(int parameterIndex, float x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -196,7 +196,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setDouble(int parameterIndex, double x) {
+    public void setDouble(int parameterIndex, double x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -209,7 +209,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setBigDecimal(int parameterIndex, BigDecimal x) {
+    public void setBigDecimal(int parameterIndex, BigDecimal x) throws SQLException {
     }
 
     /**
@@ -224,7 +224,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setString(int parameterIndex, String x) {
+    public void setString(int parameterIndex, String x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -238,7 +238,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setBytes(int parameterIndex, byte[] x) {
+    public void setBytes(int parameterIndex, byte[] x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -251,7 +251,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setDate(int parameterIndex, java.sql.Date x) {
+    public void setDate(int parameterIndex, java.sql.Date x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -264,7 +264,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setTime(int parameterIndex, java.sql.Time x) {
+    public void setTime(int parameterIndex, java.sql.Time x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -278,7 +278,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param x the parameter value
      * @exception SQLException if a database access error occurs
      */
-    public void setTimestamp(int parameterIndex, java.sql.Timestamp x) {
+    public void setTimestamp(int parameterIndex, java.sql.Timestamp x) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -300,7 +300,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param length the number of bytes in the stream
      * @exception SQLException if a database access error occurs
      */
-    public void setAsciiStream(int parameterIndex, java.io.InputStream x, int length) {
+    public void setAsciiStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
     }
 
     /**
@@ -326,7 +326,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @deprecated
      */
-    public void setUnicodeStream(int parameterIndex, java.io.InputStream x, int length) {
+    public void setUnicodeStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
     }
 
     /**
@@ -346,7 +346,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @param length the number of bytes in the stream
      * @exception SQLException if a database access error occurs
      */
-    public void setBinaryStream(int parameterIndex, java.io.InputStream x, int length) {
+    public void setBinaryStream(int parameterIndex, java.io.InputStream x, int length) throws SQLException {
     }
 
     /**
@@ -359,7 +359,7 @@ public class EmulatedStatement implements PreparedStatement {
      *
      * @exception SQLException if a database access error occurs
      */
-    public void clearParameters() {
+    public void clearParameters() throws SQLException {
     }
 
     //----------------------------------------------------------------------
@@ -395,7 +395,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @see Types
      */
-    public void setObject(int parameterIndex, Object x, int targetSqlType, int scale) {
+    public void setObject(int parameterIndex, Object x, int targetSqlType, int scale) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -410,7 +410,7 @@ public class EmulatedStatement implements PreparedStatement {
     *                      sent to the database
     * @exception SQLException if a database access error occurs
     */
-    public void setObject(int parameterIndex, Object x, int targetSqlType) {
+    public void setObject(int parameterIndex, Object x, int targetSqlType) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -444,7 +444,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs or the type
      *            of the given object is ambiguous
      */
-    public void setObject(int parameterIndex, Object x) {
+    public void setObject(int parameterIndex, Object x) throws SQLException {
         while (this.parameters.size() < parameterIndex) {
             this.parameters.add(null);
         }
@@ -490,7 +490,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @see Statement#addBatch
      * @since 1.2
      */
-    public void addBatch() {
+    public void addBatch() throws SQLException {
         this.batch++;
     }
 
@@ -514,7 +514,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setCharacterStream(int parameterIndex, java.io.Reader reader, int length) {
+    public void setCharacterStream(int parameterIndex, java.io.Reader reader, int length) throws SQLException {
     }
 
     /**
@@ -528,7 +528,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setRef(int i, Ref x) {
+    public void setRef(int i, Ref x) throws SQLException {
     }
 
     /**
@@ -541,7 +541,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setBlob(int i, Blob x) {
+    public void setBlob(int i, Blob x) throws SQLException {
         setObject(i, x);
     }
 
@@ -555,7 +555,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setClob(int i, Clob x) {
+    public void setClob(int i, Clob x) throws SQLException {
         setObject(i, x);
     }
 
@@ -569,7 +569,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setArray(int i, Array x) {
+    public void setArray(int i, Array x) throws SQLException {
         setObject(i, x);
     }
 
@@ -596,7 +596,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public ResultSetMetaData getMetaData() {
+    public ResultSetMetaData getMetaData() throws SQLException {
         return null;
     }
 
@@ -617,7 +617,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setDate(int parameterIndex, java.sql.Date x, Calendar cal) {
+    public void setDate(int parameterIndex, java.sql.Date x, Calendar cal) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -638,7 +638,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setTime(int parameterIndex, java.sql.Time x, Calendar cal) {
+    public void setTime(int parameterIndex, java.sql.Time x, Calendar cal) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -659,7 +659,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setTimestamp(int parameterIndex, java.sql.Timestamp x, Calendar cal) {
+    public void setTimestamp(int parameterIndex, java.sql.Timestamp x, Calendar cal) throws SQLException {
         setObject(parameterIndex, x);
     }
 
@@ -691,7 +691,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void setNull(int paramIndex, int sqlType, String typeName) {
+    public void setNull(int paramIndex, int sqlType, String typeName) throws SQLException {
         setObject(paramIndex, null);
     }
 
@@ -707,7 +707,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void setURL(int parameterIndex, java.net.URL x) {
+    public void setURL(int parameterIndex, java.net.URL x) throws SQLException {
     }
 
     /**
@@ -721,7 +721,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @see ParameterMetaData
      * @since 1.4
      */
-    public ParameterMetaData getParameterMetaData() {
+    public ParameterMetaData getParameterMetaData() throws SQLException {
         return null;
     }
 
@@ -776,7 +776,7 @@ public class EmulatedStatement implements PreparedStatement {
      *
      * @exception SQLException if a database access error occurs
      */
-    public void close() {
+    public void close() throws SQLException {
     }
 
     //----------------------------------------------------------------------
@@ -796,7 +796,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @see #setMaxFieldSize
      */
-    public int getMaxFieldSize() {
+    public int getMaxFieldSize() throws SQLException {
         return 0;
     }
 
@@ -812,10 +812,10 @@ public class EmulatedStatement implements PreparedStatement {
      *
      * @param max the new column size limit in bytes; zero means there is no limit
      * @exception SQLException if a database access error occurs
-     *            or the condition max >= 0 is not satisfied
+     *            or the condition max &gt;= 0 is not satisfied
      * @see #getMaxFieldSize
      */
-    public void setMaxFieldSize(int max) {
+    public void setMaxFieldSize(int max) throws SQLException {
     }
 
     /**
@@ -830,7 +830,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @see #setMaxRows
      */
-    public int getMaxRows() {
+    public int getMaxRows() throws SQLException {
         return 0;
     }
 
@@ -842,10 +842,10 @@ public class EmulatedStatement implements PreparedStatement {
      *
      * @param max the new max rows limit; zero means there is no limit
      * @exception SQLException if a database access error occurs
-     *            or the condition max >= 0 is not satisfied
+     *            or the condition max &gt;= 0 is not satisfied
      * @see #getMaxRows
      */
-    public void setMaxRows(int max) {
+    public void setMaxRows(int max) throws SQLException {
     }
 
     /**
@@ -861,7 +861,7 @@ public class EmulatedStatement implements PreparedStatement {
      *       <code>false</code> to disable it
      * @exception SQLException if a database access error occurs
      */
-    public void setEscapeProcessing(boolean enable) {
+    public void setEscapeProcessing(boolean enable) throws SQLException {
     }
 
     /**
@@ -874,7 +874,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @see #setQueryTimeout
      */
-    public int getQueryTimeout() {
+    public int getQueryTimeout() throws SQLException {
         return 0;
     }
 
@@ -886,10 +886,10 @@ public class EmulatedStatement implements PreparedStatement {
      * @param seconds the new query timeout limit in seconds; zero means
      *        there is no limit
      * @exception SQLException if a database access error occurs
-     *            or the condition seconds >= 0 is not satisfied
+     *            or the condition seconds &gt;= 0 is not satisfied
      * @see #getQueryTimeout
      */
-    public void setQueryTimeout(int seconds) {
+    public void setQueryTimeout(int seconds) throws SQLException {
     }
 
     /**
@@ -900,7 +900,7 @@ public class EmulatedStatement implements PreparedStatement {
      *
      * @exception SQLException if a database access error occurs
      */
-    public void cancel() {
+    public void cancel() throws SQLException {
     }
 
     /**
@@ -923,7 +923,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs or this
      *            method is called on a closed statement
      */
-    public SQLWarning getWarnings() {
+    public SQLWarning getWarnings() throws SQLException {
         return null;
     }
 
@@ -936,7 +936,7 @@ public class EmulatedStatement implements PreparedStatement {
      *
      * @exception SQLException if a database access error occurs
      */
-    public void clearWarnings() {
+    public void clearWarnings() throws SQLException {
     }
 
     /**
@@ -960,7 +960,7 @@ public class EmulatedStatement implements PreparedStatement {
      *             a connection
      * @exception SQLException if a database access error occurs
      */
-    public void setCursorName(String name) {
+    public void setCursorName(String name) throws SQLException {
     }
 
     //----------------------- Multiple Results --------------------------
@@ -1001,7 +1001,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @see #execute
      */
-    public ResultSet getResultSet() {
+    public ResultSet getResultSet() throws SQLException {
         return null;
     }
 
@@ -1015,7 +1015,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @see #execute
      */
-    public int getUpdateCount() {
+    public int getUpdateCount() throws SQLException {
         return 0;
     }
 
@@ -1028,7 +1028,7 @@ public class EmulatedStatement implements PreparedStatement {
      * <P>There are no more results when the following is true:
      * <PRE>
      *     // stmt is a Statement object
-     *     ((stmt.getMoreResults() == false) && (stmt.getUpdateCount() == -1))
+     *     ((stmt.getMoreResults() == false) &amp;&amp; (stmt.getUpdateCount() == -1))
      * </PRE>
      *
      * @return <code>true</code> if the next result is a <code>ResultSet</code>
@@ -1037,7 +1037,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @see #execute
      */
-    public boolean getMoreResults() {
+    public boolean getMoreResults() throws SQLException {
         return false;
     }
 
@@ -1062,7 +1062,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @since 1.2
      * @see #getFetchDirection
      */
-    public void setFetchDirection(int direction) {
+    public void setFetchDirection(int direction) throws SQLException {
     }
 
     /**
@@ -1079,7 +1079,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @since 1.2
      * @see #setFetchDirection
      */
-    public int getFetchDirection() {
+    public int getFetchDirection() throws SQLException {
         return 0;
     }
 
@@ -1092,12 +1092,12 @@ public class EmulatedStatement implements PreparedStatement {
      *
      * @param rows the number of rows to fetch
      * @exception SQLException if a database access error occurs, or the
-     *        condition 0 <= <code>rows</code> <= <code>this.getMaxRows()</code>
+     *        condition 0 &lt;= <code>rows</code> &lt;= <code>this.getMaxRows()</code>
      *        is not satisfied.
      * @since 1.2
      * @see #getFetchSize
      */
-    public void setFetchSize(int rows) {
+    public void setFetchSize(int rows) throws SQLException {
     }
 
     /**
@@ -1114,7 +1114,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @since 1.2
      * @see #setFetchSize
      */
-    public int getFetchSize() {
+    public int getFetchSize() throws SQLException {
         return 0;
     }
 
@@ -1127,7 +1127,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public int getResultSetConcurrency() {
+    public int getResultSetConcurrency() throws SQLException {
         return 0;
     }
 
@@ -1141,7 +1141,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public int getResultSetType() {
+    public int getResultSetType() throws SQLException {
         return 0;
     }
 
@@ -1159,7 +1159,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @see #executeBatch
      * @since 1.2
      */
-    public void addBatch(String sql) {
+    public void addBatch(String sql) throws SQLException {
     }
 
     /**
@@ -1173,7 +1173,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @see #addBatch
      * @since 1.2
      */
-    public void clearBatch() {
+    public void clearBatch() throws SQLException {
     }
 
     /**
@@ -1224,7 +1224,7 @@ public class EmulatedStatement implements PreparedStatement {
      * database fails to execute properly or attempts to return a result set.
      * @since 1.3
      */
-    public int[] executeBatch(){
+    public int[] executeBatch() throws SQLException {
         int result[] = new int[this.batch];
         for (int index = 0; index < this.batch; index++) {
             result[index] = 1;
@@ -1240,7 +1240,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Connection getConnection() {
+    public Connection getConnection() throws SQLException {
         return connection;
     }
 
@@ -1255,7 +1255,7 @@ public class EmulatedStatement implements PreparedStatement {
      * <P>There are no more results when the following is true:
      * <PRE>
      *     // stmt is a Statement object
-     *     ((stmt.getMoreResults() == false) && (stmt.getUpdateCount() == -1))
+     *     ((stmt.getMoreResults() == false) &amp;&amp; (stmt.getUpdateCount() == -1))
      * </PRE>
      *
      * @param current one of the following <code>Statement</code>
@@ -1276,7 +1276,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @since 1.4
      * @see #execute
      */
-    public boolean getMoreResults(int current) {
+    public boolean getMoreResults(int current) throws SQLException {
         return false;
     }
 
@@ -1291,7 +1291,7 @@ public class EmulatedStatement implements PreparedStatement {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public ResultSet getGeneratedKeys() {
+    public ResultSet getGeneratedKeys() throws SQLException {
         return null;
     }
 
@@ -1505,7 +1505,7 @@ public class EmulatedStatement implements PreparedStatement {
      *
      * @since 1.4
      */
-    public int getResultSetHoldability() {
+    public int getResultSetHoldability() throws SQLException {
         return 0;
     }
 

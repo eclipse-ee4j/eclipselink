@@ -60,7 +60,7 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  *   It's possible to set error on a Handling (see examples preLogin and postLogin) -
  *   that sends the erroneous Handling to errors list (still kept on handlings list, too).
  *
- * @see SessionEventManager#addListener(SessionEventListener)
+ * @see "SessionEventManager#addListener(SessionEventListener)"
  * @see Session#getEventManager()
  * @see SessionEvent
  */

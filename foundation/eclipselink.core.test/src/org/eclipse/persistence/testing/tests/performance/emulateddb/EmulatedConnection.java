@@ -314,7 +314,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs or this
      *            method is called during a transaction
      */
-    public void setReadOnly(boolean readOnly) {
+    public void setReadOnly(boolean readOnly) throws SQLException {
     }
 
     /**
@@ -325,7 +325,7 @@ public class EmulatedConnection implements Connection {
      *         is read-only; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean isReadOnly() {
+    public boolean isReadOnly() throws SQLException {
         return false;
     }
 
@@ -342,7 +342,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #getCatalog
      */
-    public void setCatalog(String catalog) {
+    public void setCatalog(String catalog) throws SQLException {
     }
 
     /**
@@ -352,7 +352,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #setCatalog
      */
-    public String getCatalog() {
+    public String getCatalog() throws SQLException {
         return null;
     }
 
@@ -378,7 +378,7 @@ public class EmulatedConnection implements Connection {
      * @see DatabaseMetaData#supportsTransactionIsolationLevel
      * @see #getTransactionIsolation
      */
-    public void setTransactionIsolation(int level) {
+    public void setTransactionIsolation(int level) throws SQLException {
     }
 
     /**
@@ -395,7 +395,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #setTransactionIsolation
      */
-    public int getTransactionIsolation() {
+    public int getTransactionIsolation() throws SQLException {
         return 0;
     }
 
@@ -420,7 +420,7 @@ public class EmulatedConnection implements Connection {
      *            this method is called on a closed connection
      * @see SQLWarning
      */
-    public SQLWarning getWarnings() {
+    public SQLWarning getWarnings() throws SQLException {
         return null;
     }
 
@@ -432,7 +432,7 @@ public class EmulatedConnection implements Connection {
      *
      * @exception SQLException if a database access error occurs
      */
-    public void clearWarnings() {
+    public void clearWarnings() throws SQLException {
     }
 
     //--------------------------JDBC 2.0-----------------------------
@@ -533,7 +533,7 @@ public class EmulatedConnection implements Connection {
      * @since 1.2
      * @see #setTypeMap
      */
-    public java.util.Map getTypeMap() {
+    public java.util.Map getTypeMap() throws SQLException {
         return null;
     }
 
@@ -551,7 +551,7 @@ public class EmulatedConnection implements Connection {
      * @since 1.2
      * @see #getTypeMap
      */
-    public void setTypeMap(java.util.Map map) {
+    public void setTypeMap(java.util.Map map) throws SQLException {
     }
 
     //--------------------------JDBC 3.0-----------------------------
@@ -571,7 +571,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
-    public void setHoldability(int holdability) {
+    public void setHoldability(int holdability) throws SQLException {
     }
 
     /**
@@ -586,7 +586,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
-    public int getHoldability() {
+    public int getHoldability() throws SQLException {
         return 0;
     }
 
@@ -601,7 +601,7 @@ public class EmulatedConnection implements Connection {
      * @see Savepoint
      * @since 1.4
      */
-    public Savepoint setSavepoint() {
+    public Savepoint setSavepoint() throws SQLException {
         return null;
     }
 
@@ -617,7 +617,7 @@ public class EmulatedConnection implements Connection {
      * @see Savepoint
      * @since 1.4
      */
-    public Savepoint setSavepoint(String name) {
+    public Savepoint setSavepoint(String name) throws SQLException {
         return null;
     }
 
@@ -636,7 +636,7 @@ public class EmulatedConnection implements Connection {
      * @see #rollback
      * @since 1.4
      */
-    public void rollback(Savepoint savepoint) {
+    public void rollback(Savepoint savepoint) throws SQLException {
         return;
     }
 
@@ -651,7 +651,7 @@ public class EmulatedConnection implements Connection {
      *            savepoint in the current transaction
      * @since 1.4
      */
-    public void releaseSavepoint(Savepoint savepoint) {
+    public void releaseSavepoint(Savepoint savepoint)throws SQLException  {
         return;
     }
 
@@ -941,13 +941,13 @@ public class EmulatedConnection implements Connection {
         return iFace.cast(this);
     }
 
-    public int getNetworkTimeout(){return 0;}
+    public int getNetworkTimeout() throws SQLException {return 0;}
 
-    public void setNetworkTimeout(Executor executor, int milliseconds){}
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException{}
 
-    public void abort(Executor executor){}
+    public void abort(Executor executor) throws SQLException {}
 
-    public String getSchema(){return null;}
+    public String getSchema() throws SQLException {return null;}
 
-    public void setSchema(String schema){}
+    public void setSchema(String schema) throws SQLException {}
 }
