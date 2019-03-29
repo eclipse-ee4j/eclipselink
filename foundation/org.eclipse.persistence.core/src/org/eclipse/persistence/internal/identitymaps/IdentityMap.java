@@ -45,51 +45,51 @@ public interface IdentityMap extends Cloneable{
      * This first thread will get an active lock.
      * Other threads will get deferred locks, all threads will wait until all other threads are complete before releasing their locks.
      */
-    public CacheKey acquireDeferredLock(Object primaryKey, boolean isCacheCheckComplete);
+    CacheKey acquireDeferredLock(Object primaryKey, boolean isCacheCheckComplete);
 
     /**
      * Acquire an active lock on the object.
      * This is used by reading (when using indirection or no relationships) and by merge.
      */
-    public CacheKey acquireLock(Object primaryKey, boolean forMerge, boolean isCacheCheckComplete);
+    CacheKey acquireLock(Object primaryKey, boolean forMerge, boolean isCacheCheckComplete);
 
     /**
      * Acquire an active lock on the object, if not already locked.
      * This is used by merge for missing existing objects.
      */
-    public CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge);
+    CacheKey acquireLockNoWait(Object primaryKey, boolean forMerge);
 
     /**
      * Acquire an active lock on the object, if not already locked.
      * This is used by merge for missing existing objects.
      */
-    public CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait);
+    CacheKey acquireLockWithWait(Object primaryKey, boolean forMerge, int wait);
 
     /**
      * Acquire a read lock on the object.
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
-    public CacheKey acquireReadLockOnCacheKey(Object primaryKey);
+    CacheKey acquireReadLockOnCacheKey(Object primaryKey);
 
     /**
      * Acquire a read lock on the object, if not already locked.
      * This is used by UnitOfWork cloning.
      * This will allow multiple users to read the same object but prevent writes to the object while the read lock is held.
      */
-    public CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey);
+    CacheKey acquireReadLockOnCacheKeyNoWait(Object primaryKey);
 
     /**
      * Clone the map and all of the CacheKeys.
      * This is used by UnitOfWork commitAndResumeOnFailure to avoid corrupting the cache during a failed commit.
      */
-    public Object clone();
+    Object clone();
 
         /**
      * Add all locked CacheKeys to the map grouped by thread.
      * Used to print all the locks in the identity map.
      */
-    public void collectLocks(HashMap threadList);
+    void collectLocks(HashMap threadList);
 
 
     /**
@@ -97,18 +97,18 @@ public interface IdentityMap extends Cloneable{
      * User API.
      * @param primaryKey is the primary key for the object to search for.
      */
-    public boolean containsKey(Object primaryKey);
+    boolean containsKey(Object primaryKey);
 
     /**
      * Allow for the cache to be iterated on.
      */
-    public Enumeration elements();
+    Enumeration elements();
 
     /**
      * Return the object cached in the identity map or null if it could not be found.
      * User API.
      */
-    public Object get(Object primaryKey);
+    Object get(Object primaryKey);
 
     /**
      * ADVANCED:
@@ -119,7 +119,7 @@ public interface IdentityMap extends Cloneable{
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
-    public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
+    Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
 
     /**
      * ADVANCED:
@@ -130,62 +130,62 @@ public interface IdentityMap extends Cloneable{
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
-    public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
+    Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session);
 
     /**
      * Get the cache key (with object) for the primary key.
      */
-    public CacheKey getCacheKey(Object primaryKey, boolean forMerge);
+    CacheKey getCacheKey(Object primaryKey, boolean forMerge);
 
     /**
      * Get the cache key (with object) for the primary key in order to acquire a lock.
      */
-    public CacheKey getCacheKeyForLock(Object primaryKey);
+    CacheKey getCacheKeyForLock(Object primaryKey);
 
         /**
      * Return the class that this is the map for.
      */
-    public Class getDescriptorClass();
+    Class getDescriptorClass();
 
     /**
      * Return the descriptor that this is the map for.
      */
-    public ClassDescriptor getDescriptor();
+    ClassDescriptor getDescriptor();
 
     /**
      * @return The maxSize for the IdentityMap (NOTE: some subclasses may use this differently).
      */
-    public int getMaxSize();
+    int getMaxSize();
 
     /**
      * Return the number of CacheKeys in the IdentityMap.
      * This may contain weak referenced objects that have been garbage collected.
      */
-    public int getSize();
+    int getSize();
 
     /**
      * Return the number of actual objects of type myClass in the IdentityMap.
      * Recurse = true will include subclasses of myClass in the count.
      */
-    public int getSize(Class myClass, boolean recurse);
+    int getSize(Class myClass, boolean recurse);
 
     /**
      * Get the wrapper object from the cache key associated with the given primary key,
      * this is used for EJB2.
      */
-    public Object getWrapper(Object primaryKey);
+    Object getWrapper(Object primaryKey);
 
     /**
      * Get the write lock value from the cache key associated to the primarykey.
      * User API.
      */
-    public Object getWriteLockValue(Object primaryKey);
+    Object getWriteLockValue(Object primaryKey);
 
     /**
      * Allow for the CacheKeys to be iterated on.
      * Read locks should be checked
      */
-    public Enumeration<CacheKey> keys();
+    Enumeration<CacheKey> keys();
 
     /**
      * Allow for the CacheKeys to be iterated on using copy of keys enumeration.
@@ -193,19 +193,19 @@ public interface IdentityMap extends Cloneable{
      *
      * @return clone of the CacheKeys enumeration
      */
-    public Enumeration<CacheKey> cloneKeys();
+    Enumeration<CacheKey> cloneKeys();
 
     /**
      * Allow for the CacheKeys to be iterated on.
      * @param checkReadLocks - true if readLocks should be checked, false otherwise.
      */
-    public Enumeration<CacheKey> keys(boolean checkReadLocks);
+    Enumeration<CacheKey> keys(boolean checkReadLocks);
 
     /**
      * Notify the cache that a lazy relationship has been triggered in the object
      * and the cache may need to be updated
      */
-    public void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface valueHolder,  ForeignReferenceMapping mapping);
+    void lazyRelationshipLoaded(Object rootEntity, ValueHolderInterface valueHolder,  ForeignReferenceMapping mapping);
 
     /**
      * Store the object in the cache at its primary key.
@@ -216,50 +216,50 @@ public interface IdentityMap extends Cloneable{
      * @param object is the domain object to cache.
      * @param writeLockValue is the current write lock value of object, if null the version is ignored.
      */
-    public CacheKey put(Object primaryKey, Object object, Object writeLockValue, long readTime);
+    CacheKey put(Object primaryKey, Object object, Object writeLockValue, long readTime);
 
     /**
      * This method may be called during initialize all identity maps.  It allows the identity map
      * or interceptor the opportunity to release any resources before being thrown away.
      */
-    public void release();
+    void release();
 
     /**
      * Remove the CacheKey with the primaryKey from the map.
      * This is used by DeleteObjectQuery and merge.
      * This is also an advanced (very) user API.
      */
-    public Object remove(Object primaryKey, Object object);
+    Object remove(Object primaryKey, Object object);
 
     /**
      * Remove the CacheKey from the map.
      */
-    public Object remove(CacheKey cacheKey);
+    Object remove(CacheKey cacheKey);
 
     /**
      * This method will be used to update the max cache size, any objects exceeding the max cache size will
      * be remove from the cache. Please note that this does not remove the object from the identityMap, except in
      * the case of the CacheIdentityMap.
      */
-    public void updateMaxSize(int maxSize);
+    void updateMaxSize(int maxSize);
 
     /**
      * Set the descriptor that this is the map for.
      */
-    public void setDescriptor(ClassDescriptor descriptor);
+    void setDescriptor(ClassDescriptor descriptor);
 
     /**
      * Update the wrapper object in the CacheKey associated with the given primaryKey,
      * this is used for EJB2.
      */
-    public void setWrapper(Object primaryKey, Object wrapper);
+    void setWrapper(Object primaryKey, Object wrapper);
 
     /**
      * Update the write lock value of the CacheKey associated with the given primaryKey.
      * This is used by UpdateObjectQuery, and is also an advanced (very) user API.
      */
-    public void setWriteLockValue(Object primaryKey, Object writeLockValue);
+    void setWriteLockValue(Object primaryKey, Object writeLockValue);
 
     @Override
-    public String toString();
+    String toString();
 }

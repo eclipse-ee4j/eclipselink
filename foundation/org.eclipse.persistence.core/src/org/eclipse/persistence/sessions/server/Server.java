@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * to communicate to the server through.
      * This method allows for a client session to be acquired sharing the same login as the server session.
      */
-    public ClientSession acquireClientSession() throws DatabaseException;
+    ClientSession acquireClientSession() throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -60,7 +60,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * of connection allocated on the server session.
      * By default this uses a lazy connection policy.
      */
-    public ClientSession acquireClientSession(String poolName);
+    ClientSession acquireClientSession(String poolName);
 
     /**
      * PUBLIC:
@@ -72,46 +72,46 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * all database modification for all units of work acquired from the client session.
      * By default this does not use a lazy connection policy.
      */
-    public ClientSession acquireClientSession(Login login);
+    ClientSession acquireClientSession(Login login);
 
     /**
      * PUBLIC:
      * Return a client session for this server session.
      * The connection policy specifies how the client session's connection will be acquired.
      */
-    public ClientSession acquireClientSession(ConnectionPolicy connectionPolicy);
+    ClientSession acquireClientSession(ConnectionPolicy connectionPolicy);
 
     /**
      * PUBLIC:
      * Add the connection pool.
      * Connections are pooled to share and restrict the number of database connections.
      */
-    public void addConnectionPool(String poolName, Login login, int minNumberOfConnections, int maxNumberOfConnections);
+    void addConnectionPool(String poolName, Login login, int minNumberOfConnections, int maxNumberOfConnections);
 
     /**
      * PUBLIC:
      * Connection are pooled to share and restrict the number of database connections.
      */
-    public void addConnectionPool(ConnectionPool pool);
+    void addConnectionPool(ConnectionPool pool);
 
     /**
      * PUBLIC:
      * Return the pool by name.
      */
-    public ConnectionPool getConnectionPool(String poolName);
+    ConnectionPool getConnectionPool(String poolName);
 
     /**
      * PUBLIC:
      * The default connection policy is used by default by the acquireClientConnection() protocol.
      * By default it uses the default connection pool.
      */
-    public ConnectionPolicy getDefaultConnectionPolicy();
+    ConnectionPolicy getDefaultConnectionPolicy();
 
     /**
      * PUBLIC:
      * Return the default connection pool.
      */
-    public ConnectionPool getDefaultConnectionPool();
+    ConnectionPool getDefaultConnectionPool();
 
     /**
      * PUBLIC:
@@ -119,7 +119,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * This can be enforced to make up for the resource limitation of most JDBC drivers and database clients.
      * By default this is 50.
      */
-    public int getMaxNumberOfNonPooledConnections();
+    int getMaxNumberOfNonPooledConnections();
 
 
     /**
@@ -133,21 +133,20 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * @see #useExternalReadConnectionPool
      * @see #useReadConnectionPool
      */
-    public ConnectionPool getReadConnectionPool();
+    ConnectionPool getReadConnectionPool();
 
     /**
      * PUBLIC:
      * Set the login.
      */
-    @Override
-    public void setDatasourceLogin(Login login);
+    @Override void setDatasourceLogin(Login login);
 
     /**
      * PUBLIC:
      * The default connection policy is used by default by the acquireClientConnection() protocol.
      * By default it uses the default connection pool.
      */
-    public void setDefaultConnectionPolicy(ConnectionPolicy defaultConnectionPolicy);
+    void setDefaultConnectionPolicy(ConnectionPolicy defaultConnectionPolicy);
 
     /**
      * PUBLIC:
@@ -155,7 +154,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * This can be enforced to make up for the resource limitation of most JDBC drivers and database clients.
      * By default this is 50.
      */
-    public void setMaxNumberOfNonPooledConnections(int maxNumberOfNonPooledConnections);
+    void setMaxNumberOfNonPooledConnections(int maxNumberOfNonPooledConnections);
 
 
     /**
@@ -168,7 +167,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      *
      * @throws ValidationException if already connected
      */
-    public void setReadConnectionPool(ConnectionPool readConnectionPool);
+    void setReadConnectionPool(ConnectionPool readConnectionPool);
 
     /**
      * PUBLIC:
@@ -185,7 +184,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * @see #useReadConnectionPool
      * @see #useExternalReadConnectionPool
      */
-    public void useExclusiveReadConnectionPool(int minNumberOfConnections, int maxNumberOfConnections);
+    void useExclusiveReadConnectionPool(int minNumberOfConnections, int maxNumberOfConnections);
 
     /**
      * PUBLIC:
@@ -202,7 +201,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * @see #useReadConnectionPool
      * @see #useExternalReadConnectionPool
      */
-    public void useExclusiveReadConnectionPool(int initialNumberOfConnections, int minNumberOfConnections, int maxNumberOfConnections);
+    void useExclusiveReadConnectionPool(int initialNumberOfConnections, int minNumberOfConnections, int maxNumberOfConnections);
 
     /**
      * PUBLIC:
@@ -216,7 +215,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * @see #useReadConnectionPool
      * @see #useExclusiveReadConnectionPool
      */
-    public void useExternalReadConnectionPool();
+    void useExternalReadConnectionPool();
 
     /**
      * PUBLIC:
@@ -242,7 +241,7 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * @see #useExternalReadConnectionPool
      * @see #useExclusiveReadConnectionPool
      */
-    public void useReadConnectionPool(int minNumberOfConnections, int maxNumberOfConnections);
+    void useReadConnectionPool(int minNumberOfConnections, int maxNumberOfConnections);
 
     /**
      * PUBLIC:
@@ -269,6 +268,6 @@ public interface Server extends org.eclipse.persistence.sessions.DatabaseSession
      * @see #useExternalReadConnectionPool
      * @see #useExclusiveReadConnectionPool
      */
-    public void useReadConnectionPool(int initialNumberOfConnections, int minNumberOfConnections, int maxNumberOfConnections);
+    void useReadConnectionPool(int initialNumberOfConnections, int minNumberOfConnections, int maxNumberOfConnections);
 
 }

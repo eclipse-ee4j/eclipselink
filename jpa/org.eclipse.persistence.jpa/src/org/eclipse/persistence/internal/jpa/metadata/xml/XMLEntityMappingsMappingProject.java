@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,13 +91,11 @@
 package org.eclipse.persistence.internal.jpa.metadata.xml;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.PropertyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EmbeddableAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.EntityAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.MappedSuperclassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.XMLAttributes;
-
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicCollectionAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.BasicMapAccessor;
@@ -113,17 +111,12 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.Transfor
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.TransientAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VariableOneToOneAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.mappings.VersionAccessor;
-import org.eclipse.persistence.internal.jpa.metadata.sop.SerializedObjectPolicyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.additionalcriteria.AdditionalCriteriaMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheIndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheInterceptorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.CacheMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.cache.TimeOfDayMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.changetracking.ChangeTrackingMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.columns.AssociationOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.AttributeOverrideMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.ColumnMetadata;
@@ -138,7 +131,6 @@ import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyForeignKe
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyJoinColumnMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.PrimaryKeyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.columns.TenantDiscriminatorColumnMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConversionValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConvertMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.ConverterMetadata;
@@ -150,18 +142,15 @@ import org.eclipse.persistence.internal.jpa.metadata.converters.SerializedConver
 import org.eclipse.persistence.internal.jpa.metadata.converters.StructConverterMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TemporalMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.converters.TypeConverterMetadata;
-
+import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CustomCopyPolicyMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.copypolicy.InstantiationCopyPolicyMetadata;
-import org.eclipse.persistence.internal.jpa.metadata.copypolicy.CloneCopyPolicyMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedAttributeNodeMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedEntityGraphMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.graphs.NamedSubgraphMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.inheritance.InheritanceMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.listeners.EntityListenerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.locking.OptimisticLockingMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.mappings.AccessMethodsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.BatchFetchMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.mappings.CascadeMetadata;
@@ -171,7 +160,6 @@ import org.eclipse.persistence.internal.jpa.metadata.mappings.ReturnInsertMetada
 import org.eclipse.persistence.internal.jpa.metadata.multitenant.MultitenantMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.multitenant.TenantTableDiscriminatorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.nosql.NoSqlMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.HashPartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.PartitioningMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.partitioning.PinnedPartitioningMetadata;
@@ -203,14 +191,14 @@ import org.eclipse.persistence.internal.jpa.metadata.queries.QueryHintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.QueryRedirectorsMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.SQLResultSetMappingMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.queries.StoredProcedureParameterMetadata;
-
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.GeneratedValueMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.SequenceGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.TableGeneratorMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.sequencing.UuidGeneratorMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.sop.SerializedObjectPolicyMetadata;
+import org.eclipse.persistence.internal.jpa.metadata.structures.ArrayAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.structures.StructureAccessor;
-
 import org.eclipse.persistence.internal.jpa.metadata.tables.CollectionTableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.IndexMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.JoinTableMetadata;
@@ -219,7 +207,7 @@ import org.eclipse.persistence.internal.jpa.metadata.tables.TableMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.tables.UniqueConstraintMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.ReadTransformerMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.transformers.WriteTransformerMetadata;
-
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLLogin;
@@ -793,9 +781,13 @@ public class XMLEntityMappingsMappingProject extends org.eclipse.persistence.ses
 
         XMLDirectMapping sharedMapping = new XMLDirectMapping();
         sharedMapping.setAttributeName("m_shared");
-        sharedMapping.setGetMethodName("getShared");
-        sharedMapping.setSetMethodName("setShared");
+        sharedMapping.setGetMethodName("getIsolation");
+        sharedMapping.setSetMethodName("setIsolation");
         sharedMapping.setXPath("@shared");
+        ObjectTypeConverter sharedConverter = new ObjectTypeConverter();
+        sharedConverter.addConversionValue("true", "ISOLATED");
+        sharedConverter.addConversionValue("false", "SHARED");
+        sharedMapping.setConverter(sharedConverter);
         descriptor.addMapping(sharedMapping);
 
         XMLDirectMapping isolationMapping = new XMLDirectMapping();

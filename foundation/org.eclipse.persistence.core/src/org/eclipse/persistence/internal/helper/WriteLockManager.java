@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -38,7 +38,6 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
@@ -256,7 +255,7 @@ public class WriteLockManager {
             // If the session in the mergemanager is not a unit of work then the
             // merge is of a changeSet into a distributed session.
             if (session.isUnitOfWork()) {
-                session = ((UnitOfWorkImpl)session).getParent();
+                session = session.getParent();
             }
             while (locksToAcquire) {
                 //lets assume all locks will be acquired
@@ -419,7 +418,7 @@ public class WriteLockManager {
                 // for others to find an prevent cycles
             }
             if (mergeManager.isTransitionedToDeferredLocks()){
-                lockedCacheKey.getDeferredLockManager(Thread.currentThread()).getActiveLocks().add(lockedCacheKey);
+                ConcurrencyManager.getDeferredLockManager(Thread.currentThread()).getActiveLocks().add(lockedCacheKey);
             }else{
                  mergeManager.getAcquiredLocks().add(lockedCacheKey);
             }

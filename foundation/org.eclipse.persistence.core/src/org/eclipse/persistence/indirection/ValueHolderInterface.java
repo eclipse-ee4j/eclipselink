@@ -24,19 +24,19 @@ package org.eclipse.persistence.indirection;
 public interface ValueHolderInterface<T> extends Cloneable {
 
     /** Can be used to have transparent indirection toString instantiate the objects. */
-    public static boolean shouldToStringInstantiate = false;
+    boolean shouldToStringInstantiate = false;
 
     /**
      * PUBLIC:
      * Copy the value holder (but not its' reference, shallow).
      */
-    public Object clone();
+    Object clone();
 
     /**
      * PUBLIC:
      * Return the value.
      */
-    public T getValue();
+    T getValue();
 
     /**
      * PUBLIC:
@@ -44,11 +44,11 @@ public interface ValueHolderInterface<T> extends Cloneable {
      * This is used periodically by the indirection policy to determine whether
      * to trigger the database read.
      */
-    public boolean isInstantiated();
+    boolean isInstantiated();
 
     /**
      * PUBLIC:
      * Set the value.
      */
-    public void setValue(T value);
+    void setValue(T value);
 }

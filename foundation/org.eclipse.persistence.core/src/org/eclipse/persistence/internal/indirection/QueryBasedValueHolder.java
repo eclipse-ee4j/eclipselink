@@ -131,7 +131,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
         if (this.query.isObjectBuildingQuery() && ((ObjectBuildingQuery)this.query).shouldRefreshIdentityMapResult()){
-            this.refreshCascade = ((ObjectBuildingQuery)this.query).getCascadePolicy();
+            this.refreshCascade = this.query.getCascadePolicy();
         }
         Object result = session.executeQuery(getQuery(), getRow());
         // Bug 489898 - ensure that the query's session is dereferenced, post-execution

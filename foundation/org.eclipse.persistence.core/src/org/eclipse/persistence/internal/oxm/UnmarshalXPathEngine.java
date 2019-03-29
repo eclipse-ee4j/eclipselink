@@ -169,8 +169,8 @@ public class UnmarshalXPathEngine <
     }
 
     public List<XMLEntry> selectNodes(Node contextNode, List<XML_FIELD> xmlFields, XMLNamespaceResolver xmlNamespaceResolver) throws XMLMarshalException {
-        List<XMLEntry> nodes = new ArrayList<XMLEntry>();
-        List<XPathFragment> firstFragments = new ArrayList<XPathFragment>(xmlFields.size());
+        List<XMLEntry> nodes = new ArrayList<>();
+        List<XPathFragment> firstFragments = new ArrayList<>(xmlFields.size());
         for(XML_FIELD nextField:xmlFields) {
             firstFragments.add(nextField.getXPathFragment());
         }
@@ -182,7 +182,7 @@ public class UnmarshalXPathEngine <
         NodeList childNodes = contextNode.getChildNodes();
         for(int i = 0, size = childNodes.getLength(); i < size; i++) {
             Node nextChild = childNodes.item(i);
-            List<XPathFragment> matchingFragments = new ArrayList<XPathFragment>();
+            List<XPathFragment> matchingFragments = new ArrayList<>();
             for(XPathFragment<XML_FIELD> nextFragment:xpathFragments) {
                 if((nextChild.getNodeType() == Node.TEXT_NODE || nextChild.getNodeType() == Node.CDATA_SECTION_NODE) && nextFragment.nameIsText()) {
                     addXMLEntry(nextChild, nextFragment.getXMLField(), entries);

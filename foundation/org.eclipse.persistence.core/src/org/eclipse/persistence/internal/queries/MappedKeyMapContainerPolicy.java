@@ -797,7 +797,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
             setKeyMapping(newKeyMapping);
         }
         if (((DatabaseMapping)keyMapping).isDirectToFieldMapping()) {
-            ((AbstractDirectMapping)keyMapping).setField(keyField);;
+            ((AbstractDirectMapping)keyMapping).setField(keyField);
         }
     }
 
@@ -946,7 +946,7 @@ public class MappedKeyMapContainerPolicy extends MapContainerPolicy implements C
                 query.setSession(session);
                 query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
                 int pkCount = foreignKeyValues.size();
-                Collection<Object> temp = new ArrayList<Object>();
+                Collection<Object> temp = new ArrayList<>();
                 List arguments = new ArrayList();
                 arguments.add(foreignKeyValues);
                 if (pkCount > 1000){

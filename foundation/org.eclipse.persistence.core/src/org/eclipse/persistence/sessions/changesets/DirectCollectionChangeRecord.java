@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,12 +30,12 @@ public interface DirectCollectionChangeRecord extends ChangeRecord {
      * This method returns the collection of Primitive Objects that were added to the collection.
      * @return java.util.Vector
      */
-    public java.util.Vector getAddObjectList();
+    java.util.Vector getAddObjectList();
 
     /**
      * ADVANCED:
      * This method returns the collection of Primitive Objects that were removed to the collection.
      * @return java.util.Vector
      */
-    public java.util.Vector getRemoveObjectList();
+    java.util.Vector getRemoveObjectList();
 }

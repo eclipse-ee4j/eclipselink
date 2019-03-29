@@ -107,7 +107,7 @@ public abstract class DatasourceCall implements Call {
      */
     public List<Integer> getParameterTypes() {
         if (parameterTypes == null) {
-            parameterTypes = new ArrayList<Integer>();
+            parameterTypes = new ArrayList<>();
         }
         return parameterTypes;
     }
@@ -193,7 +193,7 @@ public abstract class DatasourceCall implements Call {
         try {
             return super.clone();
         } catch (CloneNotSupportedException exception) {
-            ;//Do nothing
+            //Do nothing
         }
 
         return null;
@@ -948,7 +948,7 @@ public abstract class DatasourceCall implements Call {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         if (parameterTypes !=null) {
-            List<Integer> newParameterTypes = new ArrayList<Integer>(parameterTypes.size());
+            List<Integer> newParameterTypes = new ArrayList<>(parameterTypes.size());
             for (Integer type: parameterTypes){
                 if (LITERAL.equals(type)) {
                     newParameterTypes.add(LITERAL);

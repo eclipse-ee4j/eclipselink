@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -601,7 +601,6 @@ public class PropertiesHandler {
             valueArray = new Object[][] {
                 {TargetServer.None, pcg + "NoServerPlatform"},
                 {TargetServer.OC4J, pcg + "oc4j.Oc4jPlatform"},
-                {TargetServer.SunAS9, pcg + "sunas.SunAS9ServerPlatform"},
                 {TargetServer.Glassfish, pcg + "glassfish.GlassfishPlatform"},
                 {TargetServer.WebSphere, pcg + "was.WebSpherePlatform"},
                 {TargetServer.WebSphere_6_1, pcg + "was.WebSphere_6_1_Platform"},
@@ -613,7 +612,8 @@ public class PropertiesHandler {
                 {TargetServer.WebLogic_10, pcg + "wls.WebLogic_10_Platform"},
                 {TargetServer.WebLogic_12, pcg + "wls.WebLogic_12_Platform"},
                 {TargetServer.JBoss, pcg + "jboss.JBossPlatform"},
-                {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"},            };
+                {TargetServer.SAPNetWeaver_7_1, pcg + "sap.SAPNetWeaver_7_1_Platform"}
+                };
         }
     }
 

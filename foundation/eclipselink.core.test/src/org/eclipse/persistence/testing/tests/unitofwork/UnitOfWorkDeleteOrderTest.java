@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,11 @@ package org.eclipse.persistence.testing.tests.unitofwork;
 
 import java.util.List;
 import java.util.Random;
-import org.eclipse.persistence.sessions.*;
+
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.sessions.UnitOfWork.CommitOrderType;
 import org.eclipse.persistence.testing.framework.TestCase;
 import org.eclipse.persistence.testing.models.employee.domain.PhoneNumber;
 import org.eclipse.persistence.testing.tests.clientserver.Server;
@@ -53,11 +57,12 @@ public class UnitOfWorkDeleteOrderTest extends TestCase {
             this.clientSession.release();
         }
 
+        @Override
         public void run() {
             try {
                 for (int index = 0; index < 5; index++) {
                     UnitOfWork uow = this.clientSession.acquireUnitOfWork();
-                    uow.setShouldOrderUpdates(true);
+                    uow.setCommitOrder(CommitOrderType.ID);
                     List<PhoneNumber> phoneNumbers = uow.readAllObjects(PhoneNumber.class);
                     Random random = new Random();
                     for (PhoneNumber phoneNumber : phoneNumbers) {
@@ -81,6 +86,7 @@ public class UnitOfWorkDeleteOrderTest extends TestCase {
         setDescription("Test to ensure objects are deleted in order of PK when should order is set to avoid deadlock.");
     }
 
+    @Override
     public void setup() {
         this.login = (DatabaseLogin)getSession().getLogin().clone();
         this.server = new Server(this.login);
@@ -92,6 +98,7 @@ public class UnitOfWorkDeleteOrderTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
             this.clients[i].release();
@@ -99,6 +106,7 @@ public class UnitOfWorkDeleteOrderTest extends TestCase {
         this.server.logout();
     }
 
+    @Override
     public void test() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
             this.clients[i].start();
@@ -111,6 +119,7 @@ public class UnitOfWorkDeleteOrderTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
             if (this.clients[i].exception != null) {

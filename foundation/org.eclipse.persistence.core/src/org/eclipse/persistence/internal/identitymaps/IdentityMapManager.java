@@ -1286,7 +1286,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
     public void printLocks() {
         StringWriter writer = new StringWriter();
         HashMap threadCollection = new HashMap();
-        writer.write(TraceLocalization.buildMessage("lock_writer_header", (Object[])null) + Helper.cr());
+        writer.write(TraceLocalization.buildMessage("lock_writer_header", null) + Helper.cr());
         Iterator idenityMapsIterator = this.session.getIdentityMapAccessorInstance().getIdentityMapManager().getIdentityMaps().values().iterator();
         while (idenityMapsIterator.hasNext()) {
             IdentityMap idenityMap = (IdentityMap)idenityMapsIterator.next();
@@ -1327,7 +1327,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 }
             }
         }
-        writer.write(Helper.cr() + TraceLocalization.buildMessage("lock_writer_footer", (Object[])null) + Helper.cr());
+        writer.write(Helper.cr() + TraceLocalization.buildMessage("lock_writer_footer", null) + Helper.cr());
         this.session.log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), null, null, false);
     }
 
@@ -1339,7 +1339,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
         ClassDescriptor descriptor = this.session.getDescriptor(theClass);
         StringWriter writer = new StringWriter();
         HashMap threadCollection = new HashMap();
-        writer.write(TraceLocalization.buildMessage("lock_writer_header", (Object[])null) + Helper.cr());
+        writer.write(TraceLocalization.buildMessage("lock_writer_header", null) + Helper.cr());
         IdentityMap identityMap = getIdentityMap(descriptor, false);
         identityMap.collectLocks(threadCollection);
 
@@ -1368,7 +1368,7 @@ public class IdentityMapManager implements Serializable, Cloneable {
                 }
             }
         }
-        writer.write(Helper.cr() + TraceLocalization.buildMessage("lock_writer_footer", (Object[])null) + Helper.cr());
+        writer.write(Helper.cr() + TraceLocalization.buildMessage("lock_writer_footer", null) + Helper.cr());
         this.session.log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), null, null, false);
     }
 

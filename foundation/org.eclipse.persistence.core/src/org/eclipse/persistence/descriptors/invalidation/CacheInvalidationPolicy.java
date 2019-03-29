@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -132,32 +132,12 @@ public abstract class CacheInvalidationPolicy implements java.io.Serializable, C
 
     /**
      * PUBLIC:
-     * Set if expired object registered in the unit of work should be refreshed, default is true.
-     * @deprecated since EclipseLink 2.2
-     * @see #setShouldRefreshInvalidObjectsOnClone(boolean)
-     */
-    @Deprecated
-    public void setShouldRefreshInvalidObjectsInUnitOfWork(boolean shouldRefreshInvalidObjectsInUnitOfWork) {
-        this.shouldRefreshInvalidObjectsOnClone = shouldRefreshInvalidObjectsInUnitOfWork;
-    }
-
-    /**
-     * PUBLIC:
      * Set if expired object should be refreshed prior to cloning, default is true.  Applies to Protected Entities and UnitOfWork registration.
      */
     public void setShouldRefreshInvalidObjectsOnClone(boolean shouldRefreshInvalidObjectsOnClone) {
         this.shouldRefreshInvalidObjectsOnClone = shouldRefreshInvalidObjectsOnClone;
     }
-    /**
-     * PUBLIC:
-     * Return if expired object registered in the unit of work should be refreshed.
-     * @deprecated since EclipseLink 2.2
-     * @see #shouldRefreshInvalidObjectsOnClone()
-     */
-    @Deprecated
-    public boolean shouldRefreshInvalidObjectsInUnitOfWork() {
-        return shouldRefreshInvalidObjectsOnClone;
-    }
+
     /**
      * PUBLIC:
      * Return if expired object should be refreshed prior to cloning.  Applies to Protected Entities and UnitOfWork registration.

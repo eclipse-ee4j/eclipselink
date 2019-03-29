@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,7 +116,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
 
     private boolean isAny;
     private boolean isWriteOnly;
-    private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
+    private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();
     private boolean reuseContainer;
     private Converter converter;
     private XMLCompositeDirectCollectionMapping mixedContentMapping;
@@ -127,14 +127,14 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     private static final String IMAGE = "java.awt.Image";
 
     public XMLChoiceCollectionMapping() {
-        fieldToClassMappings = new HashMap<XMLField, Class>();
-        fieldToClassNameMappings = new HashMap<XMLField, String>();
-        classToFieldMappings = new HashMap<Class, XMLField>();
-        classNameToFieldMappings = new HashMap<String, XMLField>();
-        choiceElementMappings = new LinkedHashMap<XMLField, XMLMapping>();
-        fieldsToConverters = new HashMap<XMLField, Converter>();
-        choiceElementMappingsByClassName = new LinkedHashMap<String, XMLMapping>();
-        choiceElementMappingsByClass = new LinkedHashMap<Class, XMLMapping>();
+        fieldToClassMappings = new HashMap<>();
+        fieldToClassNameMappings = new HashMap<>();
+        classToFieldMappings = new HashMap<>();
+        classNameToFieldMappings = new HashMap<>();
+        choiceElementMappings = new LinkedHashMap<>();
+        fieldsToConverters = new HashMap<>();
+        choiceElementMappingsByClassName = new LinkedHashMap<>();
+        choiceElementMappingsByClass = new LinkedHashMap<>();
         this.containerPolicy = ContainerPolicy.buildDefaultPolicy();
     }
 
@@ -274,7 +274,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
                getContainerPolicy().addInto(value, container, executionSession);
            }
        }
-       ArrayList<XMLMapping> processedMappings = new ArrayList<XMLMapping>();
+       ArrayList<XMLMapping> processedMappings = new ArrayList<>();
        for(XMLMapping mapping:choiceElementMappings.values()) {
            if(((DatabaseMapping)mapping).isObjectReferenceMapping() && ((DatabaseMapping)mapping).isCollectionMapping() && !(processedMappings.contains(mapping))) {
                ((XMLCollectionReferenceMapping)mapping).readFromRowIntoObject(row, joinManager, ((XMLRecord)row).getCurrentObject(), cacheKey, sourceQuery, executionSession, isTargetProtected, container);
@@ -290,7 +290,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
             return;
         }
         Object attributeValue = getAttributeValueFromObject(object);
-        List<XMLEntry> nestedRows = new ArrayList<XMLEntry>();
+        List<XMLEntry> nestedRows = new ArrayList<>();
         XMLRecord record = (XMLRecord)row;
         //First determine which Field is associated with each value:
         if(null != attributeValue) {
@@ -384,7 +384,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
 
     @Override
     protected Vector<DatabaseField> collectFields() {
-        return new Vector<DatabaseField>(fieldToClassMappings.keySet());
+        return new Vector<>(fieldToClassMappings.keySet());
     }
 
     public void addChoiceElement(String xpath, Class elementType) {
@@ -522,7 +522,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         if (this.converter != null) {
             this.converter.initialize(this, session);
         }
-        ArrayList<XMLMapping> mappingsList = new ArrayList<XMLMapping>();
+        ArrayList<XMLMapping> mappingsList = new ArrayList<>();
         mappingsList.addAll(getChoiceElementMappings().values());
         for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
             if(!(mappingsList.contains(next))) {
@@ -700,7 +700,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     @Override
     public void addConverter(XMLField field, Converter converter) {
         if(this.fieldsToConverters == null) {
-            fieldsToConverters = new HashMap<XMLField, Converter>();
+            fieldsToConverters = new HashMap<>();
         }
         fieldsToConverters.put(field, converter);
     }
@@ -844,7 +844,7 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
         //Collection<XMLMapping> allMappings = new ArrayList<XMLMapping>();
-        ArrayList<XMLMapping> mappingsList = new ArrayList<XMLMapping>();
+        ArrayList<XMLMapping> mappingsList = new ArrayList<>();
         mappingsList.addAll(getChoiceElementMappings().values());
         if(isAny){
             anyMapping = new XMLAnyCollectionMapping();
@@ -913,14 +913,14 @@ public class XMLChoiceCollectionMapping extends DatabaseMapping implements Choic
     @Override
     public Map<Class, List<XMLField>> getClassToSourceFieldsMappings() {
         if(this.classToSourceFieldsMappings == null) {
-            this.classToSourceFieldsMappings = new HashMap<Class, List<XMLField>>();
+            this.classToSourceFieldsMappings = new HashMap<>();
         }
         return this.classToSourceFieldsMappings;
     }
 
     private Map<String, List<XMLField>> getClassNameToSourceFieldsMappings() {
         if(this.classNameToSourceFieldsMappings == null) {
-            this.classNameToSourceFieldsMappings = new HashMap<String, List<XMLField>>();
+            this.classNameToSourceFieldsMappings = new HashMap<>();
         }
         return this.classNameToSourceFieldsMappings;
     }

@@ -238,12 +238,12 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
             // This must not be set "accessible" - clone() must be public, and some JVM's do not allow access to JDK classes.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, "clone", (Class[])null, false));
+                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, "clone", null, false));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.methodDoesNotExistInContainerClass("clone", javaClass);
                 }
             } else {
-                cloneMethod = PrivilegedAccessHelper.getMethod(javaClass, "clone", (Class[])null, false);
+                cloneMethod = PrivilegedAccessHelper.getMethod(javaClass, "clone", null, false);
             }
         } catch (NoSuchMethodException ex) {
             throw QueryException.methodDoesNotExistInContainerClass("clone", javaClass);
@@ -299,7 +299,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, container, (Object[])null));
+                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, container, null));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {
@@ -309,7 +309,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
                     }
                 }
             } else {
-                return PrivilegedAccessHelper.invokeMethod(method, container, (Object[])null);
+                return PrivilegedAccessHelper.invokeMethod(method, container, null);
             }
         } catch (IllegalAccessException ex1) {
             throw QueryException.cannotAccessMethodOnObject(method, container);

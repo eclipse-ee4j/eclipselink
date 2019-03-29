@@ -45,21 +45,21 @@ public interface DirectCollectionMapping<
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    public Class getAttributeElementClass();
+    Class getAttributeElementClass();
 
-    public AbstractNullPolicy getNullPolicy();
+    AbstractNullPolicy getNullPolicy();
 
     /**
      * Return the converter on the mapping.
      * A converter can be used to convert between the direct collection's object value and database value.
      */
-    public CONVERTER getValueConverter();
+    CONVERTER getValueConverter();
 
-    public boolean isCDATA();
+    boolean isCDATA();
 
-    public boolean isCollapsingStringValues();
+    boolean isCollapsingStringValues();
 
-    public boolean isNormalizingStringValues();
+    boolean isNormalizingStringValues();
 
     /**
      * Set the class each element in the object's
@@ -68,7 +68,7 @@ public interface DirectCollectionMapping<
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    public void setAttributeElementClass(Class attributeElementClass);
+    void setAttributeElementClass(Class attributeElementClass);
 
     /**
      * Indicates that this mapping should collapse all string values before adding them
@@ -76,12 +76,12 @@ public interface DirectCollectionMapping<
      * any sequence of whitespace characters with a single space.
      * @param collapse
      */
-    public void setCollapsingStringValues(boolean collapse);
+    void setCollapsingStringValues(boolean collapse);
 
     /**
      * Set the field that holds the nested collection.
      */
-    public void setField(FIELD field);
+    void setField(FIELD field);
 
     /**
       * PUBLIC:
@@ -91,11 +91,11 @@ public interface DirectCollectionMapping<
       * This is optional - if left null, the elements will be added
       * to the database row's collection unconverted.
       */
-     public void setFieldElementClass(Class fieldElementClass);
+     void setFieldElementClass(Class fieldElementClass);
 
-    public void setIsCDATA(boolean CDATA);
+    void setIsCDATA(boolean CDATA);
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 
     /**
      * Indicates that this mapping should normalize all string values before adding them
@@ -103,39 +103,39 @@ public interface DirectCollectionMapping<
      * single space character.
      * @param normalize
      */
-    public void setNormalizingStringValues(boolean normalize);
+    void setNormalizingStringValues(boolean normalize);
 
-    public void setNullPolicy(AbstractNullPolicy nullPolicyFromProperty);
+    void setNullPolicy(AbstractNullPolicy nullPolicyFromProperty);
 
     /**
       * Sets whether the mapping uses a single node.
       * @param usesSingleNode True if the items in the collection are in a single node or false if each of the items in the collection is in its own node
       */
-     public void setUsesSingleNode(boolean usesSingleNode);
+     void setUsesSingleNode(boolean usesSingleNode);
 
     /**
      * Set the converter on the mapping.
      * A converter can be used to convert between the direct collection's object value and database value.
      */
-    public void setValueConverter(CONVERTER valueConverter);
+    void setValueConverter(CONVERTER valueConverter);
 
      /**
      * Set the Mapping field name attribute to the given XPath String
      * @param xpathString String
      */
-    public void setXPath(String xpathString);
+    void setXPath(String xpathString);
 
-     public void useCollectionClassName(String concreteContainerClassName);
+     void useCollectionClassName(String concreteContainerClassName);
 
      /**
      * Checks whether the mapping uses a single node.
      *
      * @return True if the items in the collection are in a single node or false if each of the items in the collection is in its own node.
      */
-    public boolean usesSingleNode();
+    boolean usesSingleNode();
 
-    public void setNullValue(Object nullValue);
+    void setNullValue(Object nullValue);
 
-    public Object getNullValue();
+    Object getNullValue();
 
 }

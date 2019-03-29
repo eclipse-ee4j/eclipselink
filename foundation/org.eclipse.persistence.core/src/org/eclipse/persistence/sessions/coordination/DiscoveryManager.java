@@ -94,7 +94,7 @@ public class DiscoveryManager implements Runnable {
      * Send out an announcement that we are here.
      */
     public void announceSession() {
-        rcm.logDebug("sending_announcement", (Object[])null);
+        rcm.logDebug("sending_announcement", null);
 
         ServiceAnnouncement outMsg = new ServiceAnnouncement(rcm.getServiceId());
         byte[] outBytes = outMsg.toBytes();
@@ -219,7 +219,7 @@ public class DiscoveryManager implements Runnable {
 
         // Only stop when we get the directive to stop
         stopListening = false;
-        rcm.logInfo("discovery_manager_active", (Object[])null);
+        rcm.logInfo("discovery_manager_active", null);
         while (!stopListening) {
             DatagramPacket recvPacket = new DatagramPacket(recvBuf, recvBuf.length);
             ServiceAnnouncement inMsg;
@@ -230,7 +230,7 @@ public class DiscoveryManager implements Runnable {
             } catch (IOException exception) {
                 if (stopListening) {
                     // We caused the exception by closing the socket
-                    rcm.logInfo("discovery_manager_stopped", (Object[])null);
+                    rcm.logInfo("discovery_manager_stopped", null);
                     return;
                 } else {
                     // Exception was caused by something else (e.g. network error, etc.)

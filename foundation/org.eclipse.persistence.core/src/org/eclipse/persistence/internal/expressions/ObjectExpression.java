@@ -510,7 +510,7 @@ public abstract class ObjectExpression extends DataExpression {
             if (mapping != null) {
                 return mapping.getSelectFields();
             }
-            return new ArrayList<DatabaseField>(0);
+            return new ArrayList<>(0);
         }
         if (descriptor.hasInheritance() && descriptor.getInheritancePolicy().shouldReadSubclasses()
                 && (!descriptor.getInheritancePolicy().hasMultipleTableChild()) || shouldUseOuterJoinForMultitableInheritance()) {

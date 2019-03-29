@@ -567,15 +567,15 @@ public class XMLUnmarshaller<
         if (source == null) {
             throw XMLMarshalException.nullArgumentException();
         }
-        if (source.getClass() == this.staxSourceClass) {
+        if (source.getClass() == staxSourceClass) {
             try {
-                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
+                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetStreamReaderMethod, source);
                 if(xmlStreamReader != null) {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[0]);
                     return platformUnmarshaller.unmarshal(xmlReader, inputSource);
                 } else {
-                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetEventReaderMethod, source);
+                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
                     if(xmlEventReader != null) {
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
@@ -630,15 +630,15 @@ public class XMLUnmarshaller<
         if ((null == source) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        if (source.getClass() == this.staxSourceClass) {
+        if (source.getClass() == staxSourceClass) {
             try {
-                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
+                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetStreamReaderMethod, source);
                 if(xmlStreamReader != null) {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{});
                     return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
                 } else {
-                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetEventReaderMethod, source);
+                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
                     if(xmlEventReader != null) {
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});

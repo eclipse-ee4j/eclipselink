@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,6 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl.PropertyWrapper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.mappings.AttributeAccessor;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
@@ -73,7 +72,7 @@ public class ValuesAccessor extends AttributeAccessor {
         if (mapping.isForeignReferenceMapping()) {
             ForeignReferenceMapping refMapping = (ForeignReferenceMapping)mapping;
             if (refMapping.isCollectionMapping()) {
-                return ((CollectionMapping)refMapping).getContainerPolicy().getContainerClass();
+                return refMapping.getContainerPolicy().getContainerClass();
             }
             if (refMapping.usesIndirection()) {
                 return ValueHolderInterface.class;

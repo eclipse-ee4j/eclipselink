@@ -224,7 +224,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * Return the freshly-built delegate.
      */
     protected Set<E> buildDelegate() {
-        Set<E> newDelegate = (Set<E>)getValueHolder().getValue();
+        Set<E> newDelegate = getValueHolder().getValue();
         if (newDelegate == null) {
             newDelegate = new HashSet<>(this.initialCapacity, this.loadFactor);
         }
@@ -666,7 +666,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         if (this.isInstantiated()) {
             return "{" + this.getDelegate().toString() + "}";
         } else {
-            return "{" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", (Object[])null) + "}";
+            return "{" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
 
         }
     }

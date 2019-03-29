@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  */
 public class RangePartitioningPolicy extends FieldPartitioningPolicy {
 
-    protected List<RangePartition> partitions = new ArrayList<RangePartition>();
+    protected List<RangePartition> partitions = new ArrayList<>();
 
     public RangePartitioningPolicy() {
         super();
@@ -118,12 +118,12 @@ public class RangePartitioningPolicy extends FieldPartitioningPolicy {
         List<Accessor> accessors = null;
         if (value == null) {
             if (this.unionUnpartitionableQueries) {
-                accessors = new ArrayList<Accessor>(this.partitions.size());
+                accessors = new ArrayList<>(this.partitions.size());
             } else {
                 return null;
             }
         } else {
-            accessors = new ArrayList<Accessor>(1);
+            accessors = new ArrayList<>(1);
         }
         int size = this.partitions.size();
         for (int index = 0; index < size; index++) {

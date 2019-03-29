@@ -89,7 +89,7 @@ public class JPQLQueryHelper {
         DescriptorCollector collector = new DescriptorCollector(queryContext);
         jpqlExpression.accept(collector);
 
-        return new ArrayList<ClassDescriptor>(collector.descriptors);
+        return new ArrayList<>(collector.descriptors);
     }
 
     /**
@@ -115,7 +115,7 @@ public class JPQLQueryHelper {
      */
     public List<ConstructorQueryMappings> getConstructorQueryMappings(AbstractSession session) {
 
-        List<ConstructorQueryMappings> allMappings = new LinkedList<ConstructorQueryMappings>();
+        List<ConstructorQueryMappings> allMappings = new LinkedList<>();
 
         for (DatabaseQuery query : session.getJPAQueries()) {
             ConstructorQueryMappings mappings = getConstructorQueryMappings(session, query);
@@ -173,7 +173,7 @@ public class JPQLQueryHelper {
          */
         private DescriptorCollector(JPQLQueryContext queryContext) {
             super();
-            this.descriptors  = new HashSet<ClassDescriptor>();
+            this.descriptors  = new HashSet<>();
             this.queryContext = queryContext;
         }
 

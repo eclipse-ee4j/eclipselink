@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
@@ -107,13 +106,13 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     public Object buildFieldValueFromDirectValues(Vector directValues, String elementDataTypeName, AbstractSession session) throws DatabaseException {
         Object[] fields = Helper.arrayFromVector(directValues);
         try {
-            ((DatabaseAccessor)session.getAccessor()).incrementCallCount(session);
-            java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
+            session.getAccessor().incrementCallCount(session);
+            java.sql.Connection connection = session.getAccessor().getConnection();
             return session.getPlatform().createArray(elementDataTypeName, fields, session,connection);
         } catch (java.sql.SQLException ex) {
             throw DatabaseException.sqlException(ex, session, false);
         } finally {
-            ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
+            session.getAccessor().decrementCallCount();
         }
     }
 
@@ -124,7 +123,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
      */
     @Override
     public Object buildFieldValueFromNestedRow(AbstractRecord nestedRow, AbstractSession session) throws DatabaseException {
-        java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
+        java.sql.Connection connection = session.getAccessor().getConnection();
         return this.buildStructureFromRow(nestedRow, session, connection);
     }
 
@@ -138,14 +137,14 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
     @Override
     public Object buildFieldValueFromNestedRows(Vector nestedRows, String structureName, AbstractSession session) throws DatabaseException {
         Object[] fields = new Object[nestedRows.size()];
-        java.sql.Connection connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
+        java.sql.Connection connection = session.getAccessor().getConnection();
         boolean reconnected = false;
 
         try {
             if (connection == null) {
-                ((DatabaseAccessor)session.getAccessor()).incrementCallCount(session);
+                session.getAccessor().incrementCallCount(session);
                 reconnected = true;
-                connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
+                connection = session.getAccessor().getConnection();
             }
 
             int i = 0;
@@ -159,7 +158,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             throw DatabaseException.sqlException(exception, session, false);
         } finally {
             if (reconnected) {
-                ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
+                session.getAccessor().decrementCallCount();
             }
         }
     }
@@ -329,9 +328,9 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
 
         try {
             if (connection == null) {
-                ((DatabaseAccessor)session.getAccessor()).incrementCallCount(session);
+                session.getAccessor().incrementCallCount(session);
                 reconnected = true;
-                connection = ((DatabaseAccessor)session.getAccessor()).getConnection();
+                connection = session.getAccessor().getConnection();
             }
 
             Object[] fields = new Object[getOrderedFields().size()];
@@ -345,7 +344,7 @@ public class ObjectRelationalDataTypeDescriptor extends RelationalDescriptor {
             throw DatabaseException.sqlException(exception, session, false);
         } finally {
             if (reconnected) {
-                ((DatabaseAccessor)session.getAccessor()).decrementCallCount();
+                session.getAccessor().decrementCallCount();
             }
         }
 

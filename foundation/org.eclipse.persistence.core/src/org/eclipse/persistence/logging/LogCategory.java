@@ -78,7 +78,7 @@ public enum LogCategory {
     private static final String NAMESPACE_PREFIX = "eclipselink.logging.";
 
     /** {@link Map} for {@link String} to {@link LogCategory} case insensitive conversion. */
-    private static final Map<String, LogCategory> stringValuesMap = new HashMap<String, LogCategory>(2 * length);
+    private static final Map<String, LogCategory> stringValuesMap = new HashMap<>(2 * length);
 
     /** Logger name spaces lookup table. */
     private static final String[] nameSpaces = new String[length];

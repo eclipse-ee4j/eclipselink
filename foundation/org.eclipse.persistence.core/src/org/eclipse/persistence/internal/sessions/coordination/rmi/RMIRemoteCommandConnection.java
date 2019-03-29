@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,6 @@ import java.rmi.RemoteException;
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
 public interface RMIRemoteCommandConnection extends Remote {
-    public Object executeCommand(Command command) throws RemoteException;
-    public Object executeCommand(byte[] command) throws RemoteException;
+    Object executeCommand(Command command) throws RemoteException;
+    Object executeCommand(byte[] command) throws RemoteException;
 }

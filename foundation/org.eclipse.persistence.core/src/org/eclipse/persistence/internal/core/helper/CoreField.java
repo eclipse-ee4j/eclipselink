@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,20 +19,20 @@ public interface CoreField {
     /**
      * Return the unqualified name of the field.
      */
-    public String getName();
+    String getName();
 
-    public Class getType();
+    Class getType();
 
     /**
      * Set the unqualified name of the field.
      */
-    public void setName(String name);
+    void setName(String name);
 
     /**
      * Set the Java class type that corresponds to the field.
      * The JDBC type is determined from the class type,
      * this is used to optimize performance, and for binding.
      */
-    public void setType(Class type);
+    void setType(Class type);
 
 }

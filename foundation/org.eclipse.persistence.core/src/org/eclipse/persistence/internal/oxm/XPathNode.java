@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -169,13 +169,13 @@ public class XPathNode {
 
     private Map<String, XPathNode> getAttributeChildrenLookupTable() {
         if (attributeChildrenLookupTable == null)
-            attributeChildrenLookupTable = new HashMap<String, XPathNode>();
+            attributeChildrenLookupTable = new HashMap<>();
         return attributeChildrenLookupTable;
     }
 
     private Map<String, XPathNode> getNonAttributeChildrenLookupTable() {
         if (nonAttributeChildrenLookupTable == null)
-            nonAttributeChildrenLookupTable = new HashMap<String, XPathNode>();
+            nonAttributeChildrenLookupTable = new HashMap<>();
         return nonAttributeChildrenLookupTable;
     }
 
@@ -265,7 +265,7 @@ public class XPathNode {
                 }
                 if(aNodeValue instanceof XMLCompositeObjectMappingNodeValue) {
                     if (null == selfChildren) {
-                        selfChildren = new ArrayList<XPathNode>();
+                        selfChildren = new ArrayList<>();
                     }
                     selfChildren.add(textXPathNode);
                 }
@@ -352,7 +352,7 @@ public class XPathNode {
         if(isSelfFragment){
             children.add(xPathNode);
             if (null == selfChildren) {
-                selfChildren = new ArrayList<XPathNode>();
+                selfChildren = new ArrayList<>();
             }
             selfChildren.add(xPathNode);
         }else{

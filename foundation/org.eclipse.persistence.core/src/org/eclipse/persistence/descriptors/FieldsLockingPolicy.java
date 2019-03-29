@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -216,7 +216,7 @@ public abstract class FieldsLockingPolicy implements OptimisticLockingPolicy {
      * filter the fields based on the passed in table.  Only return fields of this table.
      */
     protected List<DatabaseField> getAllNonPrimaryKeyFields(DatabaseTable table) {
-        List<DatabaseField> filteredFields = new ArrayList<DatabaseField>();
+        List<DatabaseField> filteredFields = new ArrayList<>();
         for (DatabaseField dbField : getAllNonPrimaryKeyFields()) {
             if (dbField.getTableName().equals(table.getName())) {
                 filteredFields.add(dbField);

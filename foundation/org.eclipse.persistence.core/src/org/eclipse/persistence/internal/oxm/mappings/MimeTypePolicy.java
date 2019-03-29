@@ -26,6 +26,6 @@ public interface MimeTypePolicy {
      * @param object fixed non-dynamic implementors will ignore this parameter
      * @return String
      */
-    public String getMimeType(Object object);
+    String getMimeType(Object object);
 
 }

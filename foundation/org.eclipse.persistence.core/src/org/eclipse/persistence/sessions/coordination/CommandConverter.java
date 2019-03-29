@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public interface CommandConverter {
      * @param command An application-formatted command
      * @return The converted Command object that will be sent to remote services
      */
-    public Command convertToEclipseLinkCommand(Object command);
+    Command convertToEclipseLinkCommand(Object command);
 
     /**
      * PUBLIC:
@@ -55,5 +55,5 @@ public interface CommandConverter {
      * @param command An application-formatted command
      * @return The converted Command object that will be sent to be remotely executed
      */
-    public Object convertToUserCommand(Command command);
+    Object convertToUserCommand(Command command);
 }

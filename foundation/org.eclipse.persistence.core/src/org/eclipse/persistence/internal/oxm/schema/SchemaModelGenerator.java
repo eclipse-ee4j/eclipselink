@@ -202,7 +202,7 @@ public class SchemaModelGenerator {
      * @see Schema
      */
     public Map<String, Schema> generateSchemas(List<Descriptor> descriptorsToProcess, SchemaModelGeneratorProperties properties) throws DescriptorException {
-        HashMap<String, Schema> schemaForNamespace = new HashMap<String, Schema>();
+        HashMap<String, Schema> schemaForNamespace = new HashMap<>();
         Schema workingSchema = null;
         if (properties == null) {
             properties = new SchemaModelGeneratorProperties();
@@ -860,7 +860,7 @@ public class SchemaModelGenerator {
         if (!collection) {
             isNillable = mapping.getNullPolicy().isNullRepresentedByXsiNil();
         } else {
-            isNillable = ((CompositeCollectionMapping) mapping).getNullPolicy().isNullRepresentedByXsiNil();
+            isNillable = mapping.getNullPolicy().isNullRepresentedByXsiNil();
         }
         element.setNillable(isNillable);
 

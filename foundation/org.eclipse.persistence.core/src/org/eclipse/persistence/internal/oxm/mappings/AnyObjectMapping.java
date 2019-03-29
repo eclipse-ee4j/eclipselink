@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,22 +38,22 @@ public interface AnyObjectMapping<
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    public UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
+    UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
 
-    public boolean isMixedContent();
+    boolean isMixedContent();
 
-    public void setConverter(CONVERTER converter);
+    void setConverter(CONVERTER converter);
 
-    public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY unmarshalKeepAsElementPolicy);
+    void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY unmarshalKeepAsElementPolicy);
 
-    public void setField(FIELD field);
+    void setField(FIELD field);
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 
-    public void setMixedContent(boolean mixed);
+    void setMixedContent(boolean mixed);
 
-    public void setUseXMLRoot(boolean useXMLRoot);
+    void setUseXMLRoot(boolean useXMLRoot);
 
-    public boolean usesXMLRoot();
+    boolean usesXMLRoot();
 
 }

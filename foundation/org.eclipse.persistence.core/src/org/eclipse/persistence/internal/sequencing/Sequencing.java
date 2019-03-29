@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,13 +29,13 @@ package org.eclipse.persistence.internal.sequencing;
 public interface Sequencing {
     // Possible return values for whenShouldAcquireValueForAll() method:
     // all classes should acquire sequencing value before insert;
-    public static final int BEFORE_INSERT = -1;
+    int BEFORE_INSERT = -1;
 
     // some classes should acquire sequencing value before insert, some after;
-    public static final int UNDEFINED = 0;
+    int UNDEFINED = 0;
 
     // all classes should acquire sequencing value after insert;
-    public static final int AFTER_INSERT = 1;
+    int AFTER_INSERT = 1;
 
     /**
      * INTERNAL:

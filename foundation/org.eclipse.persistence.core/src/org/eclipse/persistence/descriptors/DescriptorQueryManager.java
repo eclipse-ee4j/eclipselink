@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -182,7 +182,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      * it will be replaced.
      */
     public synchronized void addQuery(DatabaseQuery query) {
-        if (query instanceof ObjectLevelReadQuery && (((ObjectLevelReadQuery)query).getReferenceClassName() == null)) {
+        if (query instanceof ObjectLevelReadQuery && (query.getReferenceClassName() == null)) {
             ((ObjectLevelReadQuery)query).setReferenceClassName(getDescriptor().getJavaClassName());
 
             // try to set the reference ClassNotFoundException since it should only happen on the MW in which
@@ -329,7 +329,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public void convertClassNamesToClasses(ClassLoader classLoader){
         Iterator queryVectors = getQueries().values().iterator();
         while (queryVectors.hasNext()){
-            Iterator queries = ((Vector)queryVectors.next()).iterator();;
+            Iterator queries = ((Vector)queryVectors.next()).iterator();
             while (queries.hasNext()){
                 ((DatabaseQuery)queries.next()).convertClassNamesToClasses(classLoader);
             }
@@ -340,7 +340,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         if (getReadAllQuery() != null) {
             getReadAllQuery().convertClassNamesToClasses(classLoader);
         }
-    };
+    }
 
     /**
      * ADVANCED:
@@ -1468,7 +1468,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
      */
     public Map<DatabaseTable, Expression> getTablesJoinExpressions() {
         if (tablesJoinExpressions == null) {
-            tablesJoinExpressions = new HashMap<DatabaseTable, Expression>();
+            tablesJoinExpressions = new HashMap<>();
         }
         return tablesJoinExpressions;
     }

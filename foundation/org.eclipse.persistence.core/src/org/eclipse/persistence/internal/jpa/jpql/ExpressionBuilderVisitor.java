@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2006, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -370,7 +370,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         ChildrenExpressionVisitor visitor = childrenExpressionVisitor();
         try {
             expression.accept(visitor);
-            return new LinkedList<org.eclipse.persistence.jpa.jpql.parser.Expression>(visitor.expressions);
+            return new LinkedList<>(visitor.expressions);
         }
         finally {
             visitor.expressions.clear();
@@ -387,7 +387,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     private Set<String> collectOuterIdentificationVariables() {
 
         // Retrieve the identification variables used in the current query
-        Set<String> variableNames = new HashSet<String>(queryContext.getUsedIdentificationVariables());
+        Set<String> variableNames = new HashSet<>(queryContext.getUsedIdentificationVariables());
 
         // Now remove the local identification variables that are defined in JOIN expressions and
         // in collection member declarations
@@ -429,7 +429,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(AdditionExpression expression) {
 
-        List<Class<?>> types = new ArrayList<Class<?>>(2);
+        List<Class<?>> types = new ArrayList<>(2);
 
         // Create the left side of the addition expression
         expression.getLeftExpression().accept(this);
@@ -666,8 +666,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(CoalesceExpression expression) {
 
-        List<Expression> expressions = new ArrayList<Expression>();
-        List<Class<?>> types = new LinkedList<Class<?>>();
+        List<Expression> expressions = new ArrayList<>();
+        List<Class<?>> types = new LinkedList<>();
 
         // Create the Expression for each scalar expression
         for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.getExpression().children()) {
@@ -952,7 +952,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(DivisionExpression expression) {
 
-        List<Class<?>> types = new ArrayList<Class<?>>(2);
+        List<Class<?>> types = new ArrayList<>(2);
 
         // Create the left side of the division expression
         expression.getLeftExpression().accept(this);
@@ -1128,7 +1128,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
             else {
 
                 // Create the Expressions for the rest
-                List<Expression> queryExpressions = new ArrayList<Expression>(expressions.size());
+                List<Expression> queryExpressions = new ArrayList<>(expressions.size());
 
                 for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expressions) {
                     child.accept(this);
@@ -1513,7 +1513,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(MultiplicationExpression expression) {
 
-        List<Class<?>> types = new ArrayList<Class<?>>(2);
+        List<Class<?>> types = new ArrayList<>(2);
 
         // Create the left side of the multiplication expression
         expression.getLeftExpression().accept(this);
@@ -1930,7 +1930,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
     @Override
     public void visit(SubtractionExpression expression) {
 
-        List<Class<?>> types = new ArrayList<Class<?>>(2);
+        List<Class<?>> types = new ArrayList<>(2);
 
         // Create the left side of the subtraction expression
         expression.getLeftExpression().accept(this);
@@ -2190,7 +2190,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
          */
         ChildrenExpressionVisitor() {
             super();
-            expressions = new ArrayList<org.eclipse.persistence.jpa.jpql.parser.Expression>();
+            expressions = new ArrayList<>();
         }
 
         /**
@@ -2273,7 +2273,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         public void visit(CollectionExpression expression) {
 
             // Assume this is a nested array
-            List<Expression> children = new LinkedList<Expression>();
+            List<Expression> children = new LinkedList<>();
 
             for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
                 child.accept(this);
@@ -2322,7 +2322,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         @Override
         public void visit(CollectionExpression expression) {
 
-            Collection<Expression> expressions = new ArrayList<Expression>();
+            Collection<Expression> expressions = new ArrayList<>();
             InItemExpressionVisitor visitor = new InItemExpressionVisitor();
 
             for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
@@ -2399,7 +2399,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
 
             expression.accept(ExpressionBuilderVisitor.this);
 
-            Collection<Expression> expressions = new ArrayList<Expression>();
+            Collection<Expression> expressions = new ArrayList<>();
             expressions.add(queryExpression);
 
             // Now create the IN expression
@@ -2448,7 +2448,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
             public void visit(CollectionExpression expression) {
 
                 // Assume this is a nested array
-                List<Expression> children = new LinkedList<Expression>();
+                List<Expression> children = new LinkedList<>();
 
                 for (org.eclipse.persistence.jpa.jpql.parser.Expression child : expression.children()) {
                     child.accept(this);
@@ -2801,8 +2801,8 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
          */
         WhenClauseExpressionVisitor() {
             super();
-            types = new LinkedList<Class<?>>();
-            whenClauses = new LinkedHashMap<Expression, Expression>();
+            types = new LinkedList<>();
+            whenClauses = new LinkedHashMap<>();
         }
 
         /**

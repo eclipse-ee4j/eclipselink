@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,22 @@ package org.eclipse.persistence.testing.oxm.mappings.containeraccessor;
 
 import java.util.ArrayList;
 
-import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.oxm.mappings.*;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
+import org.eclipse.persistence.oxm.mappings.XMLCompositeObjectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
+import org.eclipse.persistence.oxm.mappings.XMLInverseReferenceMapping;
+import org.eclipse.persistence.sessions.Project;
 
 public class EmployeeInvalidContainerAttributeProject extends Project {
     public EmployeeInvalidContainerAttributeProject(boolean methodAccess) {
-        addEmployeeDescriptor(methodAccess);
-        addAddressDescriptor();
-        addPhoneNumberDescriptor();
+        addEmployeeDescriptor();
+        addAddressDescriptor(methodAccess);
+        addPhoneNumberDescriptor(methodAccess);
     }
 
-    public void addEmployeeDescriptor(boolean methodAccess) {
+    public void addEmployeeDescriptor() {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Employee.class);
         descriptor.setDefaultRootElement("employee");
@@ -50,11 +53,6 @@ public class EmployeeInvalidContainerAttributeProject extends Project {
         addressMapping.setAttributeName("address");
         addressMapping.setReferenceClass(Address.class);
         addressMapping.setXPath("address");
-        addressMapping.setContainerAttributeName("invalidAttribute");
-        if(methodAccess) {
-            addressMapping.setContainerGetMethodName("invalidAttributeGet");
-            addressMapping.setContainerSetMethodName("invalidAttributeSet");
-        }
         descriptor.addMapping(addressMapping);
 
         XMLCompositeCollectionMapping phoneMapping = new XMLCompositeCollectionMapping();
@@ -62,16 +60,11 @@ public class EmployeeInvalidContainerAttributeProject extends Project {
         phoneMapping.setReferenceClass(PhoneNumber.class);
         phoneMapping.setXPath("phone-numbers/number");
         phoneMapping.setContainerPolicy(ContainerPolicy.buildPolicyFor(ArrayList.class));
-        phoneMapping.setContainerAttributeName("owningEmployee");
-        if(methodAccess) {
-            phoneMapping.setContainerGetMethodName("getOwningEmployee");
-            phoneMapping.setContainerSetMethodName("setOwningEmployee");
-        }
         descriptor.addMapping(phoneMapping);
         this.addDescriptor(descriptor);
     }
 
-    public void addAddressDescriptor() {
+    public void addAddressDescriptor(boolean methodAccess) {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(Address.class);
 
@@ -95,10 +88,20 @@ public class EmployeeInvalidContainerAttributeProject extends Project {
         countryMapping.setXPath("country/text()");
         descriptor.addMapping(countryMapping);
 
+        XMLInverseReferenceMapping owningEmployee = new XMLInverseReferenceMapping();
+        owningEmployee.setReferenceClass(Employee.class);
+        owningEmployee.setMappedBy("address");
+        owningEmployee.setAttributeName("invalidAttribute");
+        if (methodAccess) {
+            owningEmployee.setSetMethodName("invalidAttributeGet");
+            owningEmployee.setGetMethodName("invalidAttributeSet");
+        }
+        descriptor.addMapping(owningEmployee);
+
         this.addDescriptor(descriptor);
     }
 
-    public void addPhoneNumberDescriptor() {
+    public void addPhoneNumberDescriptor(boolean methodAccess) {
         XMLDescriptor descriptor = new XMLDescriptor();
         descriptor.setJavaClass(PhoneNumber.class);
 
@@ -106,6 +109,16 @@ public class EmployeeInvalidContainerAttributeProject extends Project {
         numberMapping.setAttributeName("number");
         numberMapping.setXPath("text()");
         descriptor.addMapping(numberMapping);
+
+        XMLInverseReferenceMapping owningEmployee = new XMLInverseReferenceMapping();
+        owningEmployee.setReferenceClass(Employee.class);
+        owningEmployee.setMappedBy("phoneNumbers");
+        owningEmployee.setAttributeName("owningEmployee");
+        if (methodAccess) {
+            owningEmployee.setSetMethodName("setOwningEmployee");
+            owningEmployee.setGetMethodName("getOwningEmployee");
+        }
+        descriptor.addMapping(owningEmployee);
 
         this.addDescriptor(descriptor);
     }

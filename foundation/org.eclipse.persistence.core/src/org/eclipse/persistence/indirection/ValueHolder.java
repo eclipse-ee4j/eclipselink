@@ -62,7 +62,7 @@ public class ValueHolder<T> implements WeavedAttributeValueHolderInterface<T>, C
         try {
             return super.clone();
         } catch (CloneNotSupportedException exception) {
-            ;
+            
         }
 
         return null;

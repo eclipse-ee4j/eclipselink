@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public interface CollectionChangeRecord extends ChangeRecord {
      * and their corresponding ChangeSets.
      * @return java.util.Vector
      */
-    public Map getAddObjectList();
+    Map getAddObjectList();
 
     /**
      * ADVANCED:
@@ -40,12 +40,12 @@ public interface CollectionChangeRecord extends ChangeRecord {
      * and their corresponding ChangeSets.
      * @return java.util.Vector
      */
-    public Map getRemoveObjectList();
+    Map getRemoveObjectList();
 
     /**
      * ADVANCED:
      * This method returns true if the change set has changes
      * @return boolean
      */
-    public boolean hasChanges();
+    boolean hasChanges();
 }

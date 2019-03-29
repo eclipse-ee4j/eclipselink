@@ -53,7 +53,7 @@ public class XMLFragmentReader extends DOMReader {
         if(null != namespaceResolver) {
             nsresolverList.add(namespaceResolver);
         }
-        tmpresolverMap = new HashMap<Element, NamespaceResolver>();
+        tmpresolverMap = new HashMap<>();
     }
 
     @Override

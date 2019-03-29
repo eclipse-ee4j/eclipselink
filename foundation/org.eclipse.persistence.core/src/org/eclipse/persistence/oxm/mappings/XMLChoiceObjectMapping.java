@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,21 +110,21 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     private Converter converter;
     private boolean isWriteOnly;
 
-    private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();;
+    private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();
 
     private static final String DATA_HANDLER = "javax.activation.DataHandler";
     private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
     private static final String IMAGE = "java.awt.Image";
 
     public XMLChoiceObjectMapping() {
-        fieldToClassMappings = new HashMap<XMLField, Class>();
-        fieldToClassNameMappings = new HashMap<XMLField, String>();
-        classToFieldMappings = new HashMap<Class, XMLField>();
-        classNameToFieldMappings = new HashMap<String, XMLField>();
-        choiceElementMappings = new LinkedHashMap<XMLField, XMLMapping>();
-        choiceElementMappingsByClass = new LinkedHashMap<Class, XMLMapping>();
-        choiceElementMappingsByClassName = new LinkedHashMap<String, XMLMapping>();
-        fieldsToConverters = new HashMap<XMLField, Converter>();
+        fieldToClassMappings = new HashMap<>();
+        fieldToClassNameMappings = new HashMap<>();
+        classToFieldMappings = new HashMap<>();
+        classNameToFieldMappings = new HashMap<>();
+        choiceElementMappings = new LinkedHashMap<>();
+        choiceElementMappingsByClass = new LinkedHashMap<>();
+        choiceElementMappingsByClassName = new LinkedHashMap<>();
+        fieldsToConverters = new HashMap<>();
     }
 
     /**
@@ -334,7 +334,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
 
     @Override
     protected Vector<DatabaseField> collectFields() {
-        Vector<DatabaseField> fields = new Vector<DatabaseField>(getFieldToClassMappings().keySet());
+        Vector<DatabaseField> fields = new Vector<>(getFieldToClassMappings().keySet());
         return fields;
     }
 
@@ -442,7 +442,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         if (this.converter != null) {
             this.converter.initialize(this, session);
         }
-        ArrayList<XMLMapping> mappingsList = new ArrayList<XMLMapping>();
+        ArrayList<XMLMapping> mappingsList = new ArrayList<>();
         mappingsList.addAll(getChoiceElementMappings().values());
         for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
             if(!(mappingsList.contains(next))) {
@@ -570,7 +570,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         }
         if(classNameToConverter != null) {
             if(this.classToConverter == null) {
-                this.classToConverter = new HashMap<Class, Converter>();
+                this.classToConverter = new HashMap<>();
             }
             for(Entry<String, Converter> next: classNameToConverter.entrySet()) {
                 String className = next.getKey();
@@ -619,7 +619,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     @Override
     public void addConverter(XMLField field, Converter converter) {
         if(this.fieldsToConverters == null) {
-            fieldsToConverters = new HashMap<XMLField, Converter>();
+            fieldsToConverters = new HashMap<>();
         }
         fieldsToConverters.put(field, converter);
     }
@@ -804,7 +804,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
         getAttributeAccessor().setIsWriteOnly(this.isWriteOnly());
         getAttributeAccessor().setIsReadOnly(this.isReadOnly());
         super.preInitialize(session);
-        ArrayList<XMLMapping> mappingsList = new ArrayList<XMLMapping>();
+        ArrayList<XMLMapping> mappingsList = new ArrayList<>();
         mappingsList.addAll(getChoiceElementMappings().values());
         for(XMLMapping next:getChoiceElementMappingsByClass().values()) {
             if(!(mappingsList.contains(next))) {
@@ -840,14 +840,14 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     @Override
     public Map<Class, List<XMLField>> getClassToSourceFieldsMappings() {
         if(this.classToSourceFieldsMappings == null) {
-            this.classToSourceFieldsMappings = new HashMap<Class, List<XMLField>>();
+            this.classToSourceFieldsMappings = new HashMap<>();
         }
         return this.classToSourceFieldsMappings;
     }
 
     private Map<String, List<XMLField>> getClassNameToSourceFieldsMappings() {
         if(this.classNameToSourceFieldsMappings == null) {
-            this.classNameToSourceFieldsMappings = new HashMap<String, List<XMLField>>();
+            this.classNameToSourceFieldsMappings = new HashMap<>();
         }
         return this.classNameToSourceFieldsMappings;
     }

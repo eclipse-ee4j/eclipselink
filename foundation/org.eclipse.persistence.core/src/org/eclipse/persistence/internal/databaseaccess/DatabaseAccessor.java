@@ -621,7 +621,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             incrementCallCount(session);
             if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {// Avoid printing if no logging required.
-                session.log(SessionLog.FINE, SessionLog.SQL, dbCall.getLogString(this), (Object[])null, this, false);
+                session.log(SessionLog.FINE, SessionLog.SQL, dbCall.getLogString(this), null, this, false);
             }
             session.startOperationProfile(SessionProfiler.SqlPrepare, dbCall.getQuery(), SessionProfiler.ALL);
             try {
@@ -673,7 +673,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 while (warning != null) {
                     String message = warning.getMessage() + ":" + warning.getSQLState() + " - " + warning.getCause();
                     // 325605: This log will not be tracked by QuerySQLTracker
-                    session.log(SessionLog.FINEST, SessionLog.SQL, message, (Object[])null, this, false);
+                    session.log(SessionLog.FINEST, SessionLog.SQL, message, null, this, false);
                     warning = warning.getNextWarning();
                 }
             }
@@ -1447,7 +1447,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected synchronized Map<String, Statement> getStatementCache() {
         if (statementCache == null) {
-            statementCache = new HashMap<String, Statement>(50);
+            statementCache = new HashMap<>(50);
         }
         return statementCache;
     }
@@ -1832,9 +1832,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
         StringWriter writer = new StringWriter();
         writer.write("DatabaseAccessor(");
         if (isConnected()) {
-            writer.write(ToStringLocalization.buildMessage("connected", (Object[])null));
+            writer.write(ToStringLocalization.buildMessage("connected", null));
         } else {
-            writer.write(ToStringLocalization.buildMessage("disconnected", (Object[])null));
+            writer.write(ToStringLocalization.buildMessage("disconnected", null));
         }
         writer.write(")");
         return writer.toString();

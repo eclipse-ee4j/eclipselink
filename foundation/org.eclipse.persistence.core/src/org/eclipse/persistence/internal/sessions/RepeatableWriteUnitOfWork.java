@@ -137,7 +137,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 }
                 if ((this.unregisteredDeletedObjectsCloneToBackupAndOriginal != null) && !this.unregisteredDeletedObjectsCloneToBackupAndOriginal.isEmpty()) {
                     if (this.classesToBeInvalidated == null) {
-                        this.classesToBeInvalidated = new HashSet<ClassDescriptor>();
+                        this.classesToBeInvalidated = new HashSet<>();
                     }
                     Iterator enumDeleted = this.unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
                     // classes of the deleted objects should be invalidated in the shared cache

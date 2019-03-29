@@ -1675,7 +1675,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         if ((originalExpressions == null) || (originalExpressions.size() == 0) || (clonedExpressions == null)) {
             return originalExpressions;
         }
-        List<Expression> newExpressions = new ArrayList<Expression>(originalExpressions.size());
+        List<Expression> newExpressions = new ArrayList<>(originalExpressions.size());
         for (Expression expression : originalExpressions) {
             newExpressions.add(expression.copiedVersionFrom(clonedExpressions));
         }
@@ -2030,7 +2030,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                             }
                             values.add(exp);
                         } else {
-                            values.add(((OneToOneMapping)mapping).getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(valueObject, targetField, getSession()));
+                            values.add(mapping.getReferenceDescriptor().getObjectBuilder().extractValueFromObjectForField(valueObject, targetField, getSession()));
                         }
                     }
                     baseExpressions.add(new FieldExpression((DatabaseField)fields.elementAt(i), ((QueryKeyExpression)baseExpression).getBaseExpression()));

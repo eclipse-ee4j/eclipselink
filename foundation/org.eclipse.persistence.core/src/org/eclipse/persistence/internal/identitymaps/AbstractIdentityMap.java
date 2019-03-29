@@ -286,7 +286,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      */
     @Override
     public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
-        HashMap<Object, Object> map = new HashMap<Object, Object>();
+        HashMap<Object, Object> map = new HashMap<>();
         CacheKey cachedObject = null;
         long currentTime = System.currentTimeMillis();
         for (Object pk : pkList){
@@ -309,7 +309,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      */
     @Override
     public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
-        HashMap<Object, CacheKey> map = new HashMap<Object, CacheKey>();
+        HashMap<Object, CacheKey> map = new HashMap<>();
         CacheKey cachedObject = null;
         long currentTime = System.currentTimeMillis();
         for (Object pk : pkList){

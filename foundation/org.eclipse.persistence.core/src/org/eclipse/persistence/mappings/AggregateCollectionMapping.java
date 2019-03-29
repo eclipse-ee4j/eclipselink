@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -173,8 +173,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
      */
     public AggregateCollectionMapping() {
         this.aggregateToSourceFields = new HashMap(5);
-        this.nestedAggregateToSourceFields = new HashMap<String, Map<String, DatabaseField>>(5);
-        this.converters = new HashMap<String, Converter>();
+        this.nestedAggregateToSourceFields = new HashMap<>(5);
+        this.converters = new HashMap<>();
         this.targetForeignKeyToSourceKeys = new HashMap(5);
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
@@ -276,7 +276,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         Map<String, DatabaseField> attributeFieldNameTranslation = nestedAggregateToSourceFields.get(attributeName);
 
         if (attributeFieldNameTranslation == null) {
-            attributeFieldNameTranslation = new HashMap<String, DatabaseField>(5);
+            attributeFieldNameTranslation = new HashMap<>(5);
             nestedAggregateToSourceFields.put(attributeName, attributeFieldNameTranslation);
         }
 
@@ -774,7 +774,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
             shouldRepairOrder = ((IndirectList)currentList).isListOrderBrokenInDb();
         }
 
-        HashMap<Object, Object[]> previousAndCurrentByKey = new HashMap<Object, Object[]>();
+        HashMap<Object, Object[]> previousAndCurrentByKey = new HashMap<>();
         int pkSize = getReferenceDescriptor().getPrimaryKeyFields().size();
 
         // First index the current objects by their primary key.
@@ -862,9 +862,9 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         }
 
         // Object[] = {previousObject, currentObject, previousIndex, currentIndex}
-        HashMap<Object, Object[]> previousAndCurrentByKey = new HashMap<Object, Object[]>();
+        HashMap<Object, Object[]> previousAndCurrentByKey = new HashMap<>();
         // a SortedMap, current index mapped by previous index, both indexes must exist and be not equal.
-        TreeMap<Integer, Integer> currentIndexByPreviousIndex = new TreeMap<Integer, Integer>();
+        TreeMap<Integer, Integer> currentIndexByPreviousIndex = new TreeMap<>();
 
         // First index the current objects by their primary key.
         for(int i=0; i < currentList.size(); i++) {
@@ -1338,7 +1338,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         int size = this.targetForeignKeyFields.size();
         if (size > 1) {
             // Support composite keys using nested IN.
-            List<Expression> fields = new ArrayList<Expression>(size);
+            List<Expression> fields = new ArrayList<>(size);
             for (DatabaseField targetForeignKeyField : this.targetForeignKeyFields) {
                 fields.add(builder.getField(targetForeignKeyField));
             }
@@ -1621,8 +1621,8 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
                 aggregateDefaultTable = new DatabaseTable();
             }
 
-            tableTranslation = new HashMap<DatabaseTable, DatabaseTable>();
-            fieldTranslation = new HashMap<DatabaseField, DatabaseField>();
+            tableTranslation = new HashMap<>();
+            fieldTranslation = new HashMap<>();
 
             for (String aggregateFieldName : aggregateToSourceFields.keySet()) {
                 DatabaseField aggregateField = new DatabaseField(aggregateFieldName);
@@ -2707,7 +2707,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (collectionChangeRecord == null) {
             //if there is no change for this attribute then create a changeSet for it. no need to modify the resulting
             // change record as it should be built from the clone which has the changes allready
-            Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
+            Object cloneObject = changeSet.getUOWChangeSet().getUOWCloneForObjectChangeSet(changeSet);
             Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
             collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, containerPolicy.containerInstance(), changeSet, session);
             changeSet.addChange(collectionChangeRecord);
@@ -2729,7 +2729,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
         if (collectionChangeRecord == null) {
             //if there is no change for this attribute then create a changeSet for it. no need to modify the resulting
             // change record as it should be built from the clone which has the changes allready
-            Object cloneObject = ((UnitOfWorkChangeSet)changeSet.getUOWChangeSet()).getUOWCloneForObjectChangeSet(changeSet);
+            Object cloneObject = changeSet.getUOWChangeSet().getUOWCloneForObjectChangeSet(changeSet);
             Object cloneCollection = this.getRealAttributeValueFromObject(cloneObject, session);
             collectionChangeRecord = (AggregateCollectionChangeRecord)convertToChangeRecord(cloneCollection, containerPolicy.containerInstance(), changeSet, session);
             changeSet.addChange(collectionChangeRecord);

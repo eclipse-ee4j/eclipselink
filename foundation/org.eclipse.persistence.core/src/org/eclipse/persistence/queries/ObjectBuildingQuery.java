@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -160,7 +159,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
         }
         setReferenceClass(referenceClass);
-    };
+    }
 
     /**
      * INTERNAL:
@@ -523,7 +522,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
                             if (!mapping.isCollectionMapping()) {
                                 triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), attributeValue, null);
                             }else {
-                                ContainerPolicy cp = ((CollectionMapping)mapping).getContainerPolicy();
+                                ContainerPolicy cp = mapping.getContainerPolicy();
                                 Object iterator = cp.iteratorFor(attributeValue);
                                 while (cp.hasNext(iterator)){
                                     triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), cp.next(iterator, unitOfWork), null);

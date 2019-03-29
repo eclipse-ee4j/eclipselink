@@ -51,7 +51,7 @@ public class SchemaModelGeneratorProperties {
      */
     public Map<String, Properties> getPropertiesMap() {
         if (propMap == null) {
-            propMap = new HashMap<String, Properties>();
+            propMap = new HashMap<>();
         }
         return propMap;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
 import org.eclipse.persistence.sessions.Session;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  *  INTERNAL:
@@ -67,7 +67,7 @@ public class ExpressionOperatorConverter extends ObjectTypeConverter  {
             attributeValue = getFieldToAttributeValues().get(Helper.NULL_VALUE);
         } else {
             try {
-                fieldValue = ((AbstractSession)session).getDatasourcePlatform().getConversionManager().convertObject(fieldValue, getFieldClassification());
+                fieldValue = session.getDatasourcePlatform().getConversionManager().convertObject(fieldValue, getFieldClassification());
             } catch (ConversionException e) {
                 throw ConversionException.couldNotBeConverted(mapping, mapping.getDescriptor(), e);
             }

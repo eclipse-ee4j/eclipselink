@@ -212,7 +212,7 @@ public abstract class Unmarshaller<
          * @param target the object that was unmarshalled.
          * @param parent the owning object of the object that was unmarshalled. This may be null.
          */
-        public void afterUnmarshal(Object target, Object parent);
+        void afterUnmarshal(Object target, Object parent);
 
 
         /**
@@ -221,7 +221,7 @@ public abstract class Unmarshaller<
          * @param target A newly created instance of the object to be unmarshalled.
          * @param parent the owning object of the object that will be unmarshalled. This may be null.
          */
-        public void beforeUnmarshal(Object target, Object parent);
+        void beforeUnmarshal(Object target, Object parent);
 
     }
 

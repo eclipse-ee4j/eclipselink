@@ -45,6 +45,6 @@ public interface CharacterEscapeHandler {
      * @param out The resulting escaped characters will be written to this Writer
      * @throws IOException In an error condition, IOException can be thrown to stop the marshalling process
      */
-    public void escape(char[] buffer, int start, int length, boolean isAttributeValue, Writer out) throws IOException;
+    void escape(char[] buffer, int start, int length, boolean isAttributeValue, Writer out) throws IOException;
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,45 +43,45 @@ import static org.eclipse.persistence.internal.helper.Helper.buildHexStringFromB
 @SuppressWarnings("unchecked")
 public interface DatabaseType {
 
-    public static final String TARGET_SHORT_PREFIX = "T_";
-    public static final String TARGET_SUFFIX = "TARGET";
-    public static final String COMPAT_SHORT_PREFIX = "C_";
-    public static final String COMPAT_SUFFIX = "COMPAT";
-    public static final int ARGNAME_SIZE_LIMIT = 30 - TARGET_SUFFIX.length();
+    String TARGET_SHORT_PREFIX = "T_";
+    String TARGET_SUFFIX = "TARGET";
+    String COMPAT_SHORT_PREFIX = "C_";
+    String COMPAT_SUFFIX = "COMPAT";
+    int ARGNAME_SIZE_LIMIT = 30 - TARGET_SUFFIX.length();
 
-    public boolean isComplexDatabaseType();
+    boolean isComplexDatabaseType();
 
-    public boolean isJDBCType();
+    boolean isJDBCType();
 
-    public int getSqlCode();
+    int getSqlCode();
 
-    public int getConversionCode();
+    int getConversionCode();
 
-    public String getTypeName();
+    String getTypeName();
 
-    public int computeInIndex(PLSQLargument inArg, int newIndex,
+    int computeInIndex(PLSQLargument inArg, int newIndex,
         ListIterator<PLSQLargument> i);
 
-    public int computeOutIndex(PLSQLargument outArg, int newIndex,
+    int computeOutIndex(PLSQLargument outArg, int newIndex,
         ListIterator<PLSQLargument> i);
 
-    public void buildInDeclare(StringBuilder sb, PLSQLargument inArg);
+    void buildInDeclare(StringBuilder sb, PLSQLargument inArg);
 
-    public void buildOutDeclare(StringBuilder sb, PLSQLargument outArg);
+    void buildOutDeclare(StringBuilder sb, PLSQLargument outArg);
 
-    public void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call);
+    void buildBeginBlock(StringBuilder sb, PLSQLargument arg, PLSQLStoredProcedureCall call);
 
-    public void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call);
+    void buildOutAssignment(StringBuilder sb, PLSQLargument outArg, PLSQLStoredProcedureCall call);
 
-    public void translate(PLSQLargument arg, AbstractRecord translationRow,
+    void translate(PLSQLargument arg, AbstractRecord translationRow,
         AbstractRecord copyOfTranslationRow, List<DatabaseField> copyOfTranslationFields,
         List<DatabaseField> translationRowFields, List translationRowValues,
         StoredProcedureCall call);
 
-    public void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
+    void buildOutputRow(PLSQLargument outArg, AbstractRecord outputRow,
         DatabaseRecord newOutputRow, List<DatabaseField> outputRowFields, List outputRowValues);
 
-    public void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
+    void logParameter(StringBuilder sb, Integer direction, PLSQLargument arg,
         AbstractRecord translationRow, DatabasePlatform platform);
 
     public enum DatabaseTypeHelper {

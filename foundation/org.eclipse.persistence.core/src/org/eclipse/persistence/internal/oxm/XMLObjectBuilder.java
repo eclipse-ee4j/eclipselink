@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.oxm.WeakObjectWrapper;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
@@ -40,18 +39,17 @@ import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.AggregateObjectMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
 import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -301,10 +299,10 @@ public class XMLObjectBuilder extends ObjectBuilder {
                 domRecord.getReferenceResolver().putValue(concreteDescriptor.getJavaClass(), pk, domainObject);
             }
         }
-        DocumentPreservationPolicy docPresPolicy = ((DOMRecord) row).getDocPresPolicy();
+        DocumentPreservationPolicy docPresPolicy = row.getDocPresPolicy();
         if (docPresPolicy != null) {
             // EIS XML Cases won't have a doc pres policy set
-            ((DOMRecord) row).getDocPresPolicy().addObjectToCache(domainObject, ((DOMRecord) row).getDOM());
+            row.getDocPresPolicy().addObjectToCache(domainObject, row.getDOM());
         }
         query.getSession().endOperationProfile(SessionProfiler.ObjectBuilding, query, SessionProfiler.ALL);
         if ((unmarshaller != null) && (unmarshaller.getUnmarshalListener() != null)) {
@@ -593,7 +591,7 @@ public class XMLObjectBuilder extends ObjectBuilder {
                     if (mapping.isAggregateObjectMapping()) {
                         // For Embeddable class, we need to test read-only
                         // status of individual fields in the embeddable.
-                        ObjectBuilder aggregateObjectBuilder = ((AggregateObjectMapping)mapping).getReferenceDescriptor().getObjectBuilder();
+                        ObjectBuilder aggregateObjectBuilder = mapping.getReferenceDescriptor().getObjectBuilder();
 
                         // Look in the non-read-only fields mapping
                         DatabaseMapping aggregatedFieldMapping = aggregateObjectBuilder.getMappingForField(field);

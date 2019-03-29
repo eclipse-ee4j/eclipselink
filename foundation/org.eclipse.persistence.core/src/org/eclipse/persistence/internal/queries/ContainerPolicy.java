@@ -747,7 +747,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
      * This method is implemented by subclasses as necessary.
      * @param classLoader
      */
-    public void convertClassNamesToClasses(ClassLoader classLoader){};
+    public void convertClassNamesToClasses(ClassLoader classLoader){}
 
     /**
      * INTERNAL:
@@ -1668,7 +1668,7 @@ public abstract class ContainerPolicy implements CoreContainerPolicy<AbstractSes
             query.setSession(session);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             int pkCount = foreignKeyValues.size();
-            Collection<Object> temp = new ArrayList<Object>();
+            Collection<Object> temp = new ArrayList<>();
             List arguments = new ArrayList();
             arguments.add(foreignKeyValues);
             if (pkCount > 1000){

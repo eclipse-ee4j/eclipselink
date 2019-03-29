@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,35 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.mappings.structures;
 
-import java.sql.*;
-import java.util.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
+import java.sql.Ref;
+import java.sql.Struct;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.indirection.ValueHolder;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.ObjectReferenceChangeRecord;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -322,14 +338,14 @@ public class ReferenceMapping extends ObjectReferenceMapping {
         }
         Struct struct;
         try {
-            ((DatabaseAccessor)executionSession.getAccessor()).incrementCallCount(executionSession);
-            java.sql.Connection connection = ((DatabaseAccessor)executionSession.getAccessor()).getConnection();
+            executionSession.getAccessor().incrementCallCount(executionSession);
+            java.sql.Connection connection = executionSession.getAccessor().getConnection();
             struct = (Struct)executionSession.getPlatform().getRefValue(ref,executionSession,connection);
             targetRow = ((ObjectRelationalDataTypeDescriptor)getReferenceDescriptor()).buildRowFromStructure(struct);
         } catch (java.sql.SQLException exception) {
             throw DatabaseException.sqlException(exception, executionSession, false);
         } finally {
-            ((DatabaseAccessor)executionSession.getAccessor()).decrementCallCount();
+            executionSession.getAccessor().decrementCallCount();
         }
 
         return getReferenceDescriptor().getObjectBuilder().buildObject(query, targetRow, joinManager);

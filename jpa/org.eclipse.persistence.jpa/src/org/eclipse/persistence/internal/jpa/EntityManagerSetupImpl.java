@@ -172,6 +172,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.CacheCoordinationProtocol;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
@@ -1521,7 +1522,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String defaultSharedString = (String)sharedMap.remove(PersistenceUnitProperties.DEFAULT);
             if (defaultSharedString != null) {
                 boolean defaultShared = Boolean.parseBoolean(defaultSharedString);
-                session.getProject().setDefaultIsIsolated(!defaultShared);
+                session.getProject().setDefaultCacheIsolation(defaultShared
+                        ? CacheIsolationType.SHARED : CacheIsolationType.ISOLATED);
             }
 
             Iterator it = session.getDescriptors().values().iterator();
@@ -1567,7 +1569,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
                 if (sharedString != null) {
                     boolean shared = Boolean.parseBoolean(sharedString);
-                    descriptor.setIsIsolated(!shared);
+                    descriptor.setCacheIsolation(shared ? CacheIsolationType.SHARED : CacheIsolationType.ISOLATED);
                 }
             }
         } catch (NumberFormatException exception) {

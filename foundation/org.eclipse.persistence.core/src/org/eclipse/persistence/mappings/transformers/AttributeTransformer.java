@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public interface AttributeTransformer extends Serializable {
     /**
      * @param mapping - The mapping associated with this transformer. Only used if some special information is required.
      */
-    public void initialize(AbstractTransformationMapping mapping);
+    void initialize(AbstractTransformationMapping mapping);
 
     /**
      * @param record - The metadata being used to build the object.
@@ -41,5 +41,5 @@ public interface AttributeTransformer extends Serializable {
      * @param object - The current object that the attribute is being built for.
      * @return - The attribute value to be built into the object containing this mapping.
      */
-    public Object buildAttributeValue(Record record, Object object, Session session);
+    Object buildAttributeValue(Record record, Object object, Session session);
 }

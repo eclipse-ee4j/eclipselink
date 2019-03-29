@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,8 @@ package org.eclipse.persistence.internal.expressions;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
@@ -194,7 +194,7 @@ public class LiteralExpression extends Expression {
      * Append the literal value into the printer, accounting for the first element
      */
     @Override
-    public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+    public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         // print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {
             printer.printString(", ");
@@ -202,7 +202,7 @@ public class LiteralExpression extends Expression {
             printer.setIsFirstElementPrinted(true);
         }
 
-        newFields.addElement(new DatabaseField(getValue()));
+        newFields.add(new DatabaseField(getValue()));
         printSQL(printer);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,10 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty;
 
 import java.util.Vector;
 
-import javax.xml.bind.annotation.*;
-
-import org.eclipse.persistence.oxm.annotations.XmlContainerProperty;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="employee")
 public class Employee {
@@ -38,6 +39,7 @@ public class Employee {
     @XmlElement(name="number")
     public Vector<PhoneNumber> phoneNumbers;
 
+    @Override
     public boolean equals(Object e) {
         if(!(e instanceof Employee)) {
             return false;

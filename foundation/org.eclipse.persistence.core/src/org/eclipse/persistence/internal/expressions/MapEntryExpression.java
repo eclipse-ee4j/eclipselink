@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      */
     @Override
     public DatabaseTable aliasForTable(DatabaseTable table) {
-        return ((DataExpression)getBaseExpression()).aliasForTable(table);
+        return getBaseExpression().aliasForTable(table);
     }
 
     /**
@@ -207,7 +207,7 @@ public class MapEntryExpression extends QueryKeyExpression {
      */
     @Override
     public List<DatabaseField> getSelectionFields(ReadQuery query) {
-        ArrayList<DatabaseField> result = new ArrayList<DatabaseField>();
+        ArrayList<DatabaseField> result = new ArrayList<>();
         InterfaceContainerPolicy icp = getInterfaceContainerPolicy();
         // if this is a map entry get all the fields for both the key and the value
         if (returnMapEntry || !icp.isMappedKeyMapPolicy()){

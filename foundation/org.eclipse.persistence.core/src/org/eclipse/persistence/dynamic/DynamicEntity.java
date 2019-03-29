@@ -63,7 +63,7 @@ public interface DynamicEntity {
      * @return
      *      persistent value or relationship container of the specified type
      */
-    public <T> T get(String propertyName) throws DynamicException;
+    <T> T get(String propertyName) throws DynamicException;
 
     /**
      * Set the persistence value for the given property to the specified value
@@ -78,7 +78,7 @@ public interface DynamicEntity {
      * @return
      *      the same DynamicEntity instance
      */
-    public DynamicEntity set(String propertyName, Object value) throws DynamicException;
+    DynamicEntity set(String propertyName, Object value) throws DynamicException;
 
     /**
      * Discover if a property has a persistent value
@@ -91,6 +91,6 @@ public interface DynamicEntity {
      * @throws
      *      DynamicException
      */
-    public boolean isSet(String propertyName) throws DynamicException;
+    boolean isSet(String propertyName) throws DynamicException;
 
 }

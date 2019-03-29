@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -978,29 +978,29 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
     protected static interface Output {
 
-        public void flush() throws IOException;
+        void flush() throws IOException;
 
-        public XMLMarshaller getMarshaller();
+        XMLMarshaller getMarshaller();
 
-        public OutputStream getOutputStream();
+        OutputStream getOutputStream();
 
-        public Writer getWriter();
+        Writer getWriter();
 
-        public void setMarshaller(XMLMarshaller marshaller);
+        void setMarshaller(XMLMarshaller marshaller);
 
-        public void write(char character) throws IOException;
+        void write(char character) throws IOException;
 
-        public void write(String text) throws IOException;
+        void write(String text) throws IOException;
 
-        public void writeAttributePrefix() throws IOException;
+        void writeAttributePrefix() throws IOException;
 
-        public void writeCR() throws IOException;
+        void writeCR() throws IOException;
 
-        public void writeLocalName(XPathFragment xPathFragment) throws IOException;
+        void writeLocalName(XPathFragment xPathFragment) throws IOException;
 
-        public void writeNamespaceSeparator() throws IOException;
+        void writeNamespaceSeparator() throws IOException;
 
-        public void writeResultFromCharEscapeHandler(String value, boolean isAttribute);
+        void writeResultFromCharEscapeHandler(String value, boolean isAttribute);
 
     }
 

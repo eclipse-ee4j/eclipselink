@@ -180,7 +180,7 @@ public class DatasourcePlatform implements Platform {
             clone.sequencesAfterCloneCleanup();
             return clone;
         } catch (CloneNotSupportedException exception) {
-            ;//Do nothing
+            //Do nothing
         }
 
         return null;
@@ -909,20 +909,6 @@ public class DatasourcePlatform implements Platform {
         } else {
             return getDefaultSequence().equals(createPlatformDefaultSequence());
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Returns the correct quote character to use around SQL Identifiers that contain
-     * Space characters
-     * @deprecated
-     * @see getStartDelimiter()
-     * @see getEndDelimiter()
-     * @return The quote character for this platform
-     */
-    @Deprecated
-    public String getIdentifierQuoteCharacter() {
-        return "";
     }
 
     /**

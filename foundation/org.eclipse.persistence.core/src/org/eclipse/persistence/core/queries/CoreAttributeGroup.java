@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -216,7 +216,7 @@ public class CoreAttributeGroup<
 
     @Override
     public CoreAttributeGroup clone() {
-       Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap = new IdentityHashMap<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>>();
+       Map<CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>, CoreAttributeGroup<ATTRIBUTE_ITEM, DESCRIPTOR>> cloneMap = new IdentityHashMap<>();
        return clone(cloneMap);
     }
 
@@ -335,8 +335,8 @@ public class CoreAttributeGroup<
                 }
             }
             if (this.allsubclasses != null){
-                Map<Object, CoreAttributeGroup> allGroups = new HashMap<Object, CoreAttributeGroup>();
-                this.subClasses = new HashSet<CoreAttributeGroup>();
+                Map<Object, CoreAttributeGroup> allGroups = new HashMap<>();
+                this.subClasses = new HashSet<>();
                 for (CoreAttributeGroup subClass : allsubclasses.values()){
                     subClass.convertClassNamesToClasses(classLoader);
                     allGroups.put(subClass.getType(), subClass);
@@ -425,7 +425,7 @@ public class CoreAttributeGroup<
      * INTERNAL:
      */
     public Map<String, ATTRIBUTE_ITEM> getAllItems() {
-        Map<String, ATTRIBUTE_ITEM> allItems = new HashMap<String, ATTRIBUTE_ITEM>();
+        Map<String, ATTRIBUTE_ITEM> allItems = new HashMap<>();
         if (this.superClassGroup != null){
             allItems.putAll(this.superClassGroup.getAllItems());
         }
@@ -434,7 +434,7 @@ public class CoreAttributeGroup<
     }
 
     public Set<String> getAttributeNames() {
-        Set<String> attributes = new HashSet<String>();
+        Set<String> attributes = new HashSet<>();
 
         if (this.superClassGroup != null && this.superClassGroup != this){
             attributes.addAll(this.superClassGroup.getAttributeNames());
@@ -538,7 +538,7 @@ public class CoreAttributeGroup<
      */
     public Map<Object, CoreAttributeGroup> getSubClassGroups(){
         if (this.allsubclasses == null){
-            this.allsubclasses = new HashMap<Object, CoreAttributeGroup>();
+            this.allsubclasses = new HashMap<>();
         }
         return this.allsubclasses;
     }
@@ -589,7 +589,7 @@ public class CoreAttributeGroup<
                 }
             }
         }else{
-            this.subClasses = new HashSet<CoreAttributeGroup>();
+            this.subClasses = new HashSet<>();
         }
         this.subClasses.add(group);
     }

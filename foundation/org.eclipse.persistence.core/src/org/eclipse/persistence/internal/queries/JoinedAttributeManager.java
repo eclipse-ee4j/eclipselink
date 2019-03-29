@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.Cursor;
@@ -178,31 +177,31 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             throw new InternalError(exception.toString());
         }
         if (this.joinedAttributeExpressions != null) {
-            joinManager.joinedAttributeExpressions = new ArrayList<Expression>(this.joinedAttributeExpressions);
+            joinManager.joinedAttributeExpressions = new ArrayList<>(this.joinedAttributeExpressions);
         }
         if (this.joinedMappingExpressions != null) {
-            joinManager.joinedMappingExpressions = new ArrayList<Expression>(this.joinedMappingExpressions);
+            joinManager.joinedMappingExpressions = new ArrayList<>(this.joinedMappingExpressions);
         }
         if (this.joinedAttributes != null) {
-            joinManager.joinedAttributes = new ArrayList<Expression>(this.joinedAttributes);
+            joinManager.joinedAttributes = new ArrayList<>(this.joinedAttributes);
         }
         if (this.joinedMappingIndexes != null) {
-            joinManager.joinedMappingIndexes = new HashMap<DatabaseMapping, Object>(this.joinedMappingIndexes);
+            joinManager.joinedMappingIndexes = new HashMap<>(this.joinedMappingIndexes);
         }
         if (this.joinedMappingQueries != null) {
-            joinManager.joinedMappingQueries = new HashMap<DatabaseMapping, ObjectLevelReadQuery>(this.joinedMappingQueries);
+            joinManager.joinedMappingQueries = new HashMap<>(this.joinedMappingQueries);
         }
         if (this.orderByExpressions != null) {
-            joinManager.orderByExpressions = new ArrayList<Expression>(this.orderByExpressions);
+            joinManager.orderByExpressions = new ArrayList<>(this.orderByExpressions);
         }
         if (this.additionalFieldExpressions != null) {
-            joinManager.additionalFieldExpressions = new ArrayList<Expression>(this.additionalFieldExpressions);
+            joinManager.additionalFieldExpressions = new ArrayList<>(this.additionalFieldExpressions);
         }
         if (this.joinedAttributeMappings != null) {
-            joinManager.joinedAttributeMappings = new ArrayList<DatabaseMapping>(this.joinedAttributeMappings);
+            joinManager.joinedAttributeMappings = new ArrayList<>(this.joinedAttributeMappings);
         }
         if (this.joinedAggregateMappings !=null) {
-            joinManager.joinedAggregateMappings = new ArrayList<DatabaseMapping>(this.joinedAggregateMappings);
+            joinManager.joinedAggregateMappings = new ArrayList<>(this.joinedAggregateMappings);
         }
         return joinManager;
     }
@@ -309,7 +308,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
                     getJoinedMappingQueries_().put(mapping, nestedQuery);
                 }
                 if (mapping.isCollectionMapping()){
-                    ((CollectionMapping)mapping).getContainerPolicy().addNestedJoinsQueriesForMapKey(this, readQuery, session);
+                    mapping.getContainerPolicy().addNestedJoinsQueriesForMapKey(this, readQuery, session);
                 }
             }
         }
@@ -320,8 +319,8 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public void computeJoiningMappingQueries(AbstractSession session) {
         if (hasJoinedExpressions()) {
-            this.joinedAttributeMappings = new ArrayList<DatabaseMapping>(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size());
-            this.joinedAttributes = new ArrayList<Expression>(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size());
+            this.joinedAttributeMappings = new ArrayList<>(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size());
+            this.joinedAttributes = new ArrayList<>(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size());
             setJoinedMappingQueries_(new HashMap(getJoinedAttributeExpressions().size() + getJoinedMappingExpressions().size()));
             computeNestedQueriesForJoinedExpressions(getJoinedAttributeExpressions(), session, (ObjectLevelReadQuery)this.baseQuery);
             computeNestedQueriesForJoinedExpressions(getJoinedMappingExpressions(), session, (ObjectLevelReadQuery)this.baseQuery);
@@ -382,7 +381,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             if (mapping.isCollectionMapping()){
                 // map keys are indexed within the collection's row.
                 // Therefore we use an offset from within the collections row
-                numberOfFields += ((CollectionMapping)mapping).getContainerPolicy()
+                numberOfFields += mapping.getContainerPolicy()
                         .updateJoinedMappingIndexesForMapKey(getJoinedMappingIndexes_(), numberOfFields);
             }
             currentIndex = currentIndex + numberOfFields;
@@ -395,7 +394,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public List<Expression> getAdditionalFieldExpressions() {
         if (this.additionalFieldExpressions == null){
-            this.additionalFieldExpressions = new ArrayList<Expression>();
+            this.additionalFieldExpressions = new ArrayList<>();
         }
         return additionalFieldExpressions;
     }
@@ -454,7 +453,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public List<DatabaseMapping> getJoinedAggregateMappings() {
         if (this.joinedAggregateMappings == null){
-            this.joinedAggregateMappings = new ArrayList<DatabaseMapping>();
+            this.joinedAggregateMappings = new ArrayList<>();
         }
         return joinedAggregateMappings;
     }
@@ -464,7 +463,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public List<Expression> getJoinedAttributeExpressions() {
         if (this.joinedAttributeExpressions == null){
-            this.joinedAttributeExpressions = new ArrayList<Expression>();
+            this.joinedAttributeExpressions = new ArrayList<>();
         }
         return joinedAttributeExpressions;
     }
@@ -474,7 +473,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public List<DatabaseMapping> getJoinedAttributeMappings() {
         if (this.joinedAttributeMappings == null){
-            this.joinedAttributeMappings = new ArrayList<DatabaseMapping>();
+            this.joinedAttributeMappings = new ArrayList<>();
         }
         return this.joinedAttributeMappings;
     }
@@ -484,7 +483,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public List<Expression> getJoinedAttributes() {
         if (this.joinedAttributes == null){
-            this.joinedAttributes = new ArrayList<Expression>();
+            this.joinedAttributes = new ArrayList<>();
         }
         return this.joinedAttributes;
     }
@@ -495,7 +494,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public List<Expression> getJoinedMappingExpressions() {
         if (this.joinedMappingExpressions == null){
-            this.joinedMappingExpressions = new ArrayList<Expression>();
+            this.joinedMappingExpressions = new ArrayList<>();
         }
         return joinedMappingExpressions;
     }
@@ -542,7 +541,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
      */
     public List<Expression> getOrderByExpressions() {
         if (this.orderByExpressions == null){
-            this.orderByExpressions = new ArrayList<Expression>();
+            this.orderByExpressions = new ArrayList<>();
         }
         return orderByExpressions;
     }
@@ -1069,7 +1068,7 @@ public class JoinedAttributeManager implements Cloneable, Serializable {
             this.dataResultsByPrimaryKey = new HashMap();
         }
         AbstractRecord parentRow = row;
-        List<AbstractRecord> childRows = new ArrayList<AbstractRecord>();
+        List<AbstractRecord> childRows = new ArrayList<>();
         childRows.add(row);
         int parentIndex = getParentResultIndex();
         // Must adjust for the parent index to ensure the correct pk is extracted.

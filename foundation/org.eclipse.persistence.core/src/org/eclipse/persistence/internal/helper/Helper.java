@@ -454,7 +454,7 @@ public class Helper extends CoreHelper implements Serializable {
      * Example: "WebLogic Server 10.3.3.0" -&gt; {10, 3, 3, 0}
      */
     static protected List<Integer> version(String version) {
-        ArrayList<Integer> list = new ArrayList<Integer>(5);
+        ArrayList<Integer> list = new ArrayList<>(5);
         // first char - a digit - in the string corresponding to the current list index
         int iBegin = -1;
         // used to remove a non-digital prefix
@@ -1026,7 +1026,7 @@ public class Helper extends CoreHelper implements Serializable {
      * access private/package/protected methods.
      */
     public static Method getDeclaredMethod(Class javaClass, String methodName) throws NoSuchMethodException {
-        return getDeclaredMethod(javaClass, methodName, (Class[]) null);
+        return getDeclaredMethod(javaClass, methodName, null);
     }
 
     /**
@@ -2051,7 +2051,6 @@ public class Helper extends CoreHelper implements Serializable {
      * @param timestampString - string representation of timestamp
      * @return  - timestamp representation of string
      */
-    @SuppressWarnings("deprecation")
     public static java.sql.Timestamp timestampFromString(String timestampString) throws ConversionException {
         if ((timestampString.indexOf('-') == -1) && (timestampString.indexOf('/') == -1) && (timestampString.indexOf('.') == -1) && (timestampString.indexOf(':') == -1)) {
             throw ConversionException.incorrectTimestampFormat(timestampString);

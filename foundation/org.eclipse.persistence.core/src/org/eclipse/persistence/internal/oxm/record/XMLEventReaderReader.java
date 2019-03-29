@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,13 +51,13 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
     private XMLEvent lastEvent;
 
     public XMLEventReaderReader() {
-        this.namespaces = new HashMap<Integer, List<Namespace>>();
+        this.namespaces = new HashMap<>();
         this.indexedAttributeList = new XMLEventReaderAttributes();
     }
 
     public XMLEventReaderReader(Unmarshaller xmlUnmarshaller) {
         super(xmlUnmarshaller);
-        this.namespaces = new HashMap<Integer, List<Namespace>>();
+        this.namespaces = new HashMap<>();
         this.indexedAttributeList = new XMLEventReaderAttributes();
     }
 
@@ -182,7 +182,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
                 Iterator namespaces = startElement.getNamespaces();
                 List<Namespace> declaredNs = null;
                 if(namespaces.hasNext()) {
-                    declaredNs = new ArrayList<Namespace>();
+                    declaredNs = new ArrayList<>();
                 }
                 while(namespaces.hasNext()) {
                     Namespace next = (Namespace)namespaces.next();
@@ -222,7 +222,7 @@ public class XMLEventReaderReader extends XMLReaderAdapter {
             if(null == attributes) {
             if(attrs.hasNext() || namespaces.hasNext()) {
 
-                ArrayList<Attribute> attributesList = new ArrayList<Attribute>();
+                ArrayList<Attribute> attributesList = new ArrayList<>();
 
                 while(namespaces.hasNext()) {
                     Namespace next = (Namespace)namespaces.next();

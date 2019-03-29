@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
     public void addKeyGroup(ATTRIBUTE_GROUP keyGroup) {
         if (keyGroup != null){
             if (this.keyGroups == null){
-                this.keyGroups = new HashMap<Object, ATTRIBUTE_GROUP>();
+                this.keyGroups = new HashMap<>();
             }
             if (this.keyGroup == null){
                 this.keyGroup = keyGroup;
@@ -99,7 +99,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
     public void addSubGroup(ATTRIBUTE_GROUP group) {
         if (group != null){
             if (this.subGroups == null){
-                this.subGroups = new HashMap<Object, ATTRIBUTE_GROUP>();
+                this.subGroups = new HashMap<>();
             }
             if (this.group == null){
                 this.group = group;
@@ -160,7 +160,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
      * @param classLoader
      */
     public void convertClassNamesToClasses(ClassLoader classLoader){
-        Map<Object, ATTRIBUTE_GROUP> newMap = new HashMap<Object, ATTRIBUTE_GROUP>();
+        Map<Object, ATTRIBUTE_GROUP> newMap = new HashMap<>();
         if (this.subGroups != null){
             for (ATTRIBUTE_GROUP entry : this.subGroups.values()){
                 entry.convertClassNamesToClasses(classLoader);
@@ -173,7 +173,7 @@ public class CoreAttributeItem<ATTRIBUTE_GROUP extends CoreAttributeGroup> imple
         }
         this.subGroups = newMap;
 
-        newMap = new HashMap<Object, ATTRIBUTE_GROUP>();
+        newMap = new HashMap<>();
         if (this.keyGroups != null){
             for (ATTRIBUTE_GROUP entry : this.keyGroups.values()){
                 entry.convertClassNamesToClasses(classLoader);

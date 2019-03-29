@@ -289,7 +289,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                 if (key == obj){
                     e.value = e.key;
                 }else{
-                    e.value = new HardEntryReference<V>(obj);
+                    e.value = new HardEntryReference<>(obj);
                 }
                 return old.get();
             }
@@ -690,7 +690,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     static interface EntryReference<T> {
-        public T get();
+        T get();
     }
 
     static class WeakEntryReference<T> extends WeakReference<T> implements EntryReference{
@@ -721,7 +721,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     // Types of Iterators
-    private enum COMPONENT_TYPES {KEYS, VALUES, ENTRIES};
+    private enum COMPONENT_TYPES {KEYS, VALUES, ENTRIES}
 
     private static EmptyHashIterator emptyHashIterator = new EmptyHashIterator();
 

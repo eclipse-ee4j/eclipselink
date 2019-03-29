@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -239,7 +239,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
             // but we do not currently allow this.
             AbstractSession rootSession = session;
             while (rootSession.isUnitOfWork()) {
-                rootSession = ((UnitOfWorkImpl)rootSession).getParent();
+                rootSession = rootSession.getParent();
             }
             Vector allCachedVector = rootSession.getIdentityMapAccessor().getAllFromIdentityMap(getSelectionCriteria(), getReferenceClass(), translationRow, getInMemoryQueryIndirectionPolicyState(), false);
 
@@ -572,7 +572,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
                 if (sopObject != null) {
                     Object valuesIterator = this.containerPolicy.iteratorFor(getTranslationRow().getSopObject());
                     int size = this.containerPolicy.sizeFor(sopObject);
-                    rows =  new ArrayList<AbstractRecord>(size);
+                    rows =  new ArrayList<>(size);
                     while (this.containerPolicy.hasNext(valuesIterator)) {
                         Object memberSopObject = this.containerPolicy.next(valuesIterator, this.session);
                         DatabaseRecord memberRow = new DatabaseRecord(0);

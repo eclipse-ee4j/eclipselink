@@ -33,19 +33,19 @@ public interface WeavedAttributeValueHolderInterface<T> extends ValueHolderInter
      * if that has happened.
      * @return
      */
-    public boolean isCoordinatedWithProperty();
+    boolean isCoordinatedWithProperty();
 
     /**
      * TopLink will call this method when the triggering of a weaved valueholder causes it's
      * value to be coordinated with the underlying property
      */
-    public void setIsCoordinatedWithProperty(boolean coordinated);
+    void setIsCoordinatedWithProperty(boolean coordinated);
 
     /**
      * This method returns whether this valueholder has been newly instantiated by weaved code.
      * @return
      */
-    public boolean isNewlyWeavedValueHolder();
+    boolean isNewlyWeavedValueHolder();
 
     /**
      * TopLink weaving calls this method on any valueholder it weaves into a class to indicate
@@ -53,13 +53,13 @@ public interface WeavedAttributeValueHolderInterface<T> extends ValueHolderInter
      * with the underlying value occurs to indicate the value can now be trusted.
      * @param isNew
      */
-    public void setIsNewlyWeavedValueHolder(boolean isNew);
+    void setIsNewlyWeavedValueHolder(boolean isNew);
 
     /**
      * INTERNAL:
      * Return if add/remove should trigger instantiation or avoid.
      * Current instantiation is avoided is using change tracking.
      */
-    public boolean shouldAllowInstantiationDeferral();
+    boolean shouldAllowInstantiationDeferral();
 
 }

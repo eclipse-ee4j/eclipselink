@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,7 +62,7 @@ public interface CommandManager {
      * Initialize the remote command manager. This will also trigger the
      * DiscoveryManager to start establishing the EclipseLink cluster.
      */
-    public void initialize();
+    void initialize();
 
     /**
      * PUBLIC:
@@ -71,7 +71,7 @@ public interface CommandManager {
      * NOTE: Although this call initiates the shutdown process,
      * no guarantees are made as to when it will actually complete.
      */
-    public void shutdown();
+    void shutdown();
 
     /**
      * PUBLIC:
@@ -79,7 +79,7 @@ public interface CommandManager {
      *
      * @return The URL String for this CommandManager
      */
-    public String getUrl();
+    String getUrl();
 
     /**
      * ADVANCED:
@@ -87,7 +87,7 @@ public interface CommandManager {
      *
      * @param url The URL String for this CommandManager
      */
-    public void setUrl(String url);
+    void setUrl(String url);
 
     /**
      * PUBLIC:
@@ -98,7 +98,7 @@ public interface CommandManager {
      *
      * @return The service channel String subscribed to by this CommandManager
      */
-    public String getChannel();
+    String getChannel();
 
     /**
      * ADVANCED:
@@ -109,7 +109,7 @@ public interface CommandManager {
      *
      * @param channel The service channel subscribed to by this CommandManager
      */
-    public void setChannel(String channel);
+    void setChannel(String channel);
 
     /**
      * ADVANCED:
@@ -118,7 +118,7 @@ public interface CommandManager {
      *
      * @param command An object representing a TopLink command
      */
-    public void propagateCommand(Object command);
+    void propagateCommand(Object command);
 
     /**
      * PUBLIC:
@@ -126,7 +126,7 @@ public interface CommandManager {
      *
      * @return An implementation instance of CommandProcessor
      */
-    public CommandProcessor getCommandProcessor();
+    CommandProcessor getCommandProcessor();
 
     /**
      * ADVANCED:
@@ -136,7 +136,7 @@ public interface CommandManager {
      *
      * @param commandProcessor The intended processor of remote commands
      */
-    public void setCommandProcessor(CommandProcessor commandProcessor);
+    void setCommandProcessor(CommandProcessor commandProcessor);
 
     /**
      * ADVANCED:
@@ -144,7 +144,7 @@ public interface CommandManager {
      *
      * @param newTransportManager An instance of the desired transport manager type
      */
-    public void setTransportManager(TransportManager newTransportManager);
+    void setTransportManager(TransportManager newTransportManager);
 
     /**
     * PUBLIC:
@@ -152,7 +152,7 @@ public interface CommandManager {
      *
      * @return The TransportManager instance being used by this CommandManager
      */
-    public TransportManager getTransportManager();
+    TransportManager getTransportManager();
 
     /**
      * PUBLIC:
@@ -160,7 +160,7 @@ public interface CommandManager {
      *
      * @return The DiscoveryManager instance being used by this CommandManager
      */
-    public DiscoveryManager getDiscoveryManager();
+    DiscoveryManager getDiscoveryManager();
 
     /**
      * PUBLIC:
@@ -169,7 +169,7 @@ public interface CommandManager {
      *
      * @return The converter being used by this CommandManager
      */
-    public CommandConverter getCommandConverter();
+    CommandConverter getCommandConverter();
 
     /**
      * ADVANCED:
@@ -181,7 +181,7 @@ public interface CommandManager {
      *
      * @param commandConverter The converter to be used by this CommandManager
      */
-    public void setCommandConverter(CommandConverter commandConverter);
+    void setCommandConverter(CommandConverter commandConverter);
 
     /**
      * PUBLIC:
@@ -192,7 +192,7 @@ public interface CommandManager {
      * the command manager will create a separate thread for each of the remote
      * service executions, and then promptly return to the caller.
      */
-    public boolean shouldPropagateAsynchronously();
+    boolean shouldPropagateAsynchronously();
 
     /**
      * ADVANCED:
@@ -203,12 +203,12 @@ public interface CommandManager {
      * the command manager will create a separate thread for each of the remote
      * service executions, and then promptly return to the caller.
      */
-    public void setShouldPropagateAsynchronously(boolean asyncMode);
+    void setShouldPropagateAsynchronously(boolean asyncMode);
 
     /**
     * ADVANCE:
     * Return whether this commandProcessor is a EclipseLink session or not.
     */
-    public boolean isCommandProcessorASession();
+    boolean isCommandProcessorASession();
 
 }

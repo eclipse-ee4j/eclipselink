@@ -125,7 +125,6 @@ import org.eclipse.persistence.mappings.ObjectReferenceMapping;
 import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.mappings.UnidirectionalOneToManyMapping;
-import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.mappings.querykeys.DirectQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -386,7 +385,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.cachePolicy = new CachePolicy();
 
         this.additionalWritableMapKeyFields = new ArrayList(2);
-        this.foreignKeyValuesForCaching = new HashSet<DatabaseField>();
+        this.foreignKeyValuesForCaching = new HashSet<>();
     }
 
     /**
@@ -604,7 +603,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         setAdditionalTablePrimaryKeyFields(sourceForeignKeyField.getTable(), targetPrimaryKeyField, sourceForeignKeyField);
         Set<DatabaseTable> sourceTables = getMultipleTableForeignKeys().get(targetPrimaryKeyField.getTable());
         if(sourceTables == null) {
-            sourceTables = new HashSet<DatabaseTable>(3);
+            sourceTables = new HashSet<>(3);
             getMultipleTableForeignKeys().put(targetPrimaryKeyField.getTable(), sourceTables);
         }
         sourceTables.add(sourceForeignKeyField.getTable());
@@ -691,7 +690,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Add an unconverted property (to be initialiazed at runtime)
      */
     public void addUnconvertedProperty(String propertyName, String propertyValue, String propertyType) {
-        List<String> valuePair = new ArrayList<String>(2);
+        List<String> valuePair = new ArrayList<>(2);
         valuePair.add(propertyValue);
         valuePair.add(propertyType);
         getUnconvertedProperties().put(propertyName, valuePair);
@@ -859,7 +858,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         int size = getPrimaryKeyFields().size();
         if (size > 1) {
             // Support composite keys using nested IN.
-            List<Expression> fields = new ArrayList<Expression>(size);
+            List<Expression> fields = new ArrayList<>(size);
             for (DatabaseField targetForeignKeyField : primaryKeyFields) {
                 fields.add(builder.getField(targetForeignKeyField));
             }
@@ -1984,7 +1983,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseField> getAdditionalAggregateCollectionKeyFields(){
         if (additionalAggregateCollectionKeyFields == null){
-            additionalAggregateCollectionKeyFields = new ArrayList<DatabaseField>();
+            additionalAggregateCollectionKeyFields = new ArrayList<>();
         }
         return additionalAggregateCollectionKeyFields;
     }
@@ -2642,7 +2641,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseMapping> getPreDeleteMappings() {
         if (this.preDeleteMappings == null) {
-            this.preDeleteMappings = new ArrayList<DatabaseMapping>();
+            this.preDeleteMappings = new ArrayList<>();
         }
         return this.preDeleteMappings;
     }
@@ -3206,14 +3205,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if(((ForeignReferenceMapping)mapping).getIndirectionPolicy() instanceof ProxyIndirectionPolicy) {
                     session.getProject().setHasProxyIndirection(true);
                 }
-                ClassDescriptor referencedDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referencedDescriptor = mapping.getReferenceDescriptor();
                 if (referencedDescriptor!= null){
                     referencedDescriptor.referencingClasses.add(this);
                 }
             }
 
             if (mapping.isAggregateObjectMapping()) {
-                ClassDescriptor referencedDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referencedDescriptor = mapping.getReferenceDescriptor();
                 if (referencedDescriptor!= null){
                     referencedDescriptor.referencingClasses.add(this);
                 }
@@ -3332,7 +3331,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 if ((mapping != null) && mapping.isAbstractColumnMapping()) {
                     getMappings().remove(mapping);
                     getMappings().add(0, mapping);
-                    DatabaseField field = ((AbstractColumnMapping)mapping).getField();
+                    DatabaseField field = mapping.getField();
                     getFields().remove(field);
                     getFields().add(0, field);
                     getAllFields().remove(field);
@@ -4795,22 +4794,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     /**
-     * PUBLIC:
-     * Used to set if the class that this descriptor represents should be isolated from the shared cache.
-     * Isolated objects will only be cached locally in the ClientSession, never in the ServerSession cache.
-     * This is the best method for disabling caching.
-     * Note: Calling this method with true will also set the cacheSynchronizationType to DO_NOT_SEND_CHANGES
-     * since isolated objects cannot be sent by  cache synchronization.
-     *
-     * @deprecated as of EclipseLink 2.2
-     * @see #setCacheIsolation(CacheIsolationType)
-     */
-    @Deprecated
-    public void setIsIsolated(boolean isIsolated) {
-        getCachePolicy().setCacheIsolation( isIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED);
-    }
-
-    /**
      * INTERNAL:
      * Set entity @Cacheable annotation value in cache configuration object.
      * @param cacheable Entity @Cacheable annotation value for current class
@@ -4886,7 +4869,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public Map<String, List<String>> getUnconvertedProperties() {
         if (unconvertedProperties == null) {
-            unconvertedProperties = new HashMap<String, List<String>>(5);
+            unconvertedProperties = new HashMap<>(5);
         }
 
         return unconvertedProperties;
@@ -5982,7 +5965,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Note: This map does not maintain object identity.
      * In general if caching is not desired a WeakIdentityMap should be used with an isolated descriptor.
      * The default is the "SoftCacheWeakIdentityMap".
-     * @see #setIsIsolated(boolean)
+     * @see #setCacheIsolation(CacheIsolationType)
      */
     public void useNoIdentityMap() {
         getCachePolicy().useNoIdentityMap();
@@ -6697,7 +6680,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseMapping> getMappingsPostCalculateChanges() {
         if(mappingsPostCalculateChanges == null) {
-            mappingsPostCalculateChanges = new ArrayList<DatabaseMapping>();
+            mappingsPostCalculateChanges = new ArrayList<>();
         }
         return mappingsPostCalculateChanges;
     }
@@ -6725,7 +6708,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public List<DatabaseMapping> getMappingsPostCalculateChangesOnDeleted() {
         if (mappingsPostCalculateChangesOnDeleted == null) {
-            mappingsPostCalculateChangesOnDeleted = new ArrayList<DatabaseMapping>();
+            mappingsPostCalculateChangesOnDeleted = new ArrayList<>();
         }
         return mappingsPostCalculateChangesOnDeleted;
     }
@@ -6809,7 +6792,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      **/
     public List<VirtualAttributeMethodInfo> getVirtualAttributeMethods() {
         if (this.virtualAttributeMethods == null) {
-            this.virtualAttributeMethods = new ArrayList<VirtualAttributeMethodInfo>();
+            this.virtualAttributeMethods = new ArrayList<>();
         }
         return this.virtualAttributeMethods;
     }
@@ -6834,7 +6817,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                     mapping.isAbstractCompositeDirectCollectionMapping()) {
                 return true;
             } else if (mapping.isAggregateObjectMapping()) {
-                ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+                ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
                 if (referenceDescriptor == null) {
                     // the mapping has not been initialized yet
                     referenceDescriptor = session.getDescriptor(((AggregateObjectMapping)mapping).getReferenceClass());

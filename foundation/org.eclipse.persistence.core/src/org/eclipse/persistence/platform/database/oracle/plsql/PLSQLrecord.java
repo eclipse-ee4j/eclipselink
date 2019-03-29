@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 @SuppressWarnings("unchecked")
 public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType, Cloneable {
 
-    protected List<PLSQLargument> fields =  new ArrayList<PLSQLargument>();
+    protected List<PLSQLargument> fields =  new ArrayList<>();
 
     public PLSQLrecord() {
         super();
@@ -53,7 +53,7 @@ public class PLSQLrecord extends ComplexDatabaseType implements OraclePLSQLType,
     @Override
     public PLSQLrecord clone()  {
         PLSQLrecord clone = (PLSQLrecord)super.clone();
-        clone.fields = new ArrayList<PLSQLargument>(fields.size());
+        clone.fields = new ArrayList<>(fields.size());
         for (PLSQLargument f : fields) {
             clone.fields.add(f.clone());
         }

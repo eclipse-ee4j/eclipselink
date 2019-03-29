@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,120 +41,112 @@ public interface MarshalRecord<
     MARSHALLER extends Marshaller,
     NAMESPACE_RESOLVER extends NamespaceResolver> extends AbstractMarshalRecord<ABSTRACT_SESSION, FIELD, MARSHALLER, NAMESPACE_RESOLVER> {
 
-    public void add(FIELD field, Object value);
+    void add(FIELD field, Object value);
 
-    public void addGroupingElement(XPathNode holderXPathNode);
+    void addGroupingElement(XPathNode holderXPathNode);
 
-    public void afterContainmentMarshal(Object object, Object value);
+    void afterContainmentMarshal(Object object, Object value);
 
-    @Override
-    public void attribute(String namespaceURI, String localPart,
+    @Override void attribute(String namespaceURI, String localPart,
             String qualifiedName, String value);
 
-    public void attribute(XPathFragment nextFragment,
+    void attribute(XPathFragment nextFragment,
             NAMESPACE_RESOLVER namespaceResolver, Object fieldValue,
             QName schemaType);
 
-    public void attribute(XPathFragment xPathFragment,
+    void attribute(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver, String value);
 
-    @Override
-    public void attributeWithoutQName(String namespaceURI,
+    @Override void attributeWithoutQName(String namespaceURI,
             String localName, String prefix, String value);
 
-    public void beforeContainmentMarshal(Object value);
+    void beforeContainmentMarshal(Object value);
 
-    public void cdata(String string);
+    void cdata(String string);
 
-    public void characters(QName schemaType, Object objectValue,
+    void characters(QName schemaType, Object objectValue,
             String mimeType, boolean b);
 
-    public void characters(String c_id);
+    void characters(String c_id);
 
-    public void closeStartElement();
+    void closeStartElement();
 
-    public void closeStartGroupingElements(XPathFragment groupingFragment);
+    void closeStartGroupingElements(XPathFragment groupingFragment);
 
-    public void emptyAttribute(XPathFragment xPathFragment,
+    void emptyAttribute(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver);
 
-    public boolean emptyCollection(XPathFragment xPathFragment,
+    boolean emptyCollection(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver, boolean b);
 
-    public void emptyComplex(XPathFragment xPathFragment,
+    void emptyComplex(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver);
 
-    public void emptySimple(NAMESPACE_RESOLVER namespaceResolver);
+    void emptySimple(NAMESPACE_RESOLVER namespaceResolver);
 
-    public void endCollection();
+    void endCollection();
 
-    public void endElement(XPathFragment xPathFragment,
+    void endElement(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver);
 
-    public void endPrefixMapping(String prefix);
+    void endPrefixMapping(String prefix);
 
-    public void flush();
+    void flush();
 
-    public void forceValueWrapper();
+    void forceValueWrapper();
 
-    public CoreAttributeGroup getCurrentAttributeGroup();
+    CoreAttributeGroup getCurrentAttributeGroup();
 
-    public CycleDetectionStack<Object>  getCycleDetectionStack();
+    CycleDetectionStack<Object>  getCycleDetectionStack();
 
-    public ArrayList<XPathNode> getGroupingElements();
+    ArrayList<XPathNode> getGroupingElements();
 
-    public XPathFragment getTextWrapperFragment();
+    XPathFragment getTextWrapperFragment();
 
-    public String getValueToWrite(QName schemaType, Object fieldValue,
+    String getValueToWrite(QName schemaType, Object fieldValue,
             ConversionManager conversionManager);
 
-    @Override
-    public boolean hasCustomNamespaceMapper();
+    @Override boolean hasCustomNamespaceMapper();
 
-    public boolean isWrapperAsCollectionName();
+    boolean isWrapperAsCollectionName();
 
-    @Override
-    public boolean isXOPPackage();
+    @Override boolean isXOPPackage();
 
-    @Override
-    public void namespaceDeclaration(String generatedPrefix, String namespaceURI);
+    @Override void namespaceDeclaration(String generatedPrefix, String namespaceURI);
 
-    public void nilComplex(XPathFragment xPathFragment,
+    void nilComplex(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver);
 
-    public void nilSimple(NAMESPACE_RESOLVER namespaceResolver);
+    void nilSimple(NAMESPACE_RESOLVER namespaceResolver);
 
-    public void node(Node item, NAMESPACE_RESOLVER namespaceResolver);
+    void node(Node item, NAMESPACE_RESOLVER namespaceResolver);
 
-    public void openStartElement(XPathFragment xPathFragment,
+    void openStartElement(XPathFragment xPathFragment,
             NAMESPACE_RESOLVER namespaceResolver);
 
-    public XPathFragment openStartGroupingElements(
+    XPathFragment openStartGroupingElements(
             NAMESPACE_RESOLVER namespaceResolver);
 
-    public void popAttributeGroup();
+    void popAttributeGroup();
 
-    public void predicateAttribute(XPathFragment anXPathFragment,
+    void predicateAttribute(XPathFragment anXPathFragment,
             NAMESPACE_RESOLVER namespaceResolver);
 
-    public void pushAttributeGroup(CoreAttributeGroup group);
+    void pushAttributeGroup(CoreAttributeGroup group);
 
-    @Override
-    public void removeExtraNamespacesFromNamespaceResolver(List<Namespace> extraNamespaces, CoreAbstractSession session);
+    @Override void removeExtraNamespacesFromNamespaceResolver(List<Namespace> extraNamespaces, CoreAbstractSession session);
 
-    public void removeGroupingElement(XPathNode holderXPathNode);
+    void removeGroupingElement(XPathNode holderXPathNode);
 
-    public void setGroupingElement(ArrayList<XPathNode> object);
+    void setGroupingElement(ArrayList<XPathNode> object);
 
-    @Override
-    public void setLeafElementType(QName leafElementType);
+    @Override void setLeafElementType(QName leafElementType);
 
-    @Override
-    public void setMarshaller(MARSHALLER marshaller);
+    @Override void setMarshaller(MARSHALLER marshaller);
 
-    public void startCollection();
+    void startCollection();
 
-    public void startPrefixMapping(String prefix, String uri);
+    void startPrefixMapping(String prefix, String uri);
 
     /**
      * A Stack-like List, used to detect object cycles during marshal operations.

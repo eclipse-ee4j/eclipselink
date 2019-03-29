@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sessions;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Set;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
 import org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet;
 
 /**
@@ -63,21 +66,21 @@ public interface UnitOfWork extends Session {
      * ADVANCED:
      * Returns the set of read-only classes in this UnitOfWork.
      */
-    public Set getReadOnlyClasses();
+    Set getReadOnlyClasses();
 
     /**
      * PUBLIC:
      * Adds the given Java class to the receiver's set of read-only classes.
      * Cannot be called after objects have been registered in the unit of work.
      */
-    public void addReadOnlyClass(Class theClass);
+    void addReadOnlyClass(Class theClass);
 
     /**
      * PUBLIC:
      * Adds the classes in the given Vector to the existing set of read-only classes.
      * Cannot be called after objects have been registered in the unit of work.
      */
-    public void addReadOnlyClasses(Collection classes);
+    void addReadOnlyClasses(Collection classes);
 
     /**
      * ADVANCED:
@@ -86,7 +89,7 @@ public interface UnitOfWork extends Session {
      * It can be used if the application requires to use the object id before the object exists on the database.
      * Normally all ids are assigned during the commit automatically.
      */
-    public void assignSequenceNumber(Object object) throws DatabaseException;
+    void assignSequenceNumber(Object object) throws DatabaseException;
 
     /**
      * ADVANCED:
@@ -96,7 +99,7 @@ public interface UnitOfWork extends Session {
      * It can be used if the application requires to use the object id before the object exists on the database.
      * Normally all ids are assigned during the commit automatically.
      */
-    public void assignSequenceNumbers() throws DatabaseException;
+    void assignSequenceNumbers() throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -109,7 +112,7 @@ public interface UnitOfWork extends Session {
      * @see #commit()
      * @see #release()
      */
-    public void beginEarlyTransaction() throws DatabaseException;
+    void beginEarlyTransaction() throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -127,7 +130,7 @@ public interface UnitOfWork extends Session {
      * @see #commitAndResume()
      * @see #release()
      */
-    public void commit() throws DatabaseException, OptimisticLockException;
+    void commit() throws DatabaseException, OptimisticLockException;
 
     /**
      * PUBLIC:
@@ -145,7 +148,7 @@ public interface UnitOfWork extends Session {
      * @see #commit()
      * @see #release()
      */
-    public void commitAndResume() throws DatabaseException, OptimisticLockException;
+    void commitAndResume() throws DatabaseException, OptimisticLockException;
 
     /**
      * PUBLIC:
@@ -164,7 +167,7 @@ public interface UnitOfWork extends Session {
      * @see #commit()
      * @see #release()
      */
-    public void commitAndResumeOnFailure() throws DatabaseException, OptimisticLockException;
+    void commitAndResumeOnFailure() throws DatabaseException, OptimisticLockException;
 
     /**
      * PUBLIC:
@@ -180,7 +183,7 @@ public interface UnitOfWork extends Session {
      * @see #mergeClone(Object)
      * @see #shallowMergeClone(Object)
      */
-    public Object deepMergeClone(Object rmiClone);
+    Object deepMergeClone(Object rmiClone);
 
     /**
      * PUBLIC:
@@ -191,7 +194,7 @@ public interface UnitOfWork extends Session {
      * @see #revertObject(Object)
      * @see #shallowRevertObject(Object)
      */
-    public Object deepRevertObject(Object clone);
+    Object deepRevertObject(Object clone);
 
     /**
      * ADVANCED:
@@ -200,21 +203,21 @@ public interface UnitOfWork extends Session {
      * Delete object can also be used, but will result in inserting the object and then deleting it.
      * The method should be used carefully because it will delete all the reachable parts.
      */
-    public void deepUnregisterObject(Object clone);
+    void deepUnregisterObject(Object clone);
 
     /**
      * PUBLIC:
      * Delete all of the objects and all of their privately owned parts in the database.
      * Delete operations are delayed in a unit of work until commit.
      */
-    public void deleteAllObjects(Collection domainObjects);
+    void deleteAllObjects(Collection domainObjects);
 
     /**
      * PUBLIC:
      * Delete the object and all of their privately owned parts in the database.
      * Delete operations are delayed in a unit of work until commit.
      */
-    public Object deleteObject(Object domainObject);
+    Object deleteObject(Object domainObject);
 
     /**
      * ADVANCED:
@@ -226,7 +229,7 @@ public interface UnitOfWork extends Session {
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
-    public void dontPerformValidation();
+    void dontPerformValidation();
 
     /**
      * ADVANCED:
@@ -241,7 +244,7 @@ public interface UnitOfWork extends Session {
      * If shouldModifyVersionField is false,
      * "UPDATE EMPLOYEE SET VERSION = 1 WHERE EMP_ID = 9 AND VERSION = 1"
      */
-    public void forceUpdateToVersionField(Object cloneFromUOW, boolean shouldModifyVersionField);
+    void forceUpdateToVersionField(Object cloneFromUOW, boolean shouldModifyVersionField);
 
     /**
      * ADVANCED:
@@ -250,27 +253,27 @@ public interface UnitOfWork extends Session {
      * A valid changeSet, with sequence numbers can be collected from the UnitOfWork after the commit
      * is complete by calling unitOfWork.getUnitOfWorkChangeSet().
      */
-    public UnitOfWorkChangeSet getCurrentChanges();
+    UnitOfWorkChangeSet getCurrentChanges();
 
     /**
      * ADVANCED:
      * Return the original version of the object(clone) from the parent's identity map.
      */
-    public Object getOriginalVersionOfObject(Object workingClone);
+    Object getOriginalVersionOfObject(Object workingClone);
 
     /**
      * PUBLIC:
      * Return the parent.
      * This is a unit of work if nested, otherwise a database session or client session.
      */
-    public org.eclipse.persistence.internal.sessions.AbstractSession getParent();
+    org.eclipse.persistence.internal.sessions.AbstractSession getParent();
 
     /**
      * ADVANCED:
      * Returns the currentChangeSet from the UnitOfWork.
      * This is only valid after the UnitOfWork has committed successfully
      */
-    public org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getUnitOfWorkChangeSet();
+    org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet getUnitOfWorkChangeSet();
 
     /**
      * ADVANCED:
@@ -282,20 +285,20 @@ public interface UnitOfWork extends Session {
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
-    public int getValidationLevel();
+    int getValidationLevel();
 
     /**
      * ADVANCED:
      * The Unit of work is capable of preprocessing to determine if any on the clone have been changed.
      * This is computationally expensive and should be avoided on large object graphs.
       */
-    public boolean hasChanges();
+    boolean hasChanges();
 
     /**
      * PUBLIC:
      * Return if the unit of work is active (has not been released).
      */
-    public boolean isActive();
+    boolean isActive();
 
     /**
      * PUBLIC:
@@ -303,19 +306,19 @@ public interface UnitOfWork extends Session {
      *
      * @return true if the class is read-only, false otherwise.
      */
-    public boolean isClassReadOnly(Class theClass);
+    boolean isClassReadOnly(Class theClass);
 
     /**
      * ADVANCED:
      * Return whether the clone object is already registered.
      */
-    public boolean isObjectRegistered(Object clone);
+    boolean isObjectRegistered(Object clone);
 
     /**
      * ADVANCED:
      * Return if this session is a nested unit of work.
      */
-    public boolean isNestedUnitOfWork();
+    boolean isNestedUnitOfWork();
 
     /**
      * PUBLIC:
@@ -331,7 +334,7 @@ public interface UnitOfWork extends Session {
      * @see #shallowMergeClone(Object)
      * @see #deepMergeClone(Object)
      */
-    public Object mergeClone(Object rmiClone);
+    Object mergeClone(Object rmiClone);
 
     /**
      * PUBLIC:
@@ -348,14 +351,14 @@ public interface UnitOfWork extends Session {
      * @see #shallowMergeClone(Object)
      * @see #deepMergeClone(Object)
      */
-    public Object mergeCloneWithReferences(Object rmiClone);
+    Object mergeCloneWithReferences(Object rmiClone);
 
     /**
      * PUBLIC:
      * Return a new instance of the class registered in this unit of work.
      * This can be used to ensure that new objects are registered correctly.
      */
-    public Object newInstance(Class theClass);
+    Object newInstance(Class theClass);
 
     /**
      * ADVANCED:
@@ -367,7 +370,7 @@ public interface UnitOfWork extends Session {
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
-    public void performFullValidation();
+    void performFullValidation();
 
     /**
      * ADVANCED:
@@ -379,13 +382,13 @@ public interface UnitOfWork extends Session {
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
-    public void performPartialValidation();
+    void performPartialValidation();
 
     /**
      * PUBLIC:
      * Print the objects in the unit of work.
      */
-    public void printRegisteredObjects();
+    void printRegisteredObjects();
 
     /**
      * PUBLIC:
@@ -395,7 +398,7 @@ public interface UnitOfWork extends Session {
      * A no wait option is available through setting the lock mode.
      * @see #refreshAndLockObject(Object, short)
      */
-    public Object refreshAndLockObject(Object object);
+    Object refreshAndLockObject(Object object);
 
     /**
      * PUBLIC:
@@ -403,7 +406,7 @@ public interface UnitOfWork extends Session {
      * The object will be pessimistically locked on the database for the duration of the transaction.
      * <p>Lock Modes: ObjectBuildingQuery.NO_LOCK, LOCK, LOCK_NOWAIT
      */
-    public Object refreshAndLockObject(Object object, short lockMode);
+    Object refreshAndLockObject(Object object, short lockMode);
 
     /**
      * PUBLIC:
@@ -416,7 +419,7 @@ public interface UnitOfWork extends Session {
      * @return is the clones of the original objects, the return value must be used for editing,
      * editing the original is not allowed in the unit of work.
      */
-    public Vector registerAllObjects(Collection domainObjects);
+    Vector registerAllObjects(Collection domainObjects);
 
     /**
      * ADVANCED:
@@ -427,7 +430,7 @@ public interface UnitOfWork extends Session {
      * @return The clone of the original object, the return value must be used for editing.
      * Editing the original is not allowed in the unit of work.
      */
-    public Object registerExistingObject(Object existingObject);
+    Object registerExistingObject(Object existingObject);
 
     /**
      * ADVANCED:
@@ -439,7 +442,7 @@ public interface UnitOfWork extends Session {
      *
      * @see #registerObject(Object)
      */
-    public Object registerNewObject(Object newObject);
+    Object registerNewObject(Object newObject);
 
     /**
      * PUBLIC:
@@ -453,7 +456,7 @@ public interface UnitOfWork extends Session {
      *
      * ** Editing the original is not allowed in the unit of work. **
      */
-    public Object registerObject(Object domainObject);
+    Object registerObject(Object domainObject);
 
     /**
      * PUBLIC:
@@ -465,8 +468,7 @@ public interface UnitOfWork extends Session {
      *
      * @see #commit()
      */
-    @Override
-    public void release();
+    @Override void release();
 
     /**
      * PUBLIC:
@@ -474,21 +476,21 @@ public interface UnitOfWork extends Session {
      * It is illegal to call this method on nested UnitOfWork objects. A nested UnitOfWork
      * cannot have a subset of its parent's set of read-only classes.
      */
-    public void removeAllReadOnlyClasses();
+    void removeAllReadOnlyClasses();
 
     /**
      * ADVANCED:
      * Remove optimistic read lock from the object
      * See forceUpdateToVersionField(Object)
      */
-    public void removeForceUpdateToVersionField(Object cloneFromUOW);
+    void removeForceUpdateToVersionField(Object cloneFromUOW);
 
     /**
      * PUBLIC:
      * Removes a Class from the receiver's set of read-only classes.
      * It is illegal to try to send this method to a nested UnitOfWork.
      */
-    public void removeReadOnlyClass(Class theClass);
+    void removeReadOnlyClass(Class theClass);
 
     /**
      * PUBLIC:
@@ -501,7 +503,7 @@ public interface UnitOfWork extends Session {
      * @see #commitAndResume()
      * @see #release()
      */
-    public void revertAndResume();
+    void revertAndResume();
 
     /**
      * PUBLIC:
@@ -512,7 +514,7 @@ public interface UnitOfWork extends Session {
      * @see #shallowRevertObject(Object)
      * @see #deepRevertObject(Object)
      */
-    public Object revertObject(Object clone);
+    Object revertObject(Object clone);
 
     /**
      * ADVANCED:
@@ -524,14 +526,14 @@ public interface UnitOfWork extends Session {
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.
      */
-    public void setShouldNewObjectsBeCached(boolean shouldNewObjectsBeCached);
+    void setShouldNewObjectsBeCached(boolean shouldNewObjectsBeCached);
 
     /**
      * ADVANCED:
      * By default deletes are performed last in a unit of work.
      * Sometimes you may want to have the deletes performed before other actions.
      */
-    public void setShouldPerformDeletesFirst(boolean shouldPerformDeletesFirst);
+    void setShouldPerformDeletesFirst(boolean shouldPerformDeletesFirst);
 
     /**
      * ADVANCED:
@@ -541,7 +543,7 @@ public interface UnitOfWork extends Session {
      *    DO_NOT_THROW_CONFORM_EXCEPTIONS = 0;<br>
      *    THROW_ALL_CONFORM_EXCEPTIONS = 1;
      */
-    public void setShouldThrowConformExceptions(int shouldThrowExceptions);
+    void setShouldThrowConformExceptions(int shouldThrowExceptions);
 
     /**
      * ADVANCED:
@@ -553,7 +555,7 @@ public interface UnitOfWork extends Session {
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
-    public void setValidationLevel(int validationLevel);
+    void setValidationLevel(int validationLevel);
 
     /**
      * PUBLIC:
@@ -569,7 +571,7 @@ public interface UnitOfWork extends Session {
      * @see #mergeClone(Object)
      * @see #deepMergeClone(Object)
      */
-    public Object shallowMergeClone(Object rmiClone);
+    Object shallowMergeClone(Object rmiClone);
 
     /**
      * PUBLIC:
@@ -580,7 +582,7 @@ public interface UnitOfWork extends Session {
      * @see #revertObject(Object)
      * @see #deepRevertObject(Object)
      */
-    public Object shallowRevertObject(Object clone);
+    Object shallowRevertObject(Object clone);
 
     /**
      * ADVANCED:
@@ -589,7 +591,7 @@ public interface UnitOfWork extends Session {
      * Delete object can also be used, but will result in inserting the object and then deleting it.
      * The method will only unregister the clone, none of its parts.
      */
-    public void shallowUnregisterObject(Object clone);
+    void shallowUnregisterObject(Object clone);
 
     /**
      * ADVANCED:
@@ -601,7 +603,7 @@ public interface UnitOfWork extends Session {
      * New objects cannot be cached unless they have a valid assigned primary key before being registered.
      * New object with non-null invalid primary keys such as 0 or '' can cause problems and should not be used with this option.
      */
-    public boolean shouldNewObjectsBeCached();
+    boolean shouldNewObjectsBeCached();
 
     /**
      * ADVANCED:
@@ -609,7 +611,7 @@ public interface UnitOfWork extends Session {
      * any object is deleted. If this flag is set to true, deletes will be
      * performed before inserts and updates
      */
-    public boolean shouldPerformDeletesFirst();
+    boolean shouldPerformDeletesFirst();
 
     /**
      * ADVANCED:
@@ -621,7 +623,7 @@ public interface UnitOfWork extends Session {
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
-    public boolean shouldPerformFullValidation();
+    boolean shouldPerformFullValidation();
 
     /**
      * ADVANCED:
@@ -633,7 +635,7 @@ public interface UnitOfWork extends Session {
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
-    public boolean shouldPerformNoValidation();
+    boolean shouldPerformNoValidation();
 
     /**
      * ADVANCED:
@@ -645,7 +647,7 @@ public interface UnitOfWork extends Session {
      * advanced situation where the application requires/desires to violate clone identity in the unit of work.
      * It is strongly suggested that clone identity not be violate in the unit of work.
      */
-    public boolean shouldPerformPartialValidation();
+    boolean shouldPerformPartialValidation();
 
     /**
      * ADVANCED:
@@ -654,7 +656,7 @@ public interface UnitOfWork extends Session {
      * Delete object can also be used, but will result in inserting the object and then deleting it.
      * The method will only unregister private owned parts
      */
-    public void unregisterObject(Object clone);
+    void unregisterObject(Object clone);
 
     /**
      * ADVANCED:
@@ -664,7 +666,7 @@ public interface UnitOfWork extends Session {
      * an error if not,  it will contain the full stack of object references in the error message.
      * If you call this method after each register or change you perform it will pin-point where the error was made.
      */
-    public void validateObjectSpace();
+    void validateObjectSpace();
 
     /**
      * ADVANCED: Writes all changes now before commit().
@@ -684,7 +686,7 @@ public interface UnitOfWork extends Session {
      * <p>
      * Use to commit a UnitOfWork in two stages.
      */
-    public void writeChanges();
+    void writeChanges();
 
     /**
      * Get an instance, whose state may be lazily fetched.
@@ -692,33 +694,17 @@ public interface UnitOfWork extends Session {
      * The instance will be lazy when it does not exist in the cache, and supports fetch groups.
      * @param primaryKey - The primary key of the object, either as a List, singleton, IdClass or an instance of the object.
      */
-    public Object getReference(Class theClass, Object primaryKey);
-
-    /**
-     * ADVANCED:
-     * Return if updates should be ordered by primary key to avoid possible database deadlocks.
-     * @deprecated since 2.6 replaced by #getCommitOrder()
-     */
-    @Deprecated
-    public boolean shouldOrderUpdates();
-
-    /**
-     * ADVANCED:
-     * Set if updates should be ordered by primary key to avoid possible database deadlocks.
-     * @deprecated since 2.6 replaced by #setCommitOrder(CommitOrderType)
-     */
-    @Deprecated
-    public void setShouldOrderUpdates(boolean shouldOrderUpdates);
+    Object getReference(Class theClass, Object primaryKey);
 
     /**
      * ADVANCED:
      * Return the commit order.
      */
-    public CommitOrderType getCommitOrder();
+    CommitOrderType getCommitOrder();
 
     /**
      * ADVANCED:
      * Set the commit order.
      */
-    public void setCommitOrder(CommitOrderType order);
+    void setCommitOrder(CommitOrderType order);
 }

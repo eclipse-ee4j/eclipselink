@@ -36,10 +36,10 @@ public class TraceLocalization extends EclipseLinkLocalization {
     }
 
     public static String buildMessage(String key, boolean translate) {
-        return buildMessage(key, (Object[])null, translate);
+        return buildMessage(key, null, translate);
     }
 
     public static String buildMessage(String key) {
-        return buildMessage(key, (Object[])null);
+        return buildMessage(key, null);
     }
 }

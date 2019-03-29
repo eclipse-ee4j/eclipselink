@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,160 +56,158 @@ public interface UnmarshalRecord<
     TRANSFORMATION_RECORD extends TransformationRecord,
     UNMARSHALLER extends Unmarshaller> extends AbstractUnmarshalRecord<ABSTRACT_SESSION, FIELD, UNMARSHALLER>, ExtendedContentHandler, LexicalHandler {
 
-    public static final UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
+    UnmappedContentHandler DEFAULT_UNMAPPED_CONTENT_HANDLER = new DefaultUnmappedContentHandler();
 
-    public void addAttributeValue(ContainerValue containerValue, Object value);
+    void addAttributeValue(ContainerValue containerValue, Object value);
 
-    public void addAttributeValue(ContainerValue containerValue, Object value, Object collection);
+    void addAttributeValue(ContainerValue containerValue, Object value, Object collection);
 
-    public Root createRoot();
+    Root createRoot();
 
-    public void endUnmappedElement(String uri, String localName, String name) throws SAXException;
+    void endUnmappedElement(String uri, String localName, String name) throws SAXException;
 
-    public NodeValue getAttributeChildNodeValue(String namespace, String localName);
+    NodeValue getAttributeChildNodeValue(String namespace, String localName);
 
-    public Attributes getAttributes();
+    Attributes getAttributes();
 
-    public CharSequence getCharacters();
+    CharSequence getCharacters();
 
-    public  UnmarshalRecord getChildRecord();
+    UnmarshalRecord getChildRecord();
 
-    public UnmarshalRecord getChildUnmarshalRecord(OBJECT_BUILDER targetObjectBuilder);
+    UnmarshalRecord getChildUnmarshalRecord(OBJECT_BUILDER targetObjectBuilder);
 
-    public Object getContainerInstance(ContainerValue containerValue);
+    Object getContainerInstance(ContainerValue containerValue);
 
-    public Object getContainerInstance(ContainerValue containerValue, boolean b);
+    Object getContainerInstance(ContainerValue containerValue, boolean b);
 
-    public Object getCurrentObject();
+    Object getCurrentObject();
 
-    public Descriptor getDescriptor();
+    Descriptor getDescriptor();
 
     /**
      * Gets the encoding for this document. Only set on the root-level UnmarshalRecord
      * @return a String representing the encoding for this doc
      */
-    public String getEncoding();
+    String getEncoding();
 
-    public SAXFragmentBuilder getFragmentBuilder();
+    SAXFragmentBuilder getFragmentBuilder();
 
-    public XPathQName getLeafElementType();
+    XPathQName getLeafElementType();
 
-    public int getLevelIndex();
+    int getLevelIndex();
 
-    public String getLocalName();
+    String getLocalName();
 
-    public String getNoNamespaceSchemaLocation();
+    String getNoNamespaceSchemaLocation();
 
-    public XPathNode getNonAttributeXPathNode(String namespaceURI, String localName, String qName, Attributes attributes);
+    XPathNode getNonAttributeXPathNode(String namespaceURI, String localName, String qName, Attributes attributes);
 
-    public List<NullCapableValue> getNullCapableValues();
+    List<NullCapableValue> getNullCapableValues();
 
-    public org.eclipse.persistence.internal.oxm.record.UnmarshalRecord getParentRecord();
+    org.eclipse.persistence.internal.oxm.record.UnmarshalRecord getParentRecord();
 
-    public Map<String, String> getPrefixesForFragment();
+    Map<String, String> getPrefixesForFragment();
 
-    public ReferenceResolver getReferenceResolver();
+    ReferenceResolver getReferenceResolver();
 
-    public String getRootElementName();
+    String getRootElementName();
 
-    public String getRootElementNamespaceUri();
+    String getRootElementNamespaceUri();
 
-    public String getSchemaLocation();
+    String getSchemaLocation();
 
-    public XPathFragment getTextWrapperFragment();
+    XPathFragment getTextWrapperFragment();
 
-    public TRANSFORMATION_RECORD getTransformationRecord();
+    TRANSFORMATION_RECORD getTransformationRecord();
 
-    public QName getTypeQName();
+    QName getTypeQName();
 
-    public UnmarshalContext getUnmarshalContext();
+    UnmarshalContext getUnmarshalContext();
 
-    @Override
-    public UNMARSHALLER getUnmarshaller();
+    @Override UNMARSHALLER getUnmarshaller();
 
-    public UnmarshalNamespaceResolver getUnmarshalNamespaceResolver();
+    UnmarshalNamespaceResolver getUnmarshalNamespaceResolver();
 
     /**
      * Gets the XML Version for this document. Only set on the root-level
      * UnmarshalRecord, if supported by the parser.
      */
-    public String getVersion();
+    String getVersion();
 
-    public XMLReader getXMLReader();
+    XMLReader getXMLReader();
 
-    public XPathNode getXPathNode();
+    XPathNode getXPathNode();
 
-    public UnmarshalRecord initialize(OBJECT_BUILDER objectBuilder);
+    UnmarshalRecord initialize(OBJECT_BUILDER objectBuilder);
 
-    public void initializeRecord(Mapping mapping) throws SAXException;
+    void initializeRecord(Mapping mapping) throws SAXException;
 
-    public boolean isBufferCDATA();
+    boolean isBufferCDATA();
 
-    public boolean isNil();
+    boolean isNil();
 
-    public boolean isSelfRecord();
+    boolean isSelfRecord();
 
-    public void reference(Reference reference);
+    void reference(Reference reference);
 
-    public void removeNullCapableValue(NullCapableValue nullCapableValue);
+    void removeNullCapableValue(NullCapableValue nullCapableValue);
 
-    public void resetStringBuffer();
+    void resetStringBuffer();
 
-    public String resolveNamespaceUri(String namespaceURI);
+    String resolveNamespaceUri(String namespaceURI);
 
-    public void resolveReferences(ABSTRACT_SESSION session, ID_RESOLVER idResolver);
+    void resolveReferences(ABSTRACT_SESSION session, ID_RESOLVER idResolver);
 
-    public void setAttributes(Attributes atts);
+    void setAttributes(Attributes atts);
 
-    public void setAttributeValue(Object object, Mapping mapping);
+    void setAttributeValue(Object object, Mapping mapping);
 
-    public void setAttributeValueNull(ContainerValue containerValue);
+    void setAttributeValueNull(ContainerValue containerValue);
 
-    public void setChildRecord(UnmarshalRecord unmarshalRecord);
+    void setChildRecord(UnmarshalRecord unmarshalRecord);
 
-    public void setContainerInstance(int index, Object containerInstance);
+    void setContainerInstance(int index, Object containerInstance);
 
-    public void setCurrentObject(Object object);
+    void setCurrentObject(Object object);
 
-    public void setFragmentBuilder(SAXFragmentBuilder fragmentBuilder);
+    void setFragmentBuilder(SAXFragmentBuilder fragmentBuilder);
 
-    public void setLeafElementType(QName leafElementType);
+    void setLeafElementType(QName leafElementType);
 
-    public void setLocalName(String localName);
+    void setLocalName(String localName);
 
-    @Override
-    public void setNil(boolean isNil);
+    @Override void setNil(boolean isNil);
 
-    public void setParentRecord(UnmarshalRecord unmarshalRecord);
+    void setParentRecord(UnmarshalRecord unmarshalRecord);
 
-    public void setReferenceResolver(ReferenceResolver referenceResolver);
+    void setReferenceResolver(ReferenceResolver referenceResolver);
 
-    public void setRootElementName(String rootElementName);
+    void setRootElementName(String rootElementName);
 
-    public void setRootElementNamespaceUri(String rootElementNamespaceUri);
+    void setRootElementNamespaceUri(String rootElementNamespaceUri);
 
-    public void setSelfRecord(boolean isSelfRecord);
+    void setSelfRecord(boolean isSelfRecord);
 
-    public void setSession(ABSTRACT_SESSION session);
+    void setSession(ABSTRACT_SESSION session);
 
-    public void setTextWrapperFragment(XPathFragment textWrapperFragment);
+    void setTextWrapperFragment(XPathFragment textWrapperFragment);
 
-    public void setTransformationRecord(TRANSFORMATION_RECORD transformationRecord);
+    void setTransformationRecord(TRANSFORMATION_RECORD transformationRecord);
 
-    public void setTypeQName(QName qname);
+    void setTypeQName(QName qname);
 
-    public void setUnmarshalContext(UnmarshalContext unmarshalContext);
+    void setUnmarshalContext(UnmarshalContext unmarshalContext);
 
-    public void setUnmarshaller(UNMARSHALLER unmarshaller);
+    void setUnmarshaller(UNMARSHALLER unmarshaller);
 
-    public void setUnmarshalNamespaceResolver(UnmarshalNamespaceResolver unmarshalNamespaceResolver);
+    void setUnmarshalNamespaceResolver(UnmarshalNamespaceResolver unmarshalNamespaceResolver);
 
-    public void setXMLReader(XMLReader xmlReader);
+    void setXMLReader(XMLReader xmlReader);
 
-    public void unmappedContent();
+    void unmappedContent();
 
-    public CoreAttributeGroup getUnmarshalAttributeGroup();
+    CoreAttributeGroup getUnmarshalAttributeGroup();
 
-    public void setUnmarshalAttributeGroup(CoreAttributeGroup group);
+    void setUnmarshalAttributeGroup(CoreAttributeGroup group);
 
 }

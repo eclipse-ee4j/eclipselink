@@ -47,12 +47,12 @@ public interface UnionField<
      * Adds the new type value to the list of types
      * @param value QName to be added to the list of schema types
      */
-     public void addSchemaType(QName value);
+     void addSchemaType(QName value);
 
     /**
       * Return the list of schema types
       * @return the list of types
       */
-    public List<QName> getSchemaTypes();
+    List<QName> getSchemaTypes();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,8 +56,8 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
     protected boolean returnNameValuePairs = false;
     protected Vector resultRows;
 
-    protected List<String> resultSetMappingNames = new ArrayList<String>();
-    protected List<SQLResultSetMapping> resultSetMappings = new ArrayList<SQLResultSetMapping>();
+    protected List<String> resultSetMappingNames = new ArrayList<>();
+    protected List<SQLResultSetMapping> resultSetMappings = new ArrayList<>();
 
     /**
      * PUBLIC:
@@ -385,7 +385,7 @@ public class ResultSetMappingQuery extends ObjectBuildingQuery {
      */
     public List<SQLResultSetMapping> getSQLResultSetMappings() {
         if (this.resultSetMappings.isEmpty()) {
-            ArrayList<SQLResultSetMapping> list = new ArrayList<SQLResultSetMapping>();
+            ArrayList<SQLResultSetMapping> list = new ArrayList<>();
             for (String resultSetMappingName : this.resultSetMappingNames) {
                 list.add(getSession().getProject().getSQLResultSetMapping(resultSetMappingName));
             }

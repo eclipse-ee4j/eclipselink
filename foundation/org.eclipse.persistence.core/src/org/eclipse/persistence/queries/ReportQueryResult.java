@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,22 +18,34 @@
 //       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.queries;
 
-import java.io.*;
-import java.util.*;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.AbstractSet;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheId;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.NonSynchronizedSubVector;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.AggregateObjectMapping;
+import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
@@ -234,7 +246,7 @@ public class ReportQueryResult implements Serializable, Map {
                 if (item.getAttributeExpression().isMapEntryExpression() && mapping.isCollectionMapping()){
                     Object rowKey = null;
                     if (mapping.getContainerPolicy().isMapPolicy() && !mapping.getContainerPolicy().isMappedKeyMapPolicy()){
-                        rowKey = ((MapContainerPolicy)mapping.getContainerPolicy()).keyFrom(value, query.getSession());
+                        rowKey = mapping.getContainerPolicy().keyFrom(value, query.getSession());
                     } else {
                         rowKey = mapping.getContainerPolicy().buildKey(subRow, query, null, query.getSession(), true);
                     }
@@ -269,8 +281,8 @@ public class ReportQueryResult implements Serializable, Map {
      */
     @Override
     public void clear() {
-        this.names = new ArrayList<String>();
-        this.results = new ArrayList<Object>();
+        this.names = new ArrayList<>();
+        this.results = new ArrayList<>();
     }
 
     /**
@@ -297,15 +309,6 @@ public class ReportQueryResult implements Serializable, Map {
     @Override
     public boolean containsValue(Object value) {
         return getResults().contains(value);
-    }
-
-    /**
-     * OBSOLETE:
-     * Return an enumeration of the result values.
-     * @see #values()
-     */
-    public Enumeration elements() {
-        return new Vector(getResults()).elements();
     }
 
     /**
@@ -559,22 +562,6 @@ public class ReportQueryResult implements Serializable, Map {
 
     /**
      * PUBLIC:
-     * Return the PKs for the corresponding object or null if not requested.
-     * @deprecated since 2.1, replaced by getId()
-     * @see #getId()
-     */
-    @Deprecated
-    public Vector<Object> getPrimaryKeyValues() {
-        if (this.primaryKey instanceof CacheId) {
-            return new Vector(Arrays.asList(((CacheId)this.primaryKey).getPrimaryKey()));
-        }
-        Vector primaryKey = new Vector(1);
-        primaryKey.add(this.primaryKey);
-        return primaryKey;
-    }
-
-    /**
-     * PUBLIC:
      * Return the results.
      */
     public List<Object> getResults() {
@@ -588,15 +575,6 @@ public class ReportQueryResult implements Serializable, Map {
     @Override
     public boolean isEmpty() {
         return getNames().isEmpty();
-    }
-
-    /**
-     * OBSOLETE:
-     * Return an enumeration of the result names.
-     * @see #keySet()
-     */
-    public Enumeration keys() {
-        return new Vector(getNames()).elements();
     }
 
     /**

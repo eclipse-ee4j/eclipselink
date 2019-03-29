@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,27 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.oxm.mappings.transformation;
 
-import java.io.FileOutputStream;
-import java.net.URL;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamSource;
-import org.eclipse.persistence.oxm.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.sessions.ObjectCopyingPolicy;
-import org.xml.sax.helpers.DefaultHandler;
-//import org.custommonkey.xmlunit.XMLTestCase;
-import java.io.*;
-import org.w3c.dom.Document;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.dom.DOMResult;
-import java.util.Calendar;
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.testing.oxm.mappings.XMLMappingTestCases;
-import org.eclipse.persistence.sessions.factories.XMLProjectWriter;
-import org.eclipse.persistence.sessions.factories.XMLProjectReader;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 public class TransformationMappingTestCases extends XMLMappingTestCases
 {
@@ -44,7 +27,8 @@ public class TransformationMappingTestCases extends XMLMappingTestCases
     setControlDocument("org/eclipse/persistence/testing/oxm/mappings/transformation/employee1.xml");
   }
 
-  public Object getControlObject()
+    @Override
+    public Object getControlObject()
   {
     Employee emp = new Employee();
     emp.setName("John Smith");
@@ -60,7 +44,7 @@ public class TransformationMappingTestCases extends XMLMappingTestCases
   {
     AbstractSession session = (AbstractSession)super.xmlContext.getSession(0);
     ClassDescriptor descriptor = session.getDescriptor(Employee.class);
-    ObjectCopyingPolicy policy = new ObjectCopyingPolicy();
+    CopyGroup policy = new CopyGroup();
     policy.setSession(session);
     Employee emp1 = (Employee)getControlObject();
     Employee emp2 = (Employee)descriptor.getObjectBuilder().copyObject(emp1, policy);

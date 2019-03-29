@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ public class ContentHandlerRecord extends MarshalRecord {
     private List<List<String>> prefixMappings;
 
     public ContentHandlerRecord() {
-        prefixMappings = new ArrayList<List<String>>();
+        prefixMappings = new ArrayList<>();
         currentLevelPrefixMappings = null;
         attributes = new AttributesImpl();
     }
@@ -131,7 +131,7 @@ public class ContentHandlerRecord extends MarshalRecord {
         try {
             contentHandler.startPrefixMapping(prefix, namespaceURI);
             if(null == currentLevelPrefixMappings) {
-                currentLevelPrefixMappings = new ArrayList<String>();
+                currentLevelPrefixMappings = new ArrayList<>();
             }
             currentLevelPrefixMappings.add(prefix);
 

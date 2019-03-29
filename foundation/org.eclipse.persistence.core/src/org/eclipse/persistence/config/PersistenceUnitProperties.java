@@ -1521,7 +1521,6 @@ public class PersistenceUnitProperties {
      * <tr><td>{@link SessionLog#CONNECTION}</td><td>&nbsp;</td><td>connection</td></tr>
      * <tr><td>{@link SessionLog#DMS}</td><td>&nbsp;</td><td>dms</td></tr>
      * <tr><td>{@link SessionLog#EJB}</td><td>&nbsp;</td><td>ejb</td></tr>
-     * <tr><td>{@link SessionLog#EJB_OR_METADATA}</td><td>&nbsp;</td><td>ejb_or_metadata</td></tr>
      * <tr><td>{@link SessionLog#EVENT}</td><td>&nbsp;</td><td>event</td></tr>
      * <tr><td>{@link SessionLog#JPA}</td><td>&nbsp;</td><td>jpa</td></tr>
      * <tr><td>{@link SessionLog#METAMODEL}</td><td>&nbsp;</td><td>metamodel</td></tr>
@@ -3869,7 +3868,7 @@ public class PersistenceUnitProperties {
      * INTERNAL: The following properties will not be displayed through logging
      * but instead have an alternate value shown in the log.
      */
-    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
+    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<>(1);
 
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");

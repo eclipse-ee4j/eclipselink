@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,7 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
         }else if(value instanceof Boolean){
             jsonGenerator.write(keyName, (Boolean)value);
         }else if(value instanceof Character){
-            jsonGenerator.write(keyName, (Character)value);;
+            jsonGenerator.write(keyName, (Character)value);
         }else if(value instanceof Double){
             jsonGenerator.write(keyName, (Double)value);
         }else if(value instanceof Float){
