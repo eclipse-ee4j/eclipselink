@@ -72,6 +72,7 @@ public class EmulatedConnection implements Connection {
      * @return a new default <code>Statement</code> object
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public Statement createStatement() throws SQLException {
         if (!EmulatedDriver.emulate) {
             return connection.createStatement();
@@ -108,6 +109,7 @@ public class EmulatedConnection implements Connection {
      * pre-compiled SQL statement
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public PreparedStatement prepareStatement(String sql) throws SQLException {
         if (!EmulatedDriver.emulate || (sql.indexOf("DUAL") != -1) || (sql.indexOf("dual") != -1)) {
             return connection.prepareStatement(sql);
@@ -142,6 +144,7 @@ public class EmulatedConnection implements Connection {
      * pre-compiled SQL statement
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public CallableStatement prepareCall(String sql) throws SQLException {
         return null;
     }
@@ -157,6 +160,7 @@ public class EmulatedConnection implements Connection {
      * @return the native form of this statement
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public String nativeSQL(String sql) throws SQLException {
         return sql;
     }
@@ -189,6 +193,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #getAutoCommit
      */
+    @Override
     public void setAutoCommit(boolean autoCommit) throws SQLException {
         if (!EmulatedDriver.emulate) {
             connection.setAutoCommit(autoCommit);
@@ -204,6 +209,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #setAutoCommit
      */
+    @Override
     public boolean getAutoCommit() throws SQLException {
         if (!EmulatedDriver.emulate) {
             connection.getAutoCommit();
@@ -222,6 +228,7 @@ public class EmulatedConnection implements Connection {
      *            <code>Connection</code> object is in auto-commit mode
      * @see #setAutoCommit
      */
+    @Override
     public void commit() throws SQLException {
         if (!EmulatedDriver.emulate) {
             connection.commit();
@@ -238,6 +245,7 @@ public class EmulatedConnection implements Connection {
      *            <code>Connection</code> object is in auto-commit mode
      * @see #setAutoCommit
      */
+    @Override
     public void rollback() throws SQLException {
         if (!EmulatedDriver.emulate) {
             connection.rollback();
@@ -257,6 +265,7 @@ public class EmulatedConnection implements Connection {
      *
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public void close() throws SQLException {
     }
 
@@ -277,6 +286,7 @@ public class EmulatedConnection implements Connection {
      *         is closed; <code>false</code> if it is still open
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public boolean isClosed() throws SQLException {
         return false;
     }
@@ -296,6 +306,7 @@ public class EmulatedConnection implements Connection {
      *         <code>Connection</code> object
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public DatabaseMetaData getMetaData() throws SQLException {
         if (connection != null) {
             return connection.getMetaData();
@@ -314,6 +325,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs or this
      *            method is called during a transaction
      */
+    @Override
     public void setReadOnly(boolean readOnly) throws SQLException {
     }
 
@@ -325,6 +337,7 @@ public class EmulatedConnection implements Connection {
      *         is read-only; <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public boolean isReadOnly() throws SQLException {
         return false;
     }
@@ -342,6 +355,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #getCatalog
      */
+    @Override
     public void setCatalog(String catalog) throws SQLException {
     }
 
@@ -352,6 +366,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #setCatalog
      */
+    @Override
     public String getCatalog() throws SQLException {
         return null;
     }
@@ -378,6 +393,7 @@ public class EmulatedConnection implements Connection {
      * @see DatabaseMetaData#supportsTransactionIsolationLevel
      * @see #getTransactionIsolation
      */
+    @Override
     public void setTransactionIsolation(int level) throws SQLException {
     }
 
@@ -395,6 +411,7 @@ public class EmulatedConnection implements Connection {
      * @exception SQLException if a database access error occurs
      * @see #setTransactionIsolation
      */
+    @Override
     public int getTransactionIsolation() throws SQLException {
         return 0;
     }
@@ -420,6 +437,7 @@ public class EmulatedConnection implements Connection {
      *            this method is called on a closed connection
      * @see SQLWarning
      */
+    @Override
     public SQLWarning getWarnings() throws SQLException {
         return null;
     }
@@ -432,6 +450,7 @@ public class EmulatedConnection implements Connection {
      *
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public void clearWarnings() throws SQLException {
     }
 
@@ -459,6 +478,7 @@ public class EmulatedConnection implements Connection {
      *         constants indicating type and concurrency
      * @since 1.2
      */
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
         return new EmulatedStatement(this);
     }
@@ -489,6 +509,7 @@ public class EmulatedConnection implements Connection {
      *         constants indicating type and concurrency
      * @since 1.2
      */
+    @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
         return prepareStatement(sql);
     }
@@ -517,6 +538,7 @@ public class EmulatedConnection implements Connection {
      *         constants indicating type and concurrency
      * @since 1.2
      */
+    @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
         return null;
     }
@@ -533,6 +555,7 @@ public class EmulatedConnection implements Connection {
      * @since 1.2
      * @see #setTypeMap
      */
+    @Override
     public java.util.Map getTypeMap() throws SQLException {
         return null;
     }
@@ -551,6 +574,7 @@ public class EmulatedConnection implements Connection {
      * @since 1.2
      * @see #getTypeMap
      */
+    @Override
     public void setTypeMap(java.util.Map map) throws SQLException {
     }
 
@@ -571,6 +595,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
+    @Override
     public void setHoldability(int holdability) throws SQLException {
     }
 
@@ -586,6 +611,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
+    @Override
     public int getHoldability() throws SQLException {
         return 0;
     }
@@ -601,6 +627,7 @@ public class EmulatedConnection implements Connection {
      * @see Savepoint
      * @since 1.4
      */
+    @Override
     public Savepoint setSavepoint() throws SQLException {
         return null;
     }
@@ -617,6 +644,7 @@ public class EmulatedConnection implements Connection {
      * @see Savepoint
      * @since 1.4
      */
+    @Override
     public Savepoint setSavepoint(String name) throws SQLException {
         return null;
     }
@@ -636,6 +664,7 @@ public class EmulatedConnection implements Connection {
      * @see #rollback
      * @since 1.4
      */
+    @Override
     public void rollback(Savepoint savepoint) throws SQLException {
         return;
     }
@@ -651,6 +680,7 @@ public class EmulatedConnection implements Connection {
      *            savepoint in the current transaction
      * @since 1.4
      */
+    @Override
     public void releaseSavepoint(Savepoint savepoint)throws SQLException  {
         return;
     }
@@ -685,6 +715,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
+    @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         return new EmulatedStatement(this);
     }
@@ -724,6 +755,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
+    @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         return prepareStatement(sql);
     }
@@ -760,6 +792,7 @@ public class EmulatedConnection implements Connection {
      * @see ResultSet
      * @since 1.4
      */
+    @Override
     public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
         return null;
     }
@@ -800,6 +833,7 @@ public class EmulatedConnection implements Connection {
      *         returned
      * @since 1.4
      */
+    @Override
     public PreparedStatement prepareStatement(String sql, int autoGeneratedKeys) throws SQLException {
         return prepareStatement(sql);
     }
@@ -843,6 +877,7 @@ public class EmulatedConnection implements Connection {
      *
      * @since 1.4
      */
+    @Override
     public PreparedStatement prepareStatement(String sql, int[] columnIndexes) throws SQLException {
         return prepareStatement(sql);
     }
@@ -886,68 +921,87 @@ public class EmulatedConnection implements Connection {
      *
      * @since 1.4
      */
+    @Override
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
         return prepareStatement(sql);
     }
 
     // 236070: Methods introduced in JDK 1.6
+    @Override
     public Array createArrayOf(String typeName, Object[] elements)  throws SQLException {
         return null;
     }
 
+    @Override
     public Blob createBlob()  throws SQLException {
         return null;
     }
 
+    @Override
     public Clob createClob()  throws SQLException {
         return null;
     }
 
+    @Override
     public NClob createNClob()  throws SQLException {
         return null;
     }
 
+    @Override
     public SQLXML createSQLXML()  throws SQLException {
         return null;
     }
 
+    @Override
     public Struct createStruct(String typeName, Object[] attributes)  throws SQLException {
         return null;
     }
 
+    @Override
     public Properties getClientInfo()  throws SQLException {
         return null;
     }
 
+    @Override
     public String getClientInfo(String name)  throws SQLException {
         return null;
     }
 
+    @Override
     public boolean isValid(int timeout)  throws SQLException {
         return true;
     }
 
+    @Override
     public void setClientInfo(String name, String value) {
     }
 
+    @Override
     public void setClientInfo(Properties properties) {
     }
 
+    @Override
     public boolean isWrapperFor(Class<?> iFace) throws SQLException{
         return false;
     }
 
+    @Override
     public <T>T unwrap(Class<T> iFace)  throws SQLException {
         return iFace.cast(this);
     }
 
+    @Override
     public int getNetworkTimeout() throws SQLException {return 0;}
 
+    @Override
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException{}
 
+    @Override
     public void abort(Executor executor) throws SQLException {}
 
+    @Override
     public String getSchema() throws SQLException {return null;}
 
+    @Override
     public void setSchema(String schema) throws SQLException {}
 }

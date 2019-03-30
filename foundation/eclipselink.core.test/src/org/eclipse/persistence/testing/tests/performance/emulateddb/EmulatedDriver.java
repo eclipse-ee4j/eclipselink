@@ -56,6 +56,7 @@ public class EmulatedDriver implements Driver {
      *         connection to the URL
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public Connection connect(String url, java.util.Properties info) throws SQLException {
         if (! acceptsURL(url)) {
             return null;
@@ -77,6 +78,7 @@ public class EmulatedDriver implements Driver {
      *         <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public boolean acceptsURL(String url) throws SQLException {
         return url.indexOf("emulate:") != -1;
     }
@@ -100,6 +102,7 @@ public class EmulatedDriver implements Driver {
      *          no properties are required.
      * @exception SQLException if a database access error occurs
      */
+    @Override
     public DriverPropertyInfo[] getPropertyInfo(String url, java.util.Properties info) throws SQLException {
         return null;
     }
@@ -109,6 +112,7 @@ public class EmulatedDriver implements Driver {
      *
      * @return this driver's major version number
      */
+    @Override
     public int getMajorVersion() {
         return 1;
     }
@@ -117,6 +121,7 @@ public class EmulatedDriver implements Driver {
      * Gets the driver's minor version number. Initially this should be 0.
      * @return this driver's minor version number
      */
+    @Override
     public int getMinorVersion() {
         return 0;
     }
@@ -140,9 +145,11 @@ public class EmulatedDriver implements Driver {
      * @return <code>true</code> if this driver is JDBC Compliant; <code>false</code>
      *         otherwise
      */
+    @Override
     public boolean jdbcCompliant() {
         return true;
     }
 
+    @Override
     public Logger getParentLogger(){return null;}
 }

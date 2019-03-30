@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventListener;
+import org.eclipse.persistence.sessions.SessionEventManager;
 
 /**
  * <p><b>Purpose</b>: Used to test handling of session events.
@@ -60,7 +61,7 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  *   It's possible to set error on a Handling (see examples preLogin and postLogin) -
  *   that sends the erroneous Handling to errors list (still kept on handlings list, too).
  *
- * @see "SessionEventManager#addListener(SessionEventListener)"
+ * @see SessionEventManager#addListener(SessionEventListener)
  * @see Session#getEventManager()
  * @see SessionEvent
  */
