@@ -84,7 +84,7 @@ public class LoadBuildSummary {
 
     /**
      *
-     * @param summary org.eclipse.persistence.testing.framework.TestResultsSummary
+     * @param result org.eclipse.persistence.testing.framework.TestResults
      */
     public void addResult(TestResult result) {
         if (results == null) {
@@ -114,10 +114,6 @@ public class LoadBuildSummary {
         getSummaries().addElement(summary);
     }
 
-    /**
-     *
-     * @return int
-     */
     public void computeNumberOfTestsAndErrors() {
         Vector<TestResultsSummary> rootSummaries = new Vector<>();
         numberOfTests = 0;
@@ -247,10 +243,6 @@ public class LoadBuildSummary {
         results = holder;
     }
 
-    /**
-     *
-     * @return java.util.Vector
-     */
     public void setSummaries(Vector<TestResultsSummary> theSummaries) {
         summaries.setValue(theSummaries);
     }
