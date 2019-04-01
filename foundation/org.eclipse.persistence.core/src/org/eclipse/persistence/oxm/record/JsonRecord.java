@@ -121,7 +121,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                     newLevel.setKeyName(keyName);
                 }
             }
-            if (!newLevel.isNestedArray()) {
+            if (!(newLevel.isNestedArray() && newLevel.isComplex())) {
                 position = newLevel;
             }
             isLastEventStart = true;
@@ -188,8 +188,18 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
              startRootLevelCollection();
         } else {
             if(isLastEventStart){
-                setComplex(position, true);
+                //TODO change 1-APR-2019
+                if (position.isNestedArray()) {
+                    position.setCollection(true);
+                } else {
+                    setComplex(position, true);
+                }
             }
+/*
+            if (!(position.isNestedArray() && position.isComplex())) {
+                position = createNewLevel(true, position, position.isNestedArray());
+            }
+*/
             position = createNewLevel(true, position, position.isNestedArray());
         }
         isLastEventStart = false;
@@ -683,7 +693,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         protected boolean emptyCollection;
         protected String keyName;
         protected boolean isComplex;
-         protected boolean nestedArray;
+        protected boolean nestedArray;
         protected Level parentLevel;
 
          public Level(boolean isCollection, Level parentLevel, boolean nestedArray) {
