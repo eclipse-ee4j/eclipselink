@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,19 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.databaseaccess;
 
-import java.io.*;
+import java.io.Serializable;
 
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.Helper;
 
 /**
  * INTERNAL:
  *    <b>Purpose</b>: Define a database platform specific definition for a platform independent Java class type.
  *    This is used for the field creation within a table creation statement.
- *    <p><b>Responsibilities</b>:<ul>
- *    <li> Store a default size and know if the size option is required or optional.
- *    <li> Store the name of the real database type.
- *    <li> Maintain maximum precision and optionall min & max Scale.
+ *    <p><b>Responsibilities</b>:
+ *    <ul>
+ *    <li> Store a default size and know if the size option is required or optional.</li>
+ *    <li> Store the name of the real database type.</li>
+ *    <li> Maintain maximum precision and optionall min &amp; max Scale.</li>
  *    </ul>
  */
 public class FieldTypeDefinition implements Serializable {
@@ -54,7 +55,7 @@ public class FieldTypeDefinition implements Serializable {
 
    /**
     * Return a new field type.
-    * @see #setName()
+    * @see #setName(String)
     */
     public FieldTypeDefinition(String databaseTypeName) {
         this();
@@ -139,27 +140,26 @@ public class FieldTypeDefinition implements Serializable {
     }
 
     /**
-    * Return the name.
-    * @param name can be any database primitive type name,
+    * Return the name. Can be any database primitive type name,
     * this name will then be mapped to the Java primitive type,
-    * the datbase type varies by platform and the mappings can be found in the subclasses of DatabasePlatform.
+    * the database type varies by platform and the mappings can be found in the subclasses of DatabasePlatform.
     *
     *    these Java names and their ODBC mappings include;
-    *        - Integer        -> SQL_INT
-    *        - Float            -> SQL_FLOAT
-    *        - Double            -> SQL_DOUBLE
-    *        - Long            -> SQL_LONG
-    *        - Short            -> SQL_INT
-    *        - BigDecimal    -> SQL_NUMERIC
-    *        - BigInteger    -> SQL_NUMERIC
-    *        - String            -> SQL_VARCHAR
-    *        - Array            -> BLOB
-    *        - Character[]    -> SQL_CHAR
-    *        - Boolean        -> SQL_BOOL
-    *        - Text            -> CLOB
-    *        - Date            -> SQL_DATE
-    *        - Time            -> SQL_TIME
-    *        - Timestamp    -> SQL_TIMESTAMP
+    *        - Integer        -&gt; SQL_INT
+    *        - Float            -&gt; SQL_FLOAT
+    *        - Double            -&gt; SQL_DOUBLE
+    *        - Long            -&gt; SQL_LONG
+    *        - Short            -&gt; SQL_INT
+    *        - BigDecimal    -&gt; SQL_NUMERIC
+    *        - BigInteger    -&gt; SQL_NUMERIC
+    *        - String            -&gt; SQL_VARCHAR
+    *        - Array            -&gt; BLOB
+    *        - Character[]    -&gt; SQL_CHAR
+    *        - Boolean        -&gt; SQL_BOOL
+    *        - Text            -&gt; CLOB
+    *        - Date            -&gt; SQL_DATE
+    *        - Time            -&gt; SQL_TIME
+    *        - Timestamp    -&gt; SQL_TIMESTAMP
     *
     * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
     */
@@ -261,24 +261,24 @@ public class FieldTypeDefinition implements Serializable {
     * Set the name.
     * @param name can be any database primitive type name,
     * this name will then be mapped to the Java primitive type,
-    * the datbase type varies by platform and the mappings can be found in the subclasses of DatabasePlatform.
+    * the database type varies by platform and the mappings can be found in the subclasses of DatabasePlatform.
     *
     *    these Java names and their ODBC mappings include;
-    *        - Integer        -> SQL_INT
-    *        - Float            -> SQL_FLOAT
-    *        - Double        -> SQL_DOUBLE
-    *        - Long            -> SQL_LONG
-    *        - Short            -> SQL_INT
-    *        - BigDecimal    -> SQL_NUMERIC
-    *        - BigInteger    -> SQL_NUMERIC
-    *        - String        -> SQL_VARCHAR
-    *        - Array            -> BLOB
-    *        - Character[]    -> SQL_CHAR
-    *        - Boolean        -> SQL_BOOL
-    *        - Text            -> CLOB
-    *        - Date            -> SQL_DATE
-    *        - Time            -> SQL_TIME
-    *        - Timestamp    -> SQL_TIMESTAMP
+    *        - Integer        -&gt; SQL_INT
+    *        - Float            -&gt; SQL_FLOAT
+    *        - Double        -&gt; SQL_DOUBLE
+    *        - Long            -&gt; SQL_LONG
+    *        - Short            -&gt; SQL_INT
+    *        - BigDecimal    -&gt; SQL_NUMERIC
+    *        - BigInteger    -&gt; SQL_NUMERIC
+    *        - String        -&gt; SQL_VARCHAR
+    *        - Array            -&gt; BLOB
+    *        - Character[]    -&gt; SQL_CHAR
+    *        - Boolean        -&gt; SQL_BOOL
+    *        - Text            -&gt; CLOB
+    *        - Date            -&gt; SQL_DATE
+    *        - Time            -&gt; SQL_TIME
+    *        - Timestamp    -&gt; SQL_TIMESTAMP
     *
     * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
     */

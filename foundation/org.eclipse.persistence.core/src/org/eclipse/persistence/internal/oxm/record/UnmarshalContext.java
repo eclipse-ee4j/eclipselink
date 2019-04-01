@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,19 +29,19 @@ public interface UnmarshalContext {
      * An event indicating that startElement has been called on the unmarshalRecord.
      * @param unmarshalRecord The UnmarshalRecord that received the startElement call.
      */
-    public void startElement(UnmarshalRecord unmarshalRecord);
+    void startElement(UnmarshalRecord unmarshalRecord);
 
     /**
      * An event indicating that characters has been called on the unmarshalRecord.
      * @param unmarshalRecord The UnmarshalRecord that received the characters call.
      */
-    public void characters(UnmarshalRecord unmarshalRecord);
+    void characters(UnmarshalRecord unmarshalRecord);
 
     /**
      * An event indicating that endElement has been called on the unmarshalRecord.
      * @param unmarshalRecord The UnmarshalRecord that received the endElement call.
      */
-    public void endElement(UnmarshalRecord unmarshalRecord);
+    void endElement(UnmarshalRecord unmarshalRecord);
 
     /**
      * The UnmarshalContext is responsible for assigning values to the object being
@@ -50,7 +50,7 @@ public interface UnmarshalContext {
      * @param value
      * @param mapping
      */
-    public void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping);
+    void setAttributeValue(UnmarshalRecord unmarshalRecord, Object value, Mapping mapping);
 
     /**
      * When a collection mapping is processed the UnmarshalContext is responsible for
@@ -60,7 +60,7 @@ public interface UnmarshalContext {
      * the value will be added.
      * @param value The value to be added to the container,
      */
-    public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value);
+    void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value);
 
     /**
      * When a collection mapping is processed the UnmarshalContext is responsible for
@@ -71,20 +71,20 @@ public interface UnmarshalContext {
      * @param value The value to be added to the container,
      * @param collection
      */
-    public void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection);
+    void addAttributeValue(UnmarshalRecord unmarshalRecord, ContainerValue containerValue, Object value, Object collection);
 
     /*
      * When a Reference is built the UnmarshalContext is given the ability to perform
      * further processing on it.
      * @param reference
      */
-    public void reference(Reference reference);
+    void reference(Reference reference);
 
     /**
      * This method is called when unmapped content (XML content that does not correspond to
      * any specified mapping, policy, etc.) is encountered during the unmarshal process.
      * @param unmarshalRecord The UnmarshalRecord that encountered the unmapped content .
      */
-    public void unmappedContent(UnmarshalRecord unmarshalRecord);
+    void unmappedContent(UnmarshalRecord unmarshalRecord);
 
 }

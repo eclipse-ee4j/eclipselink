@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -117,7 +117,7 @@ public abstract class Unmarshaller<
     /**
      * Return the property for a given key, if one exists.
      *
-     * @parm key
+     * @param key
      * @return
      */
     public abstract Object getProperty(Object key);
@@ -212,7 +212,7 @@ public abstract class Unmarshaller<
          * @param target the object that was unmarshalled.
          * @param parent the owning object of the object that was unmarshalled. This may be null.
          */
-        public void afterUnmarshal(Object target, Object parent);
+        void afterUnmarshal(Object target, Object parent);
 
 
         /**
@@ -221,7 +221,7 @@ public abstract class Unmarshaller<
          * @param target A newly created instance of the object to be unmarshalled.
          * @param parent the owning object of the object that will be unmarshalled. This may be null.
          */
-        public void beforeUnmarshal(Object target, Object parent);
+        void beforeUnmarshal(Object target, Object parent);
 
     }
 

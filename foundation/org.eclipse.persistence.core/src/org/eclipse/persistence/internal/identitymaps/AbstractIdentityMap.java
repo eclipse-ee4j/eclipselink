@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.identitymaps;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: Caches objects, and allows their retrieval  by their primary key.
- * <p><b>Responsibilities</b>:<ul>
- * <li> Store CacheKeys containing objects and possibly writeLockValues.
- * <li> Insert & retrieve objects from the cache.
- * <li> Allow retrieval and modification of writeLockValue for a cached object.
+ * <p><b>Responsibilities</b>:
+ * <ul>
+ * <li> Store CacheKeys containing objects and possibly writeLockValues.</li>
+ * <li> Insert &amp; retrieve objects from the cache.</li>
+ * <li> Allow retrieval and modification of writeLockValue for a cached object.</li>
  * </ul>
  * @see CacheKey
  * @since TOPLink/Java 1.0
@@ -276,13 +280,13 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
      * In certain circumstances this can have large performance improvements over loading each item individually.
      * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
     @Override
     public Map<Object, Object> getAllFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
-        HashMap<Object, Object> map = new HashMap<Object, Object>();
+        HashMap<Object, Object> map = new HashMap<>();
         CacheKey cachedObject = null;
         long currentTime = System.currentTimeMillis();
         for (Object pk : pkList){
@@ -299,13 +303,13 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
      * In certain circumstances this can have large performance improvements over loading each item individually.
      * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
     @Override
     public Map<Object, CacheKey> getAllCacheKeysFromIdentityMapWithEntityPK(Object[] pkList, ClassDescriptor descriptor, AbstractSession session){
-        HashMap<Object, CacheKey> map = new HashMap<Object, CacheKey>();
+        HashMap<Object, CacheKey> map = new HashMap<>();
         CacheKey cachedObject = null;
         long currentTime = System.currentTimeMillis();
         for (Object pk : pkList){

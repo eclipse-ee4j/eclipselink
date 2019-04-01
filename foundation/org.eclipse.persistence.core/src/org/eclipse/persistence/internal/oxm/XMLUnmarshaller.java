@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,16 +49,17 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 /**
- * <p>Class used to unmarshal XML & JSON to objects.
+ * <p>Class used to unmarshal XML &amp; JSON to objects.
  *
  * <p>Create an XMLUnmarshaller from an XMLContext.<br>
  *  <em>Code Sample</em><br>
  *  <code>
  *  XMLContext context = new XMLContext("mySessionName");<br>
  *  XMLUnmarshaller unmarshaller = context.createUnmarshaller();<br>
- *  <code>
+ *  </code>
  *
- * <p>XML can be unmarshalled from the following inputs:<ul>
+ * <p>XML can be unmarshalled from the following inputs:
+ * <ul>
  * <li>java.io.File</li>
  * <li>java.io.InputStream</li>
  * <li>java.io.Reader</li>
@@ -566,15 +567,15 @@ public class XMLUnmarshaller<
         if (source == null) {
             throw XMLMarshalException.nullArgumentException();
         }
-        if (source.getClass() == this.staxSourceClass) {
+        if (source.getClass() == staxSourceClass) {
             try {
-                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
+                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetStreamReaderMethod, source);
                 if(xmlStreamReader != null) {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[0]);
                     return platformUnmarshaller.unmarshal(xmlReader, inputSource);
                 } else {
-                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetEventReaderMethod, source);
+                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
                     if(xmlEventReader != null) {
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
@@ -604,7 +605,7 @@ public class XMLUnmarshaller<
     /**
      * Return the property for a given key, if one exists.
      *
-     * @parm key
+     * @param key
      * @return
      */
     @Override
@@ -629,15 +630,15 @@ public class XMLUnmarshaller<
         if ((null == source) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        if (source.getClass() == this.staxSourceClass) {
+        if (source.getClass() == staxSourceClass) {
             try {
-                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetStreamReaderMethod, source);
+                Object xmlStreamReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetStreamReaderMethod, source);
                 if(xmlStreamReader != null) {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{});
                     return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
                 } else {
-                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(this.staxSourceGetEventReaderMethod, source);
+                    Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
                     if(xmlEventReader != null) {
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
@@ -765,7 +766,6 @@ public class XMLUnmarshaller<
     /**
      * Determine if the @XMLRootElement should be marshalled when present.
      * Ignored unmarshalling XML.
-     * @return
      * @since 2.4
      */
     public void setIncludeRoot(boolean includeRoot) {

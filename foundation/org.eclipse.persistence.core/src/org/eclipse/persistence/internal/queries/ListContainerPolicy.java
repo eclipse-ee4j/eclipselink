@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,8 +27,8 @@ import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ChangeRecord;
-import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.CollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
@@ -37,7 +37,6 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 /**
  * <p><b>Purpose</b>: A ListContainerPolicy is ContainerPolicy whose container class
  * implements the List interface.  This signifies that the collection has order
- * <p>
  * <p><b>Responsibilities</b>:
  * Provide the functionality to operate on an instance of a List.
  *
@@ -238,7 +237,7 @@ public class ListContainerPolicy extends CollectionContainerPolicy {
             query.addArgument(ForeignReferenceMapping.QUERY_BATCH_PARAMETER);
             query.setSelectionCriteria(elementDescriptor.buildBatchCriteriaByPK(query.getExpressionBuilder(), query));
             int pkCount = foreignKeyValues.size();
-            Collection<Object> temp = new ArrayList<Object>();
+            Collection<Object> temp = new ArrayList<>();
             List arguments = new ArrayList();
             arguments.add(foreignKeyValues);
             if (pkCount > 1000){

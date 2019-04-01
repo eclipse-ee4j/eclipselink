@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.internal.queries.ExpressionQueryMechanism;
+import org.eclipse.persistence.internal.queries.ReportItem;
+import org.eclipse.persistence.internal.queries.StatementQueryMechanism;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.SQLCall;
 
 /**
  * This is used to support subselects.
@@ -292,7 +299,7 @@ public class SubSelectExpression extends BaseExpression {
         ReportQuery reportQuery = (ReportQuery) getSubQuery().clone();
 
         // Twist report items
-        List<ReportItem> newItems = new ArrayList<ReportItem>(getSubQuery().getItems().size());
+        List<ReportItem> newItems = new ArrayList<>(getSubQuery().getItems().size());
 
         for (ReportItem item : reportQuery.getItems()) {
             newItems.add(new ReportItem(item.getName(), item.getAttributeExpression().twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression())));
@@ -302,7 +309,7 @@ public class SubSelectExpression extends BaseExpression {
 
         // Twist group by expressions
         if (reportQuery.hasGroupByExpressions()) {
-            List<Expression> groupByExpressions = new ArrayList<Expression>(reportQuery.getGroupByExpressions().size());
+            List<Expression> groupByExpressions = new ArrayList<>(reportQuery.getGroupByExpressions().size());
             for (Expression groupByExpression : reportQuery.getGroupByExpressions()) {
                 groupByExpressions.add(groupByExpression.twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
             }
@@ -312,7 +319,7 @@ public class SubSelectExpression extends BaseExpression {
 
         // Twist order by expressions
         if (reportQuery.hasOrderByExpressions()) {
-            List<Expression> orderByExpressions = new ArrayList<Expression>(reportQuery.getOrderByExpressions().size());
+            List<Expression> orderByExpressions = new ArrayList<>(reportQuery.getOrderByExpressions().size());
             for (Expression orderByExpression : reportQuery.getOrderByExpressions()) {
                 orderByExpressions.add(orderByExpression.twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
             }
@@ -322,7 +329,7 @@ public class SubSelectExpression extends BaseExpression {
 
         // Twist union expressions
         if (reportQuery.hasUnionExpressions()) {
-            List<Expression> unionExpressions = new ArrayList<Expression>(reportQuery.getUnionExpressions().size());
+            List<Expression> unionExpressions = new ArrayList<>(reportQuery.getUnionExpressions().size());
             for (Expression unionExpression : reportQuery.getUnionExpressions()) {
                 unionExpressions.add(unionExpression.twistedForBaseAndContext(newBase, getBuilder(), getBaseExpression()));
             }
@@ -374,7 +381,7 @@ public class SubSelectExpression extends BaseExpression {
         ReportQuery reportQuery = (ReportQuery) getSubQuery().clone();
 
         // Twist report items
-        List<ReportItem> newItems = new ArrayList<ReportItem>(getSubQuery().getItems().size());
+        List<ReportItem> newItems = new ArrayList<>(getSubQuery().getItems().size());
 
         for (ReportItem item : getSubQuery().getItems()) {
             newItems.add(new ReportItem(item.getName(), item.getAttributeExpression().twistedForBaseAndContext(newBase, context, getBaseExpression())));
@@ -384,7 +391,7 @@ public class SubSelectExpression extends BaseExpression {
 
         // Twist group by expressions
         if (getSubQuery().hasGroupByExpressions()) {
-            List<Expression> groupByExpressions = new ArrayList<Expression>(getSubQuery().getGroupByExpressions().size());
+            List<Expression> groupByExpressions = new ArrayList<>(getSubQuery().getGroupByExpressions().size());
             for (Expression groupByExpression : getSubQuery().getGroupByExpressions()) {
                 groupByExpressions.add(groupByExpression.twistedForBaseAndContext(newBase, context, getBaseExpression()));
             }
@@ -394,7 +401,7 @@ public class SubSelectExpression extends BaseExpression {
 
         // Twist order by expressions
         if (getSubQuery().hasOrderByExpressions()) {
-            List<Expression> orderByExpressions = new ArrayList<Expression>(getSubQuery().getOrderByExpressions().size());
+            List<Expression> orderByExpressions = new ArrayList<>(getSubQuery().getOrderByExpressions().size());
             for (Expression orderByExpression : getSubQuery().getOrderByExpressions()) {
                 orderByExpressions.add(orderByExpression.twistedForBaseAndContext(newBase, context, getBaseExpression()));
             }
@@ -404,7 +411,7 @@ public class SubSelectExpression extends BaseExpression {
 
         // Twist union expressions
         if (getSubQuery().hasUnionExpressions()) {
-            List<Expression> unionByExpressions = new ArrayList<Expression>(getSubQuery().getUnionExpressions().size());
+            List<Expression> unionByExpressions = new ArrayList<>(getSubQuery().getUnionExpressions().size());
             for (Expression unionExpression : getSubQuery().getUnionExpressions()) {
                 unionByExpressions.add(unionExpression.twistedForBaseAndContext(newBase, context, getBaseExpression()));
             }
@@ -448,7 +455,7 @@ public class SubSelectExpression extends BaseExpression {
      * This allows a sub query in the select clause.
      */
     @Override
-    public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+    public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         //print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {
             printer.printString(", ");

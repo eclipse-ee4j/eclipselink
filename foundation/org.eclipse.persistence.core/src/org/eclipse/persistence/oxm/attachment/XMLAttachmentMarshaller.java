@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,14 +31,14 @@ import javax.activation.DataHandler;
 */
 
 public interface XMLAttachmentMarshaller {
-    public String addMtomAttachment(DataHandler data, String elementName, String namespace);
+    String addMtomAttachment(DataHandler data, String elementName, String namespace);
 
-    public String addSwaRefAttachment(DataHandler data);
+    String addSwaRefAttachment(DataHandler data);
 
-    public String addMtomAttachment(byte[] data, int start, int length, String mimeType, String elementName, String namespace);
+    String addMtomAttachment(byte[] data, int start, int length, String mimeType, String elementName, String namespace);
 
-    public String addSwaRefAttachment(byte[] data, int start, int length);
+    String addSwaRefAttachment(byte[] data, int start, int length);
 
-    public boolean isXOPPackage();
+    boolean isXOPPackage();
 
 }

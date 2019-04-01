@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,43 +27,43 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 
 public interface XMLParser {
-    public static final int NONVALIDATING = 0;
-    public static final int DTD_VALIDATION = 2;
-    public static final int SCHEMA_VALIDATION = 3;
+    int NONVALIDATING = 0;
+    int DTD_VALIDATION = 2;
+    int SCHEMA_VALIDATION = 3;
 
-    public void setNamespaceAware(boolean isNamespaceAware);
+    void setNamespaceAware(boolean isNamespaceAware);
 
-    public void setWhitespacePreserving(boolean isWhitespacePreserving);
+    void setWhitespacePreserving(boolean isWhitespacePreserving);
 
-    public int getValidationMode();
+    int getValidationMode();
 
-    public void setValidationMode(int validationMode);
+    void setValidationMode(int validationMode);
 
-    public EntityResolver getEntityResolver();
+    EntityResolver getEntityResolver();
 
-    public void setEntityResolver(EntityResolver entityResolver);
+    void setEntityResolver(EntityResolver entityResolver);
 
-    public ErrorHandler getErrorHandler();
+    ErrorHandler getErrorHandler();
 
-    public void setErrorHandler(ErrorHandler errorHandler);
+    void setErrorHandler(ErrorHandler errorHandler);
 
-    public void setXMLSchema(URL url) throws XMLPlatformException;
+    void setXMLSchema(URL url) throws XMLPlatformException;
 
-    public void setXMLSchemas(Object[] schemas) throws XMLPlatformException;
+    void setXMLSchemas(Object[] schemas) throws XMLPlatformException;
 
-    public void setXMLSchema(Schema schema) throws XMLPlatformException;
+    void setXMLSchema(Schema schema) throws XMLPlatformException;
 
-    public Schema getXMLSchema() throws XMLPlatformException;
+    Schema getXMLSchema() throws XMLPlatformException;
 
-    public Document parse(InputSource inputSource) throws XMLPlatformException;
+    Document parse(InputSource inputSource) throws XMLPlatformException;
 
-    public Document parse(File file) throws XMLPlatformException;
+    Document parse(File file) throws XMLPlatformException;
 
-    public Document parse(InputStream inputStream) throws XMLPlatformException;
+    Document parse(InputStream inputStream) throws XMLPlatformException;
 
-    public Document parse(Reader reader) throws XMLPlatformException;
+    Document parse(Reader reader) throws XMLPlatformException;
 
-    public Document parse(Source source) throws XMLPlatformException;
+    Document parse(Source source) throws XMLPlatformException;
 
-    public Document parse(URL url) throws XMLPlatformException;
+    Document parse(URL url) throws XMLPlatformException;
 }

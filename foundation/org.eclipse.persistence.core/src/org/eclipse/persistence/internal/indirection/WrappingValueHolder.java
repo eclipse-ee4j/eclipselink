@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,8 @@ import org.eclipse.persistence.indirection.ValueHolderInterface;
  * WrappingValueHolder is an interface type that implementors use when they will be
  * wrapping another ValueHolder that has the original value.
  *
- * @see UnitOfWorkValueHolder, ProtectedValueHolder
+ * @see UnitOfWorkValueHolder
+ * @see ProtectedValueHolder
  * @author    Gordon Yorke
  */
 public interface WrappingValueHolder {
@@ -28,7 +29,7 @@ public interface WrappingValueHolder {
     /**
      * Returns the valueholder that is wrapped by this ValueHolder
      */
-    public ValueHolderInterface getWrappedValueHolder();
+    ValueHolderInterface<?> getWrappedValueHolder();
 
 
 }

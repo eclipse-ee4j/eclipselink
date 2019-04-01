@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,18 +14,21 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
 
-import java.util.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.queries.*;
+import java.util.Enumeration;
+import java.util.Vector;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
+import org.eclipse.persistence.internal.expressions.SQLModifyStatement;
+import org.eclipse.persistence.internal.expressions.SQLStatement;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.SessionProfiler;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for all  statement objects.
- * <p>
  * <p><b>Responsibilities</b>:
  * Executes the appropriate statement.
  *
@@ -175,7 +178,7 @@ public class StatementQueryMechanism extends CallQueryMechanism {
     /**
      * Insert the object if the reprepare flag is set, first reprepare the query.
      * Added for CR#3237
-     * @param boolean reprepare - whether to reprepare the query.
+     * @param reprepare whether to reprepare the query.
      */
     @Override
     public void insertObject(boolean reprepare) {

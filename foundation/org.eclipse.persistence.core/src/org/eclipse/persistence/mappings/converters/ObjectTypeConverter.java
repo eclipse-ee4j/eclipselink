@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,20 +19,27 @@ package org.eclipse.persistence.mappings.converters;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
 import org.eclipse.persistence.internal.descriptors.TypeMapping;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <b>Purpose</b>: Object type converter is used to match a fixed number of database data values
@@ -68,8 +75,8 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
     public ObjectTypeConverter() {
         this.attributeToFieldValues = new HashMap(10);
         this.fieldToAttributeValues = new HashMap(10);
-        this.conversionValueStrings = new HashMap<String, String>(10);
-        this.addToAttributeOnlyConversionValueStrings = new HashMap<String, String>(10);
+        this.conversionValueStrings = new HashMap<>(10);
+        this.addToAttributeOnlyConversionValueStrings = new HashMap<>(10);
     }
 
     /**
@@ -216,7 +223,7 @@ public class ObjectTypeConverter implements Converter, ClassNameConversionRequir
             attributeValue = getFieldToAttributeValues().get(Helper.NULL_VALUE);
         } else {
             try {
-                fieldValue = ((AbstractSession)session).getDatasourcePlatform().getConversionManager().convertObject(fieldValue, getFieldClassification());
+                fieldValue = session.getDatasourcePlatform().getConversionManager().convertObject(fieldValue, getFieldClassification());
             } catch (ConversionException e) {
                 throw ConversionException.couldNotBeConverted(mapping, mapping.getDescriptor(), e);
             }

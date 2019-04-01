@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      * Default constructor.
      */
     public SessionEventManager() {
-        this.listeners = new ArrayList<SessionEventListener>();
+        this.listeners = new ArrayList<>();
     }
 
     /**
@@ -48,7 +48,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      * Create a new session event manager for a session
      */
     public SessionEventManager(Session session) {
-        this.listeners = new ArrayList<SessionEventListener>();
+        this.listeners = new ArrayList<>();
         this.session = session;
     }
 
@@ -110,7 +110,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
         SessionEventManager newManager = (SessionEventManager)clone();
         newManager.setSession(newSession);
         if (this.listeners != null) {
-            newManager.setListeners(new ArrayList<SessionEventListener>(this.listeners));
+            newManager.setListeners(new ArrayList<>(this.listeners));
         }
         return newManager;
     }
@@ -122,7 +122,7 @@ public class SessionEventManager extends CoreSessionEventManager<SessionEventLis
      */
     public List<SessionEventListener> getListeners() {
         if (listeners == null) {
-            listeners = new ArrayList<SessionEventListener>();
+            listeners = new ArrayList<>();
         }
         return listeners;
     }

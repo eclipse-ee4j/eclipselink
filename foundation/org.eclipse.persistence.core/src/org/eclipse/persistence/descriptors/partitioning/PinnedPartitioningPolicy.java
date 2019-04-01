@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ public class PinnedPartitioningPolicy extends PartitioningPolicy {
             session.getPlatform().getPartitioningCallback().setPartitionId(this.connectionPool.hashCode());
             return null;
         }
-        List<Accessor> accessors = new ArrayList<Accessor>(1);
+        List<Accessor> accessors = new ArrayList<>(1);
         accessors.add(getAccessor(this.connectionPool, session, query, false));
         return accessors;
     }

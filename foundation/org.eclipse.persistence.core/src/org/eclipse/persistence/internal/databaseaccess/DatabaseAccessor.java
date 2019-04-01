@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -621,7 +621,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             incrementCallCount(session);
             if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {// Avoid printing if no logging required.
-                session.log(SessionLog.FINE, SessionLog.SQL, dbCall.getLogString(this), (Object[])null, this, false);
+                session.log(SessionLog.FINE, SessionLog.SQL, dbCall.getLogString(this), null, this, false);
             }
             session.startOperationProfile(SessionProfiler.SqlPrepare, dbCall.getQuery(), SessionProfiler.ALL);
             try {
@@ -673,7 +673,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 while (warning != null) {
                     String message = warning.getMessage() + ":" + warning.getSQLState() + " - " + warning.getCause();
                     // 325605: This log will not be tracked by QuerySQLTracker
-                    session.log(SessionLog.FINEST, SessionLog.SQL, message, (Object[])null, this, false);
+                    session.log(SessionLog.FINEST, SessionLog.SQL, message, null, this, false);
                     warning = warning.getNextWarning();
                 }
             }
@@ -1128,43 +1128,43 @@ public class DatabaseAccessor extends DatasourceAccessor {
      *
      * <P>Each column description has the following columns:
      *  <OL>
-     *    <LI><B>TABLE_CAT</B> String => table catalog (may be null)
-     *    <LI><B>TABLE_SCHEM</B> String => table schema (may be null)
-     *    <LI><B>TABLE_NAME</B> String => table name
-     *    <LI><B>COLUMN_NAME</B> String => column name
-     *    <LI><B>DATA_TYPE</B> short => SQL type from java.sql.Types
-     *    <LI><B>TYPE_NAME</B> String => Data source dependent type name
-     *    <LI><B>COLUMN_SIZE</B> int => column size.  For char or date
+     *    <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be null)
+     *    <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be null)
+     *    <LI><B>TABLE_NAME</B> String =&gt; table name
+     *    <LI><B>COLUMN_NAME</B> String =&gt; column name
+     *    <LI><B>DATA_TYPE</B> short =&gt; SQL type from java.sql.Types
+     *    <LI><B>TYPE_NAME</B> String =&gt; Data source dependent type name
+     *    <LI><B>COLUMN_SIZE</B> int =&gt; column size.  For char or date
      *        types this is the maximum number of characters, for numeric or
      *        decimal types this is precision.
      *    <LI><B>BUFFER_LENGTH</B> is not used.
-     *    <LI><B>DECIMAL_DIGITS</B> int => the number of fractional digits
-     *    <LI><B>NUM_PREC_RADIX</B> int => Radix (typically either 10 or 2)
-     *    <LI><B>NULLABLE</B> int => is NULL allowed?
+     *    <LI><B>DECIMAL_DIGITS</B> int =&gt; the number of fractional digits
+     *    <LI><B>NUM_PREC_RADIX</B> int =&gt; Radix (typically either 10 or 2)
+     *    <LI><B>NULLABLE</B> int =&gt; is NULL allowed?
      *      <UL>
      *      <LI> columnNoNulls - might not allow NULL values
      *      <LI> columnNullable - definitely allows NULL values
      *      <LI> columnNullableUnknown - nullability unknown
      *      </UL>
-     *    <LI><B>REMARKS</B> String => comment describing column (may be null)
-     *     <LI><B>COLUMN_DEF</B> String => default value (may be null)
-     *    <LI><B>SQL_DATA_TYPE</B> int => unused
-     *    <LI><B>SQL_DATETIME_SUB</B> int => unused
-     *    <LI><B>CHAR_OCTET_LENGTH</B> int => for char types the
+     *    <LI><B>REMARKS</B> String =&gt; comment describing column (may be null)
+     *     <LI><B>COLUMN_DEF</B> String =&gt; default value (may be null)
+     *    <LI><B>SQL_DATA_TYPE</B> int =&gt; unused
+     *    <LI><B>SQL_DATETIME_SUB</B> int =&gt; unused
+     *    <LI><B>CHAR_OCTET_LENGTH</B> int =&gt; for char types the
      *       maximum number of bytes in the column
-     *    <LI><B>ORDINAL_POSITION</B> int    => index of column in table
+     *    <LI><B>ORDINAL_POSITION</B> int    =&gt; index of column in table
      *      (starting at 1)
-     *    <LI><B>IS_NULLABLE</B> String => "NO" means column definitely
+     *    <LI><B>IS_NULLABLE</B> String =&gt; "NO" means column definitely
      *      does not allow NULL values; "YES" means the column might
      *      allow NULL values.  An empty string means nobody knows.
      *  </OL>
      *
      * @param catalog a catalog name; "" retrieves those without a
      * catalog; null means drop catalog name from the selection criteria
-     * @param schemaPattern a schema name pattern; "" retrieves those
+     * @param schema schema name pattern; "" retrieves those
      * without a schema
-     * @param tableNamePattern a table name pattern
-     * @param columnNamePattern a column name pattern
+     * @param tableName a table name pattern
+     * @param columnName a column name pattern
      * @return a Vector of DatabaseRows.
      */
     @Override
@@ -1257,7 +1257,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
     /**
      * Return an object retrieved from resultSet with the getObject() method.
      * Optimize the get for certain type to avoid double conversion.
-     * <b>NOTE</b>: This method handles a virtual machine error thrown when retrieving times & dates from Oracle or Sybase.
+     * <b>NOTE</b>: This method handles a virtual machine error thrown when retrieving times &amp; dates from Oracle or Sybase.
      */
     public Object getObject(ResultSet resultSet, DatabaseField field, ResultSetMetaData metaData, int columnNumber, DatabasePlatform platform, boolean optimizeData, AbstractSession session) throws DatabaseException {
         Object value = null;
@@ -1447,7 +1447,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
      */
     protected synchronized Map<String, Statement> getStatementCache() {
         if (statementCache == null) {
-            statementCache = new HashMap<String, Statement>(50);
+            statementCache = new HashMap<>(50);
         }
         return statementCache;
     }
@@ -1461,13 +1461,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
      *
      * <P>Each table description has the following columns:
      *  <OL>
-     *    <LI><B>TABLE_CAT</B> String => table catalog (may be null)
-     *    <LI><B>TABLE_SCHEM</B> String => table schema (may be null)
-     *    <LI><B>TABLE_NAME</B> String => table name
-     *    <LI><B>TABLE_TYPE</B> String => table type.  Typical types are "TABLE",
+     *    <LI><B>TABLE_CAT</B> String =&gt; table catalog (may be null)
+     *    <LI><B>TABLE_SCHEM</B> String =&gt; table schema (may be null)
+     *    <LI><B>TABLE_NAME</B> String =&gt; table name
+     *    <LI><B>TABLE_TYPE</B> String =&gt; table type.  Typical types are "TABLE",
      *            "VIEW",    "SYSTEM TABLE", "GLOBAL TEMPORARY",
      *            "LOCAL TEMPORARY", "ALIAS", "SYNONYM".
-     *    <LI><B>REMARKS</B> String => explanatory comment on the table
+     *    <LI><B>REMARKS</B> String =&gt; explanatory comment on the table
      *  </OL>
      *
      * <P><B>Note:</B> Some databases may not return information for
@@ -1475,9 +1475,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
      *
      * @param catalog a catalog name; "" retrieves those without a
      * catalog; null means drop catalog name from the selection criteria
-     * @param schemaPattern a schema name pattern; "" retrieves those
+     * @param schema a schema name pattern; "" retrieves those
      * without a schema
-     * @param tableNamePattern a table name pattern
+     * @param tableName a table name pattern
      * @param types a list of table types to include; null returns all types
      * @return a Vector of DatabaseRows.
      */
@@ -1832,9 +1832,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
         StringWriter writer = new StringWriter();
         writer.write("DatabaseAccessor(");
         if (isConnected()) {
-            writer.write(ToStringLocalization.buildMessage("connected", (Object[])null));
+            writer.write(ToStringLocalization.buildMessage("connected", null));
         } else {
-            writer.write(ToStringLocalization.buildMessage("disconnected", (Object[])null));
+            writer.write(ToStringLocalization.buildMessage("disconnected", null));
         }
         writer.write(")");
         return writer.toString();

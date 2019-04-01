@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2015 Dies Koper (Fujitsu) All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -23,11 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 
 /*
- * Symfoware in general is configured to use transaction isolation level
+ * Apache Derby and Symfoware in general are configured to use transaction isolation level
  * READ_COMMITTED or SERIALIZABLE.<br/>
  * That causes a few tests to hang, or fail with an error message saying that the table is locked
  * (depending on a setting on the database side): these tests begin transaction, update a row,
@@ -43,9 +44,19 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
  *
  * @author Dies Koper
  */
-public class TransactionIsolationLevelSwitchListener extends
-        SessionEventAdapter {
+public class TransactionIsolationLevelSwitchListener extends SessionEventAdapter {
+    private final String statement;
     Map<Connection, String> connections = new HashMap<Connection, String>();
+
+    public TransactionIsolationLevelSwitchListener(DatabasePlatform platform) {
+        if (platform.isDerby()) {
+            statement = "set isolation ";
+        } else if (platform.isMaxDB()) {
+            statement = "set transaction isolation level ";
+        } else {
+            statement = "";
+        }
+    }
 
     public void postAcquireConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor) event.getResult())
@@ -75,7 +86,7 @@ public class TransactionIsolationLevelSwitchListener extends
                 // state of the row.
                 // Without this conn2 reading the row hangs on Symfoware.
                 stmt1 = conn.createStatement();
-                stmt1.execute("set transaction isolation level READ UNCOMMITTED");
+                stmt1.execute(statement + "READ UNCOMMITTED");
 
                 connections.put(conn, isolationLevel);
             }
@@ -102,8 +113,7 @@ public class TransactionIsolationLevelSwitchListener extends
             if (isolationLevel != null) {
                 // reset the original transaction isolation.
                 stmt = conn.createStatement();
-                stmt.execute("set transaction isolation level "
-                        + isolationLevel);
+                stmt.execute(statement + isolationLevel);
                 stmt.close();
             }
         } catch (SQLException sqlException) {

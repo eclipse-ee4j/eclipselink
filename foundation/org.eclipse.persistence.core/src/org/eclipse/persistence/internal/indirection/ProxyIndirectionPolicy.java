@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -331,7 +331,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((oldValueHolder instanceof DatabaseValueHolder)
-                    && (! ((DatabaseValueHolder) oldValueHolder).isInstantiated())
+                    && (! oldValueHolder.isInstantiated())
                     && (((DatabaseValueHolder) oldValueHolder).getSession() == null)
                     && (! ((DatabaseValueHolder) oldValueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, getMapping());
@@ -359,11 +359,11 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
             return this.getMapping().buildBackupCloneForPartObject(attributeValue, clone, backup, unitOfWork);
         }
         ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
-        ValueHolderInterface unitOfWorkValueHolder = handler.getValueHolder();
-        ValueHolderInterface backupValueHolder = null;
+        ValueHolderInterface<?> unitOfWorkValueHolder = handler.getValueHolder();
+        ValueHolderInterface<?> backupValueHolder = null;
 
         if ((!(unitOfWorkValueHolder instanceof UnitOfWorkValueHolder)) || unitOfWorkValueHolder.isInstantiated()) {
-            backupValueHolder = (ValueHolderInterface) super.backupCloneAttribute(unitOfWorkValueHolder, clone, backup, unitOfWork);
+            backupValueHolder = (ValueHolderInterface<?>) super.backupCloneAttribute(unitOfWorkValueHolder, clone, backup, unitOfWork);
         } else {
             // CR#2852176 Use a BackupValueHolder to handle replacing of the original.
             backupValueHolder = new BackupValueHolder(unitOfWorkValueHolder);
@@ -381,7 +381,7 @@ public class ProxyIndirectionPolicy extends BasicIndirectionPolicy {
     public void iterateOnAttributeValue(DescriptorIterator iterator, Object attributeValue) {
         if (attributeValue instanceof Proxy) {
             ProxyIndirectionHandler handler = (ProxyIndirectionHandler)Proxy.getInvocationHandler(attributeValue);
-            ValueHolderInterface valueHolder = handler.getValueHolder();
+            ValueHolderInterface<?> valueHolder = handler.getValueHolder();
 
             iterator.iterateValueHolderForMapping(valueHolder, this.getMapping());
         } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,19 +18,29 @@
 //           from [Class] down.  Previously only the single Class inside the tree was invalidated.
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.CacheIndex;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
 import org.eclipse.persistence.internal.helper.WriteLockManager;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.identitymaps.IdentityMap;
+import org.eclipse.persistence.internal.identitymaps.IdentityMapManager;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
+import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Record;
 import org.eclipse.persistence.sessions.coordination.CommandManager;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
@@ -196,30 +206,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     }
 
     /**
-     * Convert the primary key Vector into a primary key object.
-     * This is used to support the old deprecated Vector API.
-     */
-    public Object primaryKeyFromVector(Vector primaryKeyVector) {
-        if (primaryKeyVector == null) {
-            return null;
-        } else if (primaryKeyVector.size() == 1) {
-            return primaryKeyVector.get(0);
-        } else {
-            return new CacheId(primaryKeyVector.toArray());
-        }
-    }
-
-    /**
-     * ADVANCED:
-     * Return if their is an object for the primary key.
-     */
-    @Override
-    @Deprecated
-    public boolean containsObjectInIdentityMap(Vector primaryKey, Class theClass) {
-        return containsObjectInIdentityMap(primaryKeyFromVector(primaryKey), theClass);
-    }
-
-    /**
      * ADVANCED:
      * Return if their is an object for the primary key.
      */
@@ -331,7 +317,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
      * In certain circumstances this can have large performance improvements over loading each item individually.
      * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
@@ -344,7 +330,7 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Using a list of Entity PK this method will attempt to bulk load the entire list from the cache.
      * In certain circumstances this can have large performance improvements over loading each item individually.
      * @param pkList List of Entity PKs to extract from the cache
-     * @param ClassDescriptor Descriptor type to be retrieved.
+     * @param descriptor Descriptor type to be retrieved.
      * @return Map of Entity PKs associated to the Entities that were retrieved
      * @throws QueryException
      */
@@ -395,16 +381,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return the object from the identity with the primary and class.
      */
     @Override
-    @Deprecated
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass) {
-        return getFromIdentityMap(primaryKeyFromVector(primaryKey), theClass);
-    }
-
-    /**
-     * ADVANCED:
-     * Return the object from the identity with the primary and class.
-     */
-    @Override
     public Object getFromIdentityMap(Object primaryKey, Class theClass) {
         return getFromIdentityMap(primaryKey, theClass, true);
     }
@@ -415,17 +391,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      */
     public Object getFromIdentityMap(Object primaryKey, Class theClass, ClassDescriptor descriptor) {
         return getFromIdentityMap(primaryKey, null, theClass, true, descriptor);
-    }
-
-    /**
-     * ADVANCED:
-     * Return the object from the identity with the primary and class.
-     * Only return invalidated objects if requested.
-     */
-    @Override
-    @Deprecated
-    public Object getFromIdentityMap(Vector primaryKey, Class theClass, boolean shouldReturnInvalidatedObjects) {
-        return getFromIdentityMap(primaryKeyFromVector(primaryKey), theClass, shouldReturnInvalidatedObjects);
     }
 
     /**
@@ -675,16 +640,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Extract the write lock value from the identity map.
      */
     @Override
-    @Deprecated
-    public Object getWriteLockValue(Vector primaryKey, Class theClass) {
-        return getWriteLockValue(primaryKeyFromVector(primaryKey), theClass);
-    }
-
-    /**
-     * ADVANCED:
-     * Extract the write lock value from the identity map.
-     */
-    @Override
     public Object getWriteLockValue(Object primaryKey, Class theClass) {
         return getWriteLockValue(primaryKey, theClass, getSession().getDescriptor(theClass));
     }
@@ -761,30 +716,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     @Override
     public void invalidateObject(Object object, boolean invalidateCluster) {
         invalidateObject(getSession().getId(object), object.getClass(), invalidateCluster);
-    }
-
-    /**
-     * ADVANCED:
-     * Set an object to be invalid in the cache.
-     * If the object does not exist in the cache, this method will return
-     * without any action.
-     */
-    @Override
-    @Deprecated
-    public void invalidateObject(Vector primaryKey, Class theClass, boolean invalidateCluster) {
-        invalidateObject(primaryKeyFromVector(primaryKey), theClass, invalidateCluster);
-    }
-
-    /**
-     * ADVANCED:
-     * Set an object to be invalid in the cache.
-     * If the object does not exist in the cache, this method will return
-     * without any action.
-     */
-    @Override
-    @Deprecated
-    public void invalidateObject(Vector primaryKey, Class theClass) {
-        invalidateObject(primaryKeyFromVector(primaryKey), theClass);
     }
 
     /**
@@ -971,16 +902,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Return if this object is valid in the cache.
      */
     @Override
-    @Deprecated
-    public boolean isValid(Vector primaryKey, Class theClass) {
-        return isValid(primaryKeyFromVector(primaryKey), theClass);
-    }
-
-    /**
-     * ADVANCED:
-     * Return if this object is valid in the cache.
-     */
-    @Override
     public boolean isValid(Object primaryKey, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         //forward the call to getCacheKeyForObject locally in case subclasses overload
@@ -1052,17 +973,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The object must always be registered with its version number if optimistic locking is used.
      */
     @Override
-    @Deprecated
-    public Object putInIdentityMap(Object object, Vector key) {
-        return putInIdentityMap(object, primaryKeyFromVector(key));
-    }
-
-    /**
-     * ADVANCED:
-     * Register the object with the cache.
-     * The object must always be registered with its version number if optimistic locking is used.
-     */
-    @Override
     public Object putInIdentityMap(Object object, Object key) {
         return putInIdentityMap(object, key, null);
     }
@@ -1073,31 +983,8 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * The object must always be registered with its version number if optimistic locking is used.
      */
     @Override
-    @Deprecated
-    public Object putInIdentityMap(Object object, Vector key, Object writeLockValue) {
-        return putInIdentityMap(object, key, writeLockValue, 0);
-    }
-
-    /**
-     * ADVANCED:
-     * Register the object with the cache.
-     * The object must always be registered with its version number if optimistic locking is used.
-     */
-    @Override
     public Object putInIdentityMap(Object object, Object key, Object writeLockValue) {
         return putInIdentityMap(object, key, writeLockValue, 0);
-    }
-
-    /**
-     * ADVANCED:
-     * Register the object with the cache.
-     * The object must always be registered with its version number if optimistic locking is used.
-     * The readTime may also be included in the cache key as it is constructed.
-     */
-    @Override
-    @Deprecated
-    public Object putInIdentityMap(Object object, Vector key, Object writeLockValue, long readTime) {
-        return putInIdentityMap(object, primaryKeyFromVector(key), writeLockValue, readTime);
     }
 
     /**
@@ -1188,16 +1075,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
      * Remove the object from the object cache.
      */
     @Override
-    @Deprecated
-    public Object removeFromIdentityMap(Vector key, Class theClass) {
-        return removeFromIdentityMap(primaryKeyFromVector(key), theClass);
-    }
-
-    /**
-     * ADVANCED:
-     * Remove the object from the object cache.
-     */
-    @Override
     public Object removeFromIdentityMap(Object key, Class theClass) {
         ClassDescriptor descriptor = getSession().getDescriptor(theClass);
         if (descriptor == null){
@@ -1238,16 +1115,6 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
     @Override
     public void updateWriteLockValue(Object object, Object writeLockValue) {
         updateWriteLockValue(getSession().getId(object), object.getClass(), writeLockValue);
-    }
-
-    /**
-     * ADVANCED:
-     * Update the write lock value in the cache.
-     */
-    @Override
-    @Deprecated
-    public void updateWriteLockValue(Vector primaryKey, Class theClass, Object writeLockValue) {
-        updateWriteLockValue(primaryKeyFromVector(primaryKey), theClass, writeLockValue);
     }
 
     /**

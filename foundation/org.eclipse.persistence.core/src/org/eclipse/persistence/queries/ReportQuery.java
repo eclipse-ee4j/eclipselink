@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -114,7 +114,7 @@ public class ReportQuery extends ReadAllQuery {
      */
     public ReportQuery() {
         this.queryMechanism = new ExpressionQueryMechanism(this);
-        this.items = new ArrayList<ReportItem>();
+        this.items = new ArrayList<>();
         this.shouldRetrievePrimaryKeys = NO_PRIMARY_KEY;
         this.addToConstructorItem = false;
 
@@ -692,7 +692,7 @@ public class ReportQuery extends ReadAllQuery {
     @Override
     public Object clone() {
         ReportQuery cloneQuery = (ReportQuery)super.clone();
-        cloneQuery.items = new ArrayList<ReportItem>(this.items.size());
+        cloneQuery.items = new ArrayList<>(this.items.size());
 
         for (ReportItem item : this.items) {
             ReportItem newItem = (ReportItem)item.clone();
@@ -705,7 +705,7 @@ public class ReportQuery extends ReadAllQuery {
         }
 
         if (this.groupByExpressions != null) {
-            cloneQuery.groupByExpressions = new ArrayList<Expression>(this.groupByExpressions);
+            cloneQuery.groupByExpressions = new ArrayList<>(this.groupByExpressions);
         }
 
         return cloneQuery;
@@ -721,7 +721,7 @@ public class ReportQuery extends ReadAllQuery {
      * already cloned.
      */
     public void copyReportItems(Map alreadyDone) {
-        this.items = new ArrayList<ReportItem>(this.items);
+        this.items = new ArrayList<>(this.items);
         for (int i = this.items.size() - 1; i >= 0; i--) {
             ReportItem item = this.items.get(i);
             Expression expression = item.getAttributeExpression();
@@ -731,7 +731,7 @@ public class ReportQuery extends ReadAllQuery {
             this.items.set(i, new ReportItem(item.getName(), expression));
         }
         if (this.groupByExpressions != null) {
-            this.groupByExpressions = new ArrayList<Expression>(this.groupByExpressions);
+            this.groupByExpressions = new ArrayList<>(this.groupByExpressions);
             for (int i = this.groupByExpressions.size() - 1; i >= 0; i--) {
                 Expression item = this.groupByExpressions.get(i);
                 if (alreadyDone.get(item.getBuilder()) != null) {
@@ -869,7 +869,7 @@ public class ReportQuery extends ReadAllQuery {
      */
     public List<Expression> getGroupByExpressions() {
         if (this.groupByExpressions == null) {
-            this.groupByExpressions = new ArrayList<Expression>();
+            this.groupByExpressions = new ArrayList<>();
         }
         return this.groupByExpressions;
     }
@@ -1012,7 +1012,7 @@ public class ReportQuery extends ReadAllQuery {
      * Clear the ReportQueryItems
      */
     public void clearItems() {
-        this.items = new ArrayList<ReportItem>();
+        this.items = new ArrayList<>();
         setIsPrepared(false);
     }
 
@@ -1022,7 +1022,7 @@ public class ReportQuery extends ReadAllQuery {
      */
     public List<String> getNames() {
         if (this.names == null) {
-            this.names = new ArrayList<String>();
+            this.names = new ArrayList<>();
             for (ReportItem item : getItems()) {
                 this.names.add(item.getName());
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -673,7 +673,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
             }
             if (this.listOrderField != null) {
                 // This is a hacky check for attribute change tracking, if the backup clone is different, then is using deferred.
-                List previousList = (List)getRealCollectionAttributeValueFromObject(query.getBackupClone(), query.getSession());;
+                List previousList = (List)getRealCollectionAttributeValueFromObject(query.getBackupClone(), query.getSession());
                 int previousSize = previousList.size();
                 if (currentObjects == null) {
                     currentObjects = getRealCollectionAttributeValueFromObject(query.getObject(), query.getSession());
@@ -1117,7 +1117,7 @@ public abstract class CollectionMapping extends ForeignReferenceMapping implemen
      * Used for Workbench integration.
      */
     public List<Expression> getOrderByQueryKeyExpressions() {
-        List<Expression>  expressions = new ArrayList<Expression> ();
+        List<Expression>  expressions = new ArrayList<> ();
 
         if ((getSelectionQuery() != null) && getSelectionQuery().isReadAllQuery()) {
             for (Expression orderExpression : ((ReadAllQuery)getSelectionQuery()).getOrderByExpressions()) {

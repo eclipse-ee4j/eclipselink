@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,22 +40,22 @@ public interface BinaryDataCollectionMapping<
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    public Class getAttributeElementClass();
+    Class getAttributeElementClass();
 
     /**
      * INTERNAL
      */
-    public String getMimeType();
+    String getMimeType();
 
-    public String getMimeType(Object object);
+    String getMimeType(Object object);
 
-    public MIME_TYPE_POLICY getMimeTypePolicy();
+    MIME_TYPE_POLICY getMimeTypePolicy();
 
-    public AbstractNullPolicy getNullPolicy();
+    AbstractNullPolicy getNullPolicy();
 
-    public boolean isSwaRef();
+    boolean isSwaRef();
 
-    public boolean isWriteOnly();
+    boolean isWriteOnly();
 
     /**
      * Set the class each element in the object's
@@ -64,23 +64,23 @@ public interface BinaryDataCollectionMapping<
      * This is optional - if left null, the elements will be added
      * to the object's collection unconverted.
      */
-    public void setAttributeElementClass(Class attributeElementClass);
+    void setAttributeElementClass(Class attributeElementClass);
 
     /**
      * ADVANCED:
      * Set the field in the mapping.
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
-    public void setField(FIELD theField);
+    void setField(FIELD theField);
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 
 
     /**
      * Allow implementer to set the MimeTypePolicy class FixedMimeTypePolicy or AttributeMimeTypePolicy (dynamic)
      * @param aPolicy MimeTypePolicy
      */
-    public void setMimeTypePolicy(MIME_TYPE_POLICY aPolicy);
+    void setMimeTypePolicy(MIME_TYPE_POLICY aPolicy);
 
     /**
      * Set the AbstractNullPolicy on the mapping<br>
@@ -88,18 +88,18 @@ public interface BinaryDataCollectionMapping<
      *
      * @param aNullPolicy
      */
-    public void setNullPolicy(AbstractNullPolicy aNullPolicy);
+    void setNullPolicy(AbstractNullPolicy aNullPolicy);
 
-    public void setShouldInlineBinaryData(boolean b);
+    void setShouldInlineBinaryData(boolean b);
 
-    public void setSwaRef(boolean swaRef);
+    void setSwaRef(boolean swaRef);
     /**
      * Set the converter on the mapping.
      * A converter can be used to convert between the direct collection's object value and database value.
      */
-    public void setValueConverter(CONVERTER valueConverter);
+    void setValueConverter(CONVERTER valueConverter);
 
-    public boolean shouldInlineBinaryData();
+    boolean shouldInlineBinaryData();
 
-    public void useCollectionClassName(String concreteContainerClassName);
+    void useCollectionClassName(String concreteContainerClassName);
 }

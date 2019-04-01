@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -296,9 +296,9 @@ public class PrivilegedAccessHelper {
      * Return a method on a given class with the given method name and parameter
      * types. This call will NOT traverse the superclasses. Wrap the call in
      * doPrivileged if necessary.
-     * @param method the class to get the method from
+     * @param clazz the class to get the method from
      * @param methodName the name of the method to get
-     * @param methodParameters a list of classes representing the classes of the
+     * @param methodParameterTypes a list of classes representing the classes of the
      *  parameters of the method.
      */
     public static Method getDeclaredMethod(final Class clazz, final String methodName, final Class[] methodParameterTypes) throws NoSuchMethodException {
@@ -498,7 +498,7 @@ public class PrivilegedAccessHelper {
      * parameters. Wrap in a doPrivileged block if necessary.
      */
     public static Object invokeMethod(final Method method, final Object object) throws IllegalAccessException, InvocationTargetException {
-        return invokeMethod(method, object, (Object[]) null);
+        return invokeMethod(method, object, null);
     }
 
     /**

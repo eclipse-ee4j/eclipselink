@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -147,12 +147,12 @@ public final class ReferenceResolver {
      * Processing the 9th key:
      *
      * 1. Attempt to insert Entry#7 with key '14' into map of references.
-     * > h(14) = 5;
+     * &gt; h(14) = 5;
      * HashMap buckets:
      * position     | 0 1 2 3 4 5 6 7 8
      * entry(key)   | 0 1   3   5   7 8
      *                          ^
-     * > Bucket 5 is taken.
+     * &gt; Bucket 5 is taken.
      *
      * 2. Store the entry in a separate list.
      * List for unlucky references:
@@ -180,13 +180,13 @@ public final class ReferenceResolver {
      * #####################################################
      * Retrieve entry with key '14'
      * 1. Attempt to retrieve it from map
-     * > h(14) = 5;
+     * &gt; h(14) = 5;
      * HashMap buckets:
      * position     | 0 1 2 3 4 5 6 7 8
      * entry(key)   | 0 1   3   5   7 8
      *                          ^
      * Hash function points to bucket # 5. Stored key is 5.
-     * > key 5 != 14.
+     * &gt; key 5 != 14.
      *
      * 2. Iterate through list of unluckyReferences, comparing
      * key to all keys in the list.
@@ -194,19 +194,19 @@ public final class ReferenceResolver {
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                ^
-     * > key 5 != 14
+     * &gt; key 5 != 14
      *
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                  ^
      *
-     * > key 5 != 14
+     * &gt; key 5 != 14
      *
      * position     | 0 1 2
      * entry(key)   | 5 5 14
      *                    ^
      *
-     * > key 14 = 14, retrieve entry.
+     * &gt; key 14 = 14, retrieve entry.
      *
      * ##################################################
      * # Iterate through all elements - O(n) guaranteed #
@@ -214,24 +214,24 @@ public final class ReferenceResolver {
      *
      * 1. Create boolean array of size n that keeps track
      *  of unlucky positions:
-     * > boolean[] a = new boolean[lastPosition + 1];
+     * &gt; boolean[] a = new boolean[lastPosition + 1];
      *
      * 2. Set a[p] = true for elements that did not fit into
      *  hash map, p = position # of element.
      *
-     * > for (Integer p : unluckyRefPositions) {
-     *   > a[p] = true;
-     * > }
+     * &gt; for (Integer p : unluckyRefPositions) {
+     *   &gt; a[p] = true;
+     * &gt; }
      *
      * 3. Iterate through LinkedMap and List as if they were one joined collection
      * of size s = map.size() + list.size(), ordered by p = position # of element:
-     *  > for (p = 0; p < s; p ++) {
-     *    > if a[p] = false, take next element from linked map iterator,
-     *    > if a[p] = true,  take next element from list iterator,
-     *  > }
+     *  &gt; for (p = 0; p &lt; s; p ++) {
+     *    &gt; if a[p] = false, take next element from linked map iterator,
+     *    &gt; if a[p] = true,  take next element from list iterator,
+     *  &gt; }
      *
      */
-    public final void addReference(final Reference ref) {
+    public void addReference(final Reference ref) {
         final ReferenceKey key = new ReferenceKey(ref);
         /* If an entry with equal key is already present in map, we preserve the original entry and
          * note the position of the new entry into the list of positions and put the new misfit value
@@ -250,7 +250,7 @@ public final class ReferenceResolver {
     /**
      * Retrieve the reference for a given mapping instance. If more keys match, returns the first occurrence.
      */
-    public final Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject) {
+    public Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject) {
         refKey.setMapping(mapping);
         refKey.setSourceObject(sourceObject);
         final Reference reference = referencesMap.get(refKey);
@@ -272,7 +272,7 @@ public final class ReferenceResolver {
      * Return a reference for the given mapping and source object, that doesn't already
      * contain an entry for the provided field.
      */
-    public final Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject,
+    public Reference getReference(final ObjectReferenceMapping mapping, final Object sourceObject,
                                         final Field xmlField) {
         final Field targetField = (Field) mapping.getSourceToTargetKeyFieldAssociations().get(xmlField);
         String tgtXpath = null;
@@ -304,7 +304,7 @@ public final class ReferenceResolver {
      *
      * @since EclipseLink 2.5.0
      */
-    public final void putValue(final Class clazz, final Object key, final Object object) {
+    public void putValue(final Class clazz, final Object key, final Object object) {
         Map<Object, Object> keyToObject = cache.get(clazz);
         if (null == keyToObject) {
             keyToObject = new HashMap<>();
@@ -320,7 +320,7 @@ public final class ReferenceResolver {
      * @param session               typically will be a unit of work
      * @param userSpecifiedResolver a user-provided subclass of IDResolver, may be null
      */
-    public final void resolveReferences(final CoreAbstractSession session, final IDResolver userSpecifiedResolver,
+    public void resolveReferences(final CoreAbstractSession session, final IDResolver userSpecifiedResolver,
                                         final ErrorHandler handler) {
         final Collection<Reference> luckyReferences = referencesMap.values();
         final Iterator<Reference> mapIterator = luckyReferences.iterator();
@@ -668,14 +668,14 @@ public final class ReferenceResolver {
         }
 
         @Override
-        public final int hashCode() {
+        public int hashCode() {
             int result = System.identityHashCode(sourceObject);
             result = 31 * result + System.identityHashCode(mapping);
             return result;
         }
 
         @Override
-        public final boolean equals(final Object o) {
+        public boolean equals(final Object o) {
             if (this == o) return true;
             if (!(o instanceof ReferenceKey)) return false;
 

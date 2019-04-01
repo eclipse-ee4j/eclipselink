@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -799,7 +799,7 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public Map<String, Integer> getCursorOrdinalPositions() {
         if (cursorOrdinalPositions == null) {
-            cursorOrdinalPositions = new HashMap<String, Integer>();
+            cursorOrdinalPositions = new HashMap<>();
         }
 
         return cursorOrdinalPositions;
@@ -821,7 +821,7 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public List<String> getProcedureArgumentNames() {
         if (procedureArgumentNames == null) {
-            procedureArgumentNames = new ArrayList<String>();
+            procedureArgumentNames = new ArrayList<>();
         }
         return procedureArgumentNames;
     }
@@ -1000,7 +1000,7 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public List<DatabaseField> getOptionalArguments() {
         if (this.optionalArguments == null) {
-            this.optionalArguments = new ArrayList<DatabaseField>();
+            this.optionalArguments = new ArrayList<>();
         }
         return this.optionalArguments;
     }

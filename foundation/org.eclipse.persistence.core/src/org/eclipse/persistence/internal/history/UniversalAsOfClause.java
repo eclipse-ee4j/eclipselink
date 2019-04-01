@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.history;
 
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.expressions.*;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 
 /**
  * INTERNAL:
  * <b>Purpose:</b> Represents a query level AS OF TIMESTAMP/SCN Oracle SQL clause.
- * <p><b>Responsibilities:<b>
- * <ul><li>Will be applied to the entire selection criteria, even if
- * it is only set on the Query's expression builder.
- * <li>Prints the AS OF clause before the alias name in the FROM clause.
+ * <p><b>Responsibilities:</b>
+ * <ul>
+ * <li>Will be applied to the entire selection criteria, even if
+ * it is only set on the Query's expression builder.</li>
+ * <li>Prints the AS OF clause before the alias name in the FROM clause.</li>
  * </ul>
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  * @author Stephen McRitchie

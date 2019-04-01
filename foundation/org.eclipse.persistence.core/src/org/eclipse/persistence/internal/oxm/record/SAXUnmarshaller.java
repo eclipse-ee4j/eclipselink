@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -133,7 +133,7 @@ public class SAXUnmarshaller implements PlatformUnmarshaller {
     private SAXParserFactory getSAXParserFactory() throws XMLMarshalException {
         if (null == saxParserFactory || shouldReset) {
             try {
-                saxParserFactory = XMLHelper.createParserFactory(isSecureProcessingDisabled());;
+                saxParserFactory = XMLHelper.createParserFactory(isSecureProcessingDisabled());
                 saxParserFactory.setFeature(XMLReader.NAMESPACE_PREFIXES_FEATURE, true);
                 try {
                     saxParserFactory.setFeature(XMLReader.REPORT_IGNORED_ELEMENT_CONTENT_WHITESPACE_FEATURE, true);

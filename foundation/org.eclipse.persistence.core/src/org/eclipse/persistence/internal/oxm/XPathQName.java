@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,6 @@ public class XPathQName {
     /**
      * Create a new XPathQName.
      * namespaceUri will be "" and isNamespaceAware will be true.
-     * @param localName The local name to associate with this XPathQName
      */
     public XPathQName(){
         isNamespaceAware = true;
@@ -43,7 +42,6 @@ public class XPathQName {
      * Create a new XPathQName with the specified local name.
      * namespaceUri will be null and isNamespaceAware will be set based on the MediaType.
      * @param localName The local name to associate with this XPathQName
-     * @param mediaType the mediaType associate with this XPathQName
      */
     public XPathQName(String localName, boolean namespaceAware){
         this(Constants.EMPTY_STRING, localName, namespaceAware);
@@ -67,7 +65,7 @@ public class XPathQName {
 
     /**
      * Create a new XPathQName with the specified QName
-     * @param QName The QName to build this XPathQName from
+     * @param qname The QName to build this XPathQName from
      * @param namespaceAware set if namespaces should be processed or ignored
      */
     public XPathQName(QName qname, boolean namespaceAware){

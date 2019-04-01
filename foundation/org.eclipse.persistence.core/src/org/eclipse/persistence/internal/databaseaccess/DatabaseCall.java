@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
  * INTERNAL:
- * <b>Purpose<b>: Used as an abstraction of a database invocation.
+ * <b>Purpose</b>: Used as an abstraction of a database invocation.
  * A call is an SQL string or procedure call with parameters.
  */
 public abstract class DatabaseCall extends DatasourceCall {
@@ -524,7 +524,7 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public List<DatabaseField> getOutputCursors() {
         if (outputCursors == null) {
-            outputCursors = new ArrayList<DatabaseField>();
+            outputCursors = new ArrayList<>();
         }
 
         return outputCursors;

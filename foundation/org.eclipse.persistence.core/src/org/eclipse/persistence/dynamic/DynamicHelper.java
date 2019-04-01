@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,7 @@ public class DynamicHelper {
 
     protected DatabaseSession session;
     protected Map<String, ClassDescriptor> fqClassnameToDescriptor =
-        new HashMap<String, ClassDescriptor>();
+        new HashMap<>();
 
     public DynamicHelper(DatabaseSession session) {
         this.session = session;
@@ -201,7 +201,7 @@ public class DynamicHelper {
         if (types == null || types.length == 0) {
             throw new IllegalArgumentException("No types provided");
         }
-        Collection<ClassDescriptor> descriptors = new ArrayList<ClassDescriptor>(types.length);
+        Collection<ClassDescriptor> descriptors = new ArrayList<>(types.length);
         for (int index = 0; index < types.length; index++) {
             DynamicType typ = types[index];
             ClassDescriptor desc = typ.getDescriptor();

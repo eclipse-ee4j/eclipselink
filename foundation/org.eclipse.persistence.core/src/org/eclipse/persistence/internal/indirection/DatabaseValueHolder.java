@@ -319,7 +319,7 @@ public abstract class DatabaseValueHolder implements WeavedAttributeValueHolderI
         if (isInstantiated()) {
             return "{" + getValue() + "}";
         } else {
-            return "{" + Helper.getShortClassName(getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", (Object[])null) + "}";
+            return "{" + Helper.getShortClassName(getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
         }
     }
 }

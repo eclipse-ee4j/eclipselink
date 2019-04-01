@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -151,16 +151,16 @@ public class BigBadSystem extends TestSystem {
             bigBadObject.timestamp09 = new java.sql.Timestamp(new java.util.Date().getTime());
             bigBadObject.timestamp10 = new java.sql.Timestamp(new java.util.Date().getTime());
 
-            bigBadObject.ref01 = new ValueHolder(referenceData);
-            bigBadObject.ref02 = new ValueHolder(referenceData);
-            bigBadObject.ref03 = new ValueHolder(referenceData);
-            bigBadObject.ref04 = new ValueHolder(referenceData);
-            bigBadObject.ref05 = new ValueHolder(referenceData);
-            bigBadObject.ref06 = new ValueHolder(referenceData);
-            bigBadObject.ref07 = new ValueHolder(referenceData);
-            bigBadObject.ref08 = new ValueHolder(referenceData);
-            bigBadObject.ref09 = new ValueHolder(referenceData);
-            bigBadObject.ref10 = new ValueHolder(referenceData);
+            bigBadObject.ref01 = new ValueHolder<>(referenceData);
+            bigBadObject.ref02 = new ValueHolder<>(referenceData);
+            bigBadObject.ref03 = new ValueHolder<>(referenceData);
+            bigBadObject.ref04 = new ValueHolder<>(referenceData);
+            bigBadObject.ref05 = new ValueHolder<>(referenceData);
+            bigBadObject.ref06 = new ValueHolder<>(referenceData);
+            bigBadObject.ref07 = new ValueHolder<>(referenceData);
+            bigBadObject.ref08 = new ValueHolder<>(referenceData);
+            bigBadObject.ref09 = new ValueHolder<>(referenceData);
+            bigBadObject.ref10 = new ValueHolder<>(referenceData);
 
             BigBadAggregate agg = new BigBadAggregate();
             agg.number = new BigDecimal(12345);

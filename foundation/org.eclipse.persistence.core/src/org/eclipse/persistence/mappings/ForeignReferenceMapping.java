@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -936,7 +936,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
         ReadQuery mappingQuery = this.selectionQuery;
         if (mappingQuery.isReadAllQuery()) {
             // CR#3238 clone these vectors so they will not grow with each call to the query. -TW
-            batchQuery.setOrderByExpressions(new ArrayList<Expression>(((ReadAllQuery)mappingQuery).getOrderByExpressions()));
+            batchQuery.setOrderByExpressions(new ArrayList<>(((ReadAllQuery)mappingQuery).getOrderByExpressions()));
             if (((ReadAllQuery)mappingQuery).hasBatchReadAttributes()) {
                 for (Expression expression : ((ReadAllQuery)mappingQuery).getBatchReadAttributeExpressions()) {
                     batchQuery.addBatchReadAttribute(expression);
@@ -977,7 +977,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
             if (sourceFetchGroup != null) {
                 FetchGroup targetFetchGroup = sourceFetchGroup.getGroup(getAttributeName());
                 if (targetFetchGroup != null) {
-                    ((ObjectLevelReadQuery)batchQuery).setFetchGroup(targetFetchGroup);
+                    batchQuery.setFetchGroup(targetFetchGroup);
                 }
             }
         }
@@ -1350,7 +1350,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
      * A subclass should implement this method if it wants non default behavior.
      */
     protected void initializeSelectionQuery(AbstractSession session) throws DescriptorException {
-        if (((ObjectLevelReadQuery)getSelectionQuery()).getReferenceClass() == null) {
+        if (getSelectionQuery().getReferenceClass() == null) {
             throw DescriptorException.referenceClassNotSpecified(this);
         }
         getSelectionQuery().setName(getAttributeName());

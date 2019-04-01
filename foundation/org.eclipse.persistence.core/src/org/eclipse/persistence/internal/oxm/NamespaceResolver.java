@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
         this.defaultNamespaceURI = namespaceResolver.defaultNamespaceURI;
         Map<String, String> namespaceResolverPrefixesToNamespaces = namespaceResolver.prefixesToNamespaces;
         if(namespaceResolverPrefixesToNamespaces != null) {
-            this.prefixesToNamespaces = new LinkedHashMap<String, String>(namespaceResolverPrefixesToNamespaces.size());
+            this.prefixesToNamespaces = new LinkedHashMap<>(namespaceResolverPrefixesToNamespaces.size());
             this.prefixesToNamespaces.putAll(namespaceResolver.prefixesToNamespaces);
         }
         this.prefixCounter = namespaceResolver.prefixCounter;
@@ -88,7 +88,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
 
     public Map<String, String> getPrefixesToNamespaces() {
         if(null == prefixesToNamespaces) {
-            prefixesToNamespaces = new LinkedHashMap<String, String>();
+            prefixesToNamespaces = new LinkedHashMap<>();
         }
         return prefixesToNamespaces;
     }
@@ -216,7 +216,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
             ///@see XMLRootComplexDifferentPrefixTestCases
             Map<String, String> removedItems = null;
             if (getPrefixesToNamespaces().containsValue(namespaceURI.intern())) {
-                removedItems = new LinkedHashMap<String, String>();
+                removedItems = new LinkedHashMap<>();
                 for (Map.Entry<String, String> prefixEntry : getPrefixesToNamespaces().entrySet()) {
                     if (namespaceURI.intern().equals(prefixEntry.getValue())) {
                         removedItems.put(prefixEntry.getKey(), prefixEntry.getValue());
@@ -275,7 +275,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param  names A Vector of namespace URIs
      */
     public void setNamespaces(Vector names) {
-        prefixesToNamespaces = new LinkedHashMap<String, String>(names.size());
+        prefixesToNamespaces = new LinkedHashMap<>(names.size());
         for(Namespace namespace : (Vector<Namespace>) names) {
             if ((namespace.getPrefix() != null) && (namespace.getNamespaceURI() != null)) {
                 prefixesToNamespaces.put(namespace.getPrefix(), namespace.getNamespaceURI());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,8 @@ import java.util.Map;
 /**
  * Log levels for EclipseLink logging.
  * The EclipseLink logging levels available are:<br>
- * <table summary="">
+ * <table>
+ * <caption>Logging levels</caption>
  * <tr><td>ALL</td>    <td>&nbsp;</td><td>=&nbsp;0</td>
  *     <td>This level currently logs at the same level as FINEST.</td></tr>
  * <tr><td>FINEST</td> <td>&nbsp;</td><td>=&nbsp;1</td>
@@ -76,7 +77,7 @@ public enum LogLevel {
     public static final int length = LogLevel.values().length;
 
     /** {@link Map} for {@link String} to {@link LogLevel} case insensitive lookup. */
-    private static final Map<String, LogLevel> stringValuesMap = new HashMap<String, LogLevel>(2 * length);
+    private static final Map<String, LogLevel> stringValuesMap = new HashMap<>(2 * length);
 
     // Initialize String to LogLevel case insensitive lookup Map.
     static {

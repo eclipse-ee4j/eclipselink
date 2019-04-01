@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,22 +14,26 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
 
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedActionException;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedGetMethod;
+import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
@@ -37,7 +41,6 @@ import org.eclipse.persistence.mappings.querykeys.QueryKey;
 /**
  * <p><b>Purpose</b>: The abstract class for ContainerPolicy's whose container class implements
  * a container interface.
- * <p>
  *
  * @see CollectionContainerPolicy
  * @see MapContainerPolicy
@@ -235,12 +238,12 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
             // This must not be set "accessible" - clone() must be public, and some JVM's do not allow access to JDK classes.
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, "clone", (Class[])null, false));
+                    cloneMethod = AccessController.doPrivileged(new PrivilegedGetMethod(javaClass, "clone", null, false));
                 } catch (PrivilegedActionException exception) {
                     throw QueryException.methodDoesNotExistInContainerClass("clone", javaClass);
                 }
             } else {
-                cloneMethod = PrivilegedAccessHelper.getMethod(javaClass, "clone", (Class[])null, false);
+                cloneMethod = PrivilegedAccessHelper.getMethod(javaClass, "clone", null, false);
             }
         } catch (NoSuchMethodException ex) {
             throw QueryException.methodDoesNotExistInContainerClass("clone", javaClass);
@@ -296,7 +299,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, container, (Object[])null));
+                    return AccessController.doPrivileged(new PrivilegedMethodInvoker(method, container, null));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof IllegalAccessException) {
@@ -306,7 +309,7 @@ public abstract class InterfaceContainerPolicy extends ContainerPolicy {
                     }
                 }
             } else {
-                return PrivilegedAccessHelper.invokeMethod(method, container, (Object[])null);
+                return PrivilegedAccessHelper.invokeMethod(method, container, null);
             }
         } catch (IllegalAccessException ex1) {
             throw QueryException.cannotAccessMethodOnObject(method, container);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,32 +15,35 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.rmi.server.ObjID;
-import java.util.*;
+import java.util.Map;
 
-import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.DistributedSession;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.IntegrityChecker;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
-import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
-import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
-import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
+import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <h2>Purpose</h2>:
  * BasicIndirectionPolicy implements the behavior necessary for a
- * a ForeignReferenceMapping (or TransformationMapping) to
+ * a <code>org.eclipse.persistence.mappings.ForeignReferenceMapping</code> (or TransformationMapping) to
  * use ValueHolders to delay the reading of objects from the database
  * until they are actually needed.
  *
- * @see ForeignReferenceMapping
  * @author Mike Norman
  * @since TOPLink/Java 2.5
  */
@@ -62,11 +65,11 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     public Object backupCloneAttribute(Object attributeValue, Object clone, Object backup, UnitOfWorkImpl unitOfWork) {
         //no need to check if the attribute is a valueholder because closeAttribute
         // should always be called first
-        ValueHolderInterface valueHolder = (ValueHolderInterface)attributeValue;// cast the value
-        ValueHolderInterface result = null;
+        ValueHolderInterface<?> valueHolder = (ValueHolderInterface)attributeValue;// cast the value
+        ValueHolderInterface<Object> result = null;
         // delay instantiation until absolutely necessary
         if ((!(valueHolder instanceof UnitOfWorkValueHolder)) || valueHolder.isInstantiated()) {
-            result = new ValueHolder();
+            result = new ValueHolder<>();
             result.setValue(super.backupCloneAttribute(valueHolder.getValue(), clone, backup, unitOfWork));
         } else {
             // Backup value holder will be instantiated when uow vh is, to get original value,
@@ -99,20 +102,20 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object cloneAttribute(Object attributeValue, Object original, CacheKey cacheKey, Object clone, Integer refreshCascade, AbstractSession cloningSession, boolean buildDirectlyFromRow) {
-        ValueHolderInterface valueHolder = (ValueHolderInterface) attributeValue;
-        ValueHolderInterface result;
+        ValueHolderInterface<?> valueHolder = (ValueHolderInterface<?>) attributeValue;
+        ValueHolderInterface<Object> result;
 
         if (!buildDirectlyFromRow && cloningSession.isUnitOfWork() && ((UnitOfWorkImpl)cloningSession).isOriginalNewObject(original)) {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((valueHolder instanceof DatabaseValueHolder)
-                    && (! ((DatabaseValueHolder) valueHolder).isInstantiated())
+                    && (! valueHolder.isInstantiated())
                     && (((DatabaseValueHolder) valueHolder).getSession() == null)
                     && (! ((DatabaseValueHolder) valueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, this.mapping);
             }
             if (this.mapping.getRelationshipPartner() == null) {
-                result = new ValueHolder();
+                result = new ValueHolder<>();
                 result.setValue(this.mapping.buildCloneForPartObject(valueHolder.getValue(), original, null, clone, cloningSession, refreshCascade, false, false));
             } else {
                 //if I have a relationship partner trigger the indirection so that the value will be inserted
@@ -228,7 +231,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
     public Object getOriginalValueHolder(Object unitOfWorkIndirectionObject, AbstractSession session) {
         if ((unitOfWorkIndirectionObject instanceof UnitOfWorkValueHolder)
                 && (((UnitOfWorkValueHolder)unitOfWorkIndirectionObject).getRemoteUnitOfWork() != null)) {
-            ValueHolderInterface valueHolder = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getWrappedValueHolder();
+            ValueHolderInterface<?> valueHolder = ((UnitOfWorkValueHolder) unitOfWorkIndirectionObject).getWrappedValueHolder();
             if (valueHolder == null) {
                 // For remote session the original value holder is transient,
                 // so the value must be found in the registry or created.
@@ -258,7 +261,7 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
             }
         }
         if (unitOfWorkIndirectionObject instanceof WrappingValueHolder) {
-            ValueHolderInterface valueHolder =  ((WrappingValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
+            ValueHolderInterface<?> valueHolder =  ((WrappingValueHolder)unitOfWorkIndirectionObject).getWrappedValueHolder();
             if (!session.isProtectedSession()){
                 while (valueHolder instanceof WrappingValueHolder && ((WrappingValueHolder)valueHolder).getWrappedValueHolder() != null){
                     valueHolder = ((WrappingValueHolder)valueHolder).getWrappedValueHolder();
@@ -385,9 +388,9 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public void setRealAttributeValueInObject(Object target, Object attributeValue) {
-        ValueHolderInterface holder = (ValueHolderInterface)this.mapping.getAttributeValueFromObject(target);
+        ValueHolderInterface<Object> holder = (ValueHolderInterface<Object>)this.mapping.getAttributeValueFromObject(target);
         if (holder == null) {
-            holder = new ValueHolder(attributeValue);
+            holder = new ValueHolder<>(attributeValue);
         } else {
             holder.setValue(attributeValue);
         }
@@ -536,6 +539,6 @@ public class BasicIndirectionPolicy extends IndirectionPolicy {
      */
     @Override
     public Object valueFromRow(Object object) {
-        return new ValueHolder(object);
+        return new ValueHolder<>(object);
     }
 }

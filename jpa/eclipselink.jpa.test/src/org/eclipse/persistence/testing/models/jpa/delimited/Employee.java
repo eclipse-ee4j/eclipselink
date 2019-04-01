@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,32 +14,53 @@
 //     tware - add for testing JPA 2.0 delimited identifiers
 package org.eclipse.persistence.testing.models.jpa.delimited;
 
-import java.util.*;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.TABLE;
+import static org.eclipse.persistence.annotations.CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS;
+import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
+import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
+import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
+
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.Collection;
+import java.util.Vector;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ChangeTracking;
 import org.eclipse.persistence.annotations.CollectionTable;
-import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.PrivateOwned;
-import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.Properties;
+import org.eclipse.persistence.annotations.Property;
 import org.eclipse.persistence.annotations.TypeConverter;
-
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.GenerationType.*;
-
-import static org.eclipse.persistence.annotations.CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS;
-import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
-import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
-import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
+import org.eclipse.persistence.config.CacheIsolationType;
 
 /**
  * Employees have a one-to-many relationship with Employees through the
@@ -79,7 +100,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 @Cache(
     type=SOFT_WEAK,
     size=730,
-    shared=true,
+    isolation=CacheIsolationType.SHARED,
     expiry=100000,
     alwaysRefresh=false, // some test dependencies for this to be false.
     disableHits=true, // Employee customizer should set it back to false.
@@ -128,6 +149,7 @@ public class Employee implements Serializable, Cloneable {
         this.m_lastName = lastName;
     }
 
+    @Override
     public Employee clone() {
         Employee clone = null;
         try {
@@ -382,6 +404,7 @@ public class Employee implements Serializable, Cloneable {
         this.version = version;
     }
 
+    @Override
     public String toString() {
         return "Employee: " + getId();
     }

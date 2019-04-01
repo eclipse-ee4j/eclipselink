@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,11 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * <p>An EIS one-to-one mapping is a reference mapping that represents the relationship between
@@ -43,10 +47,11 @@ import org.eclipse.persistence.queries.*;
  * object may contain a foreign key to the source object (key on target).  Because both the source
  * and target objects use interactions, they must both be configured as root object types.
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>Record formats</caption>
  * <tr>
- * <th id="c1" align="left">Record Type</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">Record Type</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1">Indexed</td>

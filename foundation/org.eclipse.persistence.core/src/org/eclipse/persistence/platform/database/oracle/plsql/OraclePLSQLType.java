@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,6 @@ import org.eclipse.persistence.internal.helper.SimpleDatabaseType;
  */
 public interface OraclePLSQLType extends SimpleDatabaseType {
 
-    public static final String PLSQLBoolean_IN_CONV = "SYS.SQLJUTL.INT2BOOL";
-    public static final String PLSQLBoolean_OUT_CONV = "SYS.SQLJUTL.BOOL2INT";
+    String PLSQLBoolean_IN_CONV = "SYS.SQLJUTL.INT2BOOL";
+    String PLSQLBoolean_OUT_CONV = "SYS.SQLJUTL.BOOL2INT";
 }

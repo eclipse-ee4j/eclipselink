@@ -80,7 +80,7 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
      */
     public abstract DynamicPropertiesManager fetchPropertiesManager();
 
-    protected Map<String, PropertyWrapper> propertiesMap = new HashMap<String, PropertyWrapper>();
+    protected Map<String, PropertyWrapper> propertiesMap = new HashMap<>();
 
     /**
      * Instantiates a new dynamic entity impl.
@@ -224,8 +224,8 @@ public abstract class DynamicEntityImpl implements DynamicEntity, PersistenceEnt
         }
         Object oldValue = null;
         Object wrapperValue = wrapper.getValue();
-        if (wrapperValue instanceof ValueHolderInterface) {
-            ValueHolderInterface vh = (ValueHolderInterface) wrapperValue;
+        if (wrapperValue instanceof ValueHolderInterface<?>) {
+            ValueHolderInterface<Object> vh = (ValueHolderInterface<Object>) wrapperValue;
             if (vh.isInstantiated()) {
                 oldValue = vh.getValue();
             }

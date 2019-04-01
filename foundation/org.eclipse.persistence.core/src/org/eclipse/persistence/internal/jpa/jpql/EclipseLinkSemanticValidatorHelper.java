@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
             List<IdentificationVariable> variables = identificationVariables.get(variableName);
 
             if (variables == null) {
-                variables = new ArrayList<IdentificationVariable>();
+                variables = new ArrayList<>();
                 identificationVariables.put(variableName, variables);
             }
 
@@ -129,7 +129,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
     @Override
     public String[] entityNames() {
 
-        List<String> names = new ArrayList<String>();
+        List<String> names = new ArrayList<>();
 
         for (ClassDescriptor descriptor : queryContext.getSession().getDescriptors().values()) {
             if (!descriptor.isAggregateDescriptor()) {
@@ -150,7 +150,7 @@ final class EclipseLinkSemanticValidatorHelper implements SemanticValidatorHelpe
     @Override
     public List<JPQLQueryDeclaration> getAllDeclarations() {
 
-        List<JPQLQueryDeclaration> declarations = new ArrayList<JPQLQueryDeclaration>();
+        List<JPQLQueryDeclaration> declarations = new ArrayList<>();
         JPQLQueryContext context = queryContext.getCurrentContext();
 
         while (context != null) {

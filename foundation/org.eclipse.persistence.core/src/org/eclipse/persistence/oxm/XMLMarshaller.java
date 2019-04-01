@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -356,20 +356,6 @@ public class XMLMarshaller extends org.eclipse.persistence.internal.oxm.XMLMarsh
             }
         }
         return super.objectToXMLNode(object, rootNode, session, descriptor, isXMLRoot);
-    }
-
-    /**
-    * PUBLIC:
-    * Convert the given object to descendants of the parent element
-    * @param object the object to marshal
-    * @param parent the node to marshal the object to
-    * @return the document which the specified object has been marshalled to
-    * @throws XMLMarshalException if an error occurred during marshalling
-    * @deprecated
-    */
-    @Deprecated
-    public Document objectToXML(Object object, Node parent) throws XMLMarshalException {
-        return objectToXML(object, parent, null);
     }
 
     public Document objectToXML(Object object, Node parent, DocumentPreservationPolicy docPresPolicy) {

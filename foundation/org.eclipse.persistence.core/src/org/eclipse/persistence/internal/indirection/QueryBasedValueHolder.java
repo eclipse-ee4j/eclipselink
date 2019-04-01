@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -131,7 +131,7 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
             throw ValidationException.instantiatingValueholderWithNullSession();
         }
         if (this.query.isObjectBuildingQuery() && ((ObjectBuildingQuery)this.query).shouldRefreshIdentityMapResult()){
-            this.refreshCascade = ((ObjectBuildingQuery)this.query).getCascadePolicy();
+            this.refreshCascade = this.query.getCascadePolicy();
         }
         Object result = session.executeQuery(getQuery(), getRow());
         // Bug 489898 - ensure that the query's session is dereferenced, post-execution
@@ -264,7 +264,6 @@ public class QueryBasedValueHolder extends DatabaseValueHolder {
     /**
      * INTERNAL:
      * @param refreshCascadePolicy
-     * @return
      */
     public void setRefreshCascadePolicy(Integer refreshCascadePolicy) {
         this.refreshCascade = refreshCascadePolicy;

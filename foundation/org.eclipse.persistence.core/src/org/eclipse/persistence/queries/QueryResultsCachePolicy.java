@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,14 +70,14 @@ public class QueryResultsCachePolicy implements Serializable, Cloneable {
         this.cacheType = ClassConstants.CacheIdentityMap_Class;
         this.isNullIgnored = false;
         this.invalidateOnChange = true;
-        this.invalidationClasses = new HashSet<Class>();
+        this.invalidationClasses = new HashSet<>();
     }
 
     @Override
     public QueryResultsCachePolicy clone() {
         try {
             QueryResultsCachePolicy clone = (QueryResultsCachePolicy)super.clone();
-            clone.invalidationClasses = new HashSet<Class>();
+            clone.invalidationClasses = new HashSet<>();
             return clone;
         } catch (CloneNotSupportedException exception) {
             throw new InternalError(exception.toString());

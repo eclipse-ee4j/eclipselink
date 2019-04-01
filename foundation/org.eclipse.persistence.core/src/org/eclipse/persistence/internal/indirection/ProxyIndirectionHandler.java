@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ import org.eclipse.persistence.exceptions.QueryException;
  * @since        TopLink 3.0
  */
 public class ProxyIndirectionHandler implements InvocationHandler, Serializable {
-    private ValueHolderInterface valueHolder;
+    private ValueHolderInterface<?> valueHolder;
 
     // =====================================================================
 
@@ -147,7 +147,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
      *
      * Get the ValueHolder associated with this handler.
      */
-    public ValueHolderInterface getValueHolder() {
+    public ValueHolderInterface<?> getValueHolder() {
         return this.valueHolder;
     }
 
@@ -158,7 +158,7 @@ public class ProxyIndirectionHandler implements InvocationHandler, Serializable 
      *
      * Set the ValueHolder associated with this handler.
      */
-    public void setValueHolder(ValueHolderInterface value) {
+    public void setValueHolder(ValueHolderInterface<?> value) {
         this.valueHolder = value;
     }
 }

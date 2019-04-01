@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public interface XMLPlatform {
      * @return the new document
      * @throws XMLPlatformException
      */
-    public Document createDocument() throws XMLPlatformException;
+    Document createDocument() throws XMLPlatformException;
 
     /**
      * Creates a new document with the specified public and system
@@ -44,7 +44,7 @@ public interface XMLPlatform {
      * @return the new document
      * @throws XMLPlatformException
      */
-    public Document createDocumentWithPublicIdentifier(String name, String publicIdentifier, String systemIdentifier) throws XMLPlatformException;
+    Document createDocumentWithPublicIdentifier(String name, String publicIdentifier, String systemIdentifier) throws XMLPlatformException;
 
     /**
      * Creates a new document with the specified system identifier in
@@ -54,14 +54,14 @@ public interface XMLPlatform {
      * @return the new document
      * @throws XMLPlatformException
      */
-    public Document createDocumentWithSystemIdentifier(String name, String systemIdentifier) throws XMLPlatformException;
+    Document createDocumentWithSystemIdentifier(String name, String systemIdentifier) throws XMLPlatformException;
 
     /**
      * Check to see if the text node represents a whitespace node.
      * @param text a potential whitespace node
      * @return if the text node represents a whitespace node.
      */
-    public boolean isWhitespaceNode(Text text);
+    boolean isWhitespaceNode(Text text);
 
     /**
      * Return the namespace URI for the specified namespace prefix
@@ -72,7 +72,7 @@ public interface XMLPlatform {
      * @return the namespace URI for the specified prefix
      * @throws XMLPlatformException
      */
-    public String resolveNamespacePrefix(Node contextNode, String namespacePrefix) throws XMLPlatformException;
+    String resolveNamespacePrefix(Node contextNode, String namespacePrefix) throws XMLPlatformException;
 
     /**
      * Execute advanced XPath statements that are required for TopLink EIS.
@@ -84,7 +84,7 @@ public interface XMLPlatform {
      * @return the XPath result
      * @throws XMLPlatformException
      */
-    public NodeList selectNodesAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException;
+    NodeList selectNodesAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException;
 
     /**
      * Execute advanced XPath statements that are required for TopLink EIS.
@@ -94,28 +94,28 @@ public interface XMLPlatform {
      * @return
      * @throws XMLPlatformException
      */
-    public Node selectSingleNodeAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException;
+    Node selectSingleNodeAdvanced(Node contextNode, String xPath, XMLNamespaceResolver xmlNamespaceResolver) throws XMLPlatformException;
 
     /**
      * Return a concrete implementation of the XML parser abstraction that is
      * compatible with the XML Platform.
      * @return a platform specific XML parser
      */
-    public XMLParser newXMLParser();
+    XMLParser newXMLParser();
 
     /**
      * Return a concrete implementation of the XML parser abstraction that is
      * compatible with the XML Platform, based on these parser features.
      * @return a platform specific XML parser
      */
-    public XMLParser newXMLParser(Map<String, Boolean> parserFeatures);
+    XMLParser newXMLParser(Map<String, Boolean> parserFeatures);
 
     /**
      * Return a concrete implementation of the XML transformer abstraction that is
      * compatible with the XML Platform.
      * @return a platform specific XML transformer
      */
-    public XMLTransformer newXMLTransformer();
+    XMLTransformer newXMLTransformer();
 
     /**
      * Validate the document against the XML Schema
@@ -125,20 +125,20 @@ public interface XMLPlatform {
      * @return true if the document is valid, else false
      * @throws XMLPlatformException
      */
-    public boolean validateDocument(Document document, URL xmlSchemaURL, ErrorHandler errorHandler) throws XMLPlatformException;
+    boolean validateDocument(Document document, URL xmlSchemaURL, ErrorHandler errorHandler) throws XMLPlatformException;
 
     /**
      * Validates a document fragment against a complex type or element in the XML schema
      *
      * @return true if the document fragment is valid, false otherwise
      */
-    public boolean validate(Element elem, XMLDescriptor xmlDescriptor, ErrorHandler handler) throws XMLPlatformException;
+    boolean validate(Element elem, XMLDescriptor xmlDescriptor, ErrorHandler handler) throws XMLPlatformException;
 
     /**
     *
     * @param next Element to qualify
     */
-    public void namespaceQualifyFragment(Element next);
+    void namespaceQualifyFragment(Element next);
 
     void setDisableSecureProcessing(boolean disableSecureProcessing);
 

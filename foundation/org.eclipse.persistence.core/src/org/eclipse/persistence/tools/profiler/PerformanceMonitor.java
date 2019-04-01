@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -96,7 +96,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         writer.write("\nPerformance Monitor:");
         writer.write(String.valueOf(this.lastDumpTime));
         writer.write("\nOperation\tValue (ns)\n");
-        Set<String> operations = new TreeSet<String>(this.operationTimings.keySet());
+        Set<String> operations = new TreeSet<>(this.operationTimings.keySet());
         NumberFormat formater = NumberFormat.getInstance();
         for (String operation : operations) {
             Object value = this.operationTimings.get(operation);
@@ -165,7 +165,7 @@ public class PerformanceMonitor implements Serializable, Cloneable, SessionProfi
         Integer threadId = Integer.valueOf(Thread.currentThread().hashCode());
         Map<String, Long> times = this.operationStartTimesByThread.get(threadId);
         if (times == null) {
-            times = new Hashtable<String, Long>();
+            times = new Hashtable<>();
             this.operationStartTimesByThread.put(threadId, times);
         }
         return times;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ public interface SequencingControl {
      * The only reason to use this method is to pick up all parameters'
      * values that were changed after the original sequencing object has been created.
      */
-    public void resetSequencing();
+    void resetSequencing();
 
     /**
      * PUBLIC:
@@ -75,7 +75,7 @@ public interface SequencingControl {
      * returns true.
      * @see Sequence
      */
-    public boolean shouldUseSeparateConnection();
+    boolean shouldUseSeparateConnection();
 
     /**
      * PUBLIC:
@@ -86,7 +86,7 @@ public interface SequencingControl {
      * returns true.
      * @see Sequence
      */
-    public void setShouldUseSeparateConnection(boolean shouldUseSeparateConnection);
+    void setShouldUseSeparateConnection(boolean shouldUseSeparateConnection);
 
     /**
      * PUBLIC:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1347,8 +1347,8 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
         // The indicator select is prepared in the original query, so can just be executed.
         List<AbstractRecord> classIndicators = ((ExpressionQueryMechanism)query.getQueryMechanism()).selectAllRowsFromTable();
 
-        List<Class> classes = new ArrayList<Class>();
-        Set<Class> uniqueClasses = new HashSet<Class>();
+        List<Class> classes = new ArrayList<>();
+        Set<Class> uniqueClasses = new HashSet<>();
         for (AbstractRecord row : classIndicators) {
             Class concreteClass = classFromRow(row, query.getSession());
             if (!uniqueClasses.contains(concreteClass)) { // Ensure unique (a distinct is used, but may have been disabled)
@@ -1375,7 +1375,7 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             if (!uniqueClasses.contains(concreteClass)) {
                 continue;
             }
-            Set<Class> subclasses = new HashSet<Class>();
+            Set<Class> subclasses = new HashSet<>();
             uniqueClasses.remove(concreteClass);
             subclasses.add(concreteClass);
             ClassDescriptor concreteDescriptor = getDescriptor(concreteClass);

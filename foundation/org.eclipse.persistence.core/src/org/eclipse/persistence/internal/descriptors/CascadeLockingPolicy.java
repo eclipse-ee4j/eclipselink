@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -200,8 +200,8 @@ public class CascadeLockingPolicy {
       */
      public void initUnmappedFields(UnitOfWorkImpl uow) {
          if(!m_hasCheckedForUnmappedFields) {
-             m_mappedQueryKeyFields = new HashMap<DatabaseField, DatabaseField>();
-             m_unmappedQueryKeyFields = new HashMap<DatabaseField, DatabaseField>();
+             m_mappedQueryKeyFields = new HashMap<>();
+             m_unmappedQueryKeyFields = new HashMap<>();
              Iterator<Map.Entry<DatabaseField, DatabaseField>> it = m_queryKeyFields.entrySet().iterator();
              while(it.hasNext()) {
                  Map.Entry<DatabaseField, DatabaseField> entry = it.next();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,8 +50,8 @@ public final class JavaVersion {
     private static final int VM_MIN_VERSION_TOKENS = 1;
 
     /**
-     * Retrieves Java specification version {@see String} from JDK system property.
-     * @return Java specification version {@see String} from JDK system property.
+     * Retrieves Java specification version String from JDK system property.
+     * @return Java specification version String from JDK system property.
      */
     public static String vmVersionString() {
         return PrivilegedAccessHelper.getSystemProperty(VM_VERSION_PROPERTY);
@@ -179,7 +179,7 @@ public final class JavaVersion {
      * Get major version number.
      * @return Major version number.
      */
-    public final int getMajor() {
+    public int getMajor() {
         return major;
     }
 
@@ -187,7 +187,7 @@ public final class JavaVersion {
      * Get minor version number.
      * @return Minor version number.
      */
-    public final int getMinor() {
+    public int getMinor() {
         return minor;
     }
 
@@ -196,15 +196,15 @@ public final class JavaVersion {
      * @param version <code>JavaVersion</code> object to compare with
      *                <code>this</code> object.
      * @return Compare result:<ul>
-     *         <li/>Value <code>1</code> if <code>this</code> value
-     *         is greater than supplied <code>version</code> value.
-     *         <li/>Value <code>-1</code> if <code>this</code> value
-     *         is lesser than supplied <code>version</code> value.
-     *         <li/>Value <code>0</code> if both <code>this</code> value
-     *         and supplied <code>version</code> values are equal.
+     *         <li>Value <code>1</code> if <code>this</code> value
+     *         is greater than supplied <code>version</code> value.</li>
+     *         <li>Value <code>-1</code> if <code>this</code> value
+     *         is lesser than supplied <code>version</code> value.</li>
+     *         <li>Value <code>0</code> if both <code>this</code> value
+     *         and supplied <code>version</code> values are equal.</li>
      *         </ul>
      */
-    public final int comapreTo(final JavaVersion version) {
+    public int comapreTo(final JavaVersion version) {
         return this.major > version.major ? 1 :
                 this.major < version.major ? -1 :
                 this.minor > version.minor ? 1 :
@@ -216,7 +216,7 @@ public final class JavaVersion {
      * @return Java VM version string.
      */
     @Override
-    public final String toString() {
+    public String toString() {
         final StringBuilder sb = new StringBuilder(3);
         sb.append(major);
         sb.append(SEPARATOR);
@@ -229,7 +229,7 @@ public final class JavaVersion {
      * @return {@link JavaSEPlatform} matching this Java SE specification version
      *         or {@code JavaSEPlatform.DEFAULT} as default when platform matching fails.
      */
-    public final JavaSEPlatform toPlatform() {
+    public JavaSEPlatform toPlatform() {
         return JavaSEPlatform.toValue(major, minor);
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -281,7 +281,7 @@ final class DeclarationResolver {
     private void initialize(JPQLQueryContext queryContext, DeclarationResolver parent) {
         this.parent       = parent;
         this.queryContext = queryContext;
-        this.declarations = new LinkedList<Declaration>();
+        this.declarations = new LinkedList<>();
     }
 
     /**
@@ -795,7 +795,7 @@ final class DeclarationResolver {
          */
         public ResultVariableVisitor() {
             super();
-            resultVariables = new HashSet<IdentificationVariable>();
+            resultVariables = new HashSet<>();
         }
 
         /**

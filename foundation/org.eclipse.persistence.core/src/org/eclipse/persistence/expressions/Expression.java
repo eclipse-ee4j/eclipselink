@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,19 +16,47 @@
 //       - 345962: Join fetch query when using tenant discriminator column fails.
 package org.eclipse.persistence.expressions;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.localization.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
+import org.eclipse.persistence.internal.expressions.BaseExpression;
+import org.eclipse.persistence.internal.expressions.CollectionExpression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ExpressionIterator;
+import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
+import org.eclipse.persistence.internal.expressions.ExpressionNormalizer;
+import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
+import org.eclipse.persistence.internal.expressions.LiteralExpression;
+import org.eclipse.persistence.internal.expressions.MapEntryExpression;
+import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.expressions.SubSelectExpression;
+import org.eclipse.persistence.internal.expressions.TableAliasLookup;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * <p>
@@ -229,7 +257,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
      * </p>
-     * <table border=0 summary="This table compares an example EclipseLink anyOf Expression to Java and SQL">
+     * <table>
+     * <caption>This table compares an example EclipseLink anyOf Expression to Java and SQL</caption>
      * <tr>
      * <th id="c1">Format</th>
      * <th id="c2">Equivalent</th>
@@ -265,7 +294,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * This allows you to query whether any of the "many" side of the relationship satisfies the remaining criteria.
      * <p>Example:
      * </p>
-     * <table border=0 summary="This table compares an example EclipseLink anyOf Expression to Java and SQL">
+     * <table>
+     * <caption>This table compares an example EclipseLink anyOf Expression to Java and SQL</caption>
      * <tr>
      * <th id="c3">Format</th>
      * <th id="c4">Equivalent</th>
@@ -305,7 +335,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * NOTE: outer joins are not supported on all database and have differing semantics.
      * <p>Example:
      * </p>
-     * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
+     * <table>
+     * <caption>This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL</caption>
      * <tr>
      * <th id="c5">Format</th>
      * <th id="c6">Equivalent</th>
@@ -344,7 +375,8 @@ public abstract class Expression implements Serializable, Cloneable {
      * NOTE: outer joins are not supported on all database and have differing semantics.
      * <p>Example:
      * </p>
-     * <table border=0 summary="This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL">
+     * <table>
+     * <caption>This table compares an example EclipseLink anyOfAllowingNone Expression to Java and SQL</caption>
      * <tr>
      * <th id="c7">Format</th>
      * <th id="c8">Equivalent</th>
@@ -373,16 +405,6 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression anyOfAllowingNone(String attributeName, boolean shouldJoinBeIndependent) {
         throw new UnsupportedOperationException("anyOfAllowingNone");
-    }
-
-    /**
-     * ADVANCED:
-     * Return an expression that allows you to treat its base as if it were a subclass of the class returned by the base.
-     * @deprecated replaced by {@link #treat(Class)}
-     */
-    @Deprecated
-    public Expression as(Class castClass) {
-        return treat(castClass);
     }
 
     /**
@@ -915,12 +937,12 @@ public abstract class Expression implements Serializable, Cloneable {
      * Also it will rebuild using anyOf as appropriate not get.
      * @see org.eclipse.persistence.mappings.ForeignReferenceMapping#batchedValueFromRow
      * @see #rebuildOn(Expression)
-     * @bug 2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
-     * @bug 2612567 CR4298- NULLPOINTEREXCEPTION WHEN USING SUBQUERY AND BATCH READING IN 4.6
-     * @bug 2612140 CR2973- BATCHATTRIBUTE QUERIES WILL FAIL WHEN THE INITIAL QUERY HAS A SUBQUERY
-     * @bug 2720149 INVALID SQL WHEN USING BATCH READS AND MULTIPLE ANYOFS
      */
     public Expression cloneUsing(Expression newBase) {
+        // 2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
+        // 2612567 CR4298- NULLPOINTEREXCEPTION WHEN USING SUBQUERY AND BATCH READING IN 4.6
+        // 2612140 CR2973- BATCHATTRIBUTE QUERIES WILL FAIL WHEN THE INITIAL QUERY HAS A SUBQUERY
+        // 2720149 INVALID SQL WHEN USING BATCH READS AND MULTIPLE ANYOFS
         // 2612538 - the default size of Map (32) is appropriate
         Map alreadyDone = new IdentityHashMap();
 
@@ -1309,7 +1331,7 @@ public abstract class Expression implements Serializable, Cloneable {
         anOperator.setType(ExpressionOperator.FunctionOperator);
         anOperator.bePrefix();
 
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(decodeableItems.size() + 1);
+        List<String> v = new ArrayList<>(decodeableItems.size() + 1);
         v.add("DECODE(");
         for (int i = 0; i < ((decodeableItems.size() * 2) + 1); i++) {
             v.add(", ");
@@ -1763,8 +1785,8 @@ public abstract class Expression implements Serializable, Cloneable {
     /**
      * INTERNAL:
      */
-    public Vector getFields() {
-        return org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+    public List<DatabaseField> getFields() {
+        return new ArrayList<>(1);
     }
 
     /**
@@ -1876,23 +1898,6 @@ public abstract class Expression implements Serializable, Cloneable {
 
     /**
      * ADVANCED:
-     * This can be used for accessing user defined functions that have arguments.
-     * The operator must be defined in ExpressionOperator to be able to reference it.
-     * @see ExpressionOperator
-     * <p> Example:
-     * <blockquote><pre>
-     *    List arguments = new ArrayList();
-     *    arguments.add("blee");
-     *  builder.get("name").getFunction(MyFunctions.FOO_BAR, arguments).greaterThan(100);
-     * </pre></blockquote>
-     */
-    @Deprecated
-    public Expression getFunction(int selector, Vector arguments) {
-        return getFunction(selector, (List)arguments);
-    }
-
-    /**
-     * ADVANCED:
      * Return a user defined function accepting the argument.
      * The function is assumed to be a normal prefix function and will print like, UPPER(base).
      * <p> Example:
@@ -1920,20 +1925,10 @@ public abstract class Expression implements Serializable, Cloneable {
      * Return a user defined function accepting all of the arguments.
      * The function is assumed to be a normal prefix function like, CONCAT(base, value1, value2, value3, ...).
      */
-    @Deprecated
-    public Expression getFunctionWithArguments(String functionName, Vector arguments) {
-        return getFunctionWithArguments(functionName, (List)arguments);
-    }
-
-    /**
-     * ADVANCED:
-     * Return a user defined function accepting all of the arguments.
-     * The function is assumed to be a normal prefix function like, CONCAT(base, value1, value2, value3, ...).
-     */
     public Expression getFunctionWithArguments(String functionName, List arguments) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(arguments.size());
+        List<String> v = new ArrayList<>(arguments.size());
         v.add(functionName + "(");
         for (int index = 0; index < arguments.size(); index++) {
             v.add(", ");
@@ -1955,7 +1950,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression sql(String sql, List arguments) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(arguments.size());
+        List<String> v = new ArrayList<>(arguments.size());
         int start = 0;
         int index = sql.indexOf('?');
         while (index != -1) {
@@ -3835,7 +3830,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression postfixSQL(String sqlString) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        List<String> v = new ArrayList<>(1);
         v.add(sqlString);
         anOperator.printsAs(v);
         anOperator.bePostfix();
@@ -3855,7 +3850,7 @@ public abstract class Expression implements Serializable, Cloneable {
     public Expression prefixSQL(String sqlString) {
         ExpressionOperator anOperator = new ExpressionOperator();
         anOperator.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        List<String> v = new ArrayList<>(1);
         v.add(sqlString);
         anOperator.printsAs(v);
         anOperator.bePrefix();
@@ -4303,7 +4298,7 @@ public abstract class Expression implements Serializable, Cloneable {
             outerWriter.flush();
             return innerWriter.toString();
         } catch (IOException e) {
-            return ToStringLocalization.buildMessage("error_printing_expression", (Object[])null);
+            return ToStringLocalization.buildMessage("error_printing_expression", null);
         }
     }
 
@@ -4756,7 +4751,7 @@ public abstract class Expression implements Serializable, Cloneable {
      * INTERNAL:
      * called from SQLSelectStatement.writeFieldsFromExpression(...)
      */
-    public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+    public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         for (DatabaseField field : getSelectionFields(statement.getQuery())) {
             newFields.add(field);
             writeField(printer, field, statement);
@@ -4907,24 +4902,6 @@ public abstract class Expression implements Serializable, Cloneable {
         }
 
         return any(values);
-    }
-
-    /**
-     * PUBLIC:
-     * Return an expression that checks if the receivers value is contained in the collection.
-     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
-     * <p>Example:
-     * <blockquote><pre>
-     *     EclipseLink: employee.get("age").in(ages)
-     *     Java: ages.contains(employee.getAge())
-     *     SQL: AGE IN (55, 18, 30)
-     * </pre></blockquote>
-     * @deprecated since 2.4 replaced by any(List)
-     * @see #any(List)
-     */
-    @Deprecated
-    public Expression any(Vector theObjects) {
-        return any((List)theObjects);
     }
 
     /**
@@ -5200,24 +5177,6 @@ public abstract class Expression implements Serializable, Cloneable {
      *     Java: ages.contains(employee.getAge())
      *     SQL: AGE IN (55, 18, 30)
      * </pre></blockquote>
-     * @deprecated since 2.4 replaced by some(List)
-     * @see #some(List)
-     */
-    @Deprecated
-    public Expression some(Vector theObjects) {
-        return some(new ConstantExpression(theObjects, this));
-    }
-
-    /**
-     * PUBLIC:
-     * Return an expression that checks if the receivers value is contained in the collection.
-     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
-     * <p>Example:
-     * <blockquote><pre>
-     *     EclipseLink: employee.get("age").in(ages)
-     *     Java: ages.contains(employee.getAge())
-     *     SQL: AGE IN (55, 18, 30)
-     * </pre></blockquote>
      */
     public Expression some(List theObjects) {
         return some(new ConstantExpression(theObjects, this));
@@ -5368,24 +5327,6 @@ public abstract class Expression implements Serializable, Cloneable {
         }
 
         return all(values);
-    }
-
-    /**
-     * PUBLIC:
-     * Return an expression that checks if the receivers value is contained in the collection.
-     * This is equivalent to the SQL "IN" operator and Java "contains" operator.
-     * <p>Example:
-     * <blockquote><pre>
-     *     EclipseLink: employee.get("age").in(ages)
-     *     Java: ages.contains(employee.getAge())
-     *     SQL: AGE IN (55, 18, 30)
-     * </pre></blockquote>
-     * @deprecated since 2.4 replaced by all(List)
-     * @see #all(List)
-     */
-    @Deprecated
-    public Expression all(Vector theObjects) {
-        return all((List)theObjects);
     }
 
     /**

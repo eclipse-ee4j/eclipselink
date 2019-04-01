@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -450,11 +450,11 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * INTERNAL:
      * Expects version in ***num.num.num.num.num*** format, converts it to a List of Integers.
-     * Example: "11.1.0.6.0_Production" -> {11, 1, 0, 6, 0}
-     * Example: "WebLogic Server 10.3.3.0" -> {10, 3, 3, 0}
+     * Example: "11.1.0.6.0_Production" -&gt; {11, 1, 0, 6, 0}
+     * Example: "WebLogic Server 10.3.3.0" -&gt; {10, 3, 3, 0}
      */
     static protected List<Integer> version(String version) {
-        ArrayList<Integer> list = new ArrayList<Integer>(5);
+        ArrayList<Integer> list = new ArrayList<>(5);
         // first char - a digit - in the string corresponding to the current list index
         int iBegin = -1;
         // used to remove a non-digital prefix
@@ -497,7 +497,7 @@ public class Helper extends CoreHelper implements Serializable {
      * INTERNAL:
      * Compares two lists of Integers
      * -1, 0, 1 means the first list is less than, equal, greater than the second list.
-     * Example: {11, 1, 0, 6, 0} < {11, 1, 0, 7}
+     * Example: {11, 1, 0, 6, 0} &lt; {11, 1, 0, 7}
      */
     static protected int compareVersions(List<Integer> list1, List<Integer>list2) {
         int n = Math.max(list1.size(), list2.size());
@@ -1026,7 +1026,7 @@ public class Helper extends CoreHelper implements Serializable {
      * access private/package/protected methods.
      */
     public static Method getDeclaredMethod(Class javaClass, String methodName) throws NoSuchMethodException {
-        return getDeclaredMethod(javaClass, methodName, (Class[]) null);
+        return getDeclaredMethod(javaClass, methodName, null);
     }
 
     /**
@@ -1145,7 +1145,7 @@ public class Helper extends CoreHelper implements Serializable {
     /**
      * Returns the index of the the first <code>null</code> element found in the specified
      * <code>Vector</code> starting the search at the starting index specified.
-     * Return  an int >= 0 and less than size if a <code>null</code> element was found.
+     * Return  an int &gt;= 0 and less than size if a <code>null</code> element was found.
      * Return -1 if a <code>null</code> element was not found.
      * This is needed in jdk1.1, where <code>Vector.contains(Object)</code>
      * for a <code>null</code> element will result in a <code>NullPointerException</code>....
@@ -2051,7 +2051,6 @@ public class Helper extends CoreHelper implements Serializable {
      * @param timestampString - string representation of timestamp
      * @return  - timestamp representation of string
      */
-    @SuppressWarnings("deprecation")
     public static java.sql.Timestamp timestampFromString(String timestampString) throws ConversionException {
         if ((timestampString.indexOf('-') == -1) && (timestampString.indexOf('/') == -1) && (timestampString.indexOf('.') == -1) && (timestampString.indexOf(':') == -1)) {
             throw ConversionException.incorrectTimestampFormat(timestampString);

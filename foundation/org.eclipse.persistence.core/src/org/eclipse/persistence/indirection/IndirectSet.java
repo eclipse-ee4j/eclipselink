@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,13 +88,13 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @author Big Country
  * @since TOPLink/Java 3.0+
  */
-public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, IndirectCollection, Cloneable, Serializable {
+public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, IndirectCollection<E, Set<E>>, Cloneable, Serializable {
 
     /** Reduce type casting */
     private volatile Set<E> delegate;
 
     /** Delegate indirection behavior to a value holder */
-    private volatile ValueHolderInterface valueHolder;
+    private volatile ValueHolderInterface<Set<E>> valueHolder;
 
     /** Change tracking listener. */
     private transient PropertyChangeListener changeListener = null;
@@ -166,7 +166,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      */
     public IndirectSet(Collection<? extends E> c) {
         this.delegate = null;
-        this.valueHolder = new ValueHolder(new HashSet<>(c));
+        this.valueHolder = new ValueHolder<>(new HashSet<>(c));
     }
 
     protected boolean isRelationshipMaintenanceRequired() {
@@ -224,7 +224,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * Return the freshly-built delegate.
      */
     protected Set<E> buildDelegate() {
-        Set<E> newDelegate = (Set<E>)getValueHolder().getValue();
+        Set<E> newDelegate = getValueHolder().getValue();
         if (newDelegate == null) {
             newDelegate = new HashSet<>(this.initialCapacity, this.loadFactor);
         }
@@ -299,7 +299,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         try {
             IndirectSet<E> result = (IndirectSet<E>)super.clone();
             result.delegate = this.cloneDelegate();
-            result.valueHolder = new ValueHolder(result.delegate);
+            result.valueHolder = new ValueHolder<>(result.delegate);
             result.attributeName = null;
             result.changeListener = null;
             return result;
@@ -448,7 +448,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * This will force instantiation.
      */
     @Override
-    public Object getDelegateObject() {
+    public Set<E> getDelegateObject() {
         return getDelegate();
     }
 
@@ -457,14 +457,15 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * Return the valueHolder.
      */
     @Override
-    public ValueHolderInterface getValueHolder() {
-        ValueHolderInterface vh = this.valueHolder;
+    public ValueHolderInterface<Set<E>> getValueHolder() {
+
+        ValueHolderInterface<Set<E>> vh = this.valueHolder;
         // PERF: lazy initialize value holder and vector as are normally set after creation.
         if (vh == null) {
             synchronized(this){
                 vh = this.valueHolder;
                 if (vh == null) {
-                    this.valueHolder = vh = new ValueHolder(new HashSet(initialCapacity, loadFactor));
+                    this.valueHolder = vh = new ValueHolder<>(new HashSet<>(initialCapacity, loadFactor));
                 }
             }
         }
@@ -603,7 +604,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
      * Note that the delegate must be cleared out.
      */
     @Override
-    public void setValueHolder(ValueHolderInterface valueHolder) {
+    public void setValueHolder(ValueHolderInterface<Set<E>> valueHolder) {
         this.delegate = null;
         this.valueHolder = valueHolder;
     }
@@ -665,7 +666,7 @@ public class IndirectSet<E> implements CollectionChangeTracker, Set<E>, Indirect
         if (this.isInstantiated()) {
             return "{" + this.getDelegate().toString() + "}";
         } else {
-            return "{" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", (Object[])null) + "}";
+            return "{" + org.eclipse.persistence.internal.helper.Helper.getShortClassName(this.getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
 
         }
     }

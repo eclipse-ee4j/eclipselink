@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -351,6 +351,7 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
+     * #Bug 533272 - JPA NamedStoredProcedure call getOutputParameterValue with parameter name cause exception
      */
     public void processArgument(StoredProcedureCall call, boolean callByIndex, int index) {
          boolean shouldCallByIndex = process(call, index);
@@ -403,11 +404,14 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                         OracleArrayTypeMetadata aType = null;
                         if (hasTypeName() && (aType = getArrayTypeMetadata(m_typeName)) != null) {
                             call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type), buildNestedField(aType));
+                            call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                         } else {
                             call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                            call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                         }
                     } else {
                         call.addNamedOutputArgument(m_name, m_queryParameter, getJavaClass(m_type));
+                        call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                     }
                 }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
@@ -415,18 +419,21 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addUnamedOutputArgument(m_queryParameter, m_jdbcType, m_jdbcTypeName);
                 } else {
                     call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                    call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                 }
             } else if (hasJdbcType()) {
                 if (callByIndex) {
                     call.addUnamedOutputArgument(m_queryParameter, m_jdbcType);
                 } else {
                     call.addNamedOutputArgument(m_name, m_queryParameter, m_jdbcType);
+                    call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                 }
             } else {
                 if (callByIndex) {
                     call.addUnamedOutputArgument(m_queryParameter);
                 } else {
                     call.addNamedOutputArgument(m_name, m_queryParameter);
+                    call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                 }
             }
 
@@ -441,11 +448,14 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                         OracleArrayTypeMetadata aType = null;
                         if (hasTypeName() && (aType = getArrayTypeMetadata(m_typeName)) != null) {
                             call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type), buildNestedField(aType));
+                            call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                         } else {
                             call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName, getJavaClass(m_type));
+                            call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                         }
                     } else {
                         call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, getJavaClass(m_type));
+                        call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                     }
                 }
             } else if (hasJdbcType() && hasJdbcTypeName()) {
@@ -453,18 +463,21 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
                     call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
                 } else {
                     call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType, m_jdbcTypeName);
+                    call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                 }
             } else if (hasJdbcType()) {
                 if (callByIndex) {
                     call.addUnamedInOutputArgument(m_queryParameter, m_queryParameter, m_jdbcType);
                 } else {
                     call.addNamedInOutputArgument(m_name, m_queryParameter, m_queryParameter, m_jdbcType);
+                    call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                 }
             } else {
                 if (callByIndex) {
                     call.addUnamedInOutputArgument(m_queryParameter);
                 } else {
                     call.addNamedInOutputArgument(m_name, m_queryParameter);
+                    call.setCursorOrdinalPosition(m_name, call.getParameters().size());
                 }
             }
 

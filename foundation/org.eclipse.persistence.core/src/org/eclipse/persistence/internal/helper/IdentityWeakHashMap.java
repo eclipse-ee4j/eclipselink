@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,10 +35,21 @@ package org.eclipse.persistence.internal.helper;
  */
 
 // J2SE imports
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.AbstractCollection;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
@@ -66,12 +77,12 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     protected ReferenceQueue referenceQueue;
 
     /**
-     * Constructs a new <tt>IdentityWeakHashMap</tt> with the given
+     * Constructs a new <code>IdentityWeakHashMap</code> with the given
      * initial capacity and the given loadFactor.
      *
      * @param initialCapacity the initial capacity of this
-     * <tt>IdentityWeakHashMap</tt>.
-     * @param loadFactor the loadFactor of the <tt>IdentityWeakHashMap</tt>.
+     * <code>IdentityWeakHashMap</code>.
+     * @param loadFactor the loadFactor of the <code>IdentityWeakHashMap</code>.
      * @throws IllegalArgumentException  if the initial capacity is less
      * than zero, or if the loadFactor is nonpositive.
      */
@@ -98,12 +109,12 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Constructs a new <tt>IdentityWeakHashMap</tt> with the given
-     * initial capacity and a default loadFactor of <tt>0.75</tt>.
+     * Constructs a new <code>IdentityWeakHashMap</code> with the given
+     * initial capacity and a default loadFactor of <code>0.75</code>.
      *
      * @param initialCapacity the initial capacity of the
-     * <tt>IdentityWeakHashMap</tt>.
-     * @throws <tt>IllegalArgumentException</tt> if the initial capacity is less
+     * <code>IdentityWeakHashMap</code>.
+     * @throws IllegalArgumentException if the initial capacity is less
      * than zero.
      */
     public IdentityWeakHashMap(int initialCapacity) {
@@ -111,8 +122,8 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Constructs a new <tt>IdentityWeakHashMap</tt> with a default initial
-     * capacity of <tt>32</tt> and a loadfactor of <tt>0.75</tt>.
+     * Constructs a new <code>IdentityWeakHashMap</code> with a default initial
+     * capacity of <code>32</code> and a loadfactor of <code>0.75</code>.
      */
     public IdentityWeakHashMap() {
         loadFactor = DEFAULT_LOAD_FACTOR;
@@ -122,12 +133,12 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Constructs a new <tt>IdentityWeakHashMap</tt> with the same mappings
-     * as the given map.  The <tt>IdentityWeakHashMap</tt> is created with a
+     * Constructs a new <code>IdentityWeakHashMap</code> with the same mappings
+     * as the given map.  The <code>IdentityWeakHashMap</code> is created with a
      * capacity sufficient to hold the elements of the given map.
      *
      * @param m the map whose mappings are to be placed in the
-     * <tt>IdentityWeakHashMap</tt>.
+     * <code>IdentityWeakHashMap</code>.
      */
     public IdentityWeakHashMap(Map m) {
         this(Math.max((int)(m.size() / DEFAULT_LOAD_FACTOR) + 1, DEFAULT_INITIAL_CAPACITY), DEFAULT_LOAD_FACTOR);
@@ -135,7 +146,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * @return the size of this <tt>IdentityWeakHashMap</tt>.
+     * @return the size of this <code>IdentityWeakHashMap</code>.
      */
     @Override
     public int size() {
@@ -144,7 +155,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * @return <tt>true</tt> if this <tt>IdentityWeakHashMap</tt> is empty.
+     * @return <code>true</code> if this <code>IdentityWeakHashMap</code> is empty.
      */
     @Override
     public boolean isEmpty() {
@@ -152,13 +163,13 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Returns <tt>true</tt> if this <tt>IdentityWeakHashMap</tt> contains
+     * Returns <code>true</code> if this <code>IdentityWeakHashMap</code> contains
      * the given object. Equality is tested by the equals() method.
      *
      * @param obj the object to find.
-     * @return <tt>true</tt> if this <tt>IdentityWeakHashMap</tt> contains
+     * @return <code>true</code> if this <code>IdentityWeakHashMap</code> contains
      * obj.
-     * @throws <tt>NullPointerException</tt> if obj is null</tt>.
+     * @throws NullPointerException if obj is <code>null</code>.
      */
     @Override
     public boolean containsValue(Object obj) {
@@ -179,12 +190,12 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Returns <tt>true</tt> if this <tt>IdentityWeakHashMap</tt> contains a
+     * Returns <code>true</code> if this <code>IdentityWeakHashMap</code> contains a
      * mapping for the given key. Equality is tested by reference.
      *
      * @param key object to be used as a key into this
-     * <tt>IdentityWeakHashMap</tt>.
-     * @return <tt>true</tt> if this <tt>IdentityWeakHashMap</tt> contains a
+     * <code>IdentityWeakHashMap</code>.
+     * @return <code>true</code> if this <code>IdentityWeakHashMap</code> contains a
      * mapping for key.
      */
     @Override
@@ -206,10 +217,10 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     /**
      * Returns the value to which the given key is mapped in this
-     * <tt>IdentityWeakHashMap</tt>. Returns <tt>null</tt> if this
-     * <tt>IdentityWeakHashMap</tt> contains no mapping for this key.
+     * <code>IdentityWeakHashMap</code>. Returns <code>null</code> if this
+     * <code>IdentityWeakHashMap</code> contains no mapping for this key.
      *
-     * @return the value to which this <tt>IdentityWeakHashMap</tt> maps the
+     * @return the value to which this <code>IdentityWeakHashMap</code> maps the
      * given key.
      * @param key key whose associated value is to be returned.
      */
@@ -255,13 +266,13 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     /**
      * Associate the given object with the given key in this
-     * <tt>IdentityWeakHashMap</tt>, replacing any existing mapping.
+     * <code>IdentityWeakHashMap</code>, replacing any existing mapping.
      *
      * @param key key to map to given object.
      * @param obj object to be associated with key.
-     * @return the previous object for key or <tt>null</tt> if this
-     * <tt>IdentityWeakHashMap</tt> did not have one.
-     * @throws <tt>NullPointerException</tt> if obj is null</tt>.
+     * @return the previous object for key or <code>null</code> if this
+     * <code>IdentityWeakHashMap</code> did not have one.
+     * @throws NullPointerException if obj is <code>null</code>.
      */
     @Override
     public V put(K key, V obj) {
@@ -278,7 +289,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
                 if (key == obj){
                     e.value = e.key;
                 }else{
-                    e.value = new HardEntryReference<V>(obj);
+                    e.value = new HardEntryReference<>(obj);
                 }
                 return old.get();
             }
@@ -298,11 +309,11 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     /**
      * Removes the mapping (key and its corresponding value) from this
-     * <tt>IdentityWeakHashMap</tt>, if present.
+     * <code>IdentityWeakHashMap</code>, if present.
      *
      * @param key key whose mapping is to be removed from the map.
-     * @return the previous object for key or <tt>null</tt> if this
-     * <tt>IdentityWeakHashMap</tt> did not have one.
+     * @return the previous object for key or <code>null</code> if this
+     * <code>IdentityWeakHashMap</code> did not have one.
      */
     @Override
     public V remove(Object key) {
@@ -356,10 +367,10 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     /**
      * Copies all of the mappings from the given map to this
-     * <tt>IdentityWeakHashMap</tt>, replacing any existing mappings.
+     * <code>IdentityWeakHashMap</code>, replacing any existing mappings.
      *
-     * @param m mappings to be stored in this <tt>IdentityWeakHashMap</tt>.
-     * @throws <tt>NullPointerException</tt> if m is null.
+     * @param m mappings to be stored in this <code>IdentityWeakHashMap</code>.
+     * @throws NullPointerException if m is null.
      */
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
@@ -375,7 +386,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Removes all of the mappings from this <tt>IdentityWeakHashMap</tt>.
+     * Removes all of the mappings from this <code>IdentityWeakHashMap</code>.
      */
     @Override
     public void clear() {
@@ -400,10 +411,10 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Returns a shallow copy of this <tt>IdentityWeakHashMap</tt> (the
+     * Returns a shallow copy of this <code>IdentityWeakHashMap</code> (the
      * elements are not cloned).
      *
-     * @return a shallow copy of this <tt>IdentityWeakHashMap</tt>.
+     * @return a shallow copy of this <code>IdentityWeakHashMap</code>.
      */
     @Override
     public Object clone() {
@@ -433,15 +444,15 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     /**
      * Returns a set view of the keys contained in this
-     * <tt>IdentityWeakHashMap</tt>.  The set is backed by the map, so
+     * <code>IdentityWeakHashMap</code>.  The set is backed by the map, so
      * changes to the map are reflected in the set, and vice versa.  The set
      * supports element removal, which removes the corresponding mapping from
-     * this map, via the <tt>Iterator.remove</tt>, <tt>Set.remove</tt>,
-     * <tt>removeAll</tt>, <tt>retainAll</tt>, and <tt>clear</tt> operations.
-     * It does not support the <tt>add</tt> or <tt>addAll</tt> operations.
+     * this map, via the <code>Iterator.remove</code>, <code>Set.remove</code>,
+     * <code>removeAll</code>, <code>retainAll</code>, and <code>clear</code> operations.
+     * It does not support the <code>add</code> or <code>addAll</code> operations.
      *
      * @return a set view of the keys contained in this
-     * <tt>IdentityWeakHashMap</tt>.
+     * <code>IdentityWeakHashMap</code>.
      */
     @Override
     public Set keySet() {
@@ -480,16 +491,16 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     /**
      * Returns a collection view of the values contained in this
-     * <tt>IdentityWeakHashMap</tt>.  The collection is backed by the map, so
+     * <code>IdentityWeakHashMap</code>.  The collection is backed by the map, so
      * changes to the map are reflected in the collection, and vice versa.  The
      * collection supports element removal, which removes the corresponding
-     * mapping from this map, via the <tt>Iterator.remove</tt>,
-     * <tt>Collection.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt>, and
-     * <tt>clear</tt> operations. It does not support the <tt>add</tt> or
-     * <tt>addAll</tt> operations.
+     * mapping from this map, via the <code>Iterator.remove</code>,
+     * <code>Collection.remove</code>, <code>removeAll</code>, <code>retainAll</code>, and
+     * <code>clear</code> operations. It does not support the <code>add</code> or
+     * <code>addAll</code> operations.
      *
      * @return a collection view of the values contained in this
-     * <tt>IdentityWeakHashMap</tt>.
+     * <code>IdentityWeakHashMap</code>.
      */
     @Override
     public Collection values() {
@@ -521,17 +532,17 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
     /**
      * Returns a collection view of the mappings contained in this
-     * <tt>IdentityWeakHashMap</tt>.  Each element in the returned collection
-     * is a <tt>Map.Entry</tt>.  The collection is backed by the map, so changes
+     * <code>IdentityWeakHashMap</code>.  Each element in the returned collection
+     * is a <code>Map.Entry</code>.  The collection is backed by the map, so changes
      * to the map are reflected in the collection, and vice versa.  The
      * collection supports element removal, which removes the corresponding
-     * mapping from the map, via the <tt>Iterator.remove</tt>,
-     * <tt>Collection.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt>, and
-     * <tt>clear</tt> operations. It does not support the <tt>add</tt> or
-     * <tt>addAll</tt> operations.
+     * mapping from the map, via the <code>Iterator.remove</code>,
+     * <code>Collection.remove</code>, <code>removeAll</code>, <code>retainAll</code>, and
+     * <code>clear</code> operations. It does not support the <code>add</code> or
+     * <code>addAll</code> operations.
      *
      * @return a collection view of the mappings contained in this
-     * <tt>IdentityWeakHashMap</tt>.
+     * <code>IdentityWeakHashMap</code>.
      */
     @Override
     public Set entrySet() {
@@ -679,7 +690,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     static interface EntryReference<T> {
-        public T get();
+        T get();
     }
 
     static class WeakEntryReference<T> extends WeakReference<T> implements EntryReference{
@@ -710,7 +721,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     // Types of Iterators
-    private enum COMPONENT_TYPES {KEYS, VALUES, ENTRIES};
+    private enum COMPONENT_TYPES {KEYS, VALUES, ENTRIES}
 
     private static EmptyHashIterator emptyHashIterator = new EmptyHashIterator();
 
@@ -833,11 +844,11 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Serialize the state of this <tt>IdentityWeakHashMap</tt> to a stream.
+     * Serialize the state of this <code>IdentityWeakHashMap</code> to a stream.
      *
-     * @serialData The <i>capacity</i> of the <tt>IdentityWeakHashMap</tt>
+     * @serialData The <i>capacity</i> of the <code>IdentityWeakHashMap</code>
      * (the length of the bucket array) is emitted (int), followed by the
-     * <i>size</i> of the <tt>IdentityWeakHashMap</tt>, followed by the
+     * <i>size</i> of the <code>IdentityWeakHashMap</code>, followed by the
      * key-value mappings (in no particular order).
      */
     private void writeObject(ObjectOutputStream s) throws IOException {
@@ -860,7 +871,7 @@ public class IdentityWeakHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
     }
 
     /**
-     * Deserialize the <tt>IdentityWeakHashMap</tt> from a stream.
+     * Deserialize the <code>IdentityWeakHashMap</code> from a stream.
      */
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         // Read in the threshold, loadfactor (and any hidden 'magic' stuff).

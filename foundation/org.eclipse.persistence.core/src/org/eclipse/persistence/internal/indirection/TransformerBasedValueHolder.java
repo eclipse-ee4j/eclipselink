@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,11 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.transformers.*;
+import org.eclipse.persistence.mappings.transformers.AttributeTransformer;
 
 /**
  *  @version $Header: TransformerBasedValueHolder.java 30-aug-2006.11:32:36 gyorke Exp $
@@ -44,8 +45,8 @@ public class TransformerBasedValueHolder extends DatabaseValueHolder {
 
     /**
      * Initialize the method-based value holder.
-     * @param theMethod The method that returns the object when executed.
-     * @param object the Object which owns this attribute.
+     * @param theTransformer The method that returns the object when executed.
+     * @param theObject the Object which owns this attribute.
      * @param theRow The row representation of the object.
      * @param theSession The session to the database that stores the object.
      */

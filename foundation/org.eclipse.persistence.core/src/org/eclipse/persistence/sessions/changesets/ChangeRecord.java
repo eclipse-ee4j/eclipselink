@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,19 +34,19 @@ public interface ChangeRecord {
      * Returns the name of the attribute this ChangeRecord Represents
      * @return java.lang.String
      */
-    public String getAttribute();
+    String getAttribute();
 
     /**
      * ADVANCED:
      * This method returns the ObjectChangeSet that references this ChangeRecord
      * @return org.eclipse.persistence.sessions.changesets.ObjectChangeSet
      */
-    public ObjectChangeSet getOwner();
+    ObjectChangeSet getOwner();
 
     /**
      * ADVANCED:
      * If the owning UnitOfWork has shouldChangeRecordKeepOldValue set to true,
      * then return the old value of the attribute represented by this ChangeRecord.
      */
-    public Object getOldValue();
+    Object getOldValue();
 }

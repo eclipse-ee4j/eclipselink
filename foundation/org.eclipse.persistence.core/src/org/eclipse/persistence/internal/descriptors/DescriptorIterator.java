@@ -16,14 +16,22 @@
 //       - 541873: ENTITYMANAGER.DETACH() TRIGGERS LAZY LOADING INTO THE PERSISTENCE CONTEXT
 package org.eclipse.persistence.internal.descriptors;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.indirection.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.indirection.IndirectCollection;
+import org.eclipse.persistence.indirection.IndirectContainer;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.internal.queries.AttributeItem;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.AttributeGroup;
 import org.eclipse.persistence.queries.FetchGroup;
 
@@ -526,7 +534,7 @@ public abstract class DescriptorIterator {
     /**
      * Set whether to process the objects contained by indirection objects
      * (e.g. a ValueHolder's value) - but *without* instantiating them.
-     * @see #setShouldIterateOverUninstantiatedIndirectionObjects()
+     * @see #setShouldIterateOverUninstantiatedIndirectionObjects(boolean)
      */
     public void setShouldIterateOverIndirectionObjects(boolean shouldIterateOverIndirectionObjects) {
         this.shouldIterateOverIndirectionObjects = shouldIterateOverIndirectionObjects;

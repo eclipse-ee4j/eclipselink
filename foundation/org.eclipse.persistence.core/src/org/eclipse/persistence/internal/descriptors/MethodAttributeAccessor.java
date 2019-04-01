@@ -67,7 +67,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      */
     @Override
     public Object getAttributeValueFromObject(Object anObject) throws DescriptorException {
-        return getAttributeValueFromObject(anObject, (Object[]) null);
+        return getAttributeValueFromObject(anObject, null);
     }
 
     /**
@@ -188,7 +188,7 @@ public class MethodAttributeAccessor extends AttributeAccessor {
      */
     @Override
     public void initializeAttributes(Class theJavaClass) throws DescriptorException {
-        initializeAttributes(theJavaClass, (Class[]) null);
+        initializeAttributes(theJavaClass, null);
     }
 
     /**

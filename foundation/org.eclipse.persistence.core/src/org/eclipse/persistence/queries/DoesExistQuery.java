@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -172,14 +172,14 @@ public class DoesExistQuery extends DatabaseQuery {
                     return Boolean.TRUE;
                 }
                 while (((UnitOfWorkImpl)tempSession).isNestedUnitOfWork() ){ //could be nested lets check all UOWs
-                    tempSession = ((UnitOfWorkImpl)tempSession).getParent();
+                    tempSession = tempSession.getParent();
                     cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObjectForLock(primaryKey, objectClass, descriptor);
                     if (cacheKey != null) {
                         // If in the UOW cache it can't be invalid.
                         return Boolean.TRUE;
                     }
                 }
-                tempSession = ((UnitOfWorkImpl)tempSession).getParentIdentityMapSession(descriptor, false, true);
+                tempSession = tempSession.getParentIdentityMapSession(descriptor, false, true);
             }
             // Did not find it registered in UOW so check main cache and check for invalidation.
             cacheKey = tempSession.getIdentityMapAccessorInstance().getCacheKeyForObject(primaryKey,objectClass, descriptor, false);

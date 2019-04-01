@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,6 +24,6 @@ public interface ServerPlatformDetector {
      * @return {@link org.eclipse.persistence.config.TargetServer} constant if this detector determines the platform
      * this is currently being run on. Return null if unknown.
      */
-    public String checkPlatform();
+    String checkPlatform();
 
 }

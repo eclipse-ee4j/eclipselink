@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ public interface XMLNameTransformer {
      * Method called when creating a simpletype or complextype from a class
      * @param name - The fully qualified class name as taken from theClass.getName()
      */
-    public String transformTypeName(String name);
+    String transformTypeName(String name);
 
     /**
      * Method called when creating an element from a Java field or method
@@ -31,18 +31,18 @@ public interface XMLNameTransformer {
      *
      * Example: if the method getFirstName was annotated with @XmlElement the name passed in to this method would be "firstName"
      */
-    public String transformElementName(String name);
+    String transformElementName(String name);
 
     /**
      * Method called when creating an attribute from a Java field
      * @param name - attribute name from the class
      */
-    public String transformAttributeName(String name);
+    String transformAttributeName(String name);
 
     /**
      * Method called when creating a simpletype or complextype from a class
      * @param name - The fully qualified class name as taken from theClass.getName()
      */
-    public String transformRootElementName(String name);
+    String transformRootElementName(String name);
 
 }

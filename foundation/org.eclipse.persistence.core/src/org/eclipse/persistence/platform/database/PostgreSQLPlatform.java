@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -438,7 +438,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
     public String buildProcedureCallString(StoredProcedureCall call, AbstractSession session, AbstractRecord row) {
         StringWriter tailWriter = new StringWriter();
         StringWriter writer = new StringWriter();
-        boolean outParameterFound = false;;
+        boolean outParameterFound = false;
 
         tailWriter.write(call.getProcedureName());
         tailWriter.write("(");

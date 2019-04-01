@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,15 +36,32 @@ import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.indirection.EISOneToManyQueryBasedValueHolder;
-import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.internal.oxm.XPathEngine;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
-import org.eclipse.persistence.internal.sessions.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.CollectionMapping;
+import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.DOMRecord;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.InsertObjectQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.w3c.dom.Element;
 
 /**
@@ -54,10 +71,11 @@ import org.w3c.dom.Element;
  * objects may contain a foreign key to the source object (key on target).  Because both the source
  * and target objects use interactions, they must all be configured as root object types.
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>Record formats</caption>
  * <tr>
- * <th id="c1" align="left">Record Type</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">Record Type</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1">Indexed</td>

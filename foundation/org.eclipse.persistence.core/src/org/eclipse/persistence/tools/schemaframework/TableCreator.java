@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -171,7 +171,7 @@ public class TableCreator {
         buildConstraints(schemaManager, build);
 
         final String sequenceTableName = getSequenceTableName(session);
-        final List<TableDefinition> missingTables = new ArrayList<TableDefinition>();
+        final List<TableDefinition> missingTables = new ArrayList<>();
         for (TableDefinition table : getTableDefinitions()) {
             // Must not create sequence table as done in createSequences.
             if (!table.getName().equals(sequenceTableName)) {
@@ -275,7 +275,7 @@ public class TableCreator {
             }
             while ((trys > 0) && !tables.isEmpty()) {
                 trys--;
-                final List<TableDefinition> failed = new ArrayList<TableDefinition>();
+                final List<TableDefinition> failed = new ArrayList<>();
                 final Set<String> tableNames = new HashSet<>(tables.size());
                 for (final TableDefinition table : tables) {
                     final String tableName = table.getName();

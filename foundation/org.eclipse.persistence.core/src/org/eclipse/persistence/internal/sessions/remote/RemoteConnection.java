@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.remote;
 
-import java.util.*;
-import java.rmi.server.*;
-import org.eclipse.persistence.queries.*;
+import java.rmi.server.ObjID;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.queries.CursoredStreamPolicy;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ScrollableCursorPolicy;
 import org.eclipse.persistence.sessions.Login;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * Defines set of abstract methods which one must overwrite for any kind to implement a communication mechanism.
@@ -36,11 +44,10 @@ public abstract class RemoteConnection implements java.io.Serializable {
     protected DistributedSession session;
 
     /**
-     * INTERNAL:
-     * This method is intended to be used by newly connecting nodes to notify the
-     * other nodes in a distributed system to send changes to this calling server
-     * @param remoteTransporter Transporter This transporter contains the RemoteDispatcher of the calling
-     * server.
+     * ADVANCED:
+     * This method will send the command to the remote session for processing
+     * @param remoteCommand Contains a command that will be executed on the remote session
+     * @see org.eclipse.persistence.internal.sessions.remote.RemoteCommand
      */
     public abstract void processCommand(RemoteCommand remoteCommand);
 

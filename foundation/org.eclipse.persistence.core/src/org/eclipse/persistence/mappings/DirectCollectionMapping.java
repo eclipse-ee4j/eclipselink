@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,37 +30,87 @@ package org.eclipse.persistence.mappings;
 import java.beans.PropertyChangeEvent;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
 
 import org.eclipse.persistence.annotations.BatchFetchType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.TablePerMultitenantPolicy;
-import org.eclipse.persistence.descriptors.changetracking.*;
-import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
-import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.history.*;
+import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
+import org.eclipse.persistence.descriptors.changetracking.CollectionChangeEvent;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.history.HistoryPolicy;
 import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.indirection.IndirectList;
 import org.eclipse.persistence.indirection.ValueHolder;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.*;
-import org.eclipse.persistence.internal.queries.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.descriptors.changetracking.AttributeChangeListener;
+import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
+import org.eclipse.persistence.internal.expressions.ForUpdateClause;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.SQLDeleteStatement;
+import org.eclipse.persistence.internal.expressions.SQLInsertStatement;
+import org.eclipse.persistence.internal.expressions.SQLSelectStatement;
+import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.internal.expressions.TableExpression;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.identitymaps.CacheId;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
+import org.eclipse.persistence.internal.queries.OrderedListContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.*;
-import org.eclipse.persistence.mappings.converters.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.ChangeRecord;
+import org.eclipse.persistence.internal.sessions.DirectCollectionChangeRecord;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.converters.ObjectTypeConverter;
+import org.eclipse.persistence.mappings.converters.SerializedObjectConverter;
+import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DataReadQuery;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteObjectQuery;
+import org.eclipse.persistence.queries.DirectReadQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectBuildingQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.QueryByExamplePolicy;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>: This mapping is used to store a collection of simple types (String, Number, Date, etc.)
@@ -133,7 +183,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
      */
     public DirectCollectionMapping() {
         this.insertQuery = new DataModifyQuery();
-        this.orderByExpressions = new ArrayList<Expression>();
+        this.orderByExpressions = new ArrayList<>();
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.referenceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.selectionQuery = new DirectReadQuery();
@@ -249,7 +299,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Expression originalSelectionCriteria = null;
 
         // 2612538 - the default size of Map (32) is appropriate
-        Map<Expression, Expression> clonedExpressions = new IdentityHashMap<Expression, Expression>();
+        Map<Expression, Expression> clonedExpressions = new IdentityHashMap<>();
         builder = new ExpressionBuilder();
         // For flashback.
         if (query.hasAsOfClause()) {
@@ -1012,7 +1062,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         Expression table = builder.getTable(this.referenceTable);
         if (size > 1) {
             // Support composite keys using nested IN.
-            List<Expression> fields = new ArrayList<Expression>(size);
+            List<Expression> fields = new ArrayList<>(size);
             for (DatabaseField referenceKeyField : this.referenceKeyFields) {
                 fields.add(table.getField(referenceKeyField));
             }
@@ -1435,8 +1485,8 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
 
         if (getReferenceTable().getName().indexOf(' ') != -1) {
             //table names contains a space so needs to be quoted.
-            String beginQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getStartDelimiter();
-            String endQuote = ((DatasourcePlatform)session.getDatasourcePlatform()).getEndDelimiter();
+            String beginQuote = session.getDatasourcePlatform().getStartDelimiter();
+            String endQuote = session.getDatasourcePlatform().getEndDelimiter();
             //Ensure this tablename hasn't already been quoted.
             if (getReferenceTable().getName().indexOf(beginQuote) == -1) {
                 getReferenceTable().setName(beginQuote + getReferenceTable().getName() + endQuote);
@@ -1838,7 +1888,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
         if (query.isReadAllQuery()) {
             return ((ReadAllQuery)query).getExpressionBuilder();
         } else {
-            return ((DataReadQuery)query).getSQLStatement().getBuilder().getTable(getReferenceTable());
+            return query.getSQLStatement().getBuilder().getTable(getReferenceTable());
         }
     }
 
@@ -2872,7 +2922,7 @@ public class DirectCollectionMapping extends CollectionMapping implements Relati
     @Override
     public void setSelectionCriteria(Expression anExpression) {
         if (getSelectionQuery().isReadAllQuery()){
-            ((ReadAllQuery)getSelectionQuery()).setSelectionCriteria(anExpression);
+            getSelectionQuery().setSelectionCriteria(anExpression);
         } else {
             getSelectionQuery().getSQLStatement().setWhereClause(anExpression);
         }

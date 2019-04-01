@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.internal.core.queries;
 import java.util.Vector;
 
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.queries.ContainerPolicy;
+import org.eclipse.persistence.internal.queries.MapContainerPolicy;
 
 public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSession> {
 
@@ -27,7 +29,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * The session may be required to wrap for the wrapper policy.
      * Return whether the container changed
      */
-    public boolean addInto(Object element, Object container, ABSTRACT_SESSION session);
+    boolean addInto(Object element, Object container, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
@@ -36,14 +38,14 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * The session may be required to wrap for the wrapper policy.
      * Return whether the container changed.
      */
-    public boolean addInto(Object key, Object element, Object container, ABSTRACT_SESSION session);
+    boolean addInto(Object key, Object element, Object container, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
      * Remove all the elements from the specified container.
      * Valid only for certain subclasses.
      */
-    public void clear(Object container);
+    void clear(Object container);
 
     /**
      * INTERNAL:
@@ -51,7 +53,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * Null should never be returned.
      * A ValidationException is thrown on error.
      */
-    public Object containerInstance();
+    Object containerInstance();
 
     /**
      * INTERNAL:
@@ -59,7 +61,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * This is used to check contains in a collection independent of JDK 1.1 and 1.2.
      * The session may be required to unwrap for the wrapper policy.
      */
-    public boolean contains(Object element, Object container, ABSTRACT_SESSION session);
+    boolean contains(Object element, Object container, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
@@ -67,17 +69,17 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * The iterator is the one returned from #iteratorFor().
      * Valid for some subclasses only.
      *
-     * @see ContainerPolicy#iteratorFor(java.lang.Object)
+     * @see ContainerPolicy#iteratorFor(Object)
      */
-    public boolean hasNext(Object iterator);
+    boolean hasNext(Object iterator);
 
     /**
      * INTERNAL:
      * Return whether the container is empty.
      */
-    public boolean isEmpty(Object container);
+    boolean isEmpty(Object container);
 
-    public boolean isListPolicy();
+    boolean isListPolicy();
 
     /**
      * INTERNAL:
@@ -85,10 +87,10 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * This iterator can then be used as a parameter to #hasNext()
      * and #next().
      *
-     * @see ContainerPolicy#hasNext(java.lang.Object)
-     * @see ContainerPolicy#next(java.lang.Object)
+     * @see ContainerPolicy#hasNext(Object)
+     * @see ContainerPolicy#next(Object, org.eclipse.persistence.internal.sessions.AbstractSession)
      */
-    public Object iteratorFor(Object container);
+    Object iteratorFor(Object container);
 
     /**
      * INTERNAL:
@@ -96,7 +98,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * This is used to stream over a collection independent of JDK 1.1 and 1.2.
      * The session may be required to unwrap for the wrapper policy.
      */
-    public Object next(Object iterator, ABSTRACT_SESSION session);
+    Object next(Object iterator, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
@@ -105,10 +107,10 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      *
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
-     * @see ContainerPolicy#iteratorFor(java.lang.Object)
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see ContainerPolicy#iteratorFor(Object)
+     * @see MapContainerPolicy#unwrapIteratorResult(Object)
      */
-    public Object nextEntry(Object iterator);
+    Object nextEntry(Object iterator);
 
     /**
      * INTERNAL:
@@ -117,10 +119,10 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      *
      * In the case of a Map, this will return a MapEntry to allow use of the key
      *
-     * @see ContainerPolicy#iteratorFor(Object iterator, AbstractSession session)
-     * @see MapContainerPolicy.unwrapIteratorResult(Object object)
+     * @see ContainerPolicy#iteratorFor(Object)
+     * @see MapContainerPolicy#unwrapIteratorResult(Object)
      */
-    public Object nextEntry(Object iterator, ABSTRACT_SESSION session);
+    Object nextEntry(Object iterator, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
@@ -128,19 +130,19 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * This is used to remove from a collection independent of JDK 1.1 and 1.2.
      * The session may be required to unwrap for the wrapper policy.
      */
-    public boolean removeFrom(Object element, Object container, ABSTRACT_SESSION session);
+    boolean removeFrom(Object element, Object container, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
      * Set the class used for the container.
      */
-    public void setContainerClass(Class containerClass);
+    void setContainerClass(Class containerClass);
 
     /**
      * INTERNAL:
      * Return the size of container.
      */
-    public int sizeFor(Object container);
+    int sizeFor(Object container);
 
     /**
      * INTERNAL:
@@ -148,7 +150,7 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * Added for bug 2766379, must implement a version of vectorFor that
      * handles wrapped objects.
      */
-    public Vector vectorFor(Object container, ABSTRACT_SESSION session);
+    Vector vectorFor(Object container, ABSTRACT_SESSION session);
 
     /**
      * INTERNAL:
@@ -156,6 +158,6 @@ public interface CoreContainerPolicy<ABSTRACT_SESSION extends CoreAbstractSessio
      * Null should never be returned.
      * A ValidationException is thrown on error.
      */
-    public Object containerInstance(int initialCapacity);
+    Object containerInstance(int initialCapacity);
 
 }

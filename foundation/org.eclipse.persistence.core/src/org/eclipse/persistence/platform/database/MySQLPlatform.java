@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -669,19 +669,6 @@ public class MySQLPlatform extends DatabasePlatform {
 
     /**
      * INTERNAL:
-     * MySQL uses ' to allow identifier to have spaces.
-     * @deprecated
-     * @see #getStartDelimiter()
-     * @see #getEndDelimiter()
-     */
-    @Deprecated
-    @Override
-    public String getIdentifierQuoteCharacter() {
-        return "`";
-    }
-
-    /**
-     * INTERNAL:
      * MySQL uses the INOUT keyword for this.
      */
     @Override
@@ -841,6 +828,7 @@ public class MySQLPlatform extends DatabasePlatform {
      * @param suppressLogging whether to suppress logging during query execution
      * @return value of {@code true} if given table exists or {@code false} otherwise
      */
+    @Override
     public boolean checkTableExists(final DatabaseSessionImpl session,
             final TableDefinition table, final boolean suppressLogging) {
         try {

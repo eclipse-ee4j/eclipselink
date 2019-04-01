@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -93,7 +93,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     }
 
     /**
-     * Clone the DatasourceCall and Vector<DatasourceCall>.
+     * Clone the DatasourceCall and {@code Vector<DatasourceCall>}.
      */
     @Override
     public DatabaseQueryMechanism clone(DatabaseQuery queryClone) {

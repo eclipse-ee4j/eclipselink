@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,20 +79,20 @@ public class DynamicJAXBContextFactory {
     public static final String SCHEMAMETADATA_CLASS_NAME = "org.eclipse.persistence.jaxb.dynamic.metadata.SchemaMetadata";
 
     /**
-     * Create a <tt>DynamicJAXBContext</tt>, using either an XML Schema, EclipseLink OXM file,
-     * or EclipseLink <tt>sessions.xml</tt> as the metadata source.  This creation method will be
-     * called if the user calls the <tt>newInstance()</tt> method on <tt>javax.xml.bind.JAXBContext</tt>,
-     * and has specified <tt>javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.DynamicJAXBContextFactory</tt> in their
-     * <tt>jaxb.properties</tt> file.<p>
+     * Create a <code>DynamicJAXBContext</code>, using either an XML Schema, EclipseLink OXM file,
+     * or EclipseLink <code>sessions.xml</code> as the metadata source.  This creation method will be
+     * called if the user calls the <code>newInstance()</code> method on <code>javax.xml.bind.JAXBContext</code>,
+     * and has specified <code>javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.DynamicJAXBContextFactory</code> in their
+     * <code>jaxb.properties</code> file.<p>
      *
      * <b>-- Context Creation From XML Schema --</b><p>
      *
-     * The <tt>properties</tt> map must contain the following key/value pairs:
+     * The <code>properties</code> map must contain the following key/value pairs:
      * <dl>
      * <dt>DynamicJAXBContextFactory.XML_SCHEMA_KEY
-     * <dd>Either a <tt>org.w3c.dom.Node</tt>, <tt>javax.xml.transform.Source</tt>, or <tt>java.io.InputStream</tt> pointing to the XML Schema
+     * <dd>Either a <code>org.w3c.dom.Node</code>, <code>javax.xml.transform.Source</code>, or <code>java.io.InputStream</code> pointing to the XML Schema
      * <dt>DynamicJAXBContextFactory.ENTITY_RESOLVER_KEY
-     * <dd>An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.  Can be null.
+     * <dd>An <code>org.xml.sax.EntityResolver</code>, used to resolve schema imports.  Can be null.
      * </dl>
      *
      * <i>Example:</i>
@@ -110,16 +110,16 @@ public class DynamicJAXBContextFactory {
      *
      * <b>Context Creation From EclipseLink OXM:</b><p>
      *
-     * The <tt>properties</tt> map must contain the key <b>JAXBContextProperties.OXM_METADATA_SOURCE</b>, which can have
+     * The <code>properties</code> map must contain the key <b>JAXBContextProperties.OXM_METADATA_SOURCE</b>, which can have
      * several possible values:
      *
      * <ul>
-     * <li>One of the following, pointing to your OXM file: <tt>java.io.File</tt>, <tt>java.io.InputStream</tt>, <tt>java.io.Reader</tt>, <tt>java.net.URL</tt>,<br>
-     * <tt>javax.xml.stream.XMLEventReader</tt>, <tt>javax.xml.stream.XMLStreamReader</tt>, <tt>javax.xml.transform.Source</tt>,<br>
-     * <tt>org.w3c.dom.Node</tt>, or <tt>org.xml.sax.InputSource</tt>.
-     * <li>A <tt>List</tt> of objects from the set above.
-     * <li>A <tt>Map&lt;String, Object&gt;</tt>, where <tt>String</tt> is a package name, and <tt>Object</tt> is the pointer to the OXM file, from the set<br>
-     * of possibilities above.  If using this option, a <tt>package-name</tt> element is not required in the <tt>xml-bindings</tt>
+     * <li>One of the following, pointing to your OXM file: <code>java.io.File</code>, <code>java.io.InputStream</code>, <code>java.io.Reader</code>, <code>java.net.URL</code>,<br>
+     * <code>javax.xml.stream.XMLEventReader</code>, <code>javax.xml.stream.XMLStreamReader</code>, <code>javax.xml.transform.Source</code>,<br>
+     * <code>org.w3c.dom.Node</code>, or <code>org.xml.sax.InputSource</code>.
+     * <li>A <code>List</code> of objects from the set above.
+     * <li>A <code>Map&lt;String, Object&gt;</code>, where <code>String</code> is a package name, and <code>Object</code> is the pointer to the OXM file, from the set<br>
+     * of possibilities above.  If using this option, a <code>package-name</code> element is not required in the <code>xml-bindings</code>
      * element of your OXM file.
      * </ul>
      *
@@ -138,9 +138,9 @@ public class DynamicJAXBContextFactory {
      *
      * <b>Context Creation From EclipseLink sessions.xml:</b><p>
      *
-     * The <tt>sessionNames</tt> parameter is a colon-delimited list of session names within the
-     * <tt>sessions.xml</tt> file.  <tt>Descriptors</tt> in this session's <tt>Project</tt> must not
-     * have <tt>javaClass</tt> set, but must have <tt>javaClassName</tt> set.<p>
+     * The <code>sessionNames</code> parameter is a colon-delimited list of session names within the
+     * <code>sessions.xml</code> file.  <code>Descriptors</code> in this session's <code>Project</code> must not
+     * have <code>javaClass</code> set, but must have <code>javaClassName</code> set.<p>
      *
      * <i>Example:</i>
      * <pre>
@@ -152,20 +152,20 @@ public class DynamicJAXBContextFactory {
      * </pre>
      *
      * @param contextPath
-     *      A colon-delimited <tt>String</tt> specifying the packages containing <tt>jaxb.properties</tt>.  If bootstrapping
-     *      from EclipseLink <tt>sessions.xml</tt>, this will also be the name(s) of your sessions.
+     *      A colon-delimited <code>String</code> specifying the packages containing <code>jaxb.properties</code>.  If bootstrapping
+     *      from EclipseLink <code>sessions.xml</code>, this will also be the name(s) of your sessions.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
-     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
-     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     *      classes to see if they exist before new <code>DynamicTypes</code> are generated.  Can be
+     *      <code>null</code>, in which case <code>Thread.currentThread().getContextClassLoader()</code> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  Can be null if bootstrapping from sessions.xml.
+     *      Map of properties to use when creating a new <code>DynamicJAXBContext</code>.  Can be null if bootstrapping from sessions.xml.
      *
      * @return
-     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *      A new instance of <code>DynamicJAXBContext</code>.
      *
      * @throws JAXBException
-     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     *      if an error was encountered while creating the <code>DynamicJAXBContext</code>.
      */
     public static DynamicJAXBContext createContext(String contextPath, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         Object schema = null;
@@ -218,24 +218,24 @@ public class DynamicJAXBContextFactory {
     }
 
     /**
-     * Create a <tt>DynamicJAXBContext</tt>, using XML Schema as the metadata source.
+     * Create a <code>DynamicJAXBContext</code>, using XML Schema as the metadata source.
      *
      * @param schemaDOM
-     *      <tt>org.w3c.dom.Node</tt> representing the XML Schema.
+     *      <code>org.w3c.dom.Node</code> representing the XML Schema.
      * @param resolver
-     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.  Can be null.
+     *      An <code>org.xml.sax.EntityResolver</code>, used to resolve schema imports.  Can be null.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
-     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
-     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     *      classes to see if they exist before new <code>DynamicTypes</code> are generated.  Can be
+     *      <code>null</code>, in which case <code>Thread.currentThread().getContextClassLoader()</code> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  Can be null.
+     *      Map of properties to use when creating a new <code>DynamicJAXBContext</code>.  Can be null.
      *
      * @return
-     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *      A new instance of <code>DynamicJAXBContext</code>.
      *
      * @throws JAXBException
-     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     *      if an error was encountered while creating the <code>DynamicJAXBContext</code>.
      */
     public static DynamicJAXBContext createContextFromXSD(Node schemaDOM, EntityResolver resolver, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         if (schemaDOM == null) {
@@ -254,24 +254,24 @@ public class DynamicJAXBContextFactory {
     }
 
     /**
-     * Create a <tt>DynamicJAXBContext</tt>, using XML Schema as the metadata source.
+     * Create a <code>DynamicJAXBContext</code>, using XML Schema as the metadata source.
      *
      * @param schemaStream
-     *      <tt>java.io.InputStream</tt> from which to read the XML Schema.
+     *      <code>java.io.InputStream</code> from which to read the XML Schema.
      * @param resolver
-     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.  Can be null.
+     *      An <code>org.xml.sax.EntityResolver</code>, used to resolve schema imports.  Can be null.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
-     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
-     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     *      classes to see if they exist before new <code>DynamicTypes</code> are generated.  Can be
+     *      <code>null</code>, in which case <code>Thread.currentThread().getContextClassLoader()</code> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  Can be null.
+     *      Map of properties to use when creating a new <code>DynamicJAXBContext</code>.  Can be null.
      *
      * @return
-     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *      A new instance of <code>DynamicJAXBContext</code>.
      *
      * @throws JAXBException
-     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     *      if an error was encountered while creating the <code>DynamicJAXBContext</code>.
      */
     public static DynamicJAXBContext createContextFromXSD(InputStream schemaStream, EntityResolver resolver, ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
         if (schemaStream == null) {
@@ -284,24 +284,24 @@ public class DynamicJAXBContextFactory {
     }
 
     /**
-     * Create a <tt>DynamicJAXBContext</tt>, using XML Schema as the metadata source.
+     * Create a <code>DynamicJAXBContext</code>, using XML Schema as the metadata source.
      *
      * @param schemaSource
-     *      <tt>javax.xml.transform.Source</tt> from which to read the XML Schema.
+     *      <code>javax.xml.transform.Source</code> from which to read the XML Schema.
      * @param resolver
-     *      An <tt>org.xml.sax.EntityResolver</tt>, used to resolve schema imports.  Can be null.
+     *      An <code>org.xml.sax.EntityResolver</code>, used to resolve schema imports.  Can be null.
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
-     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
-     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     *      classes to see if they exist before new <code>DynamicTypes</code> are generated.  Can be
+     *      <code>null</code>, in which case <code>Thread.currentThread().getContextClassLoader()</code> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  Can be null.
+     *      Map of properties to use when creating a new <code>DynamicJAXBContext</code>.  Can be null.
      *
      * @return
-     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *      A new instance of <code>DynamicJAXBContext</code>.
      *
      * @throws JAXBException
-     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     *      if an error was encountered while creating the <code>DynamicJAXBContext</code>.
      */
     public static DynamicJAXBContext createContextFromXSD(Source schemaSource, EntityResolver resolver, ClassLoader classLoader, Map<String, Object> properties) throws JAXBException {
         if (schemaSource == null) {
@@ -314,32 +314,32 @@ public class DynamicJAXBContextFactory {
     }
 
     /**
-     * Create a <tt>DynamicJAXBContext</tt>, using an EclipseLink OXM file as the metadata source.
+     * Create a <code>DynamicJAXBContext</code>, using an EclipseLink OXM file as the metadata source.
      *
      * @param classLoader
      *      The application's current class loader, which will be used to first lookup
-     *      classes to see if they exist before new <tt>DynamicTypes</tt> are generated.  Can be
-     *      <tt>null</tt>, in which case <tt>Thread.currentThread().getContextClassLoader()</tt> will be used.
+     *      classes to see if they exist before new <code>DynamicTypes</code> are generated.  Can be
+     *      <code>null</code>, in which case <code>Thread.currentThread().getContextClassLoader()</code> will be used.
      * @param properties
-     *      Map of properties to use when creating a new <tt>DynamicJAXBContext</tt>.  This map must
+     *      Map of properties to use when creating a new <code>DynamicJAXBContext</code>.  This map must
      *      contain a key of JAXBContextProperties.OXM_METADATA_SOURCE, which can have several possible values:
      *
      * <ul>
-     * <li>One of the following, pointing to your OXM file: <tt>java.io.File</tt>, <tt>java.io.InputStream</tt>, <tt>java.io.Reader</tt>, <tt>java.net.URL</tt>,<br>
-     * <tt>javax.xml.stream.XMLEventReader</tt>, <tt>javax.xml.stream.XMLStreamReader</tt>, <tt>javax.xml.transform.Source</tt>,<br>
-     * <tt>org.w3c.dom.Node</tt>, or <tt>org.xml.sax.InputSource</tt>.
-     * <li>A <tt>List</tt> of objects from the set above.
-     * <li>A <tt>Map&lt;String, Object&gt;</tt>, where <tt>String</tt> is a package name, and <tt>Object</tt> is the pointer to the OXM file, from the set<br>
-     * of possibilities above.  If using this option, a <tt>package-name</tt> element is not required in the <tt>xml-bindings</tt>
+     * <li>One of the following, pointing to your OXM file: <code>java.io.File</code>, <code>java.io.InputStream</code>, <code>java.io.Reader</code>, <code>java.net.URL</code>,<br>
+     * <code>javax.xml.stream.XMLEventReader</code>, <code>javax.xml.stream.XMLStreamReader</code>, <code>javax.xml.transform.Source</code>,<br>
+     * <code>org.w3c.dom.Node</code>, or <code>org.xml.sax.InputSource</code>.
+     * <li>A <code>List</code> of objects from the set above.
+     * <li>A <code>Map&lt;String, Object&gt;</code>, where <code>String</code> is a package name, and <code>Object</code> is the pointer to the OXM file, from the set<br>
+     * of possibilities above.  If using this option, a <code>package-name</code> element is not required in the <code>xml-bindings</code>
      * element of your OXM file.
      * </ul>
      *
      *
      * @return
-     *      A new instance of <tt>DynamicJAXBContext</tt>.
+     *      A new instance of <code>DynamicJAXBContext</code>.
      *
      * @throws JAXBException
-     *      if an error was encountered while creating the <tt>DynamicJAXBContext</tt>.
+     *      if an error was encountered while creating the <code>DynamicJAXBContext</code>.
      */
     public static DynamicJAXBContext createContextFromOXM(ClassLoader classLoader, Map<String, ?> properties) throws JAXBException {
         if (properties == null || (properties.get(JAXBContextProperties.OXM_METADATA_SOURCE) == null && properties.get(JAXBContextFactory.ECLIPSELINK_OXM_XML_KEY) == null)) {

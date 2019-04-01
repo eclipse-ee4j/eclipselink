@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,6 +16,17 @@ package org.eclipse.persistence.internal.oxm.record;
 
 import java.io.IOException;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
+import javax.xml.validation.ValidatorHandler;
+
+import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.ConversionManager;
+import org.eclipse.persistence.internal.oxm.MediaType;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.mappings.Mapping;
+import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.DTDHandler;
@@ -28,26 +39,16 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.ext.LexicalHandler;
 
-import javax.xml.XMLConstants;
-import javax.xml.namespace.QName;
-import javax.xml.validation.ValidatorHandler;
-
-import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
-import org.eclipse.persistence.internal.oxm.ConversionManager;
-import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.MediaType;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.mappings.Mapping;
-import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
-
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>Provide a wrapper for an org.xml.sax.XMLReader instance and define some extra
  * event methods that can be used by TopLink during the unmarshal process. These events are no ops
  * in this class, but may be overridden in subclasses.
- * <p><b>Responsibilities</b><ul>
+ * <p><b>Responsibilities</b>
+ * <ul>
  * <li>Wrap an instance of org.xml.sax.XMLReader and provide all the required API</li>
  * <li>Provide empty implementations of some callback methods that can be overridden in subclasses</li>
+ * </ul>
  *
  *  @see org.eclipse.persistence.internal.oxm.record.DOMReader
  *  @author  mmacivor

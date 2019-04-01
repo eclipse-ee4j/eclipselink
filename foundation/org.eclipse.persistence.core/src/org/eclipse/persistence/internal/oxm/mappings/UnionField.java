@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,10 @@
 package org.eclipse.persistence.internal.oxm.mappings;
 
 import java.util.List;
+
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.ConversionManager;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 
@@ -45,12 +47,12 @@ public interface UnionField<
      * Adds the new type value to the list of types
      * @param value QName to be added to the list of schema types
      */
-     public void addSchemaType(QName value);
+     void addSchemaType(QName value);
 
     /**
       * Return the list of schema types
       * @return the list of types
       */
-    public List<QName> getSchemaTypes();
+    List<QName> getSchemaTypes();
 
 }

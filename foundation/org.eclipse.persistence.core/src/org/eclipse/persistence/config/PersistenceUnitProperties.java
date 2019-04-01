@@ -1459,7 +1459,7 @@ public class PersistenceUnitProperties {
      * </ul>
      *
      * @see DatabaseEventListener
-     * @see org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener
+     * @see "org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"
      */
     public static final String DATABASE_EVENT_LISTENER = "eclipselink.cache.database-event-listener";
 
@@ -1487,8 +1487,8 @@ public class PersistenceUnitProperties {
     /**
      * The "<code>eclipselink.logging.level</code>" property allows the default logging levels to be specified.
      * <p>
-     * <b>Logging Levels:</b>
-     * <table summary="Logger levels">
+     * <table>
+     * <caption>Logging Levels:</caption>
      * <tr><td>{@link SessionLog#ALL_LABEL}</td><td>&nbsp;</td><td>ALL</td></tr>
      * <tr><td>{@link SessionLog#FINEST_LABEL}</td><td>&nbsp;</td><td>FINEST</td></tr>
      * <tr><td>{@link SessionLog#FINER_LABEL}</td><td>&nbsp;</td><td>FINER</td></tr>
@@ -1515,13 +1515,12 @@ public class PersistenceUnitProperties {
      * Property prefix "<code>eclipselink.logging.level.</code>" allows the category specific logging levels
      * to be specified.
      * <p>
-     * <b>Categories:</b>
-     * <table summary="Logger categories">
+     * <table>
+     * <caption>Logger categories:</caption>
      * <tr><td>{@link SessionLog#CACHE}</td><td>&nbsp;</td><td>cache</td></tr>
      * <tr><td>{@link SessionLog#CONNECTION}</td><td>&nbsp;</td><td>connection</td></tr>
      * <tr><td>{@link SessionLog#DMS}</td><td>&nbsp;</td><td>dms</td></tr>
      * <tr><td>{@link SessionLog#EJB}</td><td>&nbsp;</td><td>ejb</td></tr>
-     * <tr><td>{@link SessionLog#EJB_OR_METADATA}</td><td>&nbsp;</td><td>ejb_or_metadata</td></tr>
      * <tr><td>{@link SessionLog#EVENT}</td><td>&nbsp;</td><td>event</td></tr>
      * <tr><td>{@link SessionLog#JPA}</td><td>&nbsp;</td><td>jpa</td></tr>
      * <tr><td>{@link SessionLog#METAMODEL}</td><td>&nbsp;</td><td>metamodel</td></tr>
@@ -2461,7 +2460,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.se-puinfo</code>" property specifies a
-     * {@link org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo} that is used
+     * {@code org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo} that is used
      * create an EntityManagerFactory. That datastructure is used in liu of a persistence.xml.
      * <p><b>IMPORTANT</b>: This property is only supported for use in testing.
      */
@@ -2527,16 +2526,16 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.project-cache</code>" property configures the type of
-     * {@link org.eclipse.persistence.jpa.metadata.ProjectCache} implementation to use to retrieve and store projects
+     * {@code org.eclipse.persistence.jpa.metadata.ProjectCache} implementation to use to retrieve and store projects
      * representing the metadata for the project.
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java-serialization</code>" - use {@link org.eclipse.persistence.jpa.metadata.FileBasedProjectCache FileBasedProjectCache}
-     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.jpa.metadata.ProjectCache} interface
+     * <li>"<code>java-serialization</code>" - use {@code org.eclipse.persistence.jpa.metadata.FileBasedProjectCache}
+     * <li>the fully qualified name for a class that implements {@code org.eclipse.persistence.jpa.metadata.ProjectCache} interface
      * </ul>
      *
-     * @see org.eclipse.persistence.jpa.metadata.ProjectCache
+     * @see "org.eclipse.persistence.jpa.metadata.ProjectCache"
      */
     public static final String PROJECT_CACHE = "eclipselink.project-cache";
 
@@ -2765,12 +2764,12 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>XML</code>" - use {@link org.eclipse.persistence.jpa.metadata.XMLMetadataSource}
-     * <li>the fully qualified name for a class that implements {@link org.eclipse.persistence.jpa.metadata.MetadataSource} interface
+     * <li>"<code>XML</code>" - use {@code org.eclipse.persistence.jpa.metadata.XMLMetadataSource}
+     * <li>the fully qualified name for a class that implements {@code org.eclipse.persistence.jpa.metadata.MetadataSource} interface
      * </ul>
      *
-     * @see org.eclipse.persistence.jpa.metadata.MetadataSource
-     * @see org.eclipse.persistence.jpa.metadata.XMLMetadataSource
+     * @see "org.eclipse.persistence.jpa.metadata.MetadataSource"
+     * @see "org.eclipse.persistence.jpa.metadata.XMLMetadataSource"
      */
     public static final String METADATA_SOURCE = "eclipselink.metadata-source";
 
@@ -3048,7 +3047,7 @@ public class PersistenceUnitProperties {
      * <li>"<code>PerformanceMonitor</code>" - use {@link PerformanceMonitor}
      * <li>"<code>PerformanceProfiler</code>" - use {@link PerformanceProfiler}
      * <li>"<code>QueryMonitor</code>" - use {@link QueryMonitor}
-     * <li>"<code>DMSProfiler</code>" - use {@link org.eclipse.persistence.tools.profiler.oracle.DMSPerformanceProfiler}
+     * <li>"<code>DMSProfiler</code>" - use {@code org.eclipse.persistence.tools.profiler.oracle.DMSPerformanceProfiler}
      * <li>the fully qualified name for a class that implements {@link SessionProfiler} interface
      * </ul>
      *
@@ -3718,7 +3717,7 @@ public class PersistenceUnitProperties {
      * XML database, transactional and messaging systems, or ERP systems.
      *
      * @see org.eclipse.persistence.eis.EISConnectionSpec
-     * @see org.eclipse.persistence.nosql.annotations.NoSql
+     * @see "org.eclipse.persistence.nosql.annotations.NoSql"
      */
     public static final String NOSQL_CONNECTION_SPEC = "eclipselink.nosql.connection-spec";
 
@@ -3740,7 +3739,7 @@ public class PersistenceUnitProperties {
      * i.e. "eclipselink.nosql.property.nosql.host"="localhost:5000"
      *
      * @see org.eclipse.persistence.eis.EISConnectionSpec
-     * @see org.eclipse.persistence.nosql.annotations.NoSql
+     * @see "org.eclipse.persistence.nosql.annotations.NoSql"
      */
     public static final String NOSQL_PROPERTY = "eclipselink.nosql.property.";
 
@@ -3750,7 +3749,7 @@ public class PersistenceUnitProperties {
      * Note that "<code>javax.persistence.jdbc.user</code>" is also supported.
      *
      * @see org.eclipse.persistence.eis.EISConnectionSpec
-     * @see org.eclipse.persistence.nosql.annotations.NoSql
+     * @see "org.eclipse.persistence.nosql.annotations.NoSql"
      * @see #JDBC_USER
      */
     public static final String NOSQL_USER = "eclipselink.nosql.property.user";
@@ -3761,7 +3760,7 @@ public class PersistenceUnitProperties {
      * Note that "<code>javax.persistence.jdbc.password</code>" is also supported.
      *
      * @see org.eclipse.persistence.eis.EISConnectionSpec
-     * @see org.eclipse.persistence.nosql.annotations.NoSql
+     * @see "org.eclipse.persistence.nosql.annotations.NoSql"
      * @see #JDBC_PASSWORD
      */
     public static final String NOSQL_PASSWORD = "eclipselink.nosql.property.password";
@@ -3869,7 +3868,7 @@ public class PersistenceUnitProperties {
      * INTERNAL: The following properties will not be displayed through logging
      * but instead have an alternate value shown in the log.
      */
-    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
+    public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<>(1);
 
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");

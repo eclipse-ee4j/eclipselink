@@ -45,19 +45,19 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * the tests tables are dropped and recreated. If the tables were created in a
  * previous test and the connection used to create it is still open, Symfoware
  * complains that the tables are locked when it tries to drop them.
- * <p/>
+ * <p>
  *
  * This class sets a flag before the subsequent recreation of the tables to
  * delete the rows instead. The first time it is called it does not set the
  * flag, to allow the tables to be initially created.
- * <p/>
+ * <p>
  *
  * To enable this functionality, the system property
  * "eclipselink.test.toggle-fast-table-creator" needs to be set to "true".
- * <p/>
+ * <p>
  *
  * This class should be positioned between the test's table creator class and
- * TableCreator by making the's test table creator extend this class.<br/>
+ * TableCreator by making the's test table creator extend this class.
  *
  * @author Dies Koper, Tomas Kraus
  *
@@ -262,9 +262,7 @@ public class TogglingFastTableCreator extends TableCreator {
      * with given name, size of {@code 15}, with {@code null} value allowed and
      * without any additional constraints.
      * @param name Column name.
-     * @param size Column numeric type size of {@code 15} with .
      * @return Initialized {@link FieldDefinition} instance.
-     * @param allowNull Allow {@code null} values for column.
      */
     protected static FieldDefinition createNumericColumn(
             final String name) {

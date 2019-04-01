@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,12 @@
 //       - JPA 2.0 - OrderedList support.
 package org.eclipse.persistence.annotations;
 
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * OrderCorrection annotation may be specified together with OrderColumn annotation.
@@ -31,7 +31,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * If the annotation is not specified than OrderCorrectionValue.READ_WRITE used.
  *
- * @see org.eclipse.persistence.jpa.config.OrderColumn
+ * @see "org.eclipse.persistence.jpa.config.OrderColumn"
  * @see org.eclipse.persistence.annotations.OrderCorrectionType
  *
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,17 +29,17 @@ public interface AnyAttributeMapping<
     FIELD extends CoreField,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping {
 
-    public boolean isNamespaceDeclarationIncluded();
+    boolean isNamespaceDeclarationIncluded();
 
-    public boolean isSchemaInstanceIncluded();
+    boolean isSchemaInstanceIncluded();
 
-    public void setField(FIELD field);
+    void setField(FIELD field);
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 
-    public void setNamespaceDeclarationIncluded(boolean isNamespaceDeclarationIncluded);
+    void setNamespaceDeclarationIncluded(boolean isNamespaceDeclarationIncluded);
 
-    public void setSchemaInstanceIncluded(boolean isSchemaInstanceIncluded);
+    void setSchemaInstanceIncluded(boolean isSchemaInstanceIncluded);
 
     /**
      * INTERNAL:
@@ -47,6 +47,6 @@ public interface AnyAttributeMapping<
      *
      * @param concreteMapClassName
      */
-    public void useMapClassName(String concreteMapClassName);
+    void useMapClassName(String concreteMapClassName);
 }
 

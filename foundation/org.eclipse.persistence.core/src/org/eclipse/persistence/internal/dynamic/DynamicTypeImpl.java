@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,12 @@ import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.exceptions.DynamicException;
 import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
 /**
  * An EntityType provides a metadata facade into the EclipseLink
- * object-relational metadata (descriptors & mappings) with specific knowledge
+ * object-relational metadata (descriptors &amp; mappings) with specific knowledge
  * of the entity types being dynamic.
  *
  * @author dclarke, mnorman
@@ -53,7 +52,7 @@ public class DynamicTypeImpl implements DynamicType, Cloneable {
      * This includes properties that are primitives as well as relationships
      * requiring indirection ValueHolders or collections.
      */
-    protected Set<DatabaseMapping> mappingsRequiringInitialization = new HashSet<DatabaseMapping>();
+    protected Set<DatabaseMapping> mappingsRequiringInitialization = new HashSet<>();
 
     protected DynamicTypeImpl() {
         super();
@@ -187,7 +186,7 @@ public class DynamicTypeImpl implements DynamicType, Cloneable {
         Class<?> expectedType = mapping.getAttributeClassification();
         if (mapping.isForeignReferenceMapping()) {
             if (mapping.isCollectionMapping()) {
-                if (((CollectionMapping) mapping).getContainerPolicy().isMapPolicy()) {
+                if (mapping.getContainerPolicy().isMapPolicy()) {
                     expectedType = Map.class;
                 } else {
                     expectedType = Collection.class;

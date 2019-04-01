@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,15 +25,15 @@ public class Agent implements Serializable {
     private String firstName;
     private String lastName;
     private java.math.BigDecimal id;
-    private ValueHolderInterface houses;
+    private ValueHolderInterface<Vector<House>> houses;
     private java.util.List houses2;
-    private ValueHolderInterface customers;
+    private ValueHolderInterface<Vector<Customer>> customers;
 
     public Agent() {
         super();
-        houses = new ValueHolder(new Vector());
+        houses = new ValueHolder<>(new Vector<>());
         houses2 = new ArrayList(2);
-        customers = new ValueHolder(new Vector());
+        customers = new ValueHolder<>(new Vector<Customer>());
     }
 
     public void addCustomer(Customer customer) {
@@ -54,12 +54,12 @@ public class Agent implements Serializable {
 
         example1.setFirstName("Micheal");
         example1.setLastName("Jordan");
-        Vector customers = new Vector();
+        Vector<Customer> customers = new Vector<Customer>();
         customers.addElement(Customer.example1());
         customers.addElement(Customer.example2());
         example1.setCustomers(customers);
 
-        Vector houses = new Vector();
+        Vector<House> houses = new Vector<>();
         houses.addElement(SingleHouse.example1());
         houses.addElement(TownHouse.example3());
         example1.setHouses(houses);
@@ -72,22 +72,22 @@ public class Agent implements Serializable {
         //example1.setId(new java.math.BigDecimal(1));
         example2.setFirstName("Dennis");
         example2.setLastName("Rodman");
-        Vector customers = new Vector();
+        Vector<Customer> customers = new Vector<>();
         customers.addElement(Customer.example3());
         example2.setCustomers(customers);
 
-        Vector houses = new Vector();
+        Vector<House> houses = new Vector<>();
         houses.addElement(SingleHouse.example2());
         houses.addElement(TownHouse.example4());
         example2.setHouses(houses);
         return example2;
     }
 
-    public Vector getCustomers() {
-        return (Vector)getCustomerValueHolder().getValue();
+    public Vector<Customer> getCustomers() {
+        return getCustomerValueHolder().getValue();
     }
 
-    public ValueHolderInterface getCustomerValueHolder() {
+    public ValueHolderInterface<Vector<Customer>> getCustomerValueHolder() {
         return customers;
     }
 
@@ -95,15 +95,15 @@ public class Agent implements Serializable {
         return firstName;
     }
 
-    public Vector getHouses() {
-        return (Vector)getHouseValueHolder().getValue();
+    public Vector<House> getHouses() {
+        return getHouseValueHolder().getValue();
     }
 
     public java.util.List getHouses2() {
         return houses2;
     }
 
-    public ValueHolderInterface getHouseValueHolder() {
+    public ValueHolderInterface<Vector<House>> getHouseValueHolder() {
         return houses;
     }
 
@@ -123,11 +123,11 @@ public class Agent implements Serializable {
         getHouses().removeElement(house);
     }
 
-    public void setCustomers(Vector customerVector) {
+    public void setCustomers(Vector<Customer> customerVector) {
         customers.setValue(customerVector);
     }
 
-    public void setCustomerValueHolder(ValueHolderInterface customers) {
+    public void setCustomerValueHolder(ValueHolderInterface<Vector<Customer>> customers) {
         this.customers = customers;
     }
 
@@ -135,7 +135,7 @@ public class Agent implements Serializable {
         this.firstName = firstName;
     }
 
-    public void setHouses(Vector houseVector) {
+    public void setHouses(Vector<House> houseVector) {
         getHouseValueHolder().setValue(houseVector);
     }
 
@@ -144,7 +144,7 @@ public class Agent implements Serializable {
 
     }
 
-    public void setHouseValueHolder(ValueHolderInterface houses) {
+    public void setHouseValueHolder(ValueHolderInterface<Vector<House>> houses) {
         this.houses = houses;
     }
 

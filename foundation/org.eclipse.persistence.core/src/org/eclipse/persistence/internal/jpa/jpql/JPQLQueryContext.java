@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -217,7 +217,7 @@ final class JPQLQueryContext {
         }
         else {
             if (inputParameters == null) {
-                inputParameters = new HashMap<InputParameter, Expression>();
+                inputParameters = new HashMap<>();
             }
             inputParameters.put(inputParameter, queryExpression);
         }
@@ -243,7 +243,7 @@ final class JPQLQueryContext {
      */
     void addQueryExpressionImp(String variableName, Expression expression) {
         if (expressions == null) {
-            expressions = new HashMap<String, Expression>();
+            expressions = new HashMap<>();
         }
         expressions.put(variableName, expression);
     }
@@ -283,7 +283,7 @@ final class JPQLQueryContext {
      */
     void addUsedIdentificationVariableImp(String variableName) {
         if (usedIdentificationVariables == null) {
-            usedIdentificationVariables = new HashSet<String>();
+            usedIdentificationVariables = new HashSet<>();
         }
         usedIdentificationVariables.add(variableName);
     }
@@ -820,7 +820,7 @@ final class JPQLQueryContext {
         }
 
         if (types == null) {
-            types = new HashMap<String, Class<?>>();
+            types = new HashMap<>();
         }
 
         return types;

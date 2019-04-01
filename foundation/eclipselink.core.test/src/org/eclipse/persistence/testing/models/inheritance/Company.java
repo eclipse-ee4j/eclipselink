@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,17 +21,17 @@ import org.eclipse.persistence.indirection.*;
 public class Company implements Serializable {
     public Number id;
     public String name;
-    public ValueHolderInterface vehicles;
-    public ValueHolderInterface workers;
+    public ValueHolderInterface<Vector<? extends Vehicle>> vehicles;
+    public ValueHolderInterface<Vector<CompanyWorker>> workers;
 
     public Company() {
-        vehicles = new ValueHolder();
-        workers = new ValueHolder();
+        vehicles = new ValueHolder<>();
+        workers = new ValueHolder<>();
     }
 
     public static Company example1() {
         Company company = new Company();
-        Vector vehicle = new Vector();
+        Vector<Vehicle> vehicle = new Vector<>();
 
         vehicle.addElement(Bus.example2(company));
         vehicle.addElement(Bicycle.example1(company));
@@ -42,7 +42,7 @@ public class Company implements Serializable {
         company.setName("TOP");
         company.getVehicles().setValue(vehicle);
 
-        Vector worker = new Vector();
+        Vector<CompanyWorker> worker = new Vector<>();
         worker.addElement(CompanyWorker.example1(company));
         worker.addElement(CompanyWorker.example4(company));
         worker.addElement(CompanyWorker.example5(company));
@@ -53,7 +53,7 @@ public class Company implements Serializable {
 
     public static Company example2() {
         Company company = new Company();
-        Vector vehicle = new Vector();
+        Vector<Vehicle> vehicle = new Vector<>();
 
         vehicle.addElement(Boat.example1(company));
         vehicle.addElement(Bicycle.example2(company));
@@ -64,7 +64,7 @@ public class Company implements Serializable {
         company.setName("ABC");
         company.getVehicles().setValue(vehicle);
 
-        Vector worker = new Vector();
+        Vector<CompanyWorker> worker = new Vector<CompanyWorker>();
         worker.addElement(CompanyWorker.example2(company));
         company.getWorkers().setValue(worker);
 
@@ -73,7 +73,7 @@ public class Company implements Serializable {
 
     public static Company example3() {
         Company company = new Company();
-        Vector vehicle = new Vector();
+        Vector<NonFueledVehicle> vehicle = new Vector<>();
 
         vehicle.addElement(Boat.example1(company));
         vehicle.addElement(Bicycle.example3(company));
@@ -84,18 +84,18 @@ public class Company implements Serializable {
         company.setName("XYZ");
         company.getVehicles().setValue(vehicle);
 
-        Vector worker = new Vector();
+        Vector<CompanyWorker> worker = new Vector<>();
         worker.addElement(CompanyWorker.example3(company));
         company.getWorkers().setValue(worker);
 
         return company;
     }
 
-    public ValueHolderInterface getWorkers() {
+    public ValueHolderInterface<Vector<CompanyWorker>> getWorkers() {
         return workers;
     }
 
-    public ValueHolderInterface getVehicles() {
+    public ValueHolderInterface<Vector<? extends Vehicle>> getVehicles() {
         return vehicles;
     }
 
