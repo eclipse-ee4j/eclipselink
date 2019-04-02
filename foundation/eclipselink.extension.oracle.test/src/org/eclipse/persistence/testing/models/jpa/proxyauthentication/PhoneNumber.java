@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,24 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.proxyauthentication;
 
-import java.io.*;
-import javax.persistence.*;
+import java.io.Serializable;
+import java.io.StringWriter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
 import org.eclipse.persistence.annotations.Cache;
+import org.eclipse.persistence.config.CacheIsolationType;
 
 @IdClass(org.eclipse.persistence.testing.models.jpa.proxyauthentication.PhoneNumberPK.class)
 @Entity
 @Table(name="PAS_PROXY.PROXY_PHONENUMBER")
-@Cache(shared=false)
+@Cache(isolation = CacheIsolationType.ISOLATED)
 public class PhoneNumber implements Serializable {
     private String number;
     private String type;
@@ -91,6 +101,7 @@ public class PhoneNumber implements Serializable {
     /**
      * Example: Phone[Work]: (613) 225-8812
      */
+    @Override
     public String toString() {
         StringWriter writer = new StringWriter();
 
