@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,10 +19,10 @@ import java.util.TimeZone;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
+import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
 import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.testing.tests.types.CalendarToTSTZWithoutSessionTZTest;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestSuite;
 
 public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testing.framework.TestModel {
     protected boolean useAccessors;
@@ -47,13 +47,15 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
         }
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new OracleTIMESTAMPTypeTestSystem());
     }
 
+    @Override
     public void addTests() {
-        if (getSession().getPlatform() instanceof Oracle9Platform) {
-            Oracle9Platform platform = (Oracle9Platform)getSession().getPlatform();
+        if (getSession().getPlatform() instanceof Oracle11Platform) {
+            Oracle11Platform platform = (Oracle11Platform)getSession().getPlatform();
             ((AbstractSession)getSession()).getAccessor().incrementCallCount((AbstractSession)getSession());
             // unwrap connection if it's wrapped
             String driverVersion= platform.getDriverVersion();
@@ -267,16 +269,17 @@ public class OracleTIMESTAMPTypeTestModel extends org.eclipse.persistence.testin
         return suite;
     }
 
+    @Override
     public void setup() {
         DatabaseSession session = (DatabaseSession)getSession();
         if (useAccessors) {
-            if (getSession().getPlatform() instanceof Oracle9Platform) {
+            if (getSession().getPlatform() instanceof Oracle11Platform) {
                 session.addDescriptor(TIMESTAMPDirectToFieldTester.descriptorWithAccessors());
                 session.addDescriptor(CalendarToTSTZWithBindingTest.descriptorWithAccessors());
                 session.addDescriptor(CalendarDaylightSavingsTest.descriptorWithAccessors());
             }
         } else {
-            if (getSession().getPlatform() instanceof Oracle9Platform) {
+            if (getSession().getPlatform() instanceof Oracle11Platform) {
                 session.addDescriptor(TIMESTAMPDirectToFieldTester.descriptor());
                 session.addDescriptor(TIMESTAMPTypeConversionTester.descriptor());
                 session.addDescriptor(CalendarToTSTZWithoutSessionTZTest.descriptor());

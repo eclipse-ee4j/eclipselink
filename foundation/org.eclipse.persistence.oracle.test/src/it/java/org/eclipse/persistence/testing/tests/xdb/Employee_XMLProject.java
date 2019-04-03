@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.xdb;
 
-import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
+import org.eclipse.persistence.mappings.OneToOneMapping;
+import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.mappings.xdb.DirectToXMLTypeMapping;
 
 public class Employee_XMLProject extends Project {
     public Employee_XMLProject() {
@@ -39,7 +41,7 @@ public class Employee_XMLProject extends Project {
 
     private void initializeLogin() {
         DatabaseLogin login = new DatabaseLogin();
-        login.setPlatform(new org.eclipse.persistence.platform.database.oracle.Oracle9Platform());
+        login.setPlatform(new org.eclipse.persistence.platform.database.oracle.Oracle11Platform());
         login.setConnectionString("jdbc:oracle:oci8:@matt");
         login.setDriverClassName("oracle.jdbc.OracleDriver");
         login.setUserName("System");

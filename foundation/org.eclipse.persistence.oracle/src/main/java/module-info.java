@@ -11,6 +11,9 @@
  */
 
 module org.eclipse.persistence.oracle {
+    requires java.sql;
+//    requires ojdbc8;
+
     requires org.eclipse.persistence.core;
 
     exports org.eclipse.persistence.platform.database.oracle;
