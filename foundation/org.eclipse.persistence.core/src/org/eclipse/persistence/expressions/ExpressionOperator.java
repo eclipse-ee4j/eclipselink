@@ -44,7 +44,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
@@ -1094,7 +1093,7 @@ public class ExpressionOperator implements Serializable {
      * Create an expression for this operator, using the given base.
      */
     public Expression expressionFor(Expression base) {
-        return expressionForArguments(base, org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0));
+        return expressionForArguments(base, new ArrayList<>(0));
     }
 
     /**
@@ -1787,7 +1786,7 @@ public class ExpressionOperator implements Serializable {
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        v = NonSynchronizedVector.newInstance(2);
+        v = new ArrayList<>(2);
         v.add(".like(");
         v.add(")");
         result.printsJavaAs(v);
@@ -1811,7 +1810,7 @@ public class ExpressionOperator implements Serializable {
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        v = NonSynchronizedVector.newInstance(2);
+        v = new ArrayList<>(2);
         v.add(".regexp(");
         v.add(")");
         result.printsJavaAs(v);
@@ -2105,7 +2104,7 @@ public class ExpressionOperator implements Serializable {
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        v = NonSynchronizedVector.newInstance(2);
+        v = new ArrayList<>(2);
         v.add(".notLike(");
         v.add(")");
         result.printsJavaAs(v);
