@@ -84,7 +84,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     // REST
     public static final String WEAVED_REST_LAZY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/jpa/rs/weaving/PersistenceWeavedRest";
     public static final String LIST_RELATIONSHIP_INFO_SIGNATURE = "Ljava/util/List;";
-    public static final String LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE = "Ljava/util/List<Lorg/eclipse/persistence/internal/weaving/RelationshipInfo;>;";
+    public static final String LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE = "Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/weaving/RelationshipInfo;>;";
     public static final String LINK_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/Link;";
     public static final String ITEM_LINKS_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/ItemLinks;";
 
