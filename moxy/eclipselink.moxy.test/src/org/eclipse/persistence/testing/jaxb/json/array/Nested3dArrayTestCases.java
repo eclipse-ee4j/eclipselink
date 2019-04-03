@@ -51,6 +51,7 @@ public class Nested3dArrayTestCases extends JSONTestCases {
         return root3DArray;
     }
 
+/*
     @Override
     public void testJSONMarshalToGeneratorResult() throws Exception{
     }
@@ -75,5 +76,6 @@ public class Nested3dArrayTestCases extends JSONTestCases {
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
     }
 
+*/
 
 }

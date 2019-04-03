@@ -99,7 +99,16 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
     @Override
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
-        if(position != null){
+        String keyName1 = getKeyName(xPathFragment);
+//        if (keyName1 != null && keyName1.equals("array2d")) {
+        if (position != null && position.isCollection && xPathFragment.getXMLField().isNestedArray()
+                && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
+            position.addSkip();
+            position.setKeyName(keyName1);
+            System.out.println(String.format("[STARTELEMENT] Skipping %s", getKeyName(xPathFragment)));
+            return;
+        }
+        if(position != null) {
             T newLevel;
             if (xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray() && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
                 newLevel = createNewLevel(false, position, true);
@@ -125,6 +134,8 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                 position = newLevel;
             }
             isLastEventStart = true;
+            //System.out.println(String.format("[STARTELEMENT] POS %s(%s) :: %s", xPathFragment, xPathFragment.getXMLField() != null  && xPathFragment.getXMLField().isNestedArray(), position.toString()));
+            System.out.println(String.format("[STARTELEMENT] NEW %s(%s) :: %s", xPathFragment, xPathFragment.getXMLField() != null  && xPathFragment.getXMLField().isNestedArray(), newLevel.toString()));
         }
     }
 
@@ -177,23 +188,31 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
     }
 
     protected void finishLevel(){
-        position = (T)position.parentLevel;
+        boolean notSkip = position.parentLevel == null || position.parentLevel.notSkip();
+        System.out.println(String.format("[FINISHLEVEL PARENT] %s", notSkip ? "UP" : "KEEP" ));
+        if (notSkip) {
+            position = (T) position.parentLevel;
+        }
     }
 
     @Override
     public void startCollection() {
         if(position == null){
              isRootArray = true;
-            position = createNewLevel(true, null, false);
+             position = createNewLevel(true, null, false);
              startRootLevelCollection();
         } else {
             if(isLastEventStart){
                 //TODO change 1-APR-2019
+/*
                 if (position.isNestedArray()) {
                     position.setCollection(true);
                 } else {
+*/
                     setComplex(position, true);
+/*
                 }
+*/
             }
 /*
             if (!(position.isNestedArray() && position.isComplex())) {
@@ -202,6 +221,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 */
             position = createNewLevel(true, position, position.isNestedArray());
         }
+        System.out.println(String.format("[STARTCOLLECTION] NEW %s", position));
         isLastEventStart = false;
     }
 
@@ -695,12 +715,27 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         protected boolean isComplex;
         protected boolean nestedArray;
         protected Level parentLevel;
+        private int skipCount;
 
          public Level(boolean isCollection, Level parentLevel, boolean nestedArray) {
              setCollection(isCollection);
              emptyCollection = true;
              this.parentLevel = parentLevel;
              this.nestedArray = nestedArray;
+             this.skipCount = 0;
+         }
+
+         protected void addSkip() {
+             skipCount++;
+         }
+
+         protected boolean notSkip() {
+             if (skipCount > 0) {
+                 skipCount--;
+                 return false;
+             } else {
+                 return true;
+             }
          }
 
         public boolean isCollection() {
@@ -740,6 +775,19 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
          public void setNestedArray(boolean nestedArray) {
              this.nestedArray = nestedArray;
+         }
+
+         public String toString() {
+             StringBuilder sb = new StringBuilder();
+             sb.append("Level:{");
+             sb.append("key=").append(keyName);
+             sb.append(",parent=").append(parentLevel != null ? parentLevel.getKeyName() : "N/A");
+             sb.append(",collection=").append(isCollection);
+             sb.append(",nestedArray=").append(nestedArray);
+             sb.append(",isComplex=").append(isComplex);
+             sb.append(",emptyCollection=").append(emptyCollection);
+             sb.append("}");
+             return sb.toString();
          }
 
      }

@@ -71,6 +71,14 @@ public class XPathFragment <
     private Set<String> attributeCollisionSet;
     private Set<String> nonAttributeCollisionSet;
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("XPathFragment:{");
+        sb.append("xpath=").append(xpath);
+        sb.append(",prefix=").append(prefix);
+        sb.append("}");
+        return sb.toString();
+    }
 
     public XPathFragment() {
         setNamespaceAware(true);
