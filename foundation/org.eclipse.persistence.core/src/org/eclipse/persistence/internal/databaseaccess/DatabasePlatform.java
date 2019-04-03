@@ -241,16 +241,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     protected boolean shouldBindLiterals = true;
 
-    /* NCLOB sql type is defined in java.sql.Types in jdk 1.6, but not in jdk 1.5.
-     * Redefined here for backward compatibility.
-     */
-    public final static int Types_NCLOB = 2011;
-
-    /* SQLXML sql type is defined in java.sql.Types in jdk 1.6, but not in jdk 1.5.
-     * Redefined here for backward compatibility.
-     */
-    public final static int Types_SQLXML = 2009;
-
     /**
      * String used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project.  This value will be appended to CreationSuffix strings
@@ -1414,7 +1404,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                 if (getStructConverters().containsKey(structType)) {
                     return getStructConverters().get(structType).convertToObject((Struct)objectFromResultSet);
                 }
-            } else if(type == Types_SQLXML) {
+            } else if(type == Types.SQLXML) {
                 return JavaPlatform.getStringAndFreeSQLXML(objectFromResultSet);
             }
         }

@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
-import org.eclipse.persistence.internal.weaving.RelationshipInfo;
 
 /**
  * Used by JPA-RS to build links for relationships.
