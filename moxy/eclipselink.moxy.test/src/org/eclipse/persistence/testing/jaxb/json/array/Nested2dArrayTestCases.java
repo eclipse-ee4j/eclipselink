@@ -46,11 +46,12 @@ public class Nested2dArrayTestCases extends JSONTestCases {
         root2DArray.setArray2d(string2DArray);
         return root2DArray;
     }
+
 /*
     @Override
     public void testJSONMarshalToBuilderResult() throws Exception{
     }
-*/
+
     @Override
     public void testJSONMarshalToGeneratorResult() throws Exception{
     }
@@ -74,5 +75,6 @@ public class Nested2dArrayTestCases extends JSONTestCases {
     @Override
     public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
     }
+*/
 
 }

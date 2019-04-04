@@ -60,7 +60,6 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
 
     @Override
     protected void finishLevel(){
-        System.out.println(String.format("[FINISHLEVEL] %s", position.keyName));
         if(!(position.isCollection && position.isEmptyCollection() && position.getKeyName() == null)){
 
             Level parentLevel = (Level) position.parentLevel;
@@ -115,7 +114,6 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
 
     @Override
     protected void addValueToObject(Level level, String keyName, Object value, QName schemaType){
-        System.out.println(String.format("[DEBUG] VALUE %s to OBJECT %s", value.toString(), level.toString()));
         JsonObjectBuilder jsonObjectBuilder = level.getJsonObjectBuilder();
         if(value == NULL){
             jsonObjectBuilder.addNull(keyName);
@@ -154,7 +152,6 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
 
     @Override
     protected void addValueToArray(Level level, Object value, QName schemaType){
-        System.out.println(String.format("[DEBUG] VALUE %s to ARRAY %s", value.toString(), level.toString()));
         JsonArrayBuilder jsonArrayBuilder = level.getJsonArrayBuilder();
         if(value == NULL){
             jsonArrayBuilder.addNull();
@@ -208,7 +205,6 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         public void setCollection(boolean isCollection) {
             super.setCollection(isCollection);
             if(isCollection && jsonArrayBuilder == null){
-                System.out.println(String.format("[ARRAYBUILDER] INIT %s", keyName));
                 jsonArrayBuilder = Json.createArrayBuilder();
             }
         }

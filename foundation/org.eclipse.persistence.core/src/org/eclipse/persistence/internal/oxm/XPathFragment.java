@@ -35,9 +35,8 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
  * b[2] would have an index value of 2.</li>
  * </ul>
  */
-public class XPathFragment <
-  XML_FIELD extends Field
->{
+public class XPathFragment<XML_FIELD extends Field> {
+
     public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(Constants.TEXT);
     public static final String SELF_XPATH = ".";
     public static final XPathFragment SELF_FRAGMENT = new XPathFragment(SELF_XPATH);
@@ -70,15 +69,6 @@ public class XPathFragment <
 
     private Set<String> attributeCollisionSet;
     private Set<String> nonAttributeCollisionSet;
-
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("XPathFragment:{");
-        sb.append("xpath=").append(xpath);
-        sb.append(",prefix=").append(prefix);
-        sb.append("}");
-        return sb.toString();
-    }
 
     public XPathFragment() {
         setNamespaceAware(true);

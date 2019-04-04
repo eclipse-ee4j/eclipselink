@@ -101,11 +101,11 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         super.openStartElement(xPathFragment, namespaceResolver);
         String keyName1 = getKeyName(xPathFragment);
 //        if (keyName1 != null && keyName1.equals("array2d")) {
-        if (position != null && position.isCollection && xPathFragment.getXMLField().isNestedArray()
+        if (position != null && position.isCollection && xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray()
                 && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
             position.addSkip();
             position.setKeyName(keyName1);
-            System.out.println(String.format("[STARTELEMENT] Skipping %s", getKeyName(xPathFragment)));
+            startEmptyCollection();
             return;
         }
         if(position != null) {
@@ -134,8 +134,6 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                 position = newLevel;
             }
             isLastEventStart = true;
-            //System.out.println(String.format("[STARTELEMENT] POS %s(%s) :: %s", xPathFragment, xPathFragment.getXMLField() != null  && xPathFragment.getXMLField().isNestedArray(), position.toString()));
-            System.out.println(String.format("[STARTELEMENT] NEW %s(%s) :: %s", xPathFragment, xPathFragment.getXMLField() != null  && xPathFragment.getXMLField().isNestedArray(), newLevel.toString()));
         }
     }
 
@@ -189,7 +187,6 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
     protected void finishLevel(){
         boolean notSkip = position.parentLevel == null || position.parentLevel.notSkip();
-        System.out.println(String.format("[FINISHLEVEL PARENT] %s", notSkip ? "UP" : "KEEP" ));
         if (notSkip) {
             position = (T) position.parentLevel;
         }
@@ -203,25 +200,10 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
              startRootLevelCollection();
         } else {
             if(isLastEventStart){
-                //TODO change 1-APR-2019
-/*
-                if (position.isNestedArray()) {
-                    position.setCollection(true);
-                } else {
-*/
                     setComplex(position, true);
-/*
-                }
-*/
             }
-/*
-            if (!(position.isNestedArray() && position.isComplex())) {
-                position = createNewLevel(true, position, position.isNestedArray());
-            }
-*/
             position = createNewLevel(true, position, position.isNestedArray());
         }
-        System.out.println(String.format("[STARTCOLLECTION] NEW %s", position));
         isLastEventStart = false;
     }
 
@@ -775,19 +757,6 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
          public void setNestedArray(boolean nestedArray) {
              this.nestedArray = nestedArray;
-         }
-
-         public String toString() {
-             StringBuilder sb = new StringBuilder();
-             sb.append("Level:{");
-             sb.append("key=").append(keyName);
-             sb.append(",parent=").append(parentLevel != null ? parentLevel.getKeyName() : "N/A");
-             sb.append(",collection=").append(isCollection);
-             sb.append(",nestedArray=").append(nestedArray);
-             sb.append(",isComplex=").append(isComplex);
-             sb.append(",emptyCollection=").append(emptyCollection);
-             sb.append("}");
-             return sb.toString();
          }
 
      }
