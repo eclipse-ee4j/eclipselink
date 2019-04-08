@@ -717,7 +717,7 @@ public class PropertiesHandler {
             };
         }
     }
-    
+
     protected static class PessimisticLockTimeoutUnitProp extends Prop {
         PessimisticLockTimeoutUnitProp() {
             super(PersistenceUnitProperties.PESSIMISTIC_LOCK_TIMEOUT_UNIT, DescriptorQueryManager.DefaultTimeoutUnit.toString());

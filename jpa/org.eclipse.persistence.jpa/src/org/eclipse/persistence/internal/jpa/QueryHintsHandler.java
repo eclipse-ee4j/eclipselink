@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -831,7 +832,7 @@ public class QueryHintsHandler {
             return query;
         }
     }
-    
+
     protected static class PessimisticLockTimeoutUnitHint extends Hint {
         PessimisticLockTimeoutUnitHint() {
             super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "");
@@ -1985,6 +1986,7 @@ public class QueryHintsHandler {
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.QUERY_TIMEOUT));
+            query.setIsPrepared(false);
             return query;
         }
     }
