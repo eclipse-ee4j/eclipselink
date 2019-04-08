@@ -2200,10 +2200,10 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
                         convertedTimeout = TimeUnit.SECONDS.convert(timeout, timeoutUnit);
                         if(convertedTimeout > Integer.MAX_VALUE){
                             timeout = Integer.MAX_VALUE;
-                        }else {
+                        } else {
                             timeout = convertedTimeout.intValue();
                         }
-                      //Round up the timeout if SECONDS are larger than the given units
+                        //Round up the timeout if SECONDS are larger than the given units
                         if(TimeUnit.SECONDS.compareTo(timeoutUnit) > 0 && timeout % 1000 > 0){
                             timeout += 1;
                         }

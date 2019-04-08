@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -245,14 +246,14 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeout(Integer)
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
-    
+
     /**
      * "eclipselink.pessimistic.lock.timeout.unit"
      * <p>Configures the pessimistic lock timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT), 
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>", 
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeoutUnit(TimeUnit)
@@ -380,8 +381,8 @@ public class QueryHints {
      * <p>Configures the query timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT), 
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>", 
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeoutUnit(TimeUnit)
