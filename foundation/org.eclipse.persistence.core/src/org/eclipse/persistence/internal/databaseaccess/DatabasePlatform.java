@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1547,6 +1547,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Platforms that support the WAIT option should override this method.
      * By default the wait timeout is ignored.
+     * 
+     *  @see DatabasePlatform#supportsWaitForUpdate()
      */
     public String getSelectForUpdateWaitString(Integer waitTimeout) {
         return getSelectForUpdateString();
@@ -2357,6 +2359,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      * this method.
      */
     public boolean supportsVPD() {
+        return false;
+    }
+
+    /**
+     *  INTERNAL:
+     *  Indicates whether the platform supports timeouts on For Update
+     *  
+     *  @see DatabasePlatform#getSelectForUpdateWaitString(Integer waitTimeout)
+     */
+    public boolean supportsWaitForUpdate() {
         return false;
     }
 

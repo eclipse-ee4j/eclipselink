@@ -3141,8 +3141,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see #PESSIMISTIC_LOCK_TIMEOUT_UNIT
@@ -3169,8 +3169,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see #QUERY_TIMEOUT
