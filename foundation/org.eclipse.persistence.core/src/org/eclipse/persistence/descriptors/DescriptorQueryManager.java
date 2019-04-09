@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -131,7 +132,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public static final int DefaultTimeout = -1;
     protected int queryTimeout;
 
-    public static final TimeUnit DefaultTimeoutUnit = TimeUnit.SECONDS;
+    public static final TimeUnit DefaultTimeoutUnit = TimeUnit.MILLISECONDS;
     protected TimeUnit queryTimeoutUnit;
 
     /**

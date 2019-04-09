@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -4490,7 +4491,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                             beginTransaction(em2);
                             Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
                             query2.setParameter("id", bobId);
-                            query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 10);
+                            query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 10000);
                             Employee emp = (Employee) query2.getSingleResult(); // might wait for lock to be released
                             emp.setFirstName("Robert");
                             commitTransaction(em2); // might wait for lock to be released

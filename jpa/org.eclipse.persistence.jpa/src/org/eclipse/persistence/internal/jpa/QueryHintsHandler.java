@@ -1927,6 +1927,7 @@ public class QueryHintsHandler {
 
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.QUERY_TIMEOUT));
+            query.setIsPrepared(false);
             return query;
         }
     }

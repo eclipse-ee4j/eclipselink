@@ -1838,7 +1838,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
         if (this.queryTimeout == DescriptorQueryManager.DefaultTimeout) {
             if (this.descriptor == null) {
                 setQueryTimeout(this.session.getQueryTimeoutDefault());
-                if(this.session.getQueryTimeoutUnitDefault() == null){
+                if(this.session.getQueryTimeoutUnitDefault() == null) {
                     this.session.setQueryTimeoutUnitDefault(DescriptorQueryManager.DefaultTimeoutUnit);
                 }
                 setQueryTimeoutUnit(this.session.getQueryTimeoutUnitDefault());
@@ -1849,10 +1849,10 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
                     timeout = this.session.getQueryTimeoutDefault();
                 }
                 setQueryTimeout(timeout);
-                
+
                 //Bug #456067
                 TimeUnit timeoutUnit = this.descriptor.getQueryManager().getQueryTimeoutUnit();
-                if(timeoutUnit == DescriptorQueryManager.DefaultTimeoutUnit){
+                if(timeoutUnit == DescriptorQueryManager.DefaultTimeoutUnit) {
                     timeoutUnit = this.session.getQueryTimeoutUnitDefault();
                 }
                 setQueryTimeoutUnit(timeoutUnit);
