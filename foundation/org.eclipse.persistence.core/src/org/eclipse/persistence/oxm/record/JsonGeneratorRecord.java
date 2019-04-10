@@ -82,7 +82,11 @@ public class JsonGeneratorRecord extends JsonRecord<JsonRecord.Level> {
 
     @Override
     protected void startEmptyCollection(){
-       jsonGenerator.writeStartArray(position.keyName);
+        if (position.parentLevel != null && position.parentLevel.getSkipCount() > 0) {
+            jsonGenerator.writeStartArray();
+        } else {
+            jsonGenerator.writeStartArray(position.keyName);
+        }
     }
 
     @Override

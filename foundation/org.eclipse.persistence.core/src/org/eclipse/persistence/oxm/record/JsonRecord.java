@@ -105,7 +105,10 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
                 && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
             position.addSkip();
             position.setKeyName(keyName1);
-            startEmptyCollection();
+            if (!position.isEmptyCollectionGenerated()) {
+                startEmptyCollection();
+                position.setEmptyCollectionGenerated(true);
+            }
             return;
         }
         if(position != null) {
@@ -693,6 +696,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
 
         protected boolean isCollection;
         protected boolean emptyCollection;
+         protected boolean emptyCollectionGenerated;
         protected String keyName;
         protected boolean isComplex;
         protected boolean nestedArray;
@@ -720,6 +724,10 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
              }
          }
 
+         protected int getSkipCount() {
+             return skipCount;
+         }
+
         public boolean isCollection() {
             return isCollection;
         }
@@ -743,7 +751,16 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
         public void setEmptyCollection(boolean emptyCollection) {
             this.emptyCollection = emptyCollection;
         }
-        public boolean isComplex() {
+
+         public boolean isEmptyCollectionGenerated() {
+             return emptyCollectionGenerated;
+         }
+
+         public void setEmptyCollectionGenerated(boolean emptyCollectionGenerated) {
+             this.emptyCollectionGenerated = emptyCollectionGenerated;
+         }
+
+         public boolean isComplex() {
             return isComplex;
         }
 
