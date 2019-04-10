@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1991,7 +1991,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     beginTransaction(em2);
                     
                     HashMap<String, Object> properties = new HashMap<String, Object>();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5000);
                     Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
@@ -2044,7 +2044,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     beginTransaction(em2);
                     
                     HashMap<String, Object> properties = new HashMap<String, Object>();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5000);
                     Employee employee2 = (Employee)em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);

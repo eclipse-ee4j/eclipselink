@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -982,6 +982,9 @@ public class ProjectClassGenerator {
         }
         if (query.getQueryTimeout() != DescriptorQueryManager.DefaultTimeout) {
             method.addLine(queryIdentifier + ".setQueryTimeout(" + String.valueOf(query.getQueryTimeout()) + ");");
+        }
+        if (query.getQueryTimeoutUnit() != DescriptorQueryManager.DefaultTimeoutUnit) {
+            method.addLine(queryIdentifier + ".setQueryTimeoutUnit(" + query.getQueryTimeoutUnit() + ");");
         }
         if (!query.shouldUseWrapperPolicy()) {
             method.addLine(queryIdentifier + ".setShouldUseWrapperPolicy(" + String.valueOf(query.shouldUseWrapperPolicy()) + ");");
