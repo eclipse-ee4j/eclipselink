@@ -1328,14 +1328,21 @@ public class DatabasePlatform extends DatasourcePlatform {
             return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.UTILDATE ) {
             return Types.TIMESTAMP;
-        } else if (javaType == ClassConstants.TIME) {
+        } else if (javaType == ClassConstants.TIME ||
+            javaType == ClassConstants.TIME_LTIME) { //bug 546312
             return Types.TIME;
-        } else if (javaType == ClassConstants.SQLDATE) {
+        } else if (javaType == ClassConstants.SQLDATE ||
+            javaType == ClassConstants.TIME_LDATE) { //bug 546312
             return Types.DATE;
         } else if (javaType == ClassConstants.TIMESTAMP ||
-            javaType == ClassConstants.UTILDATE) { //bug 5237080, return TIMESTAMP for java.util.Date as well
+            javaType == ClassConstants.UTILDATE || //bug 5237080, return TIMESTAMP for java.util.Date as well
+            javaType == ClassConstants.TIME_LDATETIME) { //bug 546312
             return Types.TIMESTAMP;
-        } else if (javaType == ClassConstants.ABYTE) {
+        } else if(javaType == ClassConstants.TIME_OTIME) { //bug 546312
+            return Types.TIME_WITH_TIMEZONE;
+        } else if(javaType == ClassConstants.TIME_ODATETIME) { //bug 546312
+            return Types.TIMESTAMP_WITH_TIMEZONE;
+        }else if (javaType == ClassConstants.ABYTE) {
             return Types.LONGVARBINARY;
         } else if (javaType == ClassConstants.APBYTE) {
             return Types.LONGVARBINARY;
