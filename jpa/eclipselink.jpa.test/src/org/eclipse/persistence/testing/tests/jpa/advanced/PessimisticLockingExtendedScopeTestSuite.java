@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2013 Oracle and/or its affiliates, SAP. All rights reserved.
+ * Copyright (c) 2010, 2019 Oracle and/or its affiliates, SAP. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -376,7 +376,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
         LockModeType lockMode = LockModeType.PESSIMISTIC_WRITE;
         Map<String, Object> properties = new HashMap();
         properties.put(QueryHints.PESSIMISTIC_LOCK_SCOPE, PessimisticLockScope.EXTENDED);
-        properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 10);
+        properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 10000);
 
         EntityManager em1 = createEntityManager();
         try {

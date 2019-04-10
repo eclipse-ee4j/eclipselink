@@ -247,8 +247,8 @@ public class QueryHints {
      * <p>Configures the pessimistic lock timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeoutUnit(TimeUnit)
@@ -376,8 +376,8 @@ public class QueryHints {
      * <p>Configures the query timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeoutUnit(TimeUnit)
