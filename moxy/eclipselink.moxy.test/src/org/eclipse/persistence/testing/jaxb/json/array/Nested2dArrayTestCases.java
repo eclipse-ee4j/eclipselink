@@ -47,34 +47,4 @@ public class Nested2dArrayTestCases extends JSONTestCases {
         return root2DArray;
     }
 
-/*
-    @Override
-    public void testJSONMarshalToBuilderResult() throws Exception{
-    }
-
-    @Override
-    public void testJSONMarshalToGeneratorResult() throws Exception{
-    }
-
-    @Override
-    public void testObjectToJSONStringWriter() throws Exception {
-    }
-
-    @Override
-    public void testJSONMarshalToOutputStream() throws Exception{
-    }
-
-    @Override
-    public void testJSONMarshalToOutputStream_FORMATTED() throws Exception{
-    }
-
-    @Override
-    public void testJSONMarshalToStringWriter() throws Exception{
-    }
-
-    @Override
-    public void testJSONMarshalToStringWriter_FORMATTED() throws Exception{
-    }
-*/
-
 }

@@ -12,6 +12,7 @@
 
 // Contributors:
 //     Denise Smith - 2.6 - initial implementation
+//     Radek Felman - 2.7.5 - Bug 389815 - Enhancement Request - JSON specific multidimensional array support
 package org.eclipse.persistence.oxm.record;
 
 import java.io.IOException;
@@ -100,7 +101,6 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
     public void openStartElement(XPathFragment xPathFragment, NamespaceResolver namespaceResolver) {
         super.openStartElement(xPathFragment, namespaceResolver);
         String keyName1 = getKeyName(xPathFragment);
-//        if (keyName1 != null && keyName1.equals("array2d")) {
         if (position != null && position.isCollection && xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray()
                 && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
             position.addSkip();
