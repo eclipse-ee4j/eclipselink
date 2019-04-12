@@ -197,9 +197,9 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         private JsonObjectBuilder jsonObjectBuilder;
         private JsonArrayBuilder jsonArrayBuilder;
 
-         public Level(boolean isCollection, Level position, boolean nestedArray) {
-             super(isCollection, position, nestedArray);
-         }
+        public Level(boolean isCollection, Level position, boolean nestedArray) {
+            super(isCollection, position, nestedArray);
+        }
 
         @Override
         public void setCollection(boolean isCollection) {

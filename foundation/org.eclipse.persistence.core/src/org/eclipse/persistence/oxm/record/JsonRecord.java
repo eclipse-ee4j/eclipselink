@@ -203,7 +203,7 @@ public abstract class JsonRecord<T extends JsonRecord.Level> extends MarshalReco
              startRootLevelCollection();
         } else {
             if(isLastEventStart){
-                    setComplex(position, true);
+                setComplex(position, true);
             }
             position = createNewLevel(true, position, position.isNestedArray());
         }
