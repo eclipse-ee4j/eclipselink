@@ -25,8 +25,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  */
 public final class OXMSystemProperties {
 
-    private OXMSystemProperties() {}
-
     /**
      * If we should treat unqualified type property in JSON as MOXy type discriminator.
      *
@@ -63,4 +61,7 @@ public final class OXMSystemProperties {
     public static final String jsonTypeAttributeName = PrivilegedAccessHelper.getSystemProperty(JSON_TYPE_ATTRIBUTE_NAME, Constants.SCHEMA_TYPE_ATTRIBUTE);
 
     public static final Boolean jsonDisableNestedArrayName = PrivilegedAccessHelper.getSystemPropertyBoolean(JSON_DISABLE_NESTED_ARRAY_NAME, false);
+
+    private OXMSystemProperties() {}
+
 }

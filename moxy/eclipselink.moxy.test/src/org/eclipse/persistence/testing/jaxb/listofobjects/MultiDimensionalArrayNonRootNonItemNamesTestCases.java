@@ -125,14 +125,14 @@ public class MultiDimensionalArrayNonRootNonItemNamesTestCases extends JAXBListO
 
     @Override
     public void xmlToObjectTest(Object testObject) throws Exception {
-        testObject = new JAXBElement(new QName("urn:example", "root"), Object.class, testObject);
-        super.xmlToObjectTest(testObject);
+        Object testObjectTmp = new JAXBElement(new QName("urn:example", "root"), Object.class, testObject);
+        super.xmlToObjectTest(testObjectTmp);
     }
 
     @Override
     public void jsonToObjectTest(Object testObject) throws Exception {
-        testObject = new JAXBElement(new QName("urn:example", "root"), Object.class, testObject);
-        super.jsonToObjectTest(testObject);
+        Object testObjectTmp = new JAXBElement(new QName("urn:example", "root"), Object.class, testObject);
+        super.jsonToObjectTest(testObjectTmp);
     }
 
 }

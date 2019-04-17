@@ -18,10 +18,6 @@ import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONTestCases;
 
-import javax.xml.bind.Marshaller;
-import java.io.ByteArrayOutputStream;
-import java.io.StringWriter;
-
 /**
  * Tests marshall/unmarshal of 3d array (int[]).
  *
