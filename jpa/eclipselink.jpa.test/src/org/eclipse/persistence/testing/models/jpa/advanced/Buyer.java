@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +37,7 @@ import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import static org.eclipse.persistence.annotations.OptimisticLockingType.SELECTED_COLUMNS;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.eclipse.persistence.annotations.TypeConverter;
 
 /**
  * Buyer object.
@@ -53,12 +55,22 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 @Inheritance(strategy=JOINED)
 @NamedQuery(
     name="findBuyerByName",
-    query="SELECT OBJECT(buyer) FROM Buyer buyer WHERE buyer.name = :name"
+    query="SELECT OBJECT(b) FROM Buyer b WHERE b.name = :name"
 )
 @OptimisticLocking(
     type=SELECTED_COLUMNS,
     selectedColumns=@Column(name="VERSION"),
     cascade=false
+)
+@TypeConverter(
+    name="CreditLineLong2String",
+    dataType=String.class,
+    objectType=Long.class
+)
+@TypeConverter(
+    name="CreditCardLong2String",
+    dataType=String.class,
+    objectType=Long.class
 )
 public class Buyer implements Serializable {
     public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
@@ -150,12 +162,12 @@ public class Buyer implements Serializable {
     @BasicMap(
         fetch=EAGER,
         keyColumn=@Column(name="CARD"),
-        keyConverter=@Convert("CreditCard"),
+        keyConverter=@Convert("CreditCardString2String"),
         valueColumn=@Column(name="NUMB"),
-        valueConverter=@Convert("Long2String")
+        valueConverter=@Convert("CreditCardLong2String")
     )
     @ObjectTypeConverter(
-        name="CreditCard",
+        name="CreditCardString2String",
         conversionValues={
             @ConversionValue(dataValue="VI", objectValue=VISA),
             @ConversionValue(dataValue="AM", objectValue=AMEX),
@@ -176,7 +188,7 @@ public class Buyer implements Serializable {
         name="BUYER_CREDITLINES",
         joinColumns=@JoinColumn(name="BUYER_ID")
     )
-    @Convert("Long2String")
+    @Convert("CreditLineLong2String")
     @MapKeyConvert("CreditLine")
     @ObjectTypeConverter(
        name="CreditLine",
