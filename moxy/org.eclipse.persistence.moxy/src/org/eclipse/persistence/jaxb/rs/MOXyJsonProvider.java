@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,6 +67,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.exceptions.JSONException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -734,6 +735,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             throw new WebApplicationException(unmarshalException, builder.build());
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
+        } catch(NullPointerException nullPointerException) {
+            throw new WebApplicationException(JSONException.errorInvalidDocument(nullPointerException));
         }
     }
 
