@@ -3571,4 +3571,29 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    // Only MS SQL and Sybase ASE are known to need pattern escaping.
+    // Only MS SQL platform was fixed.
+    /**
+     * Check whether JPQL LIKE expression pattern needs escaping.
+     * @return always returns false
+     */
+    public boolean shouldEscapeLikePattern() {
+        return false;
+    }
+
+    // Returns unmodified pattern string by default.
+    /**
+     * INTERNAL:
+     * JPQL LIKE expression pattern definition contains only two wild cards: '%' for any sequence of characters
+     * and '_' for any single character. Any other characters with special meaning must be escaped if specific
+     * database supports them.
+     * @param pattern source pattern to be escaped
+     * @param escapeChar character used to escape pattern, first character from provided {@code String} is used
+     * @return pattern with other characters with special meaning escaped. Default implementation does not recognize
+     *         any characters to be escaped so unmodified pattern {@code String} is returned.
+     */
+    public String escapeLikePattern(final String pattern, final String escapeChar) {
+        return pattern;
+    }
+
 }

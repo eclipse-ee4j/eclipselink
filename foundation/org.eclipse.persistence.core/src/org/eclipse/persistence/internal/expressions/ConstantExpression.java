@@ -26,6 +26,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.transform.LikePatternTransformation;
 
 /**
  * Used for wrapping constant values.
@@ -175,6 +176,37 @@ public class ConstantExpression extends Expression {
             printer.printNull(this);
         } else {
             printer.printPrimitive(value);
+        }
+    }
+
+    // Bug# 545940 - Register delayed transformaion for JPQL LIKE expression
+    // TODO: Transformation setup should be better done in caller method as lambda
+    /**
+     * INTERNAL:
+     * Print SQL and apply transformation on value to be printed
+     * @param printer target SQL expression printer
+     * @param transform SQL parameters delayed transformation
+     * @param arg transformation method expression argument
+     */
+    @Override
+    public void printSQL(ExpressionSQLPrinter printer, LikePatternTransformation.Function transform, Expression arg) {
+        if (transform == null || value == null) {
+            printSQL(printer);
+        } else {
+            if (arg.isConstantExpression()) {
+                String argValue = ((ConstantExpression)arg).getValue().toString();
+                Object sourceValue = localBase != null ? localBase.getFieldValue(value, getSession()) : value;
+                String valueToPrint = transform.transform((String)value, argValue);
+                printer.printPrimitive(valueToPrint);
+            } else {
+                // Index of next parameter value is determined from List size before adding it.
+                List<Object> parameters = printer.getCall().getParameters();
+                int index = parameters != null ? parameters.size() : 0;
+                printSQL(printer);
+                printer.getCall().addTransformation(
+                        new LikePatternTransformation(
+                                this, index, arg, printer.getPlatform()::escapeLikePattern));
+            }
         }
     }
 

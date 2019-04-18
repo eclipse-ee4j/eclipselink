@@ -57,6 +57,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.ReportQuery;
+import org.eclipse.persistence.queries.transform.LikePatternTransformation;
 
 /**
  * <p>
@@ -3864,6 +3865,23 @@ public abstract class Expression implements Serializable, Cloneable {
      * Print SQL
      */
     public abstract void printSQL(ExpressionSQLPrinter printer);
+
+    // TODO: Transformation setup should be better done in caller method as lambda
+    /**
+     * INTERNAL:
+     * Print SQL and apply transformation on value to be printed.
+     * Only {@code ConstantExpression} and {@code ParameterExpression} support this method with transformation instance.
+     * @param printer target SQL expression printer
+     * @param transform SQL parameters delayed transformation
+     * @param arg transformation method expression argument
+     */
+    public void printSQL(ExpressionSQLPrinter printer, LikePatternTransformation.Function transform, Expression arg) {
+        if (transform == null) {
+            printSQL(printer);
+        } else {
+            throw new UnsupportedOperationException("Print SQL with transformation is not supported for this expression");
+        }
+    }
 
     /**
      * INTERNAL:

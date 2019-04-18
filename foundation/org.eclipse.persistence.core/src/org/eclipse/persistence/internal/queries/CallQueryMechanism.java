@@ -29,6 +29,7 @@ import org.eclipse.persistence.internal.expressions.*;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.queries.*;
+import org.eclipse.persistence.queries.transform.Transformations;
 
 /**
  * <p><b>Purpose</b>:
@@ -453,4 +454,27 @@ public class CallQueryMechanism extends DatasourceCallQueryMechanism {
             }
         }
     }
+
+    // Bug# 545940 - Access to delayed SQL parameter transformations container stored in DatasourceCall
+
+    /**
+     * INTERNAL:
+     * Return delayed SQL parameter transformations.
+     * @return delayed SQL parameter transformations
+     */
+    @Override
+    public Transformations getTransformations() {
+        return call != null ? call.getTransformations() : null;
+    }
+
+    /**
+     * INTERNAL:
+     * Check whether delayed SQL parameter transformations are registered.
+     * @return whether at least one delayed SQL parameter transformation is registered
+     */
+    @Override
+    public boolean hasTransformations() {
+        return call != null ? !call.getTransformations().isEmpty() : false;
+    }
+
 }

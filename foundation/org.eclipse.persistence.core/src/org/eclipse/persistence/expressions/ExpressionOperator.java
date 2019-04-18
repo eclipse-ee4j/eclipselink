@@ -34,6 +34,7 @@ import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -46,6 +47,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
+import org.eclipse.persistence.queries.transform.LikePatternTransformation;
 
 /**
  * <p>
@@ -2197,19 +2199,57 @@ public class ExpressionOperator implements Serializable {
             }
         }
 
-        for (final int index : argumentIndices) {
-            Expression item = (Expression)items.get(index);
-            if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
-                DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
-                printer.printString(alias.getNameDelimited(printer.getPlatform()));
-            } else if ((this.selector == Count) && (item.isExpressionBuilder())) {
-                printer.printString("*");
-            } else {
-                item.printSQL(printer);
+        switch (selector) {
+        // Bug# 545940: LIKE requires special handling.
+        // SYNTAX: <string_expression> [ NOT ] LIKE <pattern_value> [ ESCAPE <escape_character> ]
+        case Like: case LikeEscape: case NotLikeEscape:
+            if (argumentIndices.length > 1) {
+                Expression string = (Expression) items.get(argumentIndices[0]);
+                Expression pattern = (Expression) items.get(argumentIndices[1]);
+                Expression escape = argumentIndices.length > 2 ? (Expression) items.get(argumentIndices[2]) : null;
+                string.printSQL(printer);
+                printDatabaseString(printer, dbStringIndex++);
+                // MS SQL Server shall escape LIKE expression pattern
+                if (printer.getPlatform().shouldEscapeLikePattern()) {
+                    // TODO: This version of printSQL is only for LIKE expression. It would be nice to make it more common
+                    // by passing lambda with what to initialize
+                    pattern.printSQL(printer, printer.getPlatform()::escapeLikePattern, escape);
+                } else {
+                    string.printSQL(printer);
+                }
+                printDatabaseString(printer, dbStringIndex++);
+                if (escape != null) {
+                    escape.printSQL(printer);
+                    if (dbStringIndex < getDatabaseStrings().length) {
+                        printer.printString(getDatabaseStrings()[dbStringIndex++]);
+                    }
+                }
+                // This is just for safety if there are more arguments than 3.
+                for (int i = 3; i < argumentIndices.length; i++) {
+                    ((Expression)items.get(argumentIndices[i])).printSQL(printer);
+                    printDatabaseString(printer, dbStringIndex++);
+                }
+                break;
             }
-            if (dbStringIndex < getDatabaseStrings().length) {
-                printer.printString(getDatabaseStrings()[dbStringIndex++]);
+        default:
+            for (final int index : argumentIndices) {
+                Expression item = (Expression) items.get(index);
+                if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
+                    DatabaseTable alias = ((ObjectExpression) item).aliasForTable(((ObjectExpression) item).getDescriptor().getTables().firstElement());
+                    printer.printString(alias.getNameDelimited(printer.getPlatform()));
+                } else if ((this.selector == Count) && (item.isExpressionBuilder())) {
+                    printer.printString("*");
+                } else {
+                    item.printSQL(printer);
+                }
+                printDatabaseString(printer, dbStringIndex++);
             }
+        }
+    }
+
+    private void printDatabaseString(ExpressionSQLPrinter printer, int dbStringIndex) {
+        if (dbStringIndex < getDatabaseStrings().length) {
+            printer.printString(getDatabaseStrings()[dbStringIndex]);
         }
     }
 

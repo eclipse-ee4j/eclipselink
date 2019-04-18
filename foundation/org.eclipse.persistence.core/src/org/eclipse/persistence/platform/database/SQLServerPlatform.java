@@ -812,4 +812,66 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         call.setIgnoreFirstRowSetting(true);
         call.setIgnoreMaxResultsSetting(true);
     }
+
+    // Bug# 545940 - Transformation used to escape JPQL LIKE pattern
+
+    /** Default escape character for logical operator LIKE. */
+    public static final char DEFAULT_LIKE_ESCAPE_CHAR = '\\';
+
+    /** Pattern escaping state machine states. */
+    private static enum EscState {
+        REGULAR,
+        ESCAPED
+    }
+
+    // Trigger transformation code to be registered and executed
+    /**
+     * Check whether JPQL LIKE expression pattern needs escaping.
+     * @return always returns true
+     */
+    public boolean shouldEscapeLikePattern() {
+        return true;
+    }
+
+    // Implement pattern transformation as ParameterTransformation.Function interface to be passed
+    // to delayed query parameters transformation container
+    /**
+     * INTERNAL:
+     * JPQL LIKE expression pattern definition contains only two wild cards: '%' for any sequence of characters
+     * and '_' for any single character. Any other characters with special meaning must be escaped if specific
+     * database supports them.
+     * @param pattern source pattern to be escaped
+     * @param escapeChar character used to escape pattern, first character from provided {@code String} is used
+     * @return pattern with other characters with special meaning escaped. Default implementation does not recognize
+     *         any characters to be escaped so unmodified pattern {@code String} is returned.
+     */
+    public String escapeLikePattern(final String pattern, final String escapeChar) {
+        if (pattern == null) {
+            return pattern;
+        }
+        StringBuilder sb = new StringBuilder();
+        char escape = escapeChar != null && !escapeChar.isEmpty() ? escapeChar.charAt(0) : DEFAULT_LIKE_ESCAPE_CHAR;
+        EscState state = EscState.REGULAR;
+        for (char c : pattern.toCharArray()) {
+            switch(state) {
+                case REGULAR:
+                    switch(c) {
+                        case '[': case ']':
+                            sb.append(escape);
+                        default:
+                            sb.append(c);
+                            if (c == escape) {
+                                state = EscState.ESCAPED;
+                            }
+                    }
+                    break;
+                case ESCAPED:
+                    sb.append(c);
+                    state = EscState.REGULAR;
+                    break;
+            }
+        }
+        return sb.toString();
+    }
+
 }

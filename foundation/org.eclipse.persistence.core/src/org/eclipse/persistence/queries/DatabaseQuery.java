@@ -56,6 +56,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.queries.transform.Transformations;
 import org.eclipse.persistence.sessions.remote.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Record;
@@ -2036,11 +2037,46 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     }
 
     /**
-     * INTERNAL: Translate argumentValues into a database row.
+     * Copy unmodified query arguments into provided AbstractRecord instance.
+     * Size of source lists and order of parameters must be the same in both lists.
+     * @param row target AbstractRecord instance
+     * @param argumentFields query parameters fields
+     * @param argumentValues query parameters values
+     */
+    private void copyArguments(AbstractRecord row, List<DatabaseField> argumentFields, List argumentValues) {
+        int argumentsSize = argumentFields.size();
+        for (int index = 0; index < argumentsSize; index++) {
+            row.put(argumentFields.get(index), argumentValues.get(index));
+        }
+    }
+
+    /**
+     * Transform unmodified query arguments and put them into provided AbstractRecord instance.
+     * Size of source lists and order of parameters must be the same in both lists.
+     * @param row target AbstractRecord instance
+     * @param argumentFields query parameters fields
+     * @param argumentValues query parameters values
+     */
+    private void transformArguments(AbstractRecord row, List<DatabaseField> argumentFields, List argumentValues) {
+        Transformations transformations = getQueryMechanism().getTransformations();
+        int argumentsSize = argumentFields.size();
+        for (int index = 0; index < argumentsSize; index++) {
+            String paramName = (String)argumentFields.get(index).getName();
+            Object transformedValue = transformations.transformParam(paramName);
+            row.put(argumentFields.get(index), transformedValue);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Translate argumentValues into a database row.
+     * Delayed SQL parameters transformations are applied.
+     * @param argumentValues query parameters values
+     * @param session current database session
+     * @return AbstractRecord instance containing transformed query parameters
      */
     public AbstractRecord rowFromArguments(List argumentValues, AbstractSession session) throws QueryException {
         List<DatabaseField> argumentFields = this.argumentFields;
-
         // PERF: argumentFields are set in prepare, but need to be built if
         // query is not prepared.
         if (!isPrepared() || (argumentFields == null)) {
@@ -2053,8 +2089,15 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
 
         int argumentsSize = argumentFields.size();
         AbstractRecord row = new DatabaseRecord(argumentsSize);
-        for (int index = 0; index < argumentsSize; index++) {
-            row.put(argumentFields.get(index), argumentValues.get(index));
+        // Bug# 545940 - Delayed SQL parameters transformation is done here
+        if (getQueryMechanism().hasTransformations()) {
+            Transformations transformations = getQueryMechanism().getTransformations();
+            transformations.setQuery(this);
+            transformations.setParamValues(argumentFields, argumentValues);
+            transformations.transformConstants();
+            transformArguments(row, argumentFields, argumentValues);
+        } else {
+            copyArguments(row, argumentFields, argumentValues);
         }
 
         return row;

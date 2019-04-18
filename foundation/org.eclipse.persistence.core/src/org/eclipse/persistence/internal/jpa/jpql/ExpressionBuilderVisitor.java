@@ -155,6 +155,7 @@ import org.eclipse.persistence.jpa.jpql.parser.WhereClause;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.querykeys.ForeignReferenceQueryKey;
 import org.eclipse.persistence.mappings.querykeys.QueryKey;
+import org.eclipse.persistence.platform.database.SQLServerPlatform;
 import org.eclipse.persistence.queries.ReportQuery;
 
 /**
@@ -1388,7 +1389,14 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         }
         // Create the LIKE expression with no escape character
         else {
-            queryExpression = firstExpression.like(patternValue);
+            // Bug# 545940 - MS SQL Server shall always have escape character defined
+            if (queryContext.getSession().getPlatform().shouldEscapeLikePattern()) {
+                ConstantExpression escape = new ConstantExpression(
+                        Character.toString(SQLServerPlatform.DEFAULT_LIKE_ESCAPE_CHAR), firstExpression);
+                queryExpression = firstExpression.like(patternValue, escape);
+            } else {
+                queryExpression = firstExpression.like(patternValue);
+            }
         }
 
         // Negate the expression

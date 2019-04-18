@@ -32,6 +32,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.transform.LikePatternTransformation;
 
 /**
  * Used for parameterized expressions, such as expression defined in mapping queries.
@@ -153,6 +154,16 @@ public class ParameterExpression extends BaseExpression {
             }
         }
         return localBase.getBuilder();
+    }
+
+    /**
+     * INTERNAL:
+     * Get parameter expression name.
+     * @return name of this parameter expression
+     */
+    @Override
+    public String getName() {
+        return field != null ? field.getName() : super.getName();
     }
 
     public DatabaseField getField() {
@@ -369,6 +380,26 @@ public class ParameterExpression extends BaseExpression {
             if (getField() != null) {
                 printer.printParameter(this);
             }
+        }
+    }
+
+    // Bug# 545940 - Register delayed transformaion for JPQL LIKE expression
+    // TODO: Transformation setup should be better done in caller method as lambda
+    /**
+     * INTERNAL:
+     * Print SQL and apply transformation on value to be printed
+     * @param printer target SQL expression printer
+     * @param transform SQL parameters delayed transformation
+     * @param arg transformation method expression argument
+     */
+    @Override
+    public void printSQL(ExpressionSQLPrinter printer, LikePatternTransformation.Function transform, Expression arg) {
+        if (transform == null) {
+            printSQL(printer);
+        } else {
+            printer.printParameter(this);
+            printer.getCall().addTransformation(
+                    new LikePatternTransformation(this, arg, printer.getPlatform()::escapeLikePattern));
         }
     }
 

@@ -570,8 +570,7 @@ public class FunctionExpression extends BaseExpression {
                 printer.getCall().setUsesBinding(false);
             }
         }
-        ExpressionOperator realOperator;
-        realOperator = getPlatformOperator(printer.getPlatform());
+        ExpressionOperator realOperator = getPlatformOperator(printer.getPlatform());
         realOperator.printCollection(this.children, printer);
     }
 
