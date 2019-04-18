@@ -21,7 +21,7 @@ import java.util.ListResourceBundle;
  * <b>Purpose:</b><p>English ResourceBundle for JSONException.</p>
  */
 public class JSONExceptionResource extends ListResourceBundle {
-    static final Object[][] contents = {
+    public static final Object[][] contents = {
             {"60001", "Input JSON document is invalid or doesn't match target object graph."},
     };
 
