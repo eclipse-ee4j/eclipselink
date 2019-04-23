@@ -17,12 +17,6 @@
 //       - 375101: Date and Calendar should not require @Temporal.
 package org.eclipse.persistence.testing.tests.jpa.datetime;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.OffsetTime;
-import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.Map;
 
@@ -53,6 +47,7 @@ import junit.framework.TestSuite;
  * @see org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator
  */
 public class NullBindingJUnitTestCase extends JUnitTestCase {
+
     private static int datetimeId;
 
     public NullBindingJUnitTestCase() {
@@ -103,9 +98,7 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         DateTime dt;
 
         beginTransaction(em);
-        LocalTime localTime = LocalTime.of(0, 0);
-        LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
-        dt = new DateTime(new java.sql.Date(0), localDateTime, new java.sql.Time(0), new java.sql.Timestamp(0), new java.util.Date(0), java.util.Calendar.getInstance(), LocalDate.ofEpochDay(0), localTime, OffsetTime.of(localTime, ZoneOffset.UTC), OffsetDateTime.of(localDateTime, ZoneOffset.UTC));
+        dt = new DateTime();
         em.persist(dt);
 
         datetimeId = dt.getId();

@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,13 +47,14 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(name = "CMP3_DATE_TIME")
 public class DateTime implements Serializable {
+
     private Integer id;
     private java.sql.Date date;
     private LocalDate localDate;
     private LocalTime localTime;
     private LocalDateTime localDateTime;
-    private OffsetDateTime offsetDateTime;
     private OffsetTime offsetTime;
+    private OffsetDateTime offsetDateTime;
     private Time time;
     private Timestamp timestamp;
     private Date utilDate;
@@ -61,19 +63,19 @@ public class DateTime implements Serializable {
     private Map<Date, DateTime> uniSelfMap;
 
     public DateTime() {
-    }
+        LocalTime localTime = LocalTime.of(0, 0);
+        LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
-    public DateTime(java.sql.Date date, LocalDateTime localDateTime, Time time, Timestamp timestamp, Date utilDate, Calendar calendar, LocalDate localDate, LocalTime localTime, OffsetTime offsetTime, OffsetDateTime offsetDateTime) {
-        this.date = date;
-        this.localDate = localDate;
+        this.date = new java.sql.Date(0);
+        this.localDate = LocalDate.ofEpochDay(0);
         this.localTime = localTime;
         this.localDateTime = localDateTime;
-        this.offsetTime = offsetTime;
-        this.offsetDateTime = offsetDateTime;
-        this.time = time;
-        this.timestamp = timestamp;
-        this.utilDate = utilDate;
-        this.calendar = calendar;
+        this.offsetTime = OffsetTime.of(localTime, ZoneOffset.UTC);
+        this.offsetDateTime = OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
+        this.time = new Time(0);
+        this.timestamp = new Timestamp(0);
+        this.utilDate = new Date(0);
+        this.calendar = Calendar.getInstance();
 
         uniSelfMap = new HashMap<Date, DateTime>();
         uniSelfMap.put(new Date(), this);
@@ -192,5 +194,4 @@ public class DateTime implements Serializable {
     public void setUniSelfMap(Map<Date, DateTime> u) {
         uniSelfMap = u;
     }
-
 }
