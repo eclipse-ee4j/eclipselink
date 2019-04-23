@@ -90,7 +90,7 @@ public abstract class DatasourceCall implements Call {
 
     // Bug# 545940 - Delayed SQL parameters transformation container is part of the datasource invocation class.
     /** Delayed datasource call parameters transformations. */
-    private final Transformations transformations;
+    private transient final Transformations transformations;
 
     public DatasourceCall() {
         this.isPrepared = false;

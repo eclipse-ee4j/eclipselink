@@ -21,6 +21,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
 import org.eclipse.persistence.queries.DatabaseQuery;
 
@@ -102,9 +103,12 @@ public class LikePatternTransformation extends ParameterTransformation {
             escapeString = ((ConstantExpression)escape).getValue().toString();
         }
         if (escape.isParameterExpression()) {
-            Object escValue = paramValues.get(((ParameterExpression)escape).getName());
-            if (escValue != null) {
-                escapeString = escValue.toString();
+            DatabaseField field = ((ParameterExpression)escape).getField();
+            if (field != null) {
+                Object escValue = paramValues.get(field.getName());
+                if (escValue != null) {
+                    escapeString = escValue.toString();
+                }
             }
         }
         return escapeString;
@@ -166,7 +170,8 @@ public class LikePatternTransformation extends ParameterTransformation {
     @Override
     public String getParameterName() {
         if (isParameterExpression()) {
-            return pattern.getName();
+            DatabaseField field = ((ParameterExpression)pattern).getField();
+            return field != null ? field.getName() : null;
         } else {
             return null;
         }

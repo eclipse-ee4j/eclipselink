@@ -156,16 +156,6 @@ public class ParameterExpression extends BaseExpression {
         return localBase.getBuilder();
     }
 
-    /**
-     * INTERNAL:
-     * Get parameter expression name.
-     * @return name of this parameter expression
-     */
-    @Override
-    public String getName() {
-        return field != null ? field.getName() : super.getName();
-    }
-
     public DatabaseField getField() {
         return field;
     }
