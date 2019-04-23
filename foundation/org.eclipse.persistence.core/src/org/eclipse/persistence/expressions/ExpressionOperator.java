@@ -2215,14 +2215,12 @@ public class ExpressionOperator implements Serializable {
                     // by passing lambda with what to initialize
                     pattern.printSQL(printer, printer.getPlatform()::escapeLikePattern, escape);
                 } else {
-                    string.printSQL(printer);
+                    pattern.printSQL(printer);
                 }
                 printDatabaseString(printer, dbStringIndex++);
                 if (escape != null) {
                     escape.printSQL(printer);
-                    if (dbStringIndex < getDatabaseStrings().length) {
-                        printer.printString(getDatabaseStrings()[dbStringIndex++]);
-                    }
+                    printDatabaseString(printer, dbStringIndex++);
                 }
                 // This is just for safety if there are more arguments than 3.
                 for (int i = 3; i < argumentIndices.length; i++) {
