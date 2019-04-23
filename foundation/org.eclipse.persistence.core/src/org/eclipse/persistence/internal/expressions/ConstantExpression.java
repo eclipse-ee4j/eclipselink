@@ -195,7 +195,6 @@ public class ConstantExpression extends Expression {
         } else {
             if (arg.isConstantExpression()) {
                 String argValue = ((ConstantExpression)arg).getValue().toString();
-                Object sourceValue = localBase != null ? localBase.getFieldValue(value, getSession()) : value;
                 String valueToPrint = transform.transform((String)value, argValue);
                 printer.printPrimitive(valueToPrint);
             } else {

@@ -34,7 +34,6 @@ import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
-import org.eclipse.persistence.internal.expressions.ConstantExpression;
 import org.eclipse.persistence.internal.expressions.ExpressionJavaPrinter;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -47,7 +46,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.queries.transform.LikePatternTransformation;
 
 /**
  * <p>

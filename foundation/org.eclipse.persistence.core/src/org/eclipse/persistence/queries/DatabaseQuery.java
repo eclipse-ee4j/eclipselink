@@ -2055,9 +2055,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * Size of source lists and order of parameters must be the same in both lists.
      * @param row target AbstractRecord instance
      * @param argumentFields query parameters fields
-     * @param argumentValues query parameters values
      */
-    private void transformArguments(AbstractRecord row, List<DatabaseField> argumentFields, List argumentValues) {
+    private void transformArguments(AbstractRecord row, List<DatabaseField> argumentFields) {
         Transformations transformations = getQueryMechanism().getTransformations();
         int argumentsSize = argumentFields.size();
         for (int index = 0; index < argumentsSize; index++) {
@@ -2095,7 +2094,7 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
             transformations.setQuery(this);
             transformations.setParamValues(argumentFields, argumentValues);
             transformations.transformConstants();
-            transformArguments(row, argumentFields, argumentValues);
+            transformArguments(row, argumentFields);
         } else {
             copyArguments(row, argumentFields, argumentValues);
         }

@@ -33,6 +33,19 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  */
 public class LikePatternTransformation extends ParameterTransformation {
 
+    /** Escape character expression. Can be ConstantExpression or ParameterExpression. */
+    private final Expression escape;
+
+    /** Pattern expression. Can be ConstantExpression or ParameterExpression. */
+    private final Expression pattern;
+
+    /** Parameters list index of pattern value in DatasourceCall for ConstantExpression to allow modify it.
+     *  Value of {@code -1} means that this value is not defined. */
+    private final int patternIndex;
+
+    /** Pattern transformation function. */
+    private final Function transformation;
+
     /**
      * Lambda/functional interface for transformation method.
      */
@@ -51,19 +64,6 @@ public class LikePatternTransformation extends ParameterTransformation {
          */
         public String transform(final String pattern, final String escapeChar);
     }
-
-    /** Escape character expression. Can be ConstantExpression or ParameterExpression. */
-    private final Expression escape;
-
-    /** Pattern expression. Can be ConstantExpression or ParameterExpression. */
-    private final Expression pattern;
-
-    /** Parameters list index of pattern value in DatasourceCall for ConstantExpression to allow modify it.
-     *  Value of {@code -1} means that this value is not defined. */
-    private final int patternIndex;
-
-    /** Pattern transformation function. */
-    private final Function transformation;
 
     /**
      * Creates an instance of JPQL LIKE expression pattern parameter transformation.

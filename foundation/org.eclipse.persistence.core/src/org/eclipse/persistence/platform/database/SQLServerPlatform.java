@@ -45,6 +45,11 @@ import org.eclipse.persistence.queries.*;
  * @since TOPLink/Java 1.0
  */
 public class SQLServerPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
+
+    // Bug# 545940 - Transformation used to escape JPQL LIKE pattern
+    /** Default escape character for logical operator LIKE. */
+    public static final char DEFAULT_LIKE_ESCAPE_CHAR = '\\';
+
     /** Support for sequence objects and OFFSET FETCH NEXT added in SQL Server 2012 */
     private boolean isVersion11OrHigher;
     private boolean isConnectionDataInitialized;
@@ -815,9 +820,6 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
 
     // Bug# 545940 - Transformation used to escape JPQL LIKE pattern
 
-    /** Default escape character for logical operator LIKE. */
-    public static final char DEFAULT_LIKE_ESCAPE_CHAR = '\\';
-
     /** Pattern escaping state machine states. */
     private static enum EscState {
         REGULAR,
@@ -869,6 +871,8 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
                     sb.append(c);
                     state = EscState.REGULAR;
                     break;
+                default:
+                    throw new IllegalStateException("Unknown state value!");
             }
         }
         return sb.toString();
