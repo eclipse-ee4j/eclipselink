@@ -265,8 +265,17 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 break;
             }
             case OBJECT: {
+                Entry<String, JsonValue> xmlValueEntry = null;
                 for (Entry<String, JsonValue> nextEntry : ((JsonObject) jsonValue).entrySet()) {
-                    parsePair(nextEntry.getKey(), nextEntry.getValue());
+                    if (textWrapper != null && textWrapper.equals(nextEntry.getKey())) {
+                        xmlValueEntry = nextEntry;
+                    } else {
+                        parsePair(nextEntry.getKey(), nextEntry.getValue());
+                    }
+                }
+                //Proceed JSON value mapped to @XmlValue property as a last
+                if (xmlValueEntry != null) {
+                    parsePair(xmlValueEntry.getKey(), xmlValueEntry.getValue());
                 }
                 break;
             }
