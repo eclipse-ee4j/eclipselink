@@ -14,7 +14,7 @@
 //     tware - initial API and implementation from for JPA 2.0 criteria API
 package org.eclipse.persistence.expressions;
 
-import java.util.Vector;
+import java.util.List;
 
 import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.helper.Helper;
@@ -200,10 +200,10 @@ public class ListExpressionOperator extends ExpressionOperator {
 
     /*
      * (non-Javadoc)
-     * @see org.eclipse.persistence.expressions.ExpressionOperator#printsAs(java.util.Vector)
+     * @see org.eclipse.persistence.expressions.ExpressionOperator#printsAs(java.util.List)
      */
     @Override
-    public void printsAs(Vector dbStrings)
+    public void printsAs(List<String> dbStrings)
     {
         // The parent class's side-effect modification of the externalized
         // databaseStrings array is unsupported.
