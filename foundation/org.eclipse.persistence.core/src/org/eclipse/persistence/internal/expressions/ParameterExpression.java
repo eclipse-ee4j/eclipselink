@@ -384,7 +384,7 @@ public class ParameterExpression extends BaseExpression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer, LikePatternTransformation.Function transform, Expression arg) {
-        if (transform == null) {
+        if (transform == null || arg == null) {
             printSQL(printer);
         } else {
             printer.printParameter(this);

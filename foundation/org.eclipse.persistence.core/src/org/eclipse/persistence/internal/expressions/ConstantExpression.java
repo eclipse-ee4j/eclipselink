@@ -190,7 +190,7 @@ public class ConstantExpression extends Expression {
      */
     @Override
     public void printSQL(ExpressionSQLPrinter printer, LikePatternTransformation.Function transform, Expression arg) {
-        if (transform == null || value == null) {
+        if (transform == null || arg == null || value == null) {
             printSQL(printer);
         } else {
             if (arg.isConstantExpression()) {
