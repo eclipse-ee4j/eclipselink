@@ -103,11 +103,22 @@ public class ArgumentListFunctionExpression extends FunctionExpression {
         operator.printCollection(getChildren(), printer);
     }
 
-
     @Override
-    protected void postCopyIn(Map alreadyDone) {
-        ((ListExpressionOperator)operator).setNumberOfItems(0);
-        Boolean hasLastChildCopy = hasLastChild;
+    protected void postCopyIn(Map alreadyDone)
+    {
+        // The current ArgumentListFunctionExpression just got cloned shallow.
+        // We need a new operator: as our ListExpressionOperator instance has a
+        // state, "numberOfItems", it must be cloned not to be shared across
+        // parallel threads when an unnamed, un-query-hinted, shared, cached
+        // query is executed.
+        // This is typical for dynamic JPQL.
+        final ListExpressionOperator originalOperator = ((ListExpressionOperator) this.operator);
+        this.operator = new ListExpressionOperator();
+        originalOperator.copyTo(this.operator);
+
+        // New operator implicitly initialized to:
+        // ((ListExpressionOperator) operator).setNumberOfItems(0);
+        final Boolean hasLastChildCopy = hasLastChild;
         hasLastChild = null;
         super.postCopyIn(alreadyDone);
         hasLastChild = hasLastChildCopy;

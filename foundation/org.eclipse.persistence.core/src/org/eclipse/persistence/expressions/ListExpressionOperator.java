@@ -14,6 +14,9 @@
 //     tware - initial API and implementation from for JPA 2.0 criteria API
 package org.eclipse.persistence.expressions;
 
+import java.util.Vector;
+
+import org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression;
 import org.eclipse.persistence.internal.helper.Helper;
 
 /**
@@ -29,26 +32,59 @@ import org.eclipse.persistence.internal.helper.Helper;
  * In the example above "COALESCE(" is the start string, "," is the separator and ")" is the
  * end string
  *
+ * <p>
+ * <h2>Note</h2> This operator has an internal state, <tt>numberOfItems</tt>, which needs to be considered when caching parsed
+ * queries. Therefore, {@link ArgumentListFunctionExpression#postCopyIn(java.util.Map)} needs to ensure that a new instance of the
+ * operator is created when cloning a shared query.
+ * <ul>
+ * <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042">https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042</a></li>
+ * <li><a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=382308">https://bugs.eclipse.org/bugs/show_bug.cgi?id=382308</a></li>
+ * </ul>
+ *
  * @see org.eclipse.persistence.internal.expressions.ArgumentListFunctionExpression
  * @see Expression#coalesce()
  * @author tware
- *
+ * @author patrick.haller@sap.com
  */
 public class ListExpressionOperator extends ExpressionOperator {
 
-    protected String[] startStrings = null;
-    protected String[] separators = null;
-    protected String[] terminationStrings = null;
-    protected int numberOfItems = 0;
-    protected boolean isComplete = false;
+    /** Quasi constant: not modified after initialization of operator instance */
+    private String[] startStrings;
 
-    @Override
-    public void copyTo(ExpressionOperator operator){
+    /** Quasi constant: not modified after initialization of operator instance */
+    private String[] separators;
+
+    /** Quasi constant: not modified after initialization of operator instance */
+    private String[] terminationStrings;
+
+    /** volatile: number of items processed by this operator instance */
+    private int numberOfItems = 0;
+
+    private boolean isComplete = false;
+
+    /**
+     * Used to determine whether the database strings array needs to be recalculated, initialized to 0 by JVM
+     */
+    private int cachedNumberOfItems;
+
+    /**
+     * Cached array of database strings, initialized to null by JVM.
+     */
+    private String[] cachedDatabaseStrings;
+
+    public void copyTo(ExpressionOperator operator)
+    {
+        // This has been verified to only operate on new ListExpressionOperator
+        // instances, hence not susceptible to share volatile state between
+        // threads.
         super.copyTo(operator);
-        if (operator instanceof ListExpressionOperator){
-            ((ListExpressionOperator)operator).startStrings = Helper.copyStringArray(startStrings);
-            ((ListExpressionOperator)operator).separators = Helper.copyStringArray(separators);
-            ((ListExpressionOperator)operator).terminationStrings = Helper.copyStringArray(terminationStrings);
+        if (operator instanceof ListExpressionOperator)
+        {
+            // Quasi-constant strings for a given SQL operator (CASE, COALESCE, ...)
+            ((ListExpressionOperator) operator).setStartStrings(Helper.copyStringArray(startStrings));
+            ((ListExpressionOperator) operator).setSeparators(Helper.copyStringArray(separators));
+            ((ListExpressionOperator) operator).setTerminationStrings(Helper.copyStringArray(terminationStrings));
+
             // don't copy numberOfItems since this copy method is used to duplicate an operator that
             // may have a different number of items
         }
@@ -60,25 +96,56 @@ public class ListExpressionOperator extends ExpressionOperator {
      * case one has been added.
      */
     @Override
-    public String[] getDatabaseStrings() {
-        databaseStrings = new String[numberOfItems + 1];
-        int i = 0;
-        while (i < startStrings.length){
-            databaseStrings[i] = startStrings[i];
-            i++;
+    public String[] getDatabaseStrings()
+    {
+        final int _numberOfItems = numberOfItems;
+        if (null == cachedDatabaseStrings || cachedNumberOfItems != _numberOfItems)
+        {
+            cachedDatabaseStrings = recalculateDatabaseStrings(_numberOfItems);
+            cachedNumberOfItems = _numberOfItems;
         }
-        while  (i < numberOfItems - (terminationStrings.length - 1)){
-            for (int j=0;j<separators.length;j++){
-                databaseStrings[i] = separators[j];
-                i++;
-            }
+
+        return cachedDatabaseStrings;
+    }
+
+    /**
+     * Calculate the <i>database strings</i>, based on the <tt>numberOfItems</tt> state.
+     * 
+     * @return the calculated "database strings", i. e. SQL literals that will be interleaved with expressions, to build the final
+     *         SQL statement in the target database dialect.
+     */
+    private String[] recalculateDatabaseStrings(final int noOfItems)
+    {
+        // EJBQueryImpl.buildEJBQLDatabaseQuery() caches
+        // unnamed, un-query-hinted queries, which is typical for dynamic
+        // JPQL. This in turn leads to a shared state between threads as
+        // ArgumentListFunctionExpression's postCopyIn cloning method
+        // did not clone the ListExpressionOperator, but shared the very
+        // same instance between multiple threads.
+        //
+        // This led to https://bugs.eclipse.org/bugs/show_bug.cgi?id=463042
+        //
+        // The only variables modified from the outside even after initialization
+        // of a new object instance are:
+        // - isComplete
+        // - numberOfItems
+
+        // TODO patrick.haller@sap.com: is this calculation correct? Why is "numberOfItems" including #startStrings and
+        // #terminationStrings?
+        final int _numberOfItems = noOfItems - startStrings.length - terminationStrings.length;
+        assert _numberOfItems > 0;
+
+        final String[] databaseStrings = new String[startStrings.length + _numberOfItems * separators.length
+                + terminationStrings.length];
+        System.arraycopy(startStrings, 0, databaseStrings, 0, startStrings.length);
+
+        int pos = startStrings.length;
+        for (int j = 0; j < _numberOfItems; j++)
+        {
+            System.arraycopy(separators, 0, databaseStrings, pos, separators.length);
+            pos += separators.length;
         }
-        while (i <= numberOfItems){
-            for (int j=0;j<terminationStrings.length;j++){
-                databaseStrings[i] = terminationStrings[j];
-                    i++;
-            }
-        }
+        System.arraycopy(terminationStrings, 0, databaseStrings, pos, terminationStrings.length);
         return databaseStrings;
     }
 
@@ -88,10 +155,6 @@ public class ListExpressionOperator extends ExpressionOperator {
 
     public void setNumberOfItems(int numberOfItems){
         this.numberOfItems = numberOfItems;
-    }
-
-    public String[] getStartStrings() {
-        return startStrings;
     }
 
     public void setStartString(String startString) {
@@ -112,10 +175,6 @@ public class ListExpressionOperator extends ExpressionOperator {
 
     public void setSeparators(String[] separators) {
         this.separators = separators;
-    }
-
-    public String[] getTerminationStrings() {
-        return terminationStrings;
     }
 
     public void setTerminationString(String terminationString) {
@@ -139,5 +198,15 @@ public class ListExpressionOperator extends ExpressionOperator {
         return isComplete;
     }
 
-
+    /*
+     * (non-Javadoc)
+     * @see org.eclipse.persistence.expressions.ExpressionOperator#printsAs(java.util.Vector)
+     */
+    @Override
+    public void printsAs(Vector dbStrings)
+    {
+        // The parent class's side-effect modification of the externalized
+        // databaseStrings array is unsupported.
+        throw new UnsupportedOperationException("Use setters exclusively to modify ListExpressionOperator");
+    }
 }
