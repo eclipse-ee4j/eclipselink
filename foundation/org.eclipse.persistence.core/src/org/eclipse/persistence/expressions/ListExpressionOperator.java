@@ -129,26 +129,27 @@ public class ListExpressionOperator extends ExpressionOperator {
         // of a new object instance are:
         // - isComplete
         // - numberOfItems
-
-        // TODO patrick.haller@sap.com: is this calculation correct? Why is "numberOfItems" including #startStrings and
-        // #terminationStrings?
-        final int _numberOfItems = noOfItems - startStrings.length - terminationStrings.length;
-        assert _numberOfItems > 0;
-
-        final String[] databaseStrings = new String[startStrings.length + _numberOfItems * separators.length
-                + terminationStrings.length];
-        System.arraycopy(startStrings, 0, databaseStrings, 0, startStrings.length);
-
-        int pos = startStrings.length;
-        for (int j = 0; j < _numberOfItems; j++)
-        {
-            System.arraycopy(separators, 0, databaseStrings, pos, separators.length);
-            pos += separators.length;
+        final String[] databaseStrings = new String[noOfItems + 1];
+        int i = 0;
+        while (i < startStrings.length){
+            databaseStrings[i] = startStrings[i];
+            i++;
         }
-        System.arraycopy(terminationStrings, 0, databaseStrings, pos, terminationStrings.length);
+        while  (i < noOfItems - (terminationStrings.length - 1)){
+            for (int j=0;j<separators.length;j++){
+                databaseStrings[i] = separators[j];
+                i++;
+            }
+        }
+        while (i <= noOfItems){
+            for (int j=0;j<terminationStrings.length;j++){
+                databaseStrings[i] = terminationStrings[j];
+                    i++;
+            }
+        }
         return databaseStrings;
     }
-
+    
     public int getNumberOfItems(){
         return numberOfItems;
     }
