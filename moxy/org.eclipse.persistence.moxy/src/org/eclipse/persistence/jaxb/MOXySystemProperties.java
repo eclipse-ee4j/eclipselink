@@ -20,6 +20,7 @@ import java.security.PrivilegedExceptionAction;
 
 import org.eclipse.persistence.internal.oxm.OXMSystemProperties;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
 
 public final class MOXySystemProperties {
 
@@ -47,6 +48,39 @@ public final class MOXySystemProperties {
      */
     public static final String JSON_USE_XSD_TYPES_PREFIX = OXMSystemProperties.JSON_USE_XSD_TYPES_PREFIX;
 
+    /**
+     * Property for MOXy logging level.
+     *
+     * This is to make maintenance easier and to allow MOXy generate more diagnostic log messages.
+     *
+     * Allowed values are specified in {@link org.eclipse.persistence.logging.LogLevel}
+     * Default value is {@link org.eclipse.persistence.logging.LogLevel#INFO}
+     *
+     * @since 3.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOGGING_LEVEL
+     */
+    public static final String MOXY_LOGGING_LEVEL = "eclipselink.moxy.logging.level";
+
+    /**
+     * Property for logging Entities content during marshalling/unmarshalling operation in MOXy.
+     * It calls toString() method from entity.
+     *
+     * This is to make maintenance easier and to allow for debugging to check marshalled/unmarshalled content.
+     * Use it carefully. It can produce high amount of data in the log files.
+     *
+     * Usage: set to {@link Boolean#TRUE} to enable payload logging, set to {@link Boolean#FALSE} to disable it.
+     * It can be set via system property too. Setting via JAXBContext, marshaller, unmarshaller property has higher priority.
+     * By default it is disabled.
+     *
+     * @since 3.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#MOXY_LOG_PAYLOAD
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#MOXY_LOG_PAYLOAD
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOG_PAYLOAD
+     */
+    public static final String MOXY_LOG_PAYLOAD = "eclipselink.moxy.logging.payload";
+
 
     public static final Boolean xmlIdExtension = getBoolean(XML_ID_EXTENSION);
 
@@ -55,6 +89,10 @@ public final class MOXySystemProperties {
     public static final Boolean jsonTypeCompatibility = getBoolean(JSON_TYPE_COMPATIBILITY);
 
     public static final Boolean jsonUseXsdTypesPrefix = getBoolean(JSON_USE_XSD_TYPES_PREFIX);
+
+    public static final String moxyLoggingLevel = PrivilegedAccessHelper.getSystemProperty(MOXY_LOGGING_LEVEL, String.valueOf(AbstractSessionLog.getDefaultLoggingLevel()));
+
+    public static final Boolean moxyLogPayload = PrivilegedAccessHelper.getSystemPropertyBoolean(MOXY_LOG_PAYLOAD, false);
 
     /**
      * Returns value of system property.

@@ -1606,6 +1606,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.MOXY_LOGGING_LEVEL, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.MOXY_LOG_PAYLOAD, marshaller);
             }
 
             return marshaller;
@@ -1640,6 +1642,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.MOXY_LOGGING_LEVEL, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.MOXY_LOG_PAYLOAD, unmarshaller);
             }
             return unmarshaller;
         }
