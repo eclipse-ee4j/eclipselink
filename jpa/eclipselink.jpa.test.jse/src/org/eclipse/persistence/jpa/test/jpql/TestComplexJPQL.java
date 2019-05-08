@@ -63,7 +63,7 @@ public class TestComplexJPQL {
             return;
         }
 
-        EntityManager em = inEMF.createEntityManager();;
+        EntityManager em = inEMF.createEntityManager();
         try {
             Query q = em.createQuery("select t0.id from JPQLEntity t0 "
                     + "where (t0.string1, t0.string2) "
@@ -103,7 +103,6 @@ public class TestComplexJPQL {
             tbl2.setItemInteger1(2);
             em.persist(tbl2);
 
-            //Populate
             em.getTransaction().commit();
 
             TypedQuery<QueryResult> q = em.createQuery("SELECT new org.eclipse.persistence.jpa.test.jpql.model.QueryResult("

@@ -57,13 +57,13 @@ public class TestParameterBinding {
                 return;
             }
 
-            em.getTransaction().begin();
             TypedQuery<Child> query = em.createQuery("SELECT c FROM Child c WHERE c.id = abs(?1)", Child.class);
             query.setParameter(1, 12);
             //query.setHint("eclipselink.jdbc.bind-parameters", true);
             query.getResultList();
 
-            Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", ((JpaQuery<Child>)query).getDatabaseQuery().getCall().isUsesBindingSet());
+            Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", 
+                    ((JpaQuery<Child>)query).getDatabaseQuery().getCall().isUsesBindingSet());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
