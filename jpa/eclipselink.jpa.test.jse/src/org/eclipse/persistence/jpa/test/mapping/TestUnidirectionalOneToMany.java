@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,20 +64,27 @@ public class TestUnidirectionalOneToMany {
      */
     @Test
     public void testInsertOneToManyUni() {
-
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            PostA post = new PostA(new ComplexIdA(9));
+            post.setComments(new ArrayList<CommentA>());
+            post.getComments().add(new CommentA());
+            post.getComments().add(new CommentA());
+            post.getComments().add(new CommentA());
 
-        PostA post = new PostA(new ComplexIdA(9));
-        post.setComments(new ArrayList<CommentA>());
-        post.getComments().add(new CommentA());
-        post.getComments().add(new CommentA());
-        post.getComments().add(new CommentA());
+            em.persist(post);
 
-        em.persist(post);
-
-        em.getTransaction().commit();
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 
     /**
@@ -89,61 +97,94 @@ public class TestUnidirectionalOneToMany {
      */
     @Test
     public void testUpdateOneToManyUni() {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
 
-        EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            PostA post = new PostA(new ComplexIdA(10));
+            em.persist(post);
+            em.flush();
 
-        PostA post = new PostA(new ComplexIdA(10));
-        em.persist(post);
-        em.flush();
+            post.setComments(new ArrayList<CommentA>());
+            post.getComments().add(new CommentA());
+            post.getComments().add(new CommentA());
+            post.getComments().add(new CommentA());
 
-        post.setComments(new ArrayList<CommentA>());
-        post.getComments().add(new CommentA());
-        post.getComments().add(new CommentA());
-        post.getComments().add(new CommentA());
+            em.persist(post);
 
-        em.persist(post);
-
-        em.getTransaction().commit();
+            em.getTransaction().commit();
+        } finally {
+            if(em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                if(em.isOpen()) {
+                    em.close();
+                }
+            }
+        }
     }
 
     @Test
     public void testInsertComplexOneToManyUni() {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
 
-        EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            PostB post = new PostB(new ComplexIdB(3, 4));
+            post.setComments(new ArrayList<CommentB>());
+            post.getComments().add(new CommentB("a"));
+            post.getComments().add(new CommentB("b"));
+            post.getComments().add(new CommentB("c"));
 
-        PostB post = new PostB(new ComplexIdB(3, 4));
-        post.setComments(new ArrayList<CommentB>());
-        post.getComments().add(new CommentB("a"));
-        post.getComments().add(new CommentB("b"));
-        post.getComments().add(new CommentB("c"));
+            em.persist(post);
 
-        em.persist(post);
-
-        em.getTransaction().commit();
+            em.getTransaction().commit();
+        } finally {
+            if(em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                if(em.isOpen()) {
+                    em.close();
+                }
+            }
+        }
     }
 
     @Test
     public void testUpdateComplexOneToManyUni() {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
 
-        EntityManager em = emf.createEntityManager();
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            PostB post = new PostB(new ComplexIdB(5, 6));
+            em.persist(post);
+            em.flush();
 
-        PostB post = new PostB(new ComplexIdB(5, 6));
-        em.persist(post);
-        em.flush();
+            post.setComments(new ArrayList<CommentB>());
+            post.getComments().add(new CommentB("d"));
+            post.getComments().add(new CommentB("e"));
+            post.getComments().add(new CommentB("f"));
 
-        post.setComments(new ArrayList<CommentB>());
-        post.getComments().add(new CommentB("d"));
-        post.getComments().add(new CommentB("e"));
-        post.getComments().add(new CommentB("f"));
+            em.persist(post);
 
-        em.persist(post);
-
-        em.getTransaction().commit();
+            em.getTransaction().commit();
+        } finally {
+            if(em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                if(em.isOpen()) {
+                    em.close();
+                }
+            }
+        }
     }
 }

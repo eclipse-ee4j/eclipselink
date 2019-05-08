@@ -31,12 +31,12 @@ import javax.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SessionCustomizer;
-import org.eclipse.persistence.jpa.test.basic.model.Employee;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.jpa.test.query.model.QueryEmployee;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
@@ -54,16 +54,16 @@ public class TestQueryProperties implements PUPropertiesProvider {
 
     private final static int propertyTimeout = 3099;
 
-    @Emf(name = "timeoutEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE, properties = {
+    @Emf(name = "timeoutEMF", classes = { QueryEmployee.class }, createTables = DDLGen.DROP_CREATE, properties = {
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.propertyTimeout) })
     private EntityManagerFactory emfTimeout;
 
-    @Emf(name = "timeoutWithUnitSecondsEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE, properties = {
+    @Emf(name = "timeoutWithUnitSecondsEMF", classes = { QueryEmployee.class }, createTables = DDLGen.DROP_CREATE, properties = {
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.propertyTimeout),
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "SECONDS") })
     private EntityManagerFactory emfTimeoutSeconds;
 
-    @Emf(name = "timeoutWithUnitMintuesEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE, properties = {
+    @Emf(name = "timeoutWithUnitMintuesEMF", classes = { QueryEmployee.class }, createTables = DDLGen.DROP_CREATE, properties = {
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.propertyTimeout),
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "MINUTES") })
     private EntityManagerFactory emfTimeoutMinutes;
@@ -73,13 +73,11 @@ public class TestQueryProperties implements PUPropertiesProvider {
      *  will see the expected value of seconds being set on the statement
      */
     @Test
-    public void testTimeoutUnitDefault() throws Exception {
-        EntityManager em = null;
+    public void testTimeoutUnitDefault() {
+        EntityManager em = emfTimeout.createEntityManager();
         try {
-            em = emfTimeout.createEntityManager();
-
             em.getTransaction().begin();
-            em.createQuery("SELECT x FROM Employee x").getResultList();
+            em.createQuery("SELECT x FROM QueryEmployee x").getResultList();
 
             //Convert the timeout set (MILLISECONDS) to what is expected by the JDBC layer (SECONDS)
             double queryTimeoutSeconds = TestQueryProperties.propertyTimeout / 1000d;
@@ -89,13 +87,11 @@ public class TestQueryProperties implements PUPropertiesProvider {
             }
 
             Assert.assertEquals((int)queryTimeoutSeconds, TestQueryProperties.statementTimeout);
-        } catch (Exception e) {
-            Assert.fail(e.getLocalizedMessage());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            if (em != null) {
+            if(em.isOpen()) {
                 em.close();
             }
         }
@@ -106,25 +102,21 @@ public class TestQueryProperties implements PUPropertiesProvider {
      *  will see the expected value of seconds being set on the statement
      */
     @Test
-    public void testTimeoutUnitSeconds() throws Exception {
-        EntityManager em = null;
+    public void testTimeoutUnitSeconds() {
+        EntityManager em = emfTimeoutSeconds.createEntityManager();
         try {
-            em = emfTimeoutSeconds.createEntityManager();
-
             em.getTransaction().begin();
-            em.createQuery("SELECT x FROM Employee x").getResultList();
+            em.createQuery("SELECT x FROM QueryEmployee x").getResultList();
 
             //Convert the timeout set (SECONDS) to what is expected by the JDBC layer (SECONDS)
             int queryTimeoutSeconds = TestQueryProperties.propertyTimeout;
 
             Assert.assertEquals(queryTimeoutSeconds, TestQueryProperties.statementTimeout);
-        } catch (Exception e) {
-            Assert.fail(e.getLocalizedMessage());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            if (em != null) {
+            if(em.isOpen()) {
                 em.close();
             }
         }
@@ -135,25 +127,21 @@ public class TestQueryProperties implements PUPropertiesProvider {
      *  will see the expected value of seconds being set on the statement
      */
     @Test
-    public void testTimeoutUnitMinutes() throws Exception {
-        EntityManager em = null;
+    public void testTimeoutUnitMinutes() {
+        EntityManager em = emfTimeoutMinutes.createEntityManager();
         try {
-            em = emfTimeoutMinutes.createEntityManager();
-
             em.getTransaction().begin();
-            em.createQuery("SELECT x FROM Employee x").getResultList();
+            em.createQuery("SELECT x FROM QueryEmployee x").getResultList();
 
             //Convert the timeout set (MINUTES) to what is expected by the JDBC layer (SECONDS)
             int queryTimeoutSeconds = TestQueryProperties.propertyTimeout * 60;
 
             Assert.assertEquals(queryTimeoutSeconds, TestQueryProperties.statementTimeout);
-        } catch (Exception e) {
-            Assert.fail(e.getLocalizedMessage());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            if (em != null) {
+            if(em.isOpen()) {
                 em.close();
             }
         }
@@ -186,6 +174,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
             wrappedConnector = stmt;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (method.getName().equals("connect") && proxy instanceof Connector) {
                 return ConnectionInvocationHandler.createStatementProxy((Connection) method.invoke(wrappedConnector, args));
@@ -205,11 +194,16 @@ public class TestQueryProperties implements PUPropertiesProvider {
             wrappedConnection = stmt;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getName().equals("prepareStatement") && proxy instanceof Connection) {
-                return PreparedStatementInvocationHandler.createStatementProxy((PreparedStatement) method.invoke(wrappedConnection, args));
+            try {
+                if (method.getName().equals("prepareStatement") && proxy instanceof Connection) {
+                    return PreparedStatementInvocationHandler.createStatementProxy((PreparedStatement) method.invoke(wrappedConnection, args));
+                }
+                return method.invoke(wrappedConnection, args);
+            } catch (Exception e) {
+                throw e.getCause();
             }
-            return method.invoke(wrappedConnection, args);
         }
 
         public static Connection createStatementProxy(Connection toWrap) {
@@ -224,15 +218,20 @@ public class TestQueryProperties implements PUPropertiesProvider {
             wrappedStatement = stmt;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            //Get the query timeout being set on the statement
-            //This value should be in seconds, since that is what the Statement expects
-            if (method.getName().equals("setQueryTimeout") && proxy instanceof PreparedStatement) {
-                if(args.length > 0) {
-                    TestQueryProperties.statementTimeout = (Integer) args[0];
+            try {
+                //Get the query timeout being set on the statement
+                //This value should be in seconds, since that is what the Statement expects
+                if (method.getName().equals("setQueryTimeout") && proxy instanceof PreparedStatement) {
+                    if(args.length > 0) {
+                        TestQueryProperties.statementTimeout = (Integer) args[0];
+                    }
                 }
+                return method.invoke(wrappedStatement, args);
+            } catch (Exception e) {
+                throw e.getCause();
             }
-            return method.invoke(wrappedStatement, args);
         }
 
         public static PreparedStatement createStatementProxy(PreparedStatement toWrap) {
