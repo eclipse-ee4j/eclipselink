@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -501,7 +501,7 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
                         queryExpression = queryContext.buildExpression(expression);
                         queryContext.addQueryExpression(variableName, queryExpression);
                     }
-				}else{
+				} else {
 				    queryExpression = addNonFetchJoinedAttribute(expression, identificationVariable);
 				}
 
@@ -510,11 +510,11 @@ abstract class AbstractObjectLevelReadQueryVisitor extends AbstractEclipseLinkEx
 					Expression onClause = queryContext.buildExpression(expression.getOnClause());
 
 					// Create the JOIN expression using the base Expression
+					//'queryExpression' will be altered pass-by-reference
 					if (expression.isLeftJoin()) {
-						queryExpression = baseExpression.leftJoin(queryExpression, onClause);
-					}
-					else {
-						queryExpression = baseExpression.join(queryExpression, onClause);
+						baseExpression.leftJoin(queryExpression, onClause);
+					} else {
+						baseExpression.join(queryExpression, onClause);
 					}
 				}
 			}
