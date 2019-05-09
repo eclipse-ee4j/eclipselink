@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +19,7 @@ import java.io.Serializable;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.Struct;
 import java.sql.Types;
 import java.util.Arrays;
@@ -67,8 +69,20 @@ public class BindCallCustomParameter implements Serializable {
     protected BindCallCustomParameter() {
     }
 
-    public void set(DatabasePlatform platform, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
-        platform.setParameterValueInDatabaseCall(obj, statement, index, session);
+    /**
+     * Sets this bound parameter, on the given statement, at the given parameterIndex. 
+     * Note: {@link java.sql.PreparedStatement} contains setX(int parameterIndex, X x) methods. This method aligns with that pattern.
+     */
+    public void set(DatabasePlatform platform, PreparedStatement statement, int parameterIndex, AbstractSession session) throws SQLException {
+        platform.setParameterValueInDatabaseCall(obj, statement, parameterIndex, session);
+    }
+
+    /**
+     * Sets this bound parameter, on the given statement, for the given parameterName. 
+     * Note: {@link java.sql.CallableStatement} contains setX(int parameterName, X x) methods. This method aligns with that pattern.
+     */
+    public void set(DatabasePlatform platform, CallableStatement statement, String parameterName, AbstractSession session) throws SQLException {
+        platform.setParameterValueInDatabaseCall(obj, statement, parameterName, session);
     }
 
     public String toString() {
