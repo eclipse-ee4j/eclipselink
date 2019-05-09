@@ -90,6 +90,8 @@ public interface Platform extends CorePlatform<ConversionManager>, Serializable,
 
     public boolean isDB2();
 
+    public boolean isDB2Z();
+
     public boolean isDBase();
 
     public boolean isHANA();

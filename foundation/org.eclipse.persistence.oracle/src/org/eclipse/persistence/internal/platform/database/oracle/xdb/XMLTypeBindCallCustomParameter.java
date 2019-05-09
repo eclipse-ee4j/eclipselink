@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -13,6 +13,7 @@
 package org.eclipse.persistence.internal.platform.database.oracle.xdb;
 
 import java.io.StringWriter;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.xml.transform.stream.StreamResult;
@@ -34,7 +35,7 @@ public class XMLTypeBindCallCustomParameter extends BindCallCustomParameter {
         xmlTransformer.setFormattedOutput(false);
     }
 
-    public void set(DatabasePlatform platform, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
+    public void set(DatabasePlatform platform, PreparedStatement statement, int parameterIndex, AbstractSession session) throws SQLException {
         if (this.obj instanceof String) {
             //Bug#5200836, unwrap the connection prior to using.
             this.obj = XMLType.createXML(session.getServerPlatform().unwrapConnection(statement.getConnection()), (String)this.obj);
@@ -51,6 +52,26 @@ public class XMLTypeBindCallCustomParameter extends BindCallCustomParameter {
                 this.obj = XMLType.createXML(session.getServerPlatform().unwrapConnection(statement.getConnection()), writer.getBuffer().toString());
             }
         }
-        super.set(platform, statement, index, session);
+        super.set(platform, statement, parameterIndex, session);
+    }
+
+    public void set(DatabasePlatform platform, CallableStatement statement, String parameterName, AbstractSession session) throws SQLException {
+        if (this.obj instanceof String) {
+            //Bug#5200836, unwrap the connection prior to using.
+            this.obj = XMLType.createXML(session.getServerPlatform().unwrapConnection(statement.getConnection()), (String)this.obj);
+        } else if (this.obj instanceof Document) {
+            if (this.obj instanceof XDBDocument) {
+                //Bug#5200836, unwrap the connection prior to using.
+                this.obj = XMLType.createXML(session.getServerPlatform().unwrapConnection(statement.getConnection()), (XDBDocument)this.obj);
+            } else {
+                Document doc = (Document)obj;
+                StringWriter writer = new StringWriter();
+                StreamResult result = new StreamResult(writer);
+                xmlTransformer.transform(doc, result);
+                //Bug#5200836, unwrap the connection prior to using.
+                this.obj = XMLType.createXML(session.getServerPlatform().unwrapConnection(statement.getConnection()), writer.getBuffer().toString());
+            }
+        }
+        super.set(platform, statement, parameterName, session);
     }
 }
