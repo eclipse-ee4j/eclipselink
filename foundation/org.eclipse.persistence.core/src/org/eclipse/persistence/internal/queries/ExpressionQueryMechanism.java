@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -760,11 +760,24 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             if (attributeExpression.isExpressionBuilder()
                     && (item.getDescriptor().getQueryManager().getAdditionalJoinExpression() != null)
                     && !(clonedBuilder.wasAdditionJoinCriteriaUsed())) {
-                if (selectStatement.getWhereClause() == null ) {
-                    selectStatement.setWhereClause(item.getDescriptor().getQueryManager().getAdditionalJoinExpression().rebuildOn(clonedBuilder));
-                } else {
-                    selectStatement.setWhereClause(selectStatement.getWhereClause().and(item.getDescriptor().getQueryManager().getAdditionalJoinExpression().rebuildOn(clonedBuilder)));
+
+                //Clone the standard join expression set on the descriptor's QueryManager
+                Expression additionalJoinExpression = item.getDescriptor().getQueryManager().getAdditionalJoinExpression().rebuildOn(clonedBuilder);
+                Expression whereClause = selectStatement.getWhereClause();
+
+                //'shouldUseOuterJoin' should have been set during query parsing; see ObjectExpression.leftJoin()
+                //So we need to alter the additionalJoinExpression to account for NULL on the right side
+                if(((ExpressionBuilder)attributeExpression).shouldUseOuterJoin()) {
+                    additionalJoinExpression = additionalJoinExpression.or(attributeExpression.isNull());
                 }
+
+                if (whereClause == null ) {
+                    selectStatement.setWhereClause(additionalJoinExpression);
+                } else {
+                    selectStatement.setWhereClause(whereClause.and(additionalJoinExpression));
+                }
+
+                clonedBuilder.setWasAdditionJoinCriteriaUsed(true);
             }
             fieldExpressions.add(attributeExpression);
             if (item.hasJoining()){
