@@ -46,7 +46,16 @@
     <property name="javax.transaction" value="${jse.el.plugins.dir}/jakarta.transaction-api.jar"/>
     <property name="javax.validation" value="${jse.el.plugins.dir}/jakarta.validation-api.jar"/>
     <property name="javax.persistence" value="${jse.jpa.plugins.dir}/jakarta.persistence_2.2.2.jar"/>
+
+    <fileset id="jse.antlr.jar.path" dir="${jse.el.plugins.dir}" includes="*antlr_*.jar"/>
+    <pathconvert property="jse.antlr.jar" refid="jse.antlr.jar.path"/>
+    <fileset id="jse.asm.jar.path" dir="${jse.el.plugins.dir}" includes="*asm_*.jar"/>
+    <pathconvert property="jse.asm.jar" refid="jse.asm.jar.path"/>
+    <property name="jse.core.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+    <property name="jse.jpa.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+    <property name="jse.jpql.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.jpa.jpql_${version.string}.jar"/>
     <property name="jse.modelgen.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.jpa.modelgen_${version.string}.jar"/>
+    <property name="jse.dbws.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
 
     <!-- JVM used to run tests -->
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
@@ -67,11 +76,16 @@
     </path>
     <path id="run.jse.path">
         <pathelement path="${jse.classes.dir}" />
-        <pathelement path="${jse.eclipselink.jar}" />
+        <pathelement path="${javax.persistence}" />
+        <pathelement path="${jse.antlr.jar}" />
+        <pathelement path="${jse.asm.jar}" />
+        <pathelement path="${jse.core.jar}" />
+        <pathelement path="${jse.jpa.jar}" />
+        <pathelement path="${jse.jpql.jar}" />
         <pathelement path="${jse.modelgen.jar}" />
+        <pathelement path="${jse.dbws.jar}" />
         <pathelement path="${javax.transaction}" />
         <pathelement path="${javax.validation}" />
-        <pathelement path="${javax.persistence}" />
         <pathelement path="${junit.lib}" />
         <pathelement path="${jdbc.driver.jar}" />
     </path>
