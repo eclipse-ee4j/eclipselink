@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -12,6 +12,7 @@
  ******************************************************************************/  
 package org.eclipse.persistence.internal.databaseaccess;
 
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.eclipse.persistence.internal.helper.DatabaseField;
@@ -25,16 +26,23 @@ public class InParameterForCallableStatement extends BindCallCustomParameter {
         this.inParameter = inParameter;
         this.inField = inField;
     }
-    
-    public void set(DatabasePlatform platform, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
-        Object parameter = convert(inParameter,inField, session, statement.getConnection());
-        platform.setParameterValueInDatabaseCall(parameter, statement, index, session);
+
+    @Override
+    public void set(DatabasePlatform platform, PreparedStatement statement, int parameterIndex, AbstractSession session) throws SQLException {
+        Object parameter = convert(inParameter, inField, session, statement.getConnection());
+        platform.setParameterValueInDatabaseCall(parameter, statement, parameterIndex, session);
     }
-    
+
+    @Override
+    public void set(DatabasePlatform platform, CallableStatement statement, String parameterName, AbstractSession session) throws SQLException {
+        Object parameter = convert(inParameter, inField, session, statement.getConnection());
+        platform.setParameterValueInDatabaseCall(parameter, statement, parameterName, session);
+    }
+
     public Class getType(){
-        if ((inField!=null) && (inField.getType()!=null)){
+        if ((inField != null) && (inField.getType() != null)) {
             return inField.getType();
-        }else if (inParameter!=null){
+        } else if (inParameter != null) {
             return inParameter.getClass();
         }
         return null;

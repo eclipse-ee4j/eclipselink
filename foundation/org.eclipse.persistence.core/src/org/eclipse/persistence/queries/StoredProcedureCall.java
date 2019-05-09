@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -14,15 +14,21 @@
  ******************************************************************************/  
 package org.eclipse.persistence.queries;
 
+import java.sql.CallableStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 
@@ -832,6 +838,14 @@ public class StoredProcedureCall extends DatabaseCall {
         return procedureName;
     }
 
+    /**
+     * Callable statements are used for StoredProcedures that have argument names (named parameters)
+     */
+    @Override
+    protected boolean isCallableStatementRequired() {
+        return super.isCallableStatementRequired() || (getProcedureArgumentNames().size() > 0 && getProcedureArgumentNames().get(0) != null);
+    }
+
     public boolean isStoredProcedureCall() {
         return true;
     }
@@ -845,7 +859,57 @@ public class StoredProcedureCall extends DatabaseCall {
         setSQLStringInternal(session.getPlatform().buildProcedureCallString(this, session, getQuery().getTranslationRow()));
         super.prepareInternal(session);
     }
-    
+
+    /**
+     * INTERNAL:
+     * Prepare the JDBC statement, this may be parameterize or a call statement.
+     * If caching statements this must check for the pre-prepared statement and re-bind to it.
+     */
+    @Override
+    public Statement prepareStatement(DatabaseAccessor accessor, AbstractRecord translationRow, AbstractSession session) throws SQLException {
+        List<String> procedureArgs = getProcedureArgumentNames();
+        if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
+            return super.prepareStatement(accessor, translationRow, session);
+        }
+
+        //#Bug5200836 pass shouldUnwrapConnection flag to indicate whether or not using unwrapped connection.
+        Statement statement = accessor.prepareStatement(this, session);
+
+        // Setup the max rows returned and query timeout limit.
+        if (this.queryTimeout > 0 && this.queryTimeoutUnit != null) {
+            long timeout = TimeUnit.SECONDS.convert(this.queryTimeout, this.queryTimeoutUnit);
+
+            if(timeout > Integer.MAX_VALUE){
+                timeout = Integer.MAX_VALUE;
+            }
+
+            //Round up the timeout if SECONDS are larger than the given units
+            if(TimeUnit.SECONDS.compareTo(this.queryTimeoutUnit) > 0 && this.queryTimeout % 1000 > 0){
+                timeout += 1;
+            }
+            statement.setQueryTimeout((int)timeout);
+        }
+        if (!this.ignoreMaxResultsSetting && this.maxRows > 0) {
+            statement.setMaxRows(this.maxRows);
+        }
+        if (this.resultSetFetchSize > 0) {
+            statement.setFetchSize(this.resultSetFetchSize);
+        }
+
+        if (this.parameters == null) {
+            return statement;
+        }
+        List parameters = getParameters();
+        int size = parameters.size();
+        DatabasePlatform platform = session.getPlatform();
+        //Both lists should be the same size
+        for (int index = 0; index < size; index++) {
+            platform.setParameterValueInDatabaseCall(parameters.get(index), (CallableStatement)statement, procedureArgs.get(index), session);
+        }
+
+        return statement;
+    }
+
     /**
      * INTERNAL:
      * Used by JPA named stored procedure queries to associate parameter name 
