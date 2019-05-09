@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +23,8 @@ public class InOutputParameterForCallableStatement extends OutputParameterForCal
     protected Object inParameter;
 
     public InOutputParameterForCallableStatement(Object inParameter, OutputParameterForCallableStatement outParameter) {
+        // 'inParameter' is stored in this class
+        // The outParameter is stored under BindCallCustomParameter.obj
         super(outParameter);
         if (inParameter == null) {
             this.inParameter = getOutputField();
@@ -42,6 +45,8 @@ public class InOutputParameterForCallableStatement extends OutputParameterForCal
             }
             outField = typeField;
         }
+        // 'inParameter' is stored in this class
+        // The outParameter is stored under BindCallCustomParameter.obj
         obj = outField;
         prepare(session);
         if (inParameter == null) {
@@ -51,9 +56,20 @@ public class InOutputParameterForCallableStatement extends OutputParameterForCal
         }
     }
 
-    public void set(DatabasePlatform platform, PreparedStatement statement, int index, AbstractSession session) throws SQLException {
-        platform.setParameterValueInDatabaseCall(inParameter, statement, index, session);
-        super.set(platform, statement, index, session);
+    @Override
+    public void set(DatabasePlatform platform, PreparedStatement statement, int parameterIndex, AbstractSession session) throws SQLException {
+        //Set the 'inParameter' on the statement
+        platform.setParameterValueInDatabaseCall(inParameter, statement, parameterIndex, session);
+        //Set the outParameter on the statement
+        super.set(platform, statement, parameterIndex, session);
+    }
+
+    @Override
+    public void set(DatabasePlatform platform, CallableStatement statement, String parameterName, AbstractSession session) throws SQLException {
+        //Set the 'inParameter' on the statement
+        platform.setParameterValueInDatabaseCall(inParameter, statement, parameterName, session);
+        //Set the outParameter on the statement
+        super.set(platform, statement, parameterName, session);
     }
 
     public String toString() {

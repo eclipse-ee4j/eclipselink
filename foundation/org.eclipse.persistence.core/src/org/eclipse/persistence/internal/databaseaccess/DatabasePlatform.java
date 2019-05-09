@@ -829,7 +829,7 @@ public class DatabasePlatform extends DatasourcePlatform {
                     writer.write(getProcedureArgumentSetter());
                 }
                 writer.write("?");
-                if (call.isOutputParameterType(parameterType)) {
+                if (DatasourceCall.isOutputParameterType(parameterType)) {
                     if (requiresProcedureCallOuputToken()) {
                         writer.write(" ");
                         writer.write(getOutputProcedureToken());
@@ -1774,11 +1774,43 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * This method is used to register output parameter on Callable Statements for Stored Procedures
+     * This method is used to register output parameter on CallableStatements for Stored Procedures
      * as each database seems to have a different method.
+     * 
+     * @see java.sql.CallableStatement#registerOutParameter(int parameterIndex, int sqlType)
      */
-    public void registerOutputParameter(CallableStatement statement, int index, int jdbcType) throws SQLException {
-        statement.registerOutParameter(index, jdbcType);
+    public void registerOutputParameter(CallableStatement statement, int parameterIndex, int sqlType) throws SQLException {
+        statement.registerOutParameter(parameterIndex, sqlType);
+    }
+
+    /**
+     * This method is used to register output parameter on CallableStatements for Stored Procedures
+     * as each database seems to have a different method.
+     * 
+     * @see java.sql.CallableStatement#registerOutParameter(int parameterIndex, int sqlType, String typeName)
+     */
+    public void registerOutputParameter(CallableStatement statement, int parameterIndex, int sqlType, String typeName) throws SQLException {
+        statement.registerOutParameter(parameterIndex, sqlType, typeName);
+    }
+
+    /**
+     * This method is used to register output parameter on CallableStatements for Stored Procedures
+     * as each database seems to have a different method.
+     * 
+     * @see java.sql.CallableStatement#registerOutParameter(String parameterName, int sqlType)
+     */
+    public void registerOutputParameter(CallableStatement statement, String parameterName, int sqlType) throws SQLException {
+        statement.registerOutParameter(parameterName, sqlType);
+    }
+
+    /**
+     * This method is used to register output parameter on CallableStatements for Stored Procedures
+     * as each database seems to have a different method.
+     * 
+     * @see java.sql.CallableStatement#registerOutParameter(String parameterName, int sqlType, String typeName)
+     */
+    public void registerOutputParameter(CallableStatement statement, String parameterName, int sqlType, String typeName) throws SQLException {
+        statement.registerOutParameter(parameterName, sqlType, typeName);
     }
 
     /**
@@ -2480,7 +2512,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL
-     * Set the parameter in the JDBC statement.
+     * Set the parameter in the JDBC statement at the given index.
      * This support a wide range of different parameter types,
      * and is heavily optimized for common types.
      */
@@ -2585,6 +2617,113 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement with the given name.
+     * This support a wide range of different parameter types,
+     * and is heavily optimized for common types.
+     */
+    public void setParameterValueInDatabaseCall(Object parameter,
+                CallableStatement statement, String name, AbstractSession session)
+                throws SQLException {
+        // Process common types first.
+        if (parameter instanceof String) {
+            // Check for stream binding of large strings.
+            if (usesStringBinding() && (((String)parameter).length() > getStringBindingSize())) {
+                CharArrayReader reader = new CharArrayReader(((String)parameter).toCharArray());
+                statement.setCharacterStream(name, reader, ((String)parameter).length());
+            } else {
+                if (shouldUseGetSetNString()) {
+                    statement.setNString(name, (String) parameter);
+                } else {
+                    statement.setString(name, (String) parameter);
+                }
+            }
+        } else if (parameter instanceof Number) {
+            Number number = (Number) parameter;
+            if (number instanceof Integer) {
+                statement.setInt(name, number.intValue());
+            } else if (number instanceof Long) {
+                statement.setLong(name, number.longValue());
+            }  else if (number instanceof BigDecimal) {
+                statement.setBigDecimal(name, (BigDecimal) number);
+            } else if (number instanceof Double) {
+                statement.setDouble(name, number.doubleValue());
+            } else if (number instanceof Float) {
+                statement.setFloat(name, number.floatValue());
+            } else if (number instanceof Short) {
+                statement.setShort(name, number.shortValue());
+            } else if (number instanceof Byte) {
+                statement.setByte(name, number.byteValue());
+            } else if (number instanceof BigInteger) {
+                // Convert to BigDecimal.
+                statement.setBigDecimal(name, new BigDecimal((BigInteger) number));
+            } else {
+                statement.setObject(name, parameter);
+            }
+        }  else if (parameter instanceof java.sql.Date){
+            statement.setDate(name,(java.sql.Date)parameter);
+        }  else if (parameter instanceof java.time.LocalDate){
+            statement.setDate(name, java.sql.Date.valueOf((java.time.LocalDate) parameter));
+        } else if (parameter instanceof java.sql.Timestamp){
+            statement.setTimestamp(name,(java.sql.Timestamp)parameter);
+        } else if (parameter instanceof java.time.LocalDateTime){
+            statement.setTimestamp(name, java.sql.Timestamp.valueOf((java.time.LocalDateTime) parameter));
+        } else if (parameter instanceof java.time.OffsetDateTime) {
+            statement.setTimestamp(name, java.sql.Timestamp.from(((java.time.OffsetDateTime) parameter).toInstant()));
+        } else if (parameter instanceof java.sql.Time){
+            statement.setTime(name,(java.sql.Time)parameter);
+        } else if (parameter instanceof java.time.LocalTime){
+            java.time.LocalTime lt = (java.time.LocalTime) parameter;
+            java.sql.Timestamp ts = new java.sql.Timestamp(
+                    70, 0, 1, lt.getHour(), lt.getMinute(), lt.getSecond(), lt.getNano());
+            statement.setTimestamp(name, ts);
+        } else if (parameter instanceof java.time.OffsetTime) {
+            java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
+            java.sql.Timestamp ts = new java.sql.Timestamp(
+                    70, 0, 1, ot.getHour(), ot.getMinute(), ot.getSecond(), ot.getNano());
+            statement.setTimestamp(name, ts);
+        } else if (parameter instanceof Boolean) {
+            statement.setBoolean(name, ((Boolean) parameter).booleanValue());
+        } else if (parameter == null) {
+            // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
+            statement.setNull(name, getJDBCType((Class)null));
+        } else if (parameter instanceof DatabaseField) {
+            setNullFromDatabaseField((DatabaseField)parameter, statement, name);
+        } else if (parameter instanceof byte[]) {
+            if (usesStreamsForBinding()) {
+                ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[])parameter);
+                statement.setBinaryStream(name, inputStream, ((byte[])parameter).length);
+            } else {
+                statement.setBytes(name, (byte[])parameter);
+            }
+        }
+        // Next process types that need conversion.
+        else if (parameter instanceof Calendar) {
+            statement.setTimestamp(name, Helper.timestampFromDate(((Calendar)parameter).getTime()));
+        } else if (parameter.getClass() == ClassConstants.UTILDATE) {
+            statement.setTimestamp(name, Helper.timestampFromDate((java.util.Date) parameter));
+        } else if (parameter instanceof Character) {
+            statement.setString(name, ((Character)parameter).toString());
+        } else if (parameter instanceof char[]) {
+            statement.setString(name, new String((char[])parameter));
+        } else if (parameter instanceof Character[]) {
+            statement.setString(name, (String)convertObject(parameter, ClassConstants.STRING));
+        } else if (parameter instanceof Byte[]) {
+            statement.setBytes(name, (byte[])convertObject(parameter, ClassConstants.APBYTE));
+        } else if (parameter instanceof SQLXML) {
+            statement.setSQLXML(name, (SQLXML) parameter);
+        } else if (parameter instanceof BindCallCustomParameter) {
+            ((BindCallCustomParameter)(parameter)).set(this, statement, name, session);
+        } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){
+            StructConverter converter = typeConverters.get(parameter.getClass());
+            parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
+            statement.setObject(name, parameter);
+        } else {
+            statement.setObject(name, parameter);
+        }
+    }
+
     protected void setNullFromDatabaseField(DatabaseField databaseField, PreparedStatement statement, int index) throws SQLException {
         // Substituted null value for the corresponding DatabaseField.
         // Cannot bind null through set object, so we must compute the type, this is not good.
@@ -2596,6 +2735,20 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else {
             int jdbcType = getJDBCTypeForSetNull(databaseField);
             statement.setNull(index, jdbcType);
+        }
+    }
+
+    protected void setNullFromDatabaseField(DatabaseField databaseField, CallableStatement statement, String name) throws SQLException {
+        // Substituted null value for the corresponding DatabaseField.
+        // Cannot bind null through set object, so we must compute the type, this is not good.
+        // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the
+        // user defined type to setNull as well.
+        if (databaseField instanceof ObjectRelationalDatabaseField) {
+            ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
+            statement.setNull(name, field.getSqlType(), field.getSqlTypeName());
+        } else {
+            int jdbcType = getJDBCTypeForSetNull(databaseField);
+            statement.setNull(name, jdbcType);
         }
     }
 
