@@ -40,7 +40,13 @@
     </path>
     <path id="run.jse.path">
         <pathelement path="${jse.classes.dir}" />
-        <pathelement path="${jse.eclipselink.jar}" />
+        <!-- <pathelement path="${jse.eclipselink.jar}" /> -->
+        <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" />
+        <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" />
+        <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.core_2.6.8.WAS.jar" />
+        <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.jpa_2.6.8.WAS.jar" />
+        <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.jpa.jpql_2.6.8.WAS.jar" />
+        <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.jpa.modelgen_2.6.8.WAS.jar" />
         <pathelement path="${javax.transaction}" />
         <pathelement path="${javax.validation}" />
         <pathelement path="${javax.persistence}" />
