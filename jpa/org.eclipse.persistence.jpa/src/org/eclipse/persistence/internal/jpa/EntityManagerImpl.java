@@ -35,6 +35,8 @@
  *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
  *     02/27/2017-2.6_WAS Jody Grassel
  *       - 512255: Eclipselink JPA/Auditing capablity in EE Environment fails with JNDI name parameter type
+ *     05/10/2019-2.6_WAS Jody Grassel
+ *       - 547173: EntityManager.unwrap(Connection.class) returns null
  ******************************************************************************/
 package org.eclipse.persistence.internal.jpa;
 
@@ -2779,13 +2781,33 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             } else if (cls.equals(SessionBroker.class)) {            
                 return (T) this.getSessionBroker();
             } else if (cls.equals(java.sql.Connection.class)) {
-                UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
-                if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
-                    return (T) unitOfWork.getAccessor().getConnection();
+                final UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
+                final Accessor accessor = unitOfWork.getAccessor();
+                if (unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
+                    // If the ExclusiveIsolatedClientSession hasn't serviced a query prior to the unwrap, 
+                    // there will be no available Connection.
+                    java.sql.Connection conn = accessor.getConnection();
+                    if (conn == null) {
+                        final boolean uowInTran = unitOfWork.isInTransaction();
+                        final boolean activeTran = checkForTransaction(false) != null;
+                        if (uowInTran || activeTran) {
+                            if (activeTran) {
+                                unitOfWork.beginEarlyTransaction();
+                            }
+                            accessor.incrementCallCount(unitOfWork.getParent());
+                            accessor.decrementCallCount();
+                            conn = accessor.getConnection();
+                        }
+                        // if not in a tx, still return null
+                    }
+                    
+                    return (T) conn;
+                } else if (unitOfWork.isInTransaction()) {
+                    return (T) accessor.getConnection();
                 }
+                
                 if (checkForTransaction(false) != null) { 
                     unitOfWork.beginEarlyTransaction();
-                    Accessor accessor = unitOfWork.getAccessor();
                     // Ensure external connection is acquired.
                     accessor.incrementCallCount(unitOfWork.getParent());
                     accessor.decrementCallCount();
