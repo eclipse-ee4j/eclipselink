@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,8 +40,8 @@ public class SimpleApostropheTest extends JPQLTestCase {
         setOriginalOject(address);
 
         //test the apostrophe
-        ejbqlString = "SELECT OBJECT(address) FROM Address address WHERE ";
-        ejbqlString = ejbqlString + "address.street = '234 I''m Lost Lane'";
+        ejbqlString = "SELECT OBJECT(a) FROM Address a WHERE ";
+        ejbqlString = ejbqlString + "a.street = '234 I''m Lost Lane'";
         setEjbqlString(ejbqlString);
         setReferenceClass(Address.class);
         super.setup();

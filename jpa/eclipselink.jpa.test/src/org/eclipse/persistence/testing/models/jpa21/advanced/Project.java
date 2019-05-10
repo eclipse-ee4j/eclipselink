@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,8 +34,10 @@ import javax.persistence.EntityResult;
 import javax.persistence.FetchType;
 import javax.persistence.FieldResult;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
@@ -50,12 +53,9 @@ import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
-import static javax.persistence.GenerationType.SEQUENCE;
-import static javax.persistence.InheritanceType.JOINED;
-
 @Entity
 @Table(name="JPA21_PROJECT")
-@Inheritance(strategy=JOINED)
+@Inheritance(strategy=InheritanceType.JOINED)
 @DiscriminatorColumn(name="PROJ_TYPE")
 @DiscriminatorValue("P")
 @SqlResultSetMapping(
@@ -112,7 +112,7 @@ public class Project implements Serializable {
     }
 
     @Id
-    @GeneratedValue(strategy=SEQUENCE, generator="PROJECT_SEQUENCE_GENERATOR")
+    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator="PROJECT_SEQUENCE_GENERATOR")
     @SequenceGenerator(name="PROJECT_SEQUENCE_GENERATOR", sequenceName="PROJECT_SEQ", allocationSize=10)
     @Column(name="PROJ_ID", length=37)
     public Integer getId() {
@@ -138,7 +138,7 @@ public class Project implements Serializable {
     }
 
     @ManyToMany(targetEntity=Employee.class, mappedBy="projects")
-    public Collection getTeamMembers() {
+    public Collection<Employee> getTeamMembers() {
         return m_teamMembers;
     }
 

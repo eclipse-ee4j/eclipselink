@@ -14,11 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.Embeddable;
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
+
+import java.io.Serializable;
 
 @Embeddable
-public class ComputerPK {
+public class ComputerPK implements Serializable {
     private String manufacturer;
     private Integer serialNumber;
 

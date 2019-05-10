@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -313,9 +314,9 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        assertTrue("complexConditionCaseInUpdateTest - wrong number of results", results.size() == 2);
+        assertEquals("complexConditionCaseInUpdateTest - wrong number of results", 2, results.size());
         for (Employee e : results) {
-            assertTrue("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), e.getLastName().equals("Jones"));
+            assertEquals("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), "Jones", e.getLastName());
         }
 
     }
@@ -550,7 +551,7 @@ public class CriteriaQueryTestSuite extends JUnitTestCase {
         closeEntityManager(em);
 
         if (testSQL != null) {
-            this.assertEquals("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
+            assertEquals("Delete Criteria query did not match SQL used for a JPQL query; generated SQL was: \""
                         +testSQL + "\"  but we expected: \""+baseSQL+"\"", testSQL, baseSQL);
         } else {
             //check list of strings instead

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 IBM Corporation. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,15 +28,15 @@
     <access>PROPERTY</access>
     <table-generator name="DISTRIBUTOR_GENERATOR_TABLE" table="XML_DISTRIBUTOR_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="DTR_SEQ"/>
     <named-query name="findAllXMLOrdersByItem">
-        <query>SELECT OBJECT(theorder) FROM XMLExtendedOrder theorder WHERE theorder.item.itemId = :id</query>
+        <query>SELECT OBJECT(o) FROM XMLExtendedOrder o WHERE o.item.itemId = :id</query>
     </named-query>
     <named-query name="findAllXMLItemsByName">
-        <query>SELECT OBJECT(item) FROM XMLExtendedItem item WHERE item.name = ?1</query>
+        <query>SELECT OBJECT(i) FROM XMLExtendedItem i WHERE i.name = ?1</query>
     </named-query>
     <mapped-superclass class="Human">
         <table-generator name="CUSTOMER_GENERATOR_TABLE" table="XML_CUSTOMER_SEQ" pk-column-name="SEQ_NAME" value-column-name="SEQ_COUNT" pk-column-value="CUST_SEQ"/>
         <named-query name="findAllXMLCustomers">
-            <query>SELECT OBJECT(thecust) FROM XMLExtendedCustomer thecust</query>
+            <query>SELECT OBJECT(c) FROM XMLExtendedCustomer c</query>
             <hint name="refresh" value="true"/>
         </named-query>
         <named-native-query name="findAllSQLXMLCustomers">

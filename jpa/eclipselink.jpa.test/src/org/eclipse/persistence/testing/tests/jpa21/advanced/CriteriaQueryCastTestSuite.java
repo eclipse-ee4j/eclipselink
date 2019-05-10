@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +21,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -30,30 +32,33 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
-import org.eclipse.persistence.testing.models.jpa.advanced.Project;
-import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Boat;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
-import org.eclipse.persistence.testing.models.jpa.inheritance.FueledVehicle;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Jalopy;
-import org.eclipse.persistence.testing.models.jpa.inheritance.NonFueledVehicle;
-import org.eclipse.persistence.testing.models.jpa.inheritance.OffRoadTireInfo;
-import org.eclipse.persistence.testing.models.jpa.inheritance.PassengerPerformanceTireInfo;
-import org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
-import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
-import org.eclipse.persistence.testing.models.jpa.inheritance.TireInfo;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Vehicle;
-import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
-import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
-import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
+import org.eclipse.persistence.testing.models.jpa21.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa21.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa21.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa21.advanced.SmallProject;
 import org.eclipse.persistence.testing.models.jpa21.advanced.animals.Animal;
 import org.eclipse.persistence.testing.models.jpa21.advanced.animals.Beaver;
 import org.eclipse.persistence.testing.models.jpa21.advanced.animals.Rodent;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Boat;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Bus;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Car;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Company;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.FueledVehicle;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.InheritanceTableCreator;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Jalopy;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.NonFueledVehicle;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.OffRoadTireInfo;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.PassengerPerformanceTireInfo;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.PerformanceTireInfo;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Person;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.SportsCar;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.TireInfo;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inheritance.Vehicle;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inherited.BeerConsumer;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inherited.Blue;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inherited.BlueLight;
+import org.eclipse.persistence.testing.models.jpa21.advanced.inherited.InheritedTableManager;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -74,31 +79,34 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
         suite.setName("QueryCastTestSuite");
 
         suite.addTest(new CriteriaQueryCastTestSuite("testSetup"));
-// Bug 532018 - Can't use org.eclipse.persistence.testing.models.jpa entities in JPA 2.1 test
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafQueryKey"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyQueryKey"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastManyToManyQueryKey"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafExpressionBuilder"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyExpressionBuilder"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastManyToManyExpressionBuilder"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastInSelect"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastSingleTableQueryKey"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToManyLeafQueryKey"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastSeparateClass"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastRelationshipTraversal"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToOne"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testSelectCast"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testCastInSubselect"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastWithFetchJoin"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRoot"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRootSTI"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFrom"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFromSTI"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhere"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhereSTI"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOr"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOrSTI"));
-//        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingJoinOverDowncastRelationship"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafQueryKey"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyQueryKey"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastManyToManyQueryKey"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyLeafExpressionBuilder"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastOneToManyMidHierarchyExpressionBuilder"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastManyToManyExpressionBuilder"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastInSelect"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastSingleTableQueryKey"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToManyLeafQueryKey"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastSeparateClass"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastRelationshipTraversal"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleDowncastOneToOne"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testSelectCast"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testCastInSubselect"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDowncastWithFetchJoin"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRoot"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testDoubleTreatOnRootSTI"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFrom"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatInFromSTI"));
+
+        //544160
+        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhere"));
+        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatInWhereSTI"));
+        suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOr"));
+        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingAndOrSTI"));
+
+        //385350 - JPQL TREAT followed by JOIN problem.
+        //suite.addTest(new CriteriaQueryCastTestSuite("testTreatUsingJoinOverDowncastRelationship"));
 
         suite.addTest(new CriteriaQueryCastTestSuite("testTreatOverInheritance"));
         suite.addTest(new CriteriaQueryCastTestSuite("testTreatOverInheritanceWithCount"));
@@ -110,17 +118,13 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
     public void testSetup() {
-        if (isOnServer()) {
-            return;
-        }
-// Bug 532018 - Can't use org.eclipse.persistence.testing.models.jpa entities in JPA 2.1 test
-//        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
-//        new InheritanceTableCreator().replaceTables(getPersistenceUnitServerSession());
-//        new InheritedTableManager().replaceTables(getPersistenceUnitServerSession());
+        new AdvancedTableCreator().replaceTables(getPersistenceUnitServerSession());
+        new InheritanceTableCreator().replaceTables(getPersistenceUnitServerSession());
+        new InheritedTableManager().replaceTables(getPersistenceUnitServerSession());
 //        // Force uppercase for Postgres.
-//        if (getPersistenceUnitServerSession().getPlatform().isPostgreSQL()) {
-//            getPersistenceUnitServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
-//        }
+        if (getPersistenceUnitServerSession().getPlatform().isPostgreSQL()) {
+            getPersistenceUnitServerSession().getLogin().setShouldForceFieldNamesToUpperCase(true);
+        }
 
         EntityManager em = createEntityManager("AnimalsPU");
         beginTransaction(em);
@@ -176,7 +180,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned, expected 1 but returned "+resultList.size(), resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -232,7 +236,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -286,7 +290,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -337,7 +341,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -393,7 +397,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -446,7 +450,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -482,7 +486,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -541,7 +545,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -592,7 +596,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -641,10 +645,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Join b = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), Boat.class);
             Join f = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), FueledVehicle.class);
             cq.where(qb.or(qb.equal(b.get("model"), "fishing"), qb.equal(f.get("fuelType"), "unleaded")));
+            cq.distinct(true);
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -693,7 +698,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             boat.setOwner(company);
             em.flush();
 
-
             clearCache();
             em.clear();
 
@@ -704,10 +708,11 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<Company> root = cq.from(Company.class);
             Join b = qb.treat((Join<Object, Object>) root.join("vehicles", JoinType.LEFT), Bus.class);
             cq.where(qb.equal(b.get("busDriver").get("name"), "Driver"));
+            cq.distinct(true);
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -756,7 +761,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.or(qb.equal(s.get("maxSpeed"), 200), qb.equal(j.get("percentRust"), 20)));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -808,8 +813,8 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
-            assertTrue("Incorrect results returned", (Double)resultList.get(0) == 1000);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
+            assertEquals("Incorrect results returned", new Double(1000), (Double)resultList.get(0));
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -839,7 +844,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             proj.addTeamMember(emp);
             emp.addProject(lp);
             lp.addTeamMember(emp);
-            emp.setSalary(10000);
+            emp.setSalary(10000L);
             em.persist(emp);
 
             emp = new Employee();
@@ -848,7 +853,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             emp.addProject(lp);
             lp.addTeamMember(emp);
             em.persist(emp);
-            emp.setSalary(100);
+            emp.setSalary(100L);
             em.flush();
 
             clearCache();
@@ -860,13 +865,13 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Root<Employee> root = cq.from(Employee.class);
             Subquery<Number> sq = cq.subquery(Number.class);
             Root<Employee> sRoot = sq.from(Employee.class);
-            Join l = qb.treat((Join<Object, Object>) root.join("projects"), LargeProject.class);
+            Join l = qb.treat((Join<Object, Object>) sRoot.join("projects"), LargeProject.class);
             sq.select(qb.max(l.get("budget")));
             cq.where(qb.gt(root.<Number>get("salary"), sq));
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -912,8 +917,9 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
             Person person = (Person)resultList.get(0);
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
-            assertNotNull("The car was not fetched.", person.car);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
+            PersistenceUnitUtil unitUtil = em.getEntityManagerFactory().getPersistenceUnitUtil();
+            assertTrue("The car was not fetched.", unitUtil.isLoaded(person, "car"));
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -958,7 +964,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.or(qb.equal( qb.treat(root, SportsCar.class).get("maxSpeed"), 200), qb.equal( qb.treat(root, Jalopy.class).get("percentRust"), 20)));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -998,7 +1004,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.or(qb.equal( qb.treat(root, PerformanceTireInfo.class).get("speedRating"), 110), qb.equal( qb.treat(root, PassengerPerformanceTireInfo.class).get("speedRating"), 120)));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1049,7 +1055,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1096,7 +1102,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.select(b.get("speedRating"));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1146,7 +1152,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             List resultList = em.createQuery(cq).getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1193,7 +1199,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             cq.where(qb.greaterThan(qb.treat(root.get("tires"), PerformanceTireInfo.class).<Integer>get("speedRating"), 100));
 
             List resultList = em.createQuery(cq).getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1347,7 +1353,6 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             clearCache();
             em.clear();
 
-
             //this returns user.id instead of Person objects
             //query = em.createQuery("Select u from Person o join treat(o.car as SportsCar) b join b.user u");
             CriteriaBuilder qb = em.getCriteriaBuilder();
@@ -1356,13 +1361,15 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             Join b = qb.treat((Join<Object, Object>) root.join("car"), SportsCar.class);
             Join u = b.join("user");
             cq.select(u);
+            //Making the query distinct allows the test to pass... but the query generated is different than what is expected
+            //cq.distinct(true);
 
             List resultList = em.createQuery(cq).getResultList();
 
             for (Object result: resultList) {
-                assertTrue("query did not return intances of Company, instead it returned :"+result, (result instanceof Person));
+                assertTrue("query did not return instance of Person, instead it returned :"+result, (result instanceof Person));
             }
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1397,7 +1404,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
             createQuery.where(equal1, equal2);
             TypedQuery<Animal> query = em.createQuery(createQuery);
             List<Animal> result = query.getResultList();
-            assertEquals("Animals count:", 2, result.size());
+            assertEquals("Animals count was incorrect", 2, result.size());
         } finally {
             if (this.isTransactionActive(em)) {
                 rollbackTransaction(em);
@@ -1434,7 +1441,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
 
             TypedQuery<Long> query = em.createQuery(createQuery);
             Long result = query.getSingleResult();
-            assertEquals("Animals count:", 2, result.longValue());
+            assertEquals("Animals count was incorrect", 2, result.longValue());
         } finally {
             if (this.isTransactionActive(em)) {
                 rollbackTransaction(em);
@@ -1464,7 +1471,7 @@ public class CriteriaQueryCastTestSuite extends JUnitTestCase {
                        "AND b IS NOT null ",
                       Long.class);
             Long result = query.getSingleResult();
-            assertEquals("Animals count:", 2, result.longValue());
+            assertEquals("Animals count was incorrect", 2, result.longValue());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);

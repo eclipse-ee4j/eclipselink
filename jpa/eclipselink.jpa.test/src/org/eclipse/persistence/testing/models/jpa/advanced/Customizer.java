@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,12 +39,12 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
  * Session and descriptor customizer.
  */
 public class Customizer implements SessionCustomizer, DescriptorCustomizer {
-    static HashMap sessionCalls = new HashMap();
-    static HashMap descriptorCalls = new HashMap();
+    static HashMap<String, Integer> sessionCalls = new HashMap<String, Integer>();
+    static HashMap<String, Integer> descriptorCalls = new HashMap<String, Integer>();
 
     public void customize(Session session) throws Exception {
         String sessionName = session.getName();
-        Integer numberOfCalls = (Integer)sessionCalls.get(sessionName);
+        Integer numberOfCalls = sessionCalls.get(sessionName);
         int num = 0;
         if(numberOfCalls != null) {
             num = numberOfCalls.intValue();
@@ -97,11 +98,11 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         addCustomQueryKeys(descriptor);
     }
 
-    public static Map getSessionCalls() {
+    public static Map<String, Integer> getSessionCalls() {
         return sessionCalls;
     }
 
-    public static Map getDescriptorCalls() {
+    public static Map<String, Integer> getDescriptorCalls() {
         return descriptorCalls;
     }
 

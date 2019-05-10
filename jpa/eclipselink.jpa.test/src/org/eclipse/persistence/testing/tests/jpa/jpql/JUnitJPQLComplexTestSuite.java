@@ -1,7 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
- * 
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +34,6 @@ import java.util.Map;
 import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.PessimisticLock;
@@ -385,10 +383,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
         Employee emp2 = (Employee)getServerSession().readAllObjects(Employee.class).lastElement();
         clearCache();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "(ABS(emp.salary) = ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "(ABS(e.salary) = ";
         ejbqlString = ejbqlString + emp1.getSalary() + ")";
-        ejbqlString = ejbqlString + " OR (ABS(emp.salary) = ";
+        ejbqlString = ejbqlString + " OR (ABS(e.salary) = ";
         ejbqlString = ejbqlString + emp2.getSalary() + ")";
 
         Vector expectedResult = new Vector();
@@ -397,7 +395,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex ABS test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex ABS test failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -420,7 +418,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                     break;
                 }
             }
-            Assert.assertTrue("Complex ABS with parameter test failed", found);
+            assertTrue("Complex ABS with parameter test failed", found);
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -448,7 +446,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         raq.setSelectionCriteria(whereClause);
         expectedResult = (Vector)getServerSession().executeQuery(raq);
         clearCache();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN (";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id IN (";
         ejbqlString = ejbqlString + emp1.getId().toString() + ", ";
         ejbqlString = ejbqlString + emp2.getId().toString() + ", ";
         ejbqlString = ejbqlString + emp3.getId().toString();
@@ -456,14 +454,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex IN test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex IN test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
     public void complexInTest2()
     {
         EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :param";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id IN :param";
 
         List params = new ArrayList();
         params.add(-1);
@@ -476,7 +474,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexInTest3()
     {
         EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE UPPER(emp.lastName) IN :param";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE UPPER(e.lastName) IN :param";
 
         List params = new ArrayList();
         params.add("SMITH");
@@ -532,16 +530,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Employee expectedResult = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
         clearCache();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "(LENGTH(emp.firstName) = ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "(LENGTH(e.firstName) = ";
         ejbqlString = ejbqlString + expectedResult.getFirstName().length() + ")";
         ejbqlString = ejbqlString + " AND ";
-        ejbqlString = ejbqlString + "(LENGTH(emp.lastName) = ";
+        ejbqlString = ejbqlString + "(LENGTH(e.lastName) = ";
         ejbqlString = ejbqlString + expectedResult.getLastName().length() + ")";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Length test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Length test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexLikeTest()
@@ -563,11 +561,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         raq.setSelectionCriteria(whereClause);
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
         clearCache();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName + "\"";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName LIKE \"" + partialFirstName + "\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Like test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Like test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -595,7 +593,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id NOT IN (";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id NOT IN (";
         ejbqlString = ejbqlString + emp1.getId().toString() + ", ";
         ejbqlString = ejbqlString + emp2.getId().toString() + ", ";
         ejbqlString = ejbqlString + emp3.getId().toString();
@@ -603,7 +601,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Not IN test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Not IN test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -628,11 +626,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
         clearCache();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName NOT LIKE \"" + partialFirstName + "\"";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName NOT LIKE \"" + partialFirstName + "\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Not LIKE test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Not LIKE test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -665,14 +663,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         emp = (Employee)expectedResult.firstElement();
 
         // Set up the EJBQL using the retrieved employees
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.firstName = ?1 ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.firstName = ?1 ";
         ejbqlString = ejbqlString + " AND ";
-        ejbqlString = ejbqlString + "emp.lastName = ?2";
+        ejbqlString = ejbqlString + "e.lastName = ?2";
 
         List result = em.createQuery(ejbqlString).setParameter(1,emp.getFirstName()).setParameter(2,emp.getLastName()).getResultList();
 
-        Assert.assertTrue("Complex Paramter test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Paramter test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -683,12 +681,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
         Employee emp2 = (Employee)getServerSession().readAllObjects(Employee.class).elementAt(1);
         clearCache();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + emp1.getSalary();
-        ejbqlString = ejbqlString + " = ABS(emp.salary)";
+        ejbqlString = ejbqlString + " = ABS(e.salary)";
         ejbqlString = ejbqlString + " OR ";
         ejbqlString = ejbqlString + emp2.getSalary();
-        ejbqlString = ejbqlString + " = ABS(emp.salary)";
+        ejbqlString = ejbqlString + " = ABS(e.salary)";
 
         Vector expectedResult = new Vector();
         expectedResult.add(emp1);
@@ -696,7 +694,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex reverse ABS test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex reverse ABS test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -712,16 +710,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee expectedResult = (Employee) getServerSession().readAllObjects(Employee.class).firstElement();
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + expectedResult.getFirstName().length();
-        ejbqlString = ejbqlString + " = LENGTH(emp.firstName)";
+        ejbqlString = ejbqlString + " = LENGTH(e.firstName)";
         ejbqlString = ejbqlString + " AND ";
         ejbqlString = ejbqlString + expectedResult.getLastName().length();
-        ejbqlString = ejbqlString + " = LENGTH(emp.lastName)";
+        ejbqlString = ejbqlString + " = LENGTH(e.lastName)";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex reverse Length test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex reverse Length test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexReverseParameterTest()
@@ -754,14 +752,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         emp = (Employee)expectedResult.firstElement();
 
         // Set up the EJBQL using the retrieved employees
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "?1 = emp.firstName";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "?1 = e.firstName";
         ejbqlString = ejbqlString + " AND ";
-        ejbqlString = ejbqlString + "?2 = emp.lastName";
+        ejbqlString = ejbqlString + "?2 = e.lastName";
 
         List result = em.createQuery(ejbqlString).setParameter(1,emp.getFirstName()).setParameter(2,emp.getLastName()).getResultList();
 
-        Assert.assertTrue("Complex Reverse Paramter test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Reverse Paramter test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -791,16 +789,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         double salarySquareRoot1 = Math.sqrt((new Double(emp1.getSalary()).doubleValue()));
         double salarySquareRoot2 = Math.sqrt((new Double(emp2.getSalary()).doubleValue()));
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + salarySquareRoot1;
-        ejbqlString = ejbqlString + " = SQRT(emp.salary)";
+        ejbqlString = ejbqlString + " = SQRT(e.salary)";
         ejbqlString = ejbqlString + " OR ";
         ejbqlString = ejbqlString + salarySquareRoot2;
-        ejbqlString = ejbqlString + " = SQRT(emp.salary)";
+        ejbqlString = ejbqlString + " = SQRT(e.salary)";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Reverse Square Root test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Reverse Square Root test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -830,16 +828,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         double salarySquareRoot1 = Math.sqrt((new Double(emp1.getSalary()).doubleValue()));
         double salarySquareRoot2 = Math.sqrt((new Double(emp2.getSalary()).doubleValue()));
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "(SQRT(emp.salary) = ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "(SQRT(e.salary) = ";
         ejbqlString = ejbqlString + salarySquareRoot1 + ")";
         ejbqlString = ejbqlString + " OR ";
-        ejbqlString = ejbqlString + "(SQRT(emp.salary) = ";
+        ejbqlString = ejbqlString + "(SQRT(e.salary) = ";
         ejbqlString = ejbqlString + salarySquareRoot2 + ")";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Square Root test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Square Root test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexStringInTest()
@@ -864,7 +862,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName IN (";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName IN (";
         ejbqlString = ejbqlString + "\"" + emp1.getFirstName() + "\"" + ", ";
         ejbqlString = ejbqlString + "\"" + emp2.getFirstName() + "\"" + ", ";
         ejbqlString = ejbqlString + "\"" + emp3.getFirstName() + "\"" ;
@@ -872,7 +870,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex String In test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex String In test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -902,7 +900,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName NOT IN (";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName NOT IN (";
         ejbqlString = ejbqlString + "\"" + emp1.getFirstName() + "\"" + ", ";
         ejbqlString = ejbqlString + "\"" + emp2.getFirstName() + "\"" + ", ";
         ejbqlString = ejbqlString + "\"" + emp3.getFirstName() + "\"" ;
@@ -910,7 +908,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
          List result = em.createQuery(ejbqlString).getResultList();
 
-         Assert.assertTrue("Complex String Not In test failed", comparer.compareObjects(result, expectedResult));
+         assertTrue("Complex String Not In test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -927,16 +925,16 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         lastNamePart = expectedResult.getLastName().substring(0, 1);
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "(SUBSTRING(emp.firstName, 1, 2) = ";//changed from 0, 2 to 1, 2(ZYP)
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "(SUBSTRING(e.firstName, 1, 2) = ";//changed from 0, 2 to 1, 2(ZYP)
         ejbqlString = ejbqlString + "\"" + firstNamePart + "\")";
         ejbqlString = ejbqlString + " AND ";
-        ejbqlString = ejbqlString + "(SUBSTRING(emp.lastName, 1, 1) = ";//changed from 0, 1 to 1, 1(ZYP)
+        ejbqlString = ejbqlString + "(SUBSTRING(e.lastName, 1, 1) = ";//changed from 0, 1 to 1, 1(ZYP)
         ejbqlString = ejbqlString + "\"" + lastNamePart + "\")";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Sub String test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Sub String test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexLocateTest()
@@ -948,11 +946,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         jpql = "SELECT e FROM Employee e WHERE LOCATE('manual', e.firstName) = 2 AND e.lastName = 'Smith'";
         Employee result = (Employee)em.createQuery(jpql).getSingleResult();
-        Assert.assertTrue("Complex LOCATE(String, String) test failed", result.equals(expectedResult));
+        assertEquals("Complex LOCATE(String, String) test failed", expectedResult, result);
 
         jpql = "SELECT e FROM Employee e WHERE LOCATE('a', e.firstName, 4) = 6 AND e.lastName = 'Smith'";
         result = (Employee)em.createQuery(jpql).getSingleResult();
-        Assert.assertTrue("Complex LOCATE(String, String) test failed", result.equals(expectedResult));
+        assertEquals("Complex LOCATE(String, String) test failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -974,13 +972,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         clearCache();
 
         String ejbqlString;
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp, " +
-            "IN(emp.managedEmployees) mEmployees, IN(mEmployees.projects) projects " +
-            "WHERE projects.name = 'Enterprise'";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e, " +
+            "IN(e.managedEmployees) me, IN(me.projects) p " +
+            "WHERE p.name = 'Enterprise'";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Nested One To Many Using In Clause test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Nested One To Many Using In Clause test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1000,10 +998,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         clearCache();
 
         String ejbqlString;
-        ejbqlString = "SELECT emp FROM Employee emp JOIN emp.address a";
+        ejbqlString = "SELECT e FROM Employee e JOIN e.address a";
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Unused Variable test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Unused Variable test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1034,24 +1032,24 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // Select the related manager of empWithOutManager and empWithManager
         // This should return empWithManager's manager, because the manager
         // identification variable m is defined as inner join
-        String ejbqlString = "SELECT m FROM Employee emp JOIN emp.manager m WHERE emp.id IN (:id1, :id2)";
+        String ejbqlString = "SELECT m FROM Employee e JOIN e.manager m WHERE e.id IN (:id1, :id2)";
         Query query = em.createQuery(ejbqlString);
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         List result = query.getResultList();
         List expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
-        Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
 
         // Select the related manager of empWithOutManager and empWithManager
         // This should return empWithManager's manager, because the manager
         // identification variable m is defined as outer join
-        ejbqlString = "SELECT m FROM Employee emp LEFT OUTER JOIN emp.manager m WHERE emp.id IN (:id1, :id2)";
+        ejbqlString = "SELECT m FROM Employee e LEFT OUTER JOIN e.manager m WHERE e.id IN (:id1, :id2)";
         query = em.createQuery(ejbqlString);
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         result = query.getResultList();
         expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager(), null});
-        Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexJoinTest2()
@@ -1081,26 +1079,26 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // Select the related manager of empWithOutManager and empWithManager
         // This should return empWithManager's manager, because the manager
         // identification variable m is defined as inner join
-        String ejbqlString = "SELECT m FROM Employee emp JOIN emp.manager m WHERE emp.id IN (:id1, :id2)";
+        String ejbqlString = "SELECT m FROM Employee e JOIN e.manager m WHERE e.id IN (:id1, :id2)";
         Query query = em.createQuery(ejbqlString);
         query.setMaxResults(5);
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         List result = query.getResultList();
         List expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager()});
-        Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
 
         // Select the related manager of empWithOutManager and empWithManager
         // This should return empWithManager's manager, because the manager
         // identification variable m is defined as outer join
-        ejbqlString = "SELECT m FROM Employee emp LEFT OUTER JOIN emp.manager m WHERE emp.id IN (:id1, :id2)";
+        ejbqlString = "SELECT m FROM Employee e LEFT OUTER JOIN e.manager m WHERE e.id IN (:id1, :id2)";
         query = em.createQuery(ejbqlString);
         query.setMaxResults(5);
         query.setParameter("id1", empWithOutManager.getId());
         query.setParameter("id2", empWithManager.getId());
         result = query.getResultList();
         expectedResult = Arrays.asList(new Employee[] {empWithManager.getManager(), null});
-        Assert.assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Join test failed", comparer.compareObjects(result, expectedResult));
     }
 
     /**
@@ -1147,11 +1145,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexMultipleJoinOfSameRelationship()
     {
         EntityManager em = createEntityManager();
-        String jpql = "SELECT p1, p2 FROM Employee emp JOIN emp.phoneNumbers p1 JOIN emp.phoneNumbers p2 " +
+        String jpql = "SELECT p1, p2 FROM Employee e JOIN e.phoneNumbers p1 JOIN e.phoneNumbers p2 " +
                       "WHERE p1.type = 'Pager' AND p2.areaCode = '613'";
         Query query = em.createQuery(jpql);
         Object[] result = (Object[]) query.getSingleResult();
-        Assert.assertTrue("Complex multiple JOIN of same relationship test failed",
+        assertTrue("Complex multiple JOIN of same relationship test failed",
                           (result[0] != result[1]));
     }
 
@@ -1161,11 +1159,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     public void complexMultipleLeftOuterJoinOfSameRelationship()
     {
         EntityManager em = createEntityManager();
-        String jpql = "SELECT p1, p2 FROM Employee emp LEFT JOIN emp.phoneNumbers p1 LEFT JOIN emp.phoneNumbers p2 " +
+        String jpql = "SELECT p1, p2 FROM Employee e LEFT JOIN e.phoneNumbers p1 LEFT JOIN e.phoneNumbers p2 " +
                       "WHERE p1.type = 'Pager' AND p2.areaCode = '613'";
         Query query = em.createQuery(jpql);
         Object[] result = (Object[]) query.getSingleResult();
-        Assert.assertTrue("Complex multiple JOIN of same relationship test failed",
+        assertTrue("Complex multiple JOIN of same relationship test failed",
                           (result[0] != result[1]));
     }
 
@@ -1186,10 +1184,10 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         clearCache();
 
         String ejbqlString;
-        ejbqlString = "SELECT emp FROM Employee emp JOIN FETCH emp.address";
+        ejbqlString = "SELECT e FROM Employee e JOIN FETCH e.address";
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Fetch Join test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Fetch Join test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1217,7 +1215,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Collections.sort(ids);
 
         // compare ids, because comparer does not know class Man
-        Assert.assertEquals("Complex OneToOne Fetch Join test failed",
+        assertEquals("Complex OneToOne Fetch Join test failed",
                             allMenIds, ids);
     }
 
@@ -1250,19 +1248,19 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
 
         // constructor query including relationship field
-        String ejbqlString = "SELECT emp.manager FROM Employee emp WHERE emp.id = :id";
+        String ejbqlString = "SELECT e.manager FROM Employee e WHERE e.id = :id";
         Query query = em.createQuery(ejbqlString);
 
         // execute query using employee with manager
         query.setParameter("id", empWithManager.getId());
         Employee result = (Employee)query.getSingleResult();
-        Assert.assertEquals("Select Relationship Test Case Failed (employee with manager)",
+        assertEquals("Select Relationship Test Case Failed (employee with manager)",
                             empWithManager.getManager(), result);
 
         // execute query using employee with manager
         query.setParameter("id", empWithOutManager.getId());
         result = (Employee)query.getSingleResult();
-        Assert.assertNull("Select Relationship Test Case Failed (employee without manager)",
+        assertNull("Select Relationship Test Case Failed (employee without manager)",
                           result);
     }
 
@@ -1273,13 +1271,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp = (Employee)getServerSession().readAllObjects(Employee.class).firstElement();
 
         // simple constructor query
-        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName) FROM Employee emp WHERE emp.id = :id";
+        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(e.firstName, e.lastName) FROM Employee e WHERE e.id = :id";
         Query query = em.createQuery(ejbqlString);
         query.setParameter("id", emp.getId());
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
         EmployeeDetail expectedResult = new EmployeeDetail(emp.getFirstName(), emp.getLastName());
 
-        Assert.assertTrue("Constructor Test Case Failed", result.equals(expectedResult));
+        assertEquals("Constructor Test Case Failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
 
@@ -1296,13 +1294,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 
         // constructor query using a variable as argument
-        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp) FROM Employee emp WHERE emp.id = :id";
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(e) FROM Employee e WHERE e.id = :id";
         Query query = em.createQuery(jpqlString);
         query.setParameter("id", emp.getId());
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
         EmployeeDetail expectedResult = new EmployeeDetail(emp);
 
-        Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
+        assertEquals("Constructor with variable argument Test Case Failed", expectedResult, result);
     }
 
     public void complexConstructorRelationshipTest()
@@ -1335,7 +1333,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
 
         // constructor query including relationship field
-        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName, emp.manager) FROM Employee emp WHERE emp.id = :id";
+        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(e.firstName, e.lastName, e.manager) FROM Employee e WHERE e.id = :id";
         Query query = em.createQuery(ejbqlString);
 
         // execute query using employee with manager
@@ -1344,8 +1342,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EmployeeDetail expectedResult = new EmployeeDetail(
             empWithManager.getFirstName(), empWithManager.getLastName(),
             empWithManager.getManager());
-        Assert.assertTrue("Constructor Relationship Test Case Failed (employee with manager)",
-                          result.equals(expectedResult));
+        assertEquals("Constructor Relationship Test Case Failed (employee with manager)",
+                expectedResult, result);
 
         // execute query using employee with manager
         query.setParameter("id", empWithOutManager.getId());
@@ -1353,8 +1351,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         expectedResult = new EmployeeDetail(
             empWithOutManager.getFirstName(), empWithOutManager.getLastName(),
             empWithOutManager.getManager());
-        Assert.assertTrue("Constructor Relationship Test Case Failed (employee without manager)",
-                          result.equals(expectedResult));
+        assertEquals("Constructor Relationship Test Case Failed (employee without manager)",
+                expectedResult, result);
     }
 
     public void complexConstructorAggregatesTest()
@@ -1374,7 +1372,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
 
         // constructor query using aggregates
-        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.LongHolder(SUM(emp.salary), COUNT(emp)) FROM Employee emp WHERE emp.manager.id = :id";
+        String ejbqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.LongHolder(SUM(e.salary), COUNT(e)) FROM Employee e WHERE e.manager.id = :id";
         Query query = em.createQuery(ejbqlString);
         query.setParameter("id", emp.getId());
         LongHolder result = (LongHolder)query.getSingleResult();
@@ -1392,7 +1390,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         LongHolder expectedResult = new LongHolder(new Long(sum), new Long(count));
 
-        Assert.assertTrue("Constructor with aggregates argument Test Case Failed", result.equals(expectedResult));
+        assertEquals("Constructor with aggregates argument Test Case Failed", expectedResult, result);
     }
 
     public void complexConstructorCountOnJoinedVariableTest()
@@ -1413,11 +1411,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
 
         // constructor query using aggregates
-        String jpql = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, emp.lastName, COUNT(m)) FROM Employee emp JOIN emp.managedEmployees m GROUP BY emp.firstName, emp.lastName";
+        String jpql = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(e.firstName, e.lastName, COUNT(m)) FROM Employee e JOIN e.managedEmployees m GROUP BY e.firstName, e.lastName";
         Query query = em.createQuery(jpql);
         List<EmployeeDetail> result = query.getResultList();
 
-        Assert.assertTrue("complexConstructorCountOnJoinedVariableTest Failed",
+        assertTrue("complexConstructorCountOnJoinedVariableTest Failed",
                           comparer.compareObjects(result, expectedResult));
     }
 
@@ -1432,13 +1430,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 
         // constructor query using a constant as an argument
-        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.firstName, 'Ott') FROM Employee emp WHERE emp.id = :id";
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(e.firstName, 'Ott') FROM Employee e WHERE e.id = :id";
         Query query = em.createQuery(jpqlString);
         query.setParameter("id", emp.getId());
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
         EmployeeDetail expectedResult = new EmployeeDetail(emp.getFirstName(), "Ott");
 
-        Assert.assertTrue("complexConstructorConstantTest Failed", result.equals(expectedResult));
+        assertEquals("complexConstructorConstantTest Failed", expectedResult, result);
     }
 
     public void complexConstructorCaseTest()
@@ -1457,13 +1455,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class, exp).firstElement();
 
         // constructor query using a case statement as an argument
-        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(case emp.firstName when 'Bob' then 'Robert' else '' end, 'Ott') FROM Employee emp WHERE emp.id = :id";
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(case e.firstName when 'Bob' then 'Robert' else '' end, 'Ott') FROM Employee e WHERE e.id = :id";
         Query query = em.createQuery(jpqlString);
         query.setParameter("id", emp.getId());
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
         EmployeeDetail expectedResult = new EmployeeDetail("Robert", "Ott");
 
-        Assert.assertTrue("complexConstructorCaseTest Failed", result.equals(expectedResult));
+        assertEquals("complexConstructorCaseTest Failed", expectedResult, result);
     }
 
     //303703 - SELECT NEW query yields NoSuchMethodException for embedded
@@ -1477,12 +1475,12 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         Employee emp = (Employee)em.getActiveSession().readAllObjects(Employee.class).firstElement();
 
-        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(emp.period) FROM Employee emp WHERE emp.id = :id";
+        String jpqlString = "SELECT NEW org.eclipse.persistence.testing.tests.jpa.jpql.JUnitJPQLComplexTestSuite.EmployeeDetail(e.period) FROM Employee e WHERE e.id = :id";
         Query query = em.createQuery(jpqlString);
         query.setParameter("id", emp.getId());
         EmployeeDetail result = (EmployeeDetail)query.getSingleResult();
         EmployeeDetail expectedResult = new EmployeeDetail(emp.getPeriod());
-        Assert.assertTrue("Constructor with Embeddable parameter Test Case Failed to return", result.equals(expectedResult));
+        assertEquals("Constructor with Embeddable parameter Test Case Failed to return", expectedResult, result);
     }
 
     public void complexConstructorMapTest()
@@ -1512,7 +1510,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         EmployeeDetail expectedResult = new EmployeeDetail("Mel", "Ott", BigInteger.ONE);
 
         rollbackTransaction(em);
-        Assert.assertTrue("Constructor with variable argument Test Case Failed", result.equals(expectedResult));
+        assertEquals("Constructor with variable argument Test Case Failed", expectedResult, result);
     }
 
     public void complexResultPropertiesTest()
@@ -1533,14 +1531,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setFirstResult(firstResult);
         result = query.getResultList();
         expectedResult = allEmps.subList(firstResult, nrOfEmps);
-        Assert.assertTrue("Query.setFirstResult Test Case Failed", result.equals(expectedResult));
+        assertEquals("Query.setFirstResult Test Case Failed", expectedResult, result);
 
         // Test setMaxResults
         query = em.createQuery(ejbql);
         query.setMaxResults(maxResults);
         result = query.getResultList();
         expectedResult = allEmps.subList(0, maxResults);
-        Assert.assertTrue("Query.setMaxResult Test Case Failed", result.equals(expectedResult));
+        assertEquals("Query.setMaxResult Test Case Failed", expectedResult, result);
 
         // Test setFirstResult and setMaxResults
         maxResults = nrOfEmps - firstResult - 1;
@@ -1549,10 +1547,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query.setMaxResults(maxResults);
         result = query.getResultList();
         expectedResult = allEmps.subList(firstResult, nrOfEmps - 1);
-        Assert.assertTrue(
-                "Query.setFirstResult and Query.setMaxResults Test Case Failed (result="
-                        + result + "; expected=" + expectedResult + ")", result
-                        .equals(expectedResult));
+        assertEquals(
+                "Query.setFirstResult and Query.setMaxResults Test Case Failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -1572,30 +1568,28 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query1.setMaxResults(nrOfEmps - 2);
         List result1 = query1.getResultList();
         List expectedResult1 = allEmps.subList(0, nrOfEmps - 2);
-        Assert.assertTrue("Query1 set  MaxResults Test Case Failed", result1.equals(expectedResult1));
+        assertEquals("Query1 set  MaxResults Test Case Failed", expectedResult1, result1);
 
         // Test case 1. setFirstResult and MaxResults
         query1.setFirstResult(firstResult);
         query1.setMaxResults(nrOfEmps - 1);
         result1 = query1.getResultList();
         expectedResult1 = allEmps.subList(firstResult, nrOfEmps);
-        Assert.assertTrue(
-                "Query1 set FirstResult and MaxResults Test Case Failed (result="
-                        + result1 + "; expected=" + expectedResult1 + ")", result1
-                        .equals(expectedResult1));
+        assertEquals(
+                "Query1 set FirstResult and MaxResults Test Case Failed", expectedResult1, result1);
 
         // Test case 2. The expected result should be exactly same as test case 1
         // since the firstResult and maxresults setting keep unchange.
         result1 = query1.getResultList();
         expectedResult1= allEmps.subList(firstResult, nrOfEmps);
-        Assert.assertTrue("Query1 without setting Test Case Failed", result1.equals(expectedResult1));
+        assertEquals("Query1 without setting Test Case Failed", expectedResult1, result1);
 
         // Test case 3. The FirstResult and MaxResults are changed for same query1.
         query1.setFirstResult(1);
         query1.setMaxResults(nrOfEmps - 2);
         result1 = query1.getResultList();
         expectedResult1 = allEmps.subList(1, nrOfEmps-1);
-        Assert.assertTrue("Query1.setFirstResult Test Case Failed", result1.equals(expectedResult1));
+        assertEquals("Query1.setFirstResult Test Case Failed", expectedResult1, result1);
 
 
         // Test case 4. Create new query2, the query2 setting should be nothing to do
@@ -1603,7 +1597,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Query query2 = em.createNamedQuery("findAllEmployeesOrderById");
         List result2 = query2.getResultList();
         List expectedResult2 = allEmps.subList(0, nrOfEmps);
-        Assert.assertTrue("Query2 without setting", result2.equals(expectedResult2));
+        assertEquals("Query2 without setting", expectedResult2, result2);
 
         // Test case 5. Create query3, only has FirstResult set as zero. the maxReults use
         // default value.
@@ -1611,14 +1605,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         query3.setFirstResult(0);
         List result3 = query3.getResultList();
         List expectedResult3 = allEmps.subList(0, nrOfEmps);
-        Assert.assertTrue("Query3.set FirstResult and MaxResults Test Case Failed", result3.equals(expectedResult3));
+        assertEquals("Query3.set FirstResult and MaxResults Test Case Failed", expectedResult3, result3);
 
         //Test case 6. Create query 4. firstResult should use default one.
         Query query4 = em.createNamedQuery("findAllEmployeesOrderById");
         query4.setMaxResults(nrOfEmps-3);
         List result4 = query4.getResultList();
         List expectedResult4 = allEmps.subList(0, nrOfEmps-3);
-        Assert.assertTrue("Query4 set MaxResult only Test Case Failed", result4.equals(expectedResult4));
+        assertEquals("Query4 set MaxResult only Test Case Failed", expectedResult4, result4);
         rollbackTransaction(em);
         closeEntityManager(em);
 
@@ -1639,7 +1633,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         String ejbqlString = "SELECT e.id FROM Employee e WHERE e.address.city IN (SELECT a.city FROM e.address a WHERE a.city = 'Ottawa')";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Complex IN Subquery Test Case Failed", result.equals(expectedResult));
+        assertEquals("Complex IN Subquery Test Case Failed", expectedResult, result);
     }
 
     public void complexExistsTest()
@@ -1660,7 +1654,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT e.id FROM Employee e WHERE EXISTS (SELECT p FROM e.projects p)";
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Not Exists test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Not Exists test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1682,7 +1676,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT e.id FROM Employee e WHERE NOT EXISTS (SELECT p FROM e.projects p)";
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Complex Not Exists test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Not Exists test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1702,7 +1696,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 + " WHERE EXISTS (SELECT e1.id FROM Employee e1 WHERE e.manager.id = e1.id) "
                 + " OR EXISTS (SELECT e2.id FROM Employee e2 WHERE e.manager.id = e2.manager.id AND e.id <> e2.id)";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Complex Multiple Exists SubQuery test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Multiple Exists SubQuery test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexExistsSubqueryJoinTest()
@@ -1734,9 +1728,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             }
         }
 
-        String ejbqlString = "SELECT emp FROM Employee AS emp WHERE EXISTS (SELECT dealers FROM emp.dealers AS dealers join dealers.customers AS customers WHERE customers.budget > 0)";
+        String ejbqlString = "SELECT e FROM Employee AS e WHERE EXISTS (SELECT d FROM e.dealers AS d join d.customers AS c WHERE c.budget > 0)";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Complex Exists Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Exists Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexInSubqueryJoinTest()
@@ -1748,9 +1742,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         ReadAllQuery query = new ReadAllQuery(Employee.class, exp);
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
 
-        String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName IN (SELECT emps.firstName FROM Employee emp join emp.managedEmployees emps)";
+        String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName IN (SELECT es.firstName FROM Employee e2 join e2.managedEmployees es)";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Complex IN Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex IN Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexInSubqueryJoinInTest()
@@ -1762,9 +1756,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         ReadAllQuery query = new ReadAllQuery(Employee.class, exp);
         Vector expectedResult = (Vector)getServerSession().executeQuery(query);
 
-        String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName IN (SELECT emps.firstName FROM Employee emp, in(emp.managedEmployees) emps)";
+        String ejbqlString = "SELECT e FROM Employee e WHERE e.firstName IN (SELECT es.firstName FROM Employee e2, in(e2.managedEmployees) es)";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Complex IN Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex IN Subquery with join Test Case Failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexMemberOfTest()
@@ -1778,7 +1772,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List expectedResult = new ArrayList();
         String ejbqlString = "SELECT e FROM Employee e WHERE e MEMBER OF e.managedEmployees";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Complex MEMBER OF test failed",
+        assertTrue("Complex MEMBER OF test failed",
                           comparer.compareObjects(result, expectedResult));
 
         // find an employees with projects
@@ -1798,7 +1792,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             query.setHint(QueryHints.SERIALIZED_OBJECT, "false");
         }
         result = query.getResultList();
-        Assert.assertTrue("Complex MEMBER OF test failed",
+        assertTrue("Complex MEMBER OF test failed",
                           comparer.compareObjects(result, expectedResult));
     }
 
@@ -1809,7 +1803,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Collection allEmps = getServerSession().readAllObjects(Employee.class);
         String ejbqlString = "SELECT e FROM Employee e WHERE e NOT MEMBER OF e.managedEmployees";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, allEmps));
+        assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, allEmps));
     }
 
     public void complexNotMemberOfPathTest()
@@ -1819,7 +1813,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Collection allEmps = getServerSession().readAllObjects(Employee.class);
         String ejbqlString = "SELECT e FROM Employee e  WHERE e.manager NOT MEMBER OF e.managedEmployees";
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, allEmps));
+        assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, allEmps));
     }
 
     public void complexMemberOfElementCollectionTest()
@@ -1842,7 +1836,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List result = em.createQuery(ejbqlString).getResultList();
 
         rollbackTransaction(em);
-        Assert.assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex MEMBER OF test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexInheritanceTest()
@@ -1856,13 +1850,13 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String projectName = expectedResult.getName();
 
         //Set criteria for EJBQL and call super-class method to construct the EJBQL query
-        String ejbqlString = "SELECT OBJECT(project) FROM ProjectBaseClass project WHERE project.name = \"" + projectName +"\"";
+        String ejbqlString = "SELECT OBJECT(p) FROM ProjectBaseClass p WHERE p.name = \"" + projectName +"\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
         ((AbstractSession)getServerSession()).getAliasDescriptors().remove("ProjectBaseClass");
 
-        Assert.assertTrue("Complex Inheritance test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Inheritance test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1881,7 +1875,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
             //Named query must be built and registered with the session
             ReadObjectQuery query = new ReadObjectQuery();
-            query.setEJBQLString("SELECT OBJECT(project) FROM ProjectBaseClass project WHERE project.name = ?1");
+            query.setEJBQLString("SELECT OBJECT(p) FROM ProjectBaseClass p WHERE p.name = ?1");
             query.setName(queryName);
             query.addArgument("1");
             query.setReferenceClass(Project.class);
@@ -1893,7 +1887,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         getServerSession().removeQuery("findLargeProjectByBudgetEJBQL");
         ((AbstractSession)getServerSession()).getAliasDescriptors().remove("ProjectBaseClass");
 
-        Assert.assertTrue("Complex Inheritance using named query test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Complex Inheritance using named query test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1905,14 +1899,14 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List result = query.getResultList();
 
         String expected = "Former company";
-        Assert.assertTrue("Complex navigation of embedded in the select/where clause failed", result.contains(expected));
+        assertTrue("Complex navigation of embedded in the select/where clause failed", result.contains(expected));
     }
 
 
     public void complexNavigatingTwoLevelOfEmbeddeds ()
     {
         EntityManager em = createEntityManager();
-        String jpqlString = "SELECT emp.formerEmployment.period.startDate FROM Employee emp";
+        String jpqlString = "SELECT e.formerEmployment.period.startDate FROM Employee e";
         Query query = em.createQuery(jpqlString);
         List result = query.getResultList();
 
@@ -1920,7 +1914,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         cal.set(1990, 1, 1, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         Date expected = new Date(cal.getTime().getTime());
-        Assert.assertTrue("Complex navigation of two level of embeddeds in the select clause failed", result.contains(expected));
+        assertTrue("Complex navigation of two level of embeddeds in the select clause failed", result.contains(expected));
     }
 
     /**
@@ -1947,17 +1941,17 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // check expected result
         // {[null, "5551234", "Marcus", "Swirly Dirly"],
         //  [null, "5551234", "Nancy", "Swirly Dirly"]}
-        Assert.assertEquals("Complex outer join query (1): unexpected result size", 2, result.size());
+        assertEquals("Complex outer join query (1): unexpected result size", 2, result.size());
         Object[] result0 = result.get(0);
-        Assert.assertNull  ("Complex outer join query (1): unexpected result value (0, 0):", result0[0]);
-        Assert.assertEquals("Complex outer join query (1): unexpected result value (0, 1):", result0[1], "5551234");
-        Assert.assertEquals("Complex outer join query (1): unexpected result value (0, 2):", result0[2], "Marcus");
-        Assert.assertEquals("Complex outer join query (1): unexpected result value (0, 3):", result0[3], "Swirly Dirly");
+        assertNull  ("Complex outer join query (1): unexpected result value (0, 0):", result0[0]);
+        assertEquals("Complex outer join query (1): unexpected result value (0, 1):", "5551234", result0[1]);
+        assertEquals("Complex outer join query (1): unexpected result value (0, 2):", "Marcus", result0[2]);
+        assertEquals("Complex outer join query (1): unexpected result value (0, 3):", "Swirly Dirly", result0[3]);
         Object[] result1 = result.get(1);
-        Assert.assertNull  ("Complex outer join query (1): unexpected result value (1, 0):", result1[0]);
-        Assert.assertEquals("Complex outer join query (1): unexpected result value (1, 1):", result1[1], "5551234");
-        Assert.assertEquals("Complex outer join query (1): unexpected result value (1, 2):", result1[2], "Nancy");
-        Assert.assertEquals("Complex outer join query (1): unexpected result value (1, 3):", result1[3], "Swirly Dirly");
+        assertNull  ("Complex outer join query (1): unexpected result value (1, 0):", result1[0]);
+        assertEquals("Complex outer join query (1): unexpected result value (1, 1):", "5551234", result1[1]);
+        assertEquals("Complex outer join query (1): unexpected result value (1, 2):", "Nancy", result1[2]);
+        assertEquals("Complex outer join query (1): unexpected result value (1, 3):", "Swirly Dirly", result1[3]);
 
 
         // JPQL query using only OUTER JOINs
@@ -1977,17 +1971,17 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         // check expected result
         // {[null, 2255943, null, null]
         //  [null, 2258812, null, null]}
-        Assert.assertEquals("Complex outer join query (2): unexpected result size", 2, result.size());
+        assertEquals("Complex outer join query (2): unexpected result size", 2, result.size());
         result0 = result.get(0);
-        Assert.assertNull  ("Complex outer join query (2): unexpected result value (0, 0):", result0[0]);
-        Assert.assertEquals("Complex outer join query (2): unexpected result value (0, 1):", result0[1], "2255943");
-        Assert.assertNull  ("Complex outer join query (2): unexpected result value (0, 2):", result0[2]);
-        Assert.assertNull  ("Complex outer join query (2): unexpected result value (0, 3):", result0[3]);
+        assertNull  ("Complex outer join query (2): unexpected result value (0, 0):", result0[0]);
+        assertEquals("Complex outer join query (2): unexpected result value (0, 1):", "2255943", result0[1]);
+        assertNull  ("Complex outer join query (2): unexpected result value (0, 2):", result0[2]);
+        assertNull  ("Complex outer join query (2): unexpected result value (0, 3):", result0[3]);
         result1 = result.get(1);
-        Assert.assertNull  ("Complex outer join query (2): unexpected result value (1, 0):", result1[0]);
-        Assert.assertEquals("Complex outer join query (2): unexpected result value (1, 1):", result1[1], "2258812");
-        Assert.assertNull  ("Complex outer join query (2): unexpected result value (1, 2):", result1[2]);
-        Assert.assertNull  ("Complex outer join query (2): unexpected result value (1, 3):", result1[3]);
+        assertNull  ("Complex outer join query (2): unexpected result value (1, 0):", result1[0]);
+        assertEquals("Complex outer join query (2): unexpected result value (1, 1):", "2258812", result1[1]);
+        assertNull  ("Complex outer join query (2): unexpected result value (1, 2):", result1[2]);
+        assertNull  ("Complex outer join query (2): unexpected result value (1, 3):", result1[3]);
 
     }
 
@@ -2130,7 +2124,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT KEY(b) FROM BeerConsumer bc join bc.blueBeersToConsume b where bc.name = 'Marvin Monroe'";
 
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("mapContainerPolicyMapKeyInSelectTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mapContainerPolicyMapKeyInSelectTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2171,7 +2165,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT VALUE(b) FROM BeerConsumer bc join bc.blueBeersToConsume b where bc.name = 'Marvin Monroe'";
 
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("mapContainerPolicyMapValueInSelectTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mapContainerPolicyMapValueInSelectTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2212,11 +2206,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Incorrect number of values returned", result.size() == 1);
-        Assert.assertTrue("Did not return a Map.Entry", result.get(0) instanceof Map.Entry);
+        assertEquals("Incorrect number of values returned", 1, result.size());
+        assertTrue("Did not return a Map.Entry", result.get(0) instanceof Map.Entry);
         Map.Entry entry = (Map.Entry)result.get(0);
-        Assert.assertTrue("Keys do not match", entry.getKey().equals(BigInteger.ONE));
-        Assert.assertTrue("Values do not match", comparer.compareObjects(entry.getValue(), blue));
+        assertEquals("Keys do not match", BigInteger.ONE, entry.getKey());
+        assertTrue("Values do not match", comparer.compareObjects(entry.getValue(), blue));
 
         } finally {
             rollbackTransaction(em);
@@ -2257,7 +2251,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT bc FROM BeerConsumer bc join bc.blueBeersToConsume b where KEY(b) = 1";
 
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("mapContainerPolicyMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mapContainerPolicyMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2298,7 +2292,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT bc FROM BeerConsumer bc join bc.blueBeersToConsume b where VALUE(b).uniqueKey = 1";
 
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("mapContainerPolicyMapValueInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mapContainerPolicyMapValueInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2344,7 +2338,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mappedKeyMapContainerPolicyMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2390,7 +2384,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("mappedKeyMapContainerPolicyMapKeyInSelectTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mappedKeyMapContainerPolicyMapKeyInSelectTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2434,11 +2428,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).setParameter("becksTag", tag).getResultList();
 
-        Assert.assertTrue("Incorrect number of values returned", result.size() == 1);
-        Assert.assertTrue("Did not return a Map.Entry", result.get(0) instanceof Map.Entry);
+        assertEquals("Incorrect number of values returned", 1, result.size());
+        assertTrue("Did not return a Map.Entry", result.get(0) instanceof Map.Entry);
         Map.Entry entry = (Map.Entry)result.get(0);
-        Assert.assertTrue("Keys do not match", comparer.compareObjects(entry.getKey(), tag));
-        Assert.assertTrue("Values do not match", comparer.compareObjects(entry.getValue(), becks));
+        assertTrue("Keys do not match", comparer.compareObjects(entry.getKey(), tag));
+        assertTrue("Values do not match", comparer.compareObjects(entry.getValue(), becks));
 
         } finally {
             rollbackTransaction(em);
@@ -2484,7 +2478,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).setParameter("key", "123").getResultList();
 
-        Assert.assertTrue("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mappedKeyMapContainerPolicyEmbeddableMapKeyInSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2528,7 +2522,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).setParameter("celebration", 25).getResultList();
 
-        Assert.assertTrue("mappedKeyMapContainerPolicyElementCollctionSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mappedKeyMapContainerPolicyElementCollctionSelectionCriteriaTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2574,7 +2568,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mappedKeyMapContainerPolicyNavigateMapKeyInEntityTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2620,7 +2614,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mappedKeyMapContainerPolicyNavigateMapKeyInEmbeddableTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -2638,7 +2632,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).setParameter("param", LargeProject.class).getResultList();
 
-        Assert.assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -2654,7 +2648,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -2674,7 +2668,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).setParameter("param", params).getResultList();
 
-        Assert.assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexTypeParameterTest failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -2689,7 +2683,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexThreeLevelJoinOneTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexThreeLevelJoinOneTest failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -2710,7 +2704,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexThreeLevelJoinOneTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexThreeLevelJoinOneTest failed", comparer.compareObjects(result, expectedResult));
         rollbackTransaction(em);
         closeEntityManager(em);
     }
@@ -2733,7 +2727,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List result = em.createQuery(ejbqlString).getResultList();
 
         rollbackTransaction(em);
-        Assert.assertTrue("complexIndexOfInSelectClauseTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexIndexOfInSelectClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexIndexOfInWhereClauseTest(){
@@ -2752,7 +2746,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         String result = (String)em.createQuery(ejbqlString).getSingleResult();
 
         rollbackTransaction(em);
-        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", result.equals(expectedResult));
+        assertTrue("complexIndexOfInWhereClauseTest failed", result.equals(expectedResult));
     }
 
     public void complexCoalesceInWhereTest(){
@@ -2766,7 +2760,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexCoalesceInSelectTest(){
@@ -2785,7 +2779,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexNullIfInWhereTest(){
@@ -2799,7 +2793,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexNullIfInSelectTest(){
@@ -2813,7 +2807,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexIndexOfInWhereClauseTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexSimpleCaseInSelectTest(){
@@ -2832,7 +2826,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexSimpleCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexSimpleCaseInWhereTest(){
@@ -2850,7 +2844,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexSimpleCaseInWhereTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexSimpleCaseInWhereTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexConditionCaseInSelectTest(){
@@ -2865,7 +2859,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexConditionCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexConditionCaseInSelectTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexConditionCaseInWhereTest(){
@@ -2879,7 +2873,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("complexConditionCaseInWhereTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("complexConditionCaseInWhereTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void complexConditionCaseInUpdateTest(){
@@ -2906,11 +2900,11 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         List results = query.getResultList();
 
         rollbackTransaction(em);
-        assertTrue("complexConditionCaseInUpdateTest - wrong number of results", results.size() == 2);
+        assertEquals("complexConditionCaseInUpdateTest - wrong number of results", 2, results.size());
         Iterator i = results.iterator();
         while (i.hasNext()){
             Employee e = (Employee)i.next();
-            assertTrue("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), e.getLastName().equals("Jones"));
+            assertEquals("complexConditionCaseInUpdateTest wrong last name for - " + e.getFirstName(), "Jones", e.getLastName());
         }
 
     }
@@ -2922,7 +2916,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong absolute value was returned.", ((Integer)result.get(0)).intValue() == 35000);
+        assertEquals("The wrong absolute value was returned.", 35000, ((Integer)result.get(0)).intValue());
     }
 
     public void modInSelectTest(){
@@ -2932,7 +2926,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong mod value was returned.", ((Integer)result.get(0)).intValue() == 0);
+        assertEquals("The wrong mod value was returned.", 0, ((Integer)result.get(0)).intValue());
     }
 
     public void sqrtInSelectTest(){
@@ -2947,8 +2941,9 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong square root value was returned.", ((Double)result.get(0)).doubleValue() > 187);
-        assertTrue("The wrong square root value was returned.", ((Double)result.get(0)).doubleValue() < 188);
+        double ret = ((Double)result.get(0)).doubleValue();
+        assertTrue("The wrong square root value was returned: " + ret, ret > 187);
+        assertTrue("The wrong square root value was returned: " + ret, ret < 188);
     }
 
     public void sizeInSelectTest(){
@@ -2958,7 +2953,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong absolute value was returned.", ((Integer)result.get(0)).intValue() == 2);
+        assertEquals("The wrong absolute value was returned.", 2, ((Integer)result.get(0)).intValue());
     }
 
     public void mathInSelectTest(){
@@ -2968,7 +2963,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        assertTrue("The wrong value was returned.", ((Integer)result.get(0)).intValue() == 35100);
+        assertEquals("The wrong value was returned.", 35100, ((Integer)result.get(0)).intValue());
     }
 
     public void paramNoVariableTest(){
@@ -2980,7 +2975,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).setParameter("arg", 2).getResultList();
 
-        assertTrue("The wrong number of employees returned, expected:" + expectedResult + " got:" + result, result.size() == expectedResult.size());
+        assertEquals("The wrong number of employees returned", expectedResult.size(), result.size());
     }
 
     public void mappedContainerPolicyCompoundMapKeyTest(){
@@ -3019,7 +3014,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("mappedContainerPolicyCompoundMapKeyTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("mappedContainerPolicyCompoundMapKeyTest failed", comparer.compareObjects(result, expectedResult));
 
         } finally {
             rollbackTransaction(em);
@@ -3045,7 +3040,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         }
         int nMen = 4;
         int nWomen = 2;
-        Assert.assertTrue("Test setup problem: nMen should be greater than nWomen", nMen > nWomen);
+        assertTrue("Test setup problem: nMen should be greater than nWomen", nMen > nWomen);
 
         EntityManager em = createEntityManager();
         String whereExists = " WHERE EXISTS (SELECT w FROM Woman w WHERE w.firstName = m.firstName AND w.lastName = m.lastName AND m.lastName = '"+lastName+"')";
@@ -3065,7 +3060,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             em.clear();
             Query countQuery = em.createQuery(jpqlCount);
             long nMenRead = (Long)countQuery.getSingleResult();
-            Assert.assertTrue("Test setup problem: nMenRead should be equal to nWomen before update/delete, but nMenRead ="+nMenRead+"; nWomen ="+nWomen, nWomen == nMenRead);
+            assertTrue("Test setup problem: nMenRead should be equal to nWomen before update/delete, but nMenRead ="+nMenRead+"; nWomen ="+nWomen, nWomen == nMenRead);
 
             // test
             Query updateOrDeleteQuery = em.createQuery(jpqlUpdateOrDelete);
@@ -3075,8 +3070,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             nMenRead = (Long)countQuery.getSingleResult();
 
             // verify
-            Assert.assertTrue("nMenUpdatedOrDeleted should be equal to nWomen, but nMenUpdatedOrDeleted ="+nMenUpdatedOrDeleted+"; nWomen ="+nWomen, nMenUpdatedOrDeleted == nWomen);
-            Assert.assertTrue("nMenRead should be 0 after deletion, but nMenRead ="+nMenRead, nMenRead == 0);
+            assertTrue("nMenUpdatedOrDeleted should be equal to nWomen, but nMenUpdatedOrDeleted ="+nMenUpdatedOrDeleted+"; nWomen ="+nWomen, nMenUpdatedOrDeleted == nWomen);
+            assertEquals("nMenRead should be 0 after deletion", 0, nMenRead);
         } finally {
             // clean-up
             rollbackTransaction(em);
@@ -3333,7 +3328,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 query = em.createQuery(jpql);
                 List result = query.getResultList();
                 Employee emp = em.find(Employee.class, result.get(0));
-                assertTrue("FUNCTION is not working properly with stored function.", emp.getSalary()==75000);
+                assertEquals("FUNCTION is not working properly with stored function.", 75000, emp.getSalary());
 
                 query = em.createQuery("SELECT FUNCTION('StoredFunction_In', e.id) + 5 FROM Employee e WHERE FUNCTION('StoredFunction_In', 75) + 5 = e.salary");
                 query.getResultList();
@@ -3758,7 +3753,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
     // Tests that direct collections work with InSubQuery expressions
     public void testDirectColletionInSubquery() {
         EntityManager em = createEntityManager();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp LEFT JOIN emp.responsibilities respons WHERE (emp.responsibilities IS EMPTY) OR (respons IN (SELECT rs FROM Employee empx join empx.responsibilities rs WHERE 1 = 0))";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e LEFT JOIN e.responsibilities respons WHERE (e.responsibilities IS EMPTY) OR (respons IN (SELECT rs FROM Employee e2 join e2.responsibilities rs WHERE 1 = 0))";
         em.createQuery(ejbqlString).getResultList();
         closeEntityManager(em);
     }

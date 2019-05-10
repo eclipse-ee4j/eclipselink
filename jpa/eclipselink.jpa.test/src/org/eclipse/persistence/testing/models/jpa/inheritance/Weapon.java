@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,11 +36,11 @@ import static javax.persistence.InheritanceType.TABLE_PER_CLASS;
 @NamedQueries({
     @NamedQuery(
             name="findAllWeapons",
-            query="SELECT OBJECT(weapon) FROM Weapon weapon"
+            query="SELECT OBJECT(w) FROM Weapon w"
     ),
     @NamedQuery(
             name="findAllWeaponsContainingDescription",
-            query="SELECT OBJECT(weapon) FROM Weapon weapon WHERE weapon.description LIKE :description"
+            query="SELECT OBJECT(w) FROM Weapon w WHERE w.description LIKE :description"
     )
 })
 public class Weapon {

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,8 +25,8 @@ public class SimpleEqualsTest extends JPQLTestCase {
         String ejbqlString = null;
         Employee emp = (Employee)employees.firstElement();
         setOriginalOject(emp);
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.firstName = ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.firstName = ";
         ejbqlString = ejbqlString + "\"" + emp.getFirstName() + "\"";
         setEjbqlString(ejbqlString);
         super.setup();

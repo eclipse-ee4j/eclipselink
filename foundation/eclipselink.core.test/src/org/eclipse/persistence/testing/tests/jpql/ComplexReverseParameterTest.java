@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,10 +47,10 @@ public class ComplexReverseParameterTest extends org.eclipse.persistence.testing
         emp = (Employee)employees.firstElement();
 
         // Set up the EJBQL using the retrieved employees
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "?1 = emp.firstName";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "?1 = e.firstName";
         ejbqlString = ejbqlString + " AND ";
-        ejbqlString = ejbqlString + "?2 = emp.lastName";
+        ejbqlString = ejbqlString + "?2 = e.lastName";
 
         setEjbqlString(ejbqlString);
         setOriginalOject(employees);

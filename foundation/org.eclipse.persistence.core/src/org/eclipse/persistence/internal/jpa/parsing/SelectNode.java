@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -211,7 +212,7 @@ public class SelectNode extends QueryNode {
      * This includes a chain of relationships.
      * True: SELECT employee.address FROM ..... //Simple 1:1
      * True: SELECT a.b.c.d FROM ..... //where a->b, b->c and c->d are all 1:1.
-     * False: SELECT OBJECT(employee) FROM ..... //simple SELECT
+     * False: SELECT OBJECT(e) FROM ..... //simple SELECT
      * False: SELECT phoneNumber.areaCode FROM ..... //direct-to-field
      */
     private boolean hasOneToOneSelected(Node node, GenerationContext context) {

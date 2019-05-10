@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +19,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceUnitUtil;
 import javax.persistence.Query;
 
 import junit.framework.Test;
@@ -32,25 +34,25 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
+import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
+import org.eclipse.persistence.testing.models.jpa.advanced.Project;
+import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Boat;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
+import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
+import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Jalopy;
+import org.eclipse.persistence.testing.models.jpa.inheritance.NonFueledVehicle;
 import org.eclipse.persistence.testing.models.jpa.inheritance.OffRoadTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.PassengerPerformanceTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.PerformanceTireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Person;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
-import org.eclipse.persistence.testing.models.jpa.inheritance.NonFueledVehicle;
 import org.eclipse.persistence.testing.models.jpa.inheritance.SportsCar;
 import org.eclipse.persistence.testing.models.jpa.inheritance.TireInfo;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Vehicle;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
-import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
-import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
-import org.eclipse.persistence.testing.models.jpa.advanced.Project;
-import org.eclipse.persistence.testing.models.jpa.advanced.SmallProject;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Boat;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Car;
-import org.eclipse.persistence.testing.models.jpa.inheritance.Company;
-import org.eclipse.persistence.testing.models.jpa.inheritance.InheritanceTableCreator;
 import org.eclipse.persistence.testing.models.jpa.inherited.BeerConsumer;
 import org.eclipse.persistence.testing.models.jpa.inherited.Blue;
 import org.eclipse.persistence.testing.models.jpa.inherited.BlueLight;
@@ -151,7 +153,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select c from Company c join treat(c.vehicles as Boat) b where b.model = 'speed'");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned, expected 1 but returned "+resultList.size(), resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -200,7 +202,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select c from Company c join treat(c.vehicles as NonFueledVehicle) v where v.color = 'Blue'");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -247,7 +249,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select e from Employee e join treat(e.projects as LargeProject) p where p.budget > 100");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -298,7 +300,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             raq.setSelectionCriteria(criteria);
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -355,7 +357,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             raq.setSelectionCriteria(criteria);
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -409,7 +411,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             raq.setSelectionCriteria(criteria);
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -439,12 +441,12 @@ public class QueryCastTestSuite extends JUnitTestCase {
             rq.addAttribute("project", builder.treat(LargeProject.class).get("budget"));
             rq.setSelectionCriteria(builder.type().equal(LargeProject.class));
             List resultList = (List)((JpaEntityManager)em.getDelegate()).getActiveSession().executeQuery(rq);
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
 
             //Test equivalent JPQL as well
             Query query = em.createQuery("Select treat(c as LargeProject).budget from Project c");
             List JPQLresultList = query.getResultList();
-            assertTrue("Incorrect results returned", JPQLresultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, JPQLresultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -497,7 +499,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select b from BeerConsumer b join treat(b.blueBeersToConsume as BlueLight) bl where bl.discount = 10");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -542,7 +544,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select c from Company c join treat(c.vehicles as Boat) b where b.model = 'speed' or b.model = 'fishing'");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -587,7 +589,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select distinct c from Company c left join treat(c.vehicles as Boat) b left join treat(c.vehicles as FueledVehicle) f where b.model = 'fishing' or f.fuelType = 'unleaded'");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -641,7 +643,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
 
             Query query = em.createQuery("Select distinct c from Company c left join treat(c.vehicles as Bus) b where b.busDriver.name = 'Driver'");
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -682,7 +684,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             // causing an exception
             Query query = em.createQuery("Select distinct p from Person p left join treat(p.car as SportsCar) s left join treat(p.car as Jalopy) j where s.maxSpeed = 200 or j.percentRust = 20");
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -728,8 +730,8 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select max(l.budget) from Employee e join treat(e.projects as LargeProject) l");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
-            assertTrue("Incorrect results returned", (Double)resultList.get(0) == 1000);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
+            assertEquals("Incorrect results returned", new Double(1000), (Double)resultList.get(0));
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -777,7 +779,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("select e from Employee e where e.salary > (Select max(l.budget) from Employee emp join treat(emp.projects as LargeProject) l)");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -816,8 +818,9 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select p from Person p join fetch p.car join treat(p.car as SportsCar) s where s.maxSpeed = 200");
             List resultList = query.getResultList();
             Person person = (Person)resultList.get(0);
-            assertTrue("Incorrect result size returned", resultList.size() == 1);
-            assertNotNull("The car was not fetched.", person.car);
+            assertEquals("Incorrect result size returned", 1, resultList.size());
+            PersistenceUnitUtil unitUtil = em.getEntityManagerFactory().getPersistenceUnitUtil();
+            assertTrue("The car was not fetched.", unitUtil.isLoaded(person, "car"));
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -856,7 +859,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             // The following query casts the base expression twice
             Query query = em.createQuery("Select c from Car c where treat(c as SportsCar).maxSpeed = 200 or treat(c as Jalopy).percentRust = 20");
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -890,7 +893,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             // The following query casts the base expression twice
             Query query = em.createQuery("Select t from TireInfo t where treat(t as PerformanceTireInfo).speedRating = 110 or treat(t as PassengerPerformanceTireInfo).speedRating = 120");
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned", resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -918,7 +921,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
 
             Query query = em.createQuery("Select treat(c as LargeProject).budget from Project c");
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned, expected 1, received: "+resultList.size(), resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -945,7 +948,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             em.clear();
             Query query = em.createQuery("Select treat(c as PerformanceTireInfo).speedRating from TireInfo c");
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned, expected 1, received: "+resultList.size(), resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -988,7 +991,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
 
             Query query = em.createQuery("Select b.maxSpeed from Person o join treat(o.car as SportsCar) b");
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned, expected 1 received:"+resultList.size(), resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1028,7 +1031,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select b.speedRating from Bus o join treat(o.tires as PerformanceTireInfo) b");
 
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned, expected 2 received:"+resultList.size(), resultList.size() == 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1072,7 +1075,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select o from Person o where treat(o.car as SportsCar).maxSpeed = 200");
             List resultList = query.getResultList();
 
-            assertTrue("Incorrect results returned, expected 1 received:"+resultList.size(), resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1112,7 +1115,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
 
             Query query = em.createQuery("Select b from Bus b where treat(b.tires as PerformanceTireInfo).speedRating >100");
             List resultList = query.getResultList();
-            assertTrue("Incorrect results returned, expected 1 received:"+resultList.size(), resultList.size() == 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1170,7 +1173,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
                     "(treat(c as SportsCar).maxSpeed = 200 OR treat(c as Jalopy).percentRust = 20)");
 
             List resultList = query.getResultList();
-            assertEquals("Incorrect results returned, expected 2 received:"+resultList.size(), resultList.size(), 2);
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1211,7 +1214,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
                     "(treat(t as PassengerPerformanceTireInfo).speedRating > 100 OR treat(t as OffRoadTireInfo).name = 'notExist')");
 
             List resultList = query.getResultList();
-            assertEquals("Incorrect results returned, expected 1 received:"+resultList.size(), 1, resultList.size());
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1250,7 +1253,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
 
             Query query = em.createQuery("Select TYPE(treat(c as Car)) from Vehicle c");
             List resultList = query.getResultList();
-            assertEquals("Incorrect results returned, expected 3 received:"+resultList.size(), 3, resultList.size());
+            assertEquals("Incorrect results returned", 3, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1290,7 +1293,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             Query query = em.createQuery("Select TYPE(treat(t as PerformanceTireInfo)) from TireInfo t");
             List resultList = query.getResultList();
 
-            assertEquals("Incorrect results returned, expected 2 received:"+resultList.size(), 2, resultList.size());
+            assertEquals("Incorrect results returned", 2, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);
@@ -1335,7 +1338,7 @@ public class QueryCastTestSuite extends JUnitTestCase {
             for (Object result: resultList) {
                 assertTrue("query did not return intances of Company, instead it returned :"+result, (result instanceof Company));
             }
-            assertEquals("Incorrect results returned, expected 1 received:"+resultList.size(), resultList.size(), 1);
+            assertEquals("Incorrect results returned", 1, resultList.size());
         } finally {
             if (this.isTransactionActive(em)){
                 rollbackTransaction(em);

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +30,8 @@ public class SelectSimpleConcatTest extends org.eclipse.persistence.testing.test
 
         partOne = emp.getFirstName().substring(0, 2);
         partTwo = emp.getFirstName().substring(2);
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.firstName = ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.firstName = ";
         ejbqlString = ejbqlString + "CONCAT(\"";
         ejbqlString = ejbqlString + partOne;
         ejbqlString = ejbqlString + "\", \"";

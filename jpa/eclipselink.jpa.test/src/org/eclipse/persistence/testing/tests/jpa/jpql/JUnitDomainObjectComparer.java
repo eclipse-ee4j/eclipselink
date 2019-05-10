@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,8 +13,6 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-
 
  /**
  * <p>
@@ -40,8 +39,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;
 
-public class JUnitDomainObjectComparer
-{
+public class JUnitDomainObjectComparer {
     AbstractSession theSession;
     public boolean compareObjects(Object obj1, Object obj2) {
         if((obj1 == null) && (obj2 == null)) {
@@ -160,8 +158,8 @@ public class JUnitDomainObjectComparer
         }
         return allMatched;
     }
-    public PhoneNumber findPhoneNumberIn(PhoneNumber phone1, Collection phones){
 
+    public PhoneNumber findPhoneNumberIn(PhoneNumber phone1, Collection phones){
         Iterator itr = phones.iterator();
         while (itr.hasNext()) {
             PhoneNumber pTemp = (PhoneNumber)itr.next();
@@ -175,11 +173,10 @@ public class JUnitDomainObjectComparer
         }
         return null;
     }
-    public Project findProjectByIdIn(Project project, Collection projects){
 
+    public Project findProjectByIdIn(Project project, Collection projects){
         Iterator itr = projects.iterator();
         while (itr.hasNext()) {
-
             Project pTemp = (Project)itr.next();
             if ((pTemp != null) && pTemp.getId().equals(project.getId())) {
                 return pTemp;
@@ -187,9 +184,9 @@ public class JUnitDomainObjectComparer
         }
         return null;
     }
+
     public Employee findEmployeeByIdIn(Employee emp, Collection employees){
         Iterator itr = employees.iterator();
-
         while (itr.hasNext()) {
             Employee eTemp = (Employee)itr.next();
             if ((eTemp != null) && eTemp.getId().equals(emp.getId())) {
@@ -198,6 +195,7 @@ public class JUnitDomainObjectComparer
         }
         return null;
     }
+
     public Address findAddressByIdIn(Address addr, Collection addresses){
         Iterator itr = addresses.iterator();
         while (itr.hasNext()) {
@@ -208,9 +206,11 @@ public class JUnitDomainObjectComparer
         }
         return null;
     }
+
     public AbstractSession getSession() {
         return theSession;
     }
+
     public void setSession(AbstractSession theSession) {
         this.theSession = theSession;
     }

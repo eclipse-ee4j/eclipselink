@@ -267,6 +267,17 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected String driverName;
 
     /**
+     * True if the current jdbc driver supports get/setNString methods
+     */
+    protected boolean driverSupportsNationalCharacterVarying = false;
+
+    /**
+     * If true, the platform should map String columns to a type that supports
+     * national characters.
+     */
+    protected boolean useNationalCharacterVarying = false;
+
+    /**
      * Creates an instance of default database platform.
      */
     public DatabasePlatform() {
@@ -460,23 +471,13 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void appendLiteralToCall(Call call, Writer writer, Object literal) {
         if(shouldBindLiterals()) {
-            appendLiteralToCallWithBinding(call, writer, literal);
+            ((DatabaseCall)call).appendLiteral(writer, literal);
         } else {
             int nParametersToAdd = appendParameterInternal(call, writer, literal);
             for (int i = 0; i < nParametersToAdd; i++) {
                 ((DatabaseCall)call).getParameterTypes().add(DatabaseCall.LITERAL);
             }
         }
-    }
-
-    /**
-     * INTERNAL:
-     * Override this method in case the platform needs to do something special for binding literals.
-     * Note that instead of null value a DatabaseField
-     * value may be passed (so that it's type could be used for binding null).
-     */
-    protected void appendLiteralToCallWithBinding(Call call, Writer writer, Object literal) {
-        ((DatabaseCall)call).appendLiteral(writer, literal);
     }
 
     /**
@@ -489,79 +490,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     @Override
     public void appendParameter(Call call, Writer writer, Object parameter) {
         appendParameterInternal(call, writer, parameter);
-    }
-
-    /**
-     * Returns the number of parameters that used binding.
-     * Should only be called in case binding is not used.
-     */
-    public int appendParameterInternal(Call call, Writer writer, Object parameter) {
-        int nBoundParameters = 0;
-        DatabaseCall databaseCall = (DatabaseCall)call;
-        try {
-            // PERF: Print Calendars directly avoiding timestamp conversion,
-            // Must be before conversion as you cannot bind calendars.
-            if (parameter instanceof Calendar) {
-                appendCalendar((Calendar)parameter, writer);
-                return nBoundParameters;
-            }
-            Object dbValue = convertToDatabaseType(parameter);
-
-            if (dbValue instanceof String) {// String and number first as they are most common.
-                if (usesStringBinding() && (((String)dbValue).length() >= getStringBindingSize())) {
-                    databaseCall.bindParameter(writer, dbValue);
-                    nBoundParameters = 1;
-                } else {
-                    appendString((String)dbValue, writer);
-                }
-            } else if (dbValue instanceof Number) {
-                appendNumber((Number)dbValue, writer);
-            } else if (dbValue instanceof java.sql.Time) {
-                appendTime((java.sql.Time)dbValue, writer);
-            } else if (dbValue instanceof java.sql.Timestamp) {
-                appendTimestamp((java.sql.Timestamp)dbValue, writer);
-            } else if (dbValue instanceof java.sql.Date) {
-                appendDate((java.sql.Date)dbValue, writer);
-            } else if (dbValue == null) {
-                writer.write("NULL");
-            } else if (dbValue instanceof Boolean) {
-                appendBoolean((Boolean)dbValue, writer);
-            } else if (dbValue instanceof byte[]) {
-                if (usesByteArrayBinding()) {
-                    databaseCall.bindParameter(writer, dbValue);
-                    nBoundParameters = 1;
-                } else {
-                    appendByteArray((byte[])dbValue, writer);
-                }
-            } else if (dbValue instanceof Collection) {
-                nBoundParameters = printValuelist((Collection)dbValue, databaseCall, writer);
-            } else if (typeConverters != null && typeConverters.containsKey(dbValue.getClass())){
-                dbValue = new BindCallCustomParameter(dbValue);
-                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
-                databaseCall.bindParameter(writer, dbValue);
-            } else if ((parameter instanceof Struct) || (parameter instanceof Array) || (parameter instanceof Ref)) {
-                databaseCall.bindParameter(writer, parameter);
-                nBoundParameters = 1;
-            } else if (dbValue.getClass() == int[].class) {
-                nBoundParameters = printValuelist((int[])dbValue, databaseCall, writer);
-            } else if (dbValue instanceof AppendCallCustomParameter) {
-                // custom append is required (example BLOB, CLOB on Oracle8)
-                ((AppendCallCustomParameter)dbValue).append(writer);
-                nBoundParameters = 1;
-            } else if (dbValue instanceof BindCallCustomParameter) {
-                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
-                databaseCall.bindParameter(writer, dbValue);
-                nBoundParameters = 1;
-            } else {
-                // Assume database driver primitive that knows how to print itself, this is required for drivers
-                // such as Oracle JDBC, Informix JDBC and others, as well as client specific classes.
-                writer.write(dbValue.toString());
-            }
-        } catch (IOException exception) {
-            throw ValidationException.fileError(exception);
-        }
-
-        return nBoundParameters;
     }
 
     /**
@@ -638,7 +566,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Return the selection criteria used to IN batch fetching.
      */
     public Expression buildBatchCriteria(ExpressionBuilder builder,Expression field) {
-
         return field.in(
                 builder.getParameter(ForeignReferenceMapping.QUERY_BATCH_PARAMETER));
     }
@@ -767,16 +694,6 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean shouldUseGetSetNString() {
         return getDriverSupportsNVarChar() && getUseNationalCharacterVaryingTypeForString();
     }
-
-    /**
-     * True if the current jdbc driver supports get/setNString methods
-     */
-    protected boolean driverSupportsNationalCharacterVarying = false;
-    /**
-     * If true, the platform should map String columns to a type that supports
-     * national characters.
-     */
-    protected boolean useNationalCharacterVarying = false;
 
     public boolean getDriverSupportsNVarChar() {
         return driverSupportsNationalCharacterVarying;
@@ -3187,7 +3104,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public Array createArray(String elementDataTypeName, Object[] elements, AbstractSession session, Connection connection) throws SQLException {
         //Bug#5200836 need unwrap the connection prior to using.
         java.sql.Connection unwrappedConnection = getConnection(session, connection);
-        return createArray(elementDataTypeName,elements,unwrappedConnection);
+        return unwrappedConnection.createArrayOf(elementDataTypeName, elements);
     }
 
     /**
@@ -3197,25 +3114,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public Struct createStruct(String structTypeName, Object[] attributes, AbstractSession session, Connection connection) throws SQLException {
         java.sql.Connection unwrappedConnection = getConnection(session, connection);
-        return createStruct(structTypeName,attributes,unwrappedConnection);
-    }
-
-    /**
-     * INTERNAL:
-     * Platforms that support java.sql.Array may override this method.
-     * @return Array
-     */
-    public Array createArray(String elementDataTypeName, Object[] elements, Connection connection) throws SQLException {
-        return connection.createArrayOf(elementDataTypeName, elements);
-    }
-
-    /**
-     * INTERNAL:
-     * Platforms that support java.sql.Struct may override this method.
-     * @return Struct
-     */
-    public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
-        return connection.createStruct(structTypeName, attributes);
+        return unwrappedConnection.createStruct(structTypeName, attributes);
     }
 
     /**
@@ -3256,21 +3155,12 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL:
-     * Platforms that support java.sql.Ref may override this method.
-     * @return Object
-     */
-    public Object getRefValue(Ref ref,Connection connection) throws SQLException {
-        return ref.getObject();
-    }
-    /**
-     * INTERNAL:
      * This method builds a REF using the unwrapped connection within the session
      * @return Object
      */
-    public Object getRefValue(Ref ref,AbstractSession executionSession,Connection connection) throws SQLException {
         //Bug#6068155, ensure connection is lived when processing the REF type value.
-        java.sql.Connection unwrappedConnection = getConnection(executionSession,connection);
-        return getRefValue(ref,unwrappedConnection);
+    public Object getRefValue(Ref ref, AbstractSession session, Connection connection) throws SQLException {
+        return ref.getObject();
     }
 
 
@@ -3571,4 +3461,76 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    /**
+     * Returns the number of parameters that used binding.
+     * Should only be called in case binding is not used.
+     */
+    private int appendParameterInternal(Call call, Writer writer, Object parameter) {
+        int nBoundParameters = 0;
+        DatabaseCall databaseCall = (DatabaseCall)call;
+        try {
+            // PERF: Print Calendars directly avoiding timestamp conversion,
+            // Must be before conversion as you cannot bind calendars.
+            if (parameter instanceof Calendar) {
+                appendCalendar((Calendar)parameter, writer);
+                return nBoundParameters;
+            }
+            Object dbValue = convertToDatabaseType(parameter);
+
+            if (dbValue instanceof String) {// String and number first as they are most common.
+                if (usesStringBinding() && (((String)dbValue).length() >= getStringBindingSize())) {
+                    databaseCall.bindParameter(writer, dbValue);
+                    nBoundParameters = 1;
+                } else {
+                    appendString((String)dbValue, writer);
+                }
+            } else if (dbValue instanceof Number) {
+                appendNumber((Number)dbValue, writer);
+            } else if (dbValue instanceof java.sql.Time) {
+                appendTime((java.sql.Time)dbValue, writer);
+            } else if (dbValue instanceof java.sql.Timestamp) {
+                appendTimestamp((java.sql.Timestamp)dbValue, writer);
+            } else if (dbValue instanceof java.sql.Date) {
+                appendDate((java.sql.Date)dbValue, writer);
+            } else if (dbValue == null) {
+                writer.write("NULL");
+            } else if (dbValue instanceof Boolean) {
+                appendBoolean((Boolean)dbValue, writer);
+            } else if (dbValue instanceof byte[]) {
+                if (usesByteArrayBinding()) {
+                    databaseCall.bindParameter(writer, dbValue);
+                    nBoundParameters = 1;
+                } else {
+                    appendByteArray((byte[])dbValue, writer);
+                }
+            } else if (dbValue instanceof Collection) {
+                nBoundParameters = printValuelist((Collection)dbValue, databaseCall, writer);
+            } else if (typeConverters != null && typeConverters.containsKey(dbValue.getClass())){
+                dbValue = new BindCallCustomParameter(dbValue);
+                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
+                databaseCall.bindParameter(writer, dbValue);
+            } else if ((parameter instanceof Struct) || (parameter instanceof Array) || (parameter instanceof Ref)) {
+                databaseCall.bindParameter(writer, parameter);
+                nBoundParameters = 1;
+            } else if (dbValue.getClass() == int[].class) {
+                nBoundParameters = printValuelist((int[])dbValue, databaseCall, writer);
+            } else if (dbValue instanceof AppendCallCustomParameter) {
+                // custom append is required (example BLOB, CLOB on Oracle8)
+                ((AppendCallCustomParameter)dbValue).append(writer);
+                nBoundParameters = 1;
+            } else if (dbValue instanceof BindCallCustomParameter) {
+                // custom binding is required, object to be bound is wrapped (example NCHAR, NVARCHAR2, NCLOB on Oracle9)
+                databaseCall.bindParameter(writer, dbValue);
+                nBoundParameters = 1;
+            } else {
+                // Assume database driver primitive that knows how to print itself, this is required for drivers
+                // such as Oracle JDBC, Informix JDBC and others, as well as client specific classes.
+                writer.write(dbValue.toString());
+            }
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+
+        return nBoundParameters;
+    }
 }

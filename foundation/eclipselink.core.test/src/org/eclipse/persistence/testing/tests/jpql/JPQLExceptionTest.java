@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +30,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     public static JPQLExceptionTest recognitionExceptionTest() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.syntaxErrorAt(null, 0, 0, null, null);
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROW Employee emp");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROW Employee e");
         theTest.setName("Recognition Exception Test");
         return theTest;
     }
@@ -45,7 +46,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     public static JPQLExceptionTest malformedEjbqlExceptionTest1() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.unexpectedToken(null, 0, 0, null, null);
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName == \"Fred\"");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.firstName == \"Fred\"");
         theTest.setName("Malformed EJBQL Exception Test1");
         return theTest;
     }
@@ -53,7 +54,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     public static JPQLExceptionTest malformedEjbqlExceptionTest2() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.unexpectedEOF(null, 0, 0, null);
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" AND 1");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = \"Fred\" AND 1");
         theTest.setName("Malformed EJBQL Exception Test2");
         return theTest;
     }
@@ -61,7 +62,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     public static JPQLExceptionTest malformedEjbqlExceptionTest3() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.unexpectedEOF(null, 0, 0, null);
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" OR \"Freda\"");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = \"Fred\" OR \"Freda\"");
         theTest.setName("Malformed EJBQL Exception Test3");
         return theTest;
     }
@@ -69,7 +70,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     public static JPQLExceptionTest malformedEjbqlExceptionTest4() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.unexpectedToken(null, 0, 0, null, null);
-        theTest.setEjbqlString("SLEECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"Fred\" OR \"Freda\"");
+        theTest.setEjbqlString("SLEECT OBJECT(e) FROM Employee e WHERE e.firstName = \"Fred\" OR \"Freda\"");
         theTest.setName("Malformed EJBQL Exception Test4");
         return theTest;
     }
@@ -77,7 +78,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
     public static JPQLExceptionTest badAliasExceptionTest() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.aliasResolutionException(null, 0, 0, null);
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee employee WHERE emp.firstName = \"Fred\"");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee employee WHERE e.firstName = \"Fred\"");
         theTest.setName("Bad Alias Exception Test 2");
         return theTest;
     }
@@ -115,7 +116,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.aliasResolutionException(null, 0, 0, null);
         theTest.setName("Bad Alias Exception test 1");
-        theTest.setEjbqlString("SELECT OBJECT(nullRoot) FROM Employee emp WHERE emp.firstName = \"Fred\"");
+        theTest.setEjbqlString("SELECT OBJECT(nullRoot) FROM Employee e WHERE e.firstName = \"Fred\"");
 
         return theTest;
     }
@@ -133,7 +134,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.expressionNotSupported(null, null);
         theTest.setName("Expression Not Supported Exception test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.phoneNumbers IS EMPTY");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e WHERE e.phoneNumbers IS EMPTY");
 
         return theTest;
     }
@@ -142,7 +143,7 @@ public class JPQLExceptionTest extends JPQLTestCase {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.expectedException = JPQLException.expressionNotSupported(null, null);
         theTest.setName("MEMBER OF Not Supported Exception test");
-        theTest.setEjbqlString("SELECT OBJECT(proj) FROM Employee emp, Project proj " + " WHERE  (proj.teamLeader MEMBER OF emp.manager.managedEmployees) " + "AND (emp.lastName = \"Chan\")");
+        theTest.setEjbqlString("SELECT OBJECT(p) FROM Employee e, Project p " + " WHERE  (p.teamLeader MEMBER OF e.manager.managedEmployees) " + "AND (e.lastName = \"Chan\")");
         return theTest;
     }
 

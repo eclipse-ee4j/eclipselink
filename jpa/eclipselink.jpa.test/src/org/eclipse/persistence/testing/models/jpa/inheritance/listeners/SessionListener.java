@@ -18,7 +18,6 @@ package org.eclipse.persistence.testing.models.jpa.inheritance.listeners;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
-import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Bus;
 
 public class SessionListener extends SessionEventAdapter {

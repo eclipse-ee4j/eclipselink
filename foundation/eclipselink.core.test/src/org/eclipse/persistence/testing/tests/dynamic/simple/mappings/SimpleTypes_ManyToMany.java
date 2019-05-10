@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +30,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -141,7 +141,7 @@ public class SimpleTypes_ManyToMany {
         countQuery.addCount();
         countQuery.setShouldReturnSingleValue(true);
         int simpleCount = ((Number) session.executeQuery(countQuery)).intValue();
-        Assert.assertEquals(1, simpleCount);
+        assertEquals(1, simpleCount);
     }
 
     @Test
@@ -158,7 +158,7 @@ public class SimpleTypes_ManyToMany {
         countQuery.addCount();
         countQuery.setShouldReturnSingleValue(true);
         int simpleCount = ((Number) session.executeQuery(countQuery)).intValue();
-        Assert.assertEquals(1, simpleCount);
+        assertEquals(1, simpleCount);
     }
 
     @Test
@@ -181,13 +181,13 @@ public class SimpleTypes_ManyToMany {
         countQueryB.addCount();
         countQueryB.setShouldReturnSingleValue(true);
         int simpleCountB = ((Number) session.executeQuery(countQueryB)).intValue();
-        Assert.assertEquals(1, simpleCountB);
+        assertEquals(1, simpleCountB);
 
         ReportQuery countQueryA = dynamicHelper.newReportQuery("SimpleA", new ExpressionBuilder());
         countQueryA.addCount();
         countQueryA.setShouldReturnSingleValue(true);
         int simpleCountA = ((Number) session.executeQuery(countQueryA)).intValue();
-        Assert.assertEquals(1, simpleCountA);
+        assertEquals(1, simpleCountA);
     }
 
     @Ignore

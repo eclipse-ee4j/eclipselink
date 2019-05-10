@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,9 +28,9 @@ public class SimpleReverseSubstringTest extends org.eclipse.persistence.testing.
         String ejbqlString;
 
            firstNamePart = emp.getFirstName().substring(0, 2);
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + "\"" + firstNamePart + "\"";
-        ejbqlString = ejbqlString + " = SUBSTRING(emp.firstName, 1, 2)";
+        ejbqlString = ejbqlString + " = SUBSTRING(e.firstName, 1, 2)";
 
         setEjbqlString(ejbqlString);
         setOriginalOject(emp);

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,8 +76,8 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
         assertTrue("No foreign key constraints were found on table [" + table.getName()+ "]", table.hasForeignKeyConstraints());
         ForeignKeyConstraint constraint = table.getForeignKeyConstraint(name);
         assertNotNull("The foreign key constraint named [" + name + "] was not found on table [" + table.getName() + "]", constraint);
-        assertFalse("The foreign key definition for the constraint named [" + name + "] on table [" + table + "] was null.", constraint.getForeignKeyDefinition() == null);
-        assertTrue("The foreign key definition for the constraint named [" + name + "] on table [" + table + "] was set as [" + constraint.getForeignKeyDefinition() + " ], but was expecting [" + definition + " ]", constraint.getForeignKeyDefinition().equals(definition));
+        assertNotNull("The foreign key definition for the constraint named [" + name + "] on table [" + table + "] was null.", constraint.getForeignKeyDefinition());
+        assertEquals("The foreign key definition for the constraint named [" + name + "] on table [" + table + "] was set as [" + constraint.getForeignKeyDefinition() + " ], but was expecting [" + definition + " ]", definition, constraint.getForeignKeyDefinition());
     }
 
     /**
@@ -242,11 +243,11 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
             clearCache();
 
             Runner runnerRefreshed = em.find(Runner.class, runner.getId());
-            assertTrue("The age conversion did not work.", runnerRefreshed.getAge() == 52);
-            assertTrue("The embeddable health conversion did not work.", runnerRefreshed.getInfo().getHealth().equals(Health.HEALTHY));
-            assertTrue("The embeddable level conversion did not work.", runnerRefreshed.getInfo().getLevel().equals(Level.AMATEUR));
-            assertTrue("The nested embeddable running status conversion did not work.", runnerRefreshed.getInfo().getStatus().getRunningStatus().equals(RunningStatus.DOWN_TIME));
-            assertTrue("The number of personal bests for this runner is incorrect.", runnerRefreshed.getPersonalBests().size() == 2);
+            assertEquals("The age conversion did not work.", new Integer(52), runnerRefreshed.getAge());
+            assertEquals("The embeddable health conversion did not work.", Health.HEALTHY, runnerRefreshed.getInfo().getHealth());
+            assertEquals("The embeddable level conversion did not work.", Level.AMATEUR, runnerRefreshed.getInfo().getLevel());
+            assertEquals("The nested embeddable running status conversion did not work.", RunningStatus.DOWN_TIME, runnerRefreshed.getInfo().getStatus().getRunningStatus());
+            assertEquals("The number of personal bests for this runner is incorrect.", 2, runnerRefreshed.getPersonalBests().size());
             assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("10K"));
             assertTrue("Distance (map key) conversion did not work.", runnerRefreshed.getPersonalBests().keySet().contains("5K"));
             assertTrue("Time (map value) conversion did not work.", runnerRefreshed.getPersonalBests().values().contains("47:34.0"));
@@ -255,10 +256,10 @@ public class ForeignKeyTestSuite extends JUnitTestCase {
             Race raceRefreshed = em.find(Race.class, race.getId());
             Map<Responsibility, Organizer> organizers = raceRefreshed.getOrganizers();
             assertFalse("No race organizers returned.", organizers.isEmpty());
-            assertTrue("More than one race organizer returned.", organizers.size() == 1);
+            assertEquals("More than one race organizer returned.", 1, organizers.size());
 
             Responsibility resp = organizers.keySet().iterator().next();
-            assertTrue("Responsibility was not uppercased by the converter", resp.getDescription().equals("RAISE FUNDS"));
+            assertEquals("Responsibility was not uppercased by the converter", "RAISE FUNDS", resp.getDescription());
 
             for (String accomplishment : runnerRefreshed.getAccomplishments().keySet()) {
                 assertTrue("Accomplishment (map key) conversion did not work.", accomplishment.endsWith("!!!"));

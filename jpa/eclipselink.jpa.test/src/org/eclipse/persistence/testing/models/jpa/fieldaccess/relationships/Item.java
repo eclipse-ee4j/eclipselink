@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +22,7 @@ import static javax.persistence.GenerationType.*;
 @Table(name="CMP3_FIELDACCESS_ITEM")
 @NamedQuery(
         name="findAllFieldAccessItemsByName",
-        query="SELECT OBJECT(item) FROM FieldAccessItem item WHERE item.name = ?1"
+        query="SELECT OBJECT(i) FROM FieldAccessItem i WHERE i.name = ?1"
 )
 public class Item implements java.io.Serializable {
     @Id

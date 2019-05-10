@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +24,7 @@ public class IdentifierTest extends JPQLTestCase {
     public static IdentifierTest underscoreIdentTest() {
         IdentifierTest theTest = new IdentifierTest();
         theTest.setName("Underscore identifier test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM Employee emp");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM Employee e");
 
         return theTest;
     }
@@ -31,7 +32,7 @@ public class IdentifierTest extends JPQLTestCase {
     public static IdentifierTest dollarSignIdentTest() {
         IdentifierTest theTest = new IdentifierTest();
         theTest.setName("Dollar sign identifier test");
-        theTest.setEjbqlString("SELECT OBJECT($emp) FROM Employee $emp");
+        theTest.setEjbqlString("SELECT OBJECT($e) FROM Employee $e");
 
         return theTest;
     }
@@ -39,7 +40,7 @@ public class IdentifierTest extends JPQLTestCase {
     public static IdentifierTest underscoreSchemaNameTest() {
         IdentifierTest theTest = new IdentifierTest();
         theTest.setName("Underscore Schema name test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM _Employee emp");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM _Employee e");
 
         return theTest;
     }
@@ -47,7 +48,7 @@ public class IdentifierTest extends JPQLTestCase {
     public static IdentifierTest dollarSignSchemaNameTest() {
         IdentifierTest theTest = new IdentifierTest();
         theTest.setName("Dollar sign Schema name test");
-        theTest.setEjbqlString("SELECT OBJECT(emp) FROM $Employee emp");
+        theTest.setEjbqlString("SELECT OBJECT(e) FROM $Employee e");
 
         return theTest;
     }
@@ -55,7 +56,7 @@ public class IdentifierTest extends JPQLTestCase {
     public static IdentifierTest numericIdentTest() {
         IdentifierTest theTest = new IdentifierTest();
         theTest.setName("Numeric Identifier test");
-        theTest.setEjbqlString("SELECT OBJECT(emp1) FROM Employee emp1");
+        theTest.setEjbqlString("SELECT OBJECT(e1) FROM Employee e1");
 
         return theTest;
     }
@@ -63,7 +64,7 @@ public class IdentifierTest extends JPQLTestCase {
     public static JPQLExceptionTest badIdentifierTest1() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.setName("Bad Identifier test1");
-        theTest.setEjbqlString("SELECT OBJECT(+emp1) FROM Employee +emp1");
+        theTest.setEjbqlString("SELECT OBJECT(+e1) FROM Employee +e1");
         theTest.expectedException = JPQLException.syntaxErrorAt(null, 0, 0, null, null);
 
         return theTest;
@@ -72,7 +73,7 @@ public class IdentifierTest extends JPQLTestCase {
     public static JPQLExceptionTest badIdentifierTest2() {
         JPQLExceptionTest theTest = new JPQLExceptionTest();
         theTest.setName("Bad Identifier test2");
-        theTest.setEjbqlString("SELECT OBJECT(emp 1) FROM Employee emp 1");
+        theTest.setEjbqlString("SELECT OBJECT(e 1) FROM Employee e 1");
         theTest.expectedException = JPQLException.syntaxErrorAt(null, 0, 0, null, null);
 
         return theTest;
@@ -81,7 +82,7 @@ public class IdentifierTest extends JPQLTestCase {
     public static IdentifierTest complexIdentTest() {
         IdentifierTest theTest = new IdentifierTest();
         theTest.setName("Complex Identifier test");
-        theTest.setEjbqlString("SELECT OBJECT(_$emp1) FROM Employee _$emp1");
+        theTest.setEjbqlString("SELECT OBJECT(_$e1) FROM Employee _$e1");
 
         return theTest;
     }

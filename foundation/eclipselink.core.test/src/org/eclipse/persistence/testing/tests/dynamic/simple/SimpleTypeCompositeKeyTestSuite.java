@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +25,6 @@ import java.util.Calendar;
 
 //JUnit4 imports
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -90,7 +90,7 @@ public class SimpleTypeCompositeKeyTestSuite extends SimpleTypeTestSuite {
     @Override
     public DynamicEntity createSimpleInstance(Session session, int id) {
         DynamicType simpleEntityType = dynamicHelper.getType("Simple");
-        Assert.assertNotNull(simpleEntityType);
+        assertNotNull(simpleEntityType);
 
         DynamicEntity simpleInstance = simpleEntityType.newDynamicEntity();
         simpleInstance.set("id1", id);

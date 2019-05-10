@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +23,6 @@ import javax.persistence.metamodel.ManagedType;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa21.advanced.WovenMS;
-import org.junit.Assert;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -54,6 +54,6 @@ public class WeaverTestSuite extends JUnitTestCase {
         EntityManagerFactory emf = getEntityManagerFactory();
         ManagedType<WovenMS> managedType = emf.getMetamodel().managedType(WovenMS.class);
         Class<WovenMS> javaClass = emf.getMetamodel().managedType(WovenMS.class).getJavaType();
-        Assert.assertTrue(Arrays.asList(javaClass.getInterfaces()).contains(PersistenceEntity.class));
+        assertTrue(Arrays.asList(javaClass.getInterfaces()).contains(PersistenceEntity.class));
     }
 }

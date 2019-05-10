@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +22,7 @@ class SimpleFromFailed extends org.eclipse.persistence.testing.tests.jpql.JPQLTe
     Exception error = null;
 
     public void setup() {
-        String ejbqlString = "SELECT OBJECT(emp) Frow Employee emp";
+        String ejbqlString = "SELECT OBJECT(e) Frow Employee e";
         setEjbqlString(ejbqlString);
 
         super.setup();

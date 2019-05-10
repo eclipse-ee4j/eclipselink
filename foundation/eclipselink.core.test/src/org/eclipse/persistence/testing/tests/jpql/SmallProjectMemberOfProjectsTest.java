@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,8 +43,8 @@ public class SmallProjectMemberOfProjectsTest extends JPQLTestCase {
         setOriginalOject(employeesWithSmallProjects);
 
         //setup the EJBQL to do the same
-        ejbqlString = "SELECT OBJECT(employee) FROM Employee employee, SmallProject sp WHERE ";
-        ejbqlString = ejbqlString + "sp MEMBER OF employee.projects";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e, SmallProject sp WHERE ";
+        ejbqlString = ejbqlString + "sp MEMBER OF e.projects";
         setEjbqlString(ejbqlString);
         super.setup();
     }

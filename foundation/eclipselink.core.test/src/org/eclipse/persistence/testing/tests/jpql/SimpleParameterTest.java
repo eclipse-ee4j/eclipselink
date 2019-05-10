@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,8 +40,8 @@ public class SimpleParameterTest extends JPQLParameterTestCase {
         Vector employees = (Vector)getSession().executeQuery(raq, parameters);
 
         // Set up the EJBQL using the retrieved employees
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.firstName = ?1 ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.firstName = ?1 ";
 
         setEjbqlString(ejbqlString);
         setOriginalOject(employees);

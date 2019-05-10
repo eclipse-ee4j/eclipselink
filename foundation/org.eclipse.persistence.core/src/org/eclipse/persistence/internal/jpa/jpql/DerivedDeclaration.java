@@ -67,8 +67,7 @@ final class DerivedDeclaration extends AbstractRangeDeclaration {
             }
 
             return expression;
-        }
-        else {
+        } else {
 
             // Otherwise it will be derived by duplicating the join to the outer builder inside the
             // sub select. The same could be done for direct collection, but difficult to create a

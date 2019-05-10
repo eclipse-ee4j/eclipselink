@@ -295,12 +295,9 @@ public class QueryKeyExpression extends ObjectExpression {
     public String descriptionOfNodeType() {
         return "Query Key";
     }
-
-    /**
-     * INTERNAL:
-     */
-    public void doQueryToManyRelationship() {
-        shouldQueryToManyRelationship = true;
+    
+    public void setShouldQueryToManyRelationship(boolean shouldQueryToManyRelationship) {
+        this.shouldQueryToManyRelationship = shouldQueryToManyRelationship;
     }
 
     /**
@@ -945,7 +942,7 @@ public class QueryKeyExpression extends ObjectExpression {
             result = (QueryKeyExpression)newLocalBase.get(getName());
         }
         if (shouldQueryToManyRelationship) {
-            result.doQueryToManyRelationship();
+            result.setShouldQueryToManyRelationship(true);
         }
         result.setSelectIfOrderedBy(selectIfOrderedBy());
         if (castClass != null){
@@ -976,7 +973,7 @@ public class QueryKeyExpression extends ObjectExpression {
             result = (QueryKeyExpression)newLocalBase.get(getName());
         }
         if (shouldQueryToManyRelationship) {
-            result.doQueryToManyRelationship();
+            result.setShouldQueryToManyRelationship(true);
         }
         result.setSelectIfOrderedBy(selectIfOrderedBy());
         return result;
@@ -1010,10 +1007,10 @@ public class QueryKeyExpression extends ObjectExpression {
             Expression twistedBase = this.baseExpression.twistedForBaseAndContext(newBase, context, oldBase);
             QueryKeyExpression result = (QueryKeyExpression)twistedBase.get(getName());
             if (shouldUseOuterJoin) {
-                result.doUseOuterJoin();
+                result.setShouldUseOuterJoin(true);
             }
             if (shouldQueryToManyRelationship) {
-                result.doQueryToManyRelationship();
+                result.setShouldQueryToManyRelationship(true);
             }
             return result;
         }

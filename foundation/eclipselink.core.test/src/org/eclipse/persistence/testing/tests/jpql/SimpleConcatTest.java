@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,8 +41,8 @@ public class SimpleConcatTest extends org.eclipse.persistence.testing.tests.jpql
 
         Vector employees = (Vector)getSession().executeQuery(raq);
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "CONCAT(emp.firstName,emp.lastName) LIKE ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "CONCAT(e.firstName, e.lastName) LIKE ";
         ejbqlString = ejbqlString + "\"" + partOne + "%\"";
 
         setEjbqlString(ejbqlString);

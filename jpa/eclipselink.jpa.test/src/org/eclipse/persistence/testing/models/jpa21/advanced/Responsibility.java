@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +16,12 @@
 //       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
-import javax.persistence.Convert;
 import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
 
 @Embeddable
 public class Responsibility {
-    public Long uniqueIdentifier;
-    public String description;
+    private Long uniqueIdentifier;
+    private String description;
 
     public Responsibility() {}
 

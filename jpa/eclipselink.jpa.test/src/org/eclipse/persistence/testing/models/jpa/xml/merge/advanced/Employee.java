@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,11 +43,11 @@ import static javax.persistence.FetchType.*;
 @NamedQueries({
 @NamedQuery(
     name="ann_merge_findAllEmployeesByFirstName",
-    query="SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname"
+    query="SELECT OBJECT(e) FROM Employee e WHERE e.firstName = :firstname"
 ),
 @NamedQuery(
     name="ann_merge_constuctEmployees",
-    query="SELECT new org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.Employee(employee.firstName, employee.lastName) FROM Employee employee")
+    query="SELECT new org.eclipse.persistence.testing.models.jpa.xml.merge.advanced.Employee(e.firstName, e.lastName) FROM Employee e")
 }
 )
 public class Employee implements Serializable {

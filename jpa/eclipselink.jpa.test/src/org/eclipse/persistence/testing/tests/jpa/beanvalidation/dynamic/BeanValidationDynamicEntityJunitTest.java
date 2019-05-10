@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +28,6 @@ import org.eclipse.persistence.internal.jpa.config.metadata.ReflectiveDynamicCla
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.testing.framework.TestSuite;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.junit.Assert;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -91,7 +91,7 @@ public class BeanValidationDynamicEntityJunitTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             closeEntityManager(em);
-            Assert.fail(e.getMessage());
+            fail(e.getMessage());
         }
         Integer employeeId = employee.<Integer>get("id");
         assertTrue("Employee id not set!", employeeId > 0);
@@ -116,6 +116,6 @@ public class BeanValidationDynamicEntityJunitTest extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        Assert.fail("ConstraintViolationException not thrown");
+        fail("ConstraintViolationException not thrown");
     }
 }

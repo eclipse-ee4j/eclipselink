@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +30,6 @@ import java.util.Set;
 import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.QueryHints;
@@ -260,7 +260,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             Query query = em.createQuery("SELECT e FROM Employee e");
             List<Employee> emps = query.getResultList();
 
-            Assert.assertNotNull(emps);
+            assertNotNull(emps);
             int numRead = emps.size();
 
             query = em.createQuery("SELECT e FROM Employee e WHERE :arg1=:arg2");
@@ -268,8 +268,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             query.setParameter("arg2", 1);
             emps = query.getResultList();
 
-            Assert.assertNotNull(emps);
-            Assert.assertEquals(numRead, emps.size());
+            assertNotNull(emps);
+            assertEquals(numRead, emps.size());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -291,21 +291,21 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             Query query = em.createQuery("SELECT e FROM Employee e");
             List<Employee> emps = query.getResultList();
 
-            Assert.assertNotNull(emps);
+            assertNotNull(emps);
             int numRead = emps.size();
 
             query = em.createQuery("SELECT e FROM Employee e WHERE 1=1");
             emps = query.getResultList();
 
-            Assert.assertNotNull(emps);
-            Assert.assertEquals(numRead, emps.size());
+            assertNotNull(emps);
+            assertEquals(numRead, emps.size());
 
             ExpressionBuilder builder = new ExpressionBuilder();
             query = ((JpaEntityManager)em.getDelegate()).createQuery(builder.value(1).equal(builder.value(1)), Employee.class);
             emps = query.getResultList();
 
-            Assert.assertNotNull(emps);
-            Assert.assertEquals(numRead, emps.size());
+            assertNotNull(emps);
+            assertEquals(numRead, emps.size());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -417,9 +417,9 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        List result = em.createQuery("SELECT OBJECT(emp) FROM Employee emp").getResultList();
+        List result = em.createQuery("SELECT OBJECT(e) FROM Employee e").getResultList();
 
-        Assert.assertTrue("Base Test Case Failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Base Test Case Failed", comparer.compareObjects(result, expectedResult));
     }
 
     //Test case for ABS function in EJBQL
@@ -433,13 +433,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "ABS(emp.salary) = ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "ABS(e.salary) = ";
         ejbqlString = ejbqlString + expectedResult.getSalary();
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("ABS test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("ABS test failed", comparer.compareObjects(result, expectedResult));
     }
 
     //Test case for BETWEEN function in EJBQL
@@ -461,10 +461,10 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id BETWEEN " + empId + " AND " + employee.getId();
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id BETWEEN " + empId + " AND " + employee.getId();
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Between test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Between test failed", comparer.compareObjects(result, expectedResult));
     }
 
     //Test case for concat function in EJBQL
@@ -482,8 +482,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         partOne = expectedResult.getFirstName().substring(0, 2);
         partTwo = expectedResult.getFirstName().substring(2);
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.firstName = ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.firstName = ";
         ejbqlString = ejbqlString + "CONCAT(\"";
         ejbqlString = ejbqlString + partOne;
         ejbqlString = ejbqlString + "\", \"";
@@ -492,7 +492,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
     }
 
     //Test case for concat function in EJBQL taking parameters
@@ -515,8 +515,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         partOne = expectedResult.getFirstName().substring(0, 2);
         partTwo = expectedResult.getFirstName().substring(2);
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.firstName = ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.firstName = ";
         ejbqlString = ejbqlString + "CONCAT(";
         ejbqlString = ejbqlString + ":partOne";
         ejbqlString = ejbqlString + ", ";
@@ -525,7 +525,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).setParameter("partOne", partOne).setParameter("partTwo", partTwo).getResultList();
 
-        Assert.assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
     }
 
 
@@ -552,13 +552,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "CONCAT(emp.firstName,\"Smith\") LIKE ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "CONCAT(e.firstName,\"Smith\") LIKE ";
         ejbqlString = ejbqlString + "\"" + partOne + "Smith\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Concat test with constraints failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Concat test with constraints failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleThreeArgConcatTest() {
@@ -575,8 +575,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         partTwo = expectedResult.getFirstName().substring(1, 2);
         partThree = expectedResult.getFirstName().substring(2);
 
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.firstName = ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.firstName = ";
         ejbqlString = ejbqlString + "CONCAT(\"";
         ejbqlString = ejbqlString + partOne;
         ejbqlString = ejbqlString + "\", \"";
@@ -587,7 +587,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Concat test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleDistinctTest() {
@@ -673,11 +673,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         expectedResult.add(emp2);
         expectedResult.add(emp3);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + " OR emp.id = " + emp2.getId() + " OR emp.id = " + emp3.getId();
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id = " + emp1.getId() + " OR e.id = " + emp2.getId() + " OR e.id = " + emp3.getId();
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Double OR test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Double OR test failed", comparer.compareObjects(result, expectedResult));
     }
 
     //Test case for equals brackets in EJBQL
@@ -689,13 +689,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "( emp.firstName = ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "( e.firstName = ";
         ejbqlString = ejbqlString + "\"" + expectedResult.getFirstName() + "\")";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Equals brackets test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Equals brackets test failed", comparer.compareObjects(result, expectedResult));
     }
 
     //Test case for equals in EJBQL
@@ -707,13 +707,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.firstName = ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.firstName = ";
         ejbqlString = ejbqlString + "\"" + expectedResult.getFirstName() + "\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Equals test failed", comparer.compareObjects(expectedResult, result));
+        assertTrue("Equals test failed", comparer.compareObjects(expectedResult, result));
     }
 
     //Test case for equals with join in EJBQL
@@ -728,11 +728,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp, IN(emp.managedEmployees) managedEmployees " + "WHERE managedEmployees.address.city = 'Ottawa'";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e, IN(e.managedEmployees) managedEmployees " + "WHERE managedEmployees.address.city = 'Ottawa'";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Equals test with Join failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Equals test with Join failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleEqualsWithAs() {
@@ -744,10 +744,10 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Vector employeesUsed = new Vector();
         employeesUsed.add(expectedResult);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee AS emp WHERE emp.id = " + expectedResult.getId();
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee AS e WHERE e.id = " + expectedResult.getId();
 
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Equals test with As failed", comparer.compareObjects(expectedResult, result));
+        assertTrue("Equals test with As failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void collectionMemberIdentifierEqualsTest() {
@@ -762,11 +762,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         PhoneNumber phoneNumber = (PhoneNumber)((Vector)expectedResult.getPhoneNumbers()).firstElement();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp, IN (emp.phoneNumbers) phone " + "WHERE phone = ?1";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e, IN (e.phoneNumbers) phone " + "WHERE phone = ?1";
 
         List result = em.createQuery(ejbqlString).setParameter(1, phoneNumber).getResultList();
 
-        Assert.assertTrue("CollectionMemberIdentifierEqualsTest failed", comparer.compareObjects(expectedResult, result));
+        assertTrue("CollectionMemberIdentifierEqualsTest failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void abstractSchemaIdentifierEqualsTest() {
@@ -776,11 +776,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp = ?1";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e = ?1";
 
         List result = em.createQuery(ejbqlString).setParameter(1, expectedResult).getResultList();
 
-        Assert.assertTrue("abstractSchemaIdentifierEqualsTest failed", comparer.compareObjects(expectedResult, result));
+        assertTrue("abstractSchemaIdentifierEqualsTest failed", comparer.compareObjects(expectedResult, result));
     }
 
     public void abstractSchemaIdentifierNotEqualsTest() {
@@ -794,11 +794,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         expectedResult.removeElementAt(0);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp <> ?1";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e <> ?1";
 
         List result = em.createQuery(ejbqlString).setParameter(1, emp).getResultList();
 
-        Assert.assertTrue("abstractSchemaIdentifierNotEqualsTest failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("abstractSchemaIdentifierNotEqualsTest failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleInOneDotTest() {
@@ -820,21 +820,21 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         PhoneNumber empPhoneNumbers = (PhoneNumber)((Vector)expectedResult.getPhoneNumbers()).firstElement();
 
-        String ejbqlString = "SelecT OBJECT(emp) from Employee emp, in (emp.phoneNumbers) phone " + "Where phone.areaCode = \"" + empPhoneNumbers.getAreaCode() + "\"" + "AND emp.firstName = \"" + expectedResult.getFirstName() + "\"";
-        ejbqlString = ejbqlString + "AND emp.lastName = \"" + expectedResult.getLastName() + "\"";
+        String ejbqlString = "SelecT OBJECT(e) from Employee e, in (e.phoneNumbers) phone " + "Where phone.areaCode = \"" + empPhoneNumbers.getAreaCode() + "\"" + "AND e.firstName = \"" + expectedResult.getFirstName() + "\"";
+        ejbqlString = ejbqlString + "AND e.lastName = \"" + expectedResult.getLastName() + "\"";
 
         Employee result = (Employee)em.createQuery(ejbqlString).getSingleResult();
 
-        Assert.assertTrue("Simple In Dot Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple In Dot Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void selectAverageQueryForByteColumnTest() {
         EntityManager em = createEntityManager();
 
-        String ejbqlString = "Select AVG(emp.salary)from Employee emp";
+        String ejbqlString = "Select AVG(e.salary)from Employee e";
         Object result = em.createQuery(ejbqlString).getSingleResult();
 
-        Assert.assertTrue("AVG result type [" + result.getClass() + "] not of type Double", result.getClass() == Double.class);
+        assertTrue("AVG result type [" + result.getClass() + "] not of type Double", result.getClass() == Double.class);
     }
 
     public void simpleInTest() {
@@ -844,11 +844,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN (" + expectedResult.getId().toString() + ")";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id IN (" + expectedResult.getId().toString() + ")";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleInListTest() {
@@ -861,11 +861,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id IN :result";
 
         List result = em.createQuery(ejbqlString).setParameter("result", expectedResultList).getResultList();
 
-        Assert.assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple In Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     /**
@@ -884,11 +884,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
             clearCache();
 
-            String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.salary IN(-12345)";
+            String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.salary IN(-12345)";
 
             Employee result = (Employee)em.createQuery(ejbqlString).getSingleResult();
 
-            Assert.assertTrue("Simple In Negative Test failed", comparer.compareObjects(result, expectedResult));
+            assertTrue("Simple In Negative Test failed", comparer.compareObjects(result, expectedResult));
         } finally{
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -908,13 +908,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         String ejbqlString;
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "LENGTH ( emp.firstName     ) = ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "LENGTH ( e.firstName     ) = ";
         ejbqlString = ejbqlString + expectedResult.getFirstName().length();
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Length Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Length Test failed", comparer.compareObjects(result, expectedResult));
     }
 
 
@@ -926,11 +926,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         String partialFirstName = expectedResult.getFirstName().substring(0, 3) + "%";
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE \"" + partialFirstName + "\"";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName LIKE \"" + partialFirstName + "\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Like Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Like Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleLikeTestWithParameter() {
@@ -953,11 +953,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName LIKE ?1";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName LIKE ?1";
 
         List result = em.createQuery(ejbqlString).setParameter(1, partialFirstName).getResultList();
 
-        Assert.assertTrue("Simple Like Test with Parameter failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Like Test with Parameter failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleLikeEscapeTestWithParameter() {
@@ -977,7 +977,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         uow.commit();
 
         //test the apostrophe
-        String ejbqlString = "SELECT OBJECT(address) FROM Address address WHERE address.street LIKE :pattern ESCAPE :esc";
+        String ejbqlString = "SELECT OBJECT(a) FROM Address a WHERE a.street LIKE :pattern ESCAPE :esc";
         String patternString = null;
         Character escChar = null;
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
@@ -991,7 +991,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).setParameter("pattern", patternString).setParameter("esc", escChar).getResultList();
 
-        Assert.assertTrue("Simple Escape Underscore test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Escape Underscore test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleNotBetweenTest() {
@@ -1012,15 +1012,15 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.id NOT BETWEEN ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.id NOT BETWEEN ";
         ejbqlString = ejbqlString + emp1.getId().toString();
         ejbqlString = ejbqlString + " AND ";
         ejbqlString = ejbqlString + emp2.getId().toString();
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Not Between Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Not Between Test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1035,11 +1035,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         expectedResult.removeElementAt(0);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id <> " + emp.getId();
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id <> " + emp.getId();
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Like Test with Parameter failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Like Test with Parameter failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1062,11 +1062,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id NOT IN (" + emp.getId().toString() + ")";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id NOT IN (" + emp.getId().toString() + ")";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Not In Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Not In Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleNotLikeTest() {
@@ -1087,11 +1087,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName NOT LIKE \"" + partialFirstName + "\"";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName NOT LIKE \"" + partialFirstName + "\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Not Like Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Not Like Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleOrFollowedByAndTest() {
@@ -1104,10 +1104,10 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = new Vector();
         expectedResult.add(emp1);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + " OR emp.id = " + emp2.getId() + " AND emp.id = " + emp3.getId();
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id = " + emp1.getId() + " OR e.id = " + emp2.getId() + " AND e.id = " + emp3.getId();
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Or followed by And Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Or followed by And Test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1125,11 +1125,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = \"John\" OR emp.firstName = \"Bob\" AND emp.lastName = \"Smith\"";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName = \"John\" OR e.firstName = \"Bob\" AND e.lastName = \"Smith\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Or followed by And With Static Names Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Or followed by And With Static Names Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleOrTest() {
@@ -1142,12 +1142,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         expectedResult.add(emp1);
         expectedResult.add(emp2);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + " OR emp.id = " + emp2.getId();
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.id = " + emp1.getId() + " OR e.id = " + emp2.getId();
 
         List result = em.createQuery(ejbqlString).getResultList();
         clearCache();
 
-        Assert.assertTrue("Simple Or Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Or Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleParameterTest() {
@@ -1172,12 +1172,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE " + "emp.firstName = ?1 ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE " + "e.firstName = ?1 ";
 
         List result = em.createQuery(ejbqlString).setParameter(1, parameters.get(0)).getResultList();
 
 
-        Assert.assertTrue("Simple Parameter Test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Parameter Test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleParameterTestChangingParameters() {
@@ -1209,7 +1209,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         expectedResult.addAll(firstEmployees);
         expectedResult.addAll(secondEmployees);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE " + "emp.firstName = ?1 ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE " + "e.firstName = ?1 ";
 
         List firstResultSet = em.createQuery(ejbqlString).setParameter(1, firstParameters.get(0)).getResultList();
         clearCache();
@@ -1219,7 +1219,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         result.addAll(firstResultSet);
         result.addAll(secondResultSet);
 
-        Assert.assertTrue("Simple Parameter Test Changing Parameters failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Parameter Test Changing Parameters failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1229,11 +1229,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Employee expectedResult = (Employee)getServerSession().readAllObjects(Employee.class).elementAt(0);
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE " + expectedResult.getSalary() + " = ABS(emp.salary)";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE " + expectedResult.getSalary() + " = ABS(e.salary)";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Reverse Abs test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Reverse Abs test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1247,17 +1247,17 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         String partOne = expectedResult.getFirstName().substring(0, 2);
         String partTwo = expectedResult.getFirstName().substring(2);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + "CONCAT(\"";
         ejbqlString = ejbqlString + partOne;
         ejbqlString = ejbqlString + "\", \"";
         ejbqlString = ejbqlString + partTwo;
         ejbqlString = ejbqlString + "\")";
-        ejbqlString = ejbqlString + " = emp.firstName";
+        ejbqlString = ejbqlString + " = e.firstName";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Reverse Concat test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Reverse Concat test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleReverseEqualsTest() {
@@ -1267,13 +1267,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + "\"" + expectedResult.getFirstName() + "\"";
-        ejbqlString = ejbqlString + " = emp.firstName";
+        ejbqlString = ejbqlString + " = e.firstName";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Reverse Equals test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Reverse Equals test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleReverseLengthTest() {
@@ -1282,13 +1282,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Employee expectedResult = (Employee)getServerSession().readAllObjects(Employee.class).elementAt(0);
 
         clearCache();
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + expectedResult.getFirstName().length();
-        ejbqlString = ejbqlString + " = LENGTH(emp.firstName)";
+        ejbqlString = ejbqlString + " = LENGTH(e.firstName)";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Reverse Length test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Reverse Length test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1314,12 +1314,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Vector expectedResult = (Vector)getServerSession().executeQuery(raq, parameters);
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "?1 = emp.firstName ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "?1 = e.firstName ";
 
         List result = em.createQuery(ejbqlString).setParameter(1, parameters.get(0)).getResultList();
 
-        Assert.assertTrue("Simple Reverse Parameter test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Reverse Parameter test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleReverseSqrtTest() {
@@ -1342,14 +1342,14 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + salarySquareRoot;
-        ejbqlString = ejbqlString + " = SQRT(emp.salary)";
+        ejbqlString = ejbqlString + " = SQRT(e.salary)";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
 
-        Assert.assertTrue("Simple Reverse Square Root test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Reverse Square Root test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1364,13 +1364,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         String ejbqlString;
 
         firstNamePart = expectedResult.getFirstName().substring(0, 2);
-        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
         ejbqlString = ejbqlString + "\"" + firstNamePart + "\"";
-        ejbqlString = ejbqlString + " = SUBSTRING(emp.firstName, 1, 2)";
+        ejbqlString = ejbqlString + " = SUBSTRING(e.firstName, 1, 2)";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Reverse SubString test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Reverse SubString test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1395,13 +1395,13 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "SQRT(emp.salary) = ";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "SQRT(e.salary) = ";
         ejbqlString = ejbqlString + salarySquareRoot;
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Square Root test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Square Root test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1413,12 +1413,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         String firstNamePart = expectedResult.getFirstName().substring(0, 2);
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "SUBSTRING(emp.firstName, 1, 2) = \""; //changed from 0, 2 to 1, 2(ZYP)
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "SUBSTRING(e.firstName, 1, 2) = \""; //changed from 0, 2 to 1, 2(ZYP)
         ejbqlString = ejbqlString + firstNamePart + "\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
-        Assert.assertTrue("Simple SubString test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple SubString test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleNullTest() {
@@ -1445,7 +1445,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName IS NULL";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName IS NULL";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
@@ -1453,7 +1453,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         uow.deleteObject(nullEmployee);
         uow.commit();
 
-        Assert.assertTrue("Simple Null test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Null test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1480,14 +1480,14 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName IS NOT NULL";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName IS NOT NULL";
         List result = em.createQuery(ejbqlString).getResultList();
 
         uow = clientSession.acquireUnitOfWork();
         uow.deleteObject(nullEmployee);
         uow.commit();
 
-        Assert.assertTrue("Simple Not Null test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Not Null test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void distinctTest() {
@@ -1505,10 +1505,10 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT DISTINCT OBJECT(emp) FROM Employee emp WHERE emp.lastName = \'Smith\'";
+        String ejbqlString = "SELECT DISTINCT OBJECT(e) FROM Employee e WHERE e.lastName = \'Smith\'";
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Distinct test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Distinct test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void multipleExecutionOfNamedQueryTest() {
@@ -1546,7 +1546,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         ReadObjectQuery readObjectQuery = new ReadObjectQuery();
 
         readObjectQuery.setReferenceClass(Employee.class);
-        readObjectQuery.setEJBQLString("SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = ?1");
+        readObjectQuery.setEJBQLString("SELECT OBJECT(e) FROM Employee e WHERE e.id = ?1");
         readObjectQuery.conformResultsInUnitOfWork();
         readObjectQuery.addArgument("1", Integer.class);
 
@@ -1565,7 +1565,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         Employee result = (Employee)unitOfWork.executeQuery(readObjectQuery, testV);
 
-        Assert.assertTrue("Conform Results In Unit of Work using ServerSession failed", comparer.compareObjects(result, newEmployee));
+        assertTrue("Conform Results In Unit of Work using ServerSession failed", comparer.compareObjects(result, newEmployee));
 
         serverSession.logout();
     }
@@ -1573,7 +1573,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
     public void simpleModTest() {
         EntityManager em = createEntityManager();
 
-        //Assert.assertFalse("Warning SQL/Sybase doesnot support MOD function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer() || (JUnitTestCase.getServerSession()).getPlatform().isSybase());
+        //assertFalse("Warning SQL/Sybase doesnot support MOD function", (JUnitTestCase.getServerSession()).getPlatform().isSQLServer() || (JUnitTestCase.getServerSession()).getPlatform().isSybase());
 
         ReadAllQuery raq = new ReadAllQuery();
 
@@ -1586,21 +1586,21 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE MOD(emp.salary, 2) > 0";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE MOD(e.salary, 2) > 0";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Mod test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Mod test failed", comparer.compareObjects(result, expectedResult));
 
         // Test MOD(fieldAccess, fieldAccess) glassfish issue 2771
 
         expectedResult = getServerSession().readAllObjects(Employee.class);
         clearCache();
 
-        ejbqlString = "SELECT emp FROM Employee emp WHERE MOD(emp.salary, emp.salary) = 0";
+        ejbqlString = "SELECT e FROM Employee e WHERE MOD(e.salary, e.salary) = 0";
         result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Mod test(2) failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleIsEmptyTest() {
@@ -1617,11 +1617,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.phoneNumbers IS EMPTY";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.phoneNumbers IS EMPTY";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Is empty test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Is empty test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleIsNotEmptyTest() {
@@ -1638,11 +1638,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.phoneNumbers IS NOT EMPTY";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.phoneNumbers IS NOT EMPTY";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple is not empty test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple is not empty test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1663,12 +1663,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             }
         }
 
-        String ejbqlString = "SELECT OBJECT(address) FROM Address address WHERE ";
-        ejbqlString = ejbqlString + "address.street = '234 I''m Lost Lane'";
+        String ejbqlString = "SELECT OBJECT(a) FROM Address a WHERE ";
+        ejbqlString = ejbqlString + "a.street = '234 I''m Lost Lane'";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple apostrophe test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple apostrophe test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1689,17 +1689,17 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         uow.commit();
 
         //test the apostrophe
-        String ejbqlString = "SELECT OBJECT(address) FROM Address address WHERE ";
+        String ejbqlString = "SELECT OBJECT(a) FROM Address a WHERE ";
         // \ is always treated as escape in MySQL.  Therefore ESCAPE '\' is considered a syntax error
         if (getServerSession().getPlatform().isMySQL() || getServerSession().getPlatform().isPostgreSQL()) {
-            ejbqlString = ejbqlString + "address.street LIKE '234 Wandering $_Way' ESCAPE '$'";
+            ejbqlString = ejbqlString + "a.street LIKE '234 Wandering $_Way' ESCAPE '$'";
         } else {
-            ejbqlString = ejbqlString + "address.street LIKE '234 Wandering \\_Way' ESCAPE '\\'";
+            ejbqlString = ejbqlString + "a.street LIKE '234 Wandering \\_Way' ESCAPE '\\'";
         }
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Escape Underscore test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Escape Underscore test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void smallProjectMemberOfProjectsTest() {
@@ -1716,12 +1716,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //setup the EJBQL to do the same
-        String ejbqlString = "SELECT OBJECT(employee) FROM Employee employee, SmallProject sp WHERE ";
-        ejbqlString = ejbqlString + "sp MEMBER OF employee.projects";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e, SmallProject sp WHERE ";
+        ejbqlString = ejbqlString + "sp MEMBER OF e.projects";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple small Project Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple small Project Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1748,12 +1748,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
 
         //setup the EJBQL to do the same
-        String ejbqlString = "SELECT OBJECT(employee) FROM Employee employee WHERE ";
-        ejbqlString = ejbqlString + "?1 NOT MEMBER OF employee.projects";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "?1 NOT MEMBER OF e.projects";
 
         List result = em.createQuery(ejbqlString).setParameter(1, smallProject).getResultList();
 
-        Assert.assertTrue("Simple small Project NOT Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple small Project NOT Member Of Projects test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1775,11 +1775,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //setup the EJBQL to do the same
-        String ejbqlString = "SELECT COUNT(DISTINCT phone.owner) FROM PhoneNumber phone";
+        String ejbqlString = "SELECT COUNT(DISTINCT p.owner) FROM PhoneNumber p";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Select Count One To One test failed", expectedResult.elementAt(0).equals(result.get(0)));
+        assertTrue("Simple Select Count One To One test failed", expectedResult.elementAt(0).equals(result.get(0)));
 
     }
 
@@ -1801,11 +1801,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         //setup the EJBQL to do the same
-        String ejbqlString = "SELECT DISTINCT employee.address FROM Employee employee WHERE employee.lastName LIKE '%Way%'";
+        String ejbqlString = "SELECT DISTINCT e.address FROM Employee e WHERE e.lastName LIKE '%Way%'";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple Select One To One test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple Select One To One test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1828,12 +1828,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         // Setup the EJBQL to do the same.
-        String ejbqlString = "Select Distinct Object(p) from Employee emp, IN(emp.phoneNumbers) p WHERE ";
+        String ejbqlString = "Select Distinct Object(p) from Employee e, IN(e.phoneNumbers) p WHERE ";
         ejbqlString = ejbqlString + "p.number IS NOT NULL ORDER BY p.number, p.areaCode";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple select Phonenumber Declared In IN Clause test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple select Phonenumber Declared In IN Clause test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1872,7 +1872,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("Simple select Phonenumber Declared In IN Clause test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple select Phonenumber Declared In IN Clause test failed", comparer.compareObjects(result, expectedResult));
 
     }*/
 
@@ -1903,7 +1903,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         clearCache();
 
         // Setup the EJBQL to do the same.
-        String ejbqlString = "Select Distinct Object(emp) from Employee emp, IN(emp.phoneNumbers) p WHERE ";
+        String ejbqlString = "Select Distinct Object(e) from Employee e, IN(e.phoneNumbers) p WHERE ";
         ejbqlString = ejbqlString + "p.number = ALL (Select MIN(pp.number) FROM PhoneNumber pp)";
 
         Query jpqlQuery = em.createQuery(ejbqlString);
@@ -1914,7 +1914,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         }
         List result = jpqlQuery.getResultList();
 
-        Assert.assertTrue("Simple select Phonenumber Declared In IN Clause test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple select Phonenumber Declared In IN Clause test failed", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -1940,7 +1940,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         uow.commit();
 
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp " + "WHERE ?1 MEMBER OF emp.phoneNumbers";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e " + "WHERE ?1 MEMBER OF e.phoneNumbers";
 
         Vector parameters = new Vector();
         parameters.add(phone);
@@ -1951,7 +1951,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         uow.deleteObject(phone);
         uow.commit();
 
-        Assert.assertTrue("Select simple member of with parameter test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Select simple member of with parameter test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void selectSimpleNotMemberOfWithParameterTest() {
@@ -1993,7 +1993,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         }
 
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp " + "WHERE ?1 NOT MEMBER OF emp.phoneNumbers";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e " + "WHERE ?1 NOT MEMBER OF e.phoneNumbers";
 
         Vector parameters = new Vector();
         parameters.add(phone);
@@ -2021,7 +2021,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         String all = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL";
         List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();
-        Assert.assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
+        assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
         PhoneNumber phone = null;
         for (Project project : allProjectsWithTeamLeader) {
             if (project.getTeamLeader().getPhoneNumbers().size() > 0) {
@@ -2029,19 +2029,19 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
                 break;
             }
         }
-        Assert.assertTrue("Not a single teamLeader has a phone!", phone != null);
+        assertTrue("Not a single teamLeader has a phone!", phone != null);
 
         String ejbqlString1 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 MEMBER OF p.teamLeader.phoneNumbers";
         List result1 = em.createQuery(ejbqlString1).setParameter("1", phone).getResultList();
-        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        assertTrue("MEMBER OF result is empty", !result1.isEmpty());
 
         String ejbqlString2 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 NOT MEMBER OF p.teamLeader.phoneNumbers";
         List result2 = em.createQuery(ejbqlString2).setParameter("1", phone).getResultList();
-        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
 
         List union = new ArrayList(result1);
         union.addAll(result2);
-        Assert.assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
+        assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
 
         for (int i=0; i < result2.size(); i++) {
             if (result1.contains(result2.get(i))) {
@@ -2056,15 +2056,15 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Collection allEmps = getServerSession().readAllObjects(Employee.class);
         String ejbqlString1 = "SELECT e FROM Employee e WHERE 'Clean the kitchen.' MEMBER OF e.responsibilities";
         List result1 = em.createQuery(ejbqlString1).getResultList();
-        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        assertTrue("MEMBER OF result is empty", !result1.isEmpty());
 
         String ejbqlString2 = "SELECT e FROM Employee e WHERE 'Clean the kitchen.' NOT MEMBER OF e.responsibilities";
         List result2 = em.createQuery(ejbqlString2).getResultList();
-        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
 
         List union = new ArrayList(result1);
         union.addAll(result2);
-        Assert.assertTrue("Union of results of MEMBER OF and NOT MEMBER OF not equal to all employees", comparer.compareObjects(union, allEmps));
+        assertTrue("Union of results of MEMBER OF and NOT MEMBER OF not equal to all employees", comparer.compareObjects(union, allEmps));
 
         for (int i=0; i < result2.size(); i++) {
             if (result1.contains(result2.get(i))) {
@@ -2078,7 +2078,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         String all = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL";
         List<Project> allProjectsWithTeamLeader = em.createQuery(all).getResultList();
-        Assert.assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
+        assertTrue("No projects with team leaders.", !allProjectsWithTeamLeader.isEmpty());
         String responsibility = null;
         for (Project project : allProjectsWithTeamLeader) {
             if (project.getTeamLeader().getResponsibilities().size() > 0) {
@@ -2086,19 +2086,19 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
                 break;
             }
         }
-        Assert.assertTrue("Not a single teamLeader has any responsibilities!", responsibility != null);
+        assertTrue("Not a single teamLeader has any responsibilities!", responsibility != null);
 
         String ejbqlString1 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 MEMBER OF p.teamLeader.responsibilities";
         List result1 = em.createQuery(ejbqlString1).setParameter("1", responsibility).getResultList();
-        Assert.assertTrue("MEMBER OF result is empty", !result1.isEmpty());
+        assertTrue("MEMBER OF result is empty", !result1.isEmpty());
 
         String ejbqlString2 = "SELECT p FROM Project p WHERE p.teamLeader IS NOT NULL AND ?1 NOT MEMBER OF p.teamLeader.responsibilities";
         List result2 = em.createQuery(ejbqlString2).setParameter("1", responsibility).getResultList();
-        Assert.assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
+        assertTrue("NOT MEMBER OF result is empty", !result2.isEmpty());
 
         List union = new ArrayList(result1);
         union.addAll(result2);
-        Assert.assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
+        assertTrue("Union of results of MEMBER OF and NON MEMBER OF not equal to all projects with team leaders", comparer.compareObjects(union, allProjectsWithTeamLeader));
 
         for (int i=0; i < result2.size(); i++) {
             if (result1.contains(result2.get(i))) {
@@ -2125,8 +2125,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
             exception = e;
         }
 
-        Assert.assertNull("An exception was caught: " + exception, exception);
-        Assert.assertTrue("The query did not return the same employee.", emp1.getId() == emp2.getId());
+        assertNull("An exception was caught: " + exception, exception);
+        assertTrue("The query did not return the same employee.", emp1.getId() == emp2.getId());
     }
 
     public void selectSimpleBetweenWithParameterTest() {
@@ -2148,12 +2148,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.id BETWEEN ?1 AND ?2";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.id BETWEEN ?1 AND ?2";
 
         List result = em.createQuery(ejbqlString).setParameter(1, empId1).setParameter(2, emp2.getId()).getResultList();
 
-        Assert.assertTrue("Simple select between with parameter test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple select between with parameter test failed", comparer.compareObjects(result, expectedResult));
     }
 
     public void selectSimpleInWithParameterTest() {
@@ -2179,12 +2179,12 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.id IN (?1, ?2)";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.id IN (?1, ?2)";
 
         List result = em.createQuery(ejbqlString).setParameter(1, empId1).setParameter(2, emp2.getId()).getResultList();
 
-        Assert.assertTrue("Simple select between with parameter test failed", comparer.compareObjects(result, expectedResult));
+        assertTrue("Simple select between with parameter test failed", comparer.compareObjects(result, expectedResult));
     }
 
     //Test case for ABS function in EJBQL
@@ -2194,8 +2194,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         String ejbqlString;
 
-        ejbqlString = "SELECT emp FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "emp.status =  org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus.FULL_TIME";
+        ejbqlString = "SELECT e FROM Employee e WHERE ";
+        ejbqlString = ejbqlString + "e.status =  org.eclipse.persistence.testing.models.jpa.advanced.Employee.EmployeeStatus.FULL_TIME";
         List result = em.createQuery(ejbqlString).getResultList();
         result.size();
     }
@@ -2207,11 +2207,11 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         clearCache();
 
-        String ejbqlString = "SELECT OBJECT(proj) FROM Project proj WHERE TYPE(proj) = LargeProject";
+        String ejbqlString = "SELECT OBJECT(p) FROM Project p WHERE TYPE(p) = LargeProject";
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
+        assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
 
     }
 
@@ -2233,7 +2233,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
+        assertTrue("SimpleTypeTest", comparer.compareObjects(result, expectedResult));
     }
 
     public void simpleLiteralDateTest(){
@@ -2249,7 +2249,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("simpleLiteralDateTest", comparer.compareObjects(result, expectedResult));
+        assertTrue("simpleLiteralDateTest", comparer.compareObjects(result, expectedResult));
     }
 
     private void simpleLiteralLongTest(String numericalLiteral) {
@@ -2300,7 +2300,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        Assert.assertTrue("simpleSingleArgSubstringTest", comparer.compareObjects(result, expectedResult));
+        assertTrue("simpleSingleArgSubstringTest", comparer.compareObjects(result, expectedResult));
     }
 
     // bug 318195
@@ -2361,7 +2361,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
     public void selectFromClauseWithJoin(){
         EntityManager em = createEntityManager();
-        Query query = em.createQuery("SELECT Object(c) from Employee c JOIN FETCH c.address ");
+        Query query = em.createQuery("SELECT Object(e) from Employee e JOIN FETCH e.address ");
         query.getResultList();
     }
 

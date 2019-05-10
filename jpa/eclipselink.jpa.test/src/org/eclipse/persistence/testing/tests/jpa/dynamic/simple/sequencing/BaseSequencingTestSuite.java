@@ -37,12 +37,11 @@ import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
 import org.eclipse.persistence.sessions.server.Server;
 //JUnit4 imports
-import org.junit.Assert;
 import org.junit.Test;
 
 //domain-specific (testing) imports
 
-public abstract class BaseSequencingTestSuite  {
+public abstract class BaseSequencingTestSuite {
 
     static final String TABLE_NAME = "SIMPLE_TABLE_SEQ";
     public static final String SEQ_TABLE_NAME = "TEST_SEQ";
@@ -107,7 +106,7 @@ public abstract class BaseSequencingTestSuite  {
     public DynamicEntity createSimpleInstance(int expectedId) {
         EntityManager em = emf.createEntityManager();
         DynamicType simpleEntityType = helper.getType(ENTITY_TYPE);
-        Assert.assertNotNull(simpleEntityType);
+        assertNotNull(simpleEntityType);
         DynamicEntity simpleInstance = simpleEntityType.newDynamicEntity();
         simpleInstance.set("value1", TABLE_NAME);
         em.getTransaction().begin();

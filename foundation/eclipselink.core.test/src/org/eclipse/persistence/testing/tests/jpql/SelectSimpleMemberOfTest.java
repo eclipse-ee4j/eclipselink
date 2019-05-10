@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +21,8 @@ public class SelectSimpleMemberOfTest extends JPQLTestCase {
 
     public void setup() {
         String ejbqlString;
-        ejbqlString = "SELECT OBJECT(proj) FROM Employee emp, Project proj ";
-        ejbqlString = ejbqlString + "WHERE proj.teamLeader NOT MEMBER OF emp.manager.managedEmployees";
+        ejbqlString = "SELECT OBJECT(p) FROM Employee e, Project p ";
+        ejbqlString = ejbqlString + "WHERE p.teamLeader NOT MEMBER OF e.manager.managedEmployees";
         setEjbqlString(ejbqlString);
 
         super.setup();

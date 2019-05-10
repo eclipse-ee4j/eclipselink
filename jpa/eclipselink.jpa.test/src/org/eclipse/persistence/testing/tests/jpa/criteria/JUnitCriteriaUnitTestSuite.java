@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,13 +21,13 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 import javax.persistence.Tuple;
+import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -173,7 +174,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         try{
             clearCache();
 
-            //SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname
+            //SELECT OBJECT(e) FROM Employee e WHERE e.firstName = :firstname
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root from = cq.from(Employee.class);
@@ -186,11 +187,11 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
 
             Iterator i = initialList.iterator();
             while (i.hasNext()){
-                assertTrue("Employee with incorrect name returned on first query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
+                assertEquals("Employee with incorrect name returned on first query.", "Nancy", ((Employee)i.next()).getFirstName());
             }
             i = secondList.iterator();
             while (i.hasNext()){
-                assertTrue("Employee with incorrect name returned on second query.", ((Employee)i.next()).getFirstName().equals("Nancy"));
+                assertEquals("Employee with incorrect name returned on second query.", "Nancy", ((Employee)i.next()).getFirstName());
             }
         } finally {
             rollbackTransaction(em);
@@ -224,7 +225,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         List result = em.createQuery(cq).getResultList();
 
 
-        assertTrue("Outer join was not properly added to the query", initialSize + 1 == result.size());
+        assertEquals("Outer join was not properly added to the query", initialSize + 1, result.size());
         rollbackTransaction(em);
     }
 
@@ -239,7 +240,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             } catch (Exception exception){
                 fail("Exception caught while executing polymorphic query.  This may mean that outer join is not working correctly on your database platfrom: " + exception.toString());
             }
-            assertTrue("Incorrect number of projects returned.", resultList.size() == 15);
+            assertEquals("Incorrect number of projects returned.", 15, resultList.size());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -275,7 +276,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
            cq.where(qb.equal(phone.get("areaCode"), "613"));
            List result = em.createQuery(cq).getResultList();
 
-           Assert.assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));
+           assertTrue("SimpleSelectPhoneNumberAreaCode test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -301,16 +302,12 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
            sq.select(sqo);
            cquery.where(qbuilder.not(qbuilder.exists(sq)));
            List result = em.createQuery(cquery).getResultList();
-           Assert.assertTrue("testExistWithJoin test failed !", comparer.compareObjects(result,expected));
+           assertTrue("testExistWithJoin test failed !", comparer.compareObjects(result,expected));
       } finally {
           rollbackTransaction(em);
           closeEntityManager(em);
       }
-
-
-
   }
-
 
     public void testSelectPhoneNumberAreaCodeWithEmployee()
     {
@@ -351,7 +348,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             cq.where(qb.and(qb.equal(joinedPhone.get("areaCode"), "613")), qb.equal(joinedPhone.get("owner").get("firstName"), firstName));
             List result = em.createQuery(cq).getResultList();
 
-            Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+            assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -378,7 +375,6 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 phones.get("owner").get("id").equal(employeeBuilder.get("id")).and(
                     employeeBuilder.get("firstName").equal(firstName)));
 
-
             ReportQuery rq = new ReportQuery();
             rq.addAttribute("number", new ExpressionBuilder().anyOf("phoneNumbers").get("number"));
             rq.setSelectionCriteria(whereClause);
@@ -400,7 +396,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             cq.where(qb.and( firstAnd, qb.equal(root.get("firstName"), firstName)));
             List result = em.createQuery(cq).getResultList();
 
-            Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+            assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -447,7 +443,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             cq.where( qb.and(firstNameEquality, areaCodeEquality) );
             List result = em.createQuery(cq).getResultList();
 
-            Assert.assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
+            assertTrue("SimpleSelectPhoneNumberAreaCodeWithEmployee test failed !", comparer.compareObjects(result,expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -478,7 +474,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             exception = e;
         }
 
-        Assert.assertNull("Exception was caught.", exception);
+        assertNull("Exception was caught.", exception);
     }
 
     /**
@@ -531,8 +527,8 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 logThrowable(exception);
                 exception = e;
             }
-            Assert.assertNull("Exception was caught: " + exception, exception);
-            Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+            assertNull("Exception was caught: " + exception, exception);
+            assertEquals("Incorrect number of results returned", 1, resultList.size());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -566,8 +562,8 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 logThrowable(exception);
                 exception = e;
             }
-            Assert.assertNull("Exception was caught: " + exception, exception);
-            Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+            assertNull("Exception was caught: " + exception, exception);
+            assertEquals("Incorrect number of results returned", 1, resultList.size());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -598,8 +594,8 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
                 exception = e;
                 logThrowable(exception);
             }
-            Assert.assertNull("Exception was caught.", exception);
-            Assert.assertTrue("Incorrect number of results returned.  Expected 1, returned "+resultList.size(), resultList.size()==1);
+            assertNull("Exception was caught.", exception);
+            assertEquals("Incorrect number of results returned", 1, resultList.size());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
@@ -634,7 +630,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
             exception = e;
         }
 
-        Assert.assertNull("Exception was caught.", exception);
+        assertNull("Exception was caught.", exception);
     }
 
     /*
@@ -719,7 +715,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         emp.setLastName(null);
         em.flush();
         CriteriaBuilder qb = em.getCriteriaBuilder();
-        CriteriaQuery<?> cq = qb.createQuery(Employee.class);
+        CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> from = cq.from(Employee.class);
         EntityType<Employee> Emp_ = em.getMetamodel().entity(Employee.class);
 
@@ -728,14 +724,14 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         criteriaList.add(qb.isNull(from.get(Emp_.getSingularAttribute("firstName", String.class))));
         Predicate criteria = qb.and(criteriaList.toArray(new Predicate[0]));
         cq.where(criteria);
-        Query query = em.createQuery(cq);
-        List results = query.getResultList();
-        assertTrue(results.size() == 1);
-        emp = (Employee)results.get(0);
-        assertTrue(emp.getFirstName() == null);
-        assertTrue(emp.getLastName() != null);
+        TypedQuery<Employee> query = em.createQuery(cq);
+        List<Employee> results = query.getResultList();
+        assertEquals(1, results.size());
+        emp = results.get(0);
+        assertNull(emp.getFirstName());
+        assertNotNull(emp.getLastName());
         } finally {
-        rollbackTransaction(em);
+            rollbackTransaction(em);
         }
     }
 
@@ -759,7 +755,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         cq.where(criteria);
         Query query = em.createQuery(cq);
         List results = query.getResultList();
-        assertTrue(results.size() == 2);
+        assertEquals(2, results.size());
         rollbackTransaction(em);
     }
 }

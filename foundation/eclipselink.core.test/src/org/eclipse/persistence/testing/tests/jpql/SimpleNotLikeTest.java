@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +38,7 @@ public class SimpleNotLikeTest extends org.eclipse.persistence.testing.tests.jpq
         setOriginalOject(getSession().executeQuery(raq));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName NOT LIKE \"" + partialFirstName + "\"";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e WHERE e.firstName NOT LIKE \"" + partialFirstName + "\"";
 
         setEjbqlString(ejbqlString);
 

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +17,6 @@ package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.List;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -133,7 +133,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(project.getId()));
 
         Project tlProject = (Project)getServerSession().executeQuery(tlQuery);
-        Assert.assertTrue("SuperClass Inheritance Test Failed", comparer.compareObjects(project, tlProject));
+        assertTrue("SuperClass Inheritance Test Failed", comparer.compareObjects(project, tlProject));
     }
 
     public void testStraightReadSubClass() {
@@ -145,7 +145,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.setSelectionCriteria(tlQuery.getExpressionBuilder().get("id").equal(project.getId()));
 
         SmallProject tlProject = (SmallProject)getServerSession().executeQuery(tlQuery);
-        Assert.assertTrue("Subclass Inheritance Test Failed", comparer.compareObjects(project, tlProject));
+        assertTrue("Subclass Inheritance Test Failed", comparer.compareObjects(project, tlProject));
     }
 
     public void testJoinSuperClass() {
@@ -158,7 +158,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().anyOf("projects"));
 
         Employee tlEmp = (Employee)getServerSession().executeQuery(tlQuery);
-        Assert.assertTrue("Join superclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
+        assertTrue("Join superclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
     }
 
     public void testJoinSubClass() {
@@ -171,7 +171,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().get("bestFriend"));
 
         Engineer tlEmp = (Engineer)getServerSession().executeQuery(tlQuery);
-        Assert.assertTrue("Join Subclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
+        assertTrue("Join Subclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
     }
 
     public void testJoinFetchSuperClass() {
@@ -184,7 +184,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().anyOf("projects"));
 
         Employee tlEmp = (Employee)getServerSession().executeQuery(tlQuery);
-        Assert.assertTrue("Join superclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
+        assertTrue("Join superclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
     }
 
     public void testJoinFetchSubClass() {
@@ -197,7 +197,7 @@ public class JUnitJPQLInheritanceTestSuite extends JUnitTestCase {
         tlQuery.addJoinedAttribute(tlQuery.getExpressionBuilder().get("bestFriend"));
 
         Engineer tlEmp = (Engineer)getServerSession().executeQuery(tlQuery);
-        Assert.assertTrue("Join Subclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
+        assertTrue("Join Subclass Inheritance Test Failed", comparer.compareObjects(emp, tlEmp));
     }
 
     /**

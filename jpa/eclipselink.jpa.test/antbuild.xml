@@ -254,7 +254,7 @@
             <pathelement path="${jpatest.2.common.plugins.dir}/${jaxb-osgi.jar}"/>
             <pathelement path="${jdbc.driver.jar}"/>
         </path>
-        <path id="jpa.run.common.path" cache="true">
+        <path id="jpa21.run.common.path" cache="true">
             <path refid="run.common.path"/>
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence21.jar}"/>
         </path>
@@ -272,20 +272,22 @@
             <pathelement path="${jpatest.build.dir}/${eclipselink.validation.failed.model}.jar"/>
         </path>
 
-        <path id="jpa.run.classpath">
-            <path refid="jpa.run.common.path"/>
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+        <path id="jpa21.run.srg.classpath">
+            <path refid="jpa21.run.common.path"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${eclipselink.jpa21.model}.jar"/>
             <path refid="srg.model.classpath"/>
         </path>
-        <path id="jpa22.run.classpath">
+        <path id="jpa22.run.srg.classpath">
             <path refid="jpa22.run.common.path"/>
             <pathelement path="${jpatest.build.dir}/${jpa22.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${eclipselink.jpa22.model}.jar"/>
             <path refid="srg.model.classpath"/>
        </path>
 
        <!-- LRG -->
         <path id="lrg.base">
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <path refid="srg.model.classpath"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.advanced.field.access.model}.jar"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.cascade.deletes}.jar"/>
@@ -310,17 +312,17 @@
             <pathelement path="${jpatest.2.common.plugins.dir}/${json-impl.jar}"/>
         </path>
         <path id="lrg.path">
-            <path refid="jpa.run.common.path"/>
+            <path refid="jpa21.run.common.path"/>
             <path refid="lrg.base"/>
         </path>
         <path id="remote.classpath">
-            <path refid="jpa.run.common.path"/>
+            <path refid="jpa21.run.common.path"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.advanced.field.access.model}.jar"/>
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.remote}.jar"/>
         </path>
         <path id="lrg22.base">
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.annotation.model}.jar"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.xml.only.model}.jar"/>
             <path refid="jpa22.run.common.path" />
@@ -372,7 +374,7 @@
         </path>
 
         <path id="run.bean.validation.classpath.common">
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <path refid="jpa22.run.common.path" />
             <pathelement path="${extensions.depend.dir}/${validation-impl.jar}"/>
             <pathelement path="${extensions.depend.dir}/${jboss-logging.jar}"/>
@@ -388,7 +390,12 @@
             <path refid="run.bean.validation.classpath.common"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.beanvalidation.dynamic.model}.jar"/>
         </path>
-        <path id="run.jpa22.classpath">
+        <path id="run.jpa21.lrg.classpath">
+            <path refid="jpa21.run.common.path"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${eclipselink.jpa21.model}.jar"/>
+        </path>
+        <path id="run.jpa22.lrg.classpath">
             <path refid="jpa22.run.common.path"/>
             <pathelement path="${jpatest.build.dir}/${jpa22.test.jar}"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.jpa22.model}.jar"/>
@@ -398,7 +405,7 @@
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${jpatest.basedir}/${jpatest.framework}.jar"/>
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.xml.extended.model}.jar"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.xml.extended.composite.advanced.model}.jar"/>
             <pathelement path="${jpatest.build.dir}/${eclipselink.xml.extended.composite.advanced.model.member_1}.jar"/>
@@ -425,14 +432,14 @@
             <path refid="compile.path"/>
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${jpatest.basedir}/${jpatest.framework}.jar"/>
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <pathelement path="${jpatest.build.dir}/${jpa.performance}.jar"/>
             <pathelement path="${jpatest.build.dir}/${jpa.performance2}.jar"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${json-api.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${json-impl.jar}"/>
         </path>
          <path id="run.oracle.classpath">
-            <path refid="jpa.run.common.path"/>
+            <path refid="jpa21.run.common.path"/>
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${jpatest.2.oracletest.dir}/${classes.dir}"/>
             <pathelement path="${jpatest.2.oracle.dir}/${classes.dir}"/>
@@ -450,7 +457,7 @@
             <pathelement path="${oracle.extensions.depend.dir}/${oracle.orai18n-mapping.jar}"/>
         </path>
          <path id="run.oracle.spatial.classpath">
-            <path refid="jpa.run.common.path"/>
+            <path refid="jpa21.run.common.path"/>
             <!-- Currently the Oracle extensions are included to allow running Oracle extensions tests from here. -->
             <pathelement path="${jpatest.2.oracle.spatial.test.dir}/${classes.dir}"/>
             <pathelement path="${jpatest.2.oracletest.dir}/${classes.dir}"/>
@@ -467,7 +474,7 @@
             <fileset dir="${jpatest.2.common.plugins.dir}" includes="org.eclipse.persistence.oracle.nosql_*.jar"/>
             <pathelement path="${oracle.nosql.jar.dir}/${oracle.nosql.jar}"/>
             <pathelement path="${jpatest.basedir}/${jpatest.framework}.jar"/>
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <pathelement path="${jpatest.2.oracle.nosqltest.dir}/eclipselink-oracle-nosql-test.jar"/>
             <pathelement path="${jpatest.2.oracle.nosqltest.dir}/eclipselink-oracle-nosql-model.jar"/>
         </path>
@@ -1242,7 +1249,7 @@
     package-xml-extended-composite-advanced, package-xml-extended-composite-advanced-member_1, package-xml-extended-composite-advanced-member_2,
     package-xml-extended-composite-advanced-member_3, package-extensibility, package-jpa-remote, package-identity-model,
     package-xml-mapping-metadata-complete" description="build EclipseLink jar">
-       <jar jarfile="${jpatest.build.dir}/${jpa.test.jar}">
+       <jar jarfile="${jpatest.build.dir}/${jpa21.test.jar}">
             <fileset dir="${jpatest.classes.dir}"
                      includes="org/eclipse/persistence/testing/tests/**/*.class"
                      excludes="org/eclipse/persistence/testing/framework/**/*.class,
@@ -1955,7 +1962,7 @@
 
     <!-- Runs LRG (AllCMP3TestRunModel) with agent. -->
     <target name="test-lrg" depends="clean-test, init-testing">
-        <test classpath="run.jpa.classpath"
+        <test classpath="run.jpa21.lrg.classpath"
             include="org.eclipse.persistence.testing.tests.jpa21.advanced.JPA21TestSuite"
             ormtesting="eclipselink"/>
         <test classpath="run.weaver.classpath"
@@ -1965,7 +1972,7 @@
     </target>
 
     <target name="test-lrg22" depends="clean-test, init-testing, test-remote-jpa, run-bean-validation-tests, oracle-test">
-        <!-- not using jpa22.run.classpath -->
+        <!-- not using jpa22.run.srg.classpath -->
         <test classpath="lrg22.1.path"
             include="org.eclipse.persistence.testing.tests.jpa.AllCMP3TestRunModel"/>
         <test classpath="lrg22.2.path"
@@ -1977,7 +1984,7 @@
         <test classpath="run.extended.classpath"
             include="org.eclipse.persistence.testing.tests.jpa.xml.EntityMappingsJUnitTestSuite"
             ormtesting="eclipselink"/>
-        <test classpath="run.jpa22.classpath"
+        <test classpath="run.jpa22.lrg.classpath"
             include="org.eclipse.persistence.testing.tests.jpa22.advanced.JPA22TestSuite"
             ormtesting="eclipselink"/>
         <test classpath="run.weaver.classpath"
@@ -2054,7 +2061,7 @@
             include="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
     </target>
     <target name="test-srg22" depends="clean-test, init-testing">
-        <test classpath="jpa22.run.classpath"
+        <test classpath="jpa22.run.srg.classpath"
             include="org.eclipse.persistence.testing.tests.jpa.advanced.EntityManagerJUnitTestSuite"/>
         <generate-report/>
     </target>
@@ -2108,7 +2115,7 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${jpatest.classes.dir}"/>
             <pathelement path="${jpatest.basedir}/${jpatest.framework}.jar"/>
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <pathelement path="${jpatest.build.dir}/woven-${eclipselink.xml.mapping.metadata.complete}.jar"/>
             <path refid="compile.path"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${json-api.jar}"/>
@@ -2123,7 +2130,7 @@
             <pathelement path="${jdbc.driver.jar}"/>
             <pathelement path="${jpatest.classes.dir}"/>
             <pathelement path="${jpatest.basedir}/${jpatest.framework}.jar"/>
-            <pathelement path="${jpatest.build.dir}/${jpa.test.jar}"/>
+            <pathelement path="${jpatest.build.dir}/${jpa21.test.jar}"/>
             <path refid="compile.path"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${json-api.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${json-impl.jar}"/>
@@ -2371,7 +2378,7 @@
         <run-weaver model="${eclipselink.ddl.generation.model}"/>
         <run-weaver model="${eclipselink.xml.only.model}"
                     persistenceinfo="${eclipselink.annotation.model}.jar"/>
-        <!--<run-weaver model="${eclipselink.jpa21.model}" classpath="run.jpa21.classpath"/>-->
+        <!--<run-weaver model="${eclipselink.jpa21.model}" classpath="run.jpa21.lrg.classpath"/>-->
         <run-weaver model="${eclipselink.xml.extended.model}"
                     classpath="run.extended.classpath"/>
         <run-weaver model="${eclipselink.xml.merge.model}"

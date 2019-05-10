@@ -130,15 +130,15 @@ import org.eclipse.persistence.sessions.Session;
 @NamedQueries({
 @NamedQuery(
     name="findAllEmployeesByFirstName",
-    query="SELECT OBJECT(employee) FROM Employee employee WHERE employee.firstName = :firstname"
+    query="SELECT OBJECT(e) FROM Employee e WHERE e.firstName = :firstname"
 ),
 @NamedQuery(
     name="constuctEmployees",
-    query="SELECT new org.eclipse.persistence.testing.models.jpa.advanced.Employee(employee.firstName, employee.lastName) FROM Employee employee"
+    query="SELECT new org.eclipse.persistence.testing.models.jpa.advanced.Employee(e.firstName, e.lastName) FROM Employee e"
 ),
 @NamedQuery(
     name="findEmployeeByPK",
-    query="SELECT OBJECT(employee) FROM Employee employee WHERE employee.id = :id"
+    query="SELECT OBJECT(e) FROM Employee e WHERE e.id = :id"
 ),
 @NamedQuery(
         name="findEmployeeByPostalCode",
@@ -193,7 +193,7 @@ import org.eclipse.persistence.sessions.Session;
 ),
 @NamedQuery(
     name="findAllEmployeesByIdAndFirstName",
-    query="Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName",
+    query="Select e from Employee e where e.id = :id and e.firstName = :firstName",
     hints={
                 @QueryHint(name=QueryHints.PESSIMISTIC_LOCK_TIMEOUT, value="15000")
     }
@@ -787,8 +787,8 @@ public class Employee implements Serializable, Cloneable {
     @Embedded
     @AttributeOverrides({
         @AttributeOverride(name="formerCompany", column=@Column(name="FORMER_COMPANY", nullable=false)),
-        @AttributeOverride(name="startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
-        @AttributeOverride(name="endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
+        @AttributeOverride(name="period.startDate", column=@Column(name="FORMER_START_DATE", nullable=false)),
+        @AttributeOverride(name="period.endDate", column=@Column(name="FORMER_END_DATE", nullable=true))
     })
     @AssociationOverride(name="companyAddress", joinColumns=@JoinColumn(name="FORMER_COMPANY_ADDRESS_ID", nullable=true))
     @Property(name="attributeName", value="formerEmployment")

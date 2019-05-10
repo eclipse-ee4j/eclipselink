@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,7 +94,7 @@ public class QueryTestSuite extends JUnitTestCase {
         }
 
 
-        TypedQuery<Employee> typedQuery = em.createQuery("SELECT employee FROM Employee employee WHERE employee.firstName = ?1 OR employee.lastName = ?2", Employee.class)/*.setParameter(1, "Bob").setParameter(2, "Way")*/;
+        TypedQuery<Employee> typedQuery = em.createQuery("SELECT e FROM Employee e WHERE e.firstName = ?1 OR e.lastName = ?2", Employee.class)/*.setParameter(1, "Bob").setParameter(2, "Way")*/;
         i = 0;
         ArrayList<Parameter> params = new ArrayList<Parameter>(typedQuery.getParameters());
         for (Parameter parameter: params){

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -164,9 +164,6 @@ import org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
 import org.eclipse.persistence.exceptions.QueryException;
-import org.junit.Assert;
-import static org.junit.Assert.assertTrue;
-
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -845,12 +842,12 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Loot loot = new Loot();
             Bag bag = new Bag();
             Quantity quantity = new Quantity();
-            quantity.value = 11;
-            bag.quantity = quantity;
+            quantity.setValue(11);
+            bag.setQuantity(quantity);
             Cost cost = new Cost();
-            cost.value = 5.99;
-            bag.cost = cost;
-            loot.bag = bag;
+            cost.setValue(5.99);
+            bag.setCost(cost);
+            loot.setBag(bag);
             em.persist(loot);
             commitTransaction(em);
         } catch (RuntimeException e) {
@@ -3590,9 +3587,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                         }
                     }
                 }
-                Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
+                assertEquals("Project objects received are not as many as expected", 2000, count);
             } catch (ArrayIndexOutOfBoundsException x) {
-                Assert.fail(Helper.printStackTraceToString(x));
+                fail(Helper.printStackTraceToString(x));
             }
         } finally {
             // Clean up
@@ -3655,9 +3652,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                         }
                     }
                 }
-                Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
+                assertEquals("Project objects received are not as many as expected", 2000, count);
             } catch (ArrayIndexOutOfBoundsException x) {
-                Assert.fail(Helper.printStackTraceToString(x));
+                fail(Helper.printStackTraceToString(x));
             }
         } finally {
             // Clean up
@@ -3718,9 +3715,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
                         count++;
                     }
                 }
-                Assert.assertEquals("Project objects received are not as many as expected", 2000, count);
+                assertEquals("Project objects received are not as many as expected", 2000, count);
             } catch (ArrayIndexOutOfBoundsException x) {
-                Assert.fail(Helper.printStackTraceToString(x));
+                fail(Helper.printStackTraceToString(x));
             }
         } finally {
             // Clean up

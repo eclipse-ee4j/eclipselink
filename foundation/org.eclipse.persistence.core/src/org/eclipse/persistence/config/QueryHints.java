@@ -307,8 +307,8 @@ public class QueryHints {
     /**
      * "eclipselink.batch.size"
      * <p>Configures the batch size for batch fetching using the IN batch type.
-     * Valid values are integer values {@literal >} 0.
-     * The default size is 256, or the cursor pageSize.
+     * Valid values are integer values {@literal >=} 0.
+     * The default size is 500, or the cursor pageSize.
      * @see #BATCH
      * @see #BATCH_TYPE
      * @see BatchFetchType

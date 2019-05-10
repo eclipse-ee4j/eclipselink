@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -150,7 +151,7 @@ public class JPQLSimpleTestSuite extends TestSuite {
         return new TestCase() {
             public void test() {
                 ReadAllQuery query = new ReadAllQuery(Employee.class);
-                query.setEJBQLString("Select Object(Emp) from Employee Emp");
+                query.setEJBQLString("Select Object(e) from Employee e");
                 List results = (List) getSession().executeQuery(query);
                 if (results.size() != 12) {
                     throwError("Incorrect number of employees:12->" + results.size());
@@ -161,7 +162,7 @@ public class JPQLSimpleTestSuite extends TestSuite {
                     throwError("Incorrect number of employees:12->" + results.size());
                 }
                 query = new ReadAllQuery(Employee.class);
-                query.setEJBQLString("Select Object(Emp) from Employee Emp");
+                query.setEJBQLString("Select Object(e) from Employee e");
                 query.setMaxRows(5);
                 results = (List) getSession().executeQuery(query);
                 if (results.size() != 5) {

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +34,7 @@ public class ModTest extends JPQLTestCase {
     }
 
     public static ModTest getSimpleModTest() {
-        String ejbql = "SELECT OBJECT(emp) FROM Employee emp WHERE MOD(emp.salary, 2) > 0";
+        String ejbql = "SELECT OBJECT(e) FROM Employee e WHERE MOD(e.salary, 2) > 0";
         ModTest test = getNewTestCaseNamed("Mod Test", ejbql, Employee.class);
 
         ExpressionBuilder employee = new ExpressionBuilder();
@@ -48,7 +49,7 @@ public class ModTest extends JPQLTestCase {
         ModTest test = getSimpleModTest();
 
         test.setName("Complex " + test.getName());
-        test.setEjbqlString(test.getEjbqlString() + " AND emp.firstName <> \"XCV\"");
+        test.setEjbqlString(test.getEjbqlString() + " AND e.firstName <> \"XCV\"");
 
         return test;
     }

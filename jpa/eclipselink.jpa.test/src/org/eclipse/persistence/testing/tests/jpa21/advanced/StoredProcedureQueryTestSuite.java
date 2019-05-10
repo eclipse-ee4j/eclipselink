@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -305,7 +306,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Build the named stored procedure query, execute and test.
                 StoredProcedureQuery query = em.createStoredProcedureQuery("Result_Set_And_Update_Address", Address.class, Employee.class);
 
-                assertTrue("Parameter list was not empty.", query.getParameters().size() == 0);
+                assertEquals("Parameter list was not empty.", 0, query.getParameters().size());
 
                 query.registerStoredProcedureParameter("new_p_code_v", String.class, ParameterMode.IN);
                 query.registerStoredProcedureParameter("old_p_code_v", String.class, ParameterMode.IN);
@@ -316,10 +317,10 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
                 boolean result = query.execute();
 
-                assertTrue("Parameter list size was incorrect, actual: " + query.getParameters().size() + ", expecting 3.", query.getParameters().size() == 3);
+                assertEquals("Parameter list size was incorrect", 3, query.getParameters().size());
 
                 Object parameterValue = query.getParameterValue("new_p_code_v");
-                assertTrue("The IN parameter value was not preserved, expected: " + postalCodeCorrection + ", actual: " + parameterValue, parameterValue.equals(postalCodeCorrection));
+                assertEquals("The IN parameter value was not preserved", postalCodeCorrection, parameterValue);
 
                 assertTrue("Result did not return true for a result set.", result);
 
@@ -333,11 +334,10 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertFalse("The query had more results.", query.hasMoreResults());
 
                 // Get the update count.
-                int updateCount = query.getUpdateCount();
-                assertTrue("Update count incorrect: " + updateCount, updateCount == 2);
+                assertEquals("Update count incorrect", 2, query.getUpdateCount());
 
                 // Update count should return -1 now.
-                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
+                assertEquals("Update count should be -1.", -1, query.getUpdateCount());
 
                 // Check output parameters by name.
                 Object outputParamValueFromName = query.getOutputParameterValue("employee_count_v");
@@ -346,9 +346,9 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // reason MySql returns a Long here. By position is ok, that is,
                 // it returns an Integer (as we registered)
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
+                    assertEquals("Incorrect value returned", new Long(numberOfEmployes), outputParamValueFromName);
                 } else if (outputParamValueFromName instanceof Integer) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
+                    assertEquals("Incorrect value returned", new Integer(numberOfEmployes), outputParamValueFromName);
                 }
 
                 // TODO: else, don't worry about it for now ...
@@ -378,7 +378,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Check output parameters by position.
                 Integer outputParamValueFromPosition = (Integer) query.getOutputParameterValue(3);
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
-                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                assertEquals("Incorrect value returned", new Integer(numberOfEmployes), outputParamValueFromPosition);
 
                 // Do some negative tests ...
                 try {
@@ -397,11 +397,11 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
                 // Just because we don't trust anyone ... :-)
                 Address a1 = em.find(Address.class, address1.getId());
-                assertTrue("The postal code was not updated for address 1.", a1.getPostalCode().equals(postalCodeCorrection));
+                assertEquals("The postal code was not updated for address 1.", postalCodeCorrection, a1.getPostalCode());
                 Address a2 = em.find(Address.class, address2.getId());
-                assertTrue("The postal code was not updated for address 2.", a2.getPostalCode().equals(postalCodeCorrection));
+                assertEquals("The postal code was not updated for address 2.", postalCodeCorrection, a2.getPostalCode());
                 Address a3 = em.find(Address.class, address3.getId());
-                assertTrue("The postal code was not updated for address 3.", a3.getPostalCode().equals(postalCodeCorrection));
+                assertEquals("The postal code was not updated for address 3.", postalCodeCorrection, a3.getPostalCode());
             } finally {
                 // The open statement/connection will be closed here.
                 closeEntityManagerAndTransaction(em);
@@ -488,14 +488,14 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
                 // Get the update count.
                 int updateCount = query.getUpdateCount();
-                assertTrue("Update count incorrect: " + updateCount, updateCount == 2);
+                assertEquals("Update count incorrect", 2, updateCount);
 
                 // Update count should return -1 now.
-                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
-                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
-                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
-                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
-                assertTrue("Update count should be -1.", query.getUpdateCount() == -1);
+                assertEquals("Update count should be -1.", -1, query.getUpdateCount());
+                assertEquals("Update count should be -1.", -1, query.getUpdateCount());
+                assertEquals("Update count should be -1.", -1, query.getUpdateCount());
+                assertEquals("Update count should be -1.", -1, query.getUpdateCount());
+                assertEquals("Update count should be -1.", -1, query.getUpdateCount());
 
                 // Check output parameters by name.
                 Object outputParamValueFromName = query.getOutputParameterValue("employee_count_v");
@@ -504,9 +504,9 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // reason MySql returns a Long here. By position is ok, that is,
                 // it returns an Integer (as we registered)
                 if (outputParamValueFromName instanceof Long) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(new Long(numberOfEmployes)));
+                    assertEquals("Incorrect value returned", new Long(numberOfEmployes), outputParamValueFromName);
                 } else if (outputParamValueFromName instanceof Integer) {
-                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromName, outputParamValueFromName.equals(numberOfEmployes));
+                    assertEquals("Incorrect value returned", new Integer(numberOfEmployes), outputParamValueFromName);
                 }
                 // TODO: else, don't worry about it for now ...
 
@@ -535,7 +535,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Check output parameters by position.
                 Integer outputParamValueFromPosition = (Integer) query.getOutputParameterValue(3);
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
-                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                assertEquals("Incorrect value returned", new Integer(numberOfEmployes), outputParamValueFromPosition);
 
                 // Do some negative tests ...
                 try {
@@ -554,11 +554,11 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
                 // Just because we don't trust anyone ... :-)
                 Address a1 = em.find(Address.class, address1.getId());
-                assertTrue("The postal code was not updated for address 1.", a1.getPostalCode().equals(postalCodeCorrection));
+                assertEquals("The postal code was not updated for address 1.", postalCodeCorrection, a1.getPostalCode());
                 Address a2 = em.find(Address.class, address2.getId());
-                assertTrue("The postal code was not updated for address 2.", a2.getPostalCode().equals(postalCodeCorrection));
+                assertEquals("The postal code was not updated for address 2.", postalCodeCorrection, a2.getPostalCode());
                 Address a3 = em.find(Address.class, address3.getId());
-                assertTrue("The postal code was not updated for address 3.", a3.getPostalCode().equals(postalCodeCorrection));
+                assertEquals("The postal code was not updated for address 3.", postalCodeCorrection, a3.getPostalCode());
             } finally {
                 // The open statement/connection will be closed here.
                 closeEntityManagerAndTransaction(em);
@@ -618,13 +618,13 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
                 int results = query.setParameter("new_p_code_v", postalCodeCorrection).setParameter("old_p_code_v", postalCodeTypo).executeUpdate();
 
-                assertTrue("Update count incorrect.", results == 2);
+                assertEquals("Update count incorrect.", 2, results);
 
                 // Just because we don't trust anyone ... :-)
                 Address a1 = em.find(Address.class, address1.getId());
-                assertTrue("The postal code was not updated for address 1.", a1.getPostalCode().equals(postalCodeCorrection));
+                assertEquals("The postal code was not updated for address 1.", postalCodeCorrection, a1.getPostalCode());
                 Address a2 = em.find(Address.class, address2.getId());
-                assertTrue("The postal code was not updated for address 2.", a2.getPostalCode().equals(postalCodeCorrection));
+                assertEquals("The postal code was not updated for address 2.", postalCodeCorrection, a2.getPostalCode());
             } finally {
                 closeEntityManagerAndTransaction(em);
             }
@@ -658,15 +658,15 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.registerStoredProcedureParameter("address_id_v", Integer.class, ParameterMode.IN);
 
                 List addresses = query.setParameter("address_id_v", address1.getId()).getResultList();
-                assertTrue("Incorrect number of addresses returned", addresses.size() == 1);
+                assertEquals("Incorrect number of addresses returned", 1, addresses.size());
                 Object[] addressContent = (Object[]) addresses.get(0);
-                assertTrue("Incorrect data content size", addressContent.length == 6);
-                assertTrue("Id content incorrect", addressContent[0].equals(new Long(address1.getId())));
-                assertTrue("Steet content incorrect", addressContent[1].equals(address1.getStreet()));
-                assertTrue("City content incorrect", addressContent[2].equals(address1.getCity()));
-                assertTrue("Country content incorrect", addressContent[3].equals(address1.getCountry()));
-                assertTrue("Province content incorrect", addressContent[4].equals(address1.getProvince()));
-                assertTrue("Postal Code content incorrect", addressContent[5].equals(address1.getPostalCode()));
+                assertEquals("Incorrect data content size", 6, addressContent.length);
+                assertEquals("Id content incorrect", new Long(address1.getId()), addressContent[0]);
+                assertEquals("Steet content incorrect", address1.getStreet(), addressContent[1]);
+                assertEquals("City content incorrect", address1.getCity(), addressContent[2]);
+                assertEquals("Country content incorrect", address1.getCountry(), addressContent[3]);
+                assertEquals("Province content incorrect", address1.getProvince(), addressContent[4]);
+                assertEquals("Postal Code content incorrect", address1.getPostalCode(), addressContent[5]);
             } finally {
                 closeEntityManagerAndTransaction(em);
             }
@@ -730,7 +730,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
             List allResults = (List)getPersistenceUnitServerSession().executeQuery(query);
             assertNotNull("No results returned", allResults);
-            assertTrue("Incorrect number of results returned", allResults.size() == 4);
+            assertEquals("Incorrect number of results returned", 4, allResults.size());
 
             // Verify first result set mapping --> Employee
             List results0 = (List) allResults.get(0);
@@ -749,14 +749,14 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
             for (Object result2 : results2) {
                 Object[] result2Element = (Object[]) result2;
-                assertTrue("Failed to Return 3 items", (result2Element.length == 3));
+                assertEquals("Failed to Return 3 items", 3, result2Element.length);
                 // Using Number as Different db/drivers  can return different types
                 // e.g. Oracle with ijdbc14.jar returns BigDecimal where as Derby
                 // with derbyclient.jar returns Double. NOTE: the order of checking
                 // here is valid and as defined by the spec.
                 assertTrue("Failed to return LargeProject", (result2Element[0] instanceof LargeProject));
                 assertTrue("Failed To Return SmallProject", (result2Element[1] instanceof SmallProject));
-                assertTrue("Failed to return column",(result2Element[2] instanceof Number));
+                assertTrue("Failed to return column", (result2Element[2] instanceof Number));
                 assertFalse("Returned same data in both result elements",((SmallProject) result2Element[1]).getName().equals(((LargeProject) result2Element[0]).getName()));
             }
 
@@ -794,9 +794,10 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.registerStoredProcedureParameter("address_id_v", Integer.class, ParameterMode.IN);
 
                 Object[] values = (Object[]) query.setParameter("address_id_v", address.getId()).getSingleResult();
-                assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
+                assertNotNull("Query results returned null", values);
+                assertEquals("Address data not found or returned using stored procedure", 6, values.length);
                 assertNotNull("No results returned from store procedure call", values[1]);
-                assertTrue("Address not found using stored procedure", address.getStreet().equals(values[1]));
+                assertEquals("Address not found using stored procedure", values[1], address.getStreet());
             } finally {
                 closeEntityManagerAndTransaction(em);
             }
@@ -830,16 +831,16 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 StoredProcedureQuery query = em.createNamedStoredProcedureQuery("ReadAddressMappedNumberedFieldResult");
                 List<Address> addresses = query.setParameter(1, address1.getId()).getResultList();
 
-                assertTrue("Too many addresses returned", addresses.size() == 1);
+                assertEquals("Too many addresses returned", 1, addresses.size());
 
                 Address address2 = addresses.get(0);
 
                 assertNotNull("Address returned from stored procedure is null", address2);
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getId() == address2.getId()));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getStreet().equals(address2.getStreet())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getCountry().equals(address2.getCountry())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getProvince().equals(address2.getProvince())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getPostalCode().equals(address2.getPostalCode())));
+                assertEquals("Address id didn't build correctly using stored procedure", address1.getId(), address2.getId());
+                assertEquals("Address street didn't build correctly using stored procedure", address1.getStreet(), address2.getStreet());
+                assertEquals("Address country didn't build correctly using stored procedure", address1.getCountry(), address2.getCountry());
+                assertEquals("Address province didn't build correctly using stored procedure", address1.getProvince(), address2.getProvince());
+                assertEquals("Address postalcode didn't build correctly using stored procedure", address1.getPostalCode(), address2.getPostalCode());
             } finally {
                 closeEntityManagerAndTransaction(em);
             }
@@ -874,11 +875,11 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
                 Address address2 = (Address) query.setParameter("address_id_v", address1.getId()).getSingleResult();
                 assertNotNull("Address returned from stored procedure is null", address2);
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getId() == address2.getId()));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getStreet().equals(address2.getStreet())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getCountry().equals(address2.getCountry())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getProvince().equals(address2.getProvince())));
-                assertTrue("Address didn't build correctly using stored procedure", (address1.getPostalCode().equals(address2.getPostalCode())));
+                assertEquals("Address id didn't build correctly using stored procedure", address1.getId(), address2.getId());
+                assertEquals("Address street didn't build correctly using stored procedure", address1.getStreet(), address2.getStreet());
+                assertEquals("Address country didn't build correctly using stored procedure", address1.getCountry(), address2.getCountry());
+                assertEquals("Address province didn't build correctly using stored procedure", address1.getProvince(), address2.getProvince());
+                assertEquals("Address postalcode didn't build correctly using stored procedure", address1.getPostalCode(), address2.getPostalCode());
             } finally {
                 closeEntityManagerAndTransaction(em);
             }
@@ -914,7 +915,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
                 boolean result = query.setParameter("address_id_v", address.getId()).execute();
                 String city = (String) query.getOutputParameterValue("city_v");
-                assertTrue("Incorrect city was returned.", (address.getCity().equals(city)));
+                assertEquals("Incorrect city was returned.", address.getCity(), city);
             } finally {
                 closeEntityManagerAndTransaction(em);
             }
@@ -968,7 +969,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.registerStoredProcedureParameter("p_recordset", void.class, ParameterMode.REF_CURSOR);
 
                 // Test the getParameters call BEFORE query execution.
-                assertTrue("The number of parameters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+                assertEquals("The number of parameters returned was incorrect", 2, query.getParameters().size());
 
                 query.setParameter("f_name_v", "Fred");
 
@@ -998,7 +999,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 query.registerStoredProcedureParameter(2, void.class, ParameterMode.REF_CURSOR);
 
                 // Test the getParameters call BEFORE query execution.
-                assertTrue("The number of parameters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+                assertEquals("The number of parameters returned was incorrect", 2, query.getParameters().size());
 
                 query.setParameter(1, "Fred");
 
@@ -1037,7 +1038,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertTrue("Execute returned false.", execute);
 
                 // Test the getParameters call AFTER query execution.
-                assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+                assertEquals("The number of paramters returned was incorrect", 2, query.getParameters().size());
 
                 List<Object[]> employees = (List<Object[]>) query.getOutputParameterValue("p_recordset");
                 assertFalse("No employees were returned", employees.isEmpty());

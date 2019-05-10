@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +30,7 @@ public class SelectSimpleMemberOfWithParameterTest extends JPQLParameterTestCase
         phone.setNumber("1234567");
         phone.setOwner(employee);
 
-        String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp " + "WHERE ?1 MEMBER OF emp.phoneNumbers";
+        String ejbqlString = "SELECT OBJECT(e) FROM Employee e " + "WHERE ?1 MEMBER OF e.phoneNumbers";
 
         setEjbqlString(ejbqlString);
 

@@ -272,8 +272,9 @@ public class Oracle8Platform extends OraclePlatform {
      * @return Array
      */
     @Override
-    public Array createArray(String elementDataTypeName, Object[] elements, Connection connection) throws SQLException {
-        return new oracle.sql.ARRAY(new oracle.sql.ArrayDescriptor(elementDataTypeName, connection), connection, elements);
+    public Array createArray(String elementDataTypeName, Object[] elements, AbstractSession session, Connection connection) throws SQLException {
+        java.sql.Connection unwrappedConnection = getConnection(session, connection);
+        return new oracle.sql.ARRAY(new oracle.sql.ArrayDescriptor(elementDataTypeName, unwrappedConnection), unwrappedConnection, elements);
     }
 
     /**
@@ -282,8 +283,9 @@ public class Oracle8Platform extends OraclePlatform {
      * @return Struct
      */
     @Override
-    public Struct createStruct(String structTypeName, Object[] attributes, Connection connection) throws SQLException {
-        return new oracle.sql.STRUCT(new oracle.sql.StructDescriptor(structTypeName, connection), connection, attributes);
+    public Struct createStruct(String structTypeName, Object[] attributes, AbstractSession session, Connection connection) throws SQLException {
+        java.sql.Connection unwrappedConnection = getConnection(session, connection);
+        return new oracle.sql.STRUCT(new oracle.sql.StructDescriptor(structTypeName, unwrappedConnection), unwrappedConnection, attributes);
     }
 
     /**
@@ -292,8 +294,9 @@ public class Oracle8Platform extends OraclePlatform {
      * @return String
      */
     @Override
-    public Object getRefValue(Ref ref,Connection connection) throws SQLException {
-        ((oracle.sql.REF)ref).setPhysicalConnectionOf(connection);
+    public Object getRefValue(Ref ref, AbstractSession session, Connection connection) throws SQLException {
+        java.sql.Connection unwrappedConnection = getConnection(session, connection);
+        ((oracle.sql.REF)ref).setPhysicalConnectionOf(unwrappedConnection);
         return ((oracle.sql.REF)ref).getValue();
     }
 

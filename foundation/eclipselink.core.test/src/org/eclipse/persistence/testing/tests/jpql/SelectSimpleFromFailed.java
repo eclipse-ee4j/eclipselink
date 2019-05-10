@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +23,7 @@ class SelectSimpleFromFailed extends JPQLExceptionTest {
     public void setup() {
         this.expectedException = JPQLException.syntaxErrorAt(null, 0, 0, null, null);
 
-        String ejbqlString = "SELECT OBJECT(emp) Frow AccountBean account";
+        String ejbqlString = "SELECT OBJECT(e) Frow AccountBean account";
         setEjbqlString(ejbqlString);
         super.setup();
     }

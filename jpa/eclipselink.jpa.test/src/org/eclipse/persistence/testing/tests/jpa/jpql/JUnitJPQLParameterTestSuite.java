@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -134,7 +135,7 @@ public class JUnitJPQLParameterTestSuite extends JUnitTestCase {
         Vector expectedResult = new Vector();
         expectedResult.add(employee);
 
-        Query query = em.createQuery("SELECT OBJECT(emp) FROM Employee emp WHERE emp.firstName = ?1 AND emp.id = ?3");
+        Query query = em.createQuery("SELECT OBJECT(e) FROM Employee e WHERE e.firstName = ?1 AND e.id = ?3");
         query.setParameter(1, employee.getFirstName());
         query.setParameter(3, employee.getId());
         List result = query.getResultList();
