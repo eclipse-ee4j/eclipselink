@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,27 +13,20 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-
-
-
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
 import java.util.Vector;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;
-
-
 import org.eclipse.persistence.queries.ReportQuery;
-
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
@@ -42,12 +36,12 @@ import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsExa
 import org.eclipse.persistence.testing.models.jpa.relationships.RelationshipsTableManager;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Cubicle;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Scientist;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.CompositePKTableCreator;
 
+import org.junit.Assert;
 /**
  * <p>
  * <b>Purpose</b>: Test complex aggregate EJBQL functionality.
@@ -474,6 +468,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT MAX(DISTINCT emp.salary) FROM Employee emp";
         Number result = (Number) em.createQuery(ejbqlString).getSingleResult();
 
+        Assert.assertEquals("Type returned was not expected", Integer.class, result.getClass());
         Assert.assertEquals("Complex MAX test failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
@@ -496,6 +491,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         String ejbqlString = "SELECT MIN(DISTINCT emp.salary) FROM Employee emp";
         Number result = (Number) em.createQuery(ejbqlString).getSingleResult();
 
+        Assert.assertEquals("Type returned was not expected", Integer.class, result.getClass());
         Assert.assertEquals("Complex MIN test failed", expectedResult, result);
         rollbackTransaction(em);
         closeEntityManager(em);
