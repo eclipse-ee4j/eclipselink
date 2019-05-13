@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +27,8 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -34,7 +37,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -98,17 +100,15 @@ public class ReportQueryResult implements Serializable, Map {
             // For bug 3115576 this is only used for EXISTS sub-selects so no result is needed.
         }
 
-        List items = query.getItems();
-        List results = new ArrayList();
-        for (int index = 0; index < items.size(); index++) {
-            ReportItem item = (ReportItem)items.get(index);
+        List<Object> results = new ArrayList<Object>();
+        for(ReportItem item: query.getItems()) {
             if (item.isConstructorItem()) {
                 Object result = processConstructorItem(query, row, toManyData, (ConstructorReportItem) item);
                 results.add(result);
-            } else if (item.getAttributeExpression()!=null && item.getAttributeExpression().isClassTypeExpression()){
+            } else if (item.getAttributeExpression() != null && item.getAttributeExpression().isClassTypeExpression()) {
                 Object value = processItem(query, row, toManyData, item);
                 ClassDescriptor descriptor = ((org.eclipse.persistence.internal.expressions.ClassTypeExpression)item.getAttributeExpression()).getContainingDescriptor(query);
-                if (descriptor !=null && descriptor.hasInheritance()){
+                if (descriptor != null && descriptor.hasInheritance()) {
                     value = descriptor.getInheritancePolicy().classFromValue(value, query.getSession());
                 } else {
                     value = query.getSession().getDatasourcePlatform().convertObject(value, Class.class);
@@ -172,13 +172,16 @@ public class ReportQueryResult implements Serializable, Map {
                 }
             }
         }
+
         Object value = null;
-        DatabaseMapping mapping = item.getMapping();
         int rowSize = row.size();
         int itemIndex = item.getResultIndex();
+
         ClassDescriptor descriptor = item.getDescriptor();
-        if (!item.isPlaceHolder()) {
-            if (descriptor == null && mapping != null){
+        DatabaseMapping mapping = item.getMapping();
+
+        if (item.getAttributeExpression() != null) {
+            if (descriptor == null && mapping != null) {
                 descriptor = mapping.getReferenceDescriptor();
             }
             if (mapping != null && (mapping.isAbstractColumnMapping() || mapping.isDirectCollectionMapping())) {
@@ -186,6 +189,7 @@ public class ReportQueryResult implements Serializable, Map {
                 if (itemIndex >= rowSize) {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + 1, rowSize);
                 }
+
                 // If mapping is not null then it must be a direct mapping - see Reportitem.init.
                 // Check for non database (EIS) records to use normal get.
                 if (row instanceof DatabaseRecord) {
@@ -193,14 +197,27 @@ public class ReportQueryResult implements Serializable, Map {
                 } else {
                     value = row.get(mapping.getField());
                 }
-                if (mapping.isAbstractColumnMapping()){
+
+                //If the mapping was set on the ReportItem, then use the mapping to convert the value
+                if (mapping.isAbstractColumnMapping()) {
                     value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
-                } else {
-                    Converter converter = ((DirectCollectionMapping)mapping).getValueConverter();
-                    if (converter != null){
-                        value = converter.convertDataValueToObjectValue(value, query.getSession());
+                } else if (mapping.isDirectCollectionMapping()) {
+                    value = ((DirectCollectionMapping)mapping).getObjectValue(value, query.getSession());
+                }
+
+                //Bug 421056: JPA 2.1; section 4.8.5
+                if(item.getAttributeExpression().isFunctionExpression()) {
+                    FunctionExpression exp = (FunctionExpression) item.getAttributeExpression();
+                    int selector = exp.getOperator().getSelector();
+                    if(value instanceof Number) {
+                        Number val = (Number)value;
+                        if (val.intValue() == 0 && ((selector == ExpressionOperator.Maximum) 
+                                || (selector == ExpressionOperator.Minimum))) {
+                            value = null;
+                        }
                     }
                 }
+
                 // GF_ISSUE_395+
                 if (this.key != null) {
                     this.key.append(value);

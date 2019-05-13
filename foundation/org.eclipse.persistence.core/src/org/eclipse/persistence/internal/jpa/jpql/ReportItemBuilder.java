@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -451,7 +452,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     public void visit(MaxFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(name, queryExpression);
+        addAttribute(name, queryExpression, type[0]);
     }
 
     /**
@@ -461,7 +462,7 @@ final class ReportItemBuilder extends EclipseLinkAnonymousExpressionVisitor {
     public void visit(MinFunction expression) {
         String name = queryContext.literal(expression.getExpression(), PATH_EXPRESSION_LAST_PATH);
         Expression queryExpression = queryContext.buildExpression(expression, type);
-        addAttribute(name, queryExpression);
+        addAttribute(name, queryExpression, type[0]);
     }
 
     /**

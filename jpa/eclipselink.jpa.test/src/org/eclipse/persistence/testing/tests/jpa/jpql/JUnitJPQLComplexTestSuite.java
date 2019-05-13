@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.PessimisticLock;
@@ -95,6 +94,8 @@ import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManage
 import org.eclipse.persistence.testing.models.jpa.inherited.TelephoneNumber;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
+
+import org.junit.Assert;
 
 /**
  * <p>
@@ -4659,8 +4660,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
          closeEntityManager(em);
     }
 
-    public void converterOnElementCollectionTest()
-    {
+    public void converterOnElementCollectionTest() {
         EntityManager em = createEntityManager();
 
         beginTransaction(em);
@@ -4674,7 +4674,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         String ejbqlString = "SELECT b.creditLines FROM Buyer b where b.id = :id";
         Object result = em.createQuery(ejbqlString).setParameter("id", buyer.getId()).getSingleResult();
-        assertTrue("Converter not applied to element collection in jpql", (result instanceof Long));
+        Assert.assertEquals("Converter not applied to element collection in jpql", Long.class, result.getClass());
         rollbackTransaction(em);
     }
 
