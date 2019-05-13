@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1556,7 +1556,7 @@ public class AdvancedTableCreator extends TogglingFastTableCreator {
 
         FieldDefinition fieldSALARY = new FieldDefinition();
         fieldSALARY.setName("SALARY");
-        fieldSALARY.setTypeName("NUMBER");
+        fieldSALARY.setTypeName("INT");
         fieldSALARY.setSize(15);
         fieldSALARY.setSubSize(0);
         fieldSALARY.setIsPrimaryKey(false);

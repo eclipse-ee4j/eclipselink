@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -127,21 +127,16 @@ public class ReportItem implements Cloneable, java.io.Serializable {
         if (this.mapping == null) {
             if (this.attributeExpression != null) {
                 DatabaseMapping mapping = this.attributeExpression.getLeafMapping(query, query.getDescriptor(), query.getSession());
-                if (mapping == null && this.attributeExpression.isFunctionExpression() && this.getResultType() == null){
-                    FunctionExpression expression = ((FunctionExpression)this.attributeExpression);
-                    if (expression.getOperator().equals(ExpressionOperator.maximum()) || expression.getOperator().equals(ExpressionOperator.minimum())){
-                        mapping = expression.getBaseExpression().getLeafMapping(query, query.getDescriptor(), query.getSession());
-                    }
-                }
-                if (mapping == null){
+                if (mapping == null) {
+                    //TODO: This feels like it should be set earlier during ReportItemBuild.visit. Should investigate.
                     if (this.attributeExpression.isExpressionBuilder()) {
                         Class resultClass = ((ExpressionBuilder)this.attributeExpression).getQueryClass();
-                        if (resultClass == null){
+                        if (resultClass == null) {
                             resultClass = query.getReferenceClass();
                             ((ExpressionBuilder)this.attributeExpression).setQueryClass(resultClass);
                         }
                         setDescriptor(query.getSession().getDescriptor(resultClass));
-                        if (getDescriptor().hasInheritance()){
+                        if (getDescriptor().hasInheritance()) {
                             ((ExpressionBuilder)this.attributeExpression).setShouldUseOuterJoinForMultitableInheritance(true);
                         }
                     }
@@ -187,13 +182,6 @@ public class ReportItem implements Cloneable, java.io.Serializable {
 
     public boolean isConstructorItem(){
         return false;
-    }
-
-    /**
-     * @return true if there is no expression (null)
-     */
-    public boolean isPlaceHolder() {
-        return getAttributeExpression() == null;
     }
 
     public void setDescriptor(ClassDescriptor descriptor){
