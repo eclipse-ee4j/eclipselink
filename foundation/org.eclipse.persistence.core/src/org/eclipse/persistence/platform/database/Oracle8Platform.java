@@ -212,7 +212,7 @@ public class Oracle8Platform extends OraclePlatform {
     /**
      * PUBLIC: Set if the locator is required for the LOB write. The default is
      * true. For Oracle thin driver, the locator is recommended for large size (
-     * >4k for Oracle8, >5.9K for Oracle9) BLOB/CLOB value write.
+     * &gt;4k for Oracle8, &gt;5.9K for Oracle9) BLOB/CLOB value write.
      */
     public void setShouldUseLocatorForLOBWrite(boolean usesLocatorForLOBWrite) {
         this.usesLocatorForLOBWrite = usesLocatorForLOBWrite;
@@ -221,7 +221,7 @@ public class Oracle8Platform extends OraclePlatform {
     /**
      * PUBLIC: Return if the locator is required for the LOB write. The default
      * is true. For Oracle thin driver, the locator is recommended for large
-     * size ( >4k for Oracle8, >5.9K for Oracle9) BLOB/CLOB value write.
+     * size ( &gt;4k for Oracle8, &gt;5.9K for Oracle9) BLOB/CLOB value write.
      */
     public boolean shouldUseLocatorForLOBWrite() {
         return usesLocatorForLOBWrite;
