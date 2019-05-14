@@ -1036,7 +1036,7 @@ public class PersistenceUnitProperties {
      * <li>"<code>true</code>" - bindings will use platform default
      * </ul>
      * 
-     * @see org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_BIND_PARAMETERS
+     * @see #JDBC_BIND_PARAMETERS
     */
    public static final String JDBC_FORCE_BIND_PARAMETERS = "eclipselink.jdbc.force-bind-parameters";
 
