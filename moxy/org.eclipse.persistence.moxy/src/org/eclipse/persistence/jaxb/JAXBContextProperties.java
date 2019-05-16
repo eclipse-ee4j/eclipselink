@@ -414,7 +414,7 @@ public class JAXBContextProperties {
      * Use it carefully. It can produce high amount of data in the log files.
      *
      * Usage: set to {@link Boolean#TRUE} to enable payload logging, set to {@link Boolean#FALSE} to disable it.
-     * It can be set via system property too. Setting via JAXBContext, marshaller, unmarshaller property has higher priority.
+     * It can be set via system property with name "eclipselink.moxy.logging.payload" too.
      * By default it is disabled.
      *
      * @since 3.0

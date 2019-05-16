@@ -347,6 +347,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return this.beanValidationGroups;
         } else if (MarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
             return this.bvNoOptimisation;
+        } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+            return xmlMarshaller.isLogPayload();
         }
         throw new PropertyException(key);
     }
@@ -911,6 +913,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 xmlMarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String)value);
             } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
                 xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
+            } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+                xmlMarshaller.setLogPayload(((Boolean) value) || MOXySystemProperties.moxyLogPayload);
             } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)  ||SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
                 if (value == null) {
                     xmlMarshaller.setCharacterEscapeHandler(null);

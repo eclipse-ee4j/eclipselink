@@ -46,6 +46,8 @@ import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ExtendedResult;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
@@ -145,6 +147,7 @@ public abstract class XMLMarshaller<
     private boolean wrapperAsCollectionName = false;
     private String xmlHeader;
     private Object marshalAttributeGroup;
+    private boolean logPayload = false;
 
     public XMLMarshaller(CONTEXT context) {
         super(context);
@@ -601,6 +604,9 @@ public abstract class XMLMarshaller<
      * @param descriptor the XMLDescriptor for the object being marshalled
      */
     protected void marshal(Object object, MarshalRecord marshalRecord, ABSTRACT_SESSION session, DESCRIPTOR descriptor, boolean isXMLRoot) {
+        if (this.isLogPayload()) {
+            AbstractSessionLog.getLog().log(SessionLog.INFO, SessionLog.MOXY, object.toString(), new Object[0], false);
+        }
         if(null != schema) {
             marshalRecord = new ValidatingMarshalRecord(marshalRecord, this);
         }
@@ -1396,4 +1402,11 @@ public abstract class XMLMarshaller<
         return this.marshalAttributeGroup;
     }
 
+    public boolean isLogPayload() {
+        return logPayload;
+    }
+
+    public void setLogPayload(boolean logPayload) {
+        this.logPayload = logPayload;
+    }
 }

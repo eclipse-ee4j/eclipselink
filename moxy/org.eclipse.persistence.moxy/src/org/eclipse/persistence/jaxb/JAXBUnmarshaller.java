@@ -911,6 +911,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     ? Boolean.parseBoolean((String) value)
                     : (boolean) value;
             xmlUnmarshaller.setDisableSecureProcessing(disabled);
+        } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+            xmlUnmarshaller.setLogPayload(((boolean) value) || MOXySystemProperties.moxyLogPayload);
         } else {
             throw new PropertyException(key, value);
         }
@@ -991,6 +993,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return this.bvNoOptimisation;
         } else if (UnmarshallerProperties.DISABLE_SECURE_PROCESSING.equals(key)) {
             return xmlUnmarshaller.isSecureProcessingDisabled();
+        } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+            return xmlUnmarshaller.isLogPayload();
         }
         throw new PropertyException(key);
     }
