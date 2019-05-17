@@ -811,6 +811,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
+        if (MOXySystemProperties.moxyLogPayload != null) {
+            xmlUnmarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
+        }
         if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
             MediaType mType = null;
             if(value instanceof MediaType) {

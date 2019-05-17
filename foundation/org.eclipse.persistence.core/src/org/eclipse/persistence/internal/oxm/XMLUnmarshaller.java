@@ -667,28 +667,39 @@ public class XMLUnmarshaller<
                 if(xmlStreamReader != null) {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{});
-                    return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                    Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                    logPayload(result);
+                    return result;
                 } else {
                     Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
                     if(xmlEventReader != null) {
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
-                        return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                        Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                        logPayload(result);
+                        return result;
                     }
                 }
             } catch(Exception e) {
                 throw XMLMarshalException.unmarshalException(e);
             }
         }
-        return platformUnmarshaller.unmarshal(source, clazz);
+        Object result = platformUnmarshaller.unmarshal(source, clazz);
+        logPayload(result);
+        return result;
+
     }
 
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource) {
-        return this.platformUnmarshaller.unmarshal(xmlReader, inputSource);
+        Object result = this.platformUnmarshaller.unmarshal(xmlReader, inputSource);
+        logPayload(result);
+        return result;
     }
 
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
-        return this.platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+        Object result = this.platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+        logPayload(result);
+        return result;
     }
 
     @Override

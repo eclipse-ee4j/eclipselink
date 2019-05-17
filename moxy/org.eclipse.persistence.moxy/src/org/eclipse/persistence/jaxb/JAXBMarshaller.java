@@ -864,137 +864,142 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             if (key == null) {
                 throw new IllegalArgumentException();
-            } else if (Constants.JAXB_FRAGMENT.equals(key)) {
-                if(value == null){
-                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                Boolean fragment = (Boolean) value;
-                xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if (JAXB_FORMATTED_OUTPUT.equals(key)) {
-                if(value == null){
-                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                Boolean formattedOutput = (Boolean) value;
-                xmlMarshaller.setFormattedOutput(formattedOutput.booleanValue());
-            } else if (JAXB_ENCODING.equals(key)) {
-                xmlMarshaller.setEncoding((String) value);
-            } else if (JAXB_SCHEMA_LOCATION.equals(key)) {
-                xmlMarshaller.setSchemaLocation((String) value);
-            } else if (JAXB_NO_NAMESPACE_SCHEMA_LOCATION.equals(key)) {
-                xmlMarshaller.setNoNamespaceSchemaLocation((String) value);
-            } else if(MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) {
-                if(value == null){
-                    xmlMarshaller.setNamespacePrefixMapper(null);
-                }else if(value instanceof Map){
-                    NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map)value);
-                    xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
-                }else{
-                    xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
-                }
-            } else if(SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
-                if(value == null){
-                    xmlMarshaller.setNamespacePrefixMapper(null);
-                }else{
-                    xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
-                }
-            } else if (MarshallerProperties.INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
-                xmlMarshaller.setIndentString((String) value);
-            } else if (MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS.equals(key)){
-                xmlMarshaller.setMarshalEmptyCollections((Boolean) value);
-            } else if (MarshallerProperties.JSON_REDUCE_ANY_ARRAYS.equals(key)){
-                xmlMarshaller.setReduceAnyArrays((Boolean) value);
-            } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
-                xmlMarshaller.setWrapperAsCollectionName((Boolean) value);
-            } else if (MarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
-                xmlMarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean)value);
-            } else if (MarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
-                xmlMarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean)value);
-            } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
-                xmlMarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String)value);
-            } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
-                xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
-            } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
-                xmlMarshaller.setLogPayload(((Boolean) value) || MOXySystemProperties.moxyLogPayload);
-            } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)  ||SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
-                if (value == null) {
-                    xmlMarshaller.setCharacterEscapeHandler(null);
-                } else {
-                    xmlMarshaller.setCharacterEscapeHandler(new CharacterEscapeHandlerWrapper(value));
-                }
-            } else if (XML_DECLARATION.equals(key)) {
-                if(value == null){
-                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                Boolean fragment = !(Boolean) value;
-                xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if (XML_HEADERS.equals(key)) {
-                xmlMarshaller.setXmlHeader((String) value);
-            } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
-                if(value == null){
-                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                xmlMarshaller.setEqualUsingIdenity(((Boolean) value).booleanValue());
-            } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
-                MediaType mType = null;
-                if(value instanceof MediaType) {
-                    mType = (MediaType) value;
-                } else if(value instanceof String) {
-                    mType = MediaType.getMediaType((String)value);
-                }
-                if(mType == null){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                xmlMarshaller.setMediaType(mType);
-            } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
-                xmlMarshaller.setAttributePrefix((String)value);
-            } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
-         if(value == null){
-            throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                xmlMarshaller.setIncludeRoot((Boolean)value);
-            } else if(MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
-                if(value == null || (((String)value).length() == 0)){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                xmlMarshaller.setValueWrapper((String)value);
-            } else if(MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
-        if(value == null){
-            throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                xmlMarshaller.setNamespaceSeparator((Character)value);
-            } else if(MarshallerProperties.OBJECT_GRAPH.equals(key)) {
-                if(value == null) {
-                    xmlMarshaller.setMarshalAttributeGroup(null);
-                } else if(value instanceof ObjectGraphImpl) {
-                    xmlMarshaller.setMarshalAttributeGroup(((ObjectGraphImpl)value).getAttributeGroup());
-                } else if(value.getClass() == ClassConstants.STRING){
-                    xmlMarshaller.setMarshalAttributeGroup(value);
-                } else {
-                    throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
-                }
-            } else if (MarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
-                if(value == null){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                this.beanValidationMode = ((BeanValidationMode) value);
-            } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
-                //noinspection StatementWithEmptyBody
-                if(value == null) {
-                    // Allow null value for preferred validation factory.
-                }
-                this.prefValidatorFactory = value;
-            } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
-                if(value == null){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                this.beanValidationGroups = ((Class<?>[]) value);
-            } else if (MarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
-                if(value == null){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                this.bvNoOptimisation = ((boolean) value);
             } else {
-                throw new PropertyException(key, value);
+                if (MOXySystemProperties.moxyLogPayload != null) {
+                    xmlMarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
+                }
+                if (Constants.JAXB_FRAGMENT.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    Boolean fragment = (Boolean) value;
+                    xmlMarshaller.setFragment(fragment.booleanValue());
+                } else if (JAXB_FORMATTED_OUTPUT.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    Boolean formattedOutput = (Boolean) value;
+                    xmlMarshaller.setFormattedOutput(formattedOutput.booleanValue());
+                } else if (JAXB_ENCODING.equals(key)) {
+                    xmlMarshaller.setEncoding((String) value);
+                } else if (JAXB_SCHEMA_LOCATION.equals(key)) {
+                    xmlMarshaller.setSchemaLocation((String) value);
+                } else if (JAXB_NO_NAMESPACE_SCHEMA_LOCATION.equals(key)) {
+                    xmlMarshaller.setNoNamespaceSchemaLocation((String) value);
+                } else if (MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) {
+                    if (value == null) {
+                        xmlMarshaller.setNamespacePrefixMapper(null);
+                    } else if (value instanceof Map) {
+                        NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map) value);
+                        xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
+                    } else {
+                        xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper) value);
+                    }
+                } else if (SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
+                    if (value == null) {
+                        xmlMarshaller.setNamespacePrefixMapper(null);
+                    } else {
+                        xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
+                    }
+                } else if (MarshallerProperties.INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
+                    xmlMarshaller.setIndentString((String) value);
+                } else if (MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS.equals(key)) {
+                    xmlMarshaller.setMarshalEmptyCollections((Boolean) value);
+                } else if (MarshallerProperties.JSON_REDUCE_ANY_ARRAYS.equals(key)) {
+                    xmlMarshaller.setReduceAnyArrays((Boolean) value);
+                } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
+                    xmlMarshaller.setWrapperAsCollectionName((Boolean) value);
+                } else if (MarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean) value);
+                } else if (MarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean) value);
+                } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String) value);
+                } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
+                    xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
+                } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+                    xmlMarshaller.setLogPayload(((Boolean) value));
+                } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
+                    if (value == null) {
+                        xmlMarshaller.setCharacterEscapeHandler(null);
+                    } else {
+                        xmlMarshaller.setCharacterEscapeHandler(new CharacterEscapeHandlerWrapper(value));
+                    }
+                } else if (XML_DECLARATION.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    Boolean fragment = !(Boolean) value;
+                    xmlMarshaller.setFragment(fragment.booleanValue());
+                } else if (XML_HEADERS.equals(key)) {
+                    xmlMarshaller.setXmlHeader((String) value);
+                } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setEqualUsingIdenity(((Boolean) value).booleanValue());
+                } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
+                    MediaType mType = null;
+                    if (value instanceof MediaType) {
+                        mType = (MediaType) value;
+                    } else if (value instanceof String) {
+                        mType = MediaType.getMediaType((String) value);
+                    }
+                    if (mType == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setMediaType(mType);
+                } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
+                    xmlMarshaller.setAttributePrefix((String) value);
+                } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setIncludeRoot((Boolean) value);
+                } else if (MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)) {
+                    if (value == null || (((String) value).length() == 0)) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setValueWrapper((String) value);
+                } else if (MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setNamespaceSeparator((Character) value);
+                } else if (MarshallerProperties.OBJECT_GRAPH.equals(key)) {
+                    if (value == null) {
+                        xmlMarshaller.setMarshalAttributeGroup(null);
+                    } else if (value instanceof ObjectGraphImpl) {
+                        xmlMarshaller.setMarshalAttributeGroup(((ObjectGraphImpl) value).getAttributeGroup());
+                    } else if (value.getClass() == ClassConstants.STRING) {
+                        xmlMarshaller.setMarshalAttributeGroup(value);
+                    } else {
+                        throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
+                    }
+                } else if (MarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    this.beanValidationMode = ((BeanValidationMode) value);
+                } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
+                    //noinspection StatementWithEmptyBody
+                    if (value == null) {
+                        // Allow null value for preferred validation factory.
+                    }
+                    this.prefValidatorFactory = value;
+                } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    this.beanValidationGroups = ((Class<?>[]) value);
+                } else if (MarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    this.bvNoOptimisation = ((boolean) value);
+                } else {
+                    throw new PropertyException(key, value);
+                }
             }
         } catch (ClassCastException exception) {
             throw new PropertyException(key, exception);
