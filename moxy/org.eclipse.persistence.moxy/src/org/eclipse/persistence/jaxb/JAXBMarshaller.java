@@ -59,6 +59,9 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefix
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.MediaType;
@@ -868,6 +871,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 if (MOXySystemProperties.moxyLogPayload != null) {
                     xmlMarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
                 }
+                if (MOXySystemProperties.moxyLoggingLevel != null) {
+                    AbstractSessionLog.getLog().setLevel(LogLevel.toValue(MOXySystemProperties.moxyLoggingLevel).getId(), SessionLog.MOXY);
+                }
                 if (Constants.JAXB_FRAGMENT.equals(key)) {
                     if (value == null) {
                         throw new PropertyException(key, Constants.EMPTY_STRING);
@@ -919,6 +925,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                     xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
                 } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
                     xmlMarshaller.setLogPayload(((Boolean) value));
+                } else if (MarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
+                    AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
                 } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
                     if (value == null) {
                         xmlMarshaller.setCharacterEscapeHandler(null);

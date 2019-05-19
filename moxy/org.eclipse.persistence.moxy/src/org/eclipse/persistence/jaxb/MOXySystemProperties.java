@@ -90,7 +90,7 @@ public final class MOXySystemProperties {
 
     public static final Boolean jsonUseXsdTypesPrefix = getBoolean(JSON_USE_XSD_TYPES_PREFIX);
 
-    public static final String moxyLoggingLevel = PrivilegedAccessHelper.getSystemProperty(MOXY_LOGGING_LEVEL, String.valueOf(AbstractSessionLog.getDefaultLoggingLevel()));
+    public static final String moxyLoggingLevel = PrivilegedAccessHelper.getSystemProperty(MOXY_LOGGING_LEVEL, String.valueOf(AbstractSessionLog.INFO_LABEL));
 
     public static final Boolean moxyLogPayload = PrivilegedAccessHelper.getSystemPropertyBoolean(MOXY_LOG_PAYLOAD, false);
 

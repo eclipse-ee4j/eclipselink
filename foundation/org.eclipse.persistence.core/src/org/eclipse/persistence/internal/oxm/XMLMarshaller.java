@@ -40,6 +40,7 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
@@ -604,9 +605,7 @@ public abstract class XMLMarshaller<
      * @param descriptor the XMLDescriptor for the object being marshalled
      */
     protected void marshal(Object object, MarshalRecord marshalRecord, ABSTRACT_SESSION session, DESCRIPTOR descriptor, boolean isXMLRoot) {
-        if (this.isLogPayload()) {
-            AbstractSessionLog.getLog().log(SessionLog.INFO, SessionLog.MOXY, object.toString(), new Object[0], false);
-        }
+        logMarshall(object);
         if(null != schema) {
             marshalRecord = new ValidatingMarshalRecord(marshalRecord, this);
         }
@@ -1408,5 +1407,13 @@ public abstract class XMLMarshaller<
 
     public void setLogPayload(boolean logPayload) {
         this.logPayload = logPayload;
+    }
+
+    private void logMarshall(Object object) {
+        String i18nmsg = JAXBLocalization.buildMessage("start_marshalling", new Object[] { this.mediaType });
+        AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, i18nmsg, new Object[0], false);
+        if (this.isLogPayload()) {
+            AbstractSessionLog.getLog().log(SessionLog.INFO, SessionLog.MOXY, object.toString(), new Object[0], false);
+        }
     }
 }
