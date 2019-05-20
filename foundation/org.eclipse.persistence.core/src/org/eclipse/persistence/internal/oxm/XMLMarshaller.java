@@ -1410,10 +1410,10 @@ public abstract class XMLMarshaller<
     }
 
     private void logMarshall(Object object) {
-        String i18nmsg = JAXBLocalization.buildMessage("start_marshalling", new Object[] { this.mediaType });
+        String i18nmsg = JAXBLocalization.buildMessage("start_marshalling", new Object[] { (object!= null)?object.getClass().getName():"N/A", this.mediaType });
         AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, i18nmsg, new Object[0], false);
-        if (this.isLogPayload()) {
-            AbstractSessionLog.getLog().log(SessionLog.INFO, SessionLog.MOXY, object.toString(), new Object[0], false);
+        if (object != null && this.isLogPayload()) {
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
         }
     }
 }

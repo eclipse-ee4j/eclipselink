@@ -32,6 +32,7 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
@@ -364,7 +365,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(file);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -383,7 +384,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(file, clazz);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -402,7 +403,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(inputStream);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -421,7 +422,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(inputStream, clazz);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -440,7 +441,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(reader);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -459,7 +460,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(reader, clazz);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -478,7 +479,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(url);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -497,7 +498,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(url, clazz);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -516,7 +517,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(inputSource);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -535,7 +536,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(inputSource, clazz);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -554,7 +555,7 @@ public class XMLUnmarshaller<
         }
         if ((node.getNodeType() == Node.DOCUMENT_NODE) || (node.getNodeType() == Node.ELEMENT_NODE) || (node.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE)) {
             Object result = platformUnmarshaller.unmarshal(node);
-            logPayload(result);
+            logUnmarshall(result);
             return result;
         } else {
             throw XMLMarshalException.unmarshalException();
@@ -576,7 +577,7 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         Object result = platformUnmarshaller.unmarshal(node, clazz);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -601,7 +602,7 @@ public class XMLUnmarshaller<
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[0]);
                     Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource);
-                    logPayload(result);
+                    logUnmarshall(result);
                     return result;
                 } else {
                     Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
@@ -609,7 +610,7 @@ public class XMLUnmarshaller<
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
                         Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource);
-                        logPayload(result);
+                        logUnmarshall(result);
                         return result;
                     }
                 }
@@ -668,7 +669,7 @@ public class XMLUnmarshaller<
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{});
                     Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
-                    logPayload(result);
+                    logUnmarshall(result);
                     return result;
                 } else {
                     Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
@@ -676,7 +677,7 @@ public class XMLUnmarshaller<
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
                         Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
-                        logPayload(result);
+                        logUnmarshall(result);
                         return result;
                     }
                 }
@@ -685,20 +686,20 @@ public class XMLUnmarshaller<
             }
         }
         Object result = platformUnmarshaller.unmarshal(source, clazz);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
 
     }
 
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource) {
         Object result = this.platformUnmarshaller.unmarshal(xmlReader, inputSource);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
         Object result = this.platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
-        logPayload(result);
+        logUnmarshall(result);
         return result;
     }
 
@@ -1019,9 +1020,11 @@ public class XMLUnmarshaller<
         this.logPayload = logPayload;
     }
 
-    private void logPayload(Object object) {
-        if (this.isLogPayload()) {
-            AbstractSessionLog.getLog().log(SessionLog.INFO, SessionLog.MOXY, object.toString(), new Object[0], false);
+    private void logUnmarshall(Object object) {
+        String i18nmsg = JAXBLocalization.buildMessage("start_unmarshalling", new Object[] { this.mediaType, (object!= null)?object.getClass().getName():"N/A" });
+        AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, i18nmsg, new Object[0], false);
+        if (object != null && this.isLogPayload()) {
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
         }
     }
 

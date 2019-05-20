@@ -27,7 +27,7 @@ public class JAXBLocalizationResource extends ListResourceBundle {
             {"generate_source", "Generating Implementation Classes"},
             {"start_mw_project", "Creating Mapping Workbench Project"},
             {"create_descriptors", "Creating Descriptors"},
-            {"create_mappings", "Adding mappings to descriptors"},
+            {"create_mappings", "Adding mappings to descriptor {0}"},
             {"setup_inheritance", "Setting up inheritance"},
             {"add_namespace_resolvers", "Adding namespace resolvers"},
             {"generate_files", "Writing Deployment XML and Session Configuration"},
@@ -42,7 +42,13 @@ public class JAXBLocalizationResource extends ListResourceBundle {
             {"malformed_url_error", "Error: Unexpected MalformedURLException"},
             {"io_exception_error", "Error: Unexpected IOException"},
             {"version", "Version: "},
-            {"start_marshalling", "Marshalling into {0} started"},
+            {"start_marshalling", "Marshalling \"{0}\" into {1} started"},
+            {"start_unmarshalling", "Unmarshalling {0} into \"{1}\" started"},
+            {"read_from_moxy_json_provider", "MOXyJsonProvider.readFrom(...) is called."},
+            {"write_to_moxy_json_provider", "MOXyJsonProvider.writeTo(...) is called."},
+            {"set_marshaller_property", "Setting marshaller property (name/value): {0}/{1}"},
+            {"set_unmarshaller_property", "Setting unmarshaller property (name/value): {0}/{1}"},
+            {"set_jaxb_context_property", "Setting JAXBContext property (name/value): {0}/{1}"}
     };
 
     /**

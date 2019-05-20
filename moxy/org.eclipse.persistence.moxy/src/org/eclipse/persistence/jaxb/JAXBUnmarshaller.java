@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.jaxb.IDResolverWrapper;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
@@ -67,6 +68,8 @@ import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
@@ -811,6 +814,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
+        logProperty(key, value);
         if (MOXySystemProperties.moxyLogPayload != null) {
             xmlUnmarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
         }
@@ -1365,6 +1369,11 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return jaxbElement;
         }
 
+    }
+
+    private void logProperty(String key, Object value) {
+        String i18nmsg = JAXBLocalization.buildMessage("set_unmarshaller_property", new Object[] {key, value});
+        AbstractSessionLog.getLog().log(SessionLog.CONFIG, SessionLog.MOXY, i18nmsg, new Object[0], false);
     }
 
 }

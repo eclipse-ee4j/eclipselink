@@ -78,6 +78,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -123,6 +124,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -2522,6 +2525,9 @@ public class MappingsGenerator {
                 }
             }
             info.postInitialize();
+            if (descriptor != null) {
+                logMappingGeneration(descriptor);
+            }
         }
     }
 
@@ -3529,5 +3535,16 @@ public class MappingsGenerator {
 
     private NamespaceResolver getNamespaceResolverForDescriptor(NamespaceInfo info) {
         return info.getNamespaceResolverForDescriptor(globalNamespaceResolver, isDefaultNamespaceAllowed);
+    }
+
+    private void logMappingGeneration(Descriptor xmlDescriptor) {
+        String i18nmsg = JAXBLocalization.buildMessage("create_mappings", new Object[] { xmlDescriptor.getJavaClassName() });
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, i18nmsg, new Object[0], false);
+        Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
+        Mapping xmlMapping;
+        while (mappingIterator.hasNext()) {
+            xmlMapping = (Mapping) mappingIterator.next();
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, xmlMapping.toString(), new Object[0], false);
+        }
     }
 }

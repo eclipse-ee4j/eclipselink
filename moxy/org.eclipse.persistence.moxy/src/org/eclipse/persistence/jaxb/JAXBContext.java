@@ -68,6 +68,7 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -90,6 +91,9 @@ import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -160,6 +164,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     static {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/normalized-value", false);
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
+        if (MOXySystemProperties.moxyLoggingLevel != null) {
+            AbstractSessionLog.getLog().setLevel(LogLevel.toValue(MOXySystemProperties.moxyLoggingLevel).getId(), SessionLog.MOXY);
+        }
     }
 
     private static final String RI_XML_ACCESSOR_FACTORY_SUPPORT = "com.sun.xml.bind.XmlAccessorFactory";
@@ -796,6 +803,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * @param classLoader the classLoader to use.  If null then Thread.currentThread().getContextClassLoader() will be used.
          */
         public JAXBContextInput(Map properties, ClassLoader classLoader) {
+            logProperties(properties);
             this.properties = properties;
             if (null == classLoader) {
                 this.classLoader = Thread.currentThread().getContextClassLoader();
@@ -1683,4 +1691,14 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         Object propertyValue = properties.get(JAXBContextProperties.BEAN_VALIDATION_FACETS);
         if (propertyValue != null) inputImpl.setFacets((Boolean) propertyValue);
     }
+
+    private static void logProperties(Map properties) {
+        if (properties != null) {
+            for (Object key: properties.keySet()) {
+                String i18nmsg = JAXBLocalization.buildMessage("set_jaxb_context_property", new Object[] {key.toString(), properties.get(key).toString()});
+                AbstractSessionLog.getLog().log(SessionLog.CONFIG, SessionLog.MOXY, i18nmsg, new Object[0], false);
+            }
+        }
+    }
+
 }

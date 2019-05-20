@@ -69,6 +69,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -657,6 +658,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             JAXBContext jaxbContext = getJAXBContext(domainClasses, annotations, mediaType, httpHeaders);
+            logAction("read_from_moxy_json_provider");
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             unmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, attributePrefix);
@@ -943,6 +945,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             JAXBContext jaxbContext = getJAXBContext(domainClasses, annotations, mediaType, httpHeaders);
+            logAction("write_to_moxy_json_provider");
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formattedOutput);
             marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
@@ -977,6 +980,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
         }
+    }
+
+    private void logAction(String key) {
+        String i18nmsg = JAXBLocalization.buildMessage(key, new Object[0]);
+        AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, i18nmsg, new Object[0], false);
     }
 
 }

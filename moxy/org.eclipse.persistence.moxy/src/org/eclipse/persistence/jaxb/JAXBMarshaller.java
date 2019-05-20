@@ -53,6 +53,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
@@ -868,11 +869,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             if (key == null) {
                 throw new IllegalArgumentException();
             } else {
+                logProperty(key, value);
                 if (MOXySystemProperties.moxyLogPayload != null) {
                     xmlMarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
-                }
-                if (MOXySystemProperties.moxyLoggingLevel != null) {
-                    AbstractSessionLog.getLog().setLevel(LogLevel.toValue(MOXySystemProperties.moxyLoggingLevel).getId(), SessionLog.MOXY);
                 }
                 if (Constants.JAXB_FRAGMENT.equals(key)) {
                     if (value == null) {
@@ -1051,4 +1050,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
     }
+
+    private void logProperty(String key, Object value) {
+        String i18nmsg = JAXBLocalization.buildMessage("set_marshaller_property", new Object[] {key, value});
+        AbstractSessionLog.getLog().log(SessionLog.CONFIG, SessionLog.MOXY, i18nmsg, new Object[0], false);
+    }
+
 }
