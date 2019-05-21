@@ -949,7 +949,7 @@ public final class AnnotationsProcessor {
             List<Property> propsList = tInfo.getPropertyList();
             for (Property p : propsList) {
                 if (p.isTransient() && propOrderList.contains(p.getPropertyName())) {
-                    throw JAXBException.transientInProporder(p.getPropertyName());
+                    throw JAXBException.transientInProporder(p.getPropertyName(), tInfo.getJavaClassName());
                 }
                 if (hasPropOrder && !p.isAttribute() && !p.isTransient() && !p.isInverseReference()) {
                     if (!propOrderList.contains(p.getPropertyName())) {
@@ -1007,7 +1007,7 @@ public final class AnnotationsProcessor {
                         throw JAXBException.xmlValueAlreadySet(property.getPropertyName(), tInfo.getXmlValueProperty().getPropertyName(), jClass.getName());
                     }
                     if (!property.isXmlValue() && !property.isAttribute() && !property.isInverseReference() && !property.isTransient()) {
-                        throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName());
+                        throw JAXBException.propertyOrFieldShouldBeAnAttribute(property.getPropertyName(), jClass.getName());
                     }
                 }
 
@@ -4111,7 +4111,7 @@ public final class AnnotationsProcessor {
             for (int i = 1; i < propOrderLength; i++) {
                 String nextPropName = propOrder[i];
                 if (!nextPropName.equals(EMPTY_STRING) && !info.getPropertyNames().contains(nextPropName)) {
-                    throw JAXBException.nonExistentPropertyInPropOrder(nextPropName);
+                    throw JAXBException.nonExistentPropertyInPropOrder(nextPropName, info.getJavaClassName());
                 }
             }
         }
@@ -4124,11 +4124,11 @@ public final class AnnotationsProcessor {
 
         while (parent != null && !(parent.getQualifiedName().equals(JAVA_LANG_OBJECT))) {
             if (!useXmlValueExtension(property)) {
-                throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
+                throw JAXBException.propertyOrFieldCannotBeXmlValue(propName, cls.getQualifiedName());
             } else {
                 TypeInfo parentTypeInfo = typeInfos.get(parent.getQualifiedName());
                 if(hasElementMappedProperties(parentTypeInfo)) {
-                    throw JAXBException.propertyOrFieldCannotBeXmlValue(propName);
+                    throw JAXBException.propertyOrFieldCannotBeXmlValue(propName, cls.getQualifiedName());
                 }
                 parent = parent.getSuperclass();
             }
@@ -4138,7 +4138,7 @@ public final class AnnotationsProcessor {
         if (schemaQName == null) {
             TypeInfo refInfo = processReferencedClass(ptype);
             if (refInfo != null && !refInfo.isEnumerationType() && refInfo.getXmlValueProperty() == null) {
-                throw JAXBException.invalidTypeForXmlValueField(propName);
+                throw JAXBException.invalidTypeForXmlValueField(propName, cls.getQualifiedName());
             }
         }
     }

@@ -230,15 +230,15 @@ public class JAXBException extends EclipseLinkException {
         return exception;
     }
 
-    public static JAXBException transientInProporder(String fieldName) {
-        Object[] args = { fieldName };
+    public static JAXBException transientInProporder(String fieldName, String className) {
+        Object[] args = { fieldName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, TRANSIENT_IN_PROP_ORDER, args));
         exception.setErrorCode(TRANSIENT_IN_PROP_ORDER);
         return exception;
     }
 
-    public static JAXBException nonExistentPropertyInPropOrder(String fieldName) {
-        Object[] args = { fieldName };
+    public static JAXBException nonExistentPropertyInPropOrder(String fieldName, String className) {
+        Object[] args = { fieldName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, NON_EXISTENT_PROPERTY_IN_PROP_ORDER, args));
         exception.setErrorCode(NON_EXISTENT_PROPERTY_IN_PROP_ORDER);
         return exception;
@@ -258,22 +258,22 @@ public class JAXBException extends EclipseLinkException {
         return exception;
     }
 
-    public static JAXBException propertyOrFieldShouldBeAnAttribute(String fieldName) {
-        Object[] args = { fieldName };
+    public static JAXBException propertyOrFieldShouldBeAnAttribute(String fieldName, String className) {
+        Object[] args = { fieldName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, XMLVALUE_ATTRIBUTE_CONFLICT, args));
         exception.setErrorCode(XMLVALUE_ATTRIBUTE_CONFLICT);
         return exception;
     }
 
-    public static JAXBException propertyOrFieldCannotBeXmlValue(String fieldName) {
-        Object[] args = { fieldName };
+    public static JAXBException propertyOrFieldCannotBeXmlValue(String fieldName, String className) {
+        Object[] args = { fieldName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, SUBCLASS_CANNOT_HAVE_XMLVALUE, args));
         exception.setErrorCode(SUBCLASS_CANNOT_HAVE_XMLVALUE);
         return exception;
     }
 
-    public static JAXBException invalidTypeForXmlValueField(String fieldName) {
-        Object[] args = { fieldName };
+    public static JAXBException invalidTypeForXmlValueField(String fieldName, String className) {
+        Object[] args = { fieldName, className };
         JAXBException exception = new JAXBException(ExceptionMessageGenerator.buildMessage(JAXBException.class, INVALID_TYPE_FOR_XMLVALUE_PROPERTY, args));
         exception.setErrorCode(INVALID_TYPE_FOR_XMLVALUE_PROPERTY);
         return exception;
