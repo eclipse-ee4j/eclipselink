@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -870,7 +870,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 throw new IllegalArgumentException();
             } else {
                 logProperty(key, value);
-                if (MOXySystemProperties.moxyLogPayload != null) {
+                if (MOXySystemProperties.moxyLogPayload != null && xmlMarshaller.isLogPayload() == null) {
                     xmlMarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
                 }
                 if (Constants.JAXB_FRAGMENT.equals(key)) {

@@ -148,7 +148,7 @@ public abstract class XMLMarshaller<
     private boolean wrapperAsCollectionName = false;
     private String xmlHeader;
     private Object marshalAttributeGroup;
-    private boolean logPayload = false;
+    private Boolean logPayload;
 
     public XMLMarshaller(CONTEXT context) {
         super(context);
@@ -1401,18 +1401,18 @@ public abstract class XMLMarshaller<
         return this.marshalAttributeGroup;
     }
 
-    public boolean isLogPayload() {
+    public Boolean isLogPayload() {
         return logPayload;
     }
 
-    public void setLogPayload(boolean logPayload) {
+    public void setLogPayload(Boolean logPayload) {
         this.logPayload = logPayload;
     }
 
     private void logMarshall(Object object) {
         String i18nmsg = JAXBLocalization.buildMessage("start_marshalling", new Object[] { (object!= null)?object.getClass().getName():"N/A", this.mediaType });
         AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, i18nmsg, new Object[0], false);
-        if (object != null && this.isLogPayload()) {
+        if (object != null && logPayload != null && this.isLogPayload()) {
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
         }
     }

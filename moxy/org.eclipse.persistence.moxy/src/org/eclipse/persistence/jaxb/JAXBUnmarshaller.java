@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,6 +69,7 @@ import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamesp
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
 import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
@@ -815,7 +816,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             throw new IllegalArgumentException();
         }
         logProperty(key, value);
-        if (MOXySystemProperties.moxyLogPayload != null) {
+        if (MOXySystemProperties.moxyLogPayload != null && xmlUnmarshaller.isLogPayload() == null) {
             xmlUnmarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
         }
         if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
@@ -919,7 +920,9 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     : (boolean) value;
             xmlUnmarshaller.setDisableSecureProcessing(disabled);
         } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
-            xmlUnmarshaller.setLogPayload(((boolean) value) || MOXySystemProperties.moxyLogPayload);
+            xmlUnmarshaller.setLogPayload(((boolean) value));
+        } else if (MarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
+            AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
         } else {
             throw new PropertyException(key, value);
         }

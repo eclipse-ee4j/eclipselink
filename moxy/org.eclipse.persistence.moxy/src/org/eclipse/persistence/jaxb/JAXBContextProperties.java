@@ -403,6 +403,7 @@ public class JAXBContextProperties {
      * @since 3.0
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#MOXY_LOGGING_LEVEL
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.logging.LogLevel
      */
     public static final String MOXY_LOGGING_LEVEL = "eclipselink.moxy.logging.level";
 

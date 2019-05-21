@@ -111,7 +111,7 @@ public class XMLUnmarshaller<
     private static Constructor xmlEventReaderInputSourceConstructor;
 
     private JsonTypeConfiguration jsonTypeConfiguration;
-    private boolean logPayload = false;
+    private Boolean logPayload;
 
     /**
      * @since EclipseLink 2.4
@@ -1012,18 +1012,18 @@ public class XMLUnmarshaller<
         platformUnmarshaller.setDisableSecureProcessing(disableSecureProcessing);
     }
 
-    public boolean isLogPayload() {
+    public Boolean isLogPayload() {
         return logPayload;
     }
 
-    public void setLogPayload(boolean logPayload) {
+    public void setLogPayload(Boolean logPayload) {
         this.logPayload = logPayload;
     }
 
     private void logUnmarshall(Object object) {
         String i18nmsg = JAXBLocalization.buildMessage("start_unmarshalling", new Object[] { this.mediaType, (object!= null)?object.getClass().getName():"N/A" });
         AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, i18nmsg, new Object[0], false);
-        if (object != null && this.isLogPayload()) {
+        if (object != null && logPayload != null && this.isLogPayload()) {
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
         }
     }
