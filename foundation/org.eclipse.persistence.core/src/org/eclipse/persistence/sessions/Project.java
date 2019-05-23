@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -174,6 +174,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** used for Caching JPA projects */
     protected Collection<String> classNamesForWeaving;
     protected Collection<String> structConverters;
+
+    protected boolean allowNullResultMaxMin = true;
 
     /**
      * PUBLIC:
@@ -1289,6 +1291,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL:
+     * Return true if Max/Min functions should return Null for this project.
+     */
+    public boolean allowNullResultMaxMin() {
+        return this.allowNullResultMaxMin;
+    }
+
+    /**
+     * INTERNAL:
      * Return true if SQL calls can defer to EOT on this project.
      */
     public boolean allowSQLDeferral() {
@@ -1332,6 +1342,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setAllowNativeSQLQueries(boolean allowNativeSQLQueries) {
         this.allowNativeSQLQueries = allowNativeSQLQueries;
+    }
+
+    /**
+     * INTERNAL:
+     * Set whether Max/Min functions should return Null for this project.
+     */
+    public void setAllowNullResultMaxMin(boolean allowNullResultMaxMin) {
+        this.allowNullResultMaxMin = allowNullResultMaxMin;
     }
 
     /**
