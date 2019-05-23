@@ -89,10 +89,10 @@ public class TestQueryHints implements PUPropertiesProvider {
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
             if (em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -116,10 +116,10 @@ public class TestQueryHints implements PUPropertiesProvider {
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
             if (em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -147,10 +147,10 @@ public class TestQueryHints implements PUPropertiesProvider {
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
             if (em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -170,10 +170,10 @@ public class TestQueryHints implements PUPropertiesProvider {
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
             if (em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -201,10 +201,10 @@ public class TestQueryHints implements PUPropertiesProvider {
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
             if (em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
@@ -224,10 +224,10 @@ public class TestQueryHints implements PUPropertiesProvider {
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
             if (em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
                 em.close();
             }
         }
