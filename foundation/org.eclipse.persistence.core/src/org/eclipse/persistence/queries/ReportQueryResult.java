@@ -211,8 +211,9 @@ public class ReportQueryResult implements Serializable, Map {
                     int selector = exp.getOperator().getSelector();
                     if(value instanceof Number) {
                         Number val = (Number)value;
-                        if (val.intValue() == 0 && ((selector == ExpressionOperator.Maximum) 
-                                || (selector == ExpressionOperator.Minimum))) {
+                        if (val.intValue() == 0 && (((selector == ExpressionOperator.Maximum) 
+                                || (selector == ExpressionOperator.Minimum))
+                                && query.getSession().getProject().allowNullResultMaxMin())) {
                             value = null;
                         }
                     }

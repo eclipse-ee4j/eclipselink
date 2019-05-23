@@ -2807,6 +2807,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             if (!session.hasBroker()) {
                 updateAllowZeroIdSetting(m);
             }
+            updateAllowNULLMAXMINSetting(m);
             updateIdValidation(m);
             updatePessimisticLockTimeout(m);
             updatePessimisticLockTimeoutUnit(m);
@@ -3498,6 +3499,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 Helper.isZeroValidPrimaryKey = false;
             } else {
                 session.handleException(ValidationException.invalidBooleanValueForProperty(allowZero, PersistenceUnitProperties.ALLOW_ZERO_ID));
+            }
+        }
+    }
+
+    /**
+     * Enable or disable default allowing null return from MAX or MIN 
+     */
+    protected void updateAllowNULLMAXMINSetting(Map m) {
+        String allowNull = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.ALLOW_NULL_MAX_MIN, m, this.session);
+        if (allowNull != null) {
+            if (allowNull.equalsIgnoreCase("true")) {
+                session.getProject().setAllowNullResultMaxMin(true);
+            } else if (allowNull.equalsIgnoreCase("false")) {
+                session.getProject().setAllowNullResultMaxMin(false);
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForProperty(allowNull, PersistenceUnitProperties.ALLOW_NULL_MAX_MIN));
             }
         }
     }
