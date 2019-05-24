@@ -2590,6 +2590,16 @@ public class PersistenceUnitProperties {
     public static final String ALLOW_ZERO_ID = "eclipselink.allow-zero-id";
 
     /**
+     * The "<code>eclipselink.allow-null-max-min</code>" property configures if zero
+     * is considered a valid return value for MAX/MIN aggregate functions. 
+     * 
+     * Section 4.8.5 of the JPA specification dictates this property must default 'true'.
+     *
+     * Default: "<code>true</code>".
+     */
+    public static final String ALLOW_NULL_MAX_MIN = "eclipselink.allow-null-max-min";
+
+    /**
      * The "<code>eclipselink.id-validation</code>" property defines
      * which primary key components values are considered invalid.
      * These values will be also overridden by sequencing.
