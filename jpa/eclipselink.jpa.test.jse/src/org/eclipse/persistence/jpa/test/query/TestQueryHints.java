@@ -60,7 +60,7 @@ public class TestQueryHints implements PUPropertiesProvider {
 
     private final static int propertyTimeout = 3099;
 
-    @Emf(name = "defaultEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE)
+    @Emf(name = "defaultEMF", classes = { Employee.class })
     private EntityManagerFactory emf;
 
     /**
