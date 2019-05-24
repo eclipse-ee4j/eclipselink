@@ -19,9 +19,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
+import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.jpql.model.NoResultEntity;
 
 import org.junit.Assert;
@@ -31,8 +33,12 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestAggregateFunctions {
 
-    @Emf(createTables = DDLGen.DROP_CREATE, classes = { NoResultEntity.class })
+    @Emf(name = "defaultEMF", createTables = DDLGen.DROP_CREATE, classes = { NoResultEntity.class })
     private EntityManagerFactory emf;
+
+    @Emf(name = "allowmaxminEMF", createTables = DDLGen.DROP_CREATE, classes = { NoResultEntity.class }, properties = {
+            @Property(name = PersistenceUnitProperties.ALLOW_NULL_MAX_MIN, value = "false") })
+    private EntityManagerFactory emfOff;
 
     /**
      * Complex test of the aggregate functions in JPQL. 
@@ -57,6 +63,42 @@ public class TestAggregateFunctions {
             q = em.createQuery("SELECT MAX(n.primitive) FROM NoResultEntity n");
             res = q.getSingleResult();
             Assert.assertEquals("Result of MAX aggregate should have been NULL", null, res);
+
+            q = em.createQuery("SELECT AVG(n.primitive) FROM NoResultEntity n");
+            res = q.getSingleResult();
+            Assert.assertEquals("Result of AVG aggregate should have been NULL", null, res);
+
+            q = em.createQuery("SELECT SUM(n.primitive) FROM NoResultEntity n");
+            res = q.getSingleResult();
+            Assert.assertEquals("Result of SUM aggregate should have been NULL", null, res);
+
+            q = em.createQuery("SELECT COUNT(n.primitive) FROM NoResultEntity n");
+            res = q.getSingleResult();
+            Assert.assertEquals("Result of COUNT aggregate should have been a Long", new Long(0), res);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+
+        //Test with property that turns off fix
+        em = emfOff.createEntityManager();
+        try {
+            //Check to make sure the table is empty first
+            TypedQuery<NoResultEntity> checkQuery = em.createQuery("SELECT n FROM NoResultEntity n", NoResultEntity.class);
+            List<NoResultEntity> checkResult = checkQuery.getResultList();
+            Assert.assertEquals("Entity table NoResultEntity must be empty for this test", 0, checkResult.size());
+
+            Query q = em.createQuery("SELECT MIN(n.primitive) FROM NoResultEntity n");
+            Object res = q.getSingleResult();
+            Assert.assertEquals("Result of MIN aggregate should have been 0", 0, res);
+
+            q = em.createQuery("SELECT MAX(n.primitive) FROM NoResultEntity n");
+            res = q.getSingleResult();
+            Assert.assertEquals("Result of MAX aggregate should have been 0", 0, res);
 
             q = em.createQuery("SELECT AVG(n.primitive) FROM NoResultEntity n");
             res = q.getSingleResult();
