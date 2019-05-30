@@ -60,12 +60,12 @@ public class TestQueryHints implements PUPropertiesProvider {
 
     private final static int propertyTimeout = 3099;
 
-    @Emf(name = "defaultEMF", classes = { Employee.class })
+    @Emf(name = "defaultEMF", classes = {Employee.class}, createTables = DDLGen.DROP_CREATE)
     private EntityManagerFactory emf;
 
     /**
      * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT to the default value
-     *  will see the expected value of seconds being set on the statement
+     * will see the expected value of seconds being set on the statement
      */
     @Test
     public void testJDBCQueryTimeout() throws Exception {
@@ -75,17 +75,17 @@ public class TestQueryHints implements PUPropertiesProvider {
 
             em.getTransaction().begin();
             em.createQuery("SELECT x FROM Employee x")
-                .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
-                .getResultList();
+                    .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
+                    .getResultList();
 
             //Convert the timeout set (MILLISECONDS) to what is expected by the JDBC layer (SECONDS)
             double queryTimeoutSeconds = TestQueryHints.propertyTimeout / 1000d;
             //if there was a remainder, it should round up
-            if(queryTimeoutSeconds % 1 > 0) {
+            if (queryTimeoutSeconds % 1 > 0) {
                 queryTimeoutSeconds += 1;
             }
 
-            Assert.assertEquals((int)queryTimeoutSeconds, TestQueryHints.statementTimeout);
+            Assert.assertEquals((int) queryTimeoutSeconds, TestQueryHints.statementTimeout);
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         } finally {
@@ -102,17 +102,17 @@ public class TestQueryHints implements PUPropertiesProvider {
 
             em.getTransaction().begin();
             em.createQuery("SELECT x FROM Employee x")
-                .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
-                .getResultList();
+                    .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
+                    .getResultList();
 
             //Convert the timeout set (MILLISECONDS) to what is expected by the JDBC layer (SECONDS)
             double queryTimeoutSeconds = TestQueryHints.propertyTimeout / 1000d;
             //if there was a remainder, it should round up
-            if(queryTimeoutSeconds % 1 > 0) {
+            if (queryTimeoutSeconds % 1 > 0) {
                 queryTimeoutSeconds += 1;
             }
 
-            Assert.assertEquals((int)queryTimeoutSeconds, TestQueryHints.statementTimeout);
+            Assert.assertEquals((int) queryTimeoutSeconds, TestQueryHints.statementTimeout);
         } catch (Exception e) {
             Assert.fail(e.getLocalizedMessage());
         } finally {
@@ -127,7 +127,7 @@ public class TestQueryHints implements PUPropertiesProvider {
 
     /**
      * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT_UNIT to the "SECONDS" value
-     *  will see the expected value of seconds being set on the statement
+     * will see the expected value of seconds being set on the statement
      */
     @Test
     public void testQueryTimeoutUnitSeconds() throws Exception {
@@ -137,8 +137,8 @@ public class TestQueryHints implements PUPropertiesProvider {
 
             em.getTransaction().begin();
             em.createQuery("SELECT x FROM Employee x")
-                .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
-                .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.SECONDS.toString()).getResultList();
+                    .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
+                    .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.SECONDS.toString()).getResultList();
 
             //Convert the timeout set (SECONDS) to what is expected by the JDBC layer (SECONDS)
             int queryTimeoutSecondsDouble = TestQueryHints.propertyTimeout;
@@ -160,8 +160,8 @@ public class TestQueryHints implements PUPropertiesProvider {
 
             em.getTransaction().begin();
             em.createQuery("SELECT x FROM Employee x")
-                .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
-                .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.SECONDS.toString()).getResultList();
+                    .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
+                    .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.SECONDS.toString()).getResultList();
 
             //Convert the timeout set (SECONDS) to what is expected by the JDBC layer (SECONDS)
             int queryTimeoutSecondsDouble = TestQueryHints.propertyTimeout;
@@ -181,7 +181,7 @@ public class TestQueryHints implements PUPropertiesProvider {
 
     /**
      * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT_UNIT to the "MINUTES" value
-     *  will see the expected value of seconds being set on the statement
+     * will see the expected value of seconds being set on the statement
      */
     @Test
     public void testQueryTimeoutUnitMinutes() throws Exception {
@@ -191,8 +191,8 @@ public class TestQueryHints implements PUPropertiesProvider {
 
             em.getTransaction().begin();
             em.createQuery("SELECT x FROM Employee x")
-                .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
-                .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MINUTES.toString()).getResultList();
+                    .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
+                    .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MINUTES.toString()).getResultList();
 
             //Convert the timeout set (MINUTES) to what is expected by the JDBC layer (SECONDS)
             int queryTimeoutSeconds = TestQueryHints.propertyTimeout * 60;
@@ -214,8 +214,8 @@ public class TestQueryHints implements PUPropertiesProvider {
 
             em.getTransaction().begin();
             em.createQuery("SELECT x FROM Employee x")
-                .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
-                .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MINUTES.toString()).getResultList();
+                    .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
+                    .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MINUTES.toString()).getResultList();
 
             //Convert the timeout set (MINUTES) to what is expected by the JDBC layer (SECONDS)
             int queryTimeoutSeconds = TestQueryHints.propertyTimeout * 60;
@@ -313,7 +313,7 @@ public class TestQueryHints implements PUPropertiesProvider {
         }
 
         public static Connector createStatementProxy(Connector toWrap) {
-            return (Connector) Proxy.newProxyInstance(Connector.class.getClassLoader(), new Class[] { Connector.class }, new ConnectorInvocationHandler(toWrap));
+            return (Connector) Proxy.newProxyInstance(Connector.class.getClassLoader(), new Class[]{Connector.class}, new ConnectorInvocationHandler(toWrap));
         }
     }
 
@@ -332,7 +332,7 @@ public class TestQueryHints implements PUPropertiesProvider {
         }
 
         public static Connection createStatementProxy(Connection toWrap) {
-            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[] { Connection.class }, new ConnectionInvocationHandler(toWrap));
+            return (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), new Class[]{Connection.class}, new ConnectionInvocationHandler(toWrap));
         }
     }
 
@@ -347,15 +347,15 @@ public class TestQueryHints implements PUPropertiesProvider {
             //Get the query timeout being set on the statement
             //This value should be in seconds, since that is what the Statement expects
             if (method.getName().equals("setQueryTimeout") && proxy instanceof PreparedStatement) {
-                if(args.length > 0) {
-                    TestQueryHints.statementTimeout = (Integer)args[0];
+                if (args.length > 0) {
+                    TestQueryHints.statementTimeout = (Integer) args[0];
                 }
             }
             return method.invoke(wrappedStatement, args);
         }
 
         public static PreparedStatement createStatementProxy(PreparedStatement toWrap) {
-            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[] { PreparedStatement.class }, new PreparedStatementInvocationHandler(toWrap));
+            return (PreparedStatement) Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(), new Class[]{PreparedStatement.class}, new PreparedStatementInvocationHandler(toWrap));
         }
     }
 }
