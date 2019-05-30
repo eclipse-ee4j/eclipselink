@@ -28,7 +28,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.json.*;
+import javax.json.Json;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonException;
+import javax.json.JsonReader;
+import javax.json.JsonStructure;
+import javax.json.JsonArray;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonString;
+import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 import javax.xml.namespace.QName;
 
