@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -367,8 +367,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         try {
             query = em.createNamedQuery("StoredFunction_In");
             query.setParameter("P_IN", 1);
-            int result = (Integer)query.getSingleResult();
-            if (result != 1000) {
+            long result = (Long)query.getSingleResult();
+            if (result != 1000L) {
                 fail("Incorrect result returned:" + result);
             }
         } finally {
@@ -1974,7 +1974,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Object[] objectdata = (Object[])aQuery.getSingleResult();
 
             assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.length==2)) );
-            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == ((Integer)objectdata[0]).intValue()) );
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == ((Long)objectdata[0]).longValue()) );
             assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){

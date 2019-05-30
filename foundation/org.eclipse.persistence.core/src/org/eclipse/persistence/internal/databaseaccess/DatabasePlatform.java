@@ -1319,7 +1319,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (javaType == ClassConstants.INTEGER) {
             return Types.INTEGER;
         } else if (javaType == ClassConstants.LONG) {
-            return Types.INTEGER;
+            return Types.BIGINT;
         } else if (javaType == ClassConstants.NUMBER) {
             return Types.DECIMAL;
         } else if (javaType == ClassConstants.SHORT ) {
