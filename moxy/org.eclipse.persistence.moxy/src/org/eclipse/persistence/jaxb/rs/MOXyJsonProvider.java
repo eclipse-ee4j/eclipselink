@@ -56,6 +56,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -203,6 +204,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  */
 @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD, "application/x-javascript"})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+@Provider
 public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
 
     private static final String APPLICATION_XJAVASCRIPT = "application/x-javascript";
