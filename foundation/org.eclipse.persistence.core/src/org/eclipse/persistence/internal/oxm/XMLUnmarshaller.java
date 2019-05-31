@@ -1021,8 +1021,11 @@ public class XMLUnmarshaller<
     }
 
     private void logUnmarshall(Object object) {
-        String i18nmsg = JAXBLocalization.buildMessage("start_unmarshalling", new Object[] { this.mediaType, (object!= null)?object.getClass().getName():"N/A" });
-        AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, i18nmsg, new Object[0], false);
+        SessionLog logger = AbstractSessionLog.getLog();
+
+        if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+            logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_start_unmarshalling", new Object[] { (object!= null)?object.getClass().getName():"N/A", this.mediaType, platformUnmarshaller.getClass().getName() });
+        }
         if (object != null && logPayload != null && this.isLogPayload()) {
             AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
         }

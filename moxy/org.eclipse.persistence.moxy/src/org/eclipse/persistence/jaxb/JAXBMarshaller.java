@@ -869,7 +869,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             if (key == null) {
                 throw new IllegalArgumentException();
             } else {
-                logProperty(key, value);
+                SessionLog logger = AbstractSessionLog.getLog();
+                if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                    logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_marshaller_property", new Object[] {key, value});
+                }
                 if (MOXySystemProperties.moxyLogPayload != null && xmlMarshaller.isLogPayload() == null) {
                     xmlMarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
                 }
@@ -1050,10 +1053,4 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
     }
-
-    private void logProperty(String key, Object value) {
-        String i18nmsg = JAXBLocalization.buildMessage("set_marshaller_property", new Object[] {key, value});
-        AbstractSessionLog.getLog().log(SessionLog.CONFIG, SessionLog.MOXY, i18nmsg, new Object[0], false);
-    }
-
 }

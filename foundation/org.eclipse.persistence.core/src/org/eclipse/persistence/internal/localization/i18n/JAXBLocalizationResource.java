@@ -42,13 +42,6 @@ public class JAXBLocalizationResource extends ListResourceBundle {
             {"malformed_url_error", "Error: Unexpected MalformedURLException"},
             {"io_exception_error", "Error: Unexpected IOException"},
             {"version", "Version: "},
-            {"start_marshalling", "Marshalling \"{0}\" into {1} started"},
-            {"start_unmarshalling", "Unmarshalling {0} into \"{1}\" started"},
-            {"read_from_moxy_json_provider", "MOXyJsonProvider.readFrom(...) is called."},
-            {"write_to_moxy_json_provider", "MOXyJsonProvider.writeTo(...) is called."},
-            {"set_marshaller_property", "Setting marshaller property (name/value): {0}/{1}"},
-            {"set_unmarshaller_property", "Setting unmarshaller property (name/value): {0}/{1}"},
-            {"set_jaxb_context_property", "Setting JAXBContext property (name/value): {0}/{1}"}
     };
 
     /**

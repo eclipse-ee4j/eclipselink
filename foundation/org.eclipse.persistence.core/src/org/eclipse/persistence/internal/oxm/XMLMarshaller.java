@@ -605,7 +605,15 @@ public abstract class XMLMarshaller<
      * @param descriptor the XMLDescriptor for the object being marshalled
      */
     protected void marshal(Object object, MarshalRecord marshalRecord, ABSTRACT_SESSION session, DESCRIPTOR descriptor, boolean isXMLRoot) {
-        logMarshall(object);
+        SessionLog logger = AbstractSessionLog.getLog();
+
+        if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+            logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_start_marshalling", new Object[] { (object!= null)?object.getClass().getName():"N/A", this.mediaType});
+        }
+        if (object != null && logPayload != null && this.isLogPayload()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
+        }
+
         if(null != schema) {
             marshalRecord = new ValidatingMarshalRecord(marshalRecord, this);
         }
@@ -1407,13 +1415,5 @@ public abstract class XMLMarshaller<
 
     public void setLogPayload(Boolean logPayload) {
         this.logPayload = logPayload;
-    }
-
-    private void logMarshall(Object object) {
-        String i18nmsg = JAXBLocalization.buildMessage("start_marshalling", new Object[] { (object!= null)?object.getClass().getName():"N/A", this.mediaType });
-        AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, i18nmsg, new Object[0], false);
-        if (object != null && logPayload != null && this.isLogPayload()) {
-            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
-        }
     }
 }

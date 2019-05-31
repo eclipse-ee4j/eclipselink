@@ -815,7 +815,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
-        logProperty(key, value);
+        SessionLog logger = AbstractSessionLog.getLog();
+        if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+            logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_unmarshaller_property", new Object[] {key, value});
+        }
         if (MOXySystemProperties.moxyLogPayload != null && xmlUnmarshaller.isLogPayload() == null) {
             xmlUnmarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
         }
@@ -1371,12 +1374,5 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
             return jaxbElement;
         }
-
     }
-
-    private void logProperty(String key, Object value) {
-        String i18nmsg = JAXBLocalization.buildMessage("set_unmarshaller_property", new Object[] {key, value});
-        AbstractSessionLog.getLog().log(SessionLog.CONFIG, SessionLog.MOXY, i18nmsg, new Object[0], false);
-    }
-
 }

@@ -803,7 +803,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * @param classLoader the classLoader to use.  If null then Thread.currentThread().getContextClassLoader() will be used.
          */
         public JAXBContextInput(Map properties, ClassLoader classLoader) {
-            logProperties(properties);
+            SessionLog logger = AbstractSessionLog.getLog();
+            if (properties != null && logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                for (Object key : properties.keySet()) {
+                    logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{key.toString(), properties.get(key).toString()});
+                }
+            }
             this.properties = properties;
             if (null == classLoader) {
                 this.classLoader = Thread.currentThread().getContextClassLoader();
@@ -1691,14 +1696,4 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         Object propertyValue = properties.get(JAXBContextProperties.BEAN_VALIDATION_FACETS);
         if (propertyValue != null) inputImpl.setFacets((Boolean) propertyValue);
     }
-
-    private static void logProperties(Map properties) {
-        if (properties != null) {
-            for (Object key: properties.keySet()) {
-                String i18nmsg = JAXBLocalization.buildMessage("set_jaxb_context_property", new Object[] {key.toString(), properties.get(key).toString()});
-                AbstractSessionLog.getLog().log(SessionLog.CONFIG, SessionLog.MOXY, i18nmsg, new Object[0], false);
-            }
-        }
-    }
-
 }
