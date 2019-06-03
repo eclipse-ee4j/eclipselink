@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,17 +15,12 @@ package org.eclipse.persistence.testing.tests.jpa.beanvalidation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
-import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.beanvalidation.Address;
@@ -60,7 +55,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             suite.addTest(new BeanValidationJunitTest("testUpdateWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testRemoveWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsLoadingOfLazyRelationships"));
-            suite.addTest(new BeanValidationJunitTest("testValidateChangedData"));
+            suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsTraversingRelationshipdMultipleTimes"));
         }
         return suite;
     }
@@ -325,34 +320,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         // If it ever finds an entity with such flag set, the entity has visited the validator twice. It should be flagged as error.
     }
 
-    //Bug #411013
-    public void testValidateChangedData() {
-        try {
-            getDatabaseSession().executeNonSelectingSQL("insert into CMP3_BV_PROJECT values (895, \"some long name\")");
-        } catch (Throwable t) {
-            getDatabaseSession().getSessionLog().logThrowable(SessionLog.WARNING, t);
-        }
-        clearCache();
-        Map<String, Object> props = new HashMap<>();
-        props.put("eclipselink.weaving", "false");
-        EntityManagerFactory factory = getEntityManagerFactory(props);
-        EntityManager em = factory.createEntityManager();
-        try {
-            beginTransaction(em);
-            TypedQuery<Project> query = em.createQuery("select p from CMP3_BV_PROJECT p", Project.class);
-            for (Project p: query.getResultList()) {
-                System.out.println(p.getName());
-            }
-            commitTransaction(em);
-        } catch (RuntimeException ex) {
-            if (isTransactionActive(em)) {
-                rollbackTransaction(em);
-            }
-            throw ex;
-        } finally {
-            closeEntityManager(em);
-        }
-    }
+
 
     //--------------------Helper Methods ---------------//
     private boolean isInstantiated(Object entityObject, String attributeName, org.eclipse.persistence.sessions.Project project) {

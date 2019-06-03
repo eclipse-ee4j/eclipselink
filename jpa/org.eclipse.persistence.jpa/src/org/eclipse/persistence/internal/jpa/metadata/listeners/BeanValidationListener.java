@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2018 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2019 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -15,6 +15,11 @@
 
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
 
+import java.lang.annotation.ElementType;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
@@ -24,19 +29,14 @@ import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.jpa.metadata.beanvalidation.BeanValidationHelper;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.lang.annotation.ElementType;
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -79,7 +79,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     }
 
     @Override
-    public void aboutToUpdate (DescriptorEvent event) {
+    public void preUpdate (DescriptorEvent event) {
         Object source = event.getSource();
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl )event.getSession();
         // preUpdate is also generated for deleted objects that were modified in this UOW.
@@ -150,6 +150,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         /**
          * @return false for any lazily loaded property of root object being validated
          */
+        @Override
         public boolean isReachable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
             boolean reachable = true;
             String attributeName = null;
@@ -180,6 +181,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
          * Called only if isReachable returns true
          * @return false for any associatons of root object being validated true otherwise
          */
+        @Override
         public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
             boolean cascadable = true;
             if (isRootObjectPath(pathToTraversableObject)) {
