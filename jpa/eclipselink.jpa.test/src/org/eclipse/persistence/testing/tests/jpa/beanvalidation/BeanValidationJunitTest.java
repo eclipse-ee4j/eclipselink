@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,17 +12,24 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.tests.jpa.beanvalidation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Set;
 
-import javax.persistence.*;
-import javax.validation.ConstraintViolationException;
+import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 
-import junit.framework.*;
-
-import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
-import org.eclipse.persistence.testing.models.jpa.beanvalidation.*;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
+import org.eclipse.persistence.testing.models.jpa.beanvalidation.Address;
+import org.eclipse.persistence.testing.models.jpa.beanvalidation.BeanValidationTableCreator;
+import org.eclipse.persistence.testing.models.jpa.beanvalidation.Employee;
+import org.eclipse.persistence.testing.models.jpa.beanvalidation.Project;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 public class BeanValidationJunitTest extends JUnitTestCase {
 
@@ -240,7 +247,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         EntityManager em = createEntityManager();
         boolean removeSuccessfull = false;
         final int EMPLOYEE_PK_TO_REMOVE = 2;
-        
+
         try {
             beginTransaction(em);
             Employee e1 = new Employee(EMPLOYEE_PK_TO_REMOVE, getFilledStringOfLength(Employee.NAME_MAX_SIZSE - 1 ),
@@ -252,7 +259,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             throw ex;
-        } 
+        }
 
         try {
             beginTransaction(em);
@@ -266,7 +273,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
                 rollbackTransaction(em);
             }
             throw ex;
-        } 
+        }
 
         closeEntityManager(em);
         assertTrue("Automatic Validation should not be executed for remove", removeSuccessfull);
@@ -297,7 +304,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         } finally {
             closeEntityManager(em);
         }
-        
+
         org.eclipse.persistence.sessions.Project project = getDatabaseSession().getProject();
         assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "projects", project) );
         assertTrue( "Lazy field should not be instantiated because of validation", !isInstantiated(employee, "managedProject", project) );
@@ -322,6 +329,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
         return mapping.getIndirectionPolicy().objectIsInstantiatedOrChanged(attributeValue);
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return "beanvalidation";
     }
