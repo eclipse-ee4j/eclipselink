@@ -60,6 +60,7 @@ public class BeanValidationJunitTest extends JUnitTestCase {
             suite.addTest(new BeanValidationJunitTest("testUpdateWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testRemoveWithInvalidData"));
             suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsLoadingOfLazyRelationships"));
+            suite.addTest(new BeanValidationJunitTest("testTraversableResolverPreventsTraversingRelationshipMultipleTimes"));
             suite.addTest(new BeanValidationJunitTest("testValidateChangedData"));
         }
         return suite;
