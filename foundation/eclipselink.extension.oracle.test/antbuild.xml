@@ -308,6 +308,8 @@
         <path id="oracle_test.public.dependency.path">
             <pathelement path="${oracle_test.2.jpa.plugins.dir}/${persistence22.jar}"/>
             <fileset dir="${oracle_test.2.common.plugins.dir}" includes="${eclipselink.core.depend}"/>
+            <pathelement path="${oracle_test.2.common.plugins.dir}/${jms.jar}"/>
+            <pathelement path="${oracle_test.2.common.plugins.dir}/${transaction.jar}"/>
         </path>
     </target>
     <target name="init_paths" depends="init, init_eclipselink, init_bundles, init_classes, init_dependency">
