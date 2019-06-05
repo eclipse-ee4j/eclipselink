@@ -405,7 +405,7 @@ public class JAXBContextProperties {
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOGGING_LEVEL
      * @see org.eclipse.persistence.logging.LogLevel
      */
-    public static final String MOXY_LOGGING_LEVEL = "eclipselink.moxy.logging.level";
+    public static final String MOXY_LOGGING_LEVEL = "eclipselink.logging.level.moxy";
 
     /**
      * Property for logging Entities content during marshalling/unmarshalling operation in MOXy.
@@ -415,12 +415,12 @@ public class JAXBContextProperties {
      * Use it carefully. It can produce high amount of data in the log files.
      *
      * Usage: set to {@link Boolean#TRUE} to enable payload logging, set to {@link Boolean#FALSE} to disable it.
-     * It can be set via system property with name "eclipselink.moxy.logging.payload" too.
+     * It can be set via system property with name "eclipselink.logging.payload.moxy" too.
      * By default it is disabled.
      *
      * @since 3.0
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#MOXY_LOG_PAYLOAD
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOG_PAYLOAD
      */
-    public static final String MOXY_LOG_PAYLOAD = "eclipselink.moxy.logging.payload";
+    public static final String MOXY_LOG_PAYLOAD = "eclipselink.logging.payload.moxy";
 }
