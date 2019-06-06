@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.jaxb.IDResolverWrapper;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
@@ -67,6 +68,9 @@ import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
@@ -811,6 +815,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
+        SessionLog logger = AbstractSessionLog.getLog();
+        if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+            logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_unmarshaller_property", new Object[] {key, value});
+        }
+        if (MOXySystemProperties.moxyLogPayload != null && xmlUnmarshaller.isLogPayload() == null) {
+            xmlUnmarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
+        }
         if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
             MediaType mType = null;
             if(value instanceof MediaType) {
@@ -911,6 +922,10 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     ? Boolean.parseBoolean((String) value)
                     : (boolean) value;
             xmlUnmarshaller.setDisableSecureProcessing(disabled);
+        } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+            xmlUnmarshaller.setLogPayload(((boolean) value));
+        } else if (MarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
+            AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
         } else {
             throw new PropertyException(key, value);
         }
@@ -991,6 +1006,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return this.bvNoOptimisation;
         } else if (UnmarshallerProperties.DISABLE_SECURE_PROCESSING.equals(key)) {
             return xmlUnmarshaller.isSecureProcessingDisabled();
+        } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+            return xmlUnmarshaller.isLogPayload();
         }
         throw new PropertyException(key);
     }
@@ -1357,7 +1374,5 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
             return jaxbElement;
         }
-
     }
-
 }

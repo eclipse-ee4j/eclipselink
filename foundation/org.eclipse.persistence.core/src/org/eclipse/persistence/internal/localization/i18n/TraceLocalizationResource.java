@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -362,7 +362,14 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "jaxp_sec_disabled", "Xml Security disabled, no JAXP {0} external access configuration necessary." },
         { "jaxp_sec_explicit", "Detected explicitly JAXP configuration, no JAXP {0} external access configuration necessary." },
         { "jaxp_sec_prop_supported", "Property {0} is supported and has been successfully set by used JAXP implementation." },
-        { "jaxp_sec_prop_not_supported", "Property {0} is not supported by used JAXP implementation." }
+        { "jaxp_sec_prop_not_supported", "Property {0} is not supported by used JAXP implementation." },
+        { "moxy_start_marshalling", "Marshalling \"{0}\" into {1} started"},
+        { "moxy_start_unmarshalling", "Unmarshalling {0} into \"{1}\" by \"{2}\" started"},
+        { "moxy_read_from_moxy_json_provider", "MOXyJsonProvider.readFrom(...) is called."},
+        { "moxy_write_to_moxy_json_provider", "MOXyJsonProvider.writeTo(...) is called."},
+        { "moxy_set_marshaller_property", "Setting marshaller property (name/value): {0}/{1}"},
+        { "moxy_set_unmarshaller_property", "Setting unmarshaller property (name/value): {0}/{1}"},
+        { "moxy_set_jaxb_context_property", "Setting JAXBContext property (name/value): {0}/{1}"}
     };
 
     /**

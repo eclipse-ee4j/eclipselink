@@ -32,11 +32,14 @@ import org.eclipse.persistence.core.sessions.CoreSession;
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.record.PlatformUnmarshaller;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLPlatform;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 import org.eclipse.persistence.oxm.record.XMLRootRecord;
 import org.eclipse.persistence.platform.xml.XMLParser;
@@ -108,6 +111,7 @@ public class XMLUnmarshaller<
     private static Constructor xmlEventReaderInputSourceConstructor;
 
     private JsonTypeConfiguration jsonTypeConfiguration;
+    private Boolean logPayload;
 
     /**
      * @since EclipseLink 2.4
@@ -360,7 +364,9 @@ public class XMLUnmarshaller<
         if (file == null) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(file);
+        Object result = platformUnmarshaller.unmarshal(file);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -377,7 +383,9 @@ public class XMLUnmarshaller<
         if ((null == file) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(file, clazz);
+        Object result = platformUnmarshaller.unmarshal(file, clazz);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -394,7 +402,9 @@ public class XMLUnmarshaller<
         if (inputStream == null) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(inputStream);
+        Object result = platformUnmarshaller.unmarshal(inputStream);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -411,7 +421,9 @@ public class XMLUnmarshaller<
         if ((null == inputStream) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(inputStream, clazz);
+        Object result = platformUnmarshaller.unmarshal(inputStream, clazz);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -428,7 +440,9 @@ public class XMLUnmarshaller<
         if (reader == null) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(reader);
+        Object result = platformUnmarshaller.unmarshal(reader);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -445,7 +459,9 @@ public class XMLUnmarshaller<
         if ((null == reader) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(reader, clazz);
+        Object result = platformUnmarshaller.unmarshal(reader, clazz);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -462,7 +478,9 @@ public class XMLUnmarshaller<
         if (url == null) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(url);
+        Object result = platformUnmarshaller.unmarshal(url);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -479,7 +497,9 @@ public class XMLUnmarshaller<
         if ((null == url) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(url, clazz);
+        Object result = platformUnmarshaller.unmarshal(url, clazz);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -496,7 +516,9 @@ public class XMLUnmarshaller<
         if (inputSource == null) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(inputSource);
+        Object result = platformUnmarshaller.unmarshal(inputSource);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -513,7 +535,9 @@ public class XMLUnmarshaller<
         if ((null == inputSource) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(inputSource, clazz);
+        Object result = platformUnmarshaller.unmarshal(inputSource, clazz);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -530,7 +554,9 @@ public class XMLUnmarshaller<
             throw XMLMarshalException.nullArgumentException();
         }
         if ((node.getNodeType() == Node.DOCUMENT_NODE) || (node.getNodeType() == Node.ELEMENT_NODE) || (node.getNodeType() == Node.DOCUMENT_FRAGMENT_NODE)) {
-            return platformUnmarshaller.unmarshal(node);
+            Object result = platformUnmarshaller.unmarshal(node);
+            logUnmarshall(result);
+            return result;
         } else {
             throw XMLMarshalException.unmarshalException();
         }
@@ -550,7 +576,9 @@ public class XMLUnmarshaller<
         if ((null == node) || (null == clazz)) {
             throw XMLMarshalException.nullArgumentException();
         }
-        return platformUnmarshaller.unmarshal(node, clazz);
+        Object result = platformUnmarshaller.unmarshal(node, clazz);
+        logUnmarshall(result);
+        return result;
     }
 
     /**
@@ -573,13 +601,17 @@ public class XMLUnmarshaller<
                 if(xmlStreamReader != null) {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[0]);
-                    return platformUnmarshaller.unmarshal(xmlReader, inputSource);
+                    Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource);
+                    logUnmarshall(result);
+                    return result;
                 } else {
                     Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
                     if(xmlEventReader != null) {
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
-                        return platformUnmarshaller.unmarshal(xmlReader, inputSource);
+                        Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource);
+                        logUnmarshall(result);
+                        return result;
                     }
                 }
             } catch(Exception e) {
@@ -636,28 +668,39 @@ public class XMLUnmarshaller<
                 if(xmlStreamReader != null) {
                     InputSource inputSource = (InputSource) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderInputSourceConstructor, new Object[]{xmlStreamReader});
                     XMLReader xmlReader = (XMLReader) PrivilegedAccessHelper.invokeConstructor(xmlStreamReaderReaderConstructor, new Object[]{});
-                    return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                    Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                    logUnmarshall(result);
+                    return result;
                 } else {
                     Object xmlEventReader = PrivilegedAccessHelper.invokeMethod(staxSourceGetEventReaderMethod, source);
                     if(xmlEventReader != null) {
                         InputSource inputSource = (InputSource)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderInputSourceConstructor, new Object[]{xmlEventReader});
                         XMLReader xmlReader = (XMLReader)PrivilegedAccessHelper.invokeConstructor(xmlEventReaderReaderConstructor, new Object[]{});
-                        return platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                        Object result = platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+                        logUnmarshall(result);
+                        return result;
                     }
                 }
             } catch(Exception e) {
                 throw XMLMarshalException.unmarshalException(e);
             }
         }
-        return platformUnmarshaller.unmarshal(source, clazz);
+        Object result = platformUnmarshaller.unmarshal(source, clazz);
+        logUnmarshall(result);
+        return result;
+
     }
 
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource) {
-        return this.platformUnmarshaller.unmarshal(xmlReader, inputSource);
+        Object result = this.platformUnmarshaller.unmarshal(xmlReader, inputSource);
+        logUnmarshall(result);
+        return result;
     }
 
     public Object unmarshal(XMLReader xmlReader, InputSource inputSource, Class clazz) {
-        return this.platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+        Object result = this.platformUnmarshaller.unmarshal(xmlReader, inputSource, clazz);
+        logUnmarshall(result);
+        return result;
     }
 
     @Override
@@ -967,6 +1010,25 @@ public class XMLUnmarshaller<
 
     public final void setDisableSecureProcessing(boolean disableSecureProcessing) {
         platformUnmarshaller.setDisableSecureProcessing(disableSecureProcessing);
+    }
+
+    public Boolean isLogPayload() {
+        return logPayload;
+    }
+
+    public void setLogPayload(Boolean logPayload) {
+        this.logPayload = logPayload;
+    }
+
+    private void logUnmarshall(Object object) {
+        SessionLog logger = AbstractSessionLog.getLog();
+
+        if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+            logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_start_unmarshalling", new Object[] { (object!= null)?object.getClass().getName():"N/A", this.mediaType, platformUnmarshaller.getClass().getName() });
+        }
+        if (object != null && logPayload != null && this.isLogPayload()) {
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
+        }
     }
 
 }
