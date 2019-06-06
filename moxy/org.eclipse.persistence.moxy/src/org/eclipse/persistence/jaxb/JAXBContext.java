@@ -30,6 +30,7 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -52,6 +53,9 @@ import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
 import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespaceResolver;
@@ -159,6 +163,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     static {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/normalized-value", false);
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
+        if (MOXySystemProperties.moxyLoggingLevel != null) {
+            AbstractSessionLog.getLog().setLevel(LogLevel.toValue(MOXySystemProperties.moxyLoggingLevel).getId(), SessionLog.MOXY);
+        }
     }
 
     private static final String RI_XML_ACCESSOR_FACTORY_SUPPORT = "com.sun.xml.bind.XmlAccessorFactory";
@@ -795,6 +802,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * @param classLoader the classLoader to use.  If null then Thread.currentThread().getContextClassLoader() will be used.
          */
         public JAXBContextInput(Map properties, ClassLoader classLoader) {
+            SessionLog logger = AbstractSessionLog.getLog();
+            if (properties != null && logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                for (Object key : properties.keySet()) {
+                    logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{key.toString(), properties.get(key).toString()});
+                }
+            }
             this.properties = properties;
             if (null == classLoader) {
                 this.classLoader = Thread.currentThread().getContextClassLoader();
@@ -1604,6 +1617,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.MOXY_LOGGING_LEVEL, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.MOXY_LOG_PAYLOAD, marshaller);
             }
 
             return marshaller;
@@ -1638,6 +1653,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.MOXY_LOGGING_LEVEL, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.MOXY_LOG_PAYLOAD, unmarshaller);
             }
             return unmarshaller;
         }
