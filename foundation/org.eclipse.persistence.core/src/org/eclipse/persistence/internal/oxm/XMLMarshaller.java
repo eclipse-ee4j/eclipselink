@@ -40,12 +40,15 @@ import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.record.AbstractMarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ExtendedResult;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.oxm.record.ContentHandlerRecord;
@@ -145,6 +148,7 @@ public abstract class XMLMarshaller<
     private boolean wrapperAsCollectionName = false;
     private String xmlHeader;
     private Object marshalAttributeGroup;
+    private Boolean logPayload;
 
     public XMLMarshaller(CONTEXT context) {
         super(context);
@@ -601,6 +605,15 @@ public abstract class XMLMarshaller<
      * @param descriptor the XMLDescriptor for the object being marshalled
      */
     protected void marshal(Object object, MarshalRecord marshalRecord, ABSTRACT_SESSION session, DESCRIPTOR descriptor, boolean isXMLRoot) {
+        SessionLog logger = AbstractSessionLog.getLog();
+
+        if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+            logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_start_marshalling", new Object[] { (object!= null)?object.getClass().getName():"N/A", this.mediaType});
+        }
+        if (object != null && logPayload != null && this.isLogPayload()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, object.toString(), new Object[0], false);
+        }
+
         if(null != schema) {
             marshalRecord = new ValidatingMarshalRecord(marshalRecord, this);
         }
@@ -1397,4 +1410,11 @@ public abstract class XMLMarshaller<
         return this.marshalAttributeGroup;
     }
 
+    public Boolean isLogPayload() {
+        return logPayload;
+    }
+
+    public void setLogPayload(Boolean logPayload) {
+        this.logPayload = logPayload;
+    }
 }

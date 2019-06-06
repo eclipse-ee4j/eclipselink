@@ -49,6 +49,7 @@
       <library>
         <CLASSES>
           <root url="jar://$MODULE_DIR$/../../plugins/org.glassfish.jakarta.json.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.json.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
