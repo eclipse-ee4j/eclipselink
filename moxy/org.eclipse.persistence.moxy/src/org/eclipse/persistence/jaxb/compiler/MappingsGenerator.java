@@ -2170,6 +2170,7 @@ public class MappingsGenerator {
     }
 
     public CompositeCollectionMapping generateCompositeCollectionMapping(Property property, Descriptor descriptor, JavaClass javaClass, NamespaceInfo namespaceInfo, String referenceClassName) {
+        boolean nestedArray = false;
         CompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         initializeXMLMapping((XMLMapping)mapping, property);
         initializeXMLContainerMapping(mapping, property.getType().isArray());
@@ -2217,6 +2218,14 @@ public class MappingsGenerator {
             String mapClassName = property.getType().getRawName();
             mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName, helper.getClassLoader()));
         }
+        //Nested array check (used in JSON marshalling)
+        if (collectionType.getComponentType() == null) {
+            if ((collectionType.isArray() || helper.isCollectionType(collectionType)) && (referenceClassName != null && referenceClassName.contains(AnnotationsProcessor.ARRAY_PACKAGE_NAME))) {
+                nestedArray = true;
+            }
+        } else if ((collectionType.isArray() || helper.isCollectionType(collectionType)) && (collectionType.getComponentType().isArray() || helper.isCollectionType(collectionType.getComponentType()))) {
+            nestedArray = true;
+        }
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
@@ -2246,6 +2255,7 @@ public class MappingsGenerator {
             ((Field) mapping.getField()).setRequired(true);
         }
 
+        ((Field) mapping.getField()).setNestedArray(nestedArray);
         return mapping;
     }
 

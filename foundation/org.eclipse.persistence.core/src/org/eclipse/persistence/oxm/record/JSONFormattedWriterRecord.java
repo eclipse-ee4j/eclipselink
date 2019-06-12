@@ -126,14 +126,16 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
                     writer.write(' ');
                     level.setEmptyCollection(false);
                     level.setNeedToOpenComplex(false);
-                    level = new Level(true, true, level);
+                    level = new Level(true, true, false, level);
                     numberOfTabs++;
                     return;
                 }
             }
 
             if(level.isNeedToOpenComplex()){
-                writer.write('{');
+                if (!level.isNestedArray()) {
+                    writer.write('{');
+                }
                 level.setNeedToOpenComplex(false);
                 level.setNeedToCloseComplex(true);
             }
@@ -150,7 +152,9 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
 
           //write the key unless this is a a non-empty collection
             if(!(level.isCollection() && !level.isEmptyCollection())){
-                super.writeKey(xPathFragment);
+                if (!level.isNestedArray()) {
+                    super.writeKey(xPathFragment);
+                }
                 //if it is the first thing in the collection also add the [
                 if(level.isCollection() && level.isEmptyCollection()){
                      writer.write('[');
@@ -162,7 +166,11 @@ public class JSONFormattedWriterRecord extends JSONWriterRecord {
             numberOfTabs++;
             isLastEventText = false;
             charactersAllowed = true;
-            level = new Level(true, true, level);
+            if (xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray() && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
+                level = new Level(true, true, true, level);
+            } else {
+                level = new Level(true, true, false, level);
+            }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }

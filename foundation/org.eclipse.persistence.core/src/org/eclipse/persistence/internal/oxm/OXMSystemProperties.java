@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,8 +25,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  */
 public final class OXMSystemProperties {
 
-    private OXMSystemProperties() {};
-
     /**
      * If we should treat unqualified type property in JSON as MOXy type discriminator.
      *
@@ -48,6 +46,12 @@ public final class OXMSystemProperties {
      */
     public static final String JSON_USE_XSD_TYPES_PREFIX = "org.eclipse.persistence.json.use-xsd-types-prefix";
 
+    /**
+     * Disable generation of "item" name in nested arrays in JSON.
+     * @since 2.7.5
+     */
+    public static final String JSON_DISABLE_NESTED_ARRAY_NAME = "org.eclipse.persistence.json.disable-nested-array-name";
+
     public static final String DISABLE_SECURE_PROCESSING = "eclipselink.disableXmlSecurity";
 
     public static final Boolean jsonTypeCompatiblity = PrivilegedAccessHelper.getSystemPropertyBoolean(JSON_TYPE_COMPATIBILITY, false);
@@ -55,5 +59,9 @@ public final class OXMSystemProperties {
     public static final Boolean jsonUseXsdTypesPrefix = PrivilegedAccessHelper.getSystemPropertyBoolean(JSON_USE_XSD_TYPES_PREFIX, false);
 
     public static final String jsonTypeAttributeName = PrivilegedAccessHelper.getSystemProperty(JSON_TYPE_ATTRIBUTE_NAME, Constants.SCHEMA_TYPE_ATTRIBUTE);
+
+    public static final Boolean jsonDisableNestedArrayName = PrivilegedAccessHelper.getSystemPropertyBoolean(JSON_DISABLE_NESTED_ARRAY_NAME, false);
+
+    private OXMSystemProperties() {}
 
 }
