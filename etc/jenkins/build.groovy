@@ -136,7 +136,6 @@ spec:
                 junit allowEmptyResults: true, testResults: 'moxy/**/reports/**/TESTS-TestSuites.xml'
                 junit allowEmptyResults: true, testResults: 'sdo/**/reports/**/TESTS-TestSuites.xml'
                 junit allowEmptyResults: true, testResults: 'utils/**/reports/**/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'target/reports/TESTS-TestSuites.xml'
             }
         }
         // Publish to nightly
