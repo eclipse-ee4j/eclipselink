@@ -133,10 +133,13 @@ spec:
                 container('el-build') {
                     sshagent(['SSH_CREDENTIALS_ID']) {
                         sh """
+                            #Move JPA.JPQL test report into another location to collect it in this pipeline stage only
                             if [ -f "jpa/org.eclipse.persistence.jpa.jpql.test/reports/TESTS-TestSuites.xml" ]; then
                                 mkdir -p ${HOME}/test.reports/jpa.jpql
                                 mv jpa/org.eclipse.persistence.jpa.jpql.test/reports/TESTS-TestSuites.xml ${HOME}/test.reports/jpa.jpql
                             fi
+                            #Move aggregated test report into another location. It duplicated with modules test reports.
+                            mv target/reports/TESTS-TestSuites.xml ${HOME}/test.reports/                            
                         """
                     }
                 }
