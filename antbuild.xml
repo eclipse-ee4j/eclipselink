@@ -626,7 +626,7 @@
         <copy-plugin from="jakarta.jms-api*.jar" to="${jms-api.jar}"/>
         <copy-plugin from="org.glassfish.jakarta.json*.jar" to="${json.jar}"/>
         <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="${mail.jar}"/>
-        <copy-plugin from="jakarta.persistence_2.2.2*.jar" to="${persistence22.jar}" todir="${eclipselink.jpa.plugins}"/>
+        <copy-plugin from="jakarta.persistence_2.2.3*.jar" to="${persistence22.jar}" todir="${eclipselink.jpa.plugins}"/>
         <copy-plugin from="jakarta.resource-api*.jar" to="${resource-api.jar}"/>
         <copy-plugin from="jakarta.servlet-api*.jar" to="${servlet-api.jar}"/>
         <copy-plugin from="jakarta.transaction-api*.jar" to="${transaction-api.jar}"/>
@@ -662,7 +662,7 @@
 
         <!-- Copy source jars -->
         <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="${jaxb-api.src.jar}"/>
-        <copy-plugin from="jakarta.persistence.source_2.2.2.jar" to="${persistence22.src.jar}" todir="${eclipselink.jpa.plugins}"/>
+        <copy-plugin from="jakarta.persistence.source_2.2.3.jar" to="${persistence22.src.jar}" todir="${eclipselink.jpa.plugins}"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->

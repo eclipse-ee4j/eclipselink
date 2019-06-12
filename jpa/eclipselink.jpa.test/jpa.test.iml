@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="JAVA_MODULE" version="4">
   <component name="EclipseModuleManager">
-    <varelement var="jar://$MODULE_DIR$/../plugins/jakarta.persistence_2.2.2.jar!/" value="MODULE_DIR/../plugins/jakarta.persistence_2.2.2.jar" />
-    <varelement var="jar://$MODULE_DIR$/../plugins/jakarta.persistence-source_2.2.2.jar!/" value="src:/MODULE_DIR/../plugins/jakarta.persistence-source_2.2.2.jar" />
+    <varelement var="jar://$MODULE_DIR$/../plugins/jakarta.persistence_2.2.3.jar!/" value="MODULE_DIR/../plugins/jakarta.persistence_2.2.3.jar" />
+    <varelement var="jar://$MODULE_DIR$/../plugins/jakarta.persistence-source_2.2.3.jar!/" value="src:/MODULE_DIR/../plugins/jakarta.persistence-source_2.2.3.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.ws.rs-api.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.validation-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.validation-api.jar" />
     <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.ejb-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.ejb-api.jar" />
@@ -32,11 +32,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence_2.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence_2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence-source_2.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence-source_2.2.3.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
