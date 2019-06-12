@@ -126,39 +126,17 @@ spec:
                 }
             }
         }
-        //Test results process is divided there into two steps due bug "java.nio.channels.ClosedChannelException" in Eclipse.org cloud environment
-        // Proceed test results - JPQL only
-        stage('Proceed test results - JPA.JPQL') {
+        // Proceed test results
+        stage('Proceed test results') {
             steps {
-                container('el-build') {
-                    sshagent(['SSH_CREDENTIALS_ID']) {
-                        sh """
-                            #Move JPA.JPQL test report into another location to collect it in this pipeline stage only
-                            if [ -f "jpa/org.eclipse.persistence.jpa.jpql.test/reports/TESTS-TestSuites.xml" ]; then
-                                mkdir -p ${HOME}/test.reports/jpa.jpql
-                                mv jpa/org.eclipse.persistence.jpa.jpql.test/reports/TESTS-TestSuites.xml ${HOME}/test.reports/jpa.jpql
-                            fi
-                            #Move aggregated test report into another location. It duplicated with modules test reports.
-                            if [ -f "target/reports/TESTS-TestSuites.xml" ]; then
-                                mkdir -p ${HOME}/test.reports/target
-                                mv target/reports/TESTS-TestSuites.xml ${HOME}/test.reports/target
-                            fi                            
-                        """
-                    }
-                }
-                junit allowEmptyResults: true, testResults: '/home/jenkins/test.reports/jpa.jpql/TESTS-TestSuites.xml'
-            }
-        }
-        // Proceed test results - rest of test results without JPQL
-        stage('Proceed test results - without JPA.JPQL') {
-            steps {
-                junit '**/reports/**/TESTS-TestSuites.xml'
-            }
-        }
-        // Proceed test results - rest of test results without JPQL
-        stage('Proceed test results - target dir') {
-            steps {
-                junit allowEmptyResults: true, testResults: '/home/jenkins/test.reports/target/TESTS-TestSuites.xml'
+                //Multiple Jenkins junit plugin calls due java.nio.channels.ClosedChannelException in new/cloud Eclipse.org build infrastructure if it's called once
+                junit allowEmptyResults: true, testResults: 'dbws/**/reports/**/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'foundation/**/reports/**/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'jpa/**/reports/**/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'moxy/**/reports/**/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'sdo/**/reports/**/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'utils/**/reports/**/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'target/reports/TESTS-TestSuites.xml'
             }
         }
         // Publish to nightly
