@@ -33,7 +33,7 @@ services:
 env:
   global:
     - ANT_HOME=$HOME/apache-ant-1.10.5
-    - M2_HOME=/usr/local/maven-3.5.2
+    - M2_HOME=/usr/local/maven-3.6.0
   matrix:
     - TEST_TARGET=test-core
     - TEST_TARGET=test-jpa22
