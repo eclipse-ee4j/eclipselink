@@ -138,7 +138,7 @@ spec:
                         """
                     }
                 }
-                junit '/home/jenkins/test.reports/jpa.jpql/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: '/home/jenkins/test.reports/jpa.jpql/TESTS-TestSuites.xml'
             }
         }
         // Proceed test results - rest of test results without JPQL
