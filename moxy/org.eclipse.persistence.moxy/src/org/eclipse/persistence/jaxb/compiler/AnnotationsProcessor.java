@@ -193,6 +193,8 @@ import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
  * @since Oracle TopLink 11.1.1.0.0
  */
 public final class AnnotationsProcessor {
+
+    static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
     static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
     private static final String JAVAX_XML_BIND_JAXBELEMENT = "javax.xml.bind.JAXBElement";
@@ -200,7 +202,6 @@ public final class AnnotationsProcessor {
     private static final String OXM_ANNOTATIONS = "org.eclipse.persistence.oxm.annotations";
     private static final String TYPE_METHOD_NAME = "type";
     private static final String VALUE_METHOD_NAME = "value";
-    private static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     private static final String ARRAY_NAMESPACE = "http://jaxb.dev.java.net/array";
     private static final String ARRAY_CLASS_NAME_SUFFIX = "Array";
     private static final String JAXB_DEV = "jaxb.dev.java.net";

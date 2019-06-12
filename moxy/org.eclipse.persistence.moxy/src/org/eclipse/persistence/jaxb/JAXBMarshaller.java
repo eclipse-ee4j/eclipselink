@@ -325,6 +325,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getJsonTypeConfiguration().isJsonTypeCompatibility();
         } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
             return xmlMarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName();
+        } else if (MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME.equals(key)) {
+            return xmlMarshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName();
         } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) ||SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
             if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper) {
                 CharacterEscapeHandlerWrapper wrapper = (CharacterEscapeHandlerWrapper) xmlMarshaller.getCharacterEscapeHandler();
@@ -923,6 +925,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                     xmlMarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean) value);
                 } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
                     xmlMarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String) value);
+                } else if (MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setJsonDisableNestedArrayName((Boolean) value);
                 } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
                     xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
                 } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {

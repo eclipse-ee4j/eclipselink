@@ -198,7 +198,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
              }else if(callbackName != null){
                  startCallback();
              }
-             level = new Level(true, false, level);
+             level = new Level(true, false, false, level);
 
              writer.write('{');
          } catch (IOException e) {
@@ -258,20 +258,24 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                     level.setEmptyCollection(false);
                     level.setNeedToOpenComplex(false);
                     charactersAllowed = true;
-                    level = new Level(true, true, level);
+                    level = new Level(true, true, false, level);
                     return;
                 }
             }
 
             if(level.needToOpenComplex){
-                   writer.write('{');
-                   level.needToOpenComplex = false;
-                   level.needToCloseComplex = true;
+                if (!level.isNestedArray()) {
+                    writer.write('{');
+                }
+                level.needToOpenComplex = false;
+                level.needToCloseComplex = true;
            }
 
            //write the key unless this is a a non-empty collection
            if(!(level.isCollection() && !level.isEmptyCollection())){
-               writeKey(xPathFragment);
+               if (!level.isNestedArray()) {
+                   writeKey(xPathFragment);
+               }
                //if it is the first thing in the collection also add the [
                if(level.isCollection() && level.isEmptyCollection()){
                     writer.write('[');
@@ -281,7 +285,11 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
 
             charactersAllowed = true;
-            level = new Level(true, true, level);
+            if (xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray() && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
+                level = new Level(true, true, true, level);
+            } else {
+                level = new Level(true, true, false, level);
+            }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -349,7 +357,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                 if(level.needToOpenComplex){
                     writer.write('{');
                     closeComplex();
-                } else if(level.needToCloseComplex){
+                } else if(level.needToCloseComplex && !level.nestedArray){
                     closeComplex();
                 }
                 charactersAllowed = false;
@@ -370,7 +378,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             try {
                 startCallback();
                 writer.write('[');
-                level = new Level(true, false, level);
+                level = new Level(true, false, false, level);
             } catch(IOException e) {
                 throw XMLMarshalException.marshalException(e);
             }
@@ -918,15 +926,17 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         private boolean emptyCollection;
         private boolean needToOpenComplex;
         private boolean needToCloseComplex;
+        private boolean nestedArray;
         private Level previousLevel;
 
-        public Level(boolean value, boolean needToOpen) {
+        public Level(boolean value, boolean needToOpen, boolean nestedArray) {
             this.first = value;
             needToOpenComplex = needToOpen;
+            this.nestedArray = nestedArray;
         }
 
-        public Level(boolean value, boolean needToOpen, Level previousLevel) {
-            this(value, needToOpen);
+        public Level(boolean value, boolean needToOpen, boolean nestedArray, Level previousLevel) {
+            this(value, needToOpen, nestedArray);
             this.previousLevel = previousLevel;
         }
 
@@ -974,6 +984,13 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             return previousLevel;
         }
 
+        public boolean isNestedArray() {
+            return nestedArray;
+        }
+
+        public void setNestedArray(boolean nestedArray) {
+            this.nestedArray = nestedArray;
+        }
     }
 
     protected static interface Output {
