@@ -585,7 +585,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "CONCAT(\"Smith\",emp.firstName) LIKE ";
-        ejbqlString = ejbqlString + "\"Smith\""+ partOne + "\"";
+        ejbqlString = ejbqlString + "\"Smith"+ partOne + "\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 

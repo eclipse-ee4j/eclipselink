@@ -643,10 +643,10 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             CriteriaBuilder qb = em.getCriteriaBuilder();
             CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
             Root<Employee> root = wrapper.from(cq, Employee.class);
-            cq.where( qb.like(qb.concat(qb.literal("Smith"), wrapper.get(root, Employee_firstName) ), partOne+"Smith") );
+            cq.where( qb.like(qb.concat("Smith", wrapper.get(root, Employee_firstName) ), "Smith" + partOne) );
             List result = em.createQuery(cq).getResultList();
 
-            assertTrue("Concat test with constraints failed", comparer.compareObjects(result, expectedResult));
+            assertTrue("Concat test with constraints failed" , comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
