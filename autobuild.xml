@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -362,12 +362,13 @@
 
     <!--  =====  #####        Post 'build' Processing Targets            #####  =====  -->
     <target name="generate-nightly-p2-site" depends="common-init">
-        <!-- Set here because needed by both nightly-P2, and extract-build-artifacts -->
-        <property name="build.extract.dir" value="${extract.root.dir}/build/${release.version}/${version.qualifier}"/>
-        <mkdir dir="${build.extract.dir}"/>
+
+        <!-- Prepare directory for EclipseLink p2site results, before uploading to Eclipse.org download server -->
+        <property name="p2site.extract.dir" value="${extract.root.dir}/build/p2repo/${release.version}.${version.qualifier}"/>
+        <mkdir dir="${p2site.extract.dir}"/>
 
         <property name="p2.archive.to.use"       value="${hudson.workspace}/features/${p2.archive.presigned.zip}"/>
-        <property name="p2.repos.dir"            value="${build.extract.dir}/p2repo"/>
+        <property name="p2.repos.dir"            value="${p2site.extract.dir}"/>
         <property name="metadata.repos.name"     value="&quot;${p2.nightly.repos.name}&quot;"/>
         <property name="artifact.repos.name"     value="&quot;EclipseLink Incremental Artifacts&quot;"/>
         <property name="p2.SDK.install.dir"      value="${build.deps.dir}/eclipse"/>
@@ -388,6 +389,11 @@
 
     <!-- Extract build artifacts from Hudson Workspace and make them accessible to publish -->
     <target name="extract-build-artifacts" depends="generate-nightly-p2-site">
+
+        <!-- Prepare directory for EclipseLink build results, before uploading to Eclipse.org download server -->
+        <property name="build.extract.dir" value="${extract.root.dir}/build/bundles/${release.version}/${build.date}"/>
+        <mkdir dir="${build.extract.dir}"/>
+
         <!-- New Publish Architecture -->
         <echo message="Extracting Build artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
@@ -415,10 +421,13 @@
 
     <!-- Extract test artifacts from Hudson Workspace and make them accessible to publish -->
     <target name="extract-test-results" depends="common-init">
+
         <!-- 'Publish' from Hudson to Build -->
+        <!-- Prepare directory for test results, before uploading to Eclipse.org download server -->
         <property name="host" value="Eclipse"/>
-        <property name="test.extract.dir" value="${extract.root.dir}/test/${release.version}/${version.qualifier}/${host}"/>
+        <property name="test.extract.dir" value="${extract.root.dir}/test/${release.version}/${build.date}/${host}"/>
         <mkdir dir="${test.extract.dir}"/>
+
         <echo message="Exporting test artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
         <echo message="     to '${test.extract.dir}'"/>
