@@ -126,8 +126,23 @@ spec:
                 }
             }
         }
-        // Proceed test results
-        stage('Proceed test results') {
+        //Test results process is divided there into two steps due bug "java.nio.channels.ClosedChannelException" in Eclipse.org cloud environment
+        // Proceed test results - JPQL only
+        stage('Proceed test results - JPA.JPQL') {
+            steps {
+                container('el-build') {
+                    sshagent(['SSH_CREDENTIALS_ID']) {
+                        sh """
+                            mkdir -p ${HOME}/test.reports/jpa.jpql
+                            mv jpa/org.eclipse.persistence.jpa.jpql.test/reports/TESTS-TestSuites.xml ${HOME}/test.reports/jpa.jpql
+                        """
+                    }
+                }
+                junit '${HOME}/test.reports/jpa.jpql/TESTS-TestSuites.xml'
+            }
+        }
+        // Proceed test results - rest of test results without JPQL
+        stage('Proceed test results - without JPA.JPQL') {
             steps {
                 junit '**/reports/**/TESTS-TestSuites.xml'
             }
