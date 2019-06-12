@@ -158,7 +158,7 @@ spec:
         // Proceed test results - rest of test results without JPQL
         stage('Proceed test results - target dir') {
             steps {
-                junit '/home/jenkins/test.reports/target/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: '/home/jenkins/test.reports/target/TESTS-TestSuites.xml'
             }
         }
         // Publish to nightly
