@@ -20,8 +20,6 @@ branches:
 
 addons:
   apt:
-    sources:
-      - mysql-5.7
     packages:
       - libmysql-java
       - mysql-server
@@ -44,7 +42,7 @@ env:
     - TEST_TARGET=build-distribution
 
 jdk:
-  - oraclejdk8
+  - openjdk8
   - openjdk11
 
 cache:
