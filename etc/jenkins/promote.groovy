@@ -92,36 +92,29 @@ spec:
         }
     }
     stages {
-        // Initialize build environment
-        stage('Init') {
+        // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging) and to the Eclipse.org Milestone Builds area
+        stage('Promote') {
             steps {
                 container('el-build') {
                     git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
                     sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                        withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
+                            sh label: '', script: '''
+                                gpg --batch --import "${KEYRING}"
+                                for fpr in $(gpg --list-keys --with-colons  | awk -F: \'/fpr:/ {print $10}\' | sort -u);
+                                do
+                                    echo -e "5\\ny\\n" |  gpg --batch --command-fd 0 --expert --edit-key $fpr trust;
+                                done'''
+                        }
+                        // Download selected nightly build from Eclipse.org Nightly Builds
                         sh """
                             mkdir -p ${HOME}/etc/jenkins
                             cp -r ${WORKSPACE}/etc/jenkins/* ${HOME}/etc/jenkins
                             cp ${WORKSPACE}/buildsystem/ant_customizations.jar ${HOME}/etc/jenkins
                             ${HOME}/etc/jenkins/promote_init.sh
                             """
-                    }
-
-                    withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
-                        sh label: '', script: '''
-                            gpg --batch --import "${KEYRING}"
-                            for fpr in $(gpg --list-keys --with-colons  | awk -F: \'/fpr:/ {print $10}\' | sort -u);
-                            do
-                                echo -e "5\\ny\\n" |  gpg --batch --command-fd 0 --expert --edit-key $fpr trust;
-                            done'''
-                    }
-                }
-            }
-        }
-        // Build
-        stage('Promote') {
-            steps {
-                container('el-build') {
-                    sh """
+                        // Prepare and promote EclipseLink artifacts to oss.sonatype.org (staging)
+                        sh """
                             . /etc/profile
                             curl --version
                             echo ${RELEASE}
@@ -135,20 +128,12 @@ spec:
                             then
                                 echo calling "promote.sh ${NIGHTLY_BUILD_ID} ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}"
                                 ${HOME}/etc/jenkins/promote.sh ${NIGHTLY_BUILD_ID} ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}
-                                ${HOME}/etc/jenkins/publish_milestone.sh
                             else
                                 echo calling "promote.sh release ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}"
                                 ${HOME}/etc/jenkins/promote.sh release ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}
                             fi
                         """
-                }
-            }
-        }
-        // Publish to Eclipse.org downloads (Milestones, ...)
-        stage('Publish to Eclipse.org downloads') {
-            steps {
-                container('el-build') {
-                    sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                        // Promote EclipseLink bundles to the Eclipse.org Milestone Builds area
                         sh """
                             echo ${RELEASE}
                             if [ ${RELEASE} == 'false' ]

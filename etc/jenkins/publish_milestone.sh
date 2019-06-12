@@ -18,10 +18,5 @@
 
 
 echo '-[ EclipseLink Publish to Milestones ]-----------------------------------------------------------'
-
-echo "scp -rv ${MILESTONE_DNLD_DIR}/* genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_DNLD_DIR_REMOTE}"
-echo "scp -rv ${MILESTONE_SITE_DIR}/* genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_SITE_DIR_REMOTE}"
-
-
-scp -rv ${MILESTONE_DNLD_DIR}/* genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_DNLD_DIR_REMOTE}
-scp -rv ${MILESTONE_SITE_DIR}/* genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_SITE_DIR_REMOTE}
+scp -r ${MILESTONE_DNLD_DIR}/* genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_DNLD_DIR_REMOTE}
+scp -r ${MILESTONE_SITE_DIR}/* genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_SITE_DIR_REMOTE}
