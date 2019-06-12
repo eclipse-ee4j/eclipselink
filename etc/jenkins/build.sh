@@ -22,9 +22,8 @@ else
     ANT_TARGET=build-nightly
 fi
 
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.222.b10-0.fc30.x86_64/
 export ANT_OPTS=-Xmx4G
 set -o pipefail
-ant -f autobuild.xml ${ANT_TARGET} -DJAVA_HOME=${JAVA_HOME} -DM2_HOME=/opt/java/maven -Djdbc.driver.jar=${HOME}/extension.lib.external/mysql-connector-java-5.1.48.jar -Ddb.url=${TEST_DB_URL} -Ddb.user=${TEST_DB_USERNAME} -Ddb.pwd=${TEST_DB_PASSWORD} -Dextensions.depend.dir=${HOME}/extension.lib.external -Djunit.lib=${HOME}/extension.lib.external/junit-4.12.jar:${HOME}/extension.lib.external/hamcrest-core-1.3.jar:${HOME}/extension.lib.external/jmockit-1.35.jar -Dhudson.workspace=${WORKSPACE} -Dtest.logging.level=INFO -Dfail.on.error=true
+ant -f autobuild.xml ${ANT_TARGET} -Denv.JAVA_HOME=${JAVA_HOME} -DM2_HOME=/opt/java/maven -Djdbc.driver.jar=${HOME}/extension.lib.external/mysql-connector-java-5.1.48.jar -Ddb.url=${TEST_DB_URL} -Ddb.user=${TEST_DB_USERNAME} -Ddb.pwd=${TEST_DB_PASSWORD} -Dextensions.depend.dir=${HOME}/extension.lib.external -Djunit.lib=${HOME}/extension.lib.external/junit-4.12.jar:${HOME}/extension.lib.external/hamcrest-core-1.3.jar:${HOME}/extension.lib.external/jmockit-1.35.jar -Dhudson.workspace=${WORKSPACE} -Dtest.logging.level=INFO -Dfail.on.error=true
 
 /opt/bin/mysql-stop.sh
