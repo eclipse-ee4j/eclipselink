@@ -29,10 +29,12 @@ wget -nc https://archive.apache.org/dist/ant/binaries/apache-ant-1.10.7-bin.tar.
 wget -nc http://archive.apache.org/dist/maven/ant-tasks/2.1.3/binaries/maven-ant-tasks-2.1.3.jar -O $HOME/extension.lib.external/mavenant/maven-ant-tasks-2.1.3.jar
 wget -nc http://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.tar.gz -O $HOME/extension.lib.external/wildfly-15.0.1.Final.tar.gz
 wget -nc https://download.eclipse.org/eclipse/downloads/drops4/R-4.10-201812060815/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz -O $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
+wget -nc https://archive.apache.org/dist/maven/maven-3/3.6.0/binaries/apache-maven-3.6.0-bin.tar.gz -O $HOME/extension.lib.external/apache-maven-3.6.0-bin.tar.gz
 
 #UNPACK SOME  DEPENDENCIES
 tar -x -z -C $HOME/extension.lib.external -f $HOME/extension.lib.external/wildfly-15.0.1.Final.tar.gz
 tar -x -z -C $HOME/extension.lib.external -f $HOME/extension.lib.external/eclipse-SDK-4.10-linux-gtk-x86_64.tar.gz
+tar -x -z -C $HOME/extension.lib.external -f $HOME/extension.lib.external/apache-maven-3.6.0-bin.tar.gz
 
 #PREPARE build.properties FILE
 echo "extensions.depend.dir=$HOME/extension.lib.external" >> $HOME/build.properties
