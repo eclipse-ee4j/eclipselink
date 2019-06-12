@@ -126,21 +126,6 @@ spec:
                 }
             }
         }
-        // Proceed test results
-        stage('Proceed test results') {
-            steps {
-                //Multiple Jenkins junit plugin calls due java.nio.channels.ClosedChannelException in new/cloud Eclipse.org build infrastructure if it's called once
-                junit allowEmptyResults: true, testResults: 'dbws/**/reports/**/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'foundation/**/reports/**/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'jpa/**/reports/**/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'moxy/**/reports/installer/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'moxy/**/reports/jaxb/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'moxy/**/reports/oxm/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'moxy/**/reports/srg/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'sdo/**/reports/**/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'utils/**/reports/**/TESTS-TestSuites.xml'
-            }
-        }
         // Publish to nightly
         stage('Publish to nightly') {
             steps {
@@ -149,6 +134,33 @@ spec:
                         sh """
                             etc/jenkins/publish_nightly.sh
                             """
+                    }
+                }
+            }
+        }
+        // Proceed test results
+        stage('Proceed test results') {
+            steps {
+                script {
+                    //Multiple Jenkins junit plugin calls due java.nio.channels.ClosedChannelException in new/cloud Eclipse.org build infrastructure if it's called once
+                    //Retry is there to try (in case of crash) junit test upload again.
+                    retryCount = 5
+                    junitReportFiles = [
+                            'dbws/**/reports/**/TESTS-TestSuites.xml',
+                            'foundation/**/reports/**/TESTS-TestSuites.xml',
+                            'jpa/**/reports/**/TESTS-TestSuites.xml',
+                            'moxy/**/reports/installer/TESTS-TestSuites.xml',
+                            'moxy/**/reports/jaxb/TESTS-TestSuites.xml',
+                            'moxy/**/reports/oxm/TESTS-TestSuites.xml',
+                            'moxy/**/reports/srg/TESTS-TestSuites.xml',
+                            'sdo/**/reports/**/TESTS-TestSuites.xml',
+                            'utils/**/reports/**/TESTS-TestSuites.xml'
+                    ]
+                    for (item in junitReportFiles) {
+                        echo 'Processing file: ' + item
+                        retry(retryCount) {
+                            junit allowEmptyResults: true, testResults: item
+                        }
                     }
                 }
             }
