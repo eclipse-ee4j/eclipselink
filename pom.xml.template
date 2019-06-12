@@ -15,6 +15,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.eclipse.ee4j</groupId>
+    <artifactId>project</artifactId>
+    <version>1.0.5</version>
+  </parent>
+
   <groupId>@groupId@</groupId>
   <artifactId>@artifactId@</artifactId>
   <version>@version@</version>
@@ -22,15 +29,19 @@
   <name>@artifactName@</name>
   <description>EclipseLink build based upon Git transaction @git.hash@</description>
   <url>http://www.eclipse.org/eclipselink</url>
+
   <organization>
     <name>Eclipse.org - EclipseLink Project</name>
     <url>http://www.eclipse.org/eclipselink</url>
   </organization>
+
   <issueManagement>
     <system>bugzilla</system>
     <url>https://bugs.eclipse.org/bugs</url>
   </issueManagement>
+
   <inceptionYear>2007</inceptionYear>
+
   <mailingLists>
     <mailingList>
       <name>EclipseLink Developer List</name>
@@ -43,6 +54,7 @@
       <archive>http://dev.eclipse.org/mhonarc/lists/eclipselink-users</archive>
     </mailingList>
   </mailingLists>
+
   <licenses>
     <license>
       <name>Eclipse Public License v. 2.0</name>
@@ -57,10 +69,12 @@
       <comments>Standard Eclipse Distribution License</comments>
     </license>
   </licenses>
+
   <scm>
     <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
     <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
   </scm>
+
   <developers>
     <developer>
       <id>PeterKrogh</id>

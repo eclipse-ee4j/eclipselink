@@ -73,12 +73,13 @@
              classpathref="maven-ant-tasks.classpath" />
 
     <!-- Tool version definitions -->
-    <property name="gpg.plugin.version"   value="1.4"/>
-    <property name="wagon.http.version"   value="2.6"/>
+    <property name="gpg.plugin.version"   value="1.6"/>
+    <property name="wagon.http.version"   value="3.3.3"/>
 
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
-    <property name="stagingId"   value="sonatype-nexus-staging"/>
+    <property name="stagingId"   value="ossrh"/>
+    <!--<property name="stagingId"   value="sonatype-nexus-staging"/>-->
     <property name="stagingURL"  value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
     <property name="snapshotId"  value="sonatype-nexus-snapshots"/>
     <property name="snapshotURL" value="https://oss.sonatype.org/content/repositories/snapshots"/>
@@ -592,39 +593,21 @@
 
     <!-- Staging targets -->
     <target name="ua-staging" if="sign">
-        <!-- sign and deploy the main artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifact}"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifact} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Poss-release'" />
+        </exec>
     </target>
     <target name="us-staging" if="sign">
         <!-- sign and deploy the sources artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifactSrc}"/>
-            <arg value="-Dclassifier=sources"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifactSrc} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Dclassifier=sources -Poss-release'" />
+        </exec>
     </target>
     <target name="uj-staging" if="sign">
         <!-- sign and deploy the javadoc artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifactJavadoc}"/>
-            <arg value="-Dclassifier=javadoc"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifactJavadoc} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Dclassifier=javadoc -Poss-release,staging'" />
+        </exec>
     </target>
 
     <!-- ************************************* NOT USED **************************************** -->
