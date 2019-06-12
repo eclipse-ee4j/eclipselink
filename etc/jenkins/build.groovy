@@ -133,8 +133,10 @@ spec:
                 container('el-build') {
                     sshagent(['SSH_CREDENTIALS_ID']) {
                         sh """
-                            mkdir -p ${HOME}/test.reports/jpa.jpql
-                            mv jpa/org.eclipse.persistence.jpa.jpql.test/reports/TESTS-TestSuites.xml ${HOME}/test.reports/jpa.jpql
+                            if [ -f "jpa/org.eclipse.persistence.jpa.jpql.test/reports/TESTS-TestSuites.xml" ]; then
+                                mkdir -p ${HOME}/test.reports/jpa.jpql
+                                mv jpa/org.eclipse.persistence.jpa.jpql.test/reports/TESTS-TestSuites.xml ${HOME}/test.reports/jpa.jpql
+                            fi
                         """
                     }
                 }
