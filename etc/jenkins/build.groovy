@@ -140,8 +140,8 @@ spec:
                             fi
                             #Move aggregated test report into another location. It duplicated with modules test reports.
                             if [ -f "target/reports/TESTS-TestSuites.xml" ]; then
-                                mkdir -p ${HOME}/test.reports
-                                mv target/reports/TESTS-TestSuites.xml ${HOME}/test.reports/
+                                mkdir -p ${HOME}/test.reports/target
+                                mv target/reports/TESTS-TestSuites.xml ${HOME}/test.reports/target
                             fi                            
                         """
                     }
@@ -153,6 +153,12 @@ spec:
         stage('Proceed test results - without JPA.JPQL') {
             steps {
                 junit '**/reports/**/TESTS-TestSuites.xml'
+            }
+        }
+        // Proceed test results - rest of test results without JPQL
+        stage('Proceed test results - target dir') {
+            steps {
+                junit '/home/jenkins/test.reports/target/TESTS-TestSuites.xml'
             }
         }
         // Publish to nightly
