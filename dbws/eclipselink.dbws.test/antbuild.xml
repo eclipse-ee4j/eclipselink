@@ -98,6 +98,7 @@
         <!-- JVM used to run tests -->
         <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
         <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+        <!-- Handle missing $JAVA_HOME/release file (Travis OpenJDK 8) -->
         <condition property="test.junit.jdk.JAVA_VERSION" value='"1.8.0"'>
             <not><available file="${test.junit.jvm}/release"/></not>
         </condition>

@@ -88,6 +88,7 @@
         </condition>
         <echo message="${custom.tst.properties.message}"/>
         <property file="${user.home}/test.properties"/>
+        <!-- Handle missing $JAVA_HOME/release file (Travis OpenJDK 8) -->
         <condition property="custom.local.properties.message" value="Loading ${basedir}/local.build.properties..."
                    else="Notice: custom properties file '${basedir}/local.build.properties' not found to load.">
             <available file="${basedir}/local.build.properties"/>
