@@ -30,8 +30,8 @@ public class TestClear extends JPA1Base {
         JPAEnvironment env = getEnvironment();
         EntityManager em = env.getEntityManager();
         try {
-            Department dep1 = new Department(1, "one");
-            Department dep2 = new Department(2, "two");
+            Department dep1 = new Department(1111, "one");
+            Department dep2 = new Department(2222, "two");
             env.beginTransaction(em);
             em.persist(dep1);
             env.commitTransactionAndClear(em);
