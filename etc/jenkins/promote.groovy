@@ -135,6 +135,7 @@ spec:
                             then
                                 echo calling "promote.sh ${NIGHTLY_BUILD_ID} ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}"
                                 ${HOME}/etc/jenkins/promote.sh ${NIGHTLY_BUILD_ID} ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}
+                                ${HOME}/etc/jenkins/publish_milestone.sh
                             else
                                 echo calling "promote.sh release ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}"
                                 ${HOME}/etc/jenkins/promote.sh release ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}
