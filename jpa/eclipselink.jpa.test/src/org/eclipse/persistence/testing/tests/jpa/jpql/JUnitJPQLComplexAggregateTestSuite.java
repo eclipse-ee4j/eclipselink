@@ -462,7 +462,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.setReferenceClass(Employee.class);
         rq.returnSingleAttribute();
         rq.dontRetrievePrimaryKeys();
-        rq.addAttribute("salary", expbldr.get("salary").distinct().maximum());
+        rq.addAttribute("salary", expbldr.get("salary").distinct().maximum(), Integer.class);
         Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
         Number expectedResult = (Number) expectedResultVector.get(0);
 
@@ -485,7 +485,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
         rq.setReferenceClass(Employee.class);
         rq.returnSingleAttribute();
         rq.dontRetrievePrimaryKeys();
-        rq.addAttribute("salary", expbldr.get("salary").distinct().minimum());
+        rq.addAttribute("salary", expbldr.get("salary").distinct().minimum(), Integer.class);
         Vector expectedResultVector = (Vector) getServerSession().executeQuery(rq);
         Number expectedResult = (Number) expectedResultVector.get(0);
 
