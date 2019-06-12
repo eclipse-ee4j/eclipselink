@@ -8,7 +8,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.jpa"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence_2.2.2.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence-source_2.2.2.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence_2.2.3.jar" sourcepath="/ECLIPSELINK_HOME/jpa/plugins/jakarta.persistence-source_2.2.3.jar"/>
         <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/mongo-java-driver.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.slf4j.api.source_1.7.2.v20121108-1250.jar"/>
         <classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.resource-api.jar"/>
 	<classpathentry kind="output" path="classes"/>

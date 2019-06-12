@@ -42,11 +42,11 @@
     <property name="version.string"        value="${release.version}.${version.qualifier}"/>
 
     <!-- Not sure if there is a better way to refer to dependencies? -->
-    <property name="jse.eclipselink.jar" value="${jse.el.root}/eclipselink.jar"/>
-    <property name="javax.transaction" value="${jse.el.plugins.dir}/jakarta.transaction-api.jar"/>
-    <property name="javax.validation" value="${jse.el.plugins.dir}/jakarta.validation-api.jar"/>
-    <property name="javax.persistence" value="${jse.jpa.plugins.dir}/jakarta.persistence_2.2.2.jar"/>
-    
+    <property name="jse.eclipselink.jar" value="${jse.el.root}/${eclipselink.jar}"/>
+    <property name="javax.transaction" value="${jse.el.plugins.dir}/${transaction.jar}"/>
+    <property name="javax.validation" value="${jse.el.plugins.dir}/${validation.jar}"/>
+    <property name="javax.persistence" value="${jse.jpa.plugins.dir}/${persistence22.jar}"/>
+
     <fileset id="jse.antlr.jar.path" dir="${jse.el.plugins.dir}" includes="*antlr_*.jar"/>
     <pathconvert property="jse.antlr.jar" refid="jse.antlr.jar.path"/>
     <fileset id="jse.asm.jar.path" dir="${jse.el.plugins.dir}" includes="*asm_*.jar"/>

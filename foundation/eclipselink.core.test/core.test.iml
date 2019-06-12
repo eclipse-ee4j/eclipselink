@@ -3,7 +3,7 @@
   <component name="EclipseModuleManager">
     <varelement var="jar://$MODULE_DIR$/../../plugins/jakarta.transaction-api.jar!/" value="MODULE_DIR/../../plugins/jakarta.transaction-api.jar" />
     <varelement var="file://$MODULE_DIR$/../../plugins/javax.transaction/src" value="src:/MODULE_DIR/../../plugins/javax.transaction/src" />
-    <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence_2.2.2.jar!/" value="MODULE_DIR/../../jpa/plugins/jakarta.persistence_2.2.2.jar" />
+    <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence_2.2.3.jar!/" value="MODULE_DIR/../../jpa/plugins/jakarta.persistence_2.2.3.jar" />
     <varelement var="jar://$MODULE_DIR$/../../jpa/plugins/javax.persistence.source_2.2.1.v201807122140.jar!/" value="src:/MODULE_DIR/../../jpa/plugins/javax.persistence.source_2.2.1.v201807122140.jar" />
     <src_description expected_position="2">
       <src_folder value="file://$MODULE_DIR$/" expected_position="2" />
@@ -43,11 +43,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence_2.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence_2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence-source_2.2.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../jpa/plugins/jakarta.persistence-source_2.2.3.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
