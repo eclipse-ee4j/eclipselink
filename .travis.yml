@@ -84,8 +84,6 @@ before_script:
   - echo 'wildfly.config=standalone-full.xml' >> $HOME/build.properties
 
 script:
-  - ls /usr/lib/jvm/java-1.8.0-openjdk-amd64
-  - cat /usr/lib/jvm/java-1.8.0-openjdk-amd64/release
   - cat $HOME/build.properties
   - $ANT_HOME/bin/ant -f antbuild.xml build -Dfail.on.error=true
   - echo 'RUNNING TESTS, BE PATIENT...'
