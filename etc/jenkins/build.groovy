@@ -133,7 +133,10 @@ spec:
                 junit allowEmptyResults: true, testResults: 'dbws/**/reports/**/TESTS-TestSuites.xml'
                 junit allowEmptyResults: true, testResults: 'foundation/**/reports/**/TESTS-TestSuites.xml'
                 junit allowEmptyResults: true, testResults: 'jpa/**/reports/**/TESTS-TestSuites.xml'
-                junit allowEmptyResults: true, testResults: 'moxy/**/reports/**/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'moxy/**/reports/installer/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'moxy/**/reports/jaxb/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'moxy/**/reports/oxm/TESTS-TestSuites.xml'
+                junit allowEmptyResults: true, testResults: 'moxy/**/reports/srg/TESTS-TestSuites.xml'
                 junit allowEmptyResults: true, testResults: 'sdo/**/reports/**/TESTS-TestSuites.xml'
                 junit allowEmptyResults: true, testResults: 'utils/**/reports/**/TESTS-TestSuites.xml'
             }
