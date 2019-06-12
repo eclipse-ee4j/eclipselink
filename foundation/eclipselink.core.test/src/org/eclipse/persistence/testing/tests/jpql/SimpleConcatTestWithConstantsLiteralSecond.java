@@ -25,7 +25,6 @@ public class SimpleConcatTestWithConstantsLiteralSecond extends org.eclipse.pers
         Employee emp = (Employee)getSomeEmployees().firstElement();
 
         String partOne;
-        String partTwo;
         String ejbqlString;
 
         partOne = emp.getFirstName();
