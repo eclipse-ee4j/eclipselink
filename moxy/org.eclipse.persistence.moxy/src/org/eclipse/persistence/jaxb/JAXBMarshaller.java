@@ -925,6 +925,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                     xmlMarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean) value);
                 } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
                     xmlMarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String) value);
+                } else if (MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setJsonDisableNestedArrayName((Boolean) value);
                 } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
                     xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
                 } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
