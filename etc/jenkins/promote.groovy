@@ -135,12 +135,27 @@ spec:
                             then
                                 echo calling "promote.sh ${NIGHTLY_BUILD_ID} ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}"
                                 ${HOME}/etc/jenkins/promote.sh ${NIGHTLY_BUILD_ID} ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}
-                                ${HOME}/etc/jenkins/publish_milestone.sh
                             else
                                 echo calling "promote.sh release ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}"
                                 ${HOME}/etc/jenkins/promote.sh release ${RELEASE_CANDIDATE_ID} ${MAJOR_VERSION} ${SIGN} ${DEBUG}
                             fi
                         """
+                }
+            }
+        }
+        // Publish to Eclipse.org downloads (Milestones, ...)
+        stage('Publish to Eclipse.org downloads') {
+            steps {
+                container('el-build') {
+                    sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                        sh """
+                            echo ${RELEASE}
+                            if [ ${RELEASE} == 'false' ]
+                            then
+                                ${HOME}/etc/jenkins/publish_milestone.sh
+                            fi
+                            """
+                    }
                 }
             }
         }
