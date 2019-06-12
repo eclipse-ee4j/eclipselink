@@ -629,7 +629,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             String partOne = emp.getFirstName();
 
             ExpressionBuilder builder = new ExpressionBuilder();
-            Expression whereClause = builder.literal("\"Smith\"").concat(builder.get("firstName")).like("Smith" + partOne);
+            Expression whereClause = builder.literal("'Smith'").concat(builder.get("firstName")).like("Smith" + partOne);
 
             ReadAllQuery raq = new ReadAllQuery();
             raq.setReferenceClass(Employee.class);
