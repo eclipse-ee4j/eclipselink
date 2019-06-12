@@ -79,7 +79,6 @@
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="ossrh"/>
-    <!--<property name="stagingId"   value="sonatype-nexus-staging"/>-->
     <property name="stagingURL"  value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
     <property name="snapshotId"  value="sonatype-nexus-snapshots"/>
     <property name="snapshotURL" value="https://oss.sonatype.org/content/repositories/snapshots"/>
@@ -606,7 +605,7 @@
     <target name="uj-staging" if="sign">
         <!-- sign and deploy the javadoc artifact -->
         <exec dir="${maven.build.location}" executable="sh">
-            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifactJavadoc} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Dclassifier=javadoc -Poss-release,staging'" />
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifactJavadoc} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Dclassifier=javadoc -Poss-release'" />
         </exec>
     </target>
 
