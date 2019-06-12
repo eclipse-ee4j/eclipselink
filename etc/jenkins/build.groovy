@@ -126,6 +126,12 @@ spec:
                 }
             }
         }
+        // Proceed test results
+        stage('Proceed test results') {
+            steps {
+                junit 'reports/**/TESTS-TestSuites.xml'
+            }
+        }
         // Publish to nightly
         stage('Publish to nightly') {
             steps {
