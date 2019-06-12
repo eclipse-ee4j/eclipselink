@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,7 +80,7 @@ public class AggregateTest extends JPQLTestCase {
         ReportQuery rq = getNewReportQueryForTest(test);
         ExpressionBuilder builder = rq.getExpressionBuilder();
         Expression exp = builder.get("salary").distinct();
-        rq.addMaximum("salary", exp);
+        rq.addMaximum("salary", exp, Integer.class);
 
         return test;
     }
@@ -92,7 +92,7 @@ public class AggregateTest extends JPQLTestCase {
         ReportQuery rq = getNewReportQueryForTest(test);
         ExpressionBuilder builder = rq.getExpressionBuilder();
         Expression exp = builder.get("salary").distinct();
-        rq.addMinimum("salary", exp);
+        rq.addMinimum("salary", exp, Integer.class);
 
 
         return test;

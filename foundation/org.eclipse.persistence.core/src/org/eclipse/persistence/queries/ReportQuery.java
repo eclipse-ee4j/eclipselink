@@ -444,10 +444,30 @@ public class ReportQuery extends ReadAllQuery {
      * PUBLIC:
      * Add the maximum value of the attribute to be included in the result.
      * Aggregation functions can be used with a group by, or on the entire result set.
+     * EXAMPLE: reportQuery.addMaximum("salary", Integer.class);
+     */
+    public void addMaximum(String itemName, Class resultType) {
+        addMaximum(itemName, getExpressionBuilder().get(itemName), resultType);
+    }
+
+    /**
+     * PUBLIC:
+     * Add the maximum value of the attribute to be included in the result.
+     * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addMaximum("managerSalary", expBuilder.get("manager").get("salary"));
      */
     public void addMaximum(String itemName, Expression attributeExpression) {
         addItem(itemName, attributeExpression.maximum());
+    }
+
+    /**
+     * PUBLIC:
+     * Add the maximum value of the attribute to be included in the result.
+     * Aggregation functions can be used with a group by, or on the entire result set.
+     * EXAMPLE: reportQuery.addMaximum("managerSalary", expBuilder.get("manager").get("salary"), Integer.class);
+     */
+    public void addMaximum(String itemName, Expression attributeExpression, Class resultType) {
+        addItem(itemName, attributeExpression.maximum(), resultType);
     }
 
     /**
@@ -464,10 +484,30 @@ public class ReportQuery extends ReadAllQuery {
      * PUBLIC:
      * Add the minimum value of the attribute to be included in the result.
      * Aggregation functions can be used with a group by, or on the entire result set.
+     * EXAMPLE: reportQuery.addMinimum("salary", Integer.class);
+     */
+    public void addMinimum(String itemName, Class resultType) {
+        addMinimum(itemName, getExpressionBuilder().get(itemName), resultType);
+    }
+
+    /**
+     * PUBLIC:
+     * Add the minimum value of the attribute to be included in the result.
+     * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addMinimum("managerSalary", expBuilder.get("manager").get("salary"));
      */
     public void addMinimum(String itemName, Expression attributeExpression) {
         addItem(itemName, attributeExpression.minimum());
+    }
+
+    /**
+     * PUBLIC:
+     * Add the minimum value of the attribute to be included in the result.
+     * Aggregation functions can be used with a group by, or on the entire result set.
+     * EXAMPLE: reportQuery.addMinimum("managerSalary", expBuilder.get("manager").get("salary"), Integer.class);
+     */
+    public void addMinimum(String itemName, Expression attributeExpression, Class resultType) {
+        addItem(itemName, attributeExpression.minimum(), resultType);
     }
 
     /**
