@@ -27,13 +27,12 @@ public class SimpleConcatTestWithConstantsLiteralFirst extends JPQLTestCase {
         Employee emp = (Employee)getSomeEmployees().firstElement();
 
         String partOne;
-        String partTwo;
         String ejbqlString;
 
         partOne = emp.getFirstName();
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.literal("\"Smith\"").concat(builder.get("firstName")).like("Smith" + partOne);
+        Expression whereClause = builder.literal("'Smith'").concat(builder.get("firstName")).like("Smith" + partOne);
 
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(Employee.class);
