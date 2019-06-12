@@ -301,6 +301,7 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
     private boolean isCDATA = false;
     private boolean isRequired = false;
     private boolean isInitialized = false;
+    private boolean nestedArray = false;
 
     /** Makes this maintain the collection of items in a single attribute or element instead of having one element per item in the collection.
     * Default is false */
@@ -926,6 +927,24 @@ public class XMLField extends DatabaseField implements Field<XMLConversionManage
         } catch(ClassCastException e) {
             return false;
         }
+    }
+
+    /**
+     * Set nested array flag. Used in JSON marshalling.
+     *
+     * @param nestedArray flag.
+     */
+    public void setNestedArray(boolean nestedArray) {
+        this.nestedArray = nestedArray;
+    }
+
+    /**
+     * INTERNAL:
+     *
+     * @return True if content is nested array.
+     */
+    public boolean isNestedArray() {
+        return this.nestedArray;
     }
 
     @Override

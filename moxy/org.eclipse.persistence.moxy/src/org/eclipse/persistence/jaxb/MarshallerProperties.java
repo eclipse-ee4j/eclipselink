@@ -206,6 +206,43 @@ public class MarshallerProperties {
     public static final String JSON_TYPE_ATTRIBUTE_NAME = JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME;
 
     /**
+     * Disable generation of "item" name in nested arrays in JSON. Settings from binding file have higher priority.
+     *
+     * <p><b>Example</b></p>
+     * <p>Given the following property</p>
+     * <pre>
+     * marshaller.setProperty(MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME, "false");
+     * </pre>
+     * <p>If the property value is set to <b>false</b> (default) the JSON output will be:</p>
+     * <pre>
+     * ...
+     * "char2dArray":[
+     *      {"item":["a","b","c","d"]},
+     *      {"item":["e","f","g","h"]}
+     * ]
+     * ...
+     * </pre>
+     * <p>for following object model</p>
+     * <pre>
+     * ...
+     * &#64;XmlElement(name="char2dArray")
+     * private char[][] char2dArray;
+     * ...
+     * </pre>
+     * <p>If the property value is set to <b>true</b> (default) the JSON output will be:</p>
+     * <pre>
+     * ...
+     * "char2dArray": [
+     *      ["a","b","c","d"],
+     *      ["e","f","g","h"]
+     * ]
+     * ...
+     * </pre>
+     * @since 2.7.5
+     */
+    public static final String JSON_DISABLE_NESTED_ARRAY_NAME = "eclipselink.json.disable-nested-array-name";
+
+    /**
      *
      */
     public static final String OBJECT_GRAPH = JAXBContextProperties.OBJECT_GRAPH;

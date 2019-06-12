@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,48 +30,51 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
     private JsonObjectBuilder rootJsonObjectBuilder;
     private JsonArrayBuilder rootJsonArrayBuilder;
 
-    public JsonBuilderRecord(){
+    public JsonBuilderRecord() {
         super();
         isLastEventStart = false;
     }
 
-    public JsonBuilderRecord(JsonObjectBuilder jsonObjectBuilder){
+    public JsonBuilderRecord(JsonObjectBuilder jsonObjectBuilder) {
         this();
         rootJsonObjectBuilder = jsonObjectBuilder;
     }
 
-    public JsonBuilderRecord(JsonArrayBuilder jsonArrayBuilder){
+    public JsonBuilderRecord(JsonArrayBuilder jsonArrayBuilder) {
         this();
         rootJsonArrayBuilder = jsonArrayBuilder;
         isRootArray = true;
     }
 
-    protected Level createNewLevel(boolean collection, Level parentLevel){
-      return new Level(collection, position);
+    @Override
+    protected Level createNewLevel(boolean collection, Level parentLevel, boolean nestedArray) {
+        return new Level(collection, position, nestedArray);
     }
 
-    protected void startRootObject(){
+    @Override
+    protected void startRootObject() {
         super.startRootObject();
         position.setJsonObjectBuilder(rootJsonObjectBuilder);
         setComplex(position, true);
     }
 
-    protected void finishLevel(){
-        if(!(position.isCollection && position.isEmptyCollection() && position.getKeyName() == null)){
+    @Override
+    protected void finishLevel() {
+        if (!(position.isCollection && position.isEmptyCollection() && position.getKeyName() == null)) {
 
             Level parentLevel = (Level) position.parentLevel;
 
-            if(parentLevel != null){
-                if(parentLevel.isCollection){
-                    if(position.isCollection){
+            if (parentLevel != null) {
+                if (parentLevel.isCollection) {
+                    if (position.isCollection) {
                         parentLevel.getJsonArrayBuilder().add(position.getJsonArrayBuilder());
-                    }else{
+                    } else {
                         parentLevel.getJsonArrayBuilder().add(position.getJsonObjectBuilder());
                     }
-                }else{
-                    if(position.isCollection){
+                } else {
+                    if (position.isCollection) {
                         parentLevel.getJsonObjectBuilder().add(position.getKeyName(), position.getJsonArrayBuilder());
-                    }else{
+                    } else {
                         parentLevel.getJsonObjectBuilder().add(position.getKeyName(), position.getJsonObjectBuilder());
                     }
                 }
@@ -80,11 +83,12 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         super.finishLevel();
     }
 
-    protected void startRootLevelCollection(){
-        if(rootJsonArrayBuilder == null){
+    @Override
+    protected void startRootLevelCollection() {
+        if (rootJsonArrayBuilder == null) {
             rootJsonArrayBuilder = Json.createArrayBuilder();
-       }
-       position.setJsonArrayBuilder(rootJsonArrayBuilder);
+        }
+        position.setJsonArrayBuilder(rootJsonArrayBuilder);
     }
 
     @Override
@@ -92,110 +96,115 @@ public class JsonBuilderRecord extends JsonRecord<JsonBuilderRecord.Level> {
         finishLevel();
     }
 
-    protected void setComplex(Level level, boolean complex){
+    @Override
+    protected void setComplex(Level level, boolean complex) {
         boolean isAlreadyComplex = level.isComplex;
         super.setComplex(level, complex);
-        if(complex && !isAlreadyComplex){
-            if(level.jsonObjectBuilder == null){
+        if (complex && !isAlreadyComplex) {
+            if (level.jsonObjectBuilder == null) {
                 level.jsonObjectBuilder = Json.createObjectBuilder();
             }
         }
     }
 
-    protected void writeEmptyCollection(Level level, String keyName){
+    @Override
+    protected void writeEmptyCollection(Level level, String keyName) {
         level.getJsonObjectBuilder().add(keyName, Json.createArrayBuilder());
     }
 
-    protected void addValueToObject(Level level, String keyName, Object value, QName schemaType){
+    @Override
+    protected void addValueToObject(Level level, String keyName, Object value, QName schemaType) {
         JsonObjectBuilder jsonObjectBuilder = level.getJsonObjectBuilder();
-        if(value == NULL){
+        if (value == NULL) {
             jsonObjectBuilder.addNull(keyName);
-        }else if(value instanceof Integer){
-            jsonObjectBuilder.add(keyName, (Integer)value);
-        }else if(value instanceof BigDecimal){
-            jsonObjectBuilder.add(keyName, (BigDecimal)value);
-        }else if(value instanceof BigInteger){
-            jsonObjectBuilder.add(keyName, (BigInteger)value);
-        }else if(value instanceof Boolean){
-            jsonObjectBuilder.add(keyName, (Boolean)value);
-        }else if(value instanceof Character){
-            jsonObjectBuilder.add(keyName, (Character)value);
-        }else if(value instanceof Double){
-            jsonObjectBuilder.add(keyName, (Double)value);
-        }else if(value instanceof Float){
-            jsonObjectBuilder.add(keyName, (Float)value);
-        }else if(value instanceof Long){
-            jsonObjectBuilder.add(keyName, (Long)value);
-        }else if(value instanceof String){
-            jsonObjectBuilder.add(keyName, (String)value);
-        }else{
+        } else if (value instanceof Integer) {
+            jsonObjectBuilder.add(keyName, (Integer) value);
+        } else if (value instanceof BigDecimal) {
+            jsonObjectBuilder.add(keyName, (BigDecimal) value);
+        } else if (value instanceof BigInteger) {
+            jsonObjectBuilder.add(keyName, (BigInteger) value);
+        } else if (value instanceof Boolean) {
+            jsonObjectBuilder.add(keyName, (Boolean) value);
+        } else if (value instanceof Character) {
+            jsonObjectBuilder.add(keyName, (Character) value);
+        } else if (value instanceof Double) {
+            jsonObjectBuilder.add(keyName, (Double) value);
+        } else if (value instanceof Float) {
+            jsonObjectBuilder.add(keyName, (Float) value);
+        } else if (value instanceof Long) {
+            jsonObjectBuilder.add(keyName, (Long) value);
+        } else if (value instanceof String) {
+            jsonObjectBuilder.add(keyName, (String) value);
+        } else {
             ConversionManager conversionManager = getConversionManager();
             String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
             Class theClass = conversionManager.javaType(schemaType);
-            if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
+            if ((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))) {
                 //if it's still a number and falls through the cracks we dont want "" around the value
-                    BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
-                    jsonObjectBuilder.add(keyName, (BigDecimal)convertedNumberValue);
-            }else{
+                BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
+                jsonObjectBuilder.add(keyName, convertedNumberValue);
+            } else {
                 jsonObjectBuilder.add(keyName, convertedValue);
             }
 
         }
     }
 
-    protected void addValueToArray(Level level, Object value, QName schemaType){
+    @Override
+    protected void addValueToArray(Level level, Object value, QName schemaType) {
         JsonArrayBuilder jsonArrayBuilder = level.getJsonArrayBuilder();
-        if(value == NULL){
+        if (value == NULL) {
             jsonArrayBuilder.addNull();
-        }else if(value instanceof Integer){
-            jsonArrayBuilder.add((Integer)value);
-        }else if(value instanceof BigDecimal){
-            jsonArrayBuilder.add((BigDecimal)value);
-        }else if(value instanceof BigInteger){
-            jsonArrayBuilder.add((BigInteger)value);
-        }else if(value instanceof Boolean){
-            jsonArrayBuilder.add((Boolean)value);
-        }else if(value instanceof Character){
-            jsonArrayBuilder.add((Character)value);
-        }else if(value instanceof Double){
-            jsonArrayBuilder.add((Double)value);
-        }else if(value instanceof Float){
-            jsonArrayBuilder.add((Float)value);
-        }else if(value instanceof Long){
-            jsonArrayBuilder.add((Long)value);
-        }else if(value instanceof String){
-            jsonArrayBuilder.add((String)value);
-        }else{
+        } else if (value instanceof Integer) {
+            jsonArrayBuilder.add((Integer) value);
+        } else if (value instanceof BigDecimal) {
+            jsonArrayBuilder.add((BigDecimal) value);
+        } else if (value instanceof BigInteger) {
+            jsonArrayBuilder.add((BigInteger) value);
+        } else if (value instanceof Boolean) {
+            jsonArrayBuilder.add((Boolean) value);
+        } else if (value instanceof Character) {
+            jsonArrayBuilder.add((Character) value);
+        } else if (value instanceof Double) {
+            jsonArrayBuilder.add((Double) value);
+        } else if (value instanceof Float) {
+            jsonArrayBuilder.add((Float) value);
+        } else if (value instanceof Long) {
+            jsonArrayBuilder.add((Long) value);
+        } else if (value instanceof String) {
+            jsonArrayBuilder.add((String) value);
+        } else {
             ConversionManager conversionManager = getConversionManager();
             String convertedValue = (String) conversionManager.convertObject(value, CoreClassConstants.STRING, schemaType);
             Class theClass = conversionManager.javaType(schemaType);
-            if((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))){
+            if ((schemaType == null || theClass == null) && (CoreClassConstants.NUMBER.isAssignableFrom(value.getClass()))) {
                 //if it's still a number and falls through the cracks we dont want "" around the value
-                    BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
-                    jsonArrayBuilder.add((BigDecimal)convertedNumberValue);
-            }else{
+                BigDecimal convertedNumberValue = ((BigDecimal) ((ConversionManager) session.getDatasourcePlatform().getConversionManager()).convertObject(value, CoreClassConstants.BIGDECIMAL, schemaType));
+                jsonArrayBuilder.add(convertedNumberValue);
+            } else {
                 jsonArrayBuilder.add(convertedValue);
             }
         }
     }
 
 
-     /**
+    /**
      * Instances of this class are used to maintain state about the current
      * level of the JSON message being marshalled.
      */
-    protected static class Level extends JsonRecord.Level{
+    protected static class Level extends JsonRecord.Level {
 
         private JsonObjectBuilder jsonObjectBuilder;
         private JsonArrayBuilder jsonArrayBuilder;
 
-        public Level(boolean isCollection, Level position) {
-            super(isCollection, position);
+        public Level(boolean isCollection, Level position, boolean nestedArray) {
+            super(isCollection, position, nestedArray);
         }
 
+        @Override
         public void setCollection(boolean isCollection) {
             super.setCollection(isCollection);
-            if(isCollection && jsonArrayBuilder == null){
+            if (isCollection && jsonArrayBuilder == null) {
                 jsonArrayBuilder = Json.createArrayBuilder();
             }
         }
