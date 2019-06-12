@@ -115,7 +115,7 @@
         <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
         <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
-        <condition property="test.junit.jdk.JAVA_VERSION" value="1.8.0">
+        <condition property="test.junit.jdk.JAVA_VERSION" value='"1.8.0"'>
             <not><available file="${test.junit.jvm}/release"/></not>
         </condition>
         <property prefix="test.junit.jdk" file="${test.junit.jvm}/release"/>
@@ -124,6 +124,7 @@
         <condition property="use.modules" value="true" else="false">
             <not><matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/></not>
         </condition>
+        <echo message="use.modules              ='${use.modules}'"/>
 
         <!-- versioning -->
         <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
