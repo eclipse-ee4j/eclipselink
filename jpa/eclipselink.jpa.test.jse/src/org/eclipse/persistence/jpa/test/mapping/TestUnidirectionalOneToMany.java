@@ -26,10 +26,16 @@ import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.mapping.model.CommentA;
 import org.eclipse.persistence.jpa.test.mapping.model.CommentB;
+import org.eclipse.persistence.jpa.test.mapping.model.CommentC;
+import org.eclipse.persistence.jpa.test.mapping.model.CommentD;
 import org.eclipse.persistence.jpa.test.mapping.model.ComplexIdA;
 import org.eclipse.persistence.jpa.test.mapping.model.ComplexIdB;
+import org.eclipse.persistence.jpa.test.mapping.model.ComplexIdC;
+import org.eclipse.persistence.jpa.test.mapping.model.ComplexIdD;
 import org.eclipse.persistence.jpa.test.mapping.model.PostA;
 import org.eclipse.persistence.jpa.test.mapping.model.PostB;
+import org.eclipse.persistence.jpa.test.mapping.model.PostC;
+import org.eclipse.persistence.jpa.test.mapping.model.PostD;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -45,7 +51,9 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestUnidirectionalOneToMany {
     @Emf(createTables = DDLGen.DROP_CREATE,
-            classes = { CommentA.class, CommentB.class, ComplexIdA.class, ComplexIdB.class, PostA.class, PostB.class },
+            classes = { CommentA.class, CommentB.class, CommentC.class, CommentD.class, 
+                    ComplexIdA.class, ComplexIdB.class, ComplexIdC.class, ComplexIdD.class,
+                    PostA.class, PostB.class, PostC.class, PostD.class },
             properties = {
                 @Property(name = "eclipselink.cache.shared.default", value = "false"),
                 @Property(name = "eclipselink.logging.parameters", value = "true"),
@@ -145,5 +153,123 @@ public class TestUnidirectionalOneToMany {
         em.persist(post);
 
         em.getTransaction().commit();
+    }
+
+    @Test
+    public void testInsertComplexCOneToManyUni() {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            PostC post = new PostC(5L);
+            post.setComments(new ArrayList<CommentC>());
+            post.getComments().add(new CommentC(new ComplexIdC(5L, "Type1"), "a"));
+            post.getComments().add(new CommentC(new ComplexIdC(5L, "Type2"), "b"));
+            post.getComments().add(new CommentC(new ComplexIdC(5L, "Type3"), "c"));
+
+            em.persist(post);
+
+            em.getTransaction().commit();
+        } finally {
+            if(em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                if(em.isOpen()) {
+                    em.close();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testUpdateComplexCOneToManyUni() {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            PostC post = new PostC(6L);
+            em.persist(post);
+            em.flush();
+
+            post.setComments(new ArrayList<CommentC>());
+            post.getComments().add(new CommentC(new ComplexIdC(6L, "Type4"), "d"));
+            post.getComments().add(new CommentC(new ComplexIdC(6L, "Type5"), "3"));
+            post.getComments().add(new CommentC(new ComplexIdC(6L, "Type6"), "f"));
+
+            em.persist(post);
+
+            em.getTransaction().commit();
+        } finally {
+            if(em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                if(em.isOpen()) {
+                    em.close();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testInsertComplexDOneToManyUni() {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            PostD post = new PostD(new ComplexIdD(20, 21));
+            post.setComments(new ArrayList<CommentD>());
+            post.getComments().add(new CommentD(new ComplexIdD(20, 21), "a"));
+
+            em.persist(post);
+
+            em.getTransaction().commit();
+        } finally {
+            if(em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                if(em.isOpen()) {
+                    em.close();
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testUpdateComplexDOneToManyUni() {
+        EntityManager em = null;
+        try {
+            em = emf.createEntityManager();
+
+            em.getTransaction().begin();
+
+            PostD post = new PostD(new ComplexIdD(22, 23));
+            em.persist(post);
+            em.flush();
+
+            post.setComments(new ArrayList<CommentD>());
+            post.getComments().add(new CommentD(new ComplexIdD(22, 23), "d"));
+
+            em.persist(post);
+
+            em.getTransaction().commit();
+        } finally {
+            if(em != null) {
+                if (em.getTransaction().isActive()) {
+                    em.getTransaction().rollback();
+                }
+                if(em.isOpen()) {
+                    em.close();
+                }
+            }
+        }
     }
 }
