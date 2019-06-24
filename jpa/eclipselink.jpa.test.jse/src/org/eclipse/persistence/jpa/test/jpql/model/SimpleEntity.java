@@ -41,6 +41,9 @@ public class SimpleEntity {
     @Column(name="ITEM_INTEGER1")
     private Integer itemInteger1;
 
+    @Column(name="ITEM_INTEGER2")
+    private int itemInteger2;
+
     public String getKeyString() {
         return KeyString;
     }
@@ -87,5 +90,13 @@ public class SimpleEntity {
 
     public void setItemInteger1(Integer itemInteger1) {
         this.itemInteger1 = itemInteger1;
+    }
+
+    public int getItemInteger2() {
+        return itemInteger2;
+    }
+
+    public void setItemInteger2(int itemInteger2) {
+        this.itemInteger2 = itemInteger2;
     }
 }
