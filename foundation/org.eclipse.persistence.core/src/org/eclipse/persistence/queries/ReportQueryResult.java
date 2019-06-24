@@ -170,6 +170,37 @@ public class ReportQueryResult implements Serializable, Map {
         }
     }
 
+    private Object processItemFromMapping(ReportQuery query, AbstractRecord row, DatabaseMapping mapping, ReportItem item, int itemIndex) {
+        Object value = null;
+
+        // If mapping is not null then it must be a direct mapping - see Reportitem.init.
+        // Check for non database (EIS) records to use normal get.
+        if (row instanceof DatabaseRecord) {
+            value = row.getValues().get(itemIndex);
+        } else {
+            value = row.get(mapping.getField());
+        }
+
+        //Bug 421056: JPA 2.1; section 4.8.5
+        if(item.getAttributeExpression().isFunctionExpression()) {
+            FunctionExpression exp = (FunctionExpression) item.getAttributeExpression();
+            int selector = exp.getOperator().getSelector();
+            //a value of null for max/min implies no rows could be applied
+            //we want to return null, per the spec, here before the mapping gets to alter the value
+            if (value == null && ((selector == ExpressionOperator.Maximum) || (selector == ExpressionOperator.Minimum))) {
+                return value;
+            }
+        }
+
+        //If the mapping was set on the ReportItem, then use the mapping to convert the value
+        if (mapping.isAbstractColumnMapping()) {
+            value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
+        } else if (mapping.isDirectCollectionMapping()) {
+            value = ((DirectCollectionMapping)mapping).getObjectValue(value, query.getSession());
+        }
+        return value;
+    }
+
     /**
      * INTERNAL:
      * Return a value from an item and database row (converted from raw field values using the mapping).
@@ -203,33 +234,7 @@ public class ReportQueryResult implements Serializable, Map {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + 1, rowSize);
                 }
 
-                // If mapping is not null then it must be a direct mapping - see Reportitem.init.
-                // Check for non database (EIS) records to use normal get.
-                if (row instanceof DatabaseRecord) {
-                    value = row.getValues().get(itemIndex);
-                } else {
-                    value = row.get(mapping.getField());
-                }
-
-                //If the mapping was set on the ReportItem, then use the mapping to convert the value
-                if (mapping.isAbstractColumnMapping()) {
-                    value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
-                } else if (mapping.isDirectCollectionMapping()) {
-                    value = ((DirectCollectionMapping)mapping).getObjectValue(value, query.getSession());
-                }
-
-                //Bug 421056: JPA 2.1; section 4.8.5
-                if(item.getAttributeExpression().isFunctionExpression()) {
-                    FunctionExpression exp = (FunctionExpression) item.getAttributeExpression();
-                    int selector = exp.getOperator().getSelector();
-                    if(value instanceof Number) {
-                        Number val = (Number)value;
-                        if (val.intValue() == 0 && ((selector == ExpressionOperator.Maximum) 
-                                || (selector == ExpressionOperator.Minimum))) {
-                            value = null;
-                        }
-                    }
-                }
+                value = processItemFromMapping(query, row, mapping, item, itemIndex);
 
                 // GF_ISSUE_395+
                 if (this.key != null) {
