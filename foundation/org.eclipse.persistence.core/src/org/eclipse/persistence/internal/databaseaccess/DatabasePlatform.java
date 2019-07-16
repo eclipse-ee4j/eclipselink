@@ -983,6 +983,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         //use the variable directly to avoid custom platform strings - only want to copy user set values.
         //specifically used for login platform detection
         databasePlatform.setTableCreationSuffix(this.tableCreationSuffix);
+        databasePlatform.setIsCastRequired(isCastRequired());
     }
 
     /**
