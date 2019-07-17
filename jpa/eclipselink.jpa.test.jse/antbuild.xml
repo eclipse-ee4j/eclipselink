@@ -123,7 +123,7 @@
         </weave>
     </target>
 
-    <target name="compile">
+    <target name="compile" depends="clean-test">
         <mkdir dir="${jse.classes.dir}"/>
         <copy todir="${jse.classes.dir}/META-INF">
             <fileset dir="${jse.src.dir}/META-INF" includes="**/*" excludes=".git*"/>
@@ -134,7 +134,8 @@
             <src path="src"/>
         </javac>
     </target>
-    <target name="clean">
+
+    <target name="clean-test">
         <delete dir="${jse.classes.dir}" />
         <delete dir="${reports.dir}" />
     </target>
