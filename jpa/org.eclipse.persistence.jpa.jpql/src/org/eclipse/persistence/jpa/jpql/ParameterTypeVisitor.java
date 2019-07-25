@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -496,30 +496,27 @@ public abstract class ParameterTypeVisitor extends AbstractTraverseParentVisitor
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void visit(LikeExpression expression) {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void visit(LikeExpression expression) {
 
-		Expression patternValue     = expression.getPatternValue();
-		Expression stringExpression = expression.getStringExpression();
-		Expression escapeCharacter  = expression.getEscapeCharacter();
+        Expression stringExpression = expression.getStringExpression();
+        Expression patternValue     = expression.getPatternValue();
+        Expression escapeCharacter  = expression.getEscapeCharacter();
 
-		if (escapeCharacter.isAncestor(inputParameter)) {
-			this.type = Character.class;
-		}
-		else if (patternValue.isAncestor(inputParameter)) {
-			this.expression = expression.getStringExpression();
-		}
-		else if (stringExpression.isAncestor(inputParameter)) {
-			this.expression = expression;
-		}
-		// LIKE returns an integer value
-		else {
-			this.type = boolean.class;
-		}
-	}
+        if (stringExpression.isAncestor(inputParameter)) {
+            this.type = String.class;
+        } else if (patternValue.isAncestor(inputParameter)) {
+            this.type = String.class;
+        } else if (escapeCharacter.isAncestor(inputParameter)) {
+            this.type = Character.class;
+        } else {
+            //Shouldnt go in here?
+            this.type = boolean.class;
+        }
+    }
 
 	/**
 	 * {@inheritDoc}

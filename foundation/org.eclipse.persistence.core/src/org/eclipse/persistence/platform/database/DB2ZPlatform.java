@@ -61,6 +61,10 @@ public class DB2ZPlatform extends DB2Platform {
     private static String DB2_CALLABLESTATEMENT_CLASS = "com.ibm.db2.jcc.DB2CallableStatement";
     private static String DB2_PREPAREDSTATEMENT_CLASS = "com.ibm.db2.jcc.DB2PreparedStatement";
 
+    public DB2ZPlatform() {
+        super();
+    }
+
     @Override
     protected Hashtable buildFieldTypes() {
         Hashtable<Class<?>, Object> res = super.buildFieldTypes();
