@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2005, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright 2005, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -58,7 +58,11 @@ public class DerbyPlatform extends DB2Platform {
     boolean isOffsetFetchParameterSupported = false;
 
     protected boolean isConnectionDataInitialized;
-    
+
+    public DerbyPlatform() {
+        super();
+    }
+
     /**
      * INTERNAL:
      * TODO: Need to find out how can byte arrays be inlined in Derby
