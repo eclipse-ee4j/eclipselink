@@ -1280,11 +1280,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         String parameterName = expression.getParameter();
 
         // Calculate the input parameter type
-        Class<?> type = queryContext.getParameterType(expression);
+        type[0] = queryContext.getParameterType(expression);
 
         // Create the expression
         queryExpression = queryContext.getBaseExpression();
-        queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
+        queryExpression = queryExpression.getParameter(parameterName.substring(1), type[0]);
 
         // Cache the input parameter type
         queryContext.addInputParameter(expression, queryExpression);

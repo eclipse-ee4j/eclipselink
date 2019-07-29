@@ -443,7 +443,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void addArgument(String argumentName, Class type, boolean nullable) {
         getArguments().add(argumentName);
         getArgumentTypes().add(type);
-        getArgumentTypeNames().add(type.getName());
+        if(type != null) {
+            getArgumentTypeNames().add(type.getName());
+        }
         if (nullable) {
             getNullableArguments().add(new DatabaseField(argumentName));
         }
@@ -455,13 +457,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * API
      */
     public void addArgument(String argumentName, Class type, ParameterType argumentParameterType, boolean nullable) {
-        getArguments().add(argumentName);
-        getArgumentTypes().add(type);
+        addArgument(argumentName, type, nullable);
         getArgumentParameterTypes().add(argumentParameterType);
-        getArgumentTypeNames().add(type.getName());
-        if (nullable) {
-            getNullableArguments().add(new DatabaseField(argumentName));
-        }
     }
 
     /**
