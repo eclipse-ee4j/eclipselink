@@ -16,8 +16,6 @@
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.jpa.test.property;
 
-import java.util.List;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
@@ -26,7 +24,6 @@ import javax.persistence.TypedQuery;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.JpaQuery;
@@ -127,8 +124,8 @@ public class TestParameterBinding {
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
-            if(pl.isDB2Z()) {
-                Assert.fail("Expected a failure from DB2/z");
+            if(pl.isDB2Z() || pl.isDerby()) {
+                Assert.fail("Expected a failure from " + pl);
             }
 
             if(pl.shouldBindLiterals()) {
@@ -138,10 +135,20 @@ public class TestParameterBinding {
             }
         } catch(PersistenceException e) {
             Platform pl = forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
-            //If all Arguments of COALESCE are untyped parameters, this is expected to fail for DB2/z
             if(pl.isDB2Z()) {
+                //If all Arguments of COALESCE are untyped parameters, this is expected to fail for DB2/z
                 Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
                 Assert.assertEquals("com.ibm.db2.jcc.am.SqlSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else if(pl.isDB2()) {
+                //If all Arguments of COALESCE are untyped parameters, this is expected to fail for DB2 LUW
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+            } else if(pl.isDerby()) {
+                //All the arguments to the COALESCE/VALUE function cannot be parameters. 
+                //The function needs at least one argument that is not a parameter. Error 42610.
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("java.sql.SQLSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else {
+                Assert.fail("Unexpected failure: " + e);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -168,7 +175,7 @@ public class TestParameterBinding {
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
             if(pl.isDB2Z()) {
-                Assert.fail("Expected a failure from DB2/z");
+                Assert.fail("Expected a failure from " + pl);
             }
 
             if(pl.shouldBindLiterals()) {
@@ -182,6 +189,8 @@ public class TestParameterBinding {
             if(pl.isDB2Z()) {
                 Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
                 Assert.assertEquals("com.ibm.db2.jcc.am.SqlSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else {
+                Assert.fail("Unexpected failure: " + e);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -262,8 +271,8 @@ public class TestParameterBinding {
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
-            if(pl.isDB2Z()) {
-                Assert.fail("Expected a failure from DB2/z");
+            if(pl.isDB2Z() || pl.isDerby()) {
+                Assert.fail("Expected a failure from " + pl);
             }
 
             if(pl.shouldBindLiterals()) {
@@ -277,6 +286,12 @@ public class TestParameterBinding {
             if(pl.isDB2Z()) {
                 Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
                 Assert.assertEquals("com.ibm.db2.jcc.am.SqlSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else if(pl.isDerby()) {
+                //When all the operands of '||' expression are untyped parameters, error 42X35 on Derby
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("java.sql.SQLSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else {
+                Assert.fail("Unexpected failure: " + e);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -385,10 +400,23 @@ public class TestParameterBinding {
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+            if(pl.isDerby()) {
+                Assert.fail("Expected a failure from " + pl);
+            }
+
             if(pl.shouldBindLiterals()) {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 5, call.getParameters().size());
             } else {
                 Assert.assertEquals("The number of parameters found does not match the number supplied" , 4, call.getParameters().size());
+            }
+        } catch(PersistenceException e) {
+            Platform pl = forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
+            //When all the operands of a numeric expression are untyped parameters, error 42X35 on Derby
+            if(pl.isDerby()) {
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("java.sql.SQLSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else {
+                Assert.fail("Unexpected failure: " + e);
             }
         } finally {
             if (em.getTransaction().isActive()) {
@@ -442,8 +470,8 @@ public class TestParameterBinding {
             Assert.assertFalse("Expected query parameter binding to not be set for the DatabaseCall", call.isUsesBindingSet());
 
             DatabasePlatform pl = (DatabasePlatform)forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
-            if(pl.isDB2Z()) {
-                Assert.fail("Expected a failure from DB2/z");
+            if(pl.isDB2Z() || pl.isDerby()) {
+                Assert.fail("Expected a failure from " + pl);
             }
 
             if(pl.shouldBindLiterals()) {
@@ -453,10 +481,16 @@ public class TestParameterBinding {
             }
         } catch(PersistenceException e) {
             Platform pl = forceBindEMF.unwrap(EntityManagerFactoryImpl.class).getDatabaseSession().getDatasourcePlatform();
-            //When all the operands of an IN predicate are untyped parameters, error on DB2/z
             if(pl.isDB2Z()) {
+                //When all the operands of an IN predicate are untyped parameters, error on DB2/z
                 Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
                 Assert.assertEquals("com.ibm.db2.jcc.am.SqlSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else if(pl.isDerby()) {
+                //Use as the left operand of an IN list is not allowed when all operands are untyped parameters, error 42X35 on Derby
+                Assert.assertEquals(DatabaseException.class, e.getCause().getClass());
+                Assert.assertEquals("java.sql.SQLSyntaxErrorException", e.getCause().getCause().getClass().getName());
+            } else {
+                Assert.fail("Unexpected failure: " + e);
             }
         } finally {
             if (em.getTransaction().isActive()) {
