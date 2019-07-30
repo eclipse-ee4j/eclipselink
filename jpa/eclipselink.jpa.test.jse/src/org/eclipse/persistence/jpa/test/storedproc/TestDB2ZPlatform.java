@@ -27,7 +27,6 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -74,10 +73,6 @@ public class TestDB2ZPlatform {
             //Some driver versions seem to return the wrong type and will throw a conversion exception here
             String xml_output =  (String) storedProcedure.getOutputParameterValue("xml_output");
             String xml_message =  (String) storedProcedure.getOutputParameterValue("xml_message");
-            Assert.assertNotNull(xml_output);
-            Assert.assertNotNull(xml_message);
-            System.out.println("xml_output: " + xml_output);
-            System.out.println("xml_message: " + xml_message);
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
