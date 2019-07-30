@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -443,7 +443,9 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
     public void addArgument(String argumentName, Class type, boolean nullable) {
         getArguments().add(argumentName);
         getArgumentTypes().add(type);
-        getArgumentTypeNames().add(type.getName());
+        if(type != null) {
+            getArgumentTypeNames().add(type.getName());
+        }
         if (nullable) {
             getNullableArguments().add(new DatabaseField(argumentName));
         }
@@ -455,13 +457,8 @@ public abstract class DatabaseQuery implements Cloneable, Serializable {
      * API
      */
     public void addArgument(String argumentName, Class type, ParameterType argumentParameterType, boolean nullable) {
-        getArguments().add(argumentName);
-        getArgumentTypes().add(type);
+        addArgument(argumentName, type, nullable);
         getArgumentParameterTypes().add(argumentParameterType);
-        getArgumentTypeNames().add(type.getName());
-        if (nullable) {
-            getNullableArguments().add(new DatabaseField(argumentName));
-        }
     }
 
     /**
