@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -73,6 +74,13 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
         suite.addTest(new NamedQueryJUnitTest("testSelectNamedQueryWithNamedParametersReverseOrder"));
         suite.addTest(new NamedQueryJUnitTest("testSelectNamedQueryWithIndexedParameters"));
         suite.addTest(new NamedQueryJUnitTest("testSelectNamedQueryWithIndexedParametersReverseOrder"));
+        // Bug# 545940 - LIKE query must escape '[' and ']' characters
+        suite.addTest(new NamedQueryJUnitTest("testSelectInlineLikeWithUnsupportedRegex"));
+        suite.addTest(new NamedQueryJUnitTest("testSelectInlineLikeEscapeWithUnsupportedRegex"));
+        suite.addTest(new NamedQueryJUnitTest("testSelectInlineLikeParamEscapeWithUnsupportedRegex"));
+        suite.addTest(new NamedQueryJUnitTest("testSelectNamedParamLikeWithUnsupportedRegex"));
+        suite.addTest(new NamedQueryJUnitTest("testSelectNamedParamLikeEscapeWithUnsupportedRegex"));
+        suite.addTest(new NamedQueryJUnitTest("testSelectIndexedParamLikeWithUnsupportedRegex"));
         return suite;
     }
 
@@ -92,16 +100,20 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
      * @param employee An <code>Employee</code> entity to be persisted.
      */
     private void persistEmployee(EntityManager em, Employee employee) {
-        Collection<Equipment> equipmentColl = employee.getDepartment().getEquipment().values();
-        for (Equipment equipment : equipmentColl) {
-            EquipmentCode ec = equipment.getEquipmentCode();
-            if (ec != null) {
-                em.persist(ec);
+        if (employee.getDepartment() != null) {
+            if (employee.getDepartment().getEquipment() != null) {
+                Collection<Equipment> equipmentColl = employee.getDepartment().getEquipment().values();
+                for (Equipment equipment : equipmentColl) {
+                    EquipmentCode ec = equipment.getEquipmentCode();
+                    if (ec != null) {
+                        em.persist(ec);
+                    }
+                    em.persist(equipment);
+                }
             }
-            em.persist(equipment);
+            em.persist(employee.getDepartment());
         }
         em.persist(employee.getAddress());
-        em.persist(employee.getDepartment());
         em.persist(employee);
     }
 
@@ -112,15 +124,19 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
      * @param employee An <code>Employee</code> entity to be removed.
      */
     private void removeEmployee(EntityManager em, Employee employee) {
-        Collection<Equipment> equipmentColl = employee.getDepartment().getEquipment().values();
         em.remove(employee);
-        em.remove(employee.getDepartment());
         em.remove(employee.getAddress());
-        for (Equipment equipment : equipmentColl) {
-            EquipmentCode ec = equipment.getEquipmentCode();
-            em.remove(equipment);
-            if (ec != null) {
-                em.remove(ec);
+        if (employee.getDepartment() != null) {
+            em.remove(employee.getDepartment());
+            if (employee.getDepartment() != null && employee.getDepartment().getEquipment() != null) {
+                Collection<Equipment> equipmentColl = employee.getDepartment().getEquipment().values();
+                for (Equipment equipment : equipmentColl) {
+                    EquipmentCode ec = equipment.getEquipmentCode();
+                    em.remove(equipment);
+                    if (ec != null) {
+                        em.remove(ec);
+                    }
+                }
             }
         }
     }
@@ -145,6 +161,33 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             employees.add(e1);
             employees.add(e2);
             employees.add(e3);
+        } catch (RuntimeException ex) {
+            rollbackTransaction(em);
+            throw ex;
+        }
+        em.flush();
+        commitTransaction(em);
+        return employees;
+    }
+
+    /**
+     * Initialize, persist and retrieve some employee and address IDs for testing.
+     * @param em An <code>EntityManager</code> instance used to persist sample data.
+     * @return Collection of initialized and persisted <code>Employee</code> entities.
+     */
+    private Collection<Employee> createEmployeesForLikeTest(EntityManager em) {
+        Collection<Employee> employees = new LinkedList<Employee>();
+        // Get some employees.
+        beginTransaction(em);
+        try {
+            EmployeePopulator ep = new EmployeePopulator();
+            // Bug# 545940 - entities with lastName related to REGEX pattern
+            Employee e1 = ep.basicEmployeeExample16();
+            Employee e2 = ep.basicEmployeeExample17();
+            persistEmployee(em, e1);
+            persistEmployee(em, e2);
+            employees.add(e1);
+            employees.add(e2);
         } catch (RuntimeException ex) {
             rollbackTransaction(em);
             throw ex;
@@ -356,6 +399,158 @@ public class NamedQueryJUnitTest extends JUnitTestCase {
             deleteEmployees(em, employees);
         } catch (RuntimeException ex) {
             System.out.printf("EXCEPTION %s in testSelectNamedQueryWithIndexedParametersReverseOrder: %s\n", ex.getClass().getSimpleName(), ex.getMessage());
+            ex.printStackTrace();
+            throw ex;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Bug# 545940 model:
+    // Two Employee entities were created:
+    //   - Betty Be[ea]dril
+    //   - Betty Beedril
+    // PLSQL expression "e.lastNAme LIKE 'Be[ea]dril'" should always point to "Betty Be[ea]dril" if LIKE argument
+    // is properly escaped when database supports "[]" REGEX expressions in LIKE parameter.
+
+    // Bug# 545940 - LIKE query must escape '[' and ']' characters to not allow using them as REGEX pattern.
+    // Verify ConstantExpression as pattern
+    public void testSelectInlineLikeWithUnsupportedRegex() {
+        String queryString = "SELECT e FROM Employee e WHERE e.lastName LIKE 'Be[ea]dril'";
+        EntityManager em = createEntityManager(PUName);
+        try {
+            Collection<Employee> employees = createEmployeesForLikeTest(em);
+            TypedQuery<Employee> query = em.createQuery(queryString, Employee.class);
+            List<Employee> results = query.getResultList();
+            for (Employee e : results) {
+                System.out.printf("[EMPLOYEE] %s %s\n", e.getFirstName(), e.getLastName());
+            }
+            assertEquals(1, results.size());
+            assertEquals("Be[ea]dril", results.get(0).getLastName());
+            deleteEmployees(em, employees);
+        } catch (RuntimeException ex) {
+            System.out.printf("EXCEPTION %s in testSelectInlineLikeWithUnsupportedRegex: %s\n", ex.getClass().getSimpleName(), ex.getMessage());
+            ex.printStackTrace();
+            throw ex;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Bug# 545940 - LIKE query must escape '[' and ']' characters to not allow using them as REGEX pattern.
+    // Verify ConstantExpression as pattern and escape character
+    public void testSelectInlineLikeEscapeWithUnsupportedRegex() {
+        String queryString = "SELECT e FROM Employee e WHERE e.lastName LIKE 'Be[ea]dril' ESCAPE '#'";
+        EntityManager em = createEntityManager(PUName);
+        try {
+            Collection<Employee> employees = createEmployeesForLikeTest(em);
+            TypedQuery<Employee> query = em.createQuery(queryString, Employee.class);
+            List<Employee> results = query.getResultList();
+            for (Employee e : results) {
+                System.out.printf("[EMPLOYEE] %s %s\n", e.getFirstName(), e.getLastName());
+            }
+            assertEquals(1, results.size());
+            assertEquals("Be[ea]dril", results.get(0).getLastName());
+            deleteEmployees(em, employees);
+        } catch (RuntimeException ex) {
+            System.out.printf("EXCEPTION %s in testSelectInlineLikeWithUnsupportedRegex: %s\n", ex.getClass().getSimpleName(), ex.getMessage());
+            ex.printStackTrace();
+            throw ex;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Bug# 545940 - LIKE query must escape '[' and ']' characters to not allow using them as REGEX pattern.
+    // Verify ConstantExpression as pattern and ParameterExpression as escape character
+    public void testSelectInlineLikeParamEscapeWithUnsupportedRegex() {
+        String queryString = "SELECT e FROM Employee e WHERE e.lastName LIKE 'Be[ea]dril' ESCAPE :escape";
+        char escChar = '#';
+        EntityManager em = createEntityManager(PUName);
+        try {
+            Collection<Employee> employees = createEmployeesForLikeTest(em);
+            TypedQuery<Employee> query = em.createQuery(queryString, Employee.class);
+            query.setParameter("escape", escChar);
+            List<Employee> results = query.getResultList();
+            for (Employee e : results) {
+                System.out.printf("[EMPLOYEE] %s %s\n", e.getFirstName(), e.getLastName());
+            }
+            assertEquals(1, results.size());
+            assertEquals("Be[ea]dril", results.get(0).getLastName());
+            deleteEmployees(em, employees);
+        } catch (RuntimeException ex) {
+            System.out.printf("EXCEPTION %s in testSelectInlineLikeWithUnsupportedRegex: %s\n", ex.getClass().getSimpleName(), ex.getMessage());
+            ex.printStackTrace();
+            throw ex;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Bug# 545940 - LIKE query must escape '[' and ']' characters to not allow using them as REGEX pattern.
+    // Verify ParameterExpression as pattern
+    public void testSelectNamedParamLikeWithUnsupportedRegex() {
+        String queryString = "SELECT e FROM Employee e WHERE e.lastName LIKE :pattern";
+        String pattern = "Be[ea]dril";
+        EntityManager em = createEntityManager(PUName);
+        try {
+            Collection<Employee> employees = createEmployeesForLikeTest(em);
+            TypedQuery<Employee> query = em.createQuery(queryString, Employee.class);
+            query.setParameter("pattern", pattern);
+            List<Employee> results = query.getResultList();
+            assertEquals(1, results.size());
+            assertEquals(pattern, results.get(0).getLastName());
+            deleteEmployees(em, employees);
+        } catch (RuntimeException ex) {
+            System.out.printf("EXCEPTION %s in testSelectNamedParamLikeWithUnsupportedRegex: %s\n", ex.getClass().getSimpleName(), ex.getMessage());
+            ex.printStackTrace();
+            throw ex;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Bug# 545940 - LIKE query must escape '[' and ']' characters to not allow using them as REGEX pattern.
+    // Verify ParameterExpression as pattern and escape character
+    public void testSelectNamedParamLikeEscapeWithUnsupportedRegex() {
+        String queryString = "SELECT e FROM Employee e WHERE e.lastName LIKE :pattern ESCAPE :escape";
+        String pattern = "Be[ea]dril";
+        char escChar = '#';
+        EntityManager em = createEntityManager(PUName);
+        try {
+            Collection<Employee> employees = createEmployeesForLikeTest(em);
+            TypedQuery<Employee> query = em.createQuery(queryString, Employee.class);
+            query.setParameter("pattern", pattern);
+            query.setParameter("escape", escChar);
+            List<Employee> results = query.getResultList();
+            assertEquals(1, results.size());
+            assertEquals(pattern, results.get(0).getLastName());
+            deleteEmployees(em, employees);
+        } catch (RuntimeException ex) {
+            System.out.printf("EXCEPTION %s in testSelectNamedParamLikeWithUnsupportedRegex: %s\n", ex.getClass().getSimpleName(), ex.getMessage());
+            ex.printStackTrace();
+            throw ex;
+        } finally {
+            em.close();
+        }
+    }
+
+    // Bug# 545940 - LIKE query must escape '[' and ']' characters to not allow using them as REGEX pattern.
+    // Verify indexed ParameterExpression as pattern and escape character
+    public void testSelectIndexedParamLikeWithUnsupportedRegex() {
+        String queryString = "SELECT e FROM Employee e WHERE e.lastName LIKE ?1";
+        String pattern = "Be[ea]dril";
+        EntityManager em = createEntityManager(PUName);
+        try {
+            Collection<Employee> employees = createEmployeesForLikeTest(em);
+            TypedQuery<Employee> query = em.createQuery(queryString, Employee.class);
+            query.setParameter(1, pattern);
+            List<Employee> results = query.getResultList();
+            assertEquals(1, results.size());
+            assertEquals(pattern, results.get(0).getLastName());
+            deleteEmployees(em, employees);
+        } catch (RuntimeException ex) {
+            System.out.printf("EXCEPTION %s in testSelectNamedParamLikeWithUnsupportedRegex: %s\n", ex.getClass().getSimpleName(), ex.getMessage());
             ex.printStackTrace();
             throw ex;
         } finally {

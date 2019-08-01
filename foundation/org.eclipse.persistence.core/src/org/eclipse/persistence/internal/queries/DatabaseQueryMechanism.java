@@ -53,6 +53,7 @@ import org.eclipse.persistence.queries.ModifyQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.queries.transform.Transformations;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.tools.profiler.QueryMonitor;
 
@@ -1127,4 +1128,26 @@ public abstract class DatabaseQueryMechanism implements Cloneable, Serializable 
     public void unprepare() {
 
     }
+
+    // Bug# 545940 - Access to delayed SQL parameter transformations container stored in DatasourceCall
+    // Abstract class contains no DatasourceCall instance so there is nothing to return until being overriden
+
+    /**
+     * INTERNAL:
+     * Return delayed SQL parameter transformations.
+     * @return delayed SQL parameter transformations
+     */
+    public Transformations getTransformations() {
+        return null;
+    }
+
+    /**
+     * INTERNAL:
+     * Check whether delayed SQL parameter transformations are registered.
+     * @return whether at least one delayed SQL parameter transformation is registered
+     */
+    public boolean hasTransformations() {
+        return false;
+    }
+
 }

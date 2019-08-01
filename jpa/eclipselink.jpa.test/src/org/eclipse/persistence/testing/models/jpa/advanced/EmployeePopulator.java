@@ -528,6 +528,56 @@ public class EmployeePopulator {
         return employee;
     }
 
+    // Bug# 545940 - LIKE query must escape '[' and ']' characters to not allow using them as REGEX pattern.
+    //               This entity lastName contains string with REGEX pattern.
+    public Employee basicEmployeeExample16() {
+        Employee employee = createEmployee();
+
+        try {
+            employee.setFirstName("Betty");
+            employee.setLastName("Be[ea]dril");
+            employee.setFemale();
+            employee.setSalary(500001);
+            startCalendar.set(1970, 0, 1, 22, 0, 0);
+            endCalendar.set(1970, 0, 1, 5, 30, 0);
+            employee.setPeriod(employmentPeriodExample4());
+            employee.setAddress(addressExample2());
+            employee.setDepartment(departmentExample4());
+            employee.addPhoneNumber(phoneNumberExample5());
+            employee.addPhoneNumber(phoneNumberExample3());
+
+        } catch (Exception exception) {
+            throw new RuntimeException(exception.toString());
+        }
+
+        return employee;
+    }
+
+    // Bug# 545940 - LIKE query must escape '[' and ']' characters to not allow using them as REGEX pattern.
+    //               This entity lastName contains string matching REGEX pattern.
+    public Employee basicEmployeeExample17() {
+        Employee employee = createEmployee();
+
+        try {
+            employee.setFirstName("Betty");
+            employee.setLastName("Beedril");
+            employee.setFemale();
+            employee.setSalary(500001);
+            startCalendar.set(1970, 0, 1, 22, 0, 0);
+            endCalendar.set(1970, 0, 1, 5, 30, 0);
+            employee.setPeriod(employmentPeriodExample4());
+            employee.setAddress(addressExample2());
+            employee.setDepartment(departmentExample5());
+            employee.addPhoneNumber(phoneNumberExample5());
+            employee.addPhoneNumber(phoneNumberExample3());
+
+        } catch (Exception exception) {
+            throw new RuntimeException(exception.toString());
+        }
+
+        return employee;
+    }
+
     public EquipmentCode basicEquipmentCodeExampleA() {
         EquipmentCode equipmentCode = createEquipmentCode();
 
@@ -1052,6 +1102,18 @@ public class EmployeePopulator {
     public Department departmentExample3() {
         Department department = new Department();
         department.setName("Department 3");
+        return department;
+    }
+
+    public Department departmentExample4() {
+        Department department = new Department();
+        department.setName("Department 4");
+        return department;
+    }
+
+    public Department departmentExample5() {
+        Department department = new Department();
+        department.setName("Department 5");
         return department;
     }
 

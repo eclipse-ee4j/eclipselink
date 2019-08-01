@@ -43,6 +43,8 @@ import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.transform.ParameterTransformation;
+import org.eclipse.persistence.queries.transform.Transformations;
 
 /**
  * INTERNAL:
@@ -87,9 +89,14 @@ public abstract class DatasourceCall implements Call {
     protected static final int RETURN_CURSOR = 4;
     protected static final int EXECUTE_UPDATE = 5;
 
+    // Bug# 545940 - Delayed SQL parameters transformation container is part of the datasource invocation class.
+    /** Delayed datasource call parameters transformations. */
+    private transient final Transformations transformations;
+
     public DatasourceCall() {
         this.isPrepared = false;
         this.shouldProcessTokenInQuotes = true;
+        this.transformations = new Transformations();
     }
 
     /**
@@ -972,4 +979,23 @@ public abstract class DatasourceCall implements Call {
             parameterTypes = newParameterTypes;
         }
     }
+
+    /**
+     * INTERNAL:
+     * Add delayed SQL parameter transformation.
+     * @param transformation transformation to be added.
+     */
+    public void addTransformation(ParameterTransformation transformation) {
+        transformations.add(transformation);
+    }
+
+    /**
+     * INTERNAL:
+     * Return delayed SQL parameter transformations.
+     * @return delayed SQL parameter transformations
+     */
+    public Transformations getTransformations() {
+        return transformations;
+    }
+
 }
