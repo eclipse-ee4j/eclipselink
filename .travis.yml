@@ -24,6 +24,7 @@ branches:
 addons:
   apt:
     packages:
+      - oracle-java8-installer
       - libmysql-java
       - mysql-server
       - mysql-client
