@@ -10,8 +10,12 @@
 # SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 #
 
+dist: xenial
 language: java
 sudo: required
+
+services:
+    - mysql
 
 branches:
   except:
@@ -19,8 +23,6 @@ branches:
 
 addons:
   apt:
-    sources:
-      - mysql-5.7-trusty
     packages:
       - libmysql-java
       - mysql-server
