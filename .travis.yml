@@ -24,7 +24,6 @@ branches:
 addons:
   apt:
     packages:
-      - oracle-java8-installer
       - libmysql-java
       - mysql-server
       - mysql-client
@@ -42,7 +41,7 @@ env:
     - TEST_TARGET=build-distribution
 
 jdk:
-  - oraclejdk8
+  - openjdk8
   - openjdk10
 
 cache:
