@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,9 +8,9 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     dminsky - initial implementation
- ******************************************************************************/  
-package org.eclipse.persistence.testing.models.jpa.advanced.entities;
+ *     dminsky,lukas - initial implementation
+ *  ******************************************************************************/
+package org.eclipse.persistence.jpa.test.sequence.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
@@ -18,10 +18,12 @@ import javax.persistence.*;
 @Entity
 @Table(name="ENTITY_WITH_SCHEMA", schema=EntityWithSchema.CUSTOM_SCHEMA_NAME)
 public class EntityWithSchema implements Serializable {
-    
+
+    private static final long serialVersionUID = 1L;
+
     public static final String CUSTOM_SCHEMA_NAME = "CUSTOM_SCHEMA";
     public static final String CUSTOM_SEQUENCE_NAME = "CUSTOM_SEQUENCE";
-    
+
     // Table Sequence with a schema
     @Id
     @TableGenerator(
@@ -35,7 +37,7 @@ public class EntityWithSchema implements Serializable {
     @GeneratedValue(strategy=GenerationType.TABLE, generator="CustomSequenceGenerator")
     private Long id;
     private String name;
-    
+
     public EntityWithSchema() {
         super();
     }
