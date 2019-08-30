@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
 
+import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
@@ -37,6 +38,7 @@ import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.locking.model.LockingDog;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -120,6 +122,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testFirstResultPessimisticRead() throws Exception {
+        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        // Pessimistic locking with query row limits is not supported on Oracle
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
+
         EntityManager em = emf.createEntityManager();
         final EntityManager em2 = emf.createEntityManager();
         try {
@@ -154,6 +160,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testMaxResultPessimisticRead() {
+        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        // Pessimistic locking with query row limits is not supported on Oracle
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
+
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -173,6 +183,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testFirstResultMaxResultPessimisticRead() {
+        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        // Pessimistic locking with query row limits is not supported on Oracle
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
+
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -196,9 +210,10 @@ public class TestPessimisticLocking {
      */
     @Test
     public void testAggregateResultPessimisticForceIncrement() {
-        if (((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform().isDerby()) {
-            return;
-        }
+        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        // ORA-01786: FOR UPDATE of this query expression is not allowed
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isDerby() || platform.isOracle());
+
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();

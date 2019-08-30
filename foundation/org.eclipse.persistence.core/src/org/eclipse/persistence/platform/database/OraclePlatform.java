@@ -36,6 +36,7 @@ import java.sql.Types;
 import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -81,6 +82,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     public OraclePlatform(){
     	super();
+    	this.cursorCode = -10;
     	this.pingSQL = "SELECT 1 FROM DUAL";
     	this.storedProcedureTerminationToken = "";
     }
@@ -793,9 +795,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public boolean shouldPrintStoredProcedureArgumentNameInCall() {
-        return ! useJDBCStoredProcedureSyntax();
+        return false;
     }
-    
+
     /**
      * JDBC defines and outer join syntax, many drivers do not support this. So we normally avoid it.
      */
@@ -913,18 +915,18 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     public Connection unwrapOracleConnection(Connection connection) {
         return connection;
     }
-    
+
     /**
      * Return true if JDBC syntax should be used for stored procedure calls.
      */
     public boolean useJDBCStoredProcedureSyntax() {
         if (useJDBCStoredProcedureSyntax == null) {
-            useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Oracle");
+            useJDBCStoredProcedureSyntax = this.driverName != null 
+                    && Pattern.compile("Oracle", Pattern.CASE_INSENSITIVE).matcher(this.driverName).find();
         }
-        
         return useJDBCStoredProcedureSyntax;
     }
-    
+
     //Oracle Rownum support
     protected String SELECT = "SELECT * FROM (SELECT ";
     protected String HINT_START = "/*+ FIRST_ROWS";

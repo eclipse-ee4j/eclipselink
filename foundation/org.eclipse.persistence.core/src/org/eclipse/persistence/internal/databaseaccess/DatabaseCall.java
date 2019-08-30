@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -283,7 +283,7 @@ public abstract class DatabaseCall extends DatasourceCall {
             if (parameter instanceof OutputParameterForCallableStatement) {
                 OutputParameterForCallableStatement outParameter = (OutputParameterForCallableStatement)parameter;
                 if (!outParameter.isCursor() || !isCursorOutputProcedure()) {
-                    Object value = statement.getObject(index + 1);
+                    Object value = getObject(statement, index);
                     DatabaseField field = outParameter.getOutputField();
                     if (value instanceof Struct){
                         ClassDescriptor descriptor = session.getDescriptor(field.getType());
@@ -1358,5 +1358,14 @@ public abstract class DatabaseCall extends DatasourceCall {
      */
     public void setHasAllocatedConnection(boolean hasAllocatedConnection) {
         this.hasAllocatedConnection = hasAllocatedConnection;
+    }
+
+    /**
+     * Get the return object from the statement. Use the index to determine what return object to get.
+     * @param index - 0-based index in the argument list
+     * @return
+     */
+    protected Object getObject(CallableStatement statement, int index) throws SQLException {
+        return statement.getObject(index + 1);
     }
 }
