@@ -16,6 +16,8 @@
 //     Phillip Ross - LIMIT/OFFSET syntax support
 //     09/14/2011-2.3.1 Guy Pelletier
 //       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     18/03/2019 Joni Syri
+//       - 535431: Handle JSR-310 date/time types properly
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -333,6 +335,12 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIMESTAMP", false));
 
         return fieldTypeMapping;
     }
