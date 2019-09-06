@@ -42,6 +42,7 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -98,6 +99,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     public OraclePlatform(){
         super();
+        this.cursorCode = -10;
         this.pingSQL = "SELECT 1 FROM DUAL";
         this.storedProcedureTerminationToken = "";
         this.shouldPrintForUpdateClause = true;
@@ -811,7 +813,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public boolean shouldPrintStoredProcedureArgumentNameInCall() {
-        return ! useJDBCStoredProcedureSyntax();
+        return false;
     }
 
     /**
@@ -937,9 +939,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     public boolean useJDBCStoredProcedureSyntax() {
         if (useJDBCStoredProcedureSyntax == null) {
-            useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Oracle");
+            useJDBCStoredProcedureSyntax = this.driverName != null 
+                    && Pattern.compile("Oracle", Pattern.CASE_INSENSITIVE).matcher(this.driverName).find();
         }
-
         return useJDBCStoredProcedureSyntax;
     }
 
