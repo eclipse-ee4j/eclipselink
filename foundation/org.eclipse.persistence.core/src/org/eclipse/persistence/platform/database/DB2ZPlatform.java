@@ -96,8 +96,8 @@ public class DB2ZPlatform extends DB2Platform {
      * DB2 on Z uses ":" as prefix for procedure arguments.
      */
     @Override
-    public String getProcedureArgumentString() {
-        return ":";
+    public String getProcedureOptionList() {
+        return " DISABLE DEBUG MODE ";
     }
 
     @Override
@@ -128,7 +128,7 @@ public class DB2ZPlatform extends DB2Platform {
             // If the argument is optional and null, ignore it.
             if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
                 if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
-                    writer.write(getProcedureArgumentString());
+                    writer.write(":");
                     writer.write(name);
                     writer.write(getProcedureArgumentSetter());
                 }
