@@ -184,7 +184,7 @@
         <property name="oracleddl.name"       value="EclipseLink OracleDDL Parser"/>
         <property name="oraclebndl.prefix"    value="org.eclipse.persistence.oracle"/>
         <property name="oraclebndl.criteria"  value="[1.0.0,9.0.0)"/>
-        <property name="oraclebndl.name"       value="EclipseLink Oracle Extensions"/>
+        <property name="oraclebndl.name"      value="EclipseLink Oracle Extensions"/>
         <property name="oraclenosql.prefix"   value="org.eclipse.persistence.oracle.nosql"/>
         <property name="oraclenosql.criteria" value="[1.0.0,9.0.0)"/>
         <property name="oraclenosql.name"     value="EclipseLink Oracle NoSQL database Extensions"/>
@@ -285,6 +285,7 @@
         <property name="dep.resource"      value="${dep.grp}jakarta.resource${dep.art}jakarta.resource-api${dep.ver}1.7.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.servlet"       value="${dep.grp}jakarta.servlet${dep.art}jakarta.servlet-api${dep.ver}4.0.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.wsdl"          value="${dep.grp}wsdl4j${dep.art}wsdl4j${dep.ver}1.6.3${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.jgroups"       value="${dep.grp}org.jgroups${dep.art}jgroups${dep.ver}4.1.0.Final${dep.type}jar${dep.scope}compile${dep.opt}true${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -321,7 +322,7 @@
         <property name="builder.dependencies"     value="${deps.head}${dep.core}${dep.dbws}${dep.moxy}${dep.jpa}${dep.nosql}${dep.oracle}${dep.servlet}${dep.wsdl}${dep.oracleddl}${deps.foot}"/>
         <property name="moxy.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
-        <property name="extension.dependencies"   value="${deps.head}${dep.core}${deps.foot}"/>
+        <property name="extension.dependencies"   value="${deps.head}${dep.core}${dep.jgroups}${deps.foot}"/>
         <property name="corba.dependencies"       value="${deps.head}${dep.core}${dep.corba}${deps.foot}"/>
     </target>
 
