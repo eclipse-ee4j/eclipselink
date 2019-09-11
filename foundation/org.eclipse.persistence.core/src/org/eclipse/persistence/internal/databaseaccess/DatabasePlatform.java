@@ -520,6 +520,24 @@ public class DatabasePlatform extends DatasourcePlatform {
                 appendTime((java.sql.Time)dbValue, writer);
             } else if (dbValue instanceof java.sql.Timestamp) {
                 appendTimestamp((java.sql.Timestamp)dbValue, writer);
+            } else if (dbValue instanceof java.time.LocalDate){
+                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
+            } else if (dbValue instanceof java.time.LocalDateTime){
+                appendTimestamp(java.sql.Timestamp.valueOf((java.time.LocalDateTime) dbValue), writer);
+            } else if (dbValue instanceof java.time.OffsetDateTime) {
+                appendTimestamp(java.sql.Timestamp.from(((java.time.OffsetDateTime) dbValue).toInstant()), writer);
+            } else if (dbValue instanceof java.time.LocalTime){
+                java.time.LocalTime lt = (java.time.LocalTime) dbValue;
+                java.sql.Timestamp ts = new java.sql.Timestamp(
+                        70, 0, 1, lt.getHour(), lt.getMinute(), lt.getSecond(), lt.getNano());
+                appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.time.OffsetTime) {
+                java.time.OffsetTime ot = (java.time.OffsetTime) dbValue;
+                java.sql.Timestamp ts = new java.sql.Timestamp(
+                        70, 0, 1, ot.getHour(), ot.getMinute(), ot.getSecond(), ot.getNano());
+                appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.time.LocalDate){
+                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
             } else if (dbValue instanceof java.sql.Date) {
                 appendDate((java.sql.Date)dbValue, writer);
             } else if (dbValue == null) {
