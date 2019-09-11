@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -208,31 +208,25 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @param throwException - set to true if the caller cares to throw exceptions, false to swallow them.
      */
     protected void setOrDetectDatasource(boolean throwException) {
-        String vendorNameAndVersion = null;
+        String vendorName = null;
+        String minorVersion = null;
+        String majorVersion = null;
         String driverName = null;
 
         // Try to set the platform from JPA 2.1 schema properties first before
         // attempting a detection.
         if (getProperties().containsKey(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME)) {
-            vendorNameAndVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
-
-            String majorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION);
-            if (majorVersion != null) {
-                vendorNameAndVersion += majorVersion;
-            }
-
-            // The minorVersion is not currently used in platform matching, but
-            // shouldn't change matching when added
-            String minorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION);
-            if (minorVersion != null) {
-                vendorNameAndVersion += minorVersion;
-            }
+            vendorName = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
+            minorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION);
+            majorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION);
         } else {
             Connection conn = null;
             try {
                 conn = (Connection) getReadLogin().connectToDatasource(null, this);
                 DatabaseMetaData dmd = conn.getMetaData();
-                vendorNameAndVersion = dmd.getDatabaseProductName() + dmd.getDatabaseMajorVersion() + dmd.getDatabaseProductVersion();
+                vendorName = dmd.getDatabaseProductName();
+                minorVersion = dmd.getDatabaseProductVersion();
+                majorVersion = Integer.toString(dmd.getDatabaseMajorVersion());
                 driverName = conn.getMetaData().getDriverName();
             } catch (SQLException ex) {
                 if (throwException) {
@@ -268,7 +262,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             // null out the cached platform because the platform on the login
             // will be changed by the following line of code
             this.platform = null;
-            platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
+            platformName = DBPlatformHelper.getDBPlatform(vendorName, minorVersion, majorVersion, getSessionLog());
             getLogin().setPlatformClassName(platformName);
         } catch (EclipseLinkException classNotFound) {
             if (platformName != null && platformName.indexOf("Oracle") != -1) {
@@ -276,7 +270,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                     // If we are running against Oracle, it is possible that we are
                     // running in an environment where the extension OracleXPlatform classes can 
                     // not be loaded. Try using the core OracleXPlatform classes
-                    platformName = DBPlatformHelper.getDBPlatform("core."+ vendorNameAndVersion, getSessionLog());
+                    platformName = DBPlatformHelper.getDBPlatform("core."+ vendorName, minorVersion, majorVersion, getSessionLog());
                     getLogin().setPlatformClassName(platformName);
                 } catch (EclipseLinkException oracleClassNotFound) {
                     // If we still cannot classload a matching OracleXPlatform class, 
