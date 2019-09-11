@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,8 +26,6 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.logging.DefaultSessionLog;
-import org.eclipse.persistence.platform.database.DB2MainframePlatform;
-import org.eclipse.persistence.platform.database.DB2ZPlatform;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.Assert;
@@ -51,19 +49,49 @@ public class TestDBPlatformHelper {
     @Test
     public void testDB2ZOS() {
         //Returned from jcc driver
-        Assert.assertEquals(DB2ZPlatform.class.getName(), getPlatformClass("DB2", "DSN10015"));
+        Assert.assertEquals(org.eclipse.persistence.platform.database.DB2ZPlatform.class.getName(), getPlatformClass("DB2", "10", "DSN10015"));
     }
 
     @Test
     public void testDB2I() {
         //Returned from jcc driver (DRDA)
-        Assert.assertEquals(DB2MainframePlatform.class.getName(), getPlatformClass("AS", "QSQ07020"));
+        Assert.assertEquals(org.eclipse.persistence.platform.database.DB2MainframePlatform.class.getName(), getPlatformClass("AS", "10", "QSQ07020"));
 
         //Returned from type 2 native driver & type 4 open source driver (non-DRDA)
-        Assert.assertEquals(DB2MainframePlatform.class.getName(), getPlatformClass("DB2 UDB for AS/400", "07.02.0000 V7R2m0"));
+        Assert.assertEquals(org.eclipse.persistence.platform.database.DB2MainframePlatform.class.getName(), getPlatformClass("DB2 UDB for AS/400", "07.02.0000", "V7R2m0"));
     }
 
-    private String getPlatformClass(String productName, String productVersion){
-        return DBPlatformHelper.getDBPlatform(productName + productVersion, log);
+    @Test
+    public void testMySQL() {
+        //Returned from jcc driver (DRDA)
+        Assert.assertEquals(org.eclipse.persistence.platform.database.MySQLPlatform.class.getName(), getPlatformClass("MySQL", "5", "5.5.5-10.1.33-MariaDB"));
+    }
+
+    @Test
+    public void testDerby() {
+        //Returned from jcc driver (DRDA)
+        Assert.assertEquals(org.eclipse.persistence.platform.database.JavaDBPlatform.class.getName(), getPlatformClass("Apache Derby", "10", "10.12.1.1 - (1704137)"));
+    }
+
+    @Test
+    public void testOracle() {
+        //Returned from jcc driver (DRDA)
+        Assert.assertEquals("org.eclipse.persistence.platform.database.oracle.OraclePlatform", getPlatformClass("Oracle", "7", "Oracle Database 7c"));
+        Assert.assertEquals("org.eclipse.persistence.platform.database.oracle.OraclePlatform", getPlatformClass("Oracle", "8", "Oracle Database 8c"));
+        Assert.assertEquals("org.eclipse.persistence.platform.database.oracle.Oracle9Platform", getPlatformClass("Oracle", "9", "Oracle Database 9c"));
+        Assert.assertEquals("org.eclipse.persistence.platform.database.oracle.Oracle10Platform", getPlatformClass("Oracle", "10", "Oracle Database 10c"));
+        Assert.assertEquals("org.eclipse.persistence.platform.database.oracle.Oracle11Platform", getPlatformClass("Oracle", "11", "Oracle Database 11c"));
+        Assert.assertEquals("org.eclipse.persistence.platform.database.oracle.Oracle12Platform", getPlatformClass("Oracle", "12", "Oracle Database 12c"));
+        Assert.assertEquals("org.eclipse.persistence.platform.database.oracle.Oracle18Platform", getPlatformClass("Oracle", "18", "Oracle Database 18c"));
+    }
+
+    @Test
+    public void testHanaDB() {
+        //Returned from jcc driver (DRDA)
+        Assert.assertEquals(org.eclipse.persistence.platform.database.HANAPlatform.class.getName(), getPlatformClass("HDB", "2", "2.00.040.00.1553674765"));
+    }
+
+    private String getPlatformClass(String productName, String minorVersion, String majorVersion){
+        return DBPlatformHelper.getDBPlatform(productName, minorVersion, majorVersion, log);
     }
 }
