@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,6 @@ package org.eclipse.persistence.internal.queries;
 
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -41,6 +40,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -634,22 +634,38 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         //calculate indexes after normalize to insure expressions are set up correctly
         //take into account any field expressions added to the ReportQuery
         ReportQuery query = (ReportQuery)getQuery();
-        int itemOffset = query.getQueryExpressions().size();
-        for (Iterator items = query.getItems().iterator(); items.hasNext();) {
-            ReportItem item = (ReportItem) items.next();
-            item.setResultIndex(itemOffset);
-            if (item.getAttributeExpression() != null) {
-                if (item.hasJoining()){
-                    itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
-                } else {
-                    if (item.getDescriptor() != null) {
-                        itemOffset += item.getDescriptor().getAllSelectionFields(query).size();
+        computeAndSetItemOffset(query, query.getItems(), query.getQueryExpressions().size());
+    }
+
+    /**
+     * calculate indexes for given items, given the current Offset
+     */
+    protected int computeAndSetItemOffset(ReportQuery query, List<ReportItem> items, int itemOffset) {
+        for(ReportItem item : items) {
+            if (item.isConstructorItem()) {
+                List<ReportItem> reportItems = ((ConstructorReportItem) item).getReportItems();
+                itemOffset = computeAndSetItemOffset(query, reportItems, itemOffset);
+            } else {
+                //Don't set the offset on the ConstructorItem
+                item.setResultIndex(itemOffset);
+                if (item.getAttributeExpression() != null) {
+                    if (item.hasJoining()){
+                        itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
                     } else {
-                        ++itemOffset; //only a single attribute can be selected
+                        if (item.getDescriptor() != null) {
+                            itemOffset += item.getDescriptor().getAllSelectionFields(query).size();
+                        } else {
+                            if (item.getMapping() != null && item.getMapping().isAggregateObjectMapping()) {
+                                itemOffset += item.getMapping().getFields().size(); // Aggregate object may consist out of 1..n fields
+                            } else {
+                                ++itemOffset; //only a single attribute can be selected
+                            }
+                        }
                     }
                 }
             }
         }
+        return itemOffset;
     }
 
     /**
