@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015 IBM Corporation. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,9 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -78,10 +80,10 @@ public class TestDDLGenLineTerminator implements PUPropertiesProvider {
 
     @Test
     public void testGeneratedScripts() throws Exception {
-        String terminatorToken = ((EntityManagerFactoryImpl) terminatedEmf).getDatabaseSession().getPlatform().getStoredProcedureTerminationToken();
-        if (terminatorToken == null || terminatorToken.isEmpty()) {
-            return;
-        }
+        DatabasePlatform platform = ((EntityManagerFactoryImpl) terminatedEmf).getDatabaseSession().getPlatform();
+        String terminatorToken = platform.getStoredProcedureTerminationToken();
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", terminatorToken.isEmpty());
+
         BufferedReader reader = new BufferedReader(new FileReader(terminatedScript));
         String line = reader.readLine();
         while (line != null) {
