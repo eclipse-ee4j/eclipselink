@@ -1149,6 +1149,16 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Some platforms have an option list
+     * Only to be used for stored procedure creation.
+     * 
+     * @see org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition
+     */
+    public String getProcedureOptionList() {
+        return "";
+    }
+
+    /**
      * Return the class type to database type mapping for the schema framework.
      */
     public Map<String, Class> getClassTypes() {
@@ -2445,7 +2455,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         if (!dbCall.getReturnsResultSet()) {// no result set is expected
             if (dbCall.isCursorOutputProcedure()) {
                 result = accessor.executeNoSelect(dbCall, statement, session);
-                resultSet = (ResultSet)((CallableStatement)statement).getObject(dbCall.getCursorOutIndex());
+                int index = dbCall.getCursorOutIndex();
+                resultSet = (ResultSet)dbCall.getObject((CallableStatement)statement, index - 1);
             } else {
                 accessor.executeDirectNoSelect(statement, dbCall, session);
 
