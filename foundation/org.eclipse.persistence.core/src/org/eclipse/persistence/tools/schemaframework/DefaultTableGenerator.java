@@ -413,6 +413,14 @@ public class DefaultTableGenerator {
      * Build relation table definitions for all many-to-many relationships in a EclipseLink descriptor.
      */
     protected void buildRelationTableDefinition(ForeignReferenceMapping mapping, RelationTableMechanism relationTableMechanism, DatabaseField listOrderField, ContainerPolicy cp) {
+        if(mapping.isReadOnly()) {
+            // Skip non-owning mappings to prevent duplicate processing.
+            // See how mappings with a "mappedBy" attribute are marked
+            // as read-only in ManyToManyAccessor.process():
+            // [Eclipselink 2.7.4]: https://github.com/eclipse-ee4j/eclipselink/blob/ad5b7c6b2ada222561e59a25cd3f09ee6eef7dfb/jpa/org.eclipse.persistence.jpa/src/org/eclipse/persistence/internal/jpa/metadata/accessors/mappings/ManyToManyAccessor.java#L162
+            return;
+        }
+
         //first create relation table
         TableDefinition table = getTableDefFromDBTable(relationTableMechanism.getRelationTable());
 
