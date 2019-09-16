@@ -5500,10 +5500,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertEquals("Does not return unit of work", uow, uow1);
             JpaEntityManager jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
             assertEquals("Does not return underlying entitymanager", jem, jem1);
+
+            Connection conn1 = em.unwrap(java.sql.Connection.class);
+            assertNotNull("Connection returned was null", conn1);
             // TODO: This should be supported.
-            /*Connection conn1;
-            conn1 = em.unwrap(java.sql.Connection.class);
-            Connection conn = uowImpl.getAccessor().getConnection();
+            /*Connection conn = uowImpl.getAccessor().getConnection();
             assertEquals("Does not return underlying connection", conn, conn1);*/
         } finally {
             rollbackTransaction(em);
