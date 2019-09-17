@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -4579,5 +4579,23 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     @Override
     public AbstractRecord createRecordFromXMLContext(XMLContext context) {
         return createRecord((AbstractSession)context.getSession());
+    }
+
+    public boolean checkNull(Object o, AbstractSession session) {
+        if (o == null) {
+            return true;
+        }
+        // PERF: Avoid iterator.
+        final List mappings = this.descriptor.getMappings();
+        for (int index = 0; index < mappings.size(); index++) {
+            final DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+
+            final Object value = mapping.getAttributeValueFromObject(o);
+            if (value != null) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
