@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -36,6 +36,7 @@ import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.descriptors.*;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -316,7 +317,9 @@ public abstract class AggregateMapping extends DatabaseMapping {
 
         if (!owner.isNew()) {
             backupAttribute = getAttributeValueFromObject(backup);
-            if ((cloneAttribute == null) && (backupAttribute == null)) {
+            if ((cloneAttribute == null || backupAttribute == null) &&
+                checkNull(cloneAttribute, session) && checkNull(backupAttribute, session)
+            ) {
                 return null;// no change
             }
             if ((cloneAttribute != null) && (backupAttribute != null) && (!cloneAttribute.getClass().equals(backupAttribute.getClass()))) {
@@ -352,6 +355,14 @@ public abstract class AggregateMapping extends DatabaseMapping {
         }
         changeRecord.setChangedObject(changeSet);
         return changeRecord;
+    }
+
+    public boolean checkNull(final Object o, final AbstractSession session) {
+        if (o == null) {
+            return true;
+        }
+        final ObjectBuilder builder = getObjectBuilder(o, session);
+        return builder.checkNull(o, session);
     }
 
     /**
