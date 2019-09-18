@@ -321,15 +321,13 @@ public class DB2ZPlatform extends DB2Platform {
             parameters = new Object[] {name, (java.sql.Time)parameter};
         } else if (parameter instanceof java.time.LocalTime){
             java.time.LocalTime lt = (java.time.LocalTime) parameter;
-            java.sql.Timestamp ts = new java.sql.Timestamp(
-                70, 0, 1, lt.getHour(), lt.getMinute(), lt.getSecond(), lt.getNano());
+            java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
             methodName = "setJccTimestampAtName";
             methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, ts};
         } else if (parameter instanceof java.time.OffsetTime) {
             java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
-            java.sql.Timestamp ts = new java.sql.Timestamp(
-                70, 0, 1, ot.getHour(), ot.getMinute(), ot.getSecond(), ot.getNano());
+            java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             methodName = "setJccTimestampAtName";
             methodArgs = new Class[] {String.class, java.sql.Timestamp.class};
             parameters = new Object[] {name, ts};
