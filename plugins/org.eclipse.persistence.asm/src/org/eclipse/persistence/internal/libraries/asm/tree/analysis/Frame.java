@@ -120,7 +120,9 @@ public class Frame<V extends Value> {
    *     this frame corresponds to the successor of the jump instruction (i.e. the next instruction
    *     in the instructions sequence).
    */
-  public void initJumpTarget(final int opcode, final LabelNode target) {}
+  public void initJumpTarget(final int opcode, final LabelNode target) {
+    // Does nothing by default.
+  }
 
   /**
    * Sets the expected return type of the analyzed method.
@@ -159,7 +161,7 @@ public class Frame<V extends Value> {
    */
   public V getLocal(final int index) {
     if (index >= numLocals) {
-      throw new IndexOutOfBoundsException("Trying to access an inexistant local variable");
+      throw new IndexOutOfBoundsException("Trying to get an inexistant local variable " + index);
     }
     return values[index];
   }
@@ -173,7 +175,7 @@ public class Frame<V extends Value> {
    */
   public void setLocal(final int index, final V value) {
     if (index >= numLocals) {
-      throw new IndexOutOfBoundsException("Trying to access an inexistant local variable " + index);
+      throw new IndexOutOfBoundsException("Trying to set an inexistant local variable " + index);
     }
     values[index] = value;
   }
@@ -206,7 +208,7 @@ public class Frame<V extends Value> {
    * @param value the new value of the stack slot.
    * @throws IndexOutOfBoundsException if the stack slot does not exist.
    */
-  public void setStack(final int index, final V value) throws IndexOutOfBoundsException {
+  public void setStack(final int index, final V value) {
     values[numLocals + index] = value;
   }
 
@@ -598,36 +600,11 @@ public class Frame<V extends Value> {
       case Opcodes.INVOKESPECIAL:
       case Opcodes.INVOKESTATIC:
       case Opcodes.INVOKEINTERFACE:
-        {
-          List<V> valueList = new ArrayList<V>();
-          String methodDescriptor = ((MethodInsnNode) insn).desc;
-          for (int i = Type.getArgumentTypes(methodDescriptor).length; i > 0; --i) {
-            valueList.add(0, pop());
-          }
-          if (insn.getOpcode() != Opcodes.INVOKESTATIC) {
-            valueList.add(0, pop());
-          }
-          if (Type.getReturnType(methodDescriptor) == Type.VOID_TYPE) {
-            interpreter.naryOperation(insn, valueList);
-          } else {
-            push(interpreter.naryOperation(insn, valueList));
-          }
-          break;
-        }
+        executeInvokeInsn(insn, ((MethodInsnNode) insn).desc, interpreter);
+        break;
       case Opcodes.INVOKEDYNAMIC:
-        {
-          List<V> valueList = new ArrayList<V>();
-          String methodDesccriptor = ((InvokeDynamicInsnNode) insn).desc;
-          for (int i = Type.getArgumentTypes(methodDesccriptor).length; i > 0; --i) {
-            valueList.add(0, pop());
-          }
-          if (Type.getReturnType(methodDesccriptor) == Type.VOID_TYPE) {
-            interpreter.naryOperation(insn, valueList);
-          } else {
-            push(interpreter.naryOperation(insn, valueList));
-          }
-          break;
-        }
+        executeInvokeInsn(insn, ((InvokeDynamicInsnNode) insn).desc, interpreter);
+        break;
       case Opcodes.NEW:
         push(interpreter.newOperation(insn));
         break;
@@ -648,7 +625,7 @@ public class Frame<V extends Value> {
         interpreter.unaryOperation(insn, pop());
         break;
       case Opcodes.MULTIANEWARRAY:
-        List<V> valueList = new ArrayList<V>();
+        List<V> valueList = new ArrayList<>();
         for (int i = ((MultiANewArrayInsnNode) insn).dims; i > 0; --i) {
           valueList.add(0, pop());
         }
@@ -660,6 +637,23 @@ public class Frame<V extends Value> {
         break;
       default:
         throw new AnalyzerException(insn, "Illegal opcode " + insn.getOpcode());
+    }
+  }
+
+  private void executeInvokeInsn(
+      final AbstractInsnNode insn, final String methodDescriptor, final Interpreter<V> interpreter)
+      throws AnalyzerException {
+    ArrayList<V> valueList = new ArrayList<>();
+    for (int i = Type.getArgumentTypes(methodDescriptor).length; i > 0; --i) {
+      valueList.add(0, pop());
+    }
+    if (insn.getOpcode() != Opcodes.INVOKESTATIC && insn.getOpcode() != Opcodes.INVOKEDYNAMIC) {
+      valueList.add(0, pop());
+    }
+    if (Type.getReturnType(methodDescriptor) == Type.VOID_TYPE) {
+      interpreter.naryOperation(insn, valueList);
+    } else {
+      push(interpreter.naryOperation(insn, valueList));
     }
   }
 

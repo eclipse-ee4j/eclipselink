@@ -224,9 +224,9 @@ public class MethodNode extends MethodVisitor {
     this.signature = signature;
     this.exceptions = Util.asArrayList(exceptions);
     if ((access & Opcodes.ACC_ABSTRACT) == 0) {
-      this.localVariables = new ArrayList<LocalVariableNode>(5);
+      this.localVariables = new ArrayList<>(5);
     }
-    this.tryCatchBlocks = new ArrayList<TryCatchBlockNode>();
+    this.tryCatchBlocks = new ArrayList<>();
     this.instructions = new InsnList();
   }
 
@@ -237,7 +237,7 @@ public class MethodNode extends MethodVisitor {
   @Override
   public void visitParameter(final String name, final int access) {
     if (parameters == null) {
-      parameters = new ArrayList<ParameterNode>(5);
+      parameters = new ArrayList<>(5);
     }
     parameters.add(new ParameterNode(name, access));
   }
@@ -260,12 +260,12 @@ public class MethodNode extends MethodVisitor {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
       if (visibleAnnotations == null) {
-        visibleAnnotations = new ArrayList<AnnotationNode>(1);
+        visibleAnnotations = new ArrayList<>(1);
       }
       visibleAnnotations.add(annotation);
     } else {
       if (invisibleAnnotations == null) {
-        invisibleAnnotations = new ArrayList<AnnotationNode>(1);
+        invisibleAnnotations = new ArrayList<>(1);
       }
       invisibleAnnotations.add(annotation);
     }
@@ -278,12 +278,12 @@ public class MethodNode extends MethodVisitor {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
       if (visibleTypeAnnotations == null) {
-        visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+        visibleTypeAnnotations = new ArrayList<>(1);
       }
       visibleTypeAnnotations.add(typeAnnotation);
     } else {
       if (invisibleTypeAnnotations == null) {
-        invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+        invisibleTypeAnnotations = new ArrayList<>(1);
       }
       invisibleTypeAnnotations.add(typeAnnotation);
     }
@@ -310,7 +310,7 @@ public class MethodNode extends MethodVisitor {
         visibleParameterAnnotations = (List<AnnotationNode>[]) new List<?>[params];
       }
       if (visibleParameterAnnotations[parameter] == null) {
-        visibleParameterAnnotations[parameter] = new ArrayList<AnnotationNode>(1);
+        visibleParameterAnnotations[parameter] = new ArrayList<>(1);
       }
       visibleParameterAnnotations[parameter].add(annotation);
     } else {
@@ -319,7 +319,7 @@ public class MethodNode extends MethodVisitor {
         invisibleParameterAnnotations = (List<AnnotationNode>[]) new List<?>[params];
       }
       if (invisibleParameterAnnotations[parameter] == null) {
-        invisibleParameterAnnotations[parameter] = new ArrayList<AnnotationNode>(1);
+        invisibleParameterAnnotations[parameter] = new ArrayList<>(1);
       }
       invisibleParameterAnnotations[parameter].add(annotation);
     }
@@ -329,7 +329,7 @@ public class MethodNode extends MethodVisitor {
   @Override
   public void visitAttribute(final Attribute attribute) {
     if (attrs == null) {
-      attrs = new ArrayList<Attribute>(1);
+      attrs = new ArrayList<>(1);
     }
     attrs.add(attribute);
   }
@@ -381,33 +381,20 @@ public class MethodNode extends MethodVisitor {
     instructions.add(new FieldInsnNode(opcode, owner, name, descriptor));
   }
 
-  /**
-   * Deprecated.
-   *
-   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
-   */
-  @Deprecated
   @Override
   public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
-    if (api >= Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor);
-      return;
-    }
-    instructions.add(new MethodInsnNode(opcode, owner, name, descriptor));
-  }
-
-  @Override
-  public void visitMethodInsn(
-      final int opcode,
+      final int opcodeAndSource,
       final String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
-    if (api < Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+    if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
+      // Redirect the call to the deprecated version of this method.
+      super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
       return;
     }
+    int opcode = opcodeAndSource & ~Opcodes.SOURCE_MASK;
+
     instructions.add(new MethodInsnNode(opcode, owner, name, descriptor, isInterface));
   }
 
@@ -470,12 +457,12 @@ public class MethodNode extends MethodVisitor {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
       if (currentInsn.visibleTypeAnnotations == null) {
-        currentInsn.visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+        currentInsn.visibleTypeAnnotations = new ArrayList<>(1);
       }
       currentInsn.visibleTypeAnnotations.add(typeAnnotation);
     } else {
       if (currentInsn.invisibleTypeAnnotations == null) {
-        currentInsn.invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+        currentInsn.invisibleTypeAnnotations = new ArrayList<>(1);
       }
       currentInsn.invisibleTypeAnnotations.add(typeAnnotation);
     }
@@ -485,6 +472,9 @@ public class MethodNode extends MethodVisitor {
   @Override
   public void visitTryCatchBlock(
       final Label start, final Label end, final Label handler, final String type) {
+    if (tryCatchBlocks == null) {
+      tryCatchBlocks = new ArrayList<>(1);
+    }
     tryCatchBlocks.add(
         new TryCatchBlockNode(getLabelNode(start), getLabelNode(end), getLabelNode(handler), type));
   }
@@ -496,12 +486,12 @@ public class MethodNode extends MethodVisitor {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
       if (tryCatchBlock.visibleTypeAnnotations == null) {
-        tryCatchBlock.visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+        tryCatchBlock.visibleTypeAnnotations = new ArrayList<>(1);
       }
       tryCatchBlock.visibleTypeAnnotations.add(typeAnnotation);
     } else {
       if (tryCatchBlock.invisibleTypeAnnotations == null) {
-        tryCatchBlock.invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+        tryCatchBlock.invisibleTypeAnnotations = new ArrayList<>(1);
       }
       tryCatchBlock.invisibleTypeAnnotations.add(typeAnnotation);
     }
@@ -516,6 +506,9 @@ public class MethodNode extends MethodVisitor {
       final Label start,
       final Label end,
       final int index) {
+    if (localVariables == null) {
+      localVariables = new ArrayList<>(1);
+    }
     localVariables.add(
         new LocalVariableNode(
             name, descriptor, signature, getLabelNode(start), getLabelNode(end), index));
@@ -535,12 +528,12 @@ public class MethodNode extends MethodVisitor {
             typeRef, typePath, getLabelNodes(start), getLabelNodes(end), index, descriptor);
     if (visible) {
       if (visibleLocalVariableAnnotations == null) {
-        visibleLocalVariableAnnotations = new ArrayList<LocalVariableAnnotationNode>(1);
+        visibleLocalVariableAnnotations = new ArrayList<>(1);
       }
       visibleLocalVariableAnnotations.add(localVariableAnnotation);
     } else {
       if (invisibleLocalVariableAnnotations == null) {
-        invisibleLocalVariableAnnotations = new ArrayList<LocalVariableAnnotationNode>(1);
+        invisibleLocalVariableAnnotations = new ArrayList<>(1);
       }
       invisibleLocalVariableAnnotations.add(localVariableAnnotation);
     }
@@ -682,8 +675,7 @@ public class MethodNode extends MethodVisitor {
    * @param classVisitor a class visitor.
    */
   public void accept(final ClassVisitor classVisitor) {
-    String[] exceptionsArray = new String[this.exceptions.size()];
-    this.exceptions.toArray(exceptionsArray);
+    String[] exceptionsArray = exceptions == null ? null : exceptions.toArray(new String[0]);
     MethodVisitor methodVisitor =
         classVisitor.visitMethod(access, name, desc, signature, exceptionsArray);
     if (methodVisitor != null) {
