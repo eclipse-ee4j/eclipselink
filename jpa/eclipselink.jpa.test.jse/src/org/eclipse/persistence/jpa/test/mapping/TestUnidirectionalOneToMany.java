@@ -8,10 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     09/12/2018 - Will Dazey
- *       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
- *     06/19/2019 - Will Dazey
- *       - 391279: Add support for Unidirectional OneToMany mappings with non-nullable values
+ *     09/12/2019 - Will Dazey
+ *       - 471144: Add support for AggregateObjectMappings to eclipselink.cursor impl
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.mapping;
 

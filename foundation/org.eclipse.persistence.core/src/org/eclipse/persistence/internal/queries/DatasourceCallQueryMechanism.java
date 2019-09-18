@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -602,24 +602,40 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         //calculate indexes after normalize to insure expressions are set up correctly
         //take into account any field expressions added to the ReportQuery
         ReportQuery query = (ReportQuery)getQuery();
-        int itemOffset = query.getQueryExpressions().size();
-        for (Iterator items = query.getItems().iterator(); items.hasNext();) {
-            ReportItem item = (ReportItem) items.next();
-            item.setResultIndex(itemOffset);
-            if (item.getAttributeExpression() != null) {
-                if (item.hasJoining()){
-                    itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
-                } else {
-                    if (item.getDescriptor() != null) {
-                        itemOffset += item.getDescriptor().getAllSelectionFields(query).size();
+        computeAndSetItemOffset(query, query.getItems(), query.getQueryExpressions().size());
+    }
+
+    /**
+     * calculate indexes for given items, given the current Offset
+     */
+    protected int computeAndSetItemOffset(ReportQuery query, List<ReportItem> items, int itemOffset) {
+        for(ReportItem item : items) {
+            if (item.isConstructorItem()) {
+                List<ReportItem> reportItems = ((ConstructorReportItem) item).getReportItems();
+                itemOffset = computeAndSetItemOffset(query, reportItems, itemOffset);
+            } else {
+                //Don't set the offset on the ConstructorItem
+                item.setResultIndex(itemOffset);
+                if (item.getAttributeExpression() != null) {
+                    if (item.hasJoining()){
+                        itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
                     } else {
-                        ++itemOffset; //only a single attribute can be selected
+                        if (item.getDescriptor() != null) {
+                            itemOffset += item.getDescriptor().getAllSelectionFields(query).size();
+                        } else {
+                            if (item.getMapping() != null && item.getMapping().isAggregateObjectMapping()) {
+                                itemOffset += item.getMapping().getFields().size(); // Aggregate object may consist out of 1..n fields
+                            } else {
+                                ++itemOffset; //only a single attribute can be selected
+                            }
+                        }
                     }
                 }
             }
-        }        
+        }
+        return itemOffset;
     }
-    
+
     /**
      * Pre-build configure the call.
      */
