@@ -30,7 +30,8 @@ public class JPQLSimpleTestSuite extends TestSuite {
         addTest(new SimpleBetweenAndTest());
         addTest(new SimpleBetweenTest());
         addTest(new SimpleConcatTest());
-        addTest(new SimpleConcatTestWithConstants1());
+        addTest(new SimpleConcatTestWithConstantsLiteralSecond());
+        addTest(new SimpleConcatTestWithConstantsLiteralFirst());
         addTest(new SimpleDoubleOrTest());
         addTest(new SimpleEqualsBracketsTest());
         addTest(new SimpleEqualsTest());

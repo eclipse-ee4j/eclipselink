@@ -2106,6 +2106,11 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                             return;
                         }
                     }
+                    // In some cases when expression starts with literal session is not set.
+                    // Like ....CONCAT('abcd', column)....
+                    if (baseExpression != null && (baseExpression instanceof ExpressionBuilder) && baseExpression.getSession() == null) {
+                        ((ExpressionBuilder) baseExpression).setSession(getSession());
+                    }
                     DatabaseField field = dataExpression.getField();
                     if(field != null) {
                         if(!field.getTable().equals((DatabaseTable)getResult())) {

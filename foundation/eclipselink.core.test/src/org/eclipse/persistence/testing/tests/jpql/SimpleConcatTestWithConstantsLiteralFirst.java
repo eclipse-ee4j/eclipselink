@@ -14,13 +14,15 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpql;
 
-import java.util.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.testing.models.employee.domain.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.testing.models.employee.domain.Employee;
+
+import java.util.Vector;
 
 //This tests CONCAT with the second parameter being a constant String
-public class SimpleConcatTestWithConstants1 extends org.eclipse.persistence.testing.tests.jpql.JPQLTestCase {
+public class SimpleConcatTestWithConstantsLiteralFirst extends JPQLTestCase {
     public void setup() {
         Employee emp = (Employee)getSomeEmployees().firstElement();
 
@@ -31,7 +33,7 @@ public class SimpleConcatTestWithConstants1 extends org.eclipse.persistence.test
         partOne = emp.getFirstName();
 
         ExpressionBuilder builder = new ExpressionBuilder();
-        Expression whereClause = builder.get("firstName").concat("Smith").like(partOne + "Smith");
+        Expression whereClause = builder.literal("\"Smith\"").concat(builder.get("firstName")).like("Smith" + partOne);
 
         ReadAllQuery raq = new ReadAllQuery();
         raq.setReferenceClass(Employee.class);
@@ -40,8 +42,8 @@ public class SimpleConcatTestWithConstants1 extends org.eclipse.persistence.test
         Vector employees = (Vector)getSession().executeQuery(raq);
 
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
-        ejbqlString = ejbqlString + "CONCAT(emp.firstName,\"Smith\") LIKE ";
-        ejbqlString = ejbqlString + "\"" + partOne + "Smith\"";
+        ejbqlString = ejbqlString + "CONCAT(\"Smith\",emp.firstName) LIKE ";
+        ejbqlString = ejbqlString + "\"Smith"+ partOne + "\"";
 
         setEjbqlString(ejbqlString);
         setOriginalOject(employees);
