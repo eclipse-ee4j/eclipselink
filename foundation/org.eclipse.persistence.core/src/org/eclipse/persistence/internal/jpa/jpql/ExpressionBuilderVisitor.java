@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2006, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1280,11 +1280,11 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
         String parameterName = expression.getParameter();
 
         // Calculate the input parameter type
-        Class<?> type = queryContext.getParameterType(expression);
+        type[0] = queryContext.getParameterType(expression);
 
         // Create the expression
         queryExpression = queryContext.getBaseExpression();
-        queryExpression = queryExpression.getParameter(parameterName.substring(1), type);
+        queryExpression = queryExpression.getParameter(parameterName.substring(1), type[0]);
 
         // Cache the input parameter type
         queryContext.addInputParameter(expression, queryExpression);

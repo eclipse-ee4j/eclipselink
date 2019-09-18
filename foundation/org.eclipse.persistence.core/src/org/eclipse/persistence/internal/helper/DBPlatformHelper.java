@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,20 +57,23 @@ public class DBPlatformHelper {
      * If vendorName does not match any of predefined vendor names, <code>
      * DEFAULTPLATFORM </code> is returned.
      */
-    public static String getDBPlatform(String vendorName, SessionLog logger) {
+    public static String getDBPlatform(String vendorName, String minorVersion, String majorVersion, SessionLog logger) {
 
         initializeNameToVendorPlatform(logger);
 
-        String detectedDbPlatform = null;
-        if(vendorName != null) {
-            detectedDbPlatform = matchVendorNameInProperties(vendorName, _nameToVendorPlatform, logger);
-        }
+        vendorName = (vendorName == null) ? "Vendor Not Found" : vendorName;
+        minorVersion = (minorVersion == null) ? "0" : minorVersion;
+        majorVersion = (majorVersion == null) ? "0" : majorVersion;
+
+        String vendor = vendorName + "[" + minorVersion + ", " + majorVersion + "]";
+
+        String detectedDbPlatform = matchVendorNameInProperties(vendor, _nameToVendorPlatform, logger);
         if (logger.shouldLog(SessionLog.FINE) ) {
             logger.log(SessionLog.FINE, SessionLog.CONNECTION, "dbPlatformHelper_detectedVendorPlatform", detectedDbPlatform ); // NOI18N
         }
         if (detectedDbPlatform == null) {
             if(logger.shouldLog(SessionLog.INFO)) {
-                logger.log(SessionLog.INFO, SessionLog.CONNECTION, "dbPlatformHelper_defaultingPlatform",  vendorName, DEFAULTPLATFORM); // NOI18N
+                logger.log(SessionLog.INFO, SessionLog.CONNECTION, "dbPlatformHelper_defaultingPlatform", vendor, DEFAULTPLATFORM); // NOI18N
             }
             detectedDbPlatform = DEFAULTPLATFORM;
         }

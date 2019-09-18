@@ -93,9 +93,9 @@ public class JGroupsRemoteConnection extends BroadcastRemoteConnection {
     protected Object executeCommandInternal(Object command) throws Exception {
         Message message = null;
         if (command instanceof byte[]) {
-            message = new Message(null, null, (byte[])command);
+            message = new Message(null, (byte[])command);
         } else {
-            message = new Message(null, null, command);
+            message = new Message(null, command);
         }
 
         Object[] debugInfo = null;
