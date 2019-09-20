@@ -17,7 +17,7 @@
 
 package org.eclipse.persistence.platform.database.oracle;
 
-public class Oracle19Platform extends Oracle12Platform {
+public class Oracle19Platform extends Oracle18Platform {
     public Oracle19Platform() {
         super();
     }
