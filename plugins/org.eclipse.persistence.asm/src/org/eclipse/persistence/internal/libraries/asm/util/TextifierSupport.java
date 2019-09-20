@@ -28,17 +28,14 @@ import org.eclipse.persistence.internal.libraries.asm.Label;
  * An {@link org.eclipse.persistence.internal.libraries.asm.Attribute} that can print a readable representation of itself.
  *
  * @author Eugene Kuleshov
- * @deprecated This interface is no longer supported (since ASM 7.1), because it uses a StringBuffer
- *     instead of a StringBuilder. Use {@link TextifierSupport} instead.
  */
-@Deprecated
-public interface Textifiable {
+public interface TextifierSupport {
 
   /**
    * Generates a human readable representation of this attribute.
    *
-   * @param outputBuffer where the human representation of this attribute must be appended.
+   * @param outputBuilder where the human representation of this attribute must be appended.
    * @param labelNames the human readable names of the labels.
    */
-  void textify(StringBuffer outputBuffer, Map<Label, String> labelNames);
+  void textify(StringBuilder outputBuilder, Map<Label, String> labelNames);
 }

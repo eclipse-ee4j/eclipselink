@@ -506,42 +506,20 @@ public class InstructionAdapter extends MethodVisitor {
     }
   }
 
-  /**
-   * Deprecated.
-   *
-   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
-   */
-  @Deprecated
   @Override
   public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
-    if (api >= Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor);
-      return;
-    }
-    doVisitMethodInsn(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
-  }
-
-  @Override
-  public void visitMethodInsn(
-      final int opcode,
+      final int opcodeAndSource,
       final String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
-    if (api < Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+    if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
+      // Redirect the call to the deprecated version of this method.
+      super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
       return;
     }
-    doVisitMethodInsn(opcode, owner, name, descriptor, isInterface);
-  }
+    int opcode = opcodeAndSource & ~Opcodes.SOURCE_MASK;
 
-  private void doVisitMethodInsn(
-      final int opcode,
-      final String owner,
-      final String name,
-      final String descriptor,
-      final boolean isInterface) {
     switch (opcode) {
       case Opcodes.INVOKESPECIAL:
         invokespecial(owner, name, descriptor, isInterface);

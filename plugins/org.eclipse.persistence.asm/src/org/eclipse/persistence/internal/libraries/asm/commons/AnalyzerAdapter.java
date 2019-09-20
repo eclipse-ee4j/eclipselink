@@ -143,9 +143,9 @@ public class AnalyzerAdapter extends MethodVisitor {
       final MethodVisitor methodVisitor) {
     super(api, methodVisitor);
     this.owner = owner;
-    locals = new ArrayList<Object>();
-    stack = new ArrayList<Object>();
-    uninitializedTypes = new HashMap<Object, Object>();
+    locals = new ArrayList<>();
+    stack = new ArrayList<>();
+    uninitializedTypes = new HashMap<>();
 
     if ((access & Opcodes.ACC_STATIC) == 0) {
       if ("<init>".equals(name)) {
@@ -205,8 +205,8 @@ public class AnalyzerAdapter extends MethodVisitor {
       this.locals.clear();
       this.stack.clear();
     } else {
-      this.locals = new ArrayList<Object>();
-      this.stack = new ArrayList<Object>();
+      this.locals = new ArrayList<>();
+      this.stack = new ArrayList<>();
     }
     visitFrameTypes(numLocal, local, this.locals);
     visitFrameTypes(numStack, stack, this.stack);
@@ -258,7 +258,7 @@ public class AnalyzerAdapter extends MethodVisitor {
     if (opcode == Opcodes.NEW) {
       if (labels == null) {
         Label label = new Label();
-        labels = new ArrayList<Label>(3);
+        labels = new ArrayList<>(3);
         labels.add(label);
         if (mv != null) {
           mv.visitLabel(label);
@@ -279,45 +279,21 @@ public class AnalyzerAdapter extends MethodVisitor {
     execute(opcode, 0, descriptor);
   }
 
-  /**
-   * Deprecated.
-   *
-   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
-   */
-  @Deprecated
   @Override
   public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
-    if (api >= Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor);
-      return;
-    }
-    doVisitMethodInsn(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
-  }
-
-  @Override
-  public void visitMethodInsn(
-      final int opcode,
+      final int opcodeAndSource,
       final String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
-    if (api < Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+    if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
+      // Redirect the call to the deprecated version of this method.
+      super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
       return;
     }
-    doVisitMethodInsn(opcode, owner, name, descriptor, isInterface);
-  }
+    super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
+    int opcode = opcodeAndSource & ~Opcodes.SOURCE_MASK;
 
-  private void doVisitMethodInsn(
-      final int opcode,
-      final String owner,
-      final String name,
-      final String descriptor,
-      final boolean isInterface) {
-    if (mv != null) {
-      mv.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-    }
     if (this.locals == null) {
       labels = null;
       return;
@@ -378,7 +354,7 @@ public class AnalyzerAdapter extends MethodVisitor {
   public void visitLabel(final Label label) {
     super.visitLabel(label);
     if (labels == null) {
-      labels = new ArrayList<Label>(3);
+      labels = new ArrayList<>(3);
     }
     labels.add(label);
   }
@@ -495,9 +471,12 @@ public class AnalyzerAdapter extends MethodVisitor {
     maxStack = Math.max(maxStack, stack.size());
   }
 
-  private void pushDescriptor(final String descriptor) {
-    int index = descriptor.charAt(0) == '(' ? descriptor.indexOf(')') + 1 : 0;
-    switch (descriptor.charAt(index)) {
+  private void pushDescriptor(final String fieldOrMethodDescriptor) {
+    String descriptor =
+        fieldOrMethodDescriptor.charAt(0) == '('
+            ? Type.getReturnType(fieldOrMethodDescriptor).getDescriptor()
+            : fieldOrMethodDescriptor;
+    switch (descriptor.charAt(0)) {
       case 'V':
         return;
       case 'Z':
@@ -519,18 +498,10 @@ public class AnalyzerAdapter extends MethodVisitor {
         push(Opcodes.TOP);
         return;
       case '[':
-        if (index == 0) {
-          push(descriptor);
-        } else {
-          push(descriptor.substring(index, descriptor.length()));
-        }
+        push(descriptor);
         break;
       case 'L':
-        if (index == 0) {
-          push(descriptor.substring(1, descriptor.length() - 1));
-        } else {
-          push(descriptor.substring(index + 1, descriptor.length() - 1));
-        }
+        push(descriptor.substring(1, descriptor.length() - 1));
         break;
       default:
         throw new AssertionError();
@@ -566,6 +537,9 @@ public class AnalyzerAdapter extends MethodVisitor {
   }
 
   private void execute(final int opcode, final int intArg, final String stringArg) {
+    if (opcode == Opcodes.JSR || opcode == Opcodes.RET) {
+      throw new IllegalArgumentException("JSR/RET are not supported");
+    }
     if (this.locals == null) {
       labels = null;
       return;
@@ -866,9 +840,6 @@ public class AnalyzerAdapter extends MethodVisitor {
         pop(4);
         push(Opcodes.INTEGER);
         break;
-      case Opcodes.JSR:
-      case Opcodes.RET:
-        throw new IllegalArgumentException("JSR/RET are not supported");
       case Opcodes.GETSTATIC:
         pushDescriptor(stringArg);
         break;
