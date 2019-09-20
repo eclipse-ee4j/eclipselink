@@ -47,6 +47,7 @@ import org.eclipse.persistence.testing.jaxb.json.unmapped.JsonUnmappedTestCases;
 import org.eclipse.persistence.testing.jaxb.json.wrapper.AllWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropTestCases;
+import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropValueFirstInJSONTestCases;
 import org.eclipse.persistence.testing.oxm.xmlconversionmanager.NumberTestCases;
 
 public class JSONTestSuite extends TestSuite {
@@ -78,6 +79,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(IncludeRootTrueWithXMLRootElementTestCases.class);
           suite.addTestSuite(XMLValuePropTestCases.class);
           suite.addTestSuite(XMLValuePropDifferentTestCases.class);
+          suite.addTestSuite(XMLValuePropValueFirstInJSONTestCases.class);
           suite.addTestSuite(NumberTestCases.class);
           suite.addTestSuite(EscapeCharactersTestCases.class);
           suite.addTestSuite(UsAsciiTestCases.class);
