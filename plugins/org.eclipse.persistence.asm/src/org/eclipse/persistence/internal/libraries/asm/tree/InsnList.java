@@ -209,7 +209,7 @@ public class InsnList {
       cache[index] = newInsnNode;
       newInsnNode.index = index;
     } else {
-      newInsnNode.index = 0; // newInnsnNode now belongs to an InsnList.
+      newInsnNode.index = 0; // newInsnNode now belongs to an InsnList.
     }
     oldInsnNode.index = -1; // oldInsnNode no longer belongs to an InsnList.
     oldInsnNode.previousInsn = null;
@@ -534,6 +534,9 @@ public class InsnList {
 
     @Override
     public Object previous() {
+      if (previousInsn == null) {
+        throw new NoSuchElementException();
+      }
       AbstractInsnNode result = previousInsn;
       nextInsn = result;
       previousInsn = result.previousInsn;

@@ -388,8 +388,8 @@ public class CheckMethodAdapter extends MethodVisitor {
       final Map<Label, Integer> labelInsnIndices) {
     super(api, methodVisitor);
     this.labelInsnIndices = labelInsnIndices;
-    this.referencedLabels = new HashSet<Label>();
-    this.handlers = new ArrayList<Label>();
+    this.referencedLabels = new HashSet<>();
+    this.handlers = new ArrayList<>();
   }
 
   /**
@@ -444,7 +444,7 @@ public class CheckMethodAdapter extends MethodVisitor {
         new MethodNode(api, access, name, descriptor, null, null) {
           @Override
           public void visitEnd() {
-            Analyzer<BasicValue> analyzer = new Analyzer<BasicValue>(new BasicVerifier());
+            Analyzer<BasicValue> analyzer = new Analyzer<>(new BasicVerifier());
             try {
               analyzer.analyze("dummy", this);
             } catch (IndexOutOfBoundsException e) {
@@ -457,7 +457,9 @@ public class CheckMethodAdapter extends MethodVisitor {
             } catch (AnalyzerException e) {
               throwError(analyzer, e);
             }
-            accept(methodVisitor);
+            if (methodVisitor != null) {
+              accept(methodVisitor);
+            }
           }
 
           private void throwError(final Analyzer<BasicValue> analyzer, final Exception e) {
@@ -704,42 +706,20 @@ public class CheckMethodAdapter extends MethodVisitor {
     ++insnCount;
   }
 
-  /**
-   * Deprecated.
-   *
-   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
-   */
-  @Deprecated
   @Override
   public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
-    if (api >= Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor);
-      return;
-    }
-    doVisitMethodInsn(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
-  }
-
-  @Override
-  public void visitMethodInsn(
-      final int opcode,
+      final int opcodeAndSource,
       final String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
-    if (api < Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+    if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
+      // Redirect the call to the deprecated version of this method.
+      super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
       return;
     }
-    doVisitMethodInsn(opcode, owner, name, descriptor, isInterface);
-  }
+    int opcode = opcodeAndSource & ~Opcodes.SOURCE_MASK;
 
-  private void doVisitMethodInsn(
-      final int opcode,
-      final String owner,
-      final String name,
-      final String descriptor,
-      final boolean isInterface) {
     checkVisitCodeCalled();
     checkVisitMaxsNotCalled();
     checkOpcodeMethod(opcode, Method.VISIT_METHOD_INSN);
@@ -758,13 +738,7 @@ public class CheckMethodAdapter extends MethodVisitor {
       throw new IllegalArgumentException(
           "INVOKESPECIAL can't be used with interfaces prior to Java 8");
     }
-
-    // Calling super.visitMethodInsn requires to call the correct version depending on this.api
-    // (otherwise infinite loops can occur). To simplify and to make it easier to automatically
-    // remove the backward compatibility code, we inline the code of the overridden method here.
-    if (mv != null) {
-      mv.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-    }
+    super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
     ++insnCount;
   }
 
@@ -966,6 +940,9 @@ public class CheckMethodAdapter extends MethodVisitor {
     checkVisitMaxsNotCalled();
     checkUnqualifiedName(version, name, "name");
     checkDescriptor(version, descriptor, false);
+    if (signature != null) {
+      CheckClassAdapter.checkFieldSignature(signature);
+    }
     checkLabel(start, true, START_LABEL);
     checkLabel(end, true, END_LABEL);
     checkUnsignedShort(index, INVALID_LOCAL_VARIABLE_INDEX);
@@ -1339,10 +1316,10 @@ public class CheckMethodAdapter extends MethodVisitor {
       int startIndex = 0;
       int slashIndex;
       while ((slashIndex = name.indexOf('/', startIndex + 1)) != -1) {
-        CheckMethodAdapter.checkIdentifier(version, name, startIndex, slashIndex, null);
+        checkIdentifier(version, name, startIndex, slashIndex, null);
         startIndex = slashIndex + 1;
       }
-      CheckMethodAdapter.checkIdentifier(version, name, startIndex, name.length(), null);
+      checkIdentifier(version, name, startIndex, name.length(), null);
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(
           INVALID + message + " (must be an internal class name): " + name, e);
