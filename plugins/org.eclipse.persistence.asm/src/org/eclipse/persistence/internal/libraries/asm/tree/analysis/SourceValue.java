@@ -77,7 +77,7 @@ public class SourceValue implements Value {
    */
   public SourceValue(final int size, final AbstractInsnNode insnNode) {
     this.size = size;
-    this.insns = new SmallSet<AbstractInsnNode>(insnNode);
+    this.insns = new SmallSet<>(insnNode);
   }
 
   /**

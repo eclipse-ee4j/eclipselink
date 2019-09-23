@@ -204,7 +204,7 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
       }
     }
     if (value1.size != value2.size || !containsAll(value1.insns, value2.insns)) {
-      HashSet<AbstractInsnNode> setUnion = new HashSet<AbstractInsnNode>();
+      HashSet<AbstractInsnNode> setUnion = new HashSet<>();
       setUnion.addAll(value1.insns);
       setUnion.addAll(value2.insns);
       return new SourceValue(Math.min(value1.size, value2.size), setUnion);

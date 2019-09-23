@@ -111,42 +111,20 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
     super.visitFieldInsn(opcode, owner, name, descriptor);
   }
 
-  /**
-   * Deprecated.
-   *
-   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
-   */
-  @Deprecated
   @Override
   public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
-    if (api >= Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor);
-      return;
-    }
-    doVisitMethodInsn(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
-  }
-
-  @Override
-  public void visitMethodInsn(
-      final int opcode,
+      final int opcodeAndSource,
       final String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
-    if (api < Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+    if (api < Opcodes.ASM5 && (opcodeAndSource & Opcodes.SOURCE_DEPRECATED) == 0) {
+      // Redirect the call to the deprecated version of this method.
+      super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
       return;
     }
-    doVisitMethodInsn(opcode, owner, name, descriptor, isInterface);
-  }
+    int opcode = opcodeAndSource & ~Opcodes.SOURCE_MASK;
 
-  private void doVisitMethodInsn(
-      final int opcode,
-      final String owner,
-      final String name,
-      final String descriptor,
-      final boolean isInterface) {
     if (opcode == INVOKEINTERFACE) {
       minSize += 5;
       maxSize += 5;
@@ -154,9 +132,7 @@ public class CodeSizeEvaluator extends MethodVisitor implements Opcodes {
       minSize += 3;
       maxSize += 3;
     }
-    if (mv != null) {
-      mv.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-    }
+    super.visitMethodInsn(opcodeAndSource, owner, name, descriptor, isInterface);
   }
 
   @Override
