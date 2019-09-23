@@ -41,8 +41,8 @@ public class OSGITestHelper {
     private static final String ACTIVATION_JAR = System.getProperty("activation.jar", "jakarta.activation.jar");
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "jakarta.xml.bind-api.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "jakarta.ws.rs-api.jar");
-    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_7.0.0.v201811131354.jar");
-    private static final String ASM_VERSION = System.getProperty("asm.version", "7.0.0.v201811131354");
+    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_7.1.0.v201909231337.jar");
+    private static final String ASM_VERSION = System.getProperty("asm.version", "7.1.0.v201909231337");
     private static final String BEAN_VALIDATION_LIB = System.getProperty("javax.validation.lib", "jakarta.validation-api.jar");
 
     public static Option[] getDefaultOptions() {

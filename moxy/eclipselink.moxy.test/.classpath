@@ -14,7 +14,7 @@
 	<classpathentry kind="var" path="M2_REPO/org/ops4j/pax/exam/pax-exam/4.11.0/pax-exam-4.11.0.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.inject.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/osgi.core.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.0.0.v201811131354.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.0.0.v201811131354.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.1.0.v201909231337.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.1.0.v201909231337.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-osgi.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-osgi.source.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.validation-api.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamicxjc"/>
