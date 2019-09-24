@@ -25,20 +25,21 @@ import java.util.Map;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 
 /**
- * An {@link org.eclipse.persistence.internal.libraries.asm.Attribute} that can print a readable representation of itself.
+ * An {@link org.eclipse.persistence.internal.libraries.asm.Attribute} that can generate the ASM code to create an equivalent
+ * attribute.
  *
  * @author Eugene Kuleshov
- * @deprecated This interface is no longer supported (since ASM 7.1), because it uses a StringBuffer
- *     instead of a StringBuilder. Use {@link TextifierSupport} instead.
  */
-@Deprecated
-public interface Textifiable {
+// DontCheck(AbbreviationAsWordInName): can't be renamed (for backward binary compatibility).
+public interface ASMifierSupport {
 
   /**
-   * Generates a human readable representation of this attribute.
+   * Generates the ASM code to create an attribute equal to this attribute.
    *
-   * @param outputBuffer where the human representation of this attribute must be appended.
-   * @param labelNames the human readable names of the labels.
+   * @param outputBuilder where the generated code must be appended.
+   * @param visitorVariableName the name of the visitor variable in the produced code.
+   * @param labelNames the names of the labels in the generated code.
    */
-  void textify(StringBuffer outputBuffer, Map<Label, String> labelNames);
+  void asmify(
+      StringBuilder outputBuilder, String visitorVariableName, Map<Label, String> labelNames);
 }

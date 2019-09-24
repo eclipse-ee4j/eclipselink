@@ -144,12 +144,12 @@ public class FieldNode extends FieldVisitor {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
       if (visibleAnnotations == null) {
-        visibleAnnotations = new ArrayList<AnnotationNode>(1);
+        visibleAnnotations = new ArrayList<>(1);
       }
       visibleAnnotations.add(annotation);
     } else {
       if (invisibleAnnotations == null) {
-        invisibleAnnotations = new ArrayList<AnnotationNode>(1);
+        invisibleAnnotations = new ArrayList<>(1);
       }
       invisibleAnnotations.add(annotation);
     }
@@ -162,12 +162,12 @@ public class FieldNode extends FieldVisitor {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
       if (visibleTypeAnnotations == null) {
-        visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+        visibleTypeAnnotations = new ArrayList<>(1);
       }
       visibleTypeAnnotations.add(typeAnnotation);
     } else {
       if (invisibleTypeAnnotations == null) {
-        invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
+        invisibleTypeAnnotations = new ArrayList<>(1);
       }
       invisibleTypeAnnotations.add(typeAnnotation);
     }
@@ -177,7 +177,7 @@ public class FieldNode extends FieldVisitor {
   @Override
   public void visitAttribute(final Attribute attribute) {
     if (attrs == null) {
-      attrs = new ArrayList<Attribute>(1);
+      attrs = new ArrayList<>(1);
     }
     attrs.add(attribute);
   }

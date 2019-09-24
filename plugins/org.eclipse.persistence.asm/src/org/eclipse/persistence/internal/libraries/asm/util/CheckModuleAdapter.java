@@ -200,12 +200,12 @@ public class CheckModuleAdapter extends ModuleVisitor {
 
     NameSet(final String type) {
       this.type = type;
-      this.names = new HashSet<String>();
+      this.names = new HashSet<>();
     }
 
     void checkNameNotAlreadyDeclared(final String name) {
       if (!names.add(name)) {
-        throw new IllegalArgumentException(type + " " + name + " already declared");
+        throw new IllegalArgumentException(type + " '" + name + "' already declared");
       }
     }
   }

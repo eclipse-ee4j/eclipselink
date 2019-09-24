@@ -138,7 +138,7 @@ public class ModuleNode extends ModuleVisitor {
   @Override
   public void visitPackage(final String packaze) {
     if (packages == null) {
-      packages = new ArrayList<String>(5);
+      packages = new ArrayList<>(5);
     }
     packages.add(packaze);
   }
@@ -146,7 +146,7 @@ public class ModuleNode extends ModuleVisitor {
   @Override
   public void visitRequire(final String module, final int access, final String version) {
     if (requires == null) {
-      requires = new ArrayList<ModuleRequireNode>(5);
+      requires = new ArrayList<>(5);
     }
     requires.add(new ModuleRequireNode(module, access, version));
   }
@@ -154,7 +154,7 @@ public class ModuleNode extends ModuleVisitor {
   @Override
   public void visitExport(final String packaze, final int access, final String... modules) {
     if (exports == null) {
-      exports = new ArrayList<ModuleExportNode>(5);
+      exports = new ArrayList<>(5);
     }
     exports.add(new ModuleExportNode(packaze, access, Util.asArrayList(modules)));
   }
@@ -162,7 +162,7 @@ public class ModuleNode extends ModuleVisitor {
   @Override
   public void visitOpen(final String packaze, final int access, final String... modules) {
     if (opens == null) {
-      opens = new ArrayList<ModuleOpenNode>(5);
+      opens = new ArrayList<>(5);
     }
     opens.add(new ModuleOpenNode(packaze, access, Util.asArrayList(modules)));
   }
@@ -170,7 +170,7 @@ public class ModuleNode extends ModuleVisitor {
   @Override
   public void visitUse(final String service) {
     if (uses == null) {
-      uses = new ArrayList<String>(5);
+      uses = new ArrayList<>(5);
     }
     uses.add(service);
   }
@@ -178,7 +178,7 @@ public class ModuleNode extends ModuleVisitor {
   @Override
   public void visitProvide(final String service, final String... providers) {
     if (provides == null) {
-      provides = new ArrayList<ModuleProvideNode>(5);
+      provides = new ArrayList<>(5);
     }
     provides.add(new ModuleProvideNode(service, Util.asArrayList(providers)));
   }
