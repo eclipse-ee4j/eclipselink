@@ -251,7 +251,12 @@ public abstract class Remapper {
       final String name, final String ownerName, final String innerName) {
     final String remappedInnerName = this.mapType(name);
     if (remappedInnerName.contains("$")) {
-      return remappedInnerName.substring(remappedInnerName.lastIndexOf('$') + 1);
+      int index = remappedInnerName.lastIndexOf('$') + 1;
+      while (index < remappedInnerName.length()
+          && Character.isDigit(remappedInnerName.charAt(index))) {
+        index++;
+      }
+      return remappedInnerName.substring(index);
     } else {
       return innerName;
     }

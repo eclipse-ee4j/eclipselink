@@ -69,7 +69,7 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
    * instruction, bit i of the corresponding BitSet in this map is set iff instruction at index i
    * belongs to this subroutine.
    */
-  private final Map<LabelNode, BitSet> subroutinesInsns = new HashMap<LabelNode, BitSet>();
+  private final Map<LabelNode, BitSet> subroutinesInsns = new HashMap<>();
 
   /**
    * The instructions that belong to more that one subroutine. Bit i is set iff instruction at index
@@ -291,14 +291,14 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
    * fully elaborated.
    */
   private void emitCode() {
-    LinkedList<Instantiation> worklist = new LinkedList<Instantiation>();
+    LinkedList<Instantiation> worklist = new LinkedList<>();
     // Create an instantiation of the main "subroutine", which is just the main routine.
     worklist.add(new Instantiation(null, mainSubroutineInsns));
 
     // Emit instantiations of each subroutine we encounter, including the main subroutine.
     InsnList newInstructions = new InsnList();
-    List<TryCatchBlockNode> newTryCatchBlocks = new ArrayList<TryCatchBlockNode>();
-    List<LocalVariableNode> newLocalVariables = new ArrayList<LocalVariableNode>();
+    List<TryCatchBlockNode> newTryCatchBlocks = new ArrayList<>();
+    List<LocalVariableNode> newLocalVariables = new ArrayList<>();
     while (!worklist.isEmpty()) {
       Instantiation instantiation = worklist.removeFirst();
       emitInstantiation(
@@ -455,7 +455,7 @@ public class JSRInlinerAdapter extends MethodNode implements Opcodes {
       this.parent = parent;
       this.subroutineInsns = subroutineInsns;
       this.returnLabel = parent == null ? null : new LabelNode();
-      this.clonedLabels = new HashMap<LabelNode, LabelNode>();
+      this.clonedLabels = new HashMap<>();
 
       // Create a clone of each label in the original code of the subroutine. Note that we collapse
       // labels which point at the same instruction into one.
