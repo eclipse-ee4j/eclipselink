@@ -91,18 +91,22 @@ public abstract class SequenceDefinition extends DatabaseObjectDefinition {
         // unnecessarily
         int logLevel = session.getLogLevel();
         session.setLogLevel(SessionLog.FINEST);
+        boolean sequenceExists;
         try {
-        if (checkIfExist(session)) {
+            sequenceExists = checkIfExist(session);
+        } finally {
+            //reset log level
+            session.setLogLevel(logLevel);
+        }
+        
+        if (sequenceExists) {
             if (this.isAlterSupported(session)) {
                 alterOnDatabase(session);
             }
         } else {
             super.createOnDatabase(session);
         }
-        } finally {
-            //reset log level
-            session.setLogLevel(logLevel);
-        }
+
     }
 
     /**
