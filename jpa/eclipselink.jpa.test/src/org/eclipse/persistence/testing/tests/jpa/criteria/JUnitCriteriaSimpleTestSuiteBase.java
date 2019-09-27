@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -629,7 +629,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             String partOne = emp.getFirstName();
 
             ExpressionBuilder builder = new ExpressionBuilder();
-            Expression whereClause = builder.literal("\"Smith\"").concat(builder.get("firstName")).like("Smith" + partOne);
+            Expression whereClause = builder.literal("'Smith'").concat(builder.get("firstName")).like("Smith" + partOne);
 
             ReadAllQuery raq = new ReadAllQuery();
             raq.setReferenceClass(Employee.class);
