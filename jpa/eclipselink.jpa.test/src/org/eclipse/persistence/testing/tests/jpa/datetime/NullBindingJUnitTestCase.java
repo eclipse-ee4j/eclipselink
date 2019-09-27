@@ -23,29 +23,31 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTime;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator;
 
+import junit.framework.Test;
+import junit.framework.TestSuite;
+
 /**
  * <p>
- * <b>Purpose</b>: Test binding of null values to temporal type fields in TopLink's JPA
- * implementation.
+ * <b>Purpose</b>: Test binding of null values to temporal type fields in
+ * TopLink's JPA implementation.
  * <p>
- * <b>Description</b>: This class creates a test suite and adds tests to the suite. The database
- * gets initialized prior to the test methods.
+ * <b>Description</b>: This class creates a test suite and adds tests to the
+ * suite. The database gets initialized prior to the test methods.
  * <p>
  * <b>Responsibilities</b>:
  * <ul>
- * <li>Run tests for binding of null values to temporal type fields in TopLink's JPA implementation.
+ * <li>Run tests for binding of null values to temporal type fields in TopLink's
+ * JPA implementation.
  * </ul>
  *
  * @see org.eclipse.persistence.testing.models.jpa.datetime.DateTimeTableCreator
  */
 public class NullBindingJUnitTestCase extends JUnitTestCase {
+
     private static int datetimeId;
 
     public NullBindingJUnitTestCase() {
@@ -61,6 +63,14 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         suite.addTest(new NullBindingJUnitTestCase("testSetup"));
         suite.addTest(new NullBindingJUnitTestCase("testCreateDateTime"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifySqlDate"));
+        suite.addTest(new NullBindingJUnitTestCase("testNullifyLocalDate"));
+        suite.addTest(new NullBindingJUnitTestCase("testNullifyLocalTime"));
+        suite.addTest(new NullBindingJUnitTestCase("testNullifyLocalDateTime"));
+        // following two types seem to have limited support on the different
+        // DBMSs:
+        // suite.addTest(new NullBindingJUnitTestCase("testNullifyOffsetTime"));
+        // suite.addTest(new
+        // NullBindingJUnitTestCase("testNullifyOffsetDateTime"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifyTime"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifyTimestamp"));
         suite.addTest(new NullBindingJUnitTestCase("testNullifyUtilDate"));
@@ -71,8 +81,8 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
     }
 
     /**
-     * The setup is done as a test, both to record its failure, and to allow execution in the
-     * server.
+     * The setup is done as a test, both to record its failure, and to allow
+     * execution in the server.
      */
     public void testSetup() {
         new DateTimeTableCreator().replaceTables(JUnitTestCase.getServerSession());
@@ -88,9 +98,7 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
         DateTime dt;
 
         beginTransaction(em);
-        dt =
-            new DateTime(new java.sql.Date(0), new java.sql.Time(0), new java.sql.Timestamp(0), new java.util.Date(0),
-                java.util.Calendar.getInstance());
+        dt = new DateTime();
         em.persist(dt);
 
         datetimeId = dt.getId();
@@ -113,6 +121,116 @@ public class NullBindingJUnitTestCase extends JUnitTestCase {
             q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
             dt2 = (DateTime) q.getSingleResult();
             assertTrue("Error setting java.sql.Date field to null", dt2.getDate() == null);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
+    public void testNullifyLocalDate() {
+        EntityManager em = createEntityManager();
+        Query q;
+        DateTime dt, dt2;
+
+        try {
+            beginTransaction(em);
+            dt = em.find(DateTime.class, datetimeId);
+            dt.setLocalDate(null);
+            commitTransaction(em);
+            q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
+            dt2 = (DateTime) q.getSingleResult();
+            assertTrue("Error setting java.time.LocalDateTime field to null", dt2.getLocalDate() == null);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
+    public void testNullifyLocalTime() {
+        EntityManager em = createEntityManager();
+        Query q;
+        DateTime dt, dt2;
+
+        try {
+            beginTransaction(em);
+            dt = em.find(DateTime.class, datetimeId);
+            dt.setLocalTime(null);
+            commitTransaction(em);
+            q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
+            dt2 = (DateTime) q.getSingleResult();
+            assertTrue("Error setting java.time.LocalDateTime field to null", dt2.getLocalTime() == null);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
+    public void testNullifyLocalDateTime() {
+        EntityManager em = createEntityManager();
+        Query q;
+        DateTime dt, dt2;
+
+        try {
+            beginTransaction(em);
+            dt = em.find(DateTime.class, datetimeId);
+            dt.setLocalDateTime(null);
+            commitTransaction(em);
+            q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
+            dt2 = (DateTime) q.getSingleResult();
+            assertTrue("Error setting java.time.LocalDateTime field to null", dt2.getLocalDateTime() == null);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
+    public void testNullifyOffsetTime() {
+        EntityManager em = createEntityManager();
+        Query q;
+        DateTime dt, dt2;
+
+        try {
+            beginTransaction(em);
+            dt = em.find(DateTime.class, datetimeId);
+            dt.setOffsetTime(null);
+            commitTransaction(em);
+            q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
+            dt2 = (DateTime) q.getSingleResult();
+            assertTrue("Error setting java.time.LocalDateTime field to null", dt2.getOffsetTime() == null);
+        } catch (RuntimeException e) {
+            if (isTransactionActive(em)) {
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
+            throw e;
+        }
+    }
+
+    public void testNullifyOffsetDateTime() {
+        EntityManager em = createEntityManager();
+        Query q;
+        DateTime dt, dt2;
+
+        try {
+            beginTransaction(em);
+            dt = em.find(DateTime.class, datetimeId);
+            dt.setOffsetDateTime(null);
+            commitTransaction(em);
+            q = em.createQuery("SELECT dt FROM DateTime dt WHERE dt.id = " + datetimeId);
+            dt2 = (DateTime) q.getSingleResult();
+            assertTrue("Error setting java.time.LocalDateTime field to null", dt2.getOffsetDateTime() == null);
         } catch (RuntimeException e) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
