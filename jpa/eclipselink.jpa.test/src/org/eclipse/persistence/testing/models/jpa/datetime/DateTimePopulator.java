@@ -16,9 +16,10 @@ package org.eclipse.persistence.testing.models.jpa.datetime;
 
 import java.lang.reflect.Method;
 import java.sql.Time;
-
 import java.sql.Timestamp;
-
+import java.time.OffsetTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -113,13 +114,18 @@ public class DateTimePopulator {
     @SuppressWarnings("deprecation")
     public DateTime buildAttributes(Calendar cal) {
         DateTime dateTime = new DateTime();
-        long time = cal.getTime().getTime();;
+        long time = cal.getTime().getTime();
 
         dateTime.setDate(new java.sql.Date(time));
         dateTime.setTime(new Time(cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND)));
         dateTime.setTimestamp(new Timestamp(time));
         dateTime.setUtilDate(new Date(time));
         dateTime.setCalendar(cal);
+        dateTime.setLocalDate(cal.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        dateTime.setLocalTime(cal.getTime().toInstant().atZone(ZoneId.systemDefault()).toLocalTime());
+        dateTime.setLocalDateTime(dateTime.getLocalDate().atTime(dateTime.getLocalTime()));
+        dateTime.setOffsetTime(OffsetTime.of(dateTime.getLocalTime(), ZoneOffset.UTC));
+        dateTime.setOffsetDateTime(dateTime.getOffsetTime().atDate(dateTime.getLocalDate()));
 
         return dateTime;
     }

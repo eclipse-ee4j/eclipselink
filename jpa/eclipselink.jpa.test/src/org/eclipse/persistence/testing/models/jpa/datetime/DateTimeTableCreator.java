@@ -83,6 +83,56 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         fieldPOSTALCODE.setShouldAllowNull(true);
         table.addField(fieldPOSTALCODE);
 
+        FieldDefinition fieldLocalDate = new FieldDefinition();
+        fieldLocalDate.setName("LOCAL_DATE");
+        fieldLocalDate.setTypeName("DATE");
+        fieldLocalDate.setSize(6);
+        fieldLocalDate.setIsPrimaryKey(false);
+        fieldLocalDate.setIsIdentity(false);
+        fieldLocalDate.setUnique(false);
+        fieldLocalDate.setShouldAllowNull(true);
+        table.addField(fieldLocalDate);
+
+        FieldDefinition fieldLocalTime = new FieldDefinition();
+        fieldLocalTime.setName("LOCAL_TIME");
+        fieldLocalTime.setTypeName("TIME");
+        fieldLocalTime.setSize(6);
+        fieldLocalTime.setIsPrimaryKey(false);
+        fieldLocalTime.setIsIdentity(false);
+        fieldLocalTime.setUnique(false);
+        fieldLocalTime.setShouldAllowNull(true);
+        table.addField(fieldLocalTime);
+
+        FieldDefinition fieldLocalDateTime = new FieldDefinition();
+        fieldLocalDateTime.setName("LOCAL_DATE_TIME");
+        fieldLocalDateTime.setTypeName("TIMESTAMP");
+        fieldLocalDateTime.setSize(6);
+        fieldLocalDateTime.setIsPrimaryKey(false);
+        fieldLocalDateTime.setIsIdentity(false);
+        fieldLocalDateTime.setUnique(false);
+        fieldLocalDateTime.setShouldAllowNull(true);
+        table.addField(fieldLocalDateTime);
+
+        FieldDefinition fieldOffsetTime = new FieldDefinition();
+        fieldOffsetTime.setName("OFFSET_TIME");
+        fieldOffsetTime.setTypeName("TIME");
+        fieldOffsetTime.setSize(6);
+        fieldOffsetTime.setIsPrimaryKey(false);
+        fieldOffsetTime.setIsIdentity(false);
+        fieldOffsetTime.setUnique(false);
+        fieldOffsetTime.setShouldAllowNull(true);
+        table.addField(fieldOffsetTime);
+
+        FieldDefinition fieldOffsetDateTime = new FieldDefinition();
+        fieldOffsetDateTime.setName("OFFSET_DATE_TIME");
+        fieldOffsetDateTime.setTypeName("TIMESTAMP");
+        fieldOffsetDateTime.setSize(6);
+        fieldOffsetDateTime.setIsPrimaryKey(false);
+        fieldOffsetDateTime.setIsIdentity(false);
+        fieldOffsetDateTime.setUnique(false);
+        fieldOffsetDateTime.setShouldAllowNull(true);
+        table.addField(fieldOffsetDateTime);
+
         FieldDefinition fieldCalToCal = new FieldDefinition();
         fieldCalToCal.setName("CAL");
         fieldCalToCal.setTypeName("TIMESTAMP");

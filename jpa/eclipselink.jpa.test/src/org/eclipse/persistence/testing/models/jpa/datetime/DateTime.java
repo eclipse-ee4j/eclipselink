@@ -22,6 +22,12 @@ import static javax.persistence.GenerationType.TABLE;
 import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,11 +35,9 @@ import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
@@ -41,10 +45,16 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name="CMP3_DATE_TIME")
+@Table(name = "CMP3_DATE_TIME")
 public class DateTime implements Serializable {
+
     private Integer id;
     private java.sql.Date date;
+    private LocalDate localDate;
+    private LocalTime localTime;
+    private LocalDateTime localDateTime;
+    private OffsetTime offsetTime;
+    private OffsetDateTime offsetDateTime;
     private Time time;
     private Timestamp timestamp;
     private Date utilDate;
@@ -53,28 +63,28 @@ public class DateTime implements Serializable {
     private Map<Date, DateTime> uniSelfMap;
 
     public DateTime() {
-    }
+        LocalTime localTime = LocalTime.of(0, 0);
+        LocalDateTime localDateTime = LocalDateTime.ofEpochSecond(0, 0, ZoneOffset.UTC);
 
-    public DateTime(java.sql.Date date, Time time, Timestamp timestamp, Date utilDate, Calendar calendar) {
-        this.date = date;
-        this.time = time;
-        this.timestamp = timestamp;
-        this.utilDate = utilDate;
-        this.calendar = calendar;
+        this.date = new java.sql.Date(0);
+        this.localDate = LocalDate.ofEpochDay(0);
+        this.localTime = localTime;
+        this.localDateTime = localDateTime;
+        this.offsetTime = OffsetTime.of(localTime, ZoneOffset.UTC);
+        this.offsetDateTime = OffsetDateTime.of(localDateTime, ZoneOffset.UTC);
+        this.time = new Time(0);
+        this.timestamp = new Timestamp(0);
+        this.utilDate = new Date(0);
+        this.calendar = Calendar.getInstance();
 
         uniSelfMap = new HashMap<Date, DateTime>();
         uniSelfMap.put(new Date(), this);
     }
 
     @Id
-    @GeneratedValue(strategy=TABLE, generator="DATETIME_TABLE_GENERATOR")
-    @TableGenerator(
-        name="DATETIME_TABLE_GENERATOR",
-        table="CMP3_DATETIME_SEQ",
-        pkColumnName="SEQ_NAME",
-        valueColumnName="SEQ_COUNT"
-    )
-    @Column(name="DT_ID")
+    @GeneratedValue(strategy = TABLE, generator = "DATETIME_TABLE_GENERATOR")
+    @TableGenerator(name = "DATETIME_TABLE_GENERATOR", table = "CMP3_DATETIME_SEQ", pkColumnName = "SEQ_NAME", valueColumnName = "SEQ_COUNT")
+    @Column(name = "DT_ID")
     public Integer getId() {
         return id;
     }
@@ -83,7 +93,7 @@ public class DateTime implements Serializable {
         this.id = id;
     }
 
-    @Column(name="SQL_DATE")
+    @Column(name = "SQL_DATE")
     public java.sql.Date getDate() {
         return date;
     }
@@ -92,7 +102,52 @@ public class DateTime implements Serializable {
         this.date = date;
     }
 
-    @Column(name="SQL_TIME")
+    @Column(name = "LOCAL_DATE")
+    public LocalDate getLocalDate() {
+        return localDate;
+    }
+
+    public void setLocalDate(LocalDate localDate) {
+        this.localDate = localDate;
+    }
+
+    @Column(name = "LOCAL_TIME")
+    public LocalTime getLocalTime() {
+        return localTime;
+    }
+
+    public void setLocalTime(LocalTime localTime) {
+        this.localTime = localTime;
+    }
+
+    @Column(name = "OFFSET_DATE_TIME")
+    public OffsetDateTime getOffsetDateTime() {
+        return offsetDateTime;
+    }
+
+    public void setOffsetDateTime(OffsetDateTime offsetDateTime) {
+        this.offsetDateTime = offsetDateTime;
+    }
+
+    @Column(name = "OFFSET_TIME")
+    public OffsetTime getOffsetTime() {
+        return offsetTime;
+    }
+
+    public void setOffsetTime(OffsetTime offsetTime) {
+        this.offsetTime = offsetTime;
+    }
+
+    @Column(name = "LOCAL_DATE_TIME")
+    public LocalDateTime getLocalDateTime() {
+        return localDateTime;
+    }
+
+    public void setLocalDateTime(LocalDateTime localDateTime) {
+        this.localDateTime = localDateTime;
+    }
+
+    @Column(name = "SQL_TIME")
     public Time getTime() {
         return time;
     }
@@ -101,7 +156,7 @@ public class DateTime implements Serializable {
         this.time = date;
     }
 
-    @Column(name="SQL_TS")
+    @Column(name = "SQL_TS")
     public Timestamp getTimestamp() {
         return timestamp;
     }
@@ -110,7 +165,7 @@ public class DateTime implements Serializable {
         this.timestamp = date;
     }
 
-    @Column(name="UTIL_DATE")
+    @Column(name = "UTIL_DATE")
     @Temporal(TemporalType.TIMESTAMP)
     public Date getUtilDate() {
         return utilDate;
@@ -120,7 +175,7 @@ public class DateTime implements Serializable {
         this.utilDate = date;
     }
 
-    @Column(name="CAL")
+    @Column(name = "CAL")
     // No @Temporal to test defaulting
     public Calendar getCalendar() {
         return calendar;
@@ -139,6 +194,4 @@ public class DateTime implements Serializable {
     public void setUniSelfMap(Map<Date, DateTime> u) {
         uniSelfMap = u;
     }
-
-
 }
