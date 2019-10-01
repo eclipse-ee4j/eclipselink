@@ -459,7 +459,7 @@ public final class HANAPlatform extends DatabasePlatform {
 
     @Override
     public boolean supportsForeignKeyConstraints() {
-        return false;
+        return true;
     }
 
     /**
