@@ -18,9 +18,7 @@ import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
@@ -41,7 +39,6 @@ public class StoredProcedureCall extends DatabaseCall {
     protected String procedureName;
     protected List<String> procedureArgumentNames;
     protected List<DatabaseField> optionalArguments;
-    protected Map<String, Integer> cursorOrdinalPositions;
 
     public StoredProcedureCall() {
         super();
@@ -786,28 +783,6 @@ public class StoredProcedureCall extends DatabaseCall {
     public String getCallHeader(DatabasePlatform platform) {
         return platform.getProcedureCallHeader();
     }
-    
-    /**
-     * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name 
-     * with position. This is used to ease JPA API.
-     */
-    public Integer getCursorOrdinalPosition(String cursorName) {
-        return getCursorOrdinalPositions().get(cursorName); 
-    }
-    
-    /**
-     * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name 
-     * with position. This is used to ease JPA API.
-     */
-    public Map<String, Integer> getCursorOrdinalPositions() {
-        if (cursorOrdinalPositions == null) {
-            cursorOrdinalPositions = new HashMap<String, Integer>();
-        }
-        
-        return cursorOrdinalPositions;
-    }
 
     /**
      * INTERNAL:
@@ -822,6 +797,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * INTERNAL:
      * The if the names are provide the order is not required to match the call def.
      * This is lazy initialized to conserve space on calls that have no parameters.
+     * If the argument name is null, then it is a positional parameter.
      */
     public List<String> getProcedureArgumentNames() {
         if (procedureArgumentNames == null) {
@@ -866,7 +842,9 @@ public class StoredProcedureCall extends DatabaseCall {
      * If caching statements this must check for the pre-prepared statement and re-bind to it.
      */
     @Override
-    public Statement prepareStatement(DatabaseAccessor accessor, AbstractRecord translationRow, AbstractSession session) throws SQLException {
+    public Statement prepareStatement(DatabaseAccessor accessor, 
+            AbstractRecord translationRow, AbstractSession session) throws SQLException {
+
         List<String> procedureArgs = getProcedureArgumentNames();
         if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
             return super.prepareStatement(accessor, translationRow, session);
@@ -908,15 +886,6 @@ public class StoredProcedureCall extends DatabaseCall {
         }
 
         return statement;
-    }
-
-    /**
-     * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name 
-     * with position. This is used to ease JPA API.
-     */
-    public void setCursorOrdinalPosition(String cursorName, int index) {
-        getCursorOrdinalPositions().put(cursorName, index);
     }
 
     /**
@@ -984,8 +953,6 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public void useNamedCursorOutputAsResultSet(String argumentName) {
         useCursorOutputResultSet(argumentName, argumentName);
-        // Store the cursor ordinal position after you add it.
-        setCursorOrdinalPosition(argumentName, getParameters().size());
     }
     
     /**
@@ -1005,8 +972,6 @@ public class StoredProcedureCall extends DatabaseCall {
     public void useUnnamedCursorOutputAsResultSet(int position) {
         String positionName = String.valueOf(position);
         useCursorOutputResultSet(null, positionName);
-        // Store the cursor ordinal position after you add it.
-        setCursorOrdinalPosition(positionName, position);
     }
     
     /**
@@ -1069,5 +1034,21 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public void setOptionalArguments(List<DatabaseField> optionalArguments) {
         this.optionalArguments = optionalArguments;
+    }
+
+    /**
+     * Get the return object from the statement. Use the index to determine what return object to get.
+     * @param index - 0-based index in the argument list
+     * @return
+     */
+    @Override
+    protected Object getObject(CallableStatement statement, int index) throws SQLException {
+        List<String> procedureArgs = getProcedureArgumentNames();
+        if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
+            return super.getObject(statement, index);
+        }
+
+        String name = procedureArgs.get(index);
+        return statement.getObject(name);
     }
 }

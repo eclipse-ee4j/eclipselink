@@ -25,6 +25,7 @@ package org.eclipse.persistence.platform.database;
 import java.io.*;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
@@ -400,9 +401,9 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      * If the driver is known to be the DataDirec driver, and the value is not set, then set to true and return.
      */
     public boolean useJDBCStoredProcedureSyntax() {
-    
         if (useJDBCStoredProcedureSyntax == null) {
-            useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Sybase");
+            useJDBCStoredProcedureSyntax = this.driverName != null 
+                    && Pattern.compile("Sybase", Pattern.CASE_INSENSITIVE).matcher(this.driverName).find();
         }
         return useJDBCStoredProcedureSyntax;
     }

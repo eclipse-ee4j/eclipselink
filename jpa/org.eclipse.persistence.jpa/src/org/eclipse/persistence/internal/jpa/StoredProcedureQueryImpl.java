@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -492,7 +492,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         
         return null;
     }
-    
+
     /**
      * Used to retrieve the values passed back from the procedure through INOUT 
      * and OUT parameters. For portability, all results corresponding to result 
@@ -509,13 +509,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         
         if (isValidCallableStatement()) {
             try {
-                Integer position = getCall().getCursorOrdinalPosition(parameterName);
-                
-                if (position == null) {
-                    return ((CallableStatement) executeStatement).getObject(parameterName);
-                } else {
-                    return getOutputParameterValue(position);
+                Object obj = ((CallableStatement) executeStatement).getObject(parameterName);
+
+                if (obj instanceof ResultSet) {
+                    // If a result set is returned we have to build the objects.
+                    return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords((ResultSet) obj), ++executeResultSetIndex);
                 }
+                return obj;
             } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_name", new Object[] { parameterName, exception.getMessage() }), exception);
             }
@@ -523,7 +523,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         return null;
     }
-    
+
     /**
      * Execute the query and return the query results as a List.
      * @return a list of the results
@@ -807,10 +807,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             call.addNamedArgument(parameterName, parameterName, type);
         } else if (mode.equals(ParameterMode.OUT)) {
             call.addNamedOutputArgument(parameterName, parameterName, type);
-            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
         } else if (mode.equals(ParameterMode.INOUT)) {
             call.addNamedInOutputArgument(parameterName, parameterName, parameterName, type);
-            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
         } else if (mode.equals(ParameterMode.REF_CURSOR)) {
             call.useNamedCursorOutputAsResultSet(parameterName);
         }

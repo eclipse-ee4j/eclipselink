@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -169,12 +169,15 @@ public class StoredProcedureDefinition extends DatabaseObjectDefinition {
             printReturn(writer, session);
             writer.write(platform.getProcedureAsString());
             writer.write("\n");
-            
+
+            writer.write(platform.getProcedureOptionList());
+            writer.write("\n");
+
             if (platform.shouldPrintStoredProcedureVariablesAfterBeginString()) {
                 writer.write(platform.getProcedureBeginString());
                 writer.write("\n");
             }
-            
+
             if (!getVariables().isEmpty()) {
                 writer.write("DECLARE\n");
             }

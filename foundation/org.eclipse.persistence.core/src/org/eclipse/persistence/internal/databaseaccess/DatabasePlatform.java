@@ -1114,12 +1114,22 @@ public class DatabasePlatform extends DatasourcePlatform {
     public String getProcedureBeginString() {
         return getBatchBeginString();
     }
-    
+
     /**
      * Used for stored procedure defs.
      */
     public String getProcedureAsString() {
         return " AS";
+    }
+
+    /**
+     * Some platforms have an option list
+     * Only to be used for stored procedure creation.
+     * 
+     * @see org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition
+     */
+    public String getProcedureOptionList() {
+        return "";
     }
 
     /**
@@ -2429,8 +2439,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         ResultSet resultSet = null;
         if (!dbCall.getReturnsResultSet()) {// no result set is expected
             if (dbCall.isCursorOutputProcedure()) {
-                result = accessor.executeNoSelect(dbCall, statement, session);
-                resultSet = (ResultSet)((CallableStatement)statement).getObject(dbCall.getCursorOutIndex());
+                int index = dbCall.getCursorOutIndex();
+                resultSet = (ResultSet)dbCall.getObject((CallableStatement)statement, index - 1);
             } else {
                 accessor.executeDirectNoSelect(statement, dbCall, session);
                 
