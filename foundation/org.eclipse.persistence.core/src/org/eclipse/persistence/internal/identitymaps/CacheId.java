@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ import org.eclipse.persistence.internal.helper.*;
  */
 public class CacheId implements Serializable, Comparable<CacheId> {
     public static final CacheId EMPTY = new CacheId(new Object[0]);
+    private static final CacheIdComparator COMPARATOR = new CacheIdComparator();
 
     /** The primary key values. */
     protected Object[] primaryKey;
@@ -202,43 +203,9 @@ public class CacheId implements Serializable, Comparable<CacheId> {
     /**
      * Determine if the receiver is greater or less than the key.
      */
-    public int compareTo(CacheId id) {
-        if (this == id) {
-            return 0;
-        }
-        // PERF: Using direct variable access.
-        int size = this.primaryKey.length;
-        Object[] otherKey = id.primaryKey;
-        if (size == otherKey.length) {
-            for (int index = 0; index < size; index++) {
-                Object value = this.primaryKey[index];
-                Object otherValue = otherKey[index];
-                if (value == null) {
-                    if (otherValue != null) {
-                        return -1;
-                    } else {
-                        continue;
-                    }
-                } else if (otherValue == null) {
-                    return 1;
-                }
-                try {
-                    int compareTo = ((Comparable)value).compareTo(otherValue);
-                    if (compareTo != 0) {
-                        return compareTo;
-                    }
-                } catch (Exception exception) {
-                    return 0;
-                }
-            }
-            return 0;
-        } else {
-            if (size > otherKey.length) {
-                return 1;
-            } else {
-                return -1;
-            }
-        }
+    @Override
+    public int compareTo(CacheId otherId) {
+        return COMPARATOR.compare(this, otherId);
     }
 
     public boolean hasArray() {
