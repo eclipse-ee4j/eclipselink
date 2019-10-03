@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,10 +12,13 @@
 
 // Contributors:
 //     Tomas Kraus - Initial API and implementation
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 
 import org.eclipse.persistence.internal.helper.StringHelper;
 
@@ -41,7 +44,7 @@ public class MetadataHelper {
     public static void buildColsFromMappings(final StringBuilder target,
             final Collection<? extends MetadataAccessor> mappings, final String separator) {
         for (Iterator<? extends MetadataAccessor> i = mappings.iterator(); i.hasNext(); ) {
-            target.append(i.next().getName().toUpperCase());
+            target.append(i.next().getName().toUpperCase(Locale.ROOT));
             if (i.hasNext()) {
                 target.append(separator);
             }
@@ -85,7 +88,7 @@ public class MetadataHelper {
             final int valueIndex, final String binder, final String separator) {
         int idx = valueIndex;
         for (Iterator<? extends MetadataAccessor> i = mappings.iterator(); i.hasNext();) {
-            target.append(i.next().getName().toUpperCase()).append(binder).append(Integer.toString(++idx));
+            target.append(i.next().getName().toUpperCase(Locale.ROOT)).append(binder).append(Integer.toString(++idx));
             if (i.hasNext()) {
                 target.append(separator);
             }

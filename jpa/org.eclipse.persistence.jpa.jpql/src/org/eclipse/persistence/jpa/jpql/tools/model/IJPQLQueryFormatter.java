@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,8 +13,11 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.jpa.jpql.tools.model;
 
+import java.util.Locale;
 import java.util.StringTokenizer;
 import org.eclipse.persistence.jpa.jpql.tools.model.query.StateObject;
 import static org.eclipse.persistence.jpa.jpql.tools.model.BaseJPQLQueryFormatter.*;
@@ -71,7 +74,7 @@ public interface IJPQLQueryFormatter {
             for (StringTokenizer tokenizer = new StringTokenizer(identifier, SPACE); tokenizer.hasMoreTokens(); ) {
                 String token = tokenizer.nextToken();
                 sb.append(Character.toUpperCase(token.charAt(0)));
-                sb.append(token.substring(1).toLowerCase());
+                sb.append(token.substring(1).toLowerCase(Locale.ROOT));
                 if (tokenizer.hasMoreTokens()) {
                     sb.append(SPACE);
                 }
@@ -90,8 +93,8 @@ public interface IJPQLQueryFormatter {
         public String formatIdentifier(String identifier) {
             switch (this) {
                 case CAPITALIZE_EACH_WORD: return capitalizeEachWord(identifier);
-                case LOWERCASE:            return identifier.toLowerCase();
-                default:                   return identifier.toUpperCase();
+                case LOWERCASE:            return identifier.toLowerCase(Locale.ROOT);
+                default:                   return identifier.toUpperCase(Locale.ROOT);
             }
         }
     }
