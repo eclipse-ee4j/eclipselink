@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,18 +20,19 @@ import org.eclipse.persistence.eis.EISDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.record.XMLRecord;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 
 /**
  * <p>EIS Direct Mappings map a simple Java attribute to and from an EIS Record according to
  * its descriptor's record type.
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>Record formats</caption>
  * <tr>
- * <th id="c1" align="left">Record Type</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">Record Type</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1">Indexed</td>

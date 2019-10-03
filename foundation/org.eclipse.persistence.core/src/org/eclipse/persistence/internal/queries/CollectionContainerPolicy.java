@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,18 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.queries;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Vector;
 
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: A CollectionContainerPolicy is ContainerPolicy whose container class
  * implements the Collection interface.
- * <p>
+ *
  * <p><b>Responsibilities</b>:
  * Provide the functionality to operate on an instance of a Collection.
  *
@@ -203,7 +205,7 @@ public class CollectionContainerPolicy extends InterfaceContainerPolicy {
      * INTERNAL:
      * Return the size of container.
      *
-     * @param anObject java.lang.Object
+     * @param container
      * @return int The size of the container.
      */
     @Override

@@ -28,6 +28,6 @@ public class LoggingLocalization extends EclipseLinkLocalization {
     }
 
     public static String buildMessage(String key) {
-        return buildMessage(key, (Object[])null);
+        return buildMessage(key, null);
     }
 }

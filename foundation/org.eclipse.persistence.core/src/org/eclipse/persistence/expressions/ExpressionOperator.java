@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -43,7 +44,6 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaPlatform;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 
@@ -280,7 +280,7 @@ public class ExpressionOperator implements Serializable {
      * ADVANCED:
      * Create a new operator with the given name(s) and strings to print.
      */
-    public ExpressionOperator(int selector, Vector newDatabaseStrings) {
+    public ExpressionOperator(int selector, List<String> newDatabaseStrings) {
         this.type = FunctionOperator;
         // For bug 2780072 provide default behavior to make this class more useable.
         setNodeClass(ClassConstants.FunctionExpression_Class);
@@ -403,21 +403,21 @@ public class ExpressionOperator implements Serializable {
      * Apply this to an object in memory.
      * Throw an error if the function is not supported.
      */
-    public Object applyFunction(Object source, Vector arguments) {
+    public Object applyFunction(Object source, List arguments) {
         if (source instanceof String) {
             if (this.selector == ToUpperCase) {
                 return ((String)source).toUpperCase();
             } else if (this.selector == ToLowerCase) {
                 return ((String)source).toLowerCase();
-            } else if ((this.selector == Concat) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof String)) {
-                return ((String)source).concat((String)arguments.elementAt(0));
-            } else if ((this.selector == Substring) && (arguments.size() == 2) && (arguments.elementAt(0) instanceof Number) && (arguments.elementAt(1) instanceof Number)) {
+            } else if ((this.selector == Concat) && (arguments.size() == 1) && (arguments.get(0) instanceof String)) {
+                return ((String)source).concat((String)arguments.get(0));
+            } else if ((this.selector == Substring) && (arguments.size() == 2) && (arguments.get(0) instanceof Number) && (arguments.get(1) instanceof Number)) {
                 // assume the first parameter to be 1-based first index of the substring, the second - substring length.
-                int beginIndexInclusive = ((Number)arguments.elementAt(0)).intValue() - 1;
-                int endIndexExclusive = beginIndexInclusive +  ((Number)arguments.elementAt(1)).intValue();
+                int beginIndexInclusive = ((Number)arguments.get(0)).intValue() - 1;
+                int endIndexExclusive = beginIndexInclusive +  ((Number)arguments.get(1)).intValue();
                 return ((String)source).substring(beginIndexInclusive, endIndexExclusive);
-            } else if ((this.selector == SubstringSingleArg) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                int beginIndexInclusive = ((Number)arguments.elementAt(0)).intValue() - 1;
+            } else if ((this.selector == SubstringSingleArg) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
+                int beginIndexInclusive = ((Number)arguments.get(0)).intValue() - 1;
                 int endIndexExclusive = ((String)source).length();
                 return ((String)source).substring(beginIndexInclusive, endIndexExclusive);
             } else if (this.selector == ToNumber) {
@@ -448,26 +448,26 @@ public class ExpressionOperator implements Serializable {
                 return Double.valueOf(Math.floor(((Number)source).doubleValue()));
             } else if (this.selector == Log) {
                 return Double.valueOf(Math.log(((Number)source).doubleValue()));
-            } else if ((this.selector == Power) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return Double.valueOf(Math.pow(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
+            } else if ((this.selector == Power) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
+                return Double.valueOf(Math.pow(((Number)source).doubleValue(), (((Number)arguments.get(0)).doubleValue())));
             } else if (this.selector == Round) {
                 return Double.valueOf(Math.round(((Number)source).doubleValue()));
             } else if (this.selector == Sin) {
                 return Double.valueOf(Math.sin(((Number)source).doubleValue()));
             } else if (this.selector == Tan) {
                 return Double.valueOf(Math.tan(((Number)source).doubleValue()));
-            } else if ((this.selector == Greatest) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return Double.valueOf(Math.max(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
-            } else if ((this.selector == Least) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return Double.valueOf(Math.min(((Number)source).doubleValue(), (((Number)arguments.elementAt(0)).doubleValue())));
-            } else if ((this.selector == Add) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return Double.valueOf(((Number)source).doubleValue() + (((Number)arguments.elementAt(0)).doubleValue()));
-            } else if ((this.selector == Subtract) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return Double.valueOf(((Number)source).doubleValue() - (((Number)arguments.elementAt(0)).doubleValue()));
-            } else if ((this.selector == Divide) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return Double.valueOf(((Number)source).doubleValue() / (((Number)arguments.elementAt(0)).doubleValue()));
-            } else if ((this.selector == Multiply) && (arguments.size() == 1) && (arguments.elementAt(0) instanceof Number)) {
-                return Double.valueOf(((Number)source).doubleValue() * (((Number)arguments.elementAt(0)).doubleValue()));
+            } else if ((this.selector == Greatest) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
+                return Double.valueOf(Math.max(((Number)source).doubleValue(), (((Number)arguments.get(0)).doubleValue())));
+            } else if ((this.selector == Least) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
+                return Double.valueOf(Math.min(((Number)source).doubleValue(), (((Number)arguments.get(0)).doubleValue())));
+            } else if ((this.selector == Add) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
+                return Double.valueOf(((Number)source).doubleValue() + (((Number)arguments.get(0)).doubleValue()));
+            } else if ((this.selector == Subtract) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
+                return Double.valueOf(((Number)source).doubleValue() - (((Number)arguments.get(0)).doubleValue()));
+            } else if ((this.selector == Divide) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
+                return Double.valueOf(((Number)source).doubleValue() / (((Number)arguments.get(0)).doubleValue()));
+            } else if ((this.selector == Multiply) && (arguments.size() == 1) && (arguments.get(0) instanceof Number)) {
+                return Double.valueOf(((Number)source).doubleValue() * (((Number)arguments.get(0)).doubleValue()));
             }
         }
 
@@ -578,7 +578,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(Between);
         result.setType(ComparisonOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("(");
         v.add(" BETWEEN ");
         v.add(" AND ");
@@ -825,7 +825,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(DateName);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+        List<String> v = new ArrayList<>(3);
         v.add("TO_CHAR(");
         v.add(", '");
         v.add("')");
@@ -1071,7 +1071,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Exists);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("EXISTS" + " ");
         v.add(" ");
         exOperator.printsAs(v);
@@ -1093,7 +1093,7 @@ public class ExpressionOperator implements Serializable {
      * Create an expression for this operator, using the given base.
      */
     public Expression expressionFor(Expression base) {
-        return expressionForArguments(base, org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(0));
+        return expressionForArguments(base, new ArrayList<>(0));
     }
 
     /**
@@ -1117,15 +1117,6 @@ public class ExpressionOperator implements Serializable {
      * INTERNAL:
      * Create an expression for this operator, using the given base and arguments.
      */
-    @Deprecated
-    public Expression expressionForArguments(Expression base, Vector arguments) {
-        return newExpressionForArguments(base, arguments);
-    }
-
-    /**
-     * INTERNAL:
-     * Create an expression for this operator, using the given base and arguments.
-     */
     public Expression expressionForArguments(Expression base, List arguments) {
         return newExpressionForArguments(base, arguments);
     }
@@ -1136,7 +1127,7 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator extractXml() {
         ExpressionOperator result = new ExpressionOperator();
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("extract(");
         v.add(",");
         v.add(")");
@@ -1153,7 +1144,7 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator extractValue() {
         ExpressionOperator result = new ExpressionOperator();
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("extractValue(");
         v.add(",");
         v.add(")");
@@ -1170,7 +1161,7 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator existsNode() {
         ExpressionOperator result = new ExpressionOperator();
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("existsNode(");
         v.add(",");
         v.add(")");
@@ -1183,7 +1174,7 @@ public class ExpressionOperator implements Serializable {
 
     public static ExpressionOperator getStringVal() {
         ExpressionOperator result = new ExpressionOperator();
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add(".getStringVal()");
         result.printsAs(v);
         result.bePostfix();
@@ -1194,7 +1185,7 @@ public class ExpressionOperator implements Serializable {
 
     public static ExpressionOperator getNumberVal() {
         ExpressionOperator result = new ExpressionOperator();
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add(".getNumberVal()");
         result.printsAs(v);
         result.bePostfix();
@@ -1205,7 +1196,7 @@ public class ExpressionOperator implements Serializable {
 
     public static ExpressionOperator isFragment() {
         ExpressionOperator result = new ExpressionOperator();
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add(".isFragment()");
         result.printsAs(v);
         result.bePostfix();
@@ -1338,7 +1329,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setType(ExpressionOperator.FunctionOperator);
         result.setSelector(InSubQuery);
-        Vector v = new Vector(1);
+        List<String> v = new ArrayList<>(1);
         v.add(" IN ");
         result.printsAs(v);
         result.bePostfix();
@@ -1436,7 +1427,7 @@ public class ExpressionOperator implements Serializable {
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
     public static Map<Integer, String> initializePlatformOperatorNames() {
-        Map<Integer, String> platformOperatorNames = new HashMap<Integer, String>();
+        Map<Integer, String> platformOperatorNames = new HashMap<>();
         platformOperatorNames.put(Integer.valueOf(ToUpperCase), "ToUpperCase");
         platformOperatorNames.put(Integer.valueOf(ToLowerCase), "ToLowerCase");
         platformOperatorNames.put(Integer.valueOf(Chr), "Chr");
@@ -1542,7 +1533,7 @@ public class ExpressionOperator implements Serializable {
      * Initialize a mapping to the platform operator names for usage with exceptions.
      */
     public static Map<String, Integer> initializePlatformOperatorSelectors() {
-        Map<String, Integer> platformOperatorNames = new HashMap<String, Integer>();
+        Map<String, Integer> platformOperatorNames = new HashMap<>();
         platformOperatorNames.put("ToUpperCase", Integer.valueOf(ToUpperCase));
         platformOperatorNames.put("ToLowerCase", Integer.valueOf(ToLowerCase));
         platformOperatorNames.put("Chr", Integer.valueOf(Chr));
@@ -1707,7 +1698,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setType(ComparisonOperator);
         result.setSelector(IsNull);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("(");
         v.add(" IS NULL)");
         result.printsAs(v);
@@ -1788,14 +1779,14 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(Like);
         result.setType(FunctionOperator);
-        Vector v = NonSynchronizedVector.newInstance(3);
+        List<String> v = new ArrayList<>(3);
         v.add("");
         v.add(" LIKE ");
         v.add("");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        v = NonSynchronizedVector.newInstance(2);
+        v = new ArrayList<>(2);
         v.add(".like(");
         v.add(")");
         result.printsJavaAs(v);
@@ -1812,14 +1803,14 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(Regexp);
         result.setType(FunctionOperator);
-        Vector v = NonSynchronizedVector.newInstance(3);
+        List<String> v = new ArrayList<>(3);
         v.add("");
         v.add(" REGEXP ");
         v.add("");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        v = NonSynchronizedVector.newInstance(2);
+        v = new ArrayList<>(2);
         v.add(".regexp(");
         v.add(")");
         result.printsJavaAs(v);
@@ -1834,7 +1825,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(LikeEscape);
         result.setType(FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("");
         v.add(" LIKE ");
         v.add(" ESCAPE ");
@@ -1853,7 +1844,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(NotLikeEscape);
         result.setType(FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("");
         v.add(" NOT LIKE ");
         v.add(" ESCAPE ");
@@ -2063,7 +2054,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(NotExists);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("NOT EXISTS" + " ");
         v.add(" ");
         exOperator.printsAs(v);
@@ -2090,7 +2081,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setType(ExpressionOperator.FunctionOperator);
         result.setSelector(NotInSubQuery);
-        Vector v = new Vector(1);
+        List<String> v = new ArrayList<>(1);
         v.add(" NOT IN ");
         result.printsAs(v);
         result.bePostfix();
@@ -2106,14 +2097,14 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(NotLike);
         result.setType(FunctionOperator);
-        Vector v = NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("");
         v.add(" NOT LIKE ");
         v.add("");
         result.printsAs(v);
         result.bePrefix();
         result.setNodeClass(ClassConstants.FunctionExpression_Class);
-        v = NonSynchronizedVector.newInstance(2);
+        v = new ArrayList<>(2);
         v.add(".notLike(");
         v.add(")");
         result.printsJavaAs(v);
@@ -2128,7 +2119,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setType(ComparisonOperator);
         result.setSelector(NotNull);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("(");
         v.add(" IS NOT NULL)");
         result.printsAs(v);
@@ -2145,7 +2136,7 @@ public class ExpressionOperator implements Serializable {
     public static ExpressionOperator notOperator() {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(Not);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("NOT (");
         v.add(")");
         result.printsAs(v);
@@ -2182,7 +2173,7 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL: Print the collection onto the SQL stream.
      */
-    public void printCollection(Vector items, ExpressionSQLPrinter printer) {
+    public void printCollection(List items, ExpressionSQLPrinter printer) {
         // Certain functions don't allow binding on some platforms.
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions() && !isBindingSupported()) {
             printer.getCall().setUsesBinding(false);
@@ -2207,7 +2198,7 @@ public class ExpressionOperator implements Serializable {
         }
 
         for (final int index : argumentIndices) {
-            Expression item = (Expression)items.elementAt(index);
+            Expression item = (Expression)items.get(index);
             if ((this.selector == Ref) || ((this.selector == Deref) && (item.isObjectExpression()))) {
                 DatabaseTable alias = ((ObjectExpression)item).aliasForTable(((ObjectExpression)item).getDescriptor().getTables().firstElement());
                 printer.printString(alias.getNameDelimited(printer.getPlatform()));
@@ -2225,11 +2216,11 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL: Print the collection onto the SQL stream.
      */
-    public void printJavaCollection(Vector items, ExpressionJavaPrinter printer) {
+    public void printJavaCollection(List items, ExpressionJavaPrinter printer) {
         int javaStringIndex = 0;
 
         for (int i = 0; i < items.size(); i++) {
-            Expression item = (Expression)items.elementAt(i);
+            Expression item = (Expression)items.get(i);
             item.printJava(printer);
             if (javaStringIndex < getJavaStrings().length) {
                 printer.printString(getJavaStrings()[javaStringIndex++]);
@@ -2290,7 +2281,7 @@ public class ExpressionOperator implements Serializable {
      * Set the single string for this operator.
      */
     public void printsAs(String s) {
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        List<String> v = new ArrayList<>(1);
         v.add(s);
         printsAs(v);
     }
@@ -2299,10 +2290,10 @@ public class ExpressionOperator implements Serializable {
      * ADVANCED:
      * Set the strings for this operator.
      */
-    public void printsAs(Vector dbStrings) {
+    public void printsAs(List<String> dbStrings) {
         this.databaseStrings = new String[dbStrings.size()];
         for (int i = 0; i < dbStrings.size(); i++) {
-            getDatabaseStrings()[i] = (String)dbStrings.elementAt(i);
+            getDatabaseStrings()[i] = dbStrings.get(i);
         }
     }
 
@@ -2311,7 +2302,7 @@ public class ExpressionOperator implements Serializable {
      * Set the single string for this operator.
      */
     public void printsJavaAs(String s) {
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        List<String> v = new ArrayList<>(1);
         v.add(s);
         printsJavaAs(v);
     }
@@ -2320,10 +2311,10 @@ public class ExpressionOperator implements Serializable {
      * ADVANCED:
      * Set the strings for this operator.
      */
-    public void printsJavaAs(Vector dbStrings) {
+    public void printsJavaAs(List<String> dbStrings) {
         this.javaStrings = new String[dbStrings.size()];
         for (int i = 0; i < dbStrings.size(); i++) {
-            getJavaStrings()[i] = (String)dbStrings.elementAt(i);
+            getJavaStrings()[i] = dbStrings.get(i);
         }
     }
 
@@ -2404,9 +2395,9 @@ public class ExpressionOperator implements Serializable {
     /**
      * INTERNAL:
      * Build rightTrim operator that takes one parameter.
-     * @bug 2916893 rightTrim(substring) broken.
      */
     public static ExpressionOperator rightTrim2() {
+        // bug 2916893 rightTrim(substring) broken
         return simpleTwoArgumentFunction(RightTrim2, "RTRIM");
     }
 
@@ -2487,7 +2478,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(AggregateOperator);
         exOperator.setSelector(selector);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add(databaseName + "(");
         v.add(")");
         exOperator.printsAs(v);
@@ -2507,7 +2498,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
         exOperator.setName(databaseName);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add(databaseName + "(");
         v.add(")");
         exOperator.printsAs(v);
@@ -2524,7 +2515,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        List<String> v = new ArrayList<>(1);
         v.add(databaseName);
         exOperator.printsAs(v);
         exOperator.bePrefix();
@@ -2555,7 +2546,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setSelector(selector);
         exOperator.printsAs(" " + databaseName + " ");
         exOperator.bePostfix();
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("." + javaName + "(");
         v.add(")");
         exOperator.printsJavaAs(v);
@@ -2572,7 +2563,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setIsBindingSupported(false);
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+        List<String> v = new ArrayList<>(3);
         v.add("(");
         v.add(" " + databaseName + " ");
         v.add(")");
@@ -2620,7 +2611,7 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator simpleRelation(int selector, String databaseName, String javaName) {
         ExpressionOperator exOperator = simpleRelation(selector, databaseName);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("." + javaName + "(");
         v.add(")");
         exOperator.printsJavaAs(v);
@@ -2636,7 +2627,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
         exOperator.setName(dbString);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(4);
+        List<String> v = new ArrayList<>(4);
         v.add(dbString + "(");
         v.add(", ");
         v.add(", ");
@@ -2656,7 +2647,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
         exOperator.setName(dbString);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        List<String> v = new ArrayList<>(5);
         v.add(dbString + "(");
         v.add(", ");
         v.add(")");
@@ -2675,7 +2666,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(selector);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        List<String> v = new ArrayList<>(5);
         v.add("");
         v.add(" " + dbString + " ");
         v.add("");
@@ -2759,7 +2750,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(AddMonths);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+        List<String> v = new ArrayList<>(3);
         v.add("DATEADD(month, ");
         v.add(", ");
         v.add(")");
@@ -2788,7 +2779,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Instring);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+        List<String> v = new ArrayList<>(3);
         v.add("CHARINDEX(");
         v.add(", ");
         v.add(")");
@@ -2809,7 +2800,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(ToNumber);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("CONVERT(NUMERIC, ");
         v.add(")");
         exOperator.printsAs(v);
@@ -2826,7 +2817,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(DateToString);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("CONVERT(CHAR, ");
         v.add(")");
         exOperator.printsAs(v);
@@ -2843,7 +2834,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(ToDate);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("CONVERT(DATETIME, ");
         v.add(")");
         exOperator.printsAs(v);
@@ -2860,7 +2851,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(ToChar);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(2);
+        List<String> v = new ArrayList<>(2);
         v.add("CONVERT(CHAR, ");
         v.add(")");
         exOperator.printsAs(v);
@@ -2877,7 +2868,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(ToCharWithFormat);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(3);
+        List<String> v = new ArrayList<>(3);
         v.add("CONVERT(CHAR, ");
         v.add(",");
         v.add(")");
@@ -2909,7 +2900,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator result = new ExpressionOperator();
         result.setSelector(ExpressionOperator.Locate2);
         result.setType(ExpressionOperator.FunctionOperator);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance();
+        List<String> v = new ArrayList<>();
         v.add("CASE (CHARINDEX(");
         v.add(", SUBSTRING(");
         v.add(",");
@@ -3058,7 +3049,7 @@ public class ExpressionOperator implements Serializable {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Trim2);
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        List<String> v = new ArrayList<>(5);
         v.add("TRIM(");
         v.add(" FROM ");
         v.add(")");
@@ -3094,7 +3085,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Cast);
         exOperator.setName("CAST");
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        List<String> v = new ArrayList<>(5);
         v.add("CAST(");
         v.add(" AS ");
         v.add(")");
@@ -3113,7 +3104,7 @@ public class ExpressionOperator implements Serializable {
         exOperator.setType(FunctionOperator);
         exOperator.setSelector(Extract);
         exOperator.setName("EXTRACT");
-        Vector v = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(5);
+        List<String> v = new ArrayList<>(5);
         v.add("EXTRACT(");
         v.add(" FROM ");
         v.add(")");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,45 +40,45 @@ public interface DirectMapping<
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    public Object getAttributeValue(Object object, ABSTRACT_SESSION session, AbstractUnmarshalRecord record);
+    Object getAttributeValue(Object object, ABSTRACT_SESSION session, AbstractUnmarshalRecord record);
 
     /**
      * Return the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
-    public CONVERTER getConverter();
+    CONVERTER getConverter();
 
-    public Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord record);
+    Object getFieldValue(Object object, CoreAbstractSession session, AbstractMarshalRecord record);
 
-    public AbstractNullPolicy getNullPolicy();
+    AbstractNullPolicy getNullPolicy();
 
-    public Object getNullValue();
+    Object getNullValue();
 
-    public Object getObjectValue(Object object, SESSION session);
+    Object getObjectValue(Object object, SESSION session);
 
     /**
      * Get the XPath String
      * @return String the XPath String associated with this Mapping
      */
-    public String getXPath();
+    String getXPath();
 
-    public boolean hasConverter();
+    boolean hasConverter();
 
-    public boolean isCDATA();
+    boolean isCDATA();
 
     /**
      * Some databases do not properly support all of the base data types. For these databases,
      * the base data type must be explicitly specified in the mapping to tell EclipseLink to force
      * the instance variable value to that data type
      */
-    public void setAttributeClassification(Class attributeClassification);
+    void setAttributeClassification(Class attributeClassification);
 
 
     /**
      * INTERNAL:
      * Set the name of the class for MW usage.
      */
-    public void setAttributeClassificationName(String attributeClassificationName);
+    void setAttributeClassificationName(String attributeClassificationName);
 
     /**
      * Indicates that this mapping should collapse all string values before setting them
@@ -86,25 +86,25 @@ public interface DirectMapping<
      * any sequence of whitepsace characters with a single space.
      * @param collapse
      */
-    public void setCollapsingStringValues(boolean collapse);
+    void setCollapsingStringValues(boolean collapse);
 
     /**
      * Set the converter on the mapping.
      * A converter can be used to convert between the object's value and database value of the attribute.
      */
-    public void setConverter(CONVERTER converter);
+    void setConverter(CONVERTER converter);
 
     /**
      * ADVANCED:
      * Set the field in the mapping.
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
-    public void setField(FIELD theField);
+    void setField(FIELD theField);
 
 
-    public void setIsCDATA(boolean CDATA);
+    void setIsCDATA(boolean CDATA);
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 
     /**
      * Indicates that this mapping should normalize all string values before setting them
@@ -112,7 +112,7 @@ public interface DirectMapping<
      * single space character.
      * @param normalize
      */
-    public void setNormalizingStringValues(boolean normalize);
+    void setNormalizingStringValues(boolean normalize);
 
     /**
      * Set the AbstractNullPolicy on the mapping<br>
@@ -120,7 +120,7 @@ public interface DirectMapping<
      *
      * @param aNullPolicy
      */
-    public void setNullPolicy(AbstractNullPolicy aNullPolicy);
+    void setNullPolicy(AbstractNullPolicy aNullPolicy);
 
     /**
      * Allow for the value used for null to be specified.
@@ -128,21 +128,21 @@ public interface DirectMapping<
      * are not allowed by the application (such as in primitives).
      * Note: the default value for NULL is used on reads, writes, and query SQL generation
      */
-    public void setNullValue(Object nullValue);
+    void setNullValue(Object nullValue);
 
     /**
      * Set whether this mapping's value should be marshalled, in the case that
      * it is equal to the default null value.
      */
-    public void setNullValueMarshalled(boolean value);
+    void setNullValueMarshalled(boolean value);
 
 
     /**
      * Set the Mapping field name attribute to the given XPath String
      * @param xpathString String
      */
-    public void setXPath(String xpathString);
+    void setXPath(String xpathString);
 
-    public Object valueFromObject(Object object, FIELD field, ABSTRACT_SESSION abstractSession);
+    Object valueFromObject(Object object, FIELD field, ABSTRACT_SESSION abstractSession);
 
 }

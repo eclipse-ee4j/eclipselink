@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,67 +16,9 @@
 //     Dmitry Kornilov - 2.6.1 - BeanValidationHelper refactoring
 package org.eclipse.persistence.jaxb;
 
-import org.eclipse.persistence.core.queries.CoreAttributeGroup;
-import org.eclipse.persistence.core.sessions.CoreProject;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.ConversionException;
-import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
-import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
-import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
-import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
-import org.eclipse.persistence.internal.jaxb.WrappedValue;
-import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
-import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
-import org.eclipse.persistence.internal.jaxb.many.ManyValue;
-import org.eclipse.persistence.internal.oxm.Constants;
-import org.eclipse.persistence.internal.oxm.Root;
-import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.oxm.XPathFragment;
-import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
-import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
-import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.internal.oxm.mappings.Field;
-import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.jaxb.compiler.Generator;
-import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
-import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
-import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
-import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
-import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.oxm.MediaType;
-import org.eclipse.persistence.oxm.NamespaceResolver;
-import org.eclipse.persistence.oxm.XMLContext;
-import org.eclipse.persistence.oxm.XMLField;
-import org.eclipse.persistence.oxm.XMLLogin;
-import org.eclipse.persistence.oxm.XMLMarshaller;
-import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.oxm.platform.SAXPlatform;
-import org.eclipse.persistence.oxm.platform.XMLPlatform;
-import org.eclipse.persistence.sessions.Project;
-import org.eclipse.persistence.sessions.SessionEventListener;
+import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.namespace.QName;
-import javax.xml.stream.FactoryConfigurationError;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.transform.Source;
-import java.awt.*;
+import java.awt.Image;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -100,7 +42,70 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.eclipse.persistence.jaxb.javamodel.Helper.getQualifiedJavaTypeName;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.bind.SchemaOutputResolver;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.namespace.QName;
+import javax.xml.stream.FactoryConfigurationError;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.transform.Source;
+
+import org.eclipse.persistence.core.queries.CoreAttributeGroup;
+import org.eclipse.persistence.core.sessions.CoreProject;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.jaxb.JAXBSchemaOutputResolver;
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
+import org.eclipse.persistence.internal.jaxb.WrappedValue;
+import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
+import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
+import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
+import org.eclipse.persistence.internal.oxm.Constants;
+import org.eclipse.persistence.internal.oxm.Root;
+import org.eclipse.persistence.internal.oxm.XMLConversionManager;
+import org.eclipse.persistence.internal.oxm.XPathFragment;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceCollectionMapping;
+import org.eclipse.persistence.internal.oxm.mappings.ChoiceObjectMapping;
+import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
+import org.eclipse.persistence.internal.oxm.mappings.Field;
+import org.eclipse.persistence.internal.oxm.schema.SchemaModelGenerator;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.jaxb.compiler.Generator;
+import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
+import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
+import org.eclipse.persistence.jaxb.javamodel.JavaClass;
+import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
+import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
+import org.eclipse.persistence.jaxb.xmlmodel.JavaType;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.oxm.MediaType;
+import org.eclipse.persistence.oxm.NamespaceResolver;
+import org.eclipse.persistence.oxm.XMLContext;
+import org.eclipse.persistence.oxm.XMLField;
+import org.eclipse.persistence.oxm.XMLLogin;
+import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.XMLUnmarshaller;
+import org.eclipse.persistence.oxm.platform.SAXPlatform;
+import org.eclipse.persistence.oxm.platform.XMLPlatform;
+import org.eclipse.persistence.sessions.Project;
+import org.eclipse.persistence.sessions.SessionEventListener;
 
 /**
  * <p><b>Purpose:</b>Provide a EclipseLink implementation of the JAXBContext interface.
@@ -159,6 +164,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     static {
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/normalized-value", false);
         PARSER_FEATURES.put("http://apache.org/xml/features/validation/schema/element-default", false);
+        if (MOXySystemProperties.moxyLoggingLevel != null) {
+            AbstractSessionLog.getLog().setLevel(LogLevel.toValue(MOXySystemProperties.moxyLoggingLevel).getId(), SessionLog.MOXY);
+        }
     }
 
     private static final String RI_XML_ACCESSOR_FACTORY_SUPPORT = "com.sun.xml.bind.XmlAccessorFactory";
@@ -637,7 +645,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @param xPath
      *      The XPath statement.
      * @param namespaceResolver
-     *      A <tt>NamespaceResolver</tt> containing the prefix/URI pairings from the XPath statement.
+     *      A <code>NamespaceResolver</code> containing the prefix/URI pairings from the XPath statement.
      * @param returnType
      *      The return type.
      *
@@ -656,7 +664,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * @param xPath
      *      The XPath statement.
      * @param namespaceResolver
-     *      A <tt>NamespaceResolver</tt> containing the prefix/URI pairings from the XPath statement.
+     *      A <code>NamespaceResolver</code> containing the prefix/URI pairings from the XPath statement.
      * @param value
      *      The value to be set.
      */
@@ -795,6 +803,12 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * @param classLoader the classLoader to use.  If null then Thread.currentThread().getContextClassLoader() will be used.
          */
         public JAXBContextInput(Map properties, ClassLoader classLoader) {
+            SessionLog logger = AbstractSessionLog.getLog();
+            if (properties != null && logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                for (Object key : properties.keySet()) {
+                    logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{key.toString(), properties.get(key).toString()});
+                }
+            }
             this.properties = properties;
             if (null == classLoader) {
                 this.classLoader = Thread.currentThread().getContextClassLoader();
@@ -1605,6 +1619,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, marshaller);
                 setPropertyOnMarshaller(JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.MOXY_LOGGING_LEVEL, marshaller);
+                setPropertyOnMarshaller(JAXBContextProperties.MOXY_LOG_PAYLOAD, marshaller);
             }
 
             return marshaller;
@@ -1639,6 +1655,8 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_TYPE_COMPATIBILITY, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_USE_XSD_TYPES_WITH_PREFIX, unmarshaller);
                 setPropertyOnUnmarshaller(JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.MOXY_LOGGING_LEVEL, unmarshaller);
+                setPropertyOnUnmarshaller(JAXBContextProperties.MOXY_LOG_PAYLOAD, unmarshaller);
             }
             return unmarshaller;
         }

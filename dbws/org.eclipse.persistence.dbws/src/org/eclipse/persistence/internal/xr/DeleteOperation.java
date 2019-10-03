@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
- * <p><b>INTERNAL:</b>An XR DeleteOperation is an executable representation of a <tt>DELETE</tt>
+ * <p><b>INTERNAL:</b>An XR DeleteOperation is an executable representation of a <code>DELETE</code>
  * operation on the database.
  *
  * @author Mike Norman - michael.norman@oracle.com
@@ -92,11 +92,11 @@ public class DeleteOperation extends Operation {
     }
 
     /**
-     * Execute <tt>DELETE</tt> operation on the database
+     * Execute <code>DELETE</code> operation on the database
      * @param   xrService parent <code>XRService</code> that owns this <code>Operation</code>
      * @param   invocation contains runtime argument values to be bound to the list of
      *          {@link Parameter}'s.
-     * @return  result - can be <code>null</code> if the underlying <tt>DELETE</tt> operation on the
+     * @return  result - can be <code>null</code> if the underlying <code>DELETE</code> operation on the
      *          database does not return a value
      *
      * @see  Operation

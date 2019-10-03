@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,6 @@ package org.eclipse.persistence.internal.helper;
  * a flag that is true if the classLoader returned is temporary.<br>
  * JIRA EJBTHREE-572 requires that we use the real classLoader in place of the getNewTempClassLoader().
  * The override code should stay in place until the UCL3 loader does not throw a NPE on loadClass()
- * @return ClassLoaderHolder - may be a temporary classLoader
  */
 public class JPAClassLoaderHolder {
 

@@ -114,7 +114,7 @@ public class MessageDialog extends JDialog {
 
     /**
      * main entrypoint - starts the part when it is run as an application
-     * @param args java.lang.String[]
+     * @param exception java.lang.Throwable
      */
     public static void displayException(Throwable exception) {
         displayMessage(exception.toString());
@@ -122,7 +122,8 @@ public class MessageDialog extends JDialog {
 
     /**
      * main entrypoint - starts the part when it is run as an application
-     * @param args java.lang.String[]
+     * @param exception java.lang.Throwable
+     * @param parent java.awt.Container
      */
     public static void displayException(Throwable exception,
                                         java.awt.Container parent) {
@@ -131,7 +132,7 @@ public class MessageDialog extends JDialog {
 
     /**
      * main entrypoint - starts the part when it is run as an application
-     * @param args java.lang.String[]
+     * @param message java.lang.String
      */
     public static void displayMessage(String message) {
         try {
@@ -147,7 +148,8 @@ public class MessageDialog extends JDialog {
 
     /**
      * main entrypoint - starts the part when it is run as an application
-     * @param args java.lang.String[]
+     * @param message java.lang.String
+     * @param parent java.awt.Container
      */
     public static void displayMessage(String message,
                                       java.awt.Container parent) {

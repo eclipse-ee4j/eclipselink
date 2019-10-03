@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,12 +28,11 @@ public interface DirectToFieldChangeRecord extends ChangeRecord {
      * Returns the new value assigned during the change
      * @return java.lang.Object
      */
-    public Object getNewValue();
+    Object getNewValue();
 
     /**
      * ADVANCED:
      * Return the old value of the attribute represented by this ChangeRecord.
      */
-    @Override
-    public Object getOldValue();
+    @Override Object getOldValue();
 }

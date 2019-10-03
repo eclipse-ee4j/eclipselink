@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -244,7 +244,7 @@ public class JNDIConnector implements Connector {
      */
     @Override
     public String toString() {
-        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("datasource_name", (Object[])null) + "=>" + getName();
+        return Helper.getShortClassName(getClass()) + ToStringLocalization.buildMessage("datasource_name", null) + "=>" + getName();
     }
 
     /**
@@ -253,8 +253,8 @@ public class JNDIConnector implements Connector {
      */
     @Override
     public void toString(java.io.PrintWriter writer) {
-        writer.print(ToStringLocalization.buildMessage("connector", (Object[])null) + "=>" + Helper.getShortClassName(getClass()));
+        writer.print(ToStringLocalization.buildMessage("connector", null) + "=>" + Helper.getShortClassName(getClass()));
         writer.print(" ");
-        writer.println(ToStringLocalization.buildMessage("datasource_name", (Object[])null) + "=>" + getName());
+        writer.println(ToStringLocalization.buildMessage("datasource_name", null) + "=>" + getName());
     }
 }

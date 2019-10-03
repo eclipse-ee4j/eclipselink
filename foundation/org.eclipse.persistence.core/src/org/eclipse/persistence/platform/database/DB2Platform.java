@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,6 +69,7 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
     public DB2Platform() {
         super();
+        this.shouldBindLiterals = false;
         this.pingSQL = "VALUES(1)";
     }
 
@@ -422,11 +423,13 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Used for sp calls.
+     * INTERNAL:
+     * Should the variable name of a stored procedure call be printed as part of the procedure call
+     * e.g. EXECUTE PROCEDURE MyStoredProc(myvariable = ?)
      */
     @Override
-    public String getProcedureArgumentSetter() {
-        return " => ";
+    public boolean shouldPrintStoredProcedureArgumentNameInCall() {
+        return false;
     }
 
     /**

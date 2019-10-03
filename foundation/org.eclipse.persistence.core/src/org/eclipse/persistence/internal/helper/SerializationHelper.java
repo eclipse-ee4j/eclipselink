@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-import org.eclipse.persistence.exceptions.ValidationException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,6 +22,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+
+import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
  * <p>Provide common functionalities for serialization of object.
@@ -38,9 +39,10 @@ public class SerializationHelper {
 
     /**
      * <p>Deep clone a Serializable object using serialization.
-     * @param the serializable object
+     * @param object the serializable object
      * @return the deep cloned object
-     * @throws  IOException, ClassNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public static Object clone(Serializable object) throws IOException, ClassNotFoundException {
         return deserialize(serialize(object));
@@ -92,7 +94,8 @@ public class SerializationHelper {
      *
      * @param inputStream  the serialized object input stream, must not be null
      * @return the deserialized object
-     * @throws IOException, ClassNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public static Object deserialize(InputStream inputStream) throws IOException, ClassNotFoundException {
         if (inputStream == null) {
@@ -120,7 +123,8 @@ public class SerializationHelper {
      *
      * @param objectBytes  the serialized object, can not be null
      * @return the deserialized object
-     * @throws  IOException, ClassNotFoundException
+     * @throws IOException
+     * @throws ClassNotFoundException
      */
     public static Object deserialize(byte[] objectBytes) throws IOException, ClassNotFoundException {
         if (objectBytes == null) {

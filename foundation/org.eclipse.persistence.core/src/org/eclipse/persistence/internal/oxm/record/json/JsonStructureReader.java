@@ -29,13 +29,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.json.Json;
+import javax.json.JsonBuilderFactory;
+import javax.json.JsonException;
+import javax.json.JsonReader;
+import javax.json.JsonStructure;
 import javax.json.JsonArray;
 import javax.json.JsonNumber;
-import javax.json.JsonException;
 import javax.json.JsonObject;
-import javax.json.JsonReader;
+import javax.json.JsonObjectBuilder;
 import javax.json.JsonString;
-import javax.json.JsonStructure;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 import javax.xml.namespace.QName;
@@ -265,8 +267,17 @@ public class JsonStructureReader extends XMLReaderAdapter {
                 break;
             }
             case OBJECT: {
+                Entry<String, JsonValue> xmlValueEntry = null;
                 for (Entry<String, JsonValue> nextEntry : ((JsonObject) jsonValue).entrySet()) {
-                    parsePair(nextEntry.getKey(), nextEntry.getValue());
+                    if (textWrapper != null && textWrapper.equals(nextEntry.getKey())) {
+                        xmlValueEntry = nextEntry;
+                    } else {
+                        parsePair(nextEntry.getKey(), nextEntry.getValue());
+                    }
+                }
+                //Proceed JSON value mapped to @XmlValue property as a last
+                if (xmlValueEntry != null) {
+                    parsePair(xmlValueEntry.getKey(), xmlValueEntry.getValue());
                 }
                 break;
             }
@@ -382,6 +393,13 @@ public class JsonStructureReader extends XMLReaderAdapter {
                             contentHandler.startElement(uri, parentLocalName, parentLocalName, attributes.setValue(nextArrayValue, attributePrefix, namespaces, getNamespaceSeparator(), isNamespaceAware()));
                         }
 
+                    }
+                    //Internally store each nested array it as JsonObject with name: "item"
+                    if (valueType == nextArrayValue.getValueType()) {
+                        JsonBuilderFactory factory = Json.createBuilderFactory(null);
+                        JsonObjectBuilder jsonObjectBuilder = factory.createObjectBuilder();
+                        jsonObjectBuilder.add("item", nextArrayValue);
+                        nextArrayValue = jsonObjectBuilder.build();
                     }
                     parseValue(nextArrayValue);
                     if (!isTextValue) {
@@ -512,7 +530,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
     }
 
     private boolean isTextValue(String localName, UnmarshalRecord contentHandler_) {
-        XPathNode currentNode = ((UnmarshalRecord) contentHandler_).getXPathNode();
+        XPathNode currentNode = contentHandler_.getXPathNode();
         if (currentNode == null) {
             return textWrapper != null && textWrapper.equals(localName);
         }
@@ -653,7 +671,7 @@ public class JsonStructureReader extends XMLReaderAdapter {
                                 if (attributeLocalName.startsWith(attributePrefix)) {
                                     attributeLocalName = attributeLocalName.substring(attributePrefix.length());
                                 } else {
-                                    break;
+                                    continue;
                                 }
                             }
 

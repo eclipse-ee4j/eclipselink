@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -206,6 +206,43 @@ public class MarshallerProperties {
     public static final String JSON_TYPE_ATTRIBUTE_NAME = JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME;
 
     /**
+     * Disable generation of "item" name in nested arrays in JSON. Settings from binding file have higher priority.
+     *
+     * <p><b>Example</b></p>
+     * <p>Given the following property</p>
+     * <pre>
+     * marshaller.setProperty(MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME, "false");
+     * </pre>
+     * <p>If the property value is set to <b>false</b> (default) the JSON output will be:</p>
+     * <pre>
+     * ...
+     * "char2dArray":[
+     *      {"item":["a","b","c","d"]},
+     *      {"item":["e","f","g","h"]}
+     * ]
+     * ...
+     * </pre>
+     * <p>for following object model</p>
+     * <pre>
+     * ...
+     * &#64;XmlElement(name="char2dArray")
+     * private char[][] char2dArray;
+     * ...
+     * </pre>
+     * <p>If the property value is set to <b>true</b> (default) the JSON output will be:</p>
+     * <pre>
+     * ...
+     * "char2dArray": [
+     *      ["a","b","c","d"],
+     *      ["e","f","g","h"]
+     * ]
+     * ...
+     * </pre>
+     * @since 2.7.5
+     */
+    public static final String JSON_DISABLE_NESTED_ARRAY_NAME = "eclipselink.json.disable-nested-array-name";
+
+    /**
      *
      */
     public static final String OBJECT_GRAPH = JAXBContextProperties.OBJECT_GRAPH;
@@ -302,4 +339,36 @@ public class MarshallerProperties {
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#BEAN_VALIDATION_NO_OPTIMISATION
      */
     public static final String BEAN_VALIDATION_NO_OPTIMISATION = JAXBContextProperties.BEAN_VALIDATION_NO_OPTIMISATION;
+
+    /**
+     * Property for MOXy logging level.
+     *
+     * This is to make maintenance easier and to allow MOXy generate more diagnostic log messages.
+     *
+     * Allowed values are specified in {@link org.eclipse.persistence.logging.LogLevel}
+     * Default value is {@link org.eclipse.persistence.logging.LogLevel#INFO}
+     *
+     * @since 3.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.logging.LogLevel
+     */
+    public static final String MOXY_LOGGING_LEVEL = "eclipselink.logging.level.moxy";
+
+    /**
+     * Property for logging Entities content during marshalling/unmarshalling operation in MOXy.
+     * It calls toString() method from entity.
+     *
+     * This is to make maintenance easier and to allow for debugging to check marshalled/unmarshalled content.
+     * Use it carefully. It can produce high amount of data in the log files.
+     *
+     * Usage: set to {@link Boolean#TRUE} to enable payload logging, set to {@link Boolean#FALSE} to disable it.
+     * It can be set via system property with name "eclipselink.logging.payload.moxy" too.
+     * By default it is disabled.
+     *
+     * @since 3.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#MOXY_LOG_PAYLOAD
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOG_PAYLOAD
+     */
+    public static final String MOXY_LOG_PAYLOAD = JAXBContextProperties.MOXY_LOG_PAYLOAD;
 }

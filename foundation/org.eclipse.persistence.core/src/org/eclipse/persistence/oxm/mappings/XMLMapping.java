@@ -31,7 +31,7 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 public interface XMLMapping extends Mapping<AbstractSession, AttributeAccessor, ContainerPolicy, ClassDescriptor, DatabaseField, XMLRecord> {
 
     @Override
-    public void convertClassNamesToClasses(ClassLoader classLoader);
+    void convertClassNamesToClasses(ClassLoader classLoader);
 
     /**
      * INTERNAL:
@@ -41,9 +41,9 @@ public interface XMLMapping extends Mapping<AbstractSession, AttributeAccessor, 
      * @param record - The Record the value is being marshalled too.
      */
     @Override
-    public void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session);
+    void writeSingleValue(Object value, Object parent, XMLRecord record, AbstractSession session);
 
-    public boolean isWriteOnly();
+    boolean isWriteOnly();
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 }

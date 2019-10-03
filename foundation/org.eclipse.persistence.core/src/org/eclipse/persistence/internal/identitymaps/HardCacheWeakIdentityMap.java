@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,8 @@
 package org.eclipse.persistence.internal.identitymaps;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.internal.helper.linkedlist.*;
+import org.eclipse.persistence.internal.helper.linkedlist.ExposedNodeLinkedList;
+import org.eclipse.persistence.internal.helper.linkedlist.LinkedNode;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
@@ -67,7 +68,7 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
 
     /**
      * Checks if the object is null, or reference's object is null.
-     * @param the object for hard or the reference for soft.
+     * @param reference the object for hard or the reference for soft.
      */
     public boolean hasReference(Object reference) {
         return reference != null;

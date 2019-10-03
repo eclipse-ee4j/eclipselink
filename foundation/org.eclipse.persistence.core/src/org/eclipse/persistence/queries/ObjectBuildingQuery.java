@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,7 +31,6 @@ import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
@@ -160,7 +159,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
             throw ValidationException.classNotFoundWhileConvertingClassNames(getReferenceClassName(), exc);
         }
         setReferenceClass(referenceClass);
-    };
+    }
 
     /**
      * INTERNAL:
@@ -523,7 +522,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
                             if (!mapping.isCollectionMapping()) {
                                 triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), attributeValue, null);
                             }else {
-                                ContainerPolicy cp = ((CollectionMapping)mapping).getContainerPolicy();
+                                ContainerPolicy cp = mapping.getContainerPolicy();
                                 Object iterator = cp.iteratorFor(attributeValue);
                                 while (cp.hasNext(iterator)){
                                     triggerJoinExpressions(unitOfWork, nestedQuery.getJoinedAttributeManager(), cp.next(iterator, unitOfWork), null);
@@ -638,9 +637,9 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * Set to false to have queries conform to a UnitOfWork without registering
      * any additional objects not already in that UnitOfWork.
      * @see #shouldRegisterResultsInUnitOfWork
-     * @bug 2612601
      */
     public void setShouldRegisterResultsInUnitOfWork(boolean shouldRegisterResultsInUnitOfWork) {
+        // bug 2612601
         this.shouldRegisterResultsInUnitOfWork = shouldRegisterResultsInUnitOfWork;
     }
 
@@ -670,9 +669,9 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * should be called on any object that you intend to change.
      * @return true by default.
      * @see #setShouldRegisterResultsInUnitOfWork
-     * @bug 2612601
      */
     public boolean shouldRegisterResultsInUnitOfWork() {
+        // bug 2612601
         return shouldRegisterResultsInUnitOfWork;
     }
 

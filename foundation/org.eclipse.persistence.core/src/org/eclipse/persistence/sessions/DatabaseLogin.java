@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1192,15 +1192,15 @@ public class DatabaseLogin extends DatasourceLogin {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
         writer.println("DatabaseLogin(");
-        writer.println("\t" + ToStringLocalization.buildMessage("platform", (Object[])null) + "=>" + getDatasourcePlatform());
-        writer.println("\t" + ToStringLocalization.buildMessage("user_name", (Object[])null) + "=> \"" + getUserName() + "\"");
+        writer.println("\t" + ToStringLocalization.buildMessage("platform", null) + "=>" + getDatasourcePlatform());
+        writer.println("\t" + ToStringLocalization.buildMessage("user_name", null) + "=> \"" + getUserName() + "\"");
         writer.print("\t");
         getConnector().toString(writer);
         if (getServerName() != null) {
-            writer.println("\t" + ToStringLocalization.buildMessage("server_name", (Object[])null) + "=> \"" + getServerName() + "\"");
+            writer.println("\t" + ToStringLocalization.buildMessage("server_name", null) + "=> \"" + getServerName() + "\"");
         }
         if (getDatabaseName() != null) {
-            writer.println("\t" + ToStringLocalization.buildMessage("database_name", (Object[])null) + "=> \"" + getDatabaseName() + "\"");
+            writer.println("\t" + ToStringLocalization.buildMessage("database_name", null) + "=> \"" + getDatabaseName() + "\"");
         }
         writer.write(")");
         return stringWriter.toString();

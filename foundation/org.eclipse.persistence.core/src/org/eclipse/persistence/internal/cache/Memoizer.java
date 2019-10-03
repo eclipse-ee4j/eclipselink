@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
 /**
- * Memoizer for computing resource expensive tasks asynchronously & concurrently.
+ * Memoizer for computing resource expensive tasks asynchronously &amp; concurrently.
  *
  * Inspired by D. Lea. <i>JCiP</i>, 2nd edition. Addison-Wesley, 2006. pp.109
  *

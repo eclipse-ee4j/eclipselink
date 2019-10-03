@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,10 +69,10 @@ public class TableDefinition extends DatabaseObjectDefinition {
     public TableDefinition() {
         createVPDCalls = false;
         hasUserDefinedForeignKeyConstraints = false;
-        this.fields = new ArrayList<FieldDefinition>();
-        this.indexes = new ArrayList<IndexDefinition>();
-        this.foreignKeyMap = new HashMap<String, ForeignKeyConstraint>();
-        this.uniqueKeys = new ArrayList<UniqueKeyConstraint>();
+        this.fields = new ArrayList<>();
+        this.indexes = new ArrayList<>();
+        this.foreignKeyMap = new HashMap<>();
+        this.uniqueKeys = new ArrayList<>();
         this.creationPrefix = "CREATE TABLE ";
         this.creationSuffix = "";
     }
@@ -939,7 +939,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
             // indices for columns with unique=true declarations
             for (FieldDefinition field : getFields()) {
                 if (field.isUnique()) {
-                    List<String> columnAsList = new ArrayList<String>();
+                    List<String> columnAsList = new ArrayList<>();
                     columnAsList.add(field.getName());
                     IndexDefinition index = buildIndex(session, field.getName(), columnAsList, true);
                     if (writer == null) {
@@ -1149,7 +1149,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
             // indices for columns with unique=true declarations
             for (FieldDefinition field : getFields()) {
                 if (field.isUnique()) {
-                    List<String> columnAsList = new ArrayList<String>();
+                    List<String> columnAsList = new ArrayList<>();
                     columnAsList.add(field.getName());
                     IndexDefinition index = buildIndex(session, field.getName(), columnAsList, true);
                     if (writer == null) {
@@ -1296,7 +1296,7 @@ public class TableDefinition extends DatabaseObjectDefinition {
      * PUBLIC:
      */
     public List<String> getPrimaryKeyFieldNames() {
-        List<String> keyNames = new ArrayList<String>();
+        List<String> keyNames = new ArrayList<>();
 
         for (FieldDefinition field : getFields()) {
             if (field.isPrimaryKey()) {

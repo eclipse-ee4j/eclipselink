@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,27 +16,29 @@ package org.eclipse.persistence.internal.indirection;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.remote.*;
+import java.util.Map;
+
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.IntegrityChecker;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.InterfaceContainerPolicy;
-import org.eclipse.persistence.internal.sessions.remote.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.sessions.remote.RemoteValueHolder;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <h2>Purpose</h2>:
  * NoIndirectionPolicy implements the behavior necessary for a
- * a ForeignReferenceMapping (or TransformationMapping) to
+ * a <code>org.eclipse.persistence.mappings.ForeignReferenceMapping</code> (or TransformationMapping) to
  * directly use domain objects, as opposed to ValueHolders.
  *
- * @see ForeignReferenceMapping
  * @author Mike Norman
  * @since TOPLink/Java 2.5
  */

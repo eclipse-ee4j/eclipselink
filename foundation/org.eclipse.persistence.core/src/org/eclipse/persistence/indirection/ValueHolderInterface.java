@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,22 +21,22 @@ package org.eclipse.persistence.indirection;
  * @see ValueHolder
  * @see org.eclipse.persistence.internal.indirection.DatabaseValueHolder
  */
-public interface ValueHolderInterface extends Cloneable {
+public interface ValueHolderInterface<T> extends Cloneable {
 
     /** Can be used to have transparent indirection toString instantiate the objects. */
-    public static boolean shouldToStringInstantiate = false;
+    boolean shouldToStringInstantiate = false;
 
     /**
      * PUBLIC:
      * Copy the value holder (but not its' reference, shallow).
      */
-    public Object clone();
+    Object clone();
 
     /**
      * PUBLIC:
      * Return the value.
      */
-    public Object getValue();
+    T getValue();
 
     /**
      * PUBLIC:
@@ -44,11 +44,11 @@ public interface ValueHolderInterface extends Cloneable {
      * This is used periodically by the indirection policy to determine whether
      * to trigger the database read.
      */
-    public boolean isInstantiated();
+    boolean isInstantiated();
 
     /**
      * PUBLIC:
      * Set the value.
      */
-    public void setValue(Object value);
+    void setValue(T value);
 }

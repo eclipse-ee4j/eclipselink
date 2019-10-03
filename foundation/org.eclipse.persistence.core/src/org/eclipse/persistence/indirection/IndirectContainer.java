@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ package org.eclipse.persistence.indirection;
  * @author Big Country
  *    @since TOPLink/Java 2.5
  */
-public interface IndirectContainer {
+public interface IndirectContainer<C> {
 
     /**
      * PUBLIC:
@@ -35,7 +35,7 @@ public interface IndirectContainer {
      * UOW clone of the container.
      * @return org.eclipse.persistence.indirection.ValueHolderInterface A representation of the valueholder  * which this container uses
      */
-    public ValueHolderInterface getValueHolder();
+    ValueHolderInterface<C> getValueHolder();
 
     /**
      * PUBLIC:
@@ -43,7 +43,7 @@ public interface IndirectContainer {
      * This is used periodically by the indirection policy to determine whether
      * to trigger the database read.
      */
-    public boolean isInstantiated();
+    boolean isInstantiated();
 
     /**
      * PUBLIC:
@@ -51,5 +51,5 @@ public interface IndirectContainer {
      * This is used by the indirection policy to build the
      * UOW clone of the container.
      */
-    public void setValueHolder(ValueHolderInterface valueHolder);
+    void setValueHolder(ValueHolderInterface<C> valueHolder);
 }

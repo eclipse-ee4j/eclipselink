@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -92,7 +92,7 @@ public class ServerSession extends DatabaseSessionImpl implements Server {
      */
     public ServerSession() {
         super();
-        this.connectionPools = new HashMap<String, ConnectionPool>(10);
+        this.connectionPools = new HashMap<>(10);
     }
 
     /**

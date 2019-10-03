@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,11 @@
 package org.eclipse.persistence.internal.sessions.remote;
 
 import java.rmi.server.ObjID;
-import org.eclipse.persistence.sessions.remote.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.exceptions.*;
+
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.queries.ScrollableCursor;
+import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <p><b>Purpose</b>:
@@ -183,13 +185,13 @@ public class RemoteScrollableCursor extends ScrollableCursor {
 
     /**
      * INTERNAL:
-     * This method differs slightly from conventinal read() operation on a Java stream.  This
+     * This method differs slightly from conventional read() operation on a Java stream.  This
      * method return the next object in the collection rather than specifying the number of
      * bytes to be read in.
      *
      * Return the next object from the collection, if beyond the read limit read from the cursor
-     * @return - next object in stream
-     * @exception - throws exception if read pass end of stream
+     * @return next object in stream
+     * @exception DatabaseException if read pass end of stream
      */
     @Override
     protected Object retrieveNextObject() throws DatabaseException, QueryException {

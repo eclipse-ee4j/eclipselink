@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,33 +20,33 @@ package org.eclipse.persistence.internal.oxm.schema.model;
  * @see org.eclipse.persistence.internal.oxm.schema.model.Choice
  */
 public interface NestedParticle extends TypeDefParticleOwner {
-    public void addSequence(Sequence sequence);
+    void addSequence(Sequence sequence);
 
-    public void addChoice(Choice choice);
+    void addChoice(Choice choice);
 
-    public void addElement(Element elem);
+    void addElement(Element elem);
 
-    public void addAny(Any any);
+    void addAny(Any any);
 
-    public boolean hasAny();
+    boolean hasAny();
 
-    public void setSequences(java.util.List sequences);
+    void setSequences(java.util.List sequences);
 
-    public void setChoices(java.util.List choices);
+    void setChoices(java.util.List choices);
 
-    public void setAnys(java.util.List anys);
+    void setAnys(java.util.List anys);
 
-    public void setElements(java.util.List elements);
+    void setElements(java.util.List elements);
 
-    public void setMinOccurs(String minOccurs);
+    void setMinOccurs(String minOccurs);
 
-    public String getMinOccurs();
+    String getMinOccurs();
 
-    public String getMaxOccurs();
+    String getMaxOccurs();
 
-    public void setMaxOccurs(String maxOccurs);
+    void setMaxOccurs(String maxOccurs);
 
-    public void setOwner(TypeDefParticleOwner owner);
+    void setOwner(TypeDefParticleOwner owner);
 
-    public boolean isEmpty();
+    boolean isEmpty();
 }

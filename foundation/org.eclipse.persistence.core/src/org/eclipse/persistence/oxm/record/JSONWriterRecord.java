@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -198,7 +198,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
              }else if(callbackName != null){
                  startCallback();
              }
-             level = new Level(true, false, level);
+             level = new Level(true, false, false, level);
 
              writer.write('{');
          } catch (IOException e) {
@@ -258,20 +258,24 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                     level.setEmptyCollection(false);
                     level.setNeedToOpenComplex(false);
                     charactersAllowed = true;
-                    level = new Level(true, true, level);
+                    level = new Level(true, true, false, level);
                     return;
                 }
             }
 
             if(level.needToOpenComplex){
-                   writer.write('{');
-                   level.needToOpenComplex = false;
-                   level.needToCloseComplex = true;
+                if (!level.isNestedArray()) {
+                    writer.write('{');
+                }
+                level.needToOpenComplex = false;
+                level.needToCloseComplex = true;
            }
 
            //write the key unless this is a a non-empty collection
            if(!(level.isCollection() && !level.isEmptyCollection())){
-               writeKey(xPathFragment);
+               if (!level.isNestedArray()) {
+                   writeKey(xPathFragment);
+               }
                //if it is the first thing in the collection also add the [
                if(level.isCollection() && level.isEmptyCollection()){
                     writer.write('[');
@@ -281,7 +285,11 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
 
 
             charactersAllowed = true;
-            level = new Level(true, true, level);
+            if (xPathFragment.getXMLField() != null && xPathFragment.getXMLField().isNestedArray() && this.marshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName()) {
+                level = new Level(true, true, true, level);
+            } else {
+                level = new Level(true, true, false, level);
+            }
         } catch (IOException e) {
             throw XMLMarshalException.marshalException(e);
         }
@@ -349,7 +357,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
                 if(level.needToOpenComplex){
                     writer.write('{');
                     closeComplex();
-                } else if(level.needToCloseComplex){
+                } else if(level.needToCloseComplex && !level.nestedArray){
                     closeComplex();
                 }
                 charactersAllowed = false;
@@ -370,7 +378,7 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             try {
                 startCallback();
                 writer.write('[');
-                level = new Level(true, false, level);
+                level = new Level(true, false, false, level);
             } catch(IOException e) {
                 throw XMLMarshalException.marshalException(e);
             }
@@ -918,15 +926,17 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
         private boolean emptyCollection;
         private boolean needToOpenComplex;
         private boolean needToCloseComplex;
+        private boolean nestedArray;
         private Level previousLevel;
 
-        public Level(boolean value, boolean needToOpen) {
+        public Level(boolean value, boolean needToOpen, boolean nestedArray) {
             this.first = value;
             needToOpenComplex = needToOpen;
+            this.nestedArray = nestedArray;
         }
 
-        public Level(boolean value, boolean needToOpen, Level previousLevel) {
-            this(value, needToOpen);
+        public Level(boolean value, boolean needToOpen, boolean nestedArray, Level previousLevel) {
+            this(value, needToOpen, nestedArray);
             this.previousLevel = previousLevel;
         }
 
@@ -974,33 +984,40 @@ public class JSONWriterRecord extends MarshalRecord<XMLMarshaller> {
             return previousLevel;
         }
 
+        public boolean isNestedArray() {
+            return nestedArray;
+        }
+
+        public void setNestedArray(boolean nestedArray) {
+            this.nestedArray = nestedArray;
+        }
     }
 
     protected static interface Output {
 
-        public void flush() throws IOException;
+        void flush() throws IOException;
 
-        public XMLMarshaller getMarshaller();
+        XMLMarshaller getMarshaller();
 
-        public OutputStream getOutputStream();
+        OutputStream getOutputStream();
 
-        public Writer getWriter();
+        Writer getWriter();
 
-        public void setMarshaller(XMLMarshaller marshaller);
+        void setMarshaller(XMLMarshaller marshaller);
 
-        public void write(char character) throws IOException;
+        void write(char character) throws IOException;
 
-        public void write(String text) throws IOException;
+        void write(String text) throws IOException;
 
-        public void writeAttributePrefix() throws IOException;
+        void writeAttributePrefix() throws IOException;
 
-        public void writeCR() throws IOException;
+        void writeCR() throws IOException;
 
-        public void writeLocalName(XPathFragment xPathFragment) throws IOException;
+        void writeLocalName(XPathFragment xPathFragment) throws IOException;
 
-        public void writeNamespaceSeparator() throws IOException;
+        void writeNamespaceSeparator() throws IOException;
 
-        public void writeResultFromCharEscapeHandler(String value, boolean isAttribute);
+        void writeResultFromCharEscapeHandler(String value, boolean isAttribute);
 
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,11 @@ import org.w3c.dom.Text;
 * root node for the fragment.  The XPath is specified on the mapping using the <code>setXPath</code>
 * method.
 *
-* <table summary="" border="1">
+ * <table border="1">
+ * <caption>XPath statements</caption>
 * <tr>
-* <th id="c1" align="left">XPath</th>
-* <th id="c2" align="left">Description</th>
+* <th id="c1">XPath</th>
+* <th id="c2">Description</th>
 * </tr>
 * <tr>
 * <td headers="c1">phone-number</td>

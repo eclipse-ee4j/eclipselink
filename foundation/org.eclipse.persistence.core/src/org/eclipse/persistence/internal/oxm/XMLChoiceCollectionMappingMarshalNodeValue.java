@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,14 +101,14 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
 
     public void setFieldToNodeValues(Map<Field, NodeValue> fieldToNodeValues) {
         this.fieldToNodeValues = fieldToNodeValues;
-        this.classToNodeValues = new HashMap<Class, List<FieldNodeValue>>();
+        this.classToNodeValues = new HashMap<>();
         for(Field nextField:fieldToNodeValues.keySet()) {
             Class associatedClass = ((Map<Field, Class>)this.xmlChoiceCollectionMapping.getFieldToClassMappings()).get(nextField);
 
             if (classToNodeValues.containsKey(associatedClass)) {
                 classToNodeValues.get(associatedClass).add(new FieldNodeValue(nextField, fieldToNodeValues.get(nextField)));
             } else {
-                List<FieldNodeValue> newFieldToNodeValuesList = new ArrayList<FieldNodeValue>();
+                List<FieldNodeValue> newFieldToNodeValuesList = new ArrayList<>();
                 newFieldToNodeValuesList.add(new FieldNodeValue(nextField, fieldToNodeValues.get(nextField)));
                 this.classToNodeValues.put(associatedClass, newFieldToNodeValuesList);
             }
@@ -122,7 +122,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
             if(!(classes.contains(nextClass))) {
         Field field = (Field) xmlChoiceCollectionMapping.getClassToFieldMappings().get(nextClass);
                 NodeValue nodeValue = new XMLChoiceCollectionMappingUnmarshalNodeValue(xmlChoiceCollectionMapping, xmlField, (Mapping) xmlChoiceCollectionMapping.getChoiceElementMappingsByClass().get(nextClass));
-                List<FieldNodeValue> newFieldToNodeValuesList = new ArrayList<FieldNodeValue>();
+                List<FieldNodeValue> newFieldToNodeValuesList = new ArrayList<>();
                 newFieldToNodeValuesList.add(new FieldNodeValue(field, nodeValue));
                 this.classToNodeValues.put(nextClass, newFieldToNodeValuesList);
                 NodeValue nodeValueForField = fieldToNodeValues.get(field);
@@ -182,7 +182,7 @@ public class XMLChoiceCollectionMappingMarshalNodeValue extends MappingNodeValue
 
         if(marshalRecord.getMarshaller().isApplicationJSON()){
             List<NodeValue> nodeValues = new ArrayList();
-            List<List> values = new ArrayList<List>();
+            List<List> values = new ArrayList<>();
 
             NodeValue mixedNodeValue = null;
             List mixedValues = null;

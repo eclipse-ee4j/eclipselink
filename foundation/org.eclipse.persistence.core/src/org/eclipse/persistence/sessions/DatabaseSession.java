@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public interface DatabaseSession extends Session {
      * @see #addDescriptors(Collection)
      * @see #addDescriptors(Project)
      */
-    public void addDescriptor(ClassDescriptor descriptor);
+    void addDescriptor(ClassDescriptor descriptor);
 
     /**
      * PUBLIC:
@@ -51,7 +51,7 @@ public interface DatabaseSession extends Session {
      * This method allows for a batch of descriptors to be added at once so that EclipseLink
      * can resolve the dependencies between the descriptors and perform initialization optimally.
      */
-    public void addDescriptors(Collection descriptors);
+    void addDescriptors(Collection descriptors);
 
     /**
      * PUBLIC:
@@ -65,7 +65,7 @@ public interface DatabaseSession extends Session {
      * @see #addDescriptor
      * @see #addDescriptors
      */
-    public void addSequence(Sequence sequence);
+    void addSequence(Sequence sequence);
 
     /**
      * PUBLIC:
@@ -73,7 +73,7 @@ public interface DatabaseSession extends Session {
      * This can be used to combine the descriptors from multiple projects into a single session.
      * This can be called after the session has been connected as long as there are no external dependencies.
      */
-    public void addDescriptors(org.eclipse.persistence.sessions.Project project);
+    void addDescriptors(org.eclipse.persistence.sessions.Project project);
 
     /**
      * PUBLIC:
@@ -87,7 +87,7 @@ public interface DatabaseSession extends Session {
      *
      * @see #isInTransaction()
      */
-    public void beginTransaction() throws DatabaseException;
+    void beginTransaction() throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -101,7 +101,7 @@ public interface DatabaseSession extends Session {
      * normally errors do not occur on commit unless the disk fails or the connection is lost.
      * @exception ConcurrencyException if this session is not within a transaction.
      */
-    public void commitTransaction() throws DatabaseException;
+    void commitTransaction() throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -114,7 +114,7 @@ public interface DatabaseSession extends Session {
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
-    public void deleteAllObjects(Collection domainObjects);
+    void deleteAllObjects(Collection domainObjects);
 
     /**
      * PUBLIC:
@@ -123,7 +123,7 @@ public interface DatabaseSession extends Session {
      *
      * @see org.eclipse.persistence.queries.DeleteObjectQuery
      */
-    public Object deleteObject(Object domainObject) throws DatabaseException, OptimisticLockException;
+    Object deleteObject(Object domainObject) throws DatabaseException, OptimisticLockException;
 
     /**
      * PUBLIC:
@@ -135,14 +135,14 @@ public interface DatabaseSession extends Session {
      * @see org.eclipse.persistence.queries.InsertObjectQuery
      * @see #writeObject(Object)
      */
-    public Object insertObject(Object domainObject) throws DatabaseException;
+    Object insertObject(Object domainObject) throws DatabaseException;
 
     /**
      * PUBLIC:
      * Return if the session is currently in the progress of a database transaction.
      * Because nested transactions are allowed check if the transaction mutex has been acquired.
      */
-    public boolean isInTransaction();
+    boolean isInTransaction();
 
     /**
      * PUBLIC:
@@ -163,7 +163,7 @@ public interface DatabaseSession extends Session {
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
      */
-    public void setServerPlatform(ServerPlatform newServerPlatform);
+    void setServerPlatform(ServerPlatform newServerPlatform);
 
     /**
      * PUBLIC:
@@ -182,15 +182,14 @@ public interface DatabaseSession extends Session {
      *
      * @see org.eclipse.persistence.platform.server.ServerPlatformBase
     */
-    @Override
-    public ServerPlatform getServerPlatform();
+    @Override ServerPlatform getServerPlatform();
 
     /**
      * PUBLIC:
      * Return  SequencingControl which used for sequencing setup and
      * customization including management of sequencing preallocation.
      */
-    public SequencingControl getSequencingControl();
+    SequencingControl getSequencingControl();
 
     /**
      * PUBLIC:
@@ -199,7 +198,7 @@ public interface DatabaseSession extends Session {
      *
      * @see #login(Login)
      */
-    public void login() throws DatabaseException;
+    void login() throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -209,7 +208,7 @@ public interface DatabaseSession extends Session {
      * but all users share the same database configuration.
      * Under this login mode the password should not stay within the login definition after login.
      */
-    public void login(String userName, String password) throws DatabaseException;
+    void login(String userName, String password) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -218,7 +217,7 @@ public interface DatabaseSession extends Session {
      * This is the login should only be used if each user has their own database configuration.
      * Under this login mode the password should not stay within the login definition after login.
      */
-    public void login(Login login) throws DatabaseException;
+    void login(Login login) throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -228,7 +227,7 @@ public interface DatabaseSession extends Session {
      * @exception DatabaseException the database will also raise an error if their is an active transaction,
      * or a general error occurs.
      */
-    public void logout() throws DatabaseException;
+    void logout() throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -238,7 +237,7 @@ public interface DatabaseSession extends Session {
      * A no wait option is available through setting the lock mode.
      * @see #refreshAndLockObject(Object, short)
      */
-    public Object refreshAndLockObject(Object object);
+    Object refreshAndLockObject(Object object);
 
     /**
      * PUBLIC:
@@ -246,7 +245,7 @@ public interface DatabaseSession extends Session {
      * The object will be pessimistically locked on the database for the duration of the transaction.
      * <p>Lock Modes: ObjectBuildingQuery.NO_LOCK, LOCK, LOCK_NOWAIT
      */
-    public Object refreshAndLockObject(Object object, short lockMode);
+    Object refreshAndLockObject(Object object, short lockMode);
 
     /**
      * PUBLIC:
@@ -259,7 +258,7 @@ public interface DatabaseSession extends Session {
      * @exception DatabaseException if the database connection is lost or the rollback fails.
      * @exception ConcurrencyException if this session is not within a transaction.
      */
-    public void rollbackTransaction() throws DatabaseException;
+    void rollbackTransaction() throws DatabaseException;
 
     /**
      * PUBLIC:
@@ -270,8 +269,7 @@ public interface DatabaseSession extends Session {
      */
     //@deprecated was removed from this method as there is no viable alternative bug 5637867 was filed to
     // have this resolved.
-    @Override
-    public void setExternalTransactionController(ExternalTransactionController etc);
+    @Override void setExternalTransactionController(ExternalTransactionController etc);
 
     /**
      * ADVANCED:
@@ -285,7 +283,7 @@ public interface DatabaseSession extends Session {
      * @return The CommandManager instance that controls the remote command
      * service for this session.
      */
-    public CommandManager getCommandManager();
+    CommandManager getCommandManager();
 
     /**
      * ADVANCED:
@@ -301,7 +299,7 @@ public interface DatabaseSession extends Session {
      * @param commandManager The CommandManager instance to control the remote command
      * service for this session.
      */
-    public void setCommandManager(CommandManager commandManager);
+    void setCommandManager(CommandManager commandManager);
 
     /**
      * ADVANCED:
@@ -314,7 +312,7 @@ public interface DatabaseSession extends Session {
      * @see #setCommandManager(CommandManager)
      * @param choice If true (and the CommandManager is set) then propagation will occur.
      */
-    public void setShouldPropagateChanges(boolean choice);
+    void setShouldPropagateChanges(boolean choice);
 
     /**
      * ADVANCED:
@@ -325,19 +323,19 @@ public interface DatabaseSession extends Session {
      * @see #setCommandManager(CommandManager)
      * @return true if propagation is set to occur, false if not.
      */
-    public boolean shouldPropagateChanges();
+    boolean shouldPropagateChanges();
 
     /**
      * PUBLIC:
      * Set the login.
      */
-    public void setLogin(Login login);
+    void setLogin(Login login);
 
     /**
      * PUBLIC:
      * Set the login.
      */
-    public void setDatasourceLogin(Login login);
+    void setDatasourceLogin(Login login);
 
     /**
      * PUBLIC:
@@ -349,7 +347,7 @@ public interface DatabaseSession extends Session {
      * @see org.eclipse.persistence.queries.UpdateObjectQuery
      * @see #writeObject(Object)
      */
-    public Object updateObject(Object domainObject) throws DatabaseException, OptimisticLockException;
+    Object updateObject(Object domainObject) throws DatabaseException, OptimisticLockException;
 
     /**
      * PUBLIC:
@@ -362,7 +360,7 @@ public interface DatabaseSession extends Session {
      * @exception OptimisticLockException if the object's descriptor is using optimistic locking and
      * the object has been updated or deleted by another user since it was last read.
      */
-    public void writeAllObjects(Collection domainObjects);
+    void writeAllObjects(Collection domainObjects);
 
     /**
      * PUBLIC:
@@ -375,16 +373,16 @@ public interface DatabaseSession extends Session {
      * @see #insertObject(Object)
      * @see #updateObject(Object)
      */
-    public Object writeObject(Object domainObject) throws DatabaseException, OptimisticLockException;
+    Object writeObject(Object domainObject) throws DatabaseException, OptimisticLockException;
 
     /**
      * Return the database event listener, this allows database events to invalidate the cache.
      */
-    public DatabaseEventListener getDatabaseEventListener();
+    DatabaseEventListener getDatabaseEventListener();
 
     /**
      * PUBLIC:
      * Set the database event listener, this allows database events to invalidate the cache.
      */
-    public void setDatabaseEventListener(DatabaseEventListener databaseEventListener);
+    void setDatabaseEventListener(DatabaseEventListener databaseEventListener);
 }

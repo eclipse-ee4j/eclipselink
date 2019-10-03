@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public interface JMXEnabledPlatform {
      * @see ServerPlatform#registerMBean()
      * @since EclipseLink 2.1.1
      */
-    public abstract void prepareServerSpecificServicesMBean();
+    void prepareServerSpecificServicesMBean();
 
     /**
      * INTERNAL:
@@ -58,5 +58,5 @@ public interface JMXEnabledPlatform {
      *
      * @return String applicationName
      */
-    public abstract String getApplicationName();
+    String getApplicationName();
 }

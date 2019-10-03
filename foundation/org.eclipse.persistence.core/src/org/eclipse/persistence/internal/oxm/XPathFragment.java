@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,9 +35,8 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
  * b[2] would have an index value of 2.</li>
  * </ul>
  */
-public class XPathFragment <
-  XML_FIELD extends Field
->{
+public class XPathFragment<XML_FIELD extends Field> {
+
     public static final XPathFragment TEXT_FRAGMENT = new XPathFragment(Constants.TEXT);
     public static final String SELF_XPATH = ".";
     public static final XPathFragment SELF_FRAGMENT = new XPathFragment(SELF_XPATH);
@@ -70,7 +69,6 @@ public class XPathFragment <
 
     private Set<String> attributeCollisionSet;
     private Set<String> nonAttributeCollisionSet;
-
 
     public XPathFragment() {
         setNamespaceAware(true);
@@ -443,13 +441,13 @@ public class XPathFragment <
 
     private Set<String> getAttributeCollisionSet() {
         if (attributeCollisionSet == null)
-            attributeCollisionSet = new HashSet<String>();
+            attributeCollisionSet = new HashSet<>();
         return attributeCollisionSet;
     }
 
     private Set<String> getNonAttributeCollisionSet() {
         if (nonAttributeCollisionSet == null)
-            nonAttributeCollisionSet = new HashSet<String>();
+            nonAttributeCollisionSet = new HashSet<>();
         return nonAttributeCollisionSet;
     }
 

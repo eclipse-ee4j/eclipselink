@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -395,7 +395,7 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
                     nodeVal = null;
                 }
 
-                Object obj = ((XMLConversionManager) xmlContext.getSession().getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
+                Object obj = xmlContext.getSession().getDatasourcePlatform().getConversionManager().convertObject(nodeVal, referenceClass);
                 Root xmlRoot = new XMLRoot();
                 xmlRoot.setObject(obj);
                 String lName = xmlRow.getDOM().getLocalName();

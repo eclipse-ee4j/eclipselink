@@ -57,7 +57,8 @@ public class EmulatedResultSet implements ResultSet {
      * <code>false</code> if there are no more rows
      * @exception SQLException if a database access error occurs
      */
-    public boolean next() {
+    @Override
+    public boolean next() throws SQLException {
         this.index++;
         return this.index <= this.rows.size();
     }
@@ -77,7 +78,8 @@ public class EmulatedResultSet implements ResultSet {
      *
      * @exception SQLException if a database access error occurs
      */
-    public void close() {
+    @Override
+    public void close() throws SQLException {
     }
 
     /**
@@ -92,7 +94,8 @@ public class EmulatedResultSet implements ResultSet {
      *         <code>NULL</code> and <code>false</code> otherwise
      * @exception SQLException if a database access error occurs
      */
-    public boolean wasNull() {
+    @Override
+    public boolean wasNull() throws SQLException {
         return false;
     }
 
@@ -110,7 +113,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public String getString(int columnIndex) {
+    @Override
+    public String getString(int columnIndex) throws SQLException {
         return (String)getObject(columnIndex);
     }
 
@@ -124,7 +128,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>false</code>
      * @exception SQLException if a database access error occurs
      */
-    public boolean getBoolean(int columnIndex) {
+    @Override
+    public boolean getBoolean(int columnIndex) throws SQLException {
         return ((Boolean)getObject(columnIndex)).booleanValue();
     }
 
@@ -138,7 +143,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public byte getByte(int columnIndex) {
+    @Override
+    public byte getByte(int columnIndex) throws SQLException {
         return ((Number)getObject(columnIndex)).byteValue();
     }
 
@@ -152,7 +158,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public short getShort(int columnIndex) {
+    @Override
+    public short getShort(int columnIndex) throws SQLException {
         return ((Number)getObject(columnIndex)).shortValue();
     }
 
@@ -166,7 +173,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public int getInt(int columnIndex) {
+    @Override
+    public int getInt(int columnIndex) throws SQLException {
         Number value = (Number)getObject(columnIndex);
         if (value == null) {
             return 0;
@@ -185,7 +193,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public long getLong(int columnIndex) {
+    @Override
+    public long getLong(int columnIndex) throws SQLException {
         Number value = (Number)getObject(columnIndex);
         if (value == null) {
             return 0;
@@ -204,7 +213,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public float getFloat(int columnIndex) {
+    @Override
+    public float getFloat(int columnIndex) throws SQLException {
         Number value = (Number)getObject(columnIndex);
         if (value == null) {
             return 0;
@@ -223,7 +233,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public double getDouble(int columnIndex) {
+    @Override
+    public double getDouble(int columnIndex) throws SQLException {
         Number value = (Number)getObject(columnIndex);
         if (value == null) {
             return 0;
@@ -244,7 +255,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @deprecated
      */
-    public BigDecimal getBigDecimal(int columnIndex, int scale) {
+    @Override
+    public BigDecimal getBigDecimal(int columnIndex, int scale)throws SQLException {
         return (BigDecimal)getObject(columnIndex);
     }
 
@@ -259,7 +271,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public byte[] getBytes(int columnIndex) {
+    @Override
+    public byte[] getBytes(int columnIndex) throws SQLException {
         return (byte[])getObject(columnIndex);
     }
 
@@ -273,7 +286,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.sql.Date getDate(int columnIndex) {
+    @Override
+    public java.sql.Date getDate(int columnIndex) throws SQLException {
         java.util.Date date = (java.util.Date)getObject(columnIndex);
         if ((date != null) && (!(date instanceof java.sql.Date))) {
             date = new java.sql.Date(date.getTime());
@@ -291,7 +305,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.sql.Time getTime(int columnIndex) {
+    @Override
+    public java.sql.Time getTime(int columnIndex) throws SQLException {
         return (java.sql.Time)getObject(columnIndex);
     }
 
@@ -305,7 +320,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.sql.Timestamp getTimestamp(int columnIndex) {
+    @Override
+    public java.sql.Timestamp getTimestamp(int columnIndex) throws SQLException {
         return (java.sql.Timestamp)getObject(columnIndex);
     }
 
@@ -314,7 +330,7 @@ public class EmulatedResultSet implements ResultSet {
      * of this <code>ResultSet</code> object as
      * a stream of ASCII characters. The value can then be read in chunks from the
      * stream. This method is particularly
-     * suitable for retrieving large <char>LONGVARCHAR</char> values.
+     * suitable for retrieving large <code>LONGVARCHAR</code> values.
      * The JDBC driver will
      * do any necessary conversion from the database format into ASCII.
      *
@@ -332,7 +348,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.io.InputStream getAsciiStream(int columnIndex) {
+    @Override
+    public java.io.InputStream getAsciiStream(int columnIndex) throws SQLException {
         return (java.io.InputStream)getObject(columnIndex);
     }
 
@@ -365,7 +382,8 @@ public class EmulatedResultSet implements ResultSet {
      * @deprecated use <code>getCharacterStream</code> in place of
      *              <code>getUnicodeStream</code>
      */
-    public java.io.InputStream getUnicodeStream(int columnIndex) {
+    @Override
+    public java.io.InputStream getUnicodeStream(int columnIndex) throws SQLException {
         return (java.io.InputStream)getObject(columnIndex);
     }
 
@@ -390,7 +408,8 @@ public class EmulatedResultSet implements ResultSet {
      *         <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.io.InputStream getBinaryStream(int columnIndex) {
+    @Override
+    public java.io.InputStream getBinaryStream(int columnIndex) throws SQLException {
         return (java.io.InputStream)getObject(columnIndex);
     }
 
@@ -408,7 +427,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public String getString(String columnName) {
+    @Override
+    public String getString(String columnName) throws SQLException {
         return (String)getObject(columnName);
     }
 
@@ -422,7 +442,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>false</code>
      * @exception SQLException if a database access error occurs
      */
-    public boolean getBoolean(String columnName) {
+    @Override
+    public boolean getBoolean(String columnName) throws SQLException {
         return ((Boolean)getObject(columnName)).booleanValue();
     }
 
@@ -436,7 +457,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public byte getByte(String columnName) {
+    @Override
+    public byte getByte(String columnName) throws SQLException {
         return ((Number)getObject(columnName)).byteValue();
     }
 
@@ -450,7 +472,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public short getShort(String columnName) {
+    @Override
+    public short getShort(String columnName) throws SQLException {
         return ((Number)getObject(columnName)).shortValue();
     }
 
@@ -464,7 +487,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public int getInt(String columnName) {
+    @Override
+    public int getInt(String columnName) throws SQLException {
         Number value = (Number)getObject(columnName);
         if (value == null) {
             return 0;
@@ -483,7 +507,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public long getLong(String columnName) {
+    @Override
+    public long getLong(String columnName) throws SQLException {
         Number value = (Number)getObject(columnName);
         if (value == null) {
             return 0;
@@ -502,7 +527,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public float getFloat(String columnName) {
+    @Override
+    public float getFloat(String columnName) throws SQLException {
         Number value = (Number)getObject(columnName);
         if (value == null) {
             return 0;
@@ -521,7 +547,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>0</code>
      * @exception SQLException if a database access error occurs
      */
-    public double getDouble(String columnName) {
+    @Override
+    public double getDouble(String columnName) throws SQLException {
         Number value = (Number)getObject(columnName);
         if (value == null) {
             return 0;
@@ -542,7 +569,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @deprecated
      */
-    public BigDecimal getBigDecimal(String columnName, int scale) {
+    @Override
+    public BigDecimal getBigDecimal(String columnName, int scale) throws SQLException {
         return (BigDecimal)getObject(columnName);
     }
 
@@ -557,7 +585,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public byte[] getBytes(String columnName) {
+    @Override
+    public byte[] getBytes(String columnName) throws SQLException {
         return (byte[])getObject(columnName);
     }
 
@@ -571,7 +600,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.sql.Date getDate(String columnName) {
+    @Override
+    public java.sql.Date getDate(String columnName) throws SQLException {
         java.util.Date date = (java.util.Date)getObject(columnName);
         if ((date != null) && (!(date instanceof java.sql.Date))) {
             date = new java.sql.Date(date.getTime());
@@ -590,7 +620,8 @@ public class EmulatedResultSet implements ResultSet {
      * the value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.sql.Time getTime(String columnName) {
+    @Override
+    public java.sql.Time getTime(String columnName) throws SQLException {
         return (java.sql.Time)getObject(columnName);
     }
 
@@ -604,7 +635,8 @@ public class EmulatedResultSet implements ResultSet {
      * value returned is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.sql.Timestamp getTimestamp(String columnName) {
+    @Override
+    public java.sql.Timestamp getTimestamp(String columnName) throws SQLException {
         return (java.sql.Timestamp)getObject(columnName);
     }
 
@@ -630,7 +662,8 @@ public class EmulatedResultSet implements ResultSet {
      * the value returned is <code>null</code>.
      * @exception SQLException if a database access error occurs
      */
-    public java.io.InputStream getAsciiStream(String columnName) {
+    @Override
+    public java.io.InputStream getAsciiStream(String columnName) throws SQLException {
         return (java.io.InputStream)getObject(columnName);
     }
 
@@ -661,7 +694,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @deprecated use <code>getCharacterStream</code> instead
      */
-    public java.io.InputStream getUnicodeStream(String columnName) {
+    @Override
+    public java.io.InputStream getUnicodeStream(String columnName) throws SQLException {
         return (java.io.InputStream)getObject(columnName);
     }
 
@@ -686,7 +720,8 @@ public class EmulatedResultSet implements ResultSet {
      * if the value is SQL <code>NULL</code>, the result is <code>null</code>
      * @exception SQLException if a database access error occurs
      */
-    public java.io.InputStream getBinaryStream(String columnName) {
+    @Override
+    public java.io.InputStream getBinaryStream(String columnName) throws SQLException {
         return (java.io.InputStream)getObject(columnName);
     }
 
@@ -717,7 +752,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs or this method is
      *            called on a closed result set
      */
-    public SQLWarning getWarnings() {
+    @Override
+    public SQLWarning getWarnings() throws SQLException {
         return null;
     }
 
@@ -729,7 +765,8 @@ public class EmulatedResultSet implements ResultSet {
      *
      * @exception SQLException if a database access error occurs
      */
-    public void clearWarnings() {
+    @Override
+    public void clearWarnings() throws SQLException {
     }
 
     /**
@@ -755,7 +792,8 @@ public class EmulatedResultSet implements ResultSet {
      * @return the SQL name for this <code>ResultSet</code> object's cursor
      * @exception SQLException if a database access error occurs
      */
-    public String getCursorName() {
+    @Override
+    public String getCursorName() throws SQLException {
         return null;
     }
 
@@ -766,7 +804,8 @@ public class EmulatedResultSet implements ResultSet {
      * @return the description of this <code>ResultSet</code> object's columns
      * @exception SQLException if a database access error occurs
      */
-    public ResultSetMetaData getMetaData() {
+    @Override
+    public ResultSetMetaData getMetaData() throws SQLException {
         return new EmulatedResultSetMetaData(this);
     }
 
@@ -796,7 +835,8 @@ public class EmulatedResultSet implements ResultSet {
      * @return a <code>java.lang.Object</code> holding the column value
      * @exception SQLException if a database access error occurs
      */
-    public Object getObject(int columnIndex) {
+    @Override
+    public Object getObject(int columnIndex) throws SQLException {
         return this.rows.get(this.index - 1).getValues().get(columnIndex - 1);
     }
 
@@ -826,7 +866,8 @@ public class EmulatedResultSet implements ResultSet {
      * @return a <code>java.lang.Object</code> holding the column value
      * @exception SQLException if a database access error occurs
      */
-    public Object getObject(String columnName) {
+    @Override
+    public Object getObject(String columnName) throws SQLException {
         return this.rows.get(this.index - 1).get(columnName);
     }
 
@@ -841,7 +882,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if the <code>ResultSet</code> object
      * does not contain <code>columnName</code> or a database access error occurs
      */
-    public int findColumn(String columnName) {
+    @Override
+    public int findColumn(String columnName) throws SQLException {
         return 0;
     }
 
@@ -861,7 +903,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public java.io.Reader getCharacterStream(int columnIndex) {
+    @Override
+    public java.io.Reader getCharacterStream(int columnIndex) throws SQLException {
         return (java.io.Reader)getObject(columnIndex);
     }
 
@@ -877,7 +920,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public java.io.Reader getCharacterStream(String columnName) {
+    @Override
+    public java.io.Reader getCharacterStream(String columnName) throws SQLException {
         return (java.io.Reader)getObject(columnName);
     }
 
@@ -893,7 +937,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public BigDecimal getBigDecimal(int columnIndex) {
+    @Override
+    public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
         return (BigDecimal)getObject(columnIndex);
     }
 
@@ -910,7 +955,8 @@ public class EmulatedResultSet implements ResultSet {
      * @since 1.2
      *
      */
-    public BigDecimal getBigDecimal(String columnName) {
+    @Override
+    public BigDecimal getBigDecimal(String columnName) throws SQLException {
         return (BigDecimal)getObject(columnName);
     }
 
@@ -928,7 +974,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public boolean isBeforeFirst() {
+    @Override
+    public boolean isBeforeFirst() throws SQLException {
         return this.index == 0;
     }
 
@@ -942,7 +989,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public boolean isAfterLast() {
+    @Override
+    public boolean isAfterLast() throws SQLException {
         return (this.index - 1) == this.rows.size();
     }
 
@@ -955,7 +1003,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public boolean isFirst() {
+    @Override
+    public boolean isFirst() throws SQLException {
         return this.index == 1;
     }
 
@@ -972,7 +1021,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public boolean isLast() {
+    @Override
+    public boolean isLast() throws SQLException {
         return this.index == this.rows.size();
     }
 
@@ -985,7 +1035,8 @@ public class EmulatedResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      * @since 1.2
      */
-    public void beforeFirst() {
+    @Override
+    public void beforeFirst() throws SQLException {
         this.index = 0;
     }
 
@@ -997,7 +1048,8 @@ public class EmulatedResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      * @since 1.2
      */
-    public void afterLast() {
+    @Override
+    public void afterLast() throws SQLException {
         this.index = this.rows.size() + 1;
     }
 
@@ -1011,7 +1063,8 @@ public class EmulatedResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      * @since 1.2
      */
-    public boolean first() {
+    @Override
+    public boolean first() throws SQLException {
         this.index = 1;
         return true;
     }
@@ -1026,7 +1079,8 @@ public class EmulatedResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      * @since 1.2
      */
-    public boolean last() {
+    @Override
+    public boolean last() throws SQLException {
         this.index = this.rows.size();
         return true;
     }
@@ -1039,7 +1093,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public int getRow() {
+    @Override
+    public int getRow() throws SQLException {
         return index;
     }
 
@@ -1077,7 +1132,8 @@ public class EmulatedResultSet implements ResultSet {
      * occurs, or the result set type is <code>TYPE_FORWARD_ONLY</code>
      * @since 1.2
      */
-    public boolean absolute(int row) {
+    @Override
+    public boolean absolute(int row) throws SQLException {
         this.index = row;
         return true;
     }
@@ -1104,7 +1160,8 @@ public class EmulatedResultSet implements ResultSet {
      *            <code>TYPE_FORWARD_ONLY</code>
      * @since 1.2
      */
-    public boolean relative(int rows) {
+    @Override
+    public boolean relative(int rows) throws SQLException {
         this.index = index + rows;
         return true;
     }
@@ -1119,7 +1176,8 @@ public class EmulatedResultSet implements ResultSet {
      * occurs or the result set type is <code>TYPE_FORWARD_ONLY</code>
      * @since 1.2
      */
-    public boolean previous() {
+    @Override
+    public boolean previous() throws SQLException {
         this.index--;
         return true;
     }
@@ -1147,7 +1205,8 @@ public class EmulatedResultSet implements ResultSet {
      * @see Statement#setFetchDirection
      * @see #getFetchDirection
      */
-    public void setFetchDirection(int direction) {
+    @Override
+    public void setFetchDirection(int direction) throws SQLException {
     }
 
     /**
@@ -1159,7 +1218,8 @@ public class EmulatedResultSet implements ResultSet {
      * @since 1.2
      * @see #setFetchDirection
      */
-    public int getFetchDirection() {
+    @Override
+    public int getFetchDirection() throws SQLException {
         return 0;
     }
 
@@ -1175,11 +1235,12 @@ public class EmulatedResultSet implements ResultSet {
      *
      * @param rows the number of rows to fetch
      * @exception SQLException if a database access error occurs or the
-     * condition <code>0 <= rows <= Statement.getMaxRows()</code> is not satisfied
+     * condition <code>0 &lt;= rows &lt;= Statement.getMaxRows()</code> is not satisfied
      * @since 1.2
      * @see #getFetchSize
      */
-    public void setFetchSize(int rows) {
+    @Override
+    public void setFetchSize(int rows) throws SQLException {
     }
 
     /**
@@ -1191,7 +1252,8 @@ public class EmulatedResultSet implements ResultSet {
      * @since 1.2
      * @see #setFetchSize
      */
-    public int getFetchSize() {
+    @Override
+    public int getFetchSize() throws SQLException {
         return 0;
     }
 
@@ -1206,7 +1268,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public int getType() {
+    @Override
+    public int getType() throws SQLException {
         return 0;
     }
 
@@ -1221,7 +1284,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public int getConcurrency() {
+    @Override
+    public int getConcurrency() throws SQLException {
         return 0;
     }
 
@@ -1239,7 +1303,8 @@ public class EmulatedResultSet implements ResultSet {
      * @see DatabaseMetaData#updatesAreDetected
      * @since 1.2
      */
-    public boolean rowUpdated() {
+    @Override
+    public boolean rowUpdated() throws SQLException {
         return false;
     }
 
@@ -1255,7 +1320,8 @@ public class EmulatedResultSet implements ResultSet {
      * @see DatabaseMetaData#insertsAreDetected
      * @since 1.2
      */
-    public boolean rowInserted() {
+    @Override
+    public boolean rowInserted() throws SQLException {
         return false;
     }
 
@@ -1272,7 +1338,8 @@ public class EmulatedResultSet implements ResultSet {
      * @see DatabaseMetaData#deletesAreDetected
      * @since 1.2
      */
-    public boolean rowDeleted() {
+    @Override
+    public boolean rowDeleted() throws SQLException {
         return false;
     }
 
@@ -1288,7 +1355,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateNull(int columnIndex) {
+    @Override
+    public void updateNull(int columnIndex) throws SQLException {
     }
 
     /**
@@ -1303,7 +1371,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateBoolean(int columnIndex, boolean x) {
+    @Override
+    public void updateBoolean(int columnIndex, boolean x) throws SQLException {
     }
 
     /**
@@ -1319,7 +1388,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateByte(int columnIndex, byte x) {
+    @Override
+    public void updateByte(int columnIndex, byte x) throws SQLException {
     }
 
     /**
@@ -1334,7 +1404,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateShort(int columnIndex, short x) {
+    @Override
+    public void updateShort(int columnIndex, short x) throws SQLException {
     }
 
     /**
@@ -1349,7 +1420,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateInt(int columnIndex, int x) {
+    @Override
+    public void updateInt(int columnIndex, int x) throws SQLException {
     }
 
     /**
@@ -1364,7 +1436,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateLong(int columnIndex, long x) {
+    @Override
+    public void updateLong(int columnIndex, long x) throws SQLException {
     }
 
     /**
@@ -1379,7 +1452,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateFloat(int columnIndex, float x) {
+    @Override
+    public void updateFloat(int columnIndex, float x) throws SQLException {
     }
 
     /**
@@ -1394,7 +1468,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateDouble(int columnIndex, double x) {
+    @Override
+    public void updateDouble(int columnIndex, double x) throws SQLException {
     }
 
     /**
@@ -1410,7 +1485,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateBigDecimal(int columnIndex, BigDecimal x) {
+    @Override
+    public void updateBigDecimal(int columnIndex, BigDecimal x) throws SQLException {
     }
 
     /**
@@ -1425,7 +1501,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateString(int columnIndex, String x) {
+    @Override
+    public void updateString(int columnIndex, String x) throws SQLException {
     }
 
     /**
@@ -1440,7 +1517,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateBytes(int columnIndex, byte[] x) {
+    @Override
+    public void updateBytes(int columnIndex, byte[] x) throws SQLException {
     }
 
     /**
@@ -1455,7 +1533,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateDate(int columnIndex, java.sql.Date x) {
+    @Override
+    public void updateDate(int columnIndex, java.sql.Date x) throws SQLException {
     }
 
     /**
@@ -1470,7 +1549,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateTime(int columnIndex, java.sql.Time x) {
+    @Override
+    public void updateTime(int columnIndex, java.sql.Time x) throws SQLException {
     }
 
     /**
@@ -1486,7 +1566,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateTimestamp(int columnIndex, java.sql.Timestamp x) {
+    @Override
+    public void updateTimestamp(int columnIndex, java.sql.Timestamp x) throws SQLException {
     }
 
     /**
@@ -1502,7 +1583,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateAsciiStream(int columnIndex, java.io.InputStream x, int length) {
+    @Override
+    public void updateAsciiStream(int columnIndex, java.io.InputStream x, int length) throws SQLException {
     }
 
     /**
@@ -1518,7 +1600,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateBinaryStream(int columnIndex, java.io.InputStream x, int length) {
+    @Override
+    public void updateBinaryStream(int columnIndex, java.io.InputStream x, int length) throws SQLException {
     }
 
     /**
@@ -1534,7 +1617,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateCharacterStream(int columnIndex, java.io.Reader x, int length) {
+    @Override
+    public void updateCharacterStream(int columnIndex, java.io.Reader x, int length) throws SQLException {
     }
 
     /**
@@ -1553,7 +1637,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateObject(int columnIndex, Object x, int scale) {
+    @Override
+    public void updateObject(int columnIndex, Object x, int scale) throws SQLException {
     }
 
     /**
@@ -1568,7 +1653,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateObject(int columnIndex, Object x) {
+    @Override
+    public void updateObject(int columnIndex, Object x) throws SQLException {
     }
 
     /**
@@ -1582,7 +1668,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateNull(String columnName) {
+    @Override
+    public void updateNull(String columnName) throws SQLException {
     }
 
     /**
@@ -1597,7 +1684,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateBoolean(String columnName, boolean x) {
+    @Override
+    public void updateBoolean(String columnName, boolean x) throws SQLException {
     }
 
     /**
@@ -1612,7 +1700,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateByte(String columnName, byte x) {
+    @Override
+    public void updateByte(String columnName, byte x) throws SQLException {
     }
 
     /**
@@ -1627,7 +1716,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateShort(String columnName, short x) {
+    @Override
+    public void updateShort(String columnName, short x) throws SQLException {
     }
 
     /**
@@ -1642,7 +1732,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateInt(String columnName, int x) {
+    @Override
+    public void updateInt(String columnName, int x) throws SQLException {
     }
 
     /**
@@ -1657,7 +1748,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateLong(String columnName, long x) {
+    @Override
+    public void updateLong(String columnName, long x) throws SQLException {
     }
 
     /**
@@ -1672,7 +1764,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateFloat(String columnName, float x) {
+    @Override
+    public void updateFloat(String columnName, float x) throws SQLException {
     }
 
     /**
@@ -1687,7 +1780,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateDouble(String columnName, double x) {
+    @Override
+    public void updateDouble(String columnName, double x) throws SQLException {
     }
 
     /**
@@ -1703,7 +1797,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateBigDecimal(String columnName, BigDecimal x) {
+    @Override
+    public void updateBigDecimal(String columnName, BigDecimal x) throws SQLException {
     }
 
     /**
@@ -1718,7 +1813,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateString(String columnName, String x) {
+    @Override
+    public void updateString(String columnName, String x) throws SQLException {
     }
 
     /**
@@ -1734,7 +1830,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateBytes(String columnName, byte[] x) {
+    @Override
+    public void updateBytes(String columnName, byte[] x) throws SQLException {
     }
 
     /**
@@ -1749,7 +1846,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateDate(String columnName, java.sql.Date x) {
+    @Override
+    public void updateDate(String columnName, java.sql.Date x) throws SQLException {
     }
 
     /**
@@ -1764,7 +1862,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateTime(String columnName, java.sql.Time x) {
+    @Override
+    public void updateTime(String columnName, java.sql.Time x) throws SQLException {
     }
 
     /**
@@ -1780,7 +1879,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateTimestamp(String columnName, java.sql.Timestamp x) {
+    @Override
+    public void updateTimestamp(String columnName, java.sql.Timestamp x) throws SQLException {
     }
 
     /**
@@ -1796,7 +1896,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateAsciiStream(String columnName, java.io.InputStream x, int length) {
+    @Override
+    public void updateAsciiStream(String columnName, java.io.InputStream x, int length) throws SQLException {
     }
 
     /**
@@ -1812,7 +1913,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateBinaryStream(String columnName, java.io.InputStream x, int length) {
+    @Override
+    public void updateBinaryStream(String columnName, java.io.InputStream x, int length) throws SQLException {
     }
 
     /**
@@ -1829,7 +1931,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateCharacterStream(String columnName, java.io.Reader reader, int length) {
+    @Override
+    public void updateCharacterStream(String columnName, java.io.Reader reader, int length) throws SQLException {
     }
 
     /**
@@ -1848,7 +1951,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateObject(String columnName, Object x, int scale) {
+    @Override
+    public void updateObject(String columnName, Object x, int scale) throws SQLException {
     }
 
     /**
@@ -1863,7 +1967,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public void updateObject(String columnName, Object x) {
+    @Override
+    public void updateObject(String columnName, Object x) throws SQLException {
     }
 
     /**
@@ -1877,7 +1982,8 @@ public class EmulatedResultSet implements ResultSet {
      * the insert row have been given a value
      * @since 1.2
      */
-    public void insertRow() {
+    @Override
+    public void insertRow() throws SQLException {
     }
 
     /**
@@ -1889,7 +1995,8 @@ public class EmulatedResultSet implements ResultSet {
      * if this method is called when the cursor is on the insert row
      * @since 1.2
      */
-    public void updateRow() {
+    @Override
+    public void updateRow() throws SQLException {
     }
 
     /**
@@ -1901,7 +2008,8 @@ public class EmulatedResultSet implements ResultSet {
      * or if this method is called when the cursor is on the insert row
      * @since 1.2
      */
-    public void deleteRow() {
+    @Override
+    public void deleteRow() throws SQLException {
     }
 
     /**
@@ -1929,7 +2037,8 @@ public class EmulatedResultSet implements ResultSet {
      * occurs or if this method is called when the cursor is on the insert row
      * @since 1.2
      */
-    public void refreshRow() {
+    @Override
+    public void refreshRow() throws SQLException {
     }
 
     /**
@@ -1947,7 +2056,8 @@ public class EmulatedResultSet implements ResultSet {
      *            on the insert row
      * @since 1.2
      */
-    public void cancelRowUpdates() {
+    @Override
+    public void cancelRowUpdates() throws SQLException {
     }
 
     /**
@@ -1971,7 +2081,8 @@ public class EmulatedResultSet implements ResultSet {
      * or the result set is not updatable
      * @since 1.2
      */
-    public void moveToInsertRow() {
+    @Override
+    public void moveToInsertRow() throws SQLException {
     }
 
     /**
@@ -1983,7 +2094,8 @@ public class EmulatedResultSet implements ResultSet {
      * or the result set is not updatable
      * @since 1.2
      */
-    public void moveToCurrentRow() {
+    @Override
+    public void moveToCurrentRow() throws SQLException {
     }
 
     /**
@@ -1999,7 +2111,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Statement getStatement() {
+    @Override
+    public Statement getStatement() throws SQLException {
         return null;
     }
 
@@ -2021,7 +2134,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Object getObject(int i, java.util.Map map) {
+    @Override
+    public Object getObject(int i, java.util.Map map) throws SQLException {
         return getObject(i);
     }
 
@@ -2036,7 +2150,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Ref getRef(int i) {
+    @Override
+    public Ref getRef(int i) throws SQLException {
         return null;
     }
 
@@ -2051,7 +2166,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Blob getBlob(int i) {
+    @Override
+    public Blob getBlob(int i) throws SQLException {
         return (Blob)getObject(i);
     }
 
@@ -2066,7 +2182,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Clob getClob(int i) {
+    @Override
+    public Clob getClob(int i) throws SQLException {
         return (Clob)getObject(i);
     }
 
@@ -2081,7 +2198,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Array getArray(int i) {
+    @Override
+    public Array getArray(int i) throws SQLException {
         return null;
     }
 
@@ -2102,7 +2220,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Object getObject(String colName, java.util.Map map) {
+    @Override
+    public Object getObject(String colName, java.util.Map map) throws SQLException {
         return getObject(colName);
     }
 
@@ -2117,7 +2236,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Ref getRef(String colName) {
+    @Override
+    public Ref getRef(String colName) throws SQLException {
         return null;
     }
 
@@ -2132,7 +2252,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Blob getBlob(String colName) {
+    @Override
+    public Blob getBlob(String colName) throws SQLException {
         return (Blob)getObject(colName);
     }
 
@@ -2147,7 +2268,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Clob getClob(String colName) {
+    @Override
+    public Clob getClob(String colName) throws SQLException {
         return (Clob)getObject(colName);
     }
 
@@ -2162,7 +2284,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public Array getArray(String colName) {
+    @Override
+    public Array getArray(String colName) throws SQLException {
         return null;
     }
 
@@ -2183,7 +2306,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public java.sql.Date getDate(int columnIndex, Calendar cal) {
+    @Override
+    public java.sql.Date getDate(int columnIndex, Calendar cal) throws SQLException {
         return getDate(columnIndex);
     }
 
@@ -2204,7 +2328,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public java.sql.Date getDate(String columnName, Calendar cal) {
+    @Override
+    public java.sql.Date getDate(String columnName, Calendar cal) throws SQLException {
         return getDate(columnName);
     }
 
@@ -2225,7 +2350,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public java.sql.Time getTime(int columnIndex, Calendar cal) {
+    @Override
+    public java.sql.Time getTime(int columnIndex, Calendar cal) throws SQLException {
         return null;
     }
 
@@ -2246,7 +2372,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public java.sql.Time getTime(String columnName, Calendar cal) {
+    @Override
+    public java.sql.Time getTime(String columnName, Calendar cal) throws SQLException {
         return null;
     }
 
@@ -2267,7 +2394,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public java.sql.Timestamp getTimestamp(int columnIndex, Calendar cal) {
+    @Override
+    public java.sql.Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
         return getTimestamp(columnIndex);
     }
 
@@ -2288,7 +2416,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.2
      */
-    public java.sql.Timestamp getTimestamp(String columnName, Calendar cal) {
+    @Override
+    public java.sql.Timestamp getTimestamp(String columnName, Calendar cal) throws SQLException {
         return getTimestamp(columnName);
     }
 
@@ -2307,7 +2436,8 @@ public class EmulatedResultSet implements ResultSet {
      *            or if a URL is malformed
      * @since 1.4
      */
-    public java.net.URL getURL(int columnIndex) {
+    @Override
+    public java.net.URL getURL(int columnIndex) throws SQLException {
         return null;
     }
 
@@ -2324,7 +2454,8 @@ public class EmulatedResultSet implements ResultSet {
      *            or if a URL is malformed
      * @since 1.4
      */
-    public java.net.URL getURL(String columnName) {
+    @Override
+    public java.net.URL getURL(String columnName) throws SQLException {
         return null;
     }
 
@@ -2340,7 +2471,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void updateRef(int columnIndex, java.sql.Ref x) {
+    @Override
+    public void updateRef(int columnIndex, java.sql.Ref x) throws SQLException {
     }
 
     /**
@@ -2355,7 +2487,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void updateRef(String columnName, java.sql.Ref x) {
+    @Override
+    public void updateRef(String columnName, java.sql.Ref x) throws SQLException {
     }
 
     /**
@@ -2370,7 +2503,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void updateBlob(int columnIndex, java.sql.Blob x) {
+    @Override
+    public void updateBlob(int columnIndex, java.sql.Blob x) throws SQLException {
     }
 
     /**
@@ -2385,7 +2519,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void updateBlob(String columnName, java.sql.Blob x) {
+    @Override
+    public void updateBlob(String columnName, java.sql.Blob x) throws SQLException {
     }
 
     /**
@@ -2400,7 +2535,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void updateClob(int columnIndex, java.sql.Clob x) {
+    @Override
+    public void updateClob(int columnIndex, java.sql.Clob x) throws SQLException {
     }
 
     /**
@@ -2415,7 +2551,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void updateClob(String columnName, java.sql.Clob x) {
+    @Override
+    public void updateClob(String columnName, java.sql.Clob x) throws SQLException {
     }
 
     /**
@@ -2430,7 +2567,8 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void updateArray(int columnIndex, java.sql.Array x) {
+    @Override
+    public void updateArray(int columnIndex, java.sql.Array x) throws SQLException {
     }
 
     /**
@@ -2445,175 +2583,228 @@ public class EmulatedResultSet implements ResultSet {
      * @exception SQLException if a database access error occurs
      * @since 1.4
      */
-    public void updateArray(String columnName, java.sql.Array x) {
+    @Override
+    public void updateArray(String columnName, java.sql.Array x) throws SQLException {
     }
 
     // 236070: Methods introduced in JDK 1.6
+    @Override
     public int getHoldability()  throws SQLException {
         return 0;
     }
 
+    @Override
     public Reader getNCharacterStream(int columnIndex)  throws SQLException {
         return null;
     }
 
+    @Override
     public Reader getNCharacterStream(String columnLabel)  throws SQLException {
         return null;
     }
 
+    @Override
     public NClob getNClob(int columnIndex)  throws SQLException {
         return null;
     }
 
+   @Override
    public NClob getNClob(String columnLabel)  throws SQLException {
         return null;
     }
 
+   @Override
    public String getNString(int columnIndex)  throws SQLException {
        return null;
    }
 
+   @Override
    public String getNString(String columnLabel)  throws SQLException {
        return null;
    }
 
+   @Override
    public RowId getRowId(int columnIndex)  throws SQLException {
        return null;
    }
 
+   @Override
    public RowId getRowId(String columnLabel)  throws SQLException {
        return null;
    }
 
+   @Override
    public SQLXML getSQLXML(int columnIndex)  throws SQLException {
        return null;
    }
 
+   @Override
    public SQLXML getSQLXML(String columnLabel)  throws SQLException {
        return null;
    }
 
+   @Override
    public boolean isClosed()  throws SQLException {
        return false;
    }
 
+    @Override
    public void updateAsciiStream(int columnIndex, InputStream stream, long length)  throws SQLException {
    }
 
+    @Override
    public void updateAsciiStream(int columnIndex, InputStream stream)  throws SQLException {
    }
 
+    @Override
    public void updateAsciiStream(String columnLabel, InputStream stream, long length)  throws SQLException {
    }
 
+    @Override
    public void updateAsciiStream(String columnLabel, InputStream stream)  throws SQLException {
    }
 
+    @Override
    public void updateBlob(int columnIndex, InputStream stream, long length)  throws SQLException {
    }
 
+    @Override
    public void updateBlob(int columnIndex, InputStream stream)  throws SQLException {
    }
 
+    @Override
    public void updateBlob(String columnLabel, InputStream stream, long length)  throws SQLException {
    }
 
+    @Override
    public void updateBlob(String columnLabel, InputStream stream)  throws SQLException {
    }
 
+    @Override
    public void updateBinaryStream(int columnIndex, InputStream stream, long length)  throws SQLException {
    }
 
+    @Override
    public void updateBinaryStream(int columnIndex, InputStream stream)  throws SQLException {
    }
 
+    @Override
    public void updateBinaryStream(String columnLabel, InputStream stream, long length)  throws SQLException {
    }
 
+    @Override
    public void updateBinaryStream(String columnLabel, InputStream stream)  throws SQLException {
    }
 
+    @Override
    public void updateCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {
    }
 
+    @Override
    public void updateCharacterStream(int columnIndex, Reader reader)  throws SQLException {
    }
 
+    @Override
    public void updateCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {
    }
 
+    @Override
    public void updateCharacterStream(String columnLabel, Reader reader)  throws SQLException {
    }
 
+    @Override
    public void updateClob(int columnIndex, Reader reader, long length)  throws SQLException {
    }
 
+    @Override
    public void updateClob(int columnIndex, Reader reader)  throws SQLException {
    }
 
+    @Override
    public void updateClob(String columnLabel, Reader reader, long length)  throws SQLException {
    }
 
+    @Override
    public void updateClob(String columnLabel, Reader reader)  throws SQLException {
    }
 
+    @Override
    public void updateNCharacterStream(int columnIndex, Reader reader, long length)  throws SQLException {
    }
 
+    @Override
    public void updateNCharacterStream(int columnIndex, Reader reader)  throws SQLException {
    }
 
+    @Override
    public void updateNCharacterStream(String columnLabel, Reader reader, long length)  throws SQLException {
    }
 
+    @Override
    public void updateNCharacterStream(String columnLabel, Reader reader)  throws SQLException {
    }
 
+    @Override
    public void updateNClob(int columnIndex, Reader reader, long length)  throws SQLException {
    }
 
+    @Override
    public void updateNClob(int columnIndex, Reader reader)  throws SQLException {
    }
 
+    @Override
    public void updateNClob(String columnLabel, Reader reader, long length)  throws SQLException {
    }
 
+    @Override
    public void updateNClob(String columnLabel, Reader reader)  throws SQLException {
    }
 
+    @Override
    public void updateNClob(int columnIndex, NClob nclob)  throws SQLException {
    }
 
+    @Override
    public void updateNClob(String columnLabel, NClob nclob)  throws SQLException {
    }
 
+    @Override
    public void updateNString(int columnIndex, String nString)  throws SQLException {
    }
 
+    @Override
    public void updateNString(String columnLabel, String nString)  throws SQLException {
    }
 
+    @Override
    public void updateSQLXML(String columnLabel, SQLXML sqlxml)  throws SQLException {
    }
 
+    @Override
    public void updateSQLXML(int columnIndex, SQLXML sqlxml)  throws SQLException {
    }
 
+    @Override
    public void updateRowId(int columnIndex, RowId rowid)  throws SQLException {
    }
 
+    @Override
    public void updateRowId(String columnLabel, RowId rowid)  throws SQLException {
    }
 
+    @Override
    public boolean isWrapperFor(Class<?> iFace) throws SQLException{
        return false;
    }
 
+    @Override
    public <T>T unwrap(Class<T> iFace)  throws SQLException {
        return iFace.cast(this);
    }
 
+    @Override
    public <T> T getObject(String columnLabel, Class<T> type){return null;}
 
+    @Override
    public <T> T getObject(int columnIndex, Class<T> type){return null;}
 }

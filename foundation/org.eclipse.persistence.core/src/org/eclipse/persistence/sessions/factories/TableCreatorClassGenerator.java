@@ -30,7 +30,7 @@ import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.tools.schemaframework.FieldDefinition;
 import org.eclipse.persistence.tools.schemaframework.ForeignKeyConstraint;
 import org.eclipse.persistence.tools.schemaframework.TableCreator;
-import org.eclipse.persistence.tools.schemaframework.TableDefinition;;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
 /**
  * <p><b>Purpose</b>: Allow for a class storing a TopLink table creator's tables (meta-data) to be generated.

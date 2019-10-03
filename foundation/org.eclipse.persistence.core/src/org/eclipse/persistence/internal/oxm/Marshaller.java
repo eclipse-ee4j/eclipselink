@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -253,14 +253,14 @@ public abstract class Marshaller<
          *
          * @param target The object that was marshalled.
          */
-        public void afterMarshal(Object target);
+        void afterMarshal(Object target);
 
         /**
          * This event will be called before an object is marshalled.
          *
          * @param target The object that will be marshalled.
          */
-        public void beforeMarshal(Object target);
+        void beforeMarshal(Object target);
 
     }
 

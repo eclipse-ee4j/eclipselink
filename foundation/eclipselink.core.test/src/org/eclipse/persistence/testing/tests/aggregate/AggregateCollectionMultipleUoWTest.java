@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,7 @@ public class AggregateCollectionMultipleUoWTest extends WriteObjectTest {
         List customers = AgentBuilderHelper.getCustomers(object);
         Customer customer1 = (Customer)customers.get(0);
         customer1.setName("Vince Carter");
-        customer1.removeDependant((Dependant)customer1.getDependants().lastElement());
+        customer1.removeDependant(customer1.getDependants().lastElement());
 
         List houses = AgentBuilderHelper.getHouses(object);
         House house2 = (House)houses.get(houses.size()-1);
@@ -67,7 +67,7 @@ public class AggregateCollectionMultipleUoWTest extends WriteObjectTest {
         AgentBuilderHelper.setFirstName(object, "Johnie");
         Customer customer1 = (Customer)AgentBuilderHelper.getCustomers(object).get(2);
         customer1.setName("James");
-        customer1.removeDependant((Dependant)customer1.getDependants().firstElement());
+        customer1.removeDependant(customer1.getDependants().firstElement());
         customer1.addDependant(new Dependant("Stevenson", 14));
         AgentBuilderHelper.removeHouse(object, (House)AgentBuilderHelper.getHouses(object).get(AgentBuilderHelper.getHouses(object).size()-1));
         House newHouse = new House();

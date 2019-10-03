@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,6 @@ import org.eclipse.persistence.indirection.ValueHolder;
 import org.eclipse.persistence.internal.dynamic.DynamicEntityImpl.PropertyWrapper;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.indirection.BasicIndirectionPolicy;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
@@ -84,7 +83,7 @@ public class DynamicPropertiesInitializatonPolicy {
                 value = new ValueHolder(value);
             }
             else if (refMapping.isCollectionMapping()) {
-                value = ((CollectionMapping)refMapping).getContainerPolicy().containerInstance();
+                value = refMapping.getContainerPolicy().containerInstance();
             }
         }
         else if (mapping.isAggregateObjectMapping()) {

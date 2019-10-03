@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +46,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 
 /**
  * INTERNAL:
- * <b>Purpose<b>: Used as an abstraction of a datasource invocation.
+ * <b>Purpose</b>: Used as an abstraction of a datasource invocation.
  *
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
@@ -107,7 +108,7 @@ public abstract class DatasourceCall implements Call {
      */
     public List<Integer> getParameterTypes() {
         if (parameterTypes == null) {
-            parameterTypes = new ArrayList<Integer>();
+            parameterTypes = new ArrayList<>();
         }
         return parameterTypes;
     }
@@ -141,7 +142,7 @@ public abstract class DatasourceCall implements Call {
         return this.returnType == RETURN_MANY_ROWS;
     }
 
-    public boolean isOutputParameterType(Integer parameterType) {
+    public static boolean isOutputParameterType(Integer parameterType) {
         return (parameterType == OUT) || (parameterType == INOUT) || (parameterType == OUT_CURSOR);
     }
 
@@ -193,7 +194,7 @@ public abstract class DatasourceCall implements Call {
         try {
             return super.clone();
         } catch (CloneNotSupportedException exception) {
-            ;//Do nothing
+            //Do nothing
         }
 
         return null;
@@ -948,7 +949,7 @@ public abstract class DatasourceCall implements Call {
     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         if (parameterTypes !=null) {
-            List<Integer> newParameterTypes = new ArrayList<Integer>(parameterTypes.size());
+            List<Integer> newParameterTypes = new ArrayList<>(parameterTypes.size());
             for (Integer type: parameterTypes){
                 if (LITERAL.equals(type)) {
                     newParameterTypes.add(LITERAL);

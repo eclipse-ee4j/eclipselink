@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,11 @@
 //     tware - updates for new SessionProfiling API
 package org.eclipse.persistence.tools.profiler.oracle;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.persistence.internal.localization.DMSLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -28,18 +31,26 @@ import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.server.ServerSession;
 
-import oracle.dms.instrument.*;
-import oracle.dms.spy.*;
+import oracle.dms.instrument.DMSConsole;
+import oracle.dms.instrument.Event;
+import oracle.dms.instrument.Noun;
+import oracle.dms.instrument.PhaseEvent;
+import oracle.dms.instrument.Sensor;
+import oracle.dms.instrument.State;
+import oracle.dms.spy.ConfigurationError;
+import oracle.dms.spy.PublisherError;
+import oracle.dms.spy.Spy;
 
 /**
  * <b>Purpose</b>: Define the interface of EclipseLink profiler for using DMS gate.<p>
  * <b>Description</b>: A mechanism used to provide a link for EclipseLink performance profiling by using the DMS tool.
  *                     The predefined EclipseLink metrics will be monitored by using DMS sensors. EclipseLink library
  *                     instrumentation will be done by inserting DMS calls for the purpose of measuring its performance<p>
- * <b>Responsibilities</b>:<ul>
- * <li> Define the EclipseLink metrics.
- * <li> Provide APIs to monitor the sensors at runtime.
- * <li> Change DMS sensor weight at runtime
+ * <b>Responsibilities</b>:
+ * <ul>
+ * <li> Define the EclipseLink metrics.</li>
+ * <li> Provide APIs to monitor the sensors at runtime.</li>
+ * <li> Change DMS sensor weight at runtime</li>
  * </ul>
  * @since TopLink 10.1.3
  */
@@ -329,7 +340,7 @@ public class DMSPerformanceProfiler implements Serializable, Cloneable, SessionP
 
     /**
      * INTERNAL:
-     * Look for sensor for the name: TopLink_<sessionName>_<domainClass>_<queryClass>_<queryName>(if exist)_<operationName>(if exist).
+     * Look for sensor for the name: TopLink_&lt;sessionName&gt;_&lt;domainClass&gt;_&lt;queryClass&gt;_&lt;queryName&gt;(if exist)_&lt;operationName&gt;(if exist).
      * If not found, look for the noun the sensor should be built on.  If the noun is not found, create a new one.  Create the sensor
      * based on the noun.
      */

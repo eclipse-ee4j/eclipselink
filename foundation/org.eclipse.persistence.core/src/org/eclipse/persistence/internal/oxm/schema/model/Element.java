@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ public final class Element extends SimpleComponent {
     private int totalDigits;
     private int fractionDigits;
     private String pattern;
-    private List<String> patterns = new ArrayList<String>();
+    private List<String> patterns = new ArrayList<>();
     private int length;
     private int minLength;
     private int maxLength;

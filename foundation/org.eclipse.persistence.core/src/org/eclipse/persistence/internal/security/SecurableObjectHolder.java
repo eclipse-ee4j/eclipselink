@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,14 +19,12 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 /**
  * Holder of a SecurableObject. Securable objects should not be held onto
  * directly, instead they should be accessed via this holder.
  *
  * @author Guy Pelletier
- * @date June 26, 2003
  */
 public class SecurableObjectHolder {
 

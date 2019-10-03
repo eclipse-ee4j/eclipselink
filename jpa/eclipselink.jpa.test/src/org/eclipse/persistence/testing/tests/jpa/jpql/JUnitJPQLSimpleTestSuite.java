@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,7 +105,8 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleBetweenTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleConcatTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleConcatTestWithParameters"));
-        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleConcatTestWithConstants1"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleConcatTestWithConstantsLiteralSecond"));
+        suite.addTest(new JUnitJPQLSimpleTestSuite("simpleConcatTestWithConstantsLiteralFirst"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleThreeArgConcatTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleDistinctTest"));
         suite.addTest(new JUnitJPQLSimpleTestSuite("simpleDistinctNullTest"));
@@ -531,7 +532,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
 
     //Test case for concat function with constants in EJBQL
 
-    public void simpleConcatTestWithConstants1() {
+    public void simpleConcatTestWithConstantsLiteralSecond() {
         EntityManager em = createEntityManager();
 
         Employee emp = (Employee)(getServerSession().readAllObjects(Employee.class).firstElement());
@@ -555,6 +556,36 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "CONCAT(emp.firstName,\"Smith\") LIKE ";
         ejbqlString = ejbqlString + "\"" + partOne + "Smith\"";
+
+        List result = em.createQuery(ejbqlString).getResultList();
+
+        Assert.assertTrue("Concat test with constraints failed", comparer.compareObjects(result, expectedResult));
+    }
+
+    public void simpleConcatTestWithConstantsLiteralFirst() {
+        EntityManager em = createEntityManager();
+
+        Employee emp = (Employee)(getServerSession().readAllObjects(Employee.class).firstElement());
+
+        String partOne;
+        String ejbqlString;
+
+        partOne = emp.getFirstName();
+
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression whereClause = builder.literal("'Smith'").concat(builder.get("firstName")).like("Smith" + partOne);
+
+        ReadAllQuery raq = new ReadAllQuery();
+        raq.setReferenceClass(Employee.class);
+        raq.setSelectionCriteria(whereClause);
+
+        Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
+
+        clearCache();
+
+        ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
+        ejbqlString = ejbqlString + "CONCAT(\"Smith\",emp.firstName) LIKE ";
+        ejbqlString = ejbqlString + "\"Smith"+ partOne + "\"";
 
         List result = em.createQuery(ejbqlString).getResultList();
 

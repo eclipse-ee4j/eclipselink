@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public interface EISCollectionChangeRecord extends ChangeRecord {
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public List<ObjectChangeSet> getAdds();
+    List<ObjectChangeSet> getAdds();
 
     /**
      * <p>
@@ -42,7 +42,7 @@ public interface EISCollectionChangeRecord extends ChangeRecord {
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public List getChangedMapKeys();
+    List getChangedMapKeys();
 
     /**
      * ADVANCED:
@@ -50,11 +50,11 @@ public interface EISCollectionChangeRecord extends ChangeRecord {
      * The contents of this collection is determined by the mapping that
      * populated it
      */
-    public List<ObjectChangeSet> getRemoves();
+    List<ObjectChangeSet> getRemoves();
 
     /**
      * ADVANCED:
      * Return whether any changes have been recorded with the change record.
      */
-    public boolean hasChanges();
+    boolean hasChanges();
 }

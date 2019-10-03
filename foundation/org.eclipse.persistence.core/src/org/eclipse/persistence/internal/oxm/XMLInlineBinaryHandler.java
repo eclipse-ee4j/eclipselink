@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,14 +77,14 @@ public class XMLInlineBinaryHandler extends org.eclipse.persistence.internal.oxm
        CoreContainerPolicy cp = null;
        if(isCollection) {
            isSwaRef = ((BinaryDataCollectionMapping)mapping).isSwaRef();
-           field = (Field)((BinaryDataCollectionMapping)mapping).getField();
+           field = (Field) mapping.getField();
            attributeClassification =((BinaryDataCollectionMapping)mapping).getAttributeElementClass();
            nullPolicy =((BinaryDataCollectionMapping)mapping).getNullPolicy();
-           cp = ((BinaryDataCollectionMapping)mapping).getContainerPolicy();
+           cp = mapping.getContainerPolicy();
        } else {
            isSwaRef = ((BinaryDataMapping)mapping).isSwaRef();
-           field = (Field)((BinaryDataMapping)mapping).getField();
-           attributeClassification =((BinaryDataMapping)mapping).getAttributeClassification();
+           field = (Field) mapping.getField();
+           attributeClassification = mapping.getAttributeClassification();
            nullPolicy =((BinaryDataMapping)mapping).getNullPolicy();
 
        }

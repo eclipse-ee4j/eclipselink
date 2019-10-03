@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,7 +50,7 @@ public class SingleTableMultitenantPolicy implements MultitenantPolicy {
         descriptor = desc;
         includeTenantCriteria = true;
         tenantDiscriminatorFields = new HashMap(5);
-        tenantDiscriminatorFieldsKeyedOnContext = new HashMap<String, List<DatabaseField>>(5);
+        tenantDiscriminatorFieldsKeyedOnContext = new HashMap<>(5);
     }
 
     /**

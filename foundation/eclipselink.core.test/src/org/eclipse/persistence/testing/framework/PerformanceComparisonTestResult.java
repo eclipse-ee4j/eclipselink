@@ -142,7 +142,7 @@ public class PerformanceComparisonTestResult extends TestResult {
     }
 
     /**
-     * Return the & difference between the current test average time and the
+     * Return the &amp; difference between the current test average time and the
      * average of the last 3 successful runs of the test on the baseline version.
      */
     public double getPercentageDifferenceAverage() {

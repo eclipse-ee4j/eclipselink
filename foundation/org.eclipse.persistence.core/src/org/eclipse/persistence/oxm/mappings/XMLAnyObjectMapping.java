@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,9 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
+
 import javax.xml.namespace.QName;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -85,10 +87,11 @@ import org.w3c.dom.Text;
  * <p>The following XPath statements may be used to specify the location of XML data relating to an object's
  * name attribute:
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>XPath statements</caption>
  * <tr>
- * <th id="c1" align="left">XPath</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">XPath</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1">contact-method</td>

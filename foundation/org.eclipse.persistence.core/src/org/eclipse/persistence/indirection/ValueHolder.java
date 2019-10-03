@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,12 +21,12 @@ import java.io.Serializable;
  * <b>Purpose</b>: Act as a place holder for a variable that required a value holder interface.
  * This class should be used to initialze an objects attributes that are using indirection is their mappings.
  */
-public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneable, Serializable {
+public class ValueHolder<T> implements WeavedAttributeValueHolderInterface<T>, Cloneable, Serializable {
 
     /**
      * Stores the wrapped object.
      */
-    protected Object value;
+    protected T value;
 
     /**
      * The two variable below are used as part of the implementation of WeavedAttributeValueHolderInterface
@@ -50,7 +50,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * PUBLIC:
      * Initialize the holder with an object.
      */
-    public ValueHolder(Object value) {
+    public ValueHolder(T value) {
         this.value = value;
     }
 
@@ -62,7 +62,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
         try {
             return super.clone();
         } catch (CloneNotSupportedException exception) {
-            ;
+            
         }
 
         return null;
@@ -73,7 +73,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * Return the wrapped object.
      */
     @Override
-    public Object getValue() {
+    public T getValue() {
         return value;
     }
 
@@ -141,7 +141,7 @@ public class ValueHolder implements WeavedAttributeValueHolderInterface, Cloneab
      * Set the wrapped object.
      */
     @Override
-    public void setValue(Object value) {
+    public void setValue(T value) {
         this.value = value;
     }
 

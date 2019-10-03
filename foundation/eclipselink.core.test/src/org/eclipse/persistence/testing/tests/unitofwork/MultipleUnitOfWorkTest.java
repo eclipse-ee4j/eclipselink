@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.SessionEventListener;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 import org.eclipse.persistence.testing.models.employee.domain.SmallProject;
@@ -102,6 +103,10 @@ public class MultipleUnitOfWorkTest extends org.eclipse.persistence.testing.fram
     protected void setup() {
         if(getSession().isClientSession()) {
             listener = checkTransactionIsolation();
+        }
+
+        if (getSession().isRemoteSession() && getSession().getDatasourcePlatform().isDerby()) {
+            throw new TestWarningException("This test uses functionality that does not work over remote sessions in Apache Derby.");
         }
 
         super.setup();

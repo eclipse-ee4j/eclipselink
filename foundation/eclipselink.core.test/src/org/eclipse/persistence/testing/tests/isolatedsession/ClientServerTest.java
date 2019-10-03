@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,22 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.isolatedsession;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Vector;
 
-import org.eclipse.persistence.testing.framework.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.sessions.server.*;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.sessions.DatabaseLogin;
+import org.eclipse.persistence.sessions.Session;
+import org.eclipse.persistence.sessions.server.ConnectionPolicy;
+import org.eclipse.persistence.sessions.server.ServerSession;
+import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
+import org.eclipse.persistence.testing.framework.TestProblemException;
 
 public class ClientServerTest extends AutoVerifyTestCase {
     protected DatabaseLogin login;
@@ -59,7 +67,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
                 // cache the original one in the map.
                 isolatedDescriptors.put(desc, desc.getUnitOfWorkCacheIsolationLevel());
                 // un-isolate descriptor
-                desc.setIsIsolated(false);
+                desc.setCacheIsolation(CacheIsolationType.SHARED);
                 // the value assigned by default during initialization for non-isolated descriptor.
                 desc.setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_NEW_DATA_AFTER_TRANSACTION);
             }
@@ -69,6 +77,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
         this.server.getProject().setHasIsolatedClasses(true);
     }
 
+    @Override
     public void reset() {
         try {
             while (!this.clients.isEmpty()) {
@@ -83,7 +92,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
                 while(it.hasNext()) {
                     Map.Entry entry = (Map.Entry)it.next();
                     ClassDescriptor desc = (ClassDescriptor)entry.getKey();
-                    desc.setIsIsolated(true);
+                    desc.setCacheIsolation(CacheIsolationType.ISOLATED);
                     desc.setUnitOfWorkCacheIsolationLevel((Integer)entry.getValue());
                 }
                 isolatedDescriptors.clear();
@@ -99,6 +108,7 @@ public class ClientServerTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         try {
             this.login = (DatabaseLogin)getSession().getLogin().clone();
@@ -125,9 +135,11 @@ public class ClientServerTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
     }
 
+    @Override
     public void verify() {
     }
 }

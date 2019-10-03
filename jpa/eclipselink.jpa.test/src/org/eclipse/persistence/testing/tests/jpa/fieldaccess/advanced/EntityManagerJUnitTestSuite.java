@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2598,10 +2599,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
 
         //testing for query timeout specified in persistence.xml
-        assertTrue("Timeout overriden or not set in persistence.xml",olrQuery.getQueryTimeout() == 100);
-        query.setHint(QueryHints.JDBC_TIMEOUT, 500);
+        assertTrue("Timeout overriden or not set in persistence.xml", olrQuery.getQueryTimeout() == 100000);
+        query.setHint(QueryHints.JDBC_TIMEOUT, 500000);
         olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
-        assertTrue( olrQuery.getQueryTimeout() == 500);
+        assertTrue(olrQuery.getQueryTimeout() == 500000);
 
         closeEntityManager(em);
 

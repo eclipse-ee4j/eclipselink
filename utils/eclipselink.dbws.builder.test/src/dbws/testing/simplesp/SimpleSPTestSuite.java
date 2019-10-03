@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,7 +58,7 @@ public class SimpleSPTestSuite extends DBWSTestSuite {
             "\nPRIMARY KEY (EMPNO)" +
         "\n)";
     static String[] POPULATE_SIMPLESP_TABLE = new String[] {
-        "INSERT INTO simplesp VALUES (7369,'SMITH','CLERK',7902,'1980-12--17',800,NULL,20)",
+        "INSERT INTO simplesp VALUES (7369,'SMITH','CLERK',7902,'1980-12-17',800,NULL,20)",
         "INSERT INTO simplesp VALUES (7499,'ALLEN','SALESMAN',7698,'1981-2-20',1600,300,30)",
         "INSERT INTO simplesp VALUES (7521,'WARD','SALESMAN',7698,'1981-2-22',1250,500,30)",
         "INSERT INTO simplesp VALUES (7566,'JONES','MANAGER',7839,'1981-4-2',2975,NULL,20)",

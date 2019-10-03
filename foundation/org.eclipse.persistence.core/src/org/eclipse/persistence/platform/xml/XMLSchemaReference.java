@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,17 +23,17 @@ import java.net.URL;
  * document.
  */
 public interface XMLSchemaReference {
-    public static final int COMPLEX_TYPE = 1;
-    public static final int SIMPLE_TYPE = 2;
-    public static final int ELEMENT = 3;
-    public static final int GROUP = 5;
+    int COMPLEX_TYPE = 1;
+    int SIMPLE_TYPE = 2;
+    int ELEMENT = 3;
+    int GROUP = 5;
 
     /**
      * Returns the path to be traversed for validation purposes.
      *
      * @return a string represented the path to be traversed
      */
-    public String getSchemaContext();
+    String getSchemaContext();
 
     /**
      * Indicates if the schema reference references a simple type definition,
@@ -41,12 +41,12 @@ public interface XMLSchemaReference {
      *
      * @return COMPLEX_TYPE=1, SIMPLE_TYPE=2, ELEMENT=3, GROUP=5
      */
-    public int getType();
+    int getType();
 
     /**
      * A URL which referenes the Schema.
      *
      * @return the schema URL
      */
-    public URL getURL();
+    URL getURL();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,45 +26,45 @@ public interface CoreAttributeAccessor {
     /**
      * Return the class type of the attribute.
      */
-    public Class getAttributeClass();
+    Class getAttributeClass();
 
     /**
      * INTERNAL:
      * Return the attribute name.
      */
-    public String getAttributeName();
+    String getAttributeName();
 
     /**
      * Return the attribute value from the object.
      */
-    public Object getAttributeValueFromObject(Object object);
+    Object getAttributeValueFromObject(Object object);
 
     /**
      * Allow any initialization to be performed with the descriptor class.
      */
-    public void initializeAttributes(Class descriptorClass) throws DescriptorException;
+    void initializeAttributes(Class descriptorClass) throws DescriptorException;
 
-    public boolean isInstanceVariableAttributeAccessor();
+    boolean isInstanceVariableAttributeAccessor();
 
-    public boolean isMethodAttributeAccessor();
+    boolean isMethodAttributeAccessor();
 
     /**
      * INTERNAL:
      * @return
      */
-    public boolean isWriteOnly();
+    boolean isWriteOnly();
 
     /**
      * Set the attribute value into the object.
      */
-    public void setAttributeValueInObject(Object object, Object value);
+    void setAttributeValueInObject(Object object, Object value);
 
     /**
      * INTERNAL
      * @param aBoolean
      */
-    public void setIsReadOnly(boolean aBoolean);
+    void setIsReadOnly(boolean aBoolean);
 
-    public void setIsWriteOnly(boolean aBoolean);
+    void setIsWriteOnly(boolean aBoolean);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,10 @@
 // Contributors:
 //     David McCann - 2.5.0 - Sept.14, 2012 - Initial Implementation
 package org.eclipse.persistence.tools.dbws;
+
+import static org.eclipse.persistence.internal.oxm.Constants.EMPTY_STRING;
+import static org.eclipse.persistence.tools.dbws.Util.DOT;
+import static org.eclipse.persistence.tools.dbws.Util.XML_MIME_PREFIX;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,13 +34,13 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlAbstractNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlAttribute;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlElement;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlIsSetNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNsForm;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings.JavaTypes;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchema.XmlNs;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlSchemaType;
@@ -54,10 +58,6 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.IsSetNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType;
-
-import static org.eclipse.persistence.oxm.XMLConstants.EMPTY_STRING;
-import static org.eclipse.persistence.tools.dbws.Util.DOT;
-import static org.eclipse.persistence.tools.dbws.Util.XML_MIME_PREFIX;
 
 /**
  * This class is responsible for generating one or more EclipseLink XmlBindings
@@ -216,7 +216,7 @@ public class XmlBindingsGenerator {
     }
 
     /**
-     * Process a given XMLMapping and return a JAXBElement<XmlAttribute>.
+     * Process a given XMLMapping and return a {@code JAXBElement<XmlAttribute>}.
      *
      * Expected mappings are:
      * <ul>
@@ -244,7 +244,7 @@ public class XmlBindingsGenerator {
     }
 
     /**
-     * Process a given XMLMapping and return a JAXBElement<XmlElement>.
+     * Process a given XMLMapping and return a {@code JAXBElement<XmlElement>}.
      *
      * Expected mappings are:
      * <ul>

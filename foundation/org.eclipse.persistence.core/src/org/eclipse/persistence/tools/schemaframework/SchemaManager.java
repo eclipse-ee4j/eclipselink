@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,9 +68,9 @@ public class SchemaManager {
 
     /** Flag to determine if database schemas should be created during DDL generation */
     protected boolean createDatabaseSchemas = false;
-    protected HashSet<String> createdDatabaseSchemas = new HashSet<String>();
-    protected HashSet<String> createdDatabaseSchemasOnDatabase = new HashSet<String>();
-    protected HashMap<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<String, DatabaseObjectDefinition>();
+    protected HashSet<String> createdDatabaseSchemas = new HashSet<>();
+    protected HashSet<String> createdDatabaseSchemasOnDatabase = new HashSet<>();
+    protected HashMap<String, DatabaseObjectDefinition> dropDatabaseSchemas = new HashMap<>();
 
     public SchemaManager(DatabaseSessionImpl session) {
         this.session = session;
@@ -319,7 +319,7 @@ public class SchemaManager {
         try {
             // Handle the table definitions first.
             if (definition.isTableSequenceDefinition()) {
-                TableDefinition tableDefinition = ((TableSequenceDefinition) definition).buildTableDefinition();
+                TableDefinition tableDefinition = definition.buildTableDefinition();
                 // Check that we haven't already created the table.
                 if (! createdTableNames.contains(tableDefinition.getFullName())) {
                     createdTableNames.add(tableDefinition.getFullName());
@@ -429,7 +429,7 @@ public class SchemaManager {
     protected HashSet<SequenceDefinition> buildSequenceDefinitions() {
         // Remember the processed - to handle each sequence just once.
         HashSet processedSequenceNames = new HashSet();
-        HashSet<SequenceDefinition> sequenceDefinitions = new HashSet<SequenceDefinition>();
+        HashSet<SequenceDefinition> sequenceDefinitions = new HashSet<>();
 
         for (ClassDescriptor descriptor : getSession().getDescriptors().values()) {
             if (descriptor.usesSequenceNumbers()) {

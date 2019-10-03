@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
@@ -98,6 +99,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
 
     public OraclePlatform(){
         super();
+        this.cursorCode = -10;
         this.pingSQL = "SELECT 1 FROM DUAL";
         this.storedProcedureTerminationToken = "";
         this.shouldPrintForUpdateClause = true;
@@ -811,7 +813,7 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public boolean shouldPrintStoredProcedureArgumentNameInCall() {
-        return ! useJDBCStoredProcedureSyntax();
+        return false;
     }
 
     /**
@@ -888,6 +890,11 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         return true;
     }
 
+    @Override
+    public boolean supportsWaitForUpdate() {
+        return true;
+    }
+
     /**
      * Returns true if the database supports SQL syntax not to wait on a SELECT..FOR UPADTE
      * (i.e. In Oracle adding NOWAIT to the end will accomplish this)
@@ -932,9 +939,9 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
      */
     public boolean useJDBCStoredProcedureSyntax() {
         if (useJDBCStoredProcedureSyntax == null) {
-            useJDBCStoredProcedureSyntax = this.driverName != null && this.driverName.equals("Oracle");
+            useJDBCStoredProcedureSyntax = this.driverName != null 
+                    && Pattern.compile("Oracle", Pattern.CASE_INSENSITIVE).matcher(this.driverName).find();
         }
-
         return useJDBCStoredProcedureSyntax;
     }
 

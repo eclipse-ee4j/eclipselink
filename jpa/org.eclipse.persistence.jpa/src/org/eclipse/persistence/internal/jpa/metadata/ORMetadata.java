@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -529,7 +529,7 @@ public abstract class ORMetadata {
      * INTERNAL:
      * This is to support legacy orm instance docs. In some cases, previous
      * simple text elements may have been changed to a list of ORMetadata
-     * through spec churn. (e.g. <convert>). Method helps support backwards
+     * through spec churn. (e.g. {@code <convert>}). Method helps support backwards
      * compatibility. If the text object is initialized the metadata list is
      * set to null to ease further processing (logging, warnings, overrides etc.)
      */

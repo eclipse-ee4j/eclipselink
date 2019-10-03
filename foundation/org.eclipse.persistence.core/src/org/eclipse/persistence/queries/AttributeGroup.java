@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,7 +183,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
             }
         }
         if (this.subClasses != null){
-            clone.subClasses = new HashSet<CoreAttributeGroup>();
+            clone.subClasses = new HashSet<>();
             for (CoreAttributeGroup group : this.subClasses){
                 clone.subClasses.add(((AttributeGroup)group).toFetchGroup(cloneMap));
             }
@@ -191,7 +191,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         // all attributes and nested groups should be cloned, too
         clone.items = null;
         if (hasItems()) {
-            clone.items = new HashMap<String, AttributeItem>();
+            clone.items = new HashMap<>();
             for (AttributeItem item : this.items.values()){
                 clone.items.put(item.getAttributeName(), item.toFetchGroup(cloneMap, clone));
             }
@@ -217,8 +217,8 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         if (isCopyGroup()) {
             return (CopyGroup) this;
         }
-        Map<AttributeGroup, CopyGroup> cloneMap = new IdentityHashMap<AttributeGroup, CopyGroup>();
-        return toCopyGroup(cloneMap, new HashMap<Object, Object>());
+        Map<AttributeGroup, CopyGroup> cloneMap = new IdentityHashMap<>();
+        return toCopyGroup(cloneMap, new HashMap<>());
     }
 
         /**
@@ -251,7 +251,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
                 clone.superClassGroup = ((AttributeGroup)this.superClassGroup).toCopyGroup(cloneMap, copies);
             }
             if (this.subClasses != null){
-                clone.subClasses = new HashSet<CoreAttributeGroup>();
+                clone.subClasses = new HashSet<>();
                 for (CoreAttributeGroup group : this.subClasses){
                     clone.subClasses.add(((AttributeGroup)group).toCopyGroup(cloneMap, copies));
                 }
@@ -259,7 +259,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
             // all attributes and nested groups should be cloned, too
             clone.items = null;
             if (hasItems()) {
-                clone.items = new HashMap<String, AttributeItem>();
+                clone.items = new HashMap<>();
                 for (AttributeItem item : this.items.values()){
                     clone.items.put(item.getAttributeName(), item.toCopyGroup(cloneMap, clone, copies));
                 }
@@ -303,7 +303,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
             clone.superClassGroup = ((AttributeGroup)this.superClassGroup).toLoadGroup(cloneMap, loadOnly);
         }
         if (this.subClasses != null){
-            clone.subClasses = new HashSet<CoreAttributeGroup>();
+            clone.subClasses = new HashSet<>();
             for (CoreAttributeGroup group : this.subClasses){
                 clone.subClasses.add(((AttributeGroup)group).toLoadGroup(cloneMap, loadOnly));
             }
@@ -311,7 +311,7 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         // all attributes and nested groups should be cloned, too
         clone.items = null;
         if (hasItems()) {
-            clone.items = new HashMap<String, AttributeItem>();
+            clone.items = new HashMap<>();
             for (AttributeItem item : this.items.values()){
                 clone.items.put(item.getAttributeName(), item.toLoadGroup(cloneMap, clone, loadOnly));
             }

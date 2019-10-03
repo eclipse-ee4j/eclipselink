@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,10 +36,10 @@ import org.eclipse.persistence.mappings.converters.Converter;
  * @since EclipseLink 1.2
  */
 public interface EmbeddableMapping {
-    public String getAttributeName();
-    public void addConverter(Converter converter, String attributeName);
-    public void addOverrideManyToManyMapping(ManyToManyMapping mapping);
-    public void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping);
-    public void addFieldTranslation(DatabaseField sourceFieldName, String aggregateFieldName);
-    public void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateField);
+    String getAttributeName();
+    void addConverter(Converter converter, String attributeName);
+    void addOverrideManyToManyMapping(ManyToManyMapping mapping);
+    void addOverrideUnidirectionalOneToManyMapping(UnidirectionalOneToManyMapping mapping);
+    void addFieldTranslation(DatabaseField sourceFieldName, String aggregateFieldName);
+    void addNestedFieldTranslation(String attributeName, DatabaseField sourceField, String aggregateField);
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2017, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2017 IBM Corporation. All rights reserved.
+ * Copyright (c) 2017, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,18 +37,19 @@ import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.SessionCustomizer;
-import org.eclipse.persistence.jpa.test.basic.model.Employee;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
-import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.jpa.test.query.TestQueryProperties.PreparedStatementInvocationHandler;
+import org.eclipse.persistence.jpa.test.query.model.QueryEmployee;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.Connector;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -56,104 +57,157 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestQueryHints implements PUPropertiesProvider {
 
-    private static int setTimeout;
+    private static int statementTimeout;
 
-    private final static int realTimeout = 3099;
+    private final static int propertyTimeout = 3099;
 
-    @Emf(name = "defaultEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE)
+    @Emf(name = "queryhintsEMF", classes = { QueryEmployee.class }, createTables = DDLGen.DROP_CREATE)
     private EntityManagerFactory emf;
 
-    @Emf(name = "TimeoutPropertiesEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE, properties = {
-            @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryHints.realTimeout),
-            @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "MINUTES") })
-    private EntityManagerFactory emfTimeoutProperties;
-
     /**
-     * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT sets the
-     * timeout accordingly on the executed java.sql.Statement.
-     *
-     * QueryHints.JDBC_TIMEOUT expects seconds by default.
-     * java.sql.Statement.getQueryTimeout() will return a value in seconds.
-     *
-     * @throws Exception
+     * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT to the default value
+     *  will see the expected value of seconds being set on the statement
      */
     @Test
-    public void testJDBCQueryTimeout() throws Exception {
-        EntityManager em = null;
+    public void testJDBCQueryTimeout() {
+        EntityManager em = emf.createEntityManager();
         try {
-            em = emf.createEntityManager();
-
             em.getTransaction().begin();
-            Query q = em.createQuery("SELECT x FROM Employee x").setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.realTimeout);
-            q.getResultList();
+            em.createQuery("SELECT x FROM QueryEmployee x")
+                .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
+                .getResultList();
 
-            Assert.assertEquals(TestQueryHints.realTimeout, TestQueryHints.setTimeout);
+            //Convert the timeout set (MILLISECONDS) to what is expected by the JDBC layer (SECONDS)
+            double queryTimeoutSeconds = TestQueryHints.propertyTimeout / 1000d;
+            //if there was a remainder, it should round up
+            if(queryTimeoutSeconds % 1 > 0) {
+                queryTimeoutSeconds += 1;
+            }
 
-            em.getTransaction().rollback();
-        } catch (Exception e) {
-            Assert.fail(e.getLocalizedMessage());
+            Assert.assertEquals((int)queryTimeoutSeconds, TestQueryHints.statementTimeout);
         } finally {
-            if (em != null) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+
+        em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("SELECT x FROM QueryEmployee x")
+                .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
+                .getResultList();
+
+            //Convert the timeout set (MILLISECONDS) to what is expected by the JDBC layer (SECONDS)
+            double queryTimeoutSeconds = TestQueryHints.propertyTimeout / 1000d;
+            //if there was a remainder, it should round up
+            if(queryTimeoutSeconds % 1 > 0) {
+                queryTimeoutSeconds += 1;
+            }
+
+            Assert.assertEquals((int)queryTimeoutSeconds, TestQueryHints.statementTimeout);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
                 em.close();
             }
         }
     }
 
     /**
-     * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT_UNIT sets the
-     * timeout accordingly on the executed java.sql.Statement.
-     *
-     * QueryHints.JDBC_TIMEOUT expects seconds by default.
-     * java.sql.Statement.getQueryTimeout() will return a value in seconds.
-     *
-     * @throws Exception
+     * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT_UNIT to the "SECONDS" value
+     *  will see the expected value of seconds being set on the statement
      */
     @Test
-    public void testQueryTimeoutUnit() throws Exception {
-        EntityManager em = null;
+    public void testQueryTimeoutUnitSeconds() {
+        EntityManager em = emf.createEntityManager();
         try {
-            em = emf.createEntityManager();
-
-            /*
-             * Default Case: Seconds
-             * Without being set, the units should be in seconds already.
-             */
             em.getTransaction().begin();
-            Query q = em.createQuery("SELECT x FROM Employee x").setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.realTimeout);
-            q.getResultList();
-            int queryTimeoutSeconds = TestQueryHints.realTimeout;
-            Assert.assertEquals(queryTimeoutSeconds, TestQueryHints.setTimeout);
-            em.getTransaction().rollback();
+            em.createQuery("SELECT x FROM QueryEmployee x")
+                .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
+                .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.SECONDS.toString()).getResultList();
 
-            /*
-             * Case 2: Minutes
-             * Setting units to Minutes, value should come back converted to Seconds
-             */
-            em.getTransaction().begin();
-            q = em.createQuery("SELECT x FROM Employee x").setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.realTimeout).setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MINUTES.toString());
-            q.getResultList();
-            queryTimeoutSeconds = TestQueryHints.realTimeout * 60;
-            Assert.assertEquals(queryTimeoutSeconds, TestQueryHints.setTimeout);
-            em.getTransaction().rollback();
+            //Convert the timeout set (SECONDS) to what is expected by the JDBC layer (SECONDS)
+            int queryTimeoutSecondsDouble = TestQueryHints.propertyTimeout;
 
-            /*
-             * Case 3: Milliseconds
-             * Setting units to Milliseconds, value should come back converted to Seconds
-             */
-            em.getTransaction().begin();
-            q = em.createQuery("SELECT x FROM Employee x").setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.realTimeout).setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MILLISECONDS.toString());
-            q.getResultList();
-            double queryTimeoutSecondsDouble = TestQueryHints.realTimeout / 1000d;
-            //if there was a remainder, it should round up
-            if(queryTimeoutSecondsDouble % 1 > 0){
-                queryTimeoutSecondsDouble += 1;
-            }
-            Assert.assertEquals((int)queryTimeoutSecondsDouble, TestQueryHints.setTimeout);
-            em.getTransaction().rollback();
-        } catch (Exception e) {
-            Assert.fail(e.getLocalizedMessage());
+            Assert.assertEquals(queryTimeoutSecondsDouble, TestQueryHints.statementTimeout);
         } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
             if (em != null) {
+                em.close();
+            }
+        }
+
+        em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("SELECT x FROM QueryEmployee x")
+                .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
+                .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.SECONDS.toString()).getResultList();
+
+            //Convert the timeout set (SECONDS) to what is expected by the JDBC layer (SECONDS)
+            int queryTimeoutSecondsDouble = TestQueryHints.propertyTimeout;
+
+            Assert.assertEquals(queryTimeoutSecondsDouble, TestQueryHints.statementTimeout);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Test that setting the Query Hint: QueryHints.JDBC_TIMEOUT_UNIT to the "MINUTES" value
+     *  will see the expected value of seconds being set on the statement
+     */
+    @Test
+    public void testQueryTimeoutUnitMinutes() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("SELECT x FROM QueryEmployee x")
+                .setHint(QueryHints.QUERY_TIMEOUT, TestQueryHints.propertyTimeout)
+                .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MINUTES.toString()).getResultList();
+
+            //Convert the timeout set (MINUTES) to what is expected by the JDBC layer (SECONDS)
+            int queryTimeoutSeconds = TestQueryHints.propertyTimeout * 60;
+
+            Assert.assertEquals(queryTimeoutSeconds, TestQueryHints.statementTimeout);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+
+        em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("SELECT x FROM QueryEmployee x")
+                .setHint(QueryHints.JDBC_TIMEOUT, TestQueryHints.propertyTimeout)
+                .setHint(QueryHints.QUERY_TIMEOUT_UNIT, TimeUnit.MINUTES.toString()).getResultList();
+
+            //Convert the timeout set (MINUTES) to what is expected by the JDBC layer (SECONDS)
+            int queryTimeoutSeconds = TestQueryHints.propertyTimeout * 60;
+
+            Assert.assertEquals(queryTimeoutSeconds, TestQueryHints.statementTimeout);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
                 em.close();
             }
         }
@@ -166,23 +220,22 @@ public class TestQueryHints implements PUPropertiesProvider {
      * @throws Exception
      */
     @Test
-    public void testMultipleNamedQueryWithScrollableCursor() throws Exception {
-        EntityManager em = null;
+    public void testMultipleNamedQueryWithScrollableCursor() {
+        EntityManager em = emf.createEntityManager();
         try {
-            em = emf.createEntityManager();
             em.getTransaction().begin();
 
             /*
              * First create a NamedQuery and return the result list
              */
-            Query query1 = em.createNamedQuery("Employee.findAll");
+            Query query1 = em.createNamedQuery("QueryEmployee.findAll");
             query1.getResultList();
 
             /*
              * Next, create the same NamedQuery, but add the QueryHints.SCROLLABLE_CURSOR hint
              * and return the ScrollableCursor
              */
-            Query query2 = em.createNamedQuery("Employee.findAll");
+            Query query2 = em.createNamedQuery("QueryEmployee.findAll");
             query2.setHint(QueryHints.SCROLLABLE_CURSOR, HintValues.TRUE);
             ScrollableCursor cursor = ((ScrollableCursor) query2.getSingleResult());
             cursor.close();
@@ -191,14 +244,13 @@ public class TestQueryHints implements PUPropertiesProvider {
              * Finally, attempt to create a third NamedQuery, but return a result list
              * without adding a hint to this Query
              */
-            Query query3 = em.createNamedQuery("Employee.findAll");
+            Query query3 = em.createNamedQuery("QueryEmployee.findAll");
             query3.getResultList();
-
-            em.getTransaction().rollback();
-        } catch (Exception e) {
-            Assert.fail(e.getLocalizedMessage());
         } finally {
-            if (em != null) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
                 em.close();
             }
         }
@@ -231,6 +283,7 @@ public class TestQueryHints implements PUPropertiesProvider {
             wrappedConnector = stmt;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             if (method.getName().equals("connect") && proxy instanceof Connector) {
                 return ConnectionInvocationHandler.createStatementProxy((Connection) method.invoke(wrappedConnector, args));
@@ -250,11 +303,16 @@ public class TestQueryHints implements PUPropertiesProvider {
             wrappedConnection = stmt;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getName().equals("prepareStatement") && proxy instanceof Connection) {
-                return PreparedStatementInvocationHandler.createStatementProxy((PreparedStatement) method.invoke(wrappedConnection, args));
+            try {
+                if (method.getName().equals("prepareStatement") && proxy instanceof Connection) {
+                    return PreparedStatementInvocationHandler.createStatementProxy((PreparedStatement) method.invoke(wrappedConnection, args));
+                }
+                return method.invoke(wrappedConnection, args);
+            } catch (Exception e) {
+                throw e.getCause();
             }
-            return method.invoke(wrappedConnection, args);
         }
 
         public static Connection createStatementProxy(Connection toWrap) {
@@ -269,13 +327,20 @@ public class TestQueryHints implements PUPropertiesProvider {
             wrappedStatement = stmt;
         }
 
+        @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (method.getName().equals("setQueryTimeout") && proxy instanceof PreparedStatement) {
-                if(args.length > 0){
-                    TestQueryHints.setTimeout = (Integer)args[0];
+            try {
+                //Get the query timeout being set on the statement
+                //This value should be in seconds, since that is what the Statement expects
+                if (method.getName().equals("setQueryTimeout") && proxy instanceof PreparedStatement) {
+                    if(args.length > 0) {
+                        TestQueryHints.statementTimeout = (Integer)args[0];
+                    }
                 }
+                return method.invoke(wrappedStatement, args);
+            } catch (Exception e) {
+                throw e.getCause();
             }
-            return method.invoke(wrappedStatement, args);
         }
 
         public static PreparedStatement createStatementProxy(PreparedStatement toWrap) {

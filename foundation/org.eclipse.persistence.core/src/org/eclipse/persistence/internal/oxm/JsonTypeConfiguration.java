@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,11 @@ public class JsonTypeConfiguration {
      * Allows system property override with context property.
      */
     private boolean jsonTypeAttributeNameSet = false;
+
+    /**
+     * Disable generation of "item" name in nested arrays in JSON.
+     */
+    private boolean jsonDisableNestedArrayName = false;
 
     /**
      * Getter for useXsdTypesWithPrefix property.
@@ -157,4 +162,23 @@ public class JsonTypeConfiguration {
         this.jsonTypeAttributeNameSet = true;
     }
 
+    /**
+     * Getter for JSON property to enable/disable generation of "item" name in nested arrays in JSON.
+     *
+     * @return value of jsonDisableNestedArrayName property
+     * @since 2.7.5
+     */
+    public boolean isJsonDisableNestedArrayName() {
+        return jsonDisableNestedArrayName;
+    }
+
+    /**
+     * Setter for JSON property to enable/disable generation of "item" name in nested arrays in JSON.
+     *
+     * @param jsonDisableNestedArrayName value of jsonDisableNestedArrayName property
+     * @since 2.7.5
+     */
+    public void setJsonDisableNestedArrayName(boolean jsonDisableNestedArrayName) {
+        this.jsonDisableNestedArrayName = jsonDisableNestedArrayName;
+    }
 }

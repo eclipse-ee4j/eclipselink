@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,9 @@
 //      gonural - Initial implementation
 package org.eclipse.persistence.jpars.test.service.noversion;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.dynamic.DynamicEntity;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
-import org.eclipse.persistence.jpa.rs.resources.unversioned.PersistenceResource;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
-import org.eclipse.persistence.jpars.test.util.RestUtils;
-import org.junit.After;
-import org.junit.Test;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
-import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -36,8 +26,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import javax.ws.rs.core.MediaType;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.descriptors.FetchGroupManager;
+import org.eclipse.persistence.dynamic.DynamicEntity;
+import org.eclipse.persistence.jpa.rs.DynamicRestClassLoader;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpa.rs.resources.unversioned.PersistenceResource;
+import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
+import org.eclipse.persistence.jpars.test.util.RestUtils;
+import org.junit.After;
+import org.junit.Test;
 
 public class TestServiceNonRelational {
     PersistenceFactoryBase factory = null;
@@ -163,7 +164,7 @@ public class TestServiceNonRelational {
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.WEAVING, "static");
         properties.put(PersistenceUnitProperties.DEPLOY_ON_STARTUP, "true");
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
+        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicRestClassLoader(Thread.currentThread().getContextClassLoader()));
         context = factory.get(persistenceUnit, RestUtils.getServerURI(), null, properties);
         if (context == null) {
             throw new Exception("Persistence context could not be created.");

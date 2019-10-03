@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -731,8 +731,8 @@ public class RemoteUnitOfWork extends RepeatableWriteUnitOfWork {
         } else {
             // Also need to reset the remote objects with their local clones.
             int size = uowChangeSet.getCloneToObjectChangeSet().size();
-            Map<Object, ObjectChangeSet> newCloneToObjectChangeSet = new IdentityHashMap<Object, ObjectChangeSet>(size);
-            Map<ObjectChangeSet, Object> newObjectChangeSetToUOWClone = new IdentityHashMap<ObjectChangeSet, Object>(size);
+            Map<Object, ObjectChangeSet> newCloneToObjectChangeSet = new IdentityHashMap<>(size);
+            Map<ObjectChangeSet, Object> newObjectChangeSetToUOWClone = new IdentityHashMap<>(size);
             for (Map.Entry<Object, ObjectChangeSet> entry : uowChangeSet.getCloneToObjectChangeSet().entrySet()) {
                 Object clone = cloneMap.get(entry.getKey());
                 // Deleted objects no longer exist, so use remote copy instead.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,8 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 /**
  * EclipseLink categories used for logging name space.
  * The EclipseLink categories for the logging name space are:<br>
- * <table summary="">
+ * <table>
+ * <caption>Logging categories</caption>
  * <tr><td>&nbsp;</td><td>ALL</td>            <td>&nbsp;</td><td>= "all"</td></tr>
  * <tr><td>&nbsp;</td><td>CACHE</td>          <td>&nbsp;</td><td>= "cache"</td></tr>
  * <tr><td>&nbsp;</td><td>CONNECTION</td>     <td>&nbsp;</td><td>= "connection"</td></tr>
@@ -36,6 +37,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
  * <tr><td>&nbsp;</td><td>METADATA</td>       <td>&nbsp;</td><td>= "metadata"</td></tr>
  * <tr><td>&nbsp;</td><td>METAMODEL</td>      <td>&nbsp;</td><td>= "metamodel"</td></tr>
  * <tr><td>&nbsp;</td><td>MONITORING</td>     <td>&nbsp;</td><td>= "monitoring"</td></tr>
+ * <tr><td>&nbsp;</td><td>MOXY</td>           <td>&nbsp;</td><td>= "moxy"</td></tr>
  * <tr><td>&nbsp;</td><td>PROPAGATION</td>    <td>&nbsp;</td><td>= "propagation"</td></tr>
  * <tr><td>&nbsp;</td><td>PROPERTIES</td>     <td>&nbsp;</td><td>= "properties"</td></tr>
  * <tr><td>&nbsp;</td><td>QUERY</td>          <td>&nbsp;</td><td>= "query"</td></tr>
@@ -60,15 +62,16 @@ public enum LogCategory {
     METAMODEL(  (byte)0x0A, SessionLog.METAMODEL),
     MISC(       (byte)0x0B, SessionLog.MISC),
     MONITORING( (byte)0x0C, SessionLog.MONITORING),
-    PROCESSOR(  (byte)0x0D, SessionLog.PROCESSOR),
-    PROPAGATION((byte)0x0E, SessionLog.PROPAGATION),
-    PROPERTIES( (byte)0x0F, SessionLog.PROPERTIES),
-    QUERY(      (byte)0x10, SessionLog.QUERY),
-    SEQUENCING( (byte)0x11, SessionLog.SEQUENCING),
-    SERVER(     (byte)0x12, SessionLog.SERVER),
-    SQL(        (byte)0x13, SessionLog.SQL),
-    TRANSACTION((byte)0x14, SessionLog.TRANSACTION),
-    WEAVER(     (byte)0x15, SessionLog.WEAVER);
+    MOXY(       (byte)0x0D, SessionLog.MOXY),
+    PROCESSOR(  (byte)0x0E, SessionLog.PROCESSOR),
+    PROPAGATION((byte)0x0F, SessionLog.PROPAGATION),
+    PROPERTIES( (byte)0x10, SessionLog.PROPERTIES),
+    QUERY(      (byte)0x11, SessionLog.QUERY),
+    SEQUENCING( (byte)0x12, SessionLog.SEQUENCING),
+    SERVER(     (byte)0x13, SessionLog.SERVER),
+    SQL(        (byte)0x14, SessionLog.SQL),
+    TRANSACTION((byte)0x15, SessionLog.TRANSACTION),
+    WEAVER(     (byte)0x16, SessionLog.WEAVER);
 
     /** Logging categories enumeration length. */
     public static final int length = LogCategory.values().length;
@@ -77,7 +80,7 @@ public enum LogCategory {
     private static final String NAMESPACE_PREFIX = "eclipselink.logging.";
 
     /** {@link Map} for {@link String} to {@link LogCategory} case insensitive conversion. */
-    private static final Map<String, LogCategory> stringValuesMap = new HashMap<String, LogCategory>(2 * length);
+    private static final Map<String, LogCategory> stringValuesMap = new HashMap<>(2 * length);
 
     /** Logger name spaces lookup table. */
     private static final String[] nameSpaces = new String[length];

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,10 +39,10 @@ package org.eclipse.persistence.sessions.coordination;
  */
 public interface CommandProcessor {
     // Log levels to be used by the CommandProcessor
-    public static final int LOG_DEBUG = 4;
-    public static final int LOG_INFO = 3;
-    public static final int LOG_WARNING = 2;
-    public static final int LOG_ERROR = 1;
+    int LOG_DEBUG = 4;
+    int LOG_INFO = 3;
+    int LOG_WARNING = 2;
+    int LOG_ERROR = 1;
 
     /**
      * PUBLIC:
@@ -51,7 +51,7 @@ public interface CommandProcessor {
      *
      * @param command Application formatted command to be processed
      */
-    public void processCommand(Object command);
+    void processCommand(Object command);
 
     /**
      * PUBLIC:
@@ -61,7 +61,7 @@ public interface CommandProcessor {
      *
      * @return The remote command manager responsible for this CommandProcessor
      */
-    public CommandManager getCommandManager();
+    CommandManager getCommandManager();
 
     /**
      * PUBLIC:
@@ -71,7 +71,7 @@ public interface CommandProcessor {
      *
      * @param commandManager The remote command manager responsible for this CommandProcessor
      */
-    public void setCommandManager(CommandManager commandManager);
+    void setCommandManager(CommandManager commandManager);
 
     /**
      * PUBLIC:
@@ -82,7 +82,7 @@ public interface CommandProcessor {
      * @param logLevel A log constant that is one of LOG_ERROR, LOG_WARNING, LOG_INFO, LOG_DEBUG
      * @return True if a message at the specified level should be logged and false if it should not
      */
-    public boolean shouldLogMessages(int logLevel);
+    boolean shouldLogMessages(int logLevel);
 
     /**
      * PUBLIC:
@@ -94,27 +94,27 @@ public interface CommandProcessor {
      * @param logLevel A log constant that is one of LOG_ERROR, LOG_WARNING, LOG_INFO, LOG_DEBUG
      * @param message The message String that is to be logged
      */
-    public void logMessage(int logLevel, String message);
+    void logMessage(int logLevel, String message);
 
     /**
      * Log the profile event.
      */
-    public void incrementProfile(String counter);
+    void incrementProfile(String counter);
 
     /**
      * Log the profile event.
      */
-    public void updateProfile(String info, Object value);
+    void updateProfile(String info, Object value);
 
     /**
      * Profile the operation.
      */
-    public void startOperationProfile(String operationName);
+    void startOperationProfile(String operationName);
 
     /**
      * Profile the operation.
      */
-    public void endOperationProfile(String operationName);
+    void endOperationProfile(String operationName);
 
     /**
      * PUBLIC:
@@ -128,5 +128,5 @@ public interface CommandProcessor {
      * @param exception The exception being thrown
      * @return An object that is not currently used
      */
-    public Object handleException(RuntimeException exception);
+    Object handleException(RuntimeException exception);
 }

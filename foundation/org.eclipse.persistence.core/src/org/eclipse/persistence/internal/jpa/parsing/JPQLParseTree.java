@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.ModifyAllQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.UpdateAllQuery;
 
 /**
  * INTERNAL
@@ -63,7 +68,7 @@ public class JPQLParseTree extends ParseTree {
     /**
      * Add all of the relevant query settings from an EJBQLParseTree to the given
      * database query.
-     * @param query The query to populate
+     * @param readQuery The query to populate
      * @param outer the GenerationContext of the outer EJBQL query.
      * @return the GenerationContext for the subquery
      */

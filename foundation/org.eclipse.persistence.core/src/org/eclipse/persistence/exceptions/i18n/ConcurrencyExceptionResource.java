@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -24,7 +24,7 @@ import java.util.ListResourceBundle;
  * English ResourceBundle for ConcurrencyException messages.
  *
  * Creation date: (12/6/00 9:47:38 AM)
- * @author: Xi Chen
+ * @author Xi Chen
  */
 public class ConcurrencyExceptionResource extends ListResourceBundle {
     static final Object[][] contents = {

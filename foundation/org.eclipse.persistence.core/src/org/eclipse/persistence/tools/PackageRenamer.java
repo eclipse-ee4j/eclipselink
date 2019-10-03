@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -155,7 +155,7 @@ public class PackageRenamer {
     public void binaryCopy(File inFile, File outFile) throws FileNotFoundException, IOException {
         byte[] buf = new byte[BUFSIZ];
         try (FileInputStream in = new FileInputStream(inFile);
-             FileOutputStream out = new FileOutputStream(outFile);) {
+             FileOutputStream out = new FileOutputStream(outFile)) {
             int nBytesRead;
             while ((nBytesRead = in.read(buf)) != -1) {
                 out.write(buf, 0, nBytesRead);

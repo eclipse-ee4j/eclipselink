@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,7 +55,7 @@ public class Profile implements Serializable, Cloneable {
         try {
             return super.clone();
         } catch (CloneNotSupportedException exception) {
-            ;//Do nothing
+            //Do nothing
         }
 
         return null;
@@ -159,7 +159,7 @@ public class Profile implements Serializable, Cloneable {
     public void write(Writer writer, PerformanceProfiler profiler) {
         String cr = Helper.cr();
         try {
-            writer.write(ToStringLocalization.buildMessage("profile", (Object[])null) + "(");
+            writer.write(ToStringLocalization.buildMessage("profile", null) + "(");
             if (getQueryClass() != null) {
                 writer.write(Helper.getShortClassName(getQueryClass()) + "," + cr);
             } else {
@@ -167,19 +167,19 @@ public class Profile implements Serializable, Cloneable {
             }
             if (getDomainClass() != null) {
                 profiler.writeNestingTabs(writer);
-                writer.write("\t" + ToStringLocalization.buildMessage("class", (Object[])null) + "=" + getDomainClass().getName() + "," + cr);
+                writer.write("\t" + ToStringLocalization.buildMessage("class", null) + "=" + getDomainClass().getName() + "," + cr);
             }
             if (getNumberOfInstancesEffected() != 0) {
                 profiler.writeNestingTabs(writer);
-                writer.write("\t" + ToStringLocalization.buildMessage("number_of_objects", (Object[])null) + "=" + getNumberOfInstancesEffected() + "," + cr);
+                writer.write("\t" + ToStringLocalization.buildMessage("number_of_objects", null) + "=" + getNumberOfInstancesEffected() + "," + cr);
             }
             profiler.writeNestingTabs(writer);
-            writer.write("\t" + ToStringLocalization.buildMessage("total_time", (Object[])null) + "=" + getTotalTime() + "," + cr);
+            writer.write("\t" + ToStringLocalization.buildMessage("total_time", null) + "=" + getTotalTime() + "," + cr);
             profiler.writeNestingTabs(writer);
-            writer.write("\t" + ToStringLocalization.buildMessage("local_time", (Object[])null) + "=" + getLocalTime() + "," + cr);
+            writer.write("\t" + ToStringLocalization.buildMessage("local_time", null) + "=" + getLocalTime() + "," + cr);
             if (getProfileTime() != 0) {
                 profiler.writeNestingTabs(writer);
-                writer.write("\t" + ToStringLocalization.buildMessage("profiling_time", (Object[])null) + "=" + getProfileTime() + "," + cr);
+                writer.write("\t" + ToStringLocalization.buildMessage("profiling_time", null) + "=" + getProfileTime() + "," + cr);
             }
 
             for (Enumeration operationNames = getOperationTimings().keys();
@@ -195,19 +195,19 @@ public class Profile implements Serializable, Cloneable {
 
             if (getTimePerObject() != 0) {
                 profiler.writeNestingTabs(writer);
-                writer.write("\t" + ToStringLocalization.buildMessage("time_object", (Object[])null) + "=" + getTimePerObject() + "," + cr);
+                writer.write("\t" + ToStringLocalization.buildMessage("time_object", null) + "=" + getTimePerObject() + "," + cr);
             }
             if (getObjectsPerSecond() != 0) {
                 profiler.writeNestingTabs(writer);
-                writer.write("\t" + ToStringLocalization.buildMessage("objects_second", (Object[])null) + "=" + getObjectsPerSecond() + "," + cr);
+                writer.write("\t" + ToStringLocalization.buildMessage("objects_second", null) + "=" + getObjectsPerSecond() + "," + cr);
             }
             if (getShortestTime() != -1) {
                 profiler.writeNestingTabs(writer);
-                writer.write("\t" + ToStringLocalization.buildMessage("shortestTime", (Object[])null) + "=" + getShortestTime() + "," + cr);
+                writer.write("\t" + ToStringLocalization.buildMessage("shortestTime", null) + "=" + getShortestTime() + "," + cr);
             }
             if (getLongestTime() != 0) {
                 profiler.writeNestingTabs(writer);
-                writer.write("\t" + ToStringLocalization.buildMessage("longestTime", (Object[])null) + "=" + getLongestTime() + "," + cr);
+                writer.write("\t" + ToStringLocalization.buildMessage("longestTime", null) + "=" + getLongestTime() + "," + cr);
             }
             profiler.writeNestingTabs(writer);
             writer.write(")");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,7 +38,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
     protected transient ObjectLevelReadQuery query;
 
     // The server side original value holder.
-    protected transient ValueHolderInterface wrappedServerValueHolder;
+    protected transient ValueHolderInterface<Object> wrappedServerValueHolder;
 
     // point back to the object holding the remote value holder;
     // for the moment, used only by TransparentIndirection
@@ -112,7 +112,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
         Object cachedObject = null;
 
         if (getMapping().isOneToOneMapping()) {
-            ClassDescriptor descriptor = ((ObjectReferenceMapping)getMapping()).getReferenceDescriptor();
+            ClassDescriptor descriptor = getMapping().getReferenceDescriptor();
             cachedObject = getSession().getIdentityMapAccessorInstance().getFromIdentityMap(getTargetObjectPrimaryKeys(), descriptor.getJavaClass(), descriptor);
         }
 
@@ -149,7 +149,7 @@ public class RemoteValueHolder extends DatabaseValueHolder implements Externaliz
      * This is how we know whether the remote value holder is
      * being invoked on the client or on the server.
      */
-    public ValueHolderInterface getWrappedServerValueHolder() {
+    public ValueHolderInterface<Object> getWrappedServerValueHolder() {
         return wrappedServerValueHolder;
     }
 

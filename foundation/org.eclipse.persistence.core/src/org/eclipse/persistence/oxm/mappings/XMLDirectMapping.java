@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,13 +29,13 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.queries.JoinedAttributeManager;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.AttributeAccessor;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.XMLUnmarshaller;
-import org.eclipse.persistence.mappings.AttributeAccessor;
-import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
 import org.eclipse.persistence.oxm.mappings.converters.XMLConverter;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.AbstractNullPolicy;
 import org.eclipse.persistence.oxm.mappings.nullpolicy.NullPolicy;
@@ -66,10 +66,11 @@ import org.eclipse.persistence.sessions.Session;
  * <p>The following XPath statements may be used to specify the location of XML data relating to an object's
  * name attribute:
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>XPath statements</caption>
  * <tr>
- * <th id="c1" align="left">XPath</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">XPath</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1">@name</td>

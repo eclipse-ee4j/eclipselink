@@ -109,6 +109,11 @@ import org.eclipse.persistence.internal.libraries.asm.tree.analysis.SimpleVerifi
  */
 public class CheckClassAdapter extends ClassVisitor {
 
+  /** The help message shown when command line arguments are incorrect. */
+  private static final String USAGE =
+      "Verifies the given class.\n"
+          + "Usage: CheckClassAdapter <fully qualified class name or class file name>";
+
   private static final String ERROR_AT = ": error at index ";
 
   /** Whether the bytecode must be checked with a BasicVerifier. */
@@ -187,7 +192,7 @@ public class CheckClassAdapter extends ClassVisitor {
   protected CheckClassAdapter(
       final int api, final ClassVisitor classVisitor, final boolean checkDataFlow) {
     super(api, classVisitor);
-    this.labelInsnIndices = new HashMap<Label, Integer>();
+    this.labelInsnIndices = new HashMap<>();
     this.checkDataFlow = checkDataFlow;
   }
 
@@ -948,10 +953,19 @@ public class CheckClassAdapter extends ClassVisitor {
    * @throws IOException if the class cannot be found, or if an IO exception occurs.
    */
   public static void main(final String[] args) throws IOException {
+    main(args, new PrintWriter(System.err, true));
+  }
+
+  /**
+   * Checks the given class.
+   *
+   * @param args the command line arguments.
+   * @param logger where to log errors.
+   * @throws IOException if the class cannot be found, or if an IO exception occurs.
+   */
+  static void main(final String[] args, final PrintWriter logger) throws IOException {
     if (args.length != 1) {
-      System.err.println(
-          "Verifies the given class.\n"
-              + "Usage: CheckClassAdapter <fully qualified class name or class file name>");
+      logger.println(USAGE);
       return;
     }
 
@@ -964,7 +978,7 @@ public class CheckClassAdapter extends ClassVisitor {
       classReader = new ClassReader(args[0]);
     }
 
-    verify(classReader, false, new PrintWriter(System.err));
+    verify(classReader, false, logger);
   }
 
   /**
@@ -1000,7 +1014,7 @@ public class CheckClassAdapter extends ClassVisitor {
     Type syperType = classNode.superName == null ? null : Type.getObjectType(classNode.superName);
     List<MethodNode> methods = classNode.methods;
 
-    List<Type> interfaces = new ArrayList<Type>();
+    List<Type> interfaces = new ArrayList<>();
     for (String interfaceName : classNode.interfaces) {
       interfaces.add(Type.getObjectType(interfaceName));
     }
@@ -1012,7 +1026,7 @@ public class CheckClassAdapter extends ClassVisitor {
               syperType,
               interfaces,
               (classNode.access & Opcodes.ACC_INTERFACE) != 0);
-      Analyzer<BasicValue> analyzer = new Analyzer<BasicValue>(verifier);
+      Analyzer<BasicValue> analyzer = new Analyzer<>(verifier);
       if (loader != null) {
         verifier.setClassLoader(loader);
       }

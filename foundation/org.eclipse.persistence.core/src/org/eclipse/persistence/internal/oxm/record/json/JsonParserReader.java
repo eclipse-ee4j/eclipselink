@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,24 @@
 // Contributors:
 //     Iaroslav Savytskyi - 2.6 - initial implementation
 package org.eclipse.persistence.internal.oxm.record.json;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonException;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonStructure;
+import javax.json.JsonValue;
+import javax.json.stream.JsonParser;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Constants;
@@ -29,26 +47,9 @@ import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonException;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonStructure;
-import javax.json.JsonValue;
-import javax.json.stream.JsonParser;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayDeque;
-import java.util.Deque;
-
 /**
  * Reader for JSR-353 stream (StAX) parser.
- * <p/>
+ * 
  * Could be instantiated with {@link JsonParserReader.JsonParserReaderBuilder#build()};
  */
 public final class JsonParserReader extends XMLReaderAdapter {

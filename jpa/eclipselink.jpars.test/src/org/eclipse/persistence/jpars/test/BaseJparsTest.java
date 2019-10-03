@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,20 +14,21 @@
 //      Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpars.test;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.jpa.rs.PersistenceContext;
-import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
-import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
-import org.eclipse.persistence.jpars.test.util.RestUtils;
-
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.jpa.rs.DynamicRestClassLoader;
+import org.eclipse.persistence.jpa.rs.PersistenceContext;
+import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
+import org.eclipse.persistence.jpars.test.util.ExamplePropertiesLoader;
+import org.eclipse.persistence.jpars.test.util.RestUtils;
 
 /**
  * Base class for all JPARS tests.
@@ -60,7 +61,7 @@ public abstract class BaseJparsTest {
         ExamplePropertiesLoader.loadProperties(properties);
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
+        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicRestClassLoader(Thread.currentThread().getContextClassLoader()));
         emf = Persistence.createEntityManagerFactory(pu, properties);
 
         factory = new PersistenceFactoryBase();

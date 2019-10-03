@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,8 @@ package org.eclipse.persistence.jpa.rs.features.core.selflinks;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.ItemLinks;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
+import org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.internal.queries.ReportItem;
-import org.eclipse.persistence.internal.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;

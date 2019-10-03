@@ -125,7 +125,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(getDefaultConstructor(), (Object[])null));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(getDefaultConstructor(), null));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof InvocationTargetException){
@@ -317,7 +317,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
         try {
             if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                 try {
-                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(buildFactoryDefaultConstructor(), (Object[])null));
+                    return AccessController.doPrivileged(new PrivilegedInvokeConstructor(buildFactoryDefaultConstructor(), null));
                 } catch (PrivilegedActionException exception) {
                     Exception throwableException = exception.getException();
                     if (throwableException instanceof InvocationTargetException){
@@ -329,7 +329,7 @@ public class InstantiationPolicy extends CoreInstantiationPolicy implements Clon
                     }
                  }
             } else {
-                return PrivilegedAccessHelper.invokeConstructor(buildFactoryDefaultConstructor(), (Object[])null);
+                return PrivilegedAccessHelper.invokeConstructor(buildFactoryDefaultConstructor(), null);
             }
         } catch (InvocationTargetException exception) {
             throw DescriptorException.targetInvocationWhileConstructorInstantiationOfFactory(getDescriptor(), exception);

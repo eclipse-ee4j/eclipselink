@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,7 +78,7 @@ public class XMLVariableXPathCollectionMappingNodeValue extends XMLVariableXPath
 
         if(marshalRecord.getMarshaller().isApplicationJSON()){
             List<XPathFragment> frags = new ArrayList();
-            List<List> values = new ArrayList<List>();
+            List<List> values = new ArrayList<>();
 
             //sort the elements. Results will be a list of xpathfragments and a corresponding list of
             //collections associated with those xpathfragments

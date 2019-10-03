@@ -1,5 +1,7 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * 
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +35,6 @@ import java.util.Map;
 import java.util.Vector;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.PessimisticLock;
@@ -94,6 +95,8 @@ import org.eclipse.persistence.testing.models.jpa.inherited.InheritedTableManage
 import org.eclipse.persistence.testing.models.jpa.inherited.TelephoneNumber;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
+
+import org.junit.Assert;
 
 /**
  * <p>
@@ -4490,7 +4493,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                             beginTransaction(em2);
                             Query query2 = em2.createQuery("select e from Employee e where e.id = :id");
                             query2.setParameter("id", bobId);
-                            query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 10);
+                            query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 10000);
                             Employee emp = (Employee) query2.getSingleResult(); // might wait for lock to be released
                             emp.setFirstName("Robert");
                             commitTransaction(em2); // might wait for lock to be released
@@ -4658,8 +4661,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
          closeEntityManager(em);
     }
 
-    public void converterOnElementCollectionTest()
-    {
+    public void converterOnElementCollectionTest() {
         EntityManager em = createEntityManager();
 
         beginTransaction(em);
@@ -4673,7 +4675,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         String ejbqlString = "SELECT b.creditLines FROM Buyer b where b.id = :id";
         Object result = em.createQuery(ejbqlString).setParameter("id", buyer.getId()).getSingleResult();
-        assertTrue("Converter not applied to element collection in jpql", (result instanceof Long));
+        Assert.assertEquals("Converter not applied to element collection in jpql", Long.class, result.getClass());
         rollbackTransaction(em);
     }
 

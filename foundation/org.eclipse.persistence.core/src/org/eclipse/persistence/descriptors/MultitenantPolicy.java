@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,13 +33,13 @@ import org.eclipse.persistence.tools.schemaframework.TableDefinition;
  * @since EclipseLink 2.3.1
  */
 public interface MultitenantPolicy extends Serializable {
-    public abstract void addToTableDefinition(TableDefinition tableDefinition);
-    public abstract void addFieldsToRow(AbstractRecord row, AbstractSession session);
-    public abstract MultitenantPolicy clone(ClassDescriptor descriptor);
-    public abstract boolean isSingleTableMultitenantPolicy();
-    public abstract boolean isSchemaPerMultitenantPolicy();
-    public abstract boolean isTablePerMultitenantPolicy();
-    public abstract void postInitialize(AbstractSession session);
-    public abstract void initialize(AbstractSession session) throws DescriptorException;
-    public abstract void preInitialize(AbstractSession session) throws DescriptorException;
+    void addToTableDefinition(TableDefinition tableDefinition);
+    void addFieldsToRow(AbstractRecord row, AbstractSession session);
+    MultitenantPolicy clone(ClassDescriptor descriptor);
+    boolean isSingleTableMultitenantPolicy();
+    boolean isSchemaPerMultitenantPolicy();
+    boolean isTablePerMultitenantPolicy();
+    void postInitialize(AbstractSession session);
+    void initialize(AbstractSession session) throws DescriptorException;
+    void preInitialize(AbstractSession session) throws DescriptorException;
 }

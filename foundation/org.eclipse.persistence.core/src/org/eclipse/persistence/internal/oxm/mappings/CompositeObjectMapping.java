@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,27 +39,27 @@ public interface CompositeObjectMapping<
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    public InverseReferenceMapping getInverseReferenceMapping();
+    InverseReferenceMapping getInverseReferenceMapping();
 
-    public UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
+    UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
 
-    public AbstractNullPolicy getNullPolicy();
+    AbstractNullPolicy getNullPolicy();
 
     /**
      * PUBLIC:
      * Returns the reference class
      */
-    public Class getReferenceClass();
+    Class getReferenceClass();
 
-    public String getReferenceClassName();
+    String getReferenceClassName();
 
-    public boolean hasConverter();
+    boolean hasConverter();
 
-    public void setConverter(CONVERTER converter);
+    void setConverter(CONVERTER converter);
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 
-    public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY keepAsElementPolicy);
+    void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY keepAsElementPolicy);
 
     /**
      * Set the AbstractNullPolicy on the mapping<br>
@@ -67,21 +67,21 @@ public interface CompositeObjectMapping<
      *
      * @param aNullPolicy
      */
-    public void setNullPolicy(AbstractNullPolicy aNullPolicy);
+    void setNullPolicy(AbstractNullPolicy aNullPolicy);
 
     /**
      * This is a reference class whose instances this mapping will store in the domain objects.
      */
-    public void setReferenceClass(Class aClass);
+    void setReferenceClass(Class aClass);
 
-    public void setReferenceClassName(String aClassName);
+    void setReferenceClassName(String aClassName);
 
-    public void setXPath(String string);
+    void setXPath(String string);
 
     /**
      * ADVANCED:
      * Set the field in the mapping.
      */
-    public void setField(FIELD theField);
+    void setField(FIELD theField);
 
 }

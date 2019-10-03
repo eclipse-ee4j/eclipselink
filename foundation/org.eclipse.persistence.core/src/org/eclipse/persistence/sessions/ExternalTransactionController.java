@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,7 @@ public interface ExternalTransactionController {
      * after it's determined whether sequencing callbacks (and therefore listeners)
      * will be required.
      */
-    public void initializeSequencingListeners();
+    void initializeSequencingListeners();
 
     /**
      * INTERNAL:
@@ -107,23 +107,23 @@ public interface ExternalTransactionController {
      * DatabaseSession is passed for the sake of SessionBroker case.
      * This method requires active external transaction.
      */
-    public SequencingCallback getActiveSequencingCallback(DatabaseSession dbSession, SequencingCallbackFactory sequencingCallbackFactory);
+    SequencingCallback getActiveSequencingCallback(DatabaseSession dbSession, SequencingCallbackFactory sequencingCallbackFactory);
 
     /**
      * INTERNAL:
      * Clears sequencing listeners.
      * Called by initializeSequencingListeners and by sequencing on disconnect.
      */
-    public void clearSequencingListeners();
+    void clearSequencingListeners();
 
 
     /**
      * Return the exception handler used to handle or wrap exceptions thrown in before/after completion.
      */
-    public ExceptionHandler getExceptionHandler();
+    ExceptionHandler getExceptionHandler();
 
     /**
      * Set an exception handler to handle or wrap exceptions thrown in before/after completion.
      */
-    public void setExceptionHandler(ExceptionHandler exceptionHandler);
+    void setExceptionHandler(ExceptionHandler exceptionHandler);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,11 +18,11 @@ import java.io.*;
 import org.eclipse.persistence.indirection.*;
 
 public class AddressDescription implements Serializable {
-    public ValueHolderInterface address;
+    public ValueHolderInterface<Address> address;
     public PeriodDescription periodDescription;
 
     public AddressDescription() {
-        address = new ValueHolder();
+        address = new ValueHolder<>();
     }
 
     public static AddressDescription example1() {
@@ -73,7 +73,7 @@ public class AddressDescription implements Serializable {
         return example;
     }
 
-    public ValueHolderInterface getAddress() {
+    public ValueHolderInterface<Address> getAddress() {
         return address;
     }
 

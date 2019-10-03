@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,6 +78,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -123,6 +124,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.oxm.XMLConstants;
@@ -2167,6 +2170,7 @@ public class MappingsGenerator {
     }
 
     public CompositeCollectionMapping generateCompositeCollectionMapping(Property property, Descriptor descriptor, JavaClass javaClass, NamespaceInfo namespaceInfo, String referenceClassName) {
+        boolean nestedArray = false;
         CompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         initializeXMLMapping((XMLMapping)mapping, property);
         initializeXMLContainerMapping(mapping, property.getType().isArray());
@@ -2214,6 +2218,14 @@ public class MappingsGenerator {
             String mapClassName = property.getType().getRawName();
             mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName, helper.getClassLoader()));
         }
+        //Nested array check (used in JSON marshalling)
+        if (collectionType.getComponentType() == null) {
+            if ((collectionType.isArray() || helper.isCollectionType(collectionType)) && (referenceClassName != null && referenceClassName.contains(AnnotationsProcessor.ARRAY_PACKAGE_NAME))) {
+                nestedArray = true;
+            }
+        } else if ((collectionType.isArray() || helper.isCollectionType(collectionType)) && (collectionType.getComponentType().isArray() || helper.isCollectionType(collectionType.getComponentType()))) {
+            nestedArray = true;
+        }
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
@@ -2243,6 +2255,7 @@ public class MappingsGenerator {
             ((Field) mapping.getField()).setRequired(true);
         }
 
+        ((Field) mapping.getField()).setNestedArray(nestedArray);
         return mapping;
     }
 
@@ -2522,6 +2535,9 @@ public class MappingsGenerator {
                 }
             }
             info.postInitialize();
+            if (descriptor != null) {
+                logMappingGeneration(descriptor);
+            }
         }
     }
 
@@ -3529,5 +3545,16 @@ public class MappingsGenerator {
 
     private NamespaceResolver getNamespaceResolverForDescriptor(NamespaceInfo info) {
         return info.getNamespaceResolverForDescriptor(globalNamespaceResolver, isDefaultNamespaceAllowed);
+    }
+
+    private void logMappingGeneration(Descriptor xmlDescriptor) {
+        String i18nmsg = JAXBLocalization.buildMessage("create_mappings", new Object[] { xmlDescriptor.getJavaClassName() });
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, i18nmsg, new Object[0], false);
+        Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
+        Mapping xmlMapping;
+        while (mappingIterator.hasNext()) {
+            xmlMapping = (Mapping) mappingIterator.next();
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, xmlMapping.toString(), new Object[0], false);
+        }
     }
 }

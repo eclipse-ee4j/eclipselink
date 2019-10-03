@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,7 +129,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * Add to the changes for 'object' object to this changeSet. This method
      * will not add to the lists that are used for identity lookups.
      * The passed change set *must* either have changes or forced changes.
-     * @see addObjectChangeSetForIdentity()
+     * @see #addObjectChangeSetForIdentity(ObjectChangeSet, Object)
      * @param forceToNewObjectList - Any pre commit actions should pass in true
      * since new objects have extra-handling. Anything post commit, pass in
      * false.
@@ -175,7 +175,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
                         Map<ObjectChangeSet, ObjectChangeSet> map = getObjectChanges().get(objectChanges.getClassType());
 
                         if (map == null) {
-                            map = new HashMap<ObjectChangeSet, ObjectChangeSet>();
+                            map = new HashMap<>();
                             getObjectChanges().put(objectChanges.getClassType(), map);
                             map.put(objectChanges, objectChanges);
                         } else {
@@ -193,14 +193,14 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * add to the lists that are used for identity lookups.  It is called specifically
      * for new objects, and new object will be moved to the standard changes list by
      * the QueryMechanism after insert.
-     * @see addObjectChangeSetForIdentity()
+     * @see #addObjectChangeSetForIdentity(ObjectChangeSet, Object)
      * @param objectChanges the new object change set
      */
     protected void addNewObjectChangeSet(ObjectChangeSet objectChanges, AbstractSession session) {
         Map<ObjectChangeSet, ObjectChangeSet> changeSetTable = getNewObjectChangeSets().get(objectChanges.getClassType(session));
         if (changeSetTable == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            changeSetTable = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
+            changeSetTable = new IdentityHashMap<>();
             getNewObjectChangeSets().put(objectChanges.getClassType(session), changeSetTable);
         }
         changeSetTable.put(objectChanges, objectChanges);
@@ -271,7 +271,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      * INTERNAL:
      * Add change records to the lists used to maintain identity.  This will not actually
      * add the changes to 'object' to the change set.
-     * @see addObjectChangeSet()
+     * @see #addObjectChangeSet(ObjectChangeSet, AbstractSession, boolean)
      * @param objectChanges prototype.changeset.ObjectChanges
      */
     public void addObjectChangeSetForIdentity(ObjectChangeSet objectChanges, Object object) {
@@ -294,7 +294,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public Map<ObjectChangeSet, ObjectChangeSet> getAggregateChangeSets() {
         if (this.aggregateChangeSets == null) {
-            this.aggregateChangeSets = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
+            this.aggregateChangeSets = new IdentityHashMap<>();
         }
         return this.aggregateChangeSets;
     }
@@ -307,7 +307,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     public Map<ObjectChangeSet, ObjectChangeSet> getAllChangeSets() {
         if (this.allChangeSets == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            this.allChangeSets = new IdentityHashMap<ObjectChangeSet, ObjectChangeSet>();
+            this.allChangeSets = new IdentityHashMap<>();
         }
         return this.allChangeSets;
     }
@@ -428,7 +428,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> getObjectChanges() {
         if (objectChanges == null) {
-            objectChanges = new HashMap<Class, Map<ObjectChangeSet, ObjectChangeSet>>();
+            objectChanges = new HashMap<>();
         }
         return objectChanges;
     }
@@ -436,13 +436,12 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     /**
      * INTERNAL:
      * Returns the set of classes corresponding to updated objects in objectChanges.
-     * @return HashSet<Class>
      */
     public Set<ClassDescriptor> findUpdatedObjectsClasses() {
         if (this.objectChanges == null || this.objectChanges.isEmpty()) {
             return null;
         }
-        HashSet<ClassDescriptor> updatedObjectsClasses = new HashSet<ClassDescriptor>(getObjectChanges().size());
+        HashSet<ClassDescriptor> updatedObjectsClasses = new HashSet<>(getObjectChanges().size());
         for (Map<ObjectChangeSet, ObjectChangeSet> objectChanges : getObjectChanges().values()) {
             for (ObjectChangeSet changeSet : objectChanges.values()) {
                 // any change set will do
@@ -478,7 +477,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
     protected Map<ObjectChangeSet, Object> getObjectChangeSetToUOWClone() {
         if (this.objectChangeSetToUOWClone == null) {
             // 2612538 - the default size of Map (32) is appropriate
-            this.objectChangeSetToUOWClone = new IdentityHashMap<ObjectChangeSet, Object>();
+            this.objectChangeSetToUOWClone = new IdentityHashMap<>();
         }
         return objectChangeSetToUOWClone;
     }
@@ -692,7 +691,7 @@ public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistenc
      */
     public Map<Class, Map<ObjectChangeSet, ObjectChangeSet>> getNewObjectChangeSets() {
         if (this.newObjectChangeSets == null) {
-            this.newObjectChangeSets = new HashMap<Class, Map<ObjectChangeSet, ObjectChangeSet>>();
+            this.newObjectChangeSets = new HashMap<>();
         }
         return this.newObjectChangeSets;
     }

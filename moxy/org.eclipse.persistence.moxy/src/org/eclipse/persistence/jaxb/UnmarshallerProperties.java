@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -323,4 +323,35 @@ public class UnmarshallerProperties {
 
     public static final String DISABLE_SECURE_PROCESSING = OXMSystemProperties.DISABLE_SECURE_PROCESSING;
 
+    /**
+     * Property for MOXy logging level.
+     *
+     * This is to make maintenance easier and to allow MOXy generate more diagnostic log messages.
+     *
+     * Allowed values are specified in {@link org.eclipse.persistence.logging.LogLevel}
+     * Default value is {@link org.eclipse.persistence.logging.LogLevel#INFO}
+     *
+     * @since 3.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.logging.LogLevel
+     */
+    public static final String MOXY_LOGGING_LEVEL = "eclipselink.logging.level.moxy";
+
+    /**
+     * Property for logging Entities content during marshalling/unmarshalling operation in MOXy.
+     * It calls toString() method from entity.
+     *
+     * This is to make maintenance easier and to allow for debugging to check marshalled/unmarshalled content.
+     * Use it carefully. It can produce high amount of data in the log files.
+     *
+     * Usage: set to {@link Boolean#TRUE} to enable payload logging, set to {@link Boolean#FALSE} to disable it.
+     * It can be set via system property with name "eclipselink.logging.payload.moxy" too.
+     * By default it is disabled.
+     *
+     * @since 3.0
+     * @see org.eclipse.persistence.jaxb.JAXBContextProperties#MOXY_LOG_PAYLOAD
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#MOXY_LOG_PAYLOAD
+     */
+    public static final String MOXY_LOG_PAYLOAD = "eclipselink.logging.payload.moxy";
 }

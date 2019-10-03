@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,6 @@ import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.XPathFragment;
 import org.eclipse.persistence.internal.oxm.XPathQName;
 import org.eclipse.persistence.internal.oxm.mappings.Descriptor;
-import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.UnmarshalKeepAsElementPolicy;
 import org.eclipse.persistence.internal.oxm.record.namespaces.StackUnmarshalNamespaceResolver;
 import org.eclipse.persistence.internal.oxm.record.namespaces.UnmarshalNamespaceResolver;
@@ -283,7 +282,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
                        // sure it is non-abstract
                        if (Modifier.isAbstract(xmlDescriptor.getJavaClass().getModifiers())) {
                            // need to throw an exception here
-                           throw DescriptorException.missingClassIndicatorField((XMLRecord) tmpUnmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
+                           throw DescriptorException.missingClassIndicatorField(tmpUnmarshalRecord, (org.eclipse.persistence.oxm.XMLDescriptor)xmlDescriptor.getInheritancePolicy().getDescriptor());
                        }
                    }
                 }
@@ -359,7 +358,7 @@ public class SAXUnmarshallerHandler implements ExtendedContentHandler {
             rootRecord.setUnmarshalNamespaceResolver(unmarshalNamespaceResolver);
 
             rootRecord.startDocument();
-            rootRecord.initializeRecord((Mapping) null);
+            rootRecord.initializeRecord(null);
             xmlReader.setContentHandler(rootRecord);
             xmlReader.setLexicalHandler(rootRecord);
 

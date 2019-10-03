@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,14 +48,20 @@ public class TestSQLCast {
     @Test
     public void testSQLCastPropertyApplied() {
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            Session session = ((EntityManagerImpl) em).getActiveSession();
 
-        Session session = ((EntityManagerImpl) em).getActiveSession();
-
-        DatabasePlatform dbplatform = session.getPlatform();
-        Assert.assertTrue("Persistent property 'eclipselink.jdbc.sql-cast' did not apply", dbplatform.isCastRequired());
-
-        em.getTransaction().rollback();
+            DatabasePlatform dbplatform = session.getPlatform();
+            Assert.assertTrue("Persistent property 'eclipselink.jdbc.sql-cast' did not apply", dbplatform.isCastRequired());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 }

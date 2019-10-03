@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,25 +38,25 @@ public interface AnyCollectionMapping<
     UNMARSHALLER extends Unmarshaller,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLContainerMapping, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    public UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
+    UNMARSHAL_KEEP_AS_ELEMENT_POLICY getKeepAsElementPolicy();
 
-    public boolean isMixedContent();
+    boolean isMixedContent();
 
-    public boolean isWhitespacePreservedForMixedContent();
+    boolean isWhitespacePreservedForMixedContent();
 
-    public void setConverter(CONVERTER conv);
+    void setConverter(CONVERTER conv);
 
-    public void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY unmarshalKeepAsElementPolicy);
+    void setKeepAsElementPolicy(UNMARSHAL_KEEP_AS_ELEMENT_POLICY unmarshalKeepAsElementPolicy);
 
-    public void setField(FIELD field);
+    void setField(FIELD field);
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 
-    public void setMixedContent(boolean mixed);
+    void setMixedContent(boolean mixed);
 
-    public void setPreserveWhitespaceForMixedContent(boolean preserveWhitespace);
+    void setPreserveWhitespaceForMixedContent(boolean preserveWhitespace);
 
-    public void setUseXMLRoot(boolean useXMLRoot);
+    void setUseXMLRoot(boolean useXMLRoot);
 
     /**
      * Configure the mapping to use an instance of the specified container class
@@ -64,8 +64,8 @@ public interface AnyCollectionMapping<
      * <p>jdk1.2.x: The container class must implement (directly or indirectly) the Collection interface.
      * <p>jdk1.1.x: The container class must be a subclass of Vector.
      */
-    public void useCollectionClass(Class concreteContainerClass);
+    void useCollectionClass(Class concreteContainerClass);
 
-    public boolean usesXMLRoot();
+    boolean usesXMLRoot();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,32 +16,64 @@
 //       - 307547:  Exception in order by clause after migrating to eclipselink 1.2 release
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import java.util.*;
+import static javax.persistence.CascadeType.ALL;
+import static javax.persistence.CascadeType.MERGE;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.TABLE;
+import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES;//INVALIDATE_CHANGED_OBJECTS;
+import static org.eclipse.persistence.annotations.CacheType.FULL;//SOFT_WEAK;
+import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
+
 import java.io.Serializable;
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumSet;
+import java.util.Set;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.LockModeType;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.CollectionTable;
-import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.ConversionValue;
+import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.annotations.JoinFetch;
 import org.eclipse.persistence.annotations.JoinFetchType;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.ObjectTypeConverters;
+import org.eclipse.persistence.annotations.OptimisticLocking;
 import org.eclipse.persistence.annotations.PrivateOwned;
 import org.eclipse.persistence.annotations.TypeConverter;
 import org.eclipse.persistence.annotations.TypeConverters;
-import org.eclipse.persistence.annotations.OptimisticLocking;
-
-import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_NEW_OBJECTS_WITH_CHANGES;//INVALIDATE_CHANGED_OBJECTS;
-import static org.eclipse.persistence.annotations.CacheType.FULL;//SOFT_WEAK;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.GenerationType.*;
-import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
+import org.eclipse.persistence.config.CacheIsolationType;
 
 /**
  * Employees have a one-to-many relationship with Employees through the
@@ -120,7 +152,7 @@ import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_
 })
 @Cache(
     type=FULL,
-    shared=true,
+    isolation=CacheIsolationType.SHARED,
     expiry=100000,
     alwaysRefresh=false, // some test dependencies for this to be false.
     disableHits=true, // Employee customizer should set it back to false.
@@ -249,6 +281,7 @@ public class Employee implements Serializable, Cloneable {
         this.lastName = lastName;
     }
 
+    @Override
     public Employee clone() {
         try {
             return (Employee)super.clone();
@@ -495,6 +528,7 @@ public class Employee implements Serializable, Cloneable {
         this.workWeek = workWeek;
     }
 
+    @Override
     public String toString() {
         return "Employee: " + getId();
     }

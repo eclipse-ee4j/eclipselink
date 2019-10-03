@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -99,7 +99,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
 
     public void addForeignKeyConstraint(ForeignKeyConstraint foreignKeyConstraint) {
         if (foreignKeyConstraints == null) {
-            foreignKeyConstraints = new HashMap<String, ForeignKeyConstraint>();
+            foreignKeyConstraints = new HashMap<>();
         }
 
         foreignKeyConstraints.put(foreignKeyConstraint.getName(), foreignKeyConstraint);
@@ -121,7 +121,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
         if (getUniqueConstraints().containsKey(name)) {
             getUniqueConstraints().get(name).add(columnNames);
         } else {
-            List<List<String>> value = new ArrayList<List<String>>();
+            List<List<String>> value = new ArrayList<>();
             value.add(columnNames);
             getUniqueConstraints().put(name, value);
         }
@@ -202,7 +202,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
      */
     public List<IndexDefinition> getIndexes() {
         if (this.indexes == null) {
-            this.indexes = new ArrayList<IndexDefinition>();
+            this.indexes = new ArrayList<>();
         }
         return this.indexes;
     }
@@ -297,7 +297,7 @@ public class DatabaseTable implements CoreTable, Cloneable, Serializable {
      */
     public Map<String, List<List<String>>> getUniqueConstraints() {
         if (this.uniqueConstraints == null) {
-            this.uniqueConstraints = new HashMap<String, List<List<String>>>();
+            this.uniqueConstraints = new HashMap<>();
         }
         return this.uniqueConstraints;
     }

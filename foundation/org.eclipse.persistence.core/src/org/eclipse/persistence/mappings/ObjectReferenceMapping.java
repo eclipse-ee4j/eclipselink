@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -521,7 +521,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
         if (shouldMergeCascadeParts(mergeManager) && (valueOfSource != null)) {
             if ((mergeManager.getSession().isUnitOfWork()) && (((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet() != null)) {
                 // If it is a unit of work, we have to check if I have a change Set fot this object
-                Object targetValue = mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), (ObjectChangeSet)((UnitOfWorkChangeSet)((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet()).getObjectChangeSetForClone(valueOfSource), targetSession);
+                Object targetValue = mergeManager.mergeChanges(mergeManager.getObjectToMerge(valueOfSource, referenceDescriptor, targetSession), (ObjectChangeSet) ((UnitOfWorkImpl)mergeManager.getSession()).getUnitOfWorkChangeSet().getObjectChangeSetForClone(valueOfSource), targetSession);
                 if (target == source && targetValue != valueOfSource && (this.descriptor.getObjectChangePolicy().isObjectChangeTrackingPolicy()) && (target instanceof ChangeTracker) && (((ChangeTracker)target)._persistence_getPropertyChangeListener() != null)) {
                     ObjectChangeListener listener = (ObjectChangeListener)((ChangeTracker)target)._persistence_getPropertyChangeListener();
                     if (listener != null){
@@ -669,7 +669,7 @@ public abstract class ObjectReferenceMapping extends ForeignReferenceMapping {
     public void postCalculateChanges(org.eclipse.persistence.sessions.changesets.ChangeRecord changeRecord, UnitOfWorkImpl uow) {
         // no need for private owned check.  This code is only registered for private owned mappings.
         // targets are added to and/or removed to/from the source.
-        Object oldValue = ((ObjectReferenceChangeRecord)changeRecord).getOldValue();
+        Object oldValue = changeRecord.getOldValue();
         if (oldValue != null) {
             uow.addDeletedPrivateOwnedObjects(this, oldValue);
         }

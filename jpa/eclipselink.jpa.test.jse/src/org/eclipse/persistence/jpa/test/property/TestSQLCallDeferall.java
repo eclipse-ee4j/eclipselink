@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,18 +44,26 @@ public class TestSQLCallDeferall {
     @Test
     public void testSQLDeferralProperty() {
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            Parent parent = new Parent();
+            em.persist(parent);
 
-        Parent parent = new Parent();
-        em.persist(parent);
+            Child child = new Child();
+            child.setParent(parent);
+            em.persist(child);
 
-        Child child = new Child();
-        child.setParent(parent);
-        em.persist(child);
-
-        // expects: INSERT order: AbstractParent, Parent, Child
-        // ECL default: INSERT order: AbstractParent, Child, Parent(deferred)
-        em.getTransaction().commit();
+            // expects: INSERT order: AbstractParent, Parent, Child
+            // ECL default: INSERT order: AbstractParent, Child, Parent(deferred)
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 }

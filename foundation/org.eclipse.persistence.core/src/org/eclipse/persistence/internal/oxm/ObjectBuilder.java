@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,34 +32,34 @@ public interface ObjectBuilder<
     DESCRIPTOR extends CoreDescriptor,
     MARSHALLER extends Marshaller> {
 
-    public boolean addClassIndicatorFieldToRow(AbstractMarshalRecord record);
+    boolean addClassIndicatorFieldToRow(AbstractMarshalRecord record);
 
-    public List addExtraNamespacesToNamespaceResolver(Descriptor desc, AbstractMarshalRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers);
+    List addExtraNamespacesToNamespaceResolver(Descriptor desc, AbstractMarshalRecord marshalRecord, CoreAbstractSession session, boolean allowOverride, boolean ignoreEqualResolvers);
 
-    public Object buildNewInstance();
+    Object buildNewInstance();
 
-    public XMLRecord buildRow(XMLRecord record, Object object, CoreAbstractSession session, MARSHALLER marshaller, XPathFragment rootFragment);
+    XMLRecord buildRow(XMLRecord record, Object object, CoreAbstractSession session, MARSHALLER marshaller, XPathFragment rootFragment);
 
-    public Class classFromRow(UnmarshalRecord record, ABSTRACT_SESSION session);
+    Class classFromRow(UnmarshalRecord record, ABSTRACT_SESSION session);
 
-    public ABSTRACT_RECORD createRecord(ABSTRACT_SESSION session);
+    ABSTRACT_RECORD createRecord(ABSTRACT_SESSION session);
 
-    public Object extractPrimaryKeyFromObject(Object currentObject, ABSTRACT_SESSION session);
+    Object extractPrimaryKeyFromObject(Object currentObject, ABSTRACT_SESSION session);
 
-    public List<ContainerValue> getContainerValues();
+    List<ContainerValue> getContainerValues();
 
-    public List<ContainerValue> getDefaultEmptyContainerValues();
+    List<ContainerValue> getDefaultEmptyContainerValues();
 
-    public DESCRIPTOR getDescriptor();
+    DESCRIPTOR getDescriptor();
 
-    public List<NullCapableValue> getNullCapableValues();
+    List<NullCapableValue> getNullCapableValues();
 
-    public XPathNode getRootXPathNode();
+    XPathNode getRootXPathNode();
 
-    public List<TransformationMapping> getTransformationMappings();
+    List<TransformationMapping> getTransformationMappings();
 
-    public boolean isXsiTypeIndicatorField();
+    boolean isXsiTypeIndicatorField();
 
-    public boolean marshalAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session);
+    boolean marshalAttributes(MarshalRecord marshalRecord, Object object, CoreAbstractSession session);
 
 }

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +22,8 @@
 //     09/03/2015 - Will Dazey
 //       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.config;
+
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -243,14 +246,14 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeout(Integer)
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
-    
+
     /**
      * "eclipselink.pessimistic.lock.timeout.unit"
      * <p>Configures the pessimistic lock timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT), 
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>", 
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeoutUnit(TimeUnit)
@@ -378,8 +381,8 @@ public class QueryHints {
      * <p>Configures the query timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT), 
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>", 
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeoutUnit(TimeUnit)
@@ -425,7 +428,7 @@ public class QueryHints {
      * If a Collection type that is not a List is used, getResultCollection() or getSingleResult() must be used instead of
      * getResultList().
      * <p>e.g. "java.util.ArrayList"
-     * @see org.eclipse.persistence.jpa.JpaQuery#getResultCollection()
+     * @see "org.eclipse.persistence.jpa.JpaQuery#getResultCollection()"
      * @see org.eclipse.persistence.queries.ReadAllQuery#useCollectionClass(Class)
      */
     public static final String RESULT_COLLECTION_TYPE = "eclipselink.result-collection-type";
@@ -546,8 +549,8 @@ public class QueryHints {
      * MAX_ROWS and FIRST_RESULT can also be used instead of cursors to obtain a page of results.
      * Valid values are:  HintValues.FALSE, HintValues.TRUE,
      * "" could be used instead of default value HintValues.FALSE
-     * @see org.eclipse.persistence.jpa.JpaQuery#getSingleResult()
-     * @see org.eclipse.persistence.jpa.JpaQuery#getResultCursor()
+     * @see "org.eclipse.persistence.jpa.JpaQuery#getSingleResult()"
+     * @see "org.eclipse.persistence.jpa.JpaQuery#getResultCursor()"
      * @see org.eclipse.persistence.queries.Cursor
      * @see org.eclipse.persistence.queries.CursoredStream
      * @see org.eclipse.persistence.queries.ReadAllQuery#useCursoredStream()
@@ -599,8 +602,8 @@ public class QueryHints {
      * MAX_ROWS and FIRST_RESULT can also be used instead of cursors to obtain a page of results.
      * Valid values are:  HintValues.FALSE, HintValues.TRUE,
      * "" could be used instead of default value HintValues.FALSE
-     * @see org.eclipse.persistence.jpa.JpaQuery#getSingleResult()
-     * @see org.eclipse.persistence.jpa.JpaQuery#getResultCursor()
+     * @see "org.eclipse.persistence.jpa.JpaQuery#getSingleResult()"
+     * @see "org.eclipse.persistence.jpa.JpaQuery#getResultCursor()"
      * @see org.eclipse.persistence.queries.Cursor
      * @see org.eclipse.persistence.queries.ScrollableCursor
      * @see org.eclipse.persistence.queries.ReadAllQuery#useScrollableCursor()

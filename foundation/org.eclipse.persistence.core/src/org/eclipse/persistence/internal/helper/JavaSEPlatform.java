@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -67,7 +67,7 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
          * Get major version number.
          * @return Major version number.
          */
-        public final int getMajor() {
+        public int getMajor() {
             return major;
         }
 
@@ -75,7 +75,7 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
          * Get minor version number.
          * @return Minor version number.
          */
-        public final int getMinor() {
+        public int getMinor() {
             return minor;
         }
 
@@ -104,7 +104,7 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
      * conversion.
      */
     private static final Map<String, JavaSEPlatform> stringValuesMap
-            = new HashMap<String, JavaSEPlatform>(values().length);
+            = new HashMap<>(values().length);
 
     // Initialize backward String conversion Map.
     static {

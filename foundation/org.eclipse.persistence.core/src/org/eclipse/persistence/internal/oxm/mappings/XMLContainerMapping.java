@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ public interface XMLContainerMapping {
      * This is the default setting for the defaultEmptyContainer property.  This
      * can be overridden at the mapping level.
      */
-    static final boolean EMPTY_CONTAINER_DEFAULT = true;
+    boolean EMPTY_CONTAINER_DEFAULT = true;
 
     /**
      * Return true if a pre-initialized container already set on the
@@ -38,7 +38,7 @@ public interface XMLContainerMapping {
     /**
      * Get the Wrapper NullPolicy from the Mapping.
      */
-    public AbstractNullPolicy getWrapperNullPolicy();
+    AbstractNullPolicy getWrapperNullPolicy();
 
     /**
      * Return true if an empty container should be set on the object if there

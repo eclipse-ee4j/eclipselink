@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,8 +60,8 @@ public class SessionBroker extends DatabaseSessionImpl {
     public SessionBroker() {
         super(new org.eclipse.persistence.sessions.DatabaseLogin());
 
-        this.sessionsByName = new HashMap<String, AbstractSession>();
-        this.sessionNamesByClass = new HashMap<Class, String>();
+        this.sessionsByName = new HashMap<>();
+        this.sessionNamesByClass = new HashMap<>();
     }
 
     /**
@@ -72,7 +72,7 @@ public class SessionBroker extends DatabaseSessionImpl {
     protected SessionBroker(Map sessionNames) {
         super(new org.eclipse.persistence.sessions.DatabaseLogin());
 
-        this.sessionsByName = new HashMap<String, AbstractSession>();
+        this.sessionsByName = new HashMap<>();
         this.sessionNamesByClass = sessionNames;
     }
 

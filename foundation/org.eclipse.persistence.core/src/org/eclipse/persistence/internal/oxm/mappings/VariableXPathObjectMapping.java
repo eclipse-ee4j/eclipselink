@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,25 +40,25 @@ UNMARSHALLER extends Unmarshaller,
 XML_RECORD extends XMLRecord>
 extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD>, XMLConverterMapping<MARSHALLER, SESSION, UNMARSHALLER> {
 
-    public ATTRIBUTE_ACCESSOR getVariableAttributeAccessor();
+    ATTRIBUTE_ACCESSOR getVariableAttributeAccessor();
 
-    public XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware,char sep);
+    XPathFragment getXPathFragmentForValue(Object obj, NamespaceResolver nr, boolean isNamespaceAware,char sep);
 
-    public boolean isAttribute();
+    boolean isAttribute();
 
-    public void setAttribute(boolean isAttribute);
+    void setAttribute(boolean isAttribute);
 
-    public void setConverter(CONVERTER converter);
+    void setConverter(CONVERTER converter);
 
-    public void setIsWriteOnly(boolean isWriteOnly);
+    void setIsWriteOnly(boolean isWriteOnly);
 
-    public void setReferenceClassName(String aClassName);
+    void setReferenceClassName(String aClassName);
 
-    public void setVariableAttributeAccessor(ATTRIBUTE_ACCESSOR variableAttributeAccessor);
+    void setVariableAttributeAccessor(ATTRIBUTE_ACCESSOR variableAttributeAccessor);
 
-    public void setVariableAttributeName(String variableAttributeName);
+    void setVariableAttributeName(String variableAttributeName);
 
-    public void setVariableGetMethodName(String variableGetMethodName);
+    void setVariableGetMethodName(String variableGetMethodName);
 
-    public void setVariableSetMethodName(String variableSetMethodName);
+    void setVariableSetMethodName(String variableSetMethodName);
 }

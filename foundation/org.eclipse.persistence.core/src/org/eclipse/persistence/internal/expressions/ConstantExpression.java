@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,15 @@
 //     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
@@ -257,7 +261,7 @@ public class ConstantExpression extends Expression {
      * Append the constant value into the printer
      */
     @Override
-    public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+    public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         if (printer.getPlatform().isDynamicSQLRequiredForFunctions()) {
             printer.getCall().setUsesBinding(false);
         }
@@ -269,7 +273,7 @@ public class ConstantExpression extends Expression {
         }
 
         // This field is a constant value, so any name can be used.
-        newFields.addElement(new DatabaseField("*"));
+        newFields.add(new DatabaseField("*"));
         printSQL(printer);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -175,7 +175,7 @@ public class JPAMetadataGenerator {
      * The database platform is used to get class names for database types, i.e.
      * java.math.BigDecimal for DECIMAL.
      *
-     * @see org.eclipse.persistence.platform.database.oracle.Oracle11Platform
+     * @see "org.eclipse.persistence.platform.database.oracle.Oracle11Platform"
      * @see org.eclipse.persistence.internal.databaseaccess.DatabasePlatform
      */
     public JPAMetadataGenerator() {
@@ -475,7 +475,7 @@ public class JPAMetadataGenerator {
     /**
      * Convenience method that returns a query name  for a given ProcedureType.
      * The name will be the procedureName value of the ProcedureType with
-     * "_" + overload value if the ProcedureType's overload value is > 0.
+     * "_" + overload value if the ProcedureType's overload value is &gt; 0.
      *
      * For example, if the procedureName value is "P1" and overload == 0, "P1"
      * is returned.  If the procedureName value is "P1" and overload == 4,
@@ -1101,7 +1101,7 @@ public class JPAMetadataGenerator {
      *
      * @param platformClassName class name of the DatabasePlatform to be loaded
      * @return DatabasePlatform loaded for the given platformClassname, or Oracle11Platform if not found
-     * @see org.eclipse.persistence.platform.database.oracle.Oracle11Platform
+     * @see "org.eclipse.persistence.platform.database.oracle.Oracle11Platform"
      */
     public static DatabasePlatform loadDatabasePlatform(String platformClassName) {
         DatabasePlatform dbPlatform = null;

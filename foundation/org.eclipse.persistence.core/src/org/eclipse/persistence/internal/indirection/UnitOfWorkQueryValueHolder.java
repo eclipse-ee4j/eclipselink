@@ -179,7 +179,7 @@ public class UnitOfWorkQueryValueHolder extends UnitOfWorkValueHolder {
                     if (getMapping().isObjectReferenceMapping()) {
                         if (!partner.isCollectionMapping()) {
                             // If the back pointer is a collection it's OK that I'm adding myself into the collection
-                            ((ObjectReferenceMapping)getMapping()).setRealAttributeValueInObject(oldParent, null);
+                            getMapping().setRealAttributeValueInObject(oldParent, null);
                         }
                     } else if (getMapping().isCollectionMapping() && (!partner.isManyToManyMapping())) {
                         getMapping().getContainerPolicy().removeFrom(unwrappedValue, getMapping().getRealAttributeValueFromObject(oldParent, getSession()), getSession());

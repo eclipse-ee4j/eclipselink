@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,31 +41,31 @@ public interface ObjectReferenceMapping<
      * @param srcXPath
      * @param tgtXPath
      */
-    public void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath);
+    void addSourceToTargetKeyFieldAssociation(String srcXPath, String tgtXPath);
 
-    public Object buildFieldValue(Object targetObject, XML_FIELD xmlField, ABSTRACT_SESSION session);
+    Object buildFieldValue(Object targetObject, XML_FIELD xmlField, ABSTRACT_SESSION session);
 
-    public void buildReference(UNMARSHAL_RECORD unmarshalRecord, XML_FIELD xmlField, Object realValue, ABSTRACT_SESSION session);
+    void buildReference(UNMARSHAL_RECORD unmarshalRecord, XML_FIELD xmlField, Object realValue, ABSTRACT_SESSION session);
 
-    public List<FIELD> getFields();
+    List<FIELD> getFields();
 
-    public InverseReferenceMapping getInverseReferenceMapping();
+    InverseReferenceMapping getInverseReferenceMapping();
 
-    public Class getReferenceClass();
+    Class getReferenceClass();
 
     /**
      * INTERNAL:
      */
-    public String getReferenceClassName();
+    String getReferenceClassName();
 
     /**
      * Return a list of source-target xmlfield pairs.
      */
-    public Map getSourceToTargetKeyFieldAssociations();
+    Map getSourceToTargetKeyFieldAssociations();
 
-    public boolean isWriteOnly();
+    boolean isWriteOnly();
 
-    public void setIsWriteOnly(boolean b);
+    void setIsWriteOnly(boolean b);
 
-    public void setReferenceClassName(String aClassName);
+    void setReferenceClassName(String aClassName);
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -164,7 +164,8 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             suite.addTest(constructor.newInstance("simpleBetweenTest"));
             suite.addTest(constructor.newInstance("simpleConcatTest"));
             suite.addTest(constructor.newInstance("simpleConcatTestWithParameters"));
-            suite.addTest(constructor.newInstance("simpleConcatTestWithConstants1"));
+            suite.addTest(constructor.newInstance("simpleConcatTestWithConstantsLiteralSecond"));
+            suite.addTest(constructor.newInstance("simpleConcatTestWithConstantsLiteralFirst"));
             suite.addTest(constructor.newInstance("simpleCountTest"));
             suite.addTest(constructor.newInstance("simpleThreeArgConcatTest"));
             suite.addTest(constructor.newInstance("simpleDistinctTest"));
@@ -582,9 +583,9 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
     }
 
 
-    //Test case for concat function with constants in EJBQL
+    //Test case for concat function with constants in EJBQL (string literal as second argument of concat(...) function
 
-    public void simpleConcatTestWithConstants1() {
+    public void simpleConcatTestWithConstantsLiteralSecond() {
         EntityManager em = createEntityManager();
         beginTransaction(em);
         try {
@@ -611,6 +612,41 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             List result = em.createQuery(cq).getResultList();
 
             assertTrue("Concat test with constraints failed", comparer.compareObjects(result, expectedResult));
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    //Test case for concat function with constants in EJBQL (string literal as first argument of concat(...) function
+
+    public void simpleConcatTestWithConstantsLiteralFirst() {
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Employee emp = (Employee)(getServerSession().readAllObjects(Employee.class).firstElement());
+
+            String partOne = emp.getFirstName();
+
+            ExpressionBuilder builder = new ExpressionBuilder();
+            Expression whereClause = builder.literal("'Smith'").concat(builder.get("firstName")).like("Smith" + partOne);
+
+            ReadAllQuery raq = new ReadAllQuery();
+            raq.setReferenceClass(Employee.class);
+            raq.setSelectionCriteria(whereClause);
+
+            Vector expectedResult = (Vector)getServerSession().executeQuery(raq);
+
+            clearCache();
+
+            //"SELECT OBJECT(emp) FROM Employee emp WHERE CONCAT(\"Smith\", emp.firstName) LIKE \"" + "Smith\"" + partOne
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> root = wrapper.from(cq, Employee.class);
+            cq.where( qb.like(qb.concat("Smith", wrapper.get(root, Employee_firstName) ), "Smith" + partOne) );
+            List result = em.createQuery(cq).getResultList();
+
+            assertTrue("Concat test with constraints failed" , comparer.compareObjects(result, expectedResult));
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);

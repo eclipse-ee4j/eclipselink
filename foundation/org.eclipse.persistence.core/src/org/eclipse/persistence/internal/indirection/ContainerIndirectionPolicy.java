@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.indirection;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.indirection.*;
-import org.eclipse.persistence.exceptions.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.sessions.remote.*;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.indirection.IndirectContainer;
+import org.eclipse.persistence.indirection.ValueHolder;
+import org.eclipse.persistence.indirection.ValueHolderInterface;
+import org.eclipse.persistence.internal.descriptors.DescriptorIterator;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetConstructorFor;
@@ -31,12 +31,16 @@ import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
+import org.eclipse.persistence.internal.sessions.remote.RemoteUnitOfWork;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadQuery;
 
 /**
  * <b>Purpose</b>: Provide ability for developers to wrap ValueHolders (Basic Indirection)<p>
  * <b>Responsibilities</b>:<ul>
- * <li>Wrap & un-wrap a ValueHolder within an IndirectContainer
- * <li>Reflectivly instantiate the containers as required
+ * <li>Wrap &amp; un-wrap a ValueHolder within an IndirectContainer
+ * <li>Reflectively instantiate the containers as required
  * </ul>
  * @see org.eclipse.persistence.indirection.IndirectContainer
  * @author Doug Clarke (TOP)
@@ -68,8 +72,7 @@ public class ContainerIndirectionPolicy extends BasicIndirectionPolicy {
     }
 
     /**
-     * Build a conatiner with the initialized constructor.
-     * @see initializeContainer
+     * Build a container with the initialized constructor.
      */
     protected IndirectContainer buildContainer(ValueHolderInterface valueHolder) {
         try {

@@ -164,7 +164,7 @@ public class TransparentIndirectionPolicy extends IndirectionPolicy {
             // CR#3156435 Throw a meaningful exception if a serialized/dead value holder is detected.
             // This can occur if an existing serialized object is attempt to be registered as new.
             if ((valueHolder instanceof DatabaseValueHolder)
-                    && (! ((DatabaseValueHolder) valueHolder).isInstantiated())
+                    && (! valueHolder.isInstantiated())
                     && (((DatabaseValueHolder) valueHolder).getSession() == null)
                     && (! ((DatabaseValueHolder) valueHolder).isSerializedRemoteUnitOfWorkValueHolder())) {
                 throw DescriptorException.attemptToRegisterDeadIndirection(original, this.mapping);

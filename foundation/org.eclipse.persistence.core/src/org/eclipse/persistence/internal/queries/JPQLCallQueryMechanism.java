@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,14 +15,13 @@
 package org.eclipse.persistence.internal.queries;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.JPQLCall;
-import org.eclipse.persistence.queries.*;
 
 /**
  * INTERNAL
  * <p><b>Purpose</b>:
  * Mechanism used for EJBQL.
- * <p>
  * <p><b>Responsibilities</b>:
  * Executes the appropriate call.
  *

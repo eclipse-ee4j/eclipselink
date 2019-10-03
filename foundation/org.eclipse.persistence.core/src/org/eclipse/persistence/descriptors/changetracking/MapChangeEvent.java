@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,19 +31,6 @@ public class MapChangeEvent extends CollectionChangeEvent {
      * The value of the key that was updated.
      */
     protected Object key;
-
-    /**
-     * PUBLIC:
-     * Create a MapChangeEvent for an object based on the property name, the updated Map, the new Key and the new Value
-     * and change type (add or remove)
-     *
-     * @deprecated as of EclipseLink 2.3
-     */
-    @Deprecated
-    public MapChangeEvent(Object collectionOwner, String propertyName, Object collectionChanged, Object elementKey, Object elementValue, int changeType) {
-        super(collectionOwner, propertyName, collectionChanged, elementValue, changeType);
-        this.key = elementKey;
-    }
 
     /**
      * PUBLIC:

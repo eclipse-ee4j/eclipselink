@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,11 +17,13 @@ package org.eclipse.persistence.internal.sessions.factories;
 // javase imports
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
+import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.ECLIPSELINK_SCHEMA;
+import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
-import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.converters.EnumTypeConverter;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
@@ -37,9 +39,6 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
 import org.eclipse.persistence.oxm.schema.XMLSchemaClassPathReference;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.sessions.DatabaseLogin;
-import static org.eclipse.persistence.internal.helper.DatabaseField.NULL_SQL_TYPE;
-import static org.eclipse.persistence.sessions.factories.XMLProjectReader.ECLIPSELINK_SCHEMA;
-import static org.eclipse.persistence.sessions.factories.XMLProjectReader.SCHEMA_DIR;
 
 /**
  * INTERNAL: Define the EclipseLInk OX project and descriptor information to read an EclipseLink
@@ -340,7 +339,7 @@ public class EclipseLinkObjectPersistenceRuntimeXMLProject extends ObjectPersist
         aMapping.setReferenceClass(AbstractNullPolicy.class);
         aMapping.setAttributeName("nullPolicy");
         aMapping.setXPath(getPrimaryNamespaceXPath() + "null-policy");
-        ((DatabaseMapping)aMapping).setAttributeAccessor(new NullPolicyAttributeAccessor());
+        aMapping.setAttributeAccessor(new NullPolicyAttributeAccessor());
         descriptor.addMapping(aMapping);
 
         XMLDirectMapping reuseContainerMapping = new XMLDirectMapping();

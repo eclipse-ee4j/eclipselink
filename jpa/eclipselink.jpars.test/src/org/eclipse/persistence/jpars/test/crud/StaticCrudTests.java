@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.dynamic.DynamicClassLoader;
+import org.eclipse.persistence.jpa.rs.DynamicRestClassLoader;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.PersistenceFactoryBase;
 import org.eclipse.persistence.jpars.test.model.auction.StaticUser;
@@ -53,7 +53,7 @@ public class StaticCrudTests {
         ExamplePropertiesLoader.loadProperties(properties);
         properties.put(PersistenceUnitProperties.NON_JTA_DATASOURCE, null);
         properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
-        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicClassLoader(Thread.currentThread().getContextClassLoader()));
+        properties.put(PersistenceUnitProperties.CLASSLOADER, new DynamicRestClassLoader(Thread.currentThread().getContextClassLoader()));
         factory = null;
         try {
             factory = new PersistenceFactoryBase();

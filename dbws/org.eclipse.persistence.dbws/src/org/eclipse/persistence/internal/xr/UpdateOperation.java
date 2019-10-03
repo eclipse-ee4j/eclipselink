@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,11 +27,11 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 public class UpdateOperation extends Operation {
 
     /**
-     * Execute <tt>UPDATE</tt> operation on the database
+     * Execute <code>UPDATE</code> operation on the database
      * @param   xrService parent <code>XRService</code> that owns this <code>Operation</code>
      * @param   invocation contains runtime argument values to be bound to the list of
      *          {@link Parameter}'s.
-     * @return  result - <code>null</code> as the underlying <tt>UPDATE</tt> operation on
+     * @return  result - <code>null</code> as the underlying <code>UPDATE</code> operation on
      *          the database does not return a value.
      *
      * @see  Operation

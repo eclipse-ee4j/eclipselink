@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,10 +41,10 @@ public class XMLSessionConfigWriter {
      * @param fileName file to write to (including path)
      * @param eclipseLinkSessions the SessionConfigs instance to write
      */
-    public static void write(SessionConfigs toplinkSessions, String fileName) {
+    public static void write(SessionConfigs eclipseLinkSessions, String fileName) {
         //Bug#4305370 Needs to be utf-8 encoded.
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(fileName), "UTF-8")) {
-            write(toplinkSessions, writer);
+            write(eclipseLinkSessions, writer);
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
         }
@@ -57,13 +57,13 @@ public class XMLSessionConfigWriter {
      * @param writer writer to writer to
      * @param eclipseLinkSessions the SessionConfigs instance to write
      */
-    public static void write(SessionConfigs toplinkSessions, Writer writer) {
+    public static void write(SessionConfigs eclipseLinkSessions, Writer writer) {
         XMLContext context = new XMLContext(new XMLSessionConfigProject_11_1_1());
         XMLMarshaller marshaller = context.createMarshaller();
 
         // this is throwing a null pointer exception right now, bug entered
         //marshaller.setNoNamespaceSchemaLocation("eclipse_persistence_sessions_1_0.xsd");
-        marshaller.marshal(toplinkSessions, writer);
+        marshaller.marshal(eclipseLinkSessions, writer);
 
         try {
             writer.flush();

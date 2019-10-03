@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,10 +40,11 @@ import org.xml.sax.Attributes;
  * <li> IsSetNullPolicy (keyed off isSet() state of the node)</li>
  * </ul>
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>Unmarshalling</caption>
  * <tr>
- * <th id="c1" align="left">Unmarshal Flag</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">Unmarshal Flag</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1"> isSetPerformedForAbsentNode </td>
@@ -63,10 +64,11 @@ import org.xml.sax.Attributes;
  * </tr>
  * </table>
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>Marshalling</caption>
  * <tr>
- * <th id="c3" align="left">Marshal Enum</th>
- * <th id="c4" align="left">XMLNullRepresentationType Description</th>
+ * <th id="c3">Marshal Enum</th>
+ * <th id="c4">XMLNullRepresentationType Description</th>
  * </tr>
  * <tr>
  * <td headers="c3"> XSI_NIL </td>

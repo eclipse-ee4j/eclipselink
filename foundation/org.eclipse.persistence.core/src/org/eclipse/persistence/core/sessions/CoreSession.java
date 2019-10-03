@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,7 @@ public interface CoreSession<
      * Return the database platform currently connected to.
      * The platform is used for database specific behavior.
      */
-    public PLATFORM getDatasourcePlatform();
+    PLATFORM getDatasourcePlatform();
 
     /**
      * ADVANCED:
@@ -62,26 +62,26 @@ public interface CoreSession<
      * ADVANCED:
      * Return all registered descriptors.
      */
-    public Map<Class, DESCRIPTOR> getDescriptors();
+    Map<Class, DESCRIPTOR> getDescriptors();
 
     /**
      * PUBLIC:
      * Return the event manager.
      * The event manager can be used to register for various session events.
      */
-    public SESSION_EVENT_MANAGER getEventManager();
+    SESSION_EVENT_MANAGER getEventManager();
 
     /**
      * PUBLIC:
      * Return the project.
      * The project includes the login and descriptor and other configuration information.
      */
-    public PROJECT getProject();
+    PROJECT getProject();
 
     /**
      * PUBLIC:
      * Set the log level.
      */
-    public void setLogLevel(int logLevel);
+    void setLogLevel(int logLevel);
 
 }

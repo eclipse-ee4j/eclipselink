@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,26 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.*;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.FetchType.LAZY;
+import static javax.persistence.GenerationType.TABLE;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Version;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.annotations.Cache;
-
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
+import org.eclipse.persistence.config.CacheIsolationType;
 
 @Entity(name="FieldAccessOrderBean")
 @Table(name="CMP3_FIELDACCESS_ORDER")
@@ -31,7 +43,7 @@ import static javax.persistence.FetchType.*;
 )
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
-@Cache(shared=false)
+@Cache(isolation=CacheIsolationType.ISOLATED)
 public class Order implements java.io.Serializable {
     @Id
     @GeneratedValue(strategy=TABLE, generator="FIELDACCESS_ORDER_TABLE_GENERATOR")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -195,15 +195,15 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         this.name = "";
         this.descriptors = new HashMap();
         this.defaultReadOnlyClasses = NonSynchronizedVector.newInstance();
-        this.orderedDescriptors = new ArrayList<ClassDescriptor>();
+        this.orderedDescriptors = new ArrayList<>();
         this.hasIsolatedClasses = false;
         this.hasGenericHistorySupport = false;
         this.hasProxyIndirection = false;
         this.jpqlParseCache = new ConcurrentFixedCache(200);
-        this.queries = new ArrayList<DatabaseQuery>();
-        this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
-        this.metamodelIdClassMap = new HashMap<String, List<String>>();
-        this.attributeGroups = new HashMap<String, AttributeGroup>();
+        this.queries = new ArrayList<>();
+        this.mappedSuperclassDescriptors = new HashMap<>(2);
+        this.metamodelIdClassMap = new HashMap<>();
+        this.attributeGroups = new HashMap<>();
     }
 
     /**
@@ -680,16 +680,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * PUBLIC:
-     * Return default value for whether descriptor should use isolated cache.
-     * @deprecated see getDefaultCacheIsolation()
-     */
-    @Deprecated
-    public boolean getDefaultIsIsolated() {
-        return this.defaultCacheIsolation.equals(CacheIsolationType.ISOLATED);
-    }
-
-    /**
-     * PUBLIC:
      * Return the project level default for class cache isolation;
      */
     public CacheIsolationType getDefaultCacheIsolation(){
@@ -896,16 +886,6 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setDefaultIdentityMapSize(int defaultIdentityMapSize) {
         this.defaultIdentityMapSize = defaultIdentityMapSize;
-    }
-
-    /**
-     * PUBLIC:
-     * Set default value for whether descriptor should use isolated cache.
-     * @deprecated see setDefaultCacheIsolation(CacheIsolationType)
-     */
-    @Deprecated
-    public void setDefaultIsIsolated(boolean defaultIsIsolated) {
-        this.defaultCacheIsolation = defaultIsIsolated ? CacheIsolationType.ISOLATED : CacheIsolationType.SHARED;
     }
 
     /**
@@ -1424,7 +1404,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void addMappedSuperclass(String key, ClassDescriptor value, boolean replace) {
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
-            this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
+            this.mappedSuperclassDescriptors = new HashMap<>(2);
         }
         // Avoid replacing the current RelationalDescriptor that may have mappings set
         if(replace || !this.mappedSuperclassDescriptors.containsKey(key)) {
@@ -1444,7 +1424,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
         // in different class loaders - however currently there is only one classLoader per project
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
-            this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
+            this.mappedSuperclassDescriptors = new HashMap<>(2);
             return null;
         }
         return this.mappedSuperclassDescriptors.get(key);
@@ -1459,7 +1439,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public Map<String, ClassDescriptor> getMappedSuperclassDescriptors() {
         // Lazy initialization of the mappedSuperclassDescriptors field.
         if(null == this.mappedSuperclassDescriptors) {
-            this.mappedSuperclassDescriptors = new HashMap<String, ClassDescriptor>(2);
+            this.mappedSuperclassDescriptors = new HashMap<>(2);
         }
         return this.mappedSuperclassDescriptors;
     }
@@ -1476,7 +1456,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
             // If we have a key entry then the list will always exist
             this.metamodelIdClassMap.get(ownerName).add(name);
         } else {
-            List<String> ownerList = new ArrayList<String>();
+            List<String> ownerList = new ArrayList<>();
             ownerList.add(name);
             this.metamodelIdClassMap.put(ownerName, ownerList);
         }
@@ -1497,7 +1477,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public Map<String, PartitioningPolicy> getPartitioningPolicies() {
         if (this.partitioningPolicies == null) {
-            this.partitioningPolicies = new HashMap<String, PartitioningPolicy>();
+            this.partitioningPolicies = new HashMap<>();
         }
         return partitioningPolicies;
     }

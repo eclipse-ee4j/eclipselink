@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -472,7 +472,7 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
 
                         //The reason behind LinkedHashMap is the order of items when for-cycling HashMap.getEntrySet() or HashMap.getKeySet().
                         //This change fixes non-determinism (implementation in JDK8 has changed so the order is different (sometimes) than in JDK6 and JDK7).
-                        HashMap<Field, NodeValue> fieldToNodeValues = new LinkedHashMap<Field, NodeValue>();
+                        HashMap<Field, NodeValue> fieldToNodeValues = new LinkedHashMap<>();
                         unmarshalValue.setContainerNodeValue(unmarshalValue);
                         unmarshalValue.setFieldToNodeValues(fieldToNodeValues);
                         if(xmlChoiceMapping.isMixedContent() && (xmlChoiceMapping.getMixedContentMapping() == firstEntry.getValue())) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,19 +19,22 @@
 //       - 349424: persists during an preCalculateUnitOfWorkChangeSet event are lost
 package org.eclipse.persistence.internal.sessions;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.persistence.config.FlushClearCache;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.AttributeChangeTrackingPolicy;
+import org.eclipse.persistence.exceptions.DatabaseException;
+import org.eclipse.persistence.exceptions.OptimisticLockException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.exceptions.OptimisticLockException;
-import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.sessions.IdentityMapAccessor;
@@ -134,7 +137,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
                 }
                 if ((this.unregisteredDeletedObjectsCloneToBackupAndOriginal != null) && !this.unregisteredDeletedObjectsCloneToBackupAndOriginal.isEmpty()) {
                     if (this.classesToBeInvalidated == null) {
-                        this.classesToBeInvalidated = new HashSet<ClassDescriptor>();
+                        this.classesToBeInvalidated = new HashSet<>();
                     }
                     Iterator enumDeleted = this.unregisteredDeletedObjectsCloneToBackupAndOriginal.keySet().iterator();
                     // classes of the deleted objects should be invalidated in the shared cache
@@ -264,7 +267,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
      * In this implementation, we check whether the inheritance policy has been configured to allow
      * superclass descriptors to describe subclasses that do not have a descriptor themselves
      *
-     * @param Class
+     * @param theClass
      * @return ClassDescriptor
      */
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,12 @@ import org.eclipse.persistence.oxm.documentpreservation.RelativePositionOrdering
  * INTERNAL:
  * <p><b>Purpose:</b>Provide an implementation of DocumentPreservationPolicy that maintains bidirectional
  * relationships between Java Objects and the XMLNodes they originated from.
- * <p><b>Responsibilities:</b><ul>
+ * <p><b>Responsibilities:</b>
+ * <ul>
  * <li>Implement abstract methods from DocumentPreservationPolicy</li>
  * <li>Maintain a map of objects to nodes</li>
  * <li>Maintain the reverse map of nodes to objects</li>
+ * </ul>
  *
  * @author mmacivor
  *

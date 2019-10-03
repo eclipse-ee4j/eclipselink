@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -163,10 +163,6 @@ public class MetadataProcessor {
      */
     public void createDynamicClasses() {
         m_project.createDynamicClasses(m_loader);
-    }
-
-    public void createRestInterfaces(){
-        m_project.createRestInterfaces(m_loader);
     }
 
     /**

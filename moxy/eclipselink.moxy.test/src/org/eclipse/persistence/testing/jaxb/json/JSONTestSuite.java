@@ -20,14 +20,7 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.jaxb.json.adapter.JsonMapAdapterTestCases;
 import org.eclipse.persistence.testing.jaxb.json.any.AnyTestCases;
 import org.eclipse.persistence.testing.jaxb.json.array.ArrayTestCases;
-import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementIncludeRootFalseTestCases;
-import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementInheritanceTestCases;
-import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementJAXBElementTestCases;
-import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributeNoXmlRootElementTestCases;
-import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixEmptyStringTestCases;
-import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnContextTestCases;
-import org.eclipse.persistence.testing.jaxb.json.attribute.JSONAttributePrefixOnMarshallerTestCases;
-import org.eclipse.persistence.testing.jaxb.json.attribute.SimpleBeanAttrNullTestCases;
+import org.eclipse.persistence.testing.jaxb.json.attribute.*;
 import org.eclipse.persistence.testing.jaxb.json.characters.EscapeCharactersTestCases;
 import org.eclipse.persistence.testing.jaxb.json.characters.UTF8TestCases;
 import org.eclipse.persistence.testing.jaxb.json.characters.UsAsciiTestCases;
@@ -54,6 +47,7 @@ import org.eclipse.persistence.testing.jaxb.json.unmapped.JsonUnmappedTestCases;
 import org.eclipse.persistence.testing.jaxb.json.wrapper.AllWrapperTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropDifferentTestCases;
 import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropTestCases;
+import org.eclipse.persistence.testing.jaxb.json.xmlvalue.XMLValuePropValueFirstInJSONTestCases;
 import org.eclipse.persistence.testing.oxm.xmlconversionmanager.NumberTestCases;
 
 public class JSONTestSuite extends TestSuite {
@@ -64,6 +58,8 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(JSONAttributePrefixOnMarshallerTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementIncludeRootFalseTestCases.class);
+          suite.addTestSuite(JSONAttributeOrderAttributeFirstTestCases.class);
+          suite.addTestSuite(JSONAttributeOrderElementFirstTestCases.class);
           suite.addTestSuite(JsonMapAdapterTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementInheritanceTestCases.class);
           suite.addTestSuite(JSONAttributeNoXmlRootElementJAXBElementTestCases.class);
@@ -83,6 +79,7 @@ public class JSONTestSuite extends TestSuite {
           suite.addTestSuite(IncludeRootTrueWithXMLRootElementTestCases.class);
           suite.addTestSuite(XMLValuePropTestCases.class);
           suite.addTestSuite(XMLValuePropDifferentTestCases.class);
+          suite.addTestSuite(XMLValuePropValueFirstInJSONTestCases.class);
           suite.addTestSuite(NumberTestCases.class);
           suite.addTestSuite(EscapeCharactersTestCases.class);
           suite.addTestSuite(UsAsciiTestCases.class);

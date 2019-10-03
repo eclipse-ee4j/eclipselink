@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,33 +29,33 @@ public interface UnitOfWorkChangeSet {
      * This method returns a reference to the collection.  Not All ChangeSets that Exist in this list may have changes
      * @return Map
      */
-    public Map getAllChangeSets();
+    Map getAllChangeSets();
 
     /**
      * ADVANCED:
      * This method returns the reference to the deleted objects from the changeSet
      * @return Map
      */
-    public Map getDeletedObjects();
+    Map getDeletedObjects();
 
     /**
      * ADVANCED:
      * Get ChangeSet for a particular clone
      * @return org.eclipse.persistence.sessions.changesets.ObjectChangeSet the changeSet that represents a particular clone
      */
-    public ObjectChangeSet getObjectChangeSetForClone(Object clone);
+    ObjectChangeSet getObjectChangeSetForClone(Object clone);
 
     /**
      * ADVANCED:
      * This method returns the Clone for a particular changeSet
      * @return Object the clone represented by the changeSet
      */
-    public Object getUOWCloneForObjectChangeSet(ObjectChangeSet changeSet);
+    Object getUOWCloneForObjectChangeSet(ObjectChangeSet changeSet);
 
     /**
      * ADVANCED:
      * Returns true if the Unit Of Work change Set has changes
      * @return boolean
      */
-    public boolean hasChanges();
+    boolean hasChanges();
 }

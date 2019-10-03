@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -383,10 +383,10 @@ public class ExpressionBuilder extends ObjectExpression {
      * Override Expression.registerIn to check if the new base expression
      * has already been provided for the clone.
      * @see org.eclipse.persistence.expressions.Expression#cloneUsing(Expression)
-     * @bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
      */
     @Override
     protected Expression registerIn(Map alreadyDone) {
+        // bug  2637484 INVALID QUERY KEY EXCEPTION THROWN USING BATCH READS AND PARALLEL EXPRESSIONS
         // Here do a special check to see if this a cloneUsing(newBase) call.
         Object value = alreadyDone.get(alreadyDone);
         if ((value == null) || (value == alreadyDone)) {

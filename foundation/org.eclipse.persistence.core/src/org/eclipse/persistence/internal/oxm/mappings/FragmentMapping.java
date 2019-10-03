@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,8 +31,8 @@ public interface FragmentMapping<
     SESSION extends CoreSession,
     XML_RECORD extends XMLRecord> extends Mapping<ABSTRACT_SESSION, ATTRIBUTE_ACCESSOR, CONTAINER_POLICY, DESCRIPTOR, FIELD, XML_RECORD> {
 
-    public Object getObjectValue(Object object, SESSION session);
+    Object getObjectValue(Object object, SESSION session);
 
-    public String getXPath();
+    String getXPath();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,11 @@
 //
 package org.eclipse.persistence.jpa.jpql.tools.model.query;
 
+import static org.eclipse.persistence.jpa.jpql.parser.Expression.OR;
+
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalExpressionBNF;
 import org.eclipse.persistence.jpa.jpql.parser.ConditionalTermBNF;
 import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
-import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 
 /**
  * The <code><b>OR</b></code> logical operator chains multiple criteria together. A valid operand
@@ -32,9 +33,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * operand is <code><b>NULL</b></code> and the other operand is either <code><b>FALSE</b></code> or
  * <code><b>NULL</b></code>, the result is <code><b>NULL</b></code> (unknown).
  * <p>
- * The following table shows how the <b>OR</b> operator is evaluated based on its two operands:
  *
- * <table summary="" cellspacing="0" cellpadding="2" border="1" width="250" style="border:1px outset darkgrey;">
+ * <table border="1" style="border:1px outset darkgrey;">
+ * <caption>The following table shows how the <code><b>OR</b></code> operator is evaluated based on its two operands:</caption>
  * <tr><td></td><td><b>TRUE</b></td><td><b>FALSE</b></td><td><b>NULL</b></td></tr>
  * <tr><td><b>TRUE</b></td><td>TRUE</td><td>TRUE</td><td>TRUE</td></tr>
  * <tr><td><b>FALSE</b></td><td>TRUE</td><td>FALSE</td><td>NULL</td></tr>

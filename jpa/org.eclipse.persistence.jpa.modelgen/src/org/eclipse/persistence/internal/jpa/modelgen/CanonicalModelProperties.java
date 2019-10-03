@@ -82,7 +82,7 @@ public abstract class CanonicalModelProperties {
 
     /**
      * This optional property can be used to avoid using of date in
-     * {@link javax.annotation.Generated} annotation
+     * {@code javax.annotation.Generated} annotation
      * The default value is true and should be left as such for full feature
      * support.
      */

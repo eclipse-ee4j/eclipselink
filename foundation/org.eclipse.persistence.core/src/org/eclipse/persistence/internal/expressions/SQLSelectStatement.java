@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -166,7 +166,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public void addField(Expression expression) {
         if (expression instanceof FunctionExpression) {
-            if (((FunctionExpression)expression).getOperator().isAggregateOperator()) {
+            if (expression.getOperator().isAggregateOperator()) {
                 setIsAggregateSelect(true);
             }
         }
@@ -890,7 +890,7 @@ public class SQLSelectStatement extends SQLStatement {
     public Map<Expression, Expression> getOptimizedClonedExpressions() {
         // Lazily Initialized only to be used by subqueries.
         if (optimizedClonedExpressions == null) {
-            optimizedClonedExpressions = new IdentityHashMap<Expression, Expression>();
+            optimizedClonedExpressions = new IdentityHashMap<>();
         }
 
         return optimizedClonedExpressions;
@@ -903,7 +903,7 @@ public class SQLSelectStatement extends SQLStatement {
     public void addOptimizedClonedExpressions(Expression originalKey, Expression optimizedValue) {
         // Lazily Initialized only to be used by subqueries.
         if (optimizedClonedExpressions == null) {
-            optimizedClonedExpressions = new IdentityHashMap<Expression, Expression>();
+            optimizedClonedExpressions = new IdentityHashMap<>();
         }
 
         optimizedClonedExpressions.put(originalKey, optimizedValue);
@@ -1084,7 +1084,7 @@ public class SQLSelectStatement extends SQLStatement {
      */
     public List<Expression> getGroupByExpressions() {
         if (groupByExpressions == null) {
-            groupByExpressions = new ArrayList<Expression>();
+            groupByExpressions = new ArrayList<>();
         }
 
         return groupByExpressions;
@@ -2176,8 +2176,8 @@ public class SQLSelectStatement extends SQLStatement {
      *
      *   results:
      *     map:
-     *          1 -> (employee.emp_id = proj_emp.emp_id)
-     *          2 -> (proj_emp.proj_id = project.proj_id)
+     *          1 -&gt; (employee.emp_id = proj_emp.emp_id)
+     *          2 -&gt; (proj_emp.proj_id = project.proj_id)
      *     returned SortedSet: {0, 1, 2}.
      *
      *     Note that tablesInOrder must contain all tables used by expression
@@ -2243,8 +2243,8 @@ public class SQLSelectStatement extends SQLStatement {
      *
      *   results:
      *     returned map:
-     *          proj_emp -> (employee.emp_id = proj_emp.emp_id)
-     *          project -> (proj_emp.proj_id = project.proj_id)
+     *          proj_emp -&gt; (employee.emp_id = proj_emp.emp_id)
+     *          project -&gt; (proj_emp.proj_id = project.proj_id)
      *
      *     Note that tablesInOrder must contain all tables used by expression
      */

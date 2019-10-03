@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,18 +37,18 @@ public interface DynamicType {
      * Return the entity type's name. This is the short name of the class or the
      * {@link ClassDescriptor#getAlias()}
      */
-    public String getName();
+    String getName();
 
     /**
      * @return Fully qualified name of mapped class.
      */
-    public String getClassName();
+    String getClassName();
 
     /**
      * @return The parent type or null if this type does not have a persistent
      *         superclass
      */
-    public DynamicType getParentType();
+    DynamicType getParentType();
 
     /**
      * The current number of properties.
@@ -56,7 +56,7 @@ public interface DynamicType {
      * Note: Some implementations support adding mapped attributes at runtime so
      * it is best to avoid caching the result.
      */
-    public int getNumberOfProperties();
+    int getNumberOfProperties();
 
     /**
      * The current names of properties.
@@ -64,24 +64,24 @@ public interface DynamicType {
      * Note: Some implementations support adding mapped attributes at runtime so
      * it is best to avoid caching the result.
      */
-    public List<String> getPropertiesNames();
+    List<String> getPropertiesNames();
 
-    public boolean containsProperty(String propertyName);
+    boolean containsProperty(String propertyName);
 
-    public int getPropertyIndex(String propertyName);
+    int getPropertyIndex(String propertyName);
 
-    public Class<? extends DynamicEntity> getJavaClass();
+    Class<? extends DynamicEntity> getJavaClass();
 
-    public DynamicEntity newDynamicEntity();
+    DynamicEntity newDynamicEntity();
 
-    public Class<?> getPropertyType(int propertyIndex);
+    Class<?> getPropertyType(int propertyIndex);
 
-    public Class<?> getPropertyType(String propertyName);
+    Class<?> getPropertyType(String propertyName);
 
     /**
      * @return the underlying {@link ClassDescriptor} for the mapped type
      */
-    public ClassDescriptor getDescriptor();
+    ClassDescriptor getDescriptor();
 
     /**
      * Property name used to store the EntityTypeImpl on each descriptor in its
@@ -89,6 +89,6 @@ public interface DynamicType {
      * populated by the {@link DynamicTypeBuilder} and should only be done when
      * properly initialized.
      */
-    public static final String DESCRIPTOR_PROPERTY = "ENTITY_TYPE";
+    String DESCRIPTOR_PROPERTY = "ENTITY_TYPE";
 
 }

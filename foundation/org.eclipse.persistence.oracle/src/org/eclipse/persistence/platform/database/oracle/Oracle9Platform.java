@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -775,9 +775,9 @@ public class Oracle9Platform extends Oracle8Platform {
     @Override
     public int getJDBCTypeForSetNull(DatabaseField field) {
         int type = getJDBCType(field);
-        if (type == OracleTypes.OPAQUE || type == Types_SQLXML) {
+        if (type == OracleTypes.OPAQUE || type == Types.SQLXML) {
             // VARCHAR seems to work, driver does not like OPAQUE.
-            return java.sql.Types.VARCHAR;
+            return Types.VARCHAR;
         }
         return type;
     }
@@ -791,7 +791,7 @@ public class Oracle9Platform extends Oracle8Platform {
         if (javaType == XMLTYPE) {
             //return OracleTypes.OPAQUE;
             // VARCHAR seems to work...
-            return java.sql.Types.VARCHAR;
+            return Types.VARCHAR;
         }
         return super.getJDBCType(javaType);
     }

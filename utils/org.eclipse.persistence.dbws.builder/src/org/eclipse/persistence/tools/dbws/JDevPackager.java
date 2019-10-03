@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,18 +15,19 @@
 
 package org.eclipse.persistence.tools.dbws;
 
+import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
+
 //javase imports
 import java.io.OutputStream;
 
 //EclipseLink imports
 import org.eclipse.persistence.internal.sessions.factories.model.SessionConfigs;
 import org.eclipse.persistence.internal.sessions.factories.model.session.DatabaseSessionConfig;
-import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchive;
 
 /**
  * <p>
  * <b>PUBLIC:</b> JDevPackager extends {@link IDEPackager}. It is responsible for generating<br>
- * the source code of the DBWS Provider (instead of a <tt>.class</tt> file) and packaging in a<br>
+ * the source code of the DBWS Provider (instead of a <code>.class</code> file) and packaging in a<br>
  * JDev-friendly directory structure all the other DBWS files produced by its parent:
  * <pre>
  * \--- JDev <b>Projectnnn</b> root directory

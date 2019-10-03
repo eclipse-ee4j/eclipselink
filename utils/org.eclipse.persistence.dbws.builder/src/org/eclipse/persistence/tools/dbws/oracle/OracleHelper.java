@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -512,12 +512,12 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
      *
      * The returned string will be:
      *
-     * 1) If the given ProcedureOperationModel 'name' is a non-null & non-empty
+     * 1) If the given ProcedureOperationModel 'name' is a non-null &amp; non-empty
      * string, the returned string will be one of the following:
      *   a) 'modelName' if no pattern matching or overloading
      *   b) 'modelName_procedureName' if pattern matching and no overloading
      *   c) 'modelName_overload' if overloading and no pattern matching
-     *   d) 'modelName_procedureName_overload' if pattern matching & overloading
+     *   d) 'modelName_procedureName_overload' if pattern matching &amp; overloading
      *
      * OR
      *
@@ -583,7 +583,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Generates a List<TableType> based on a given set of patterns.
+     * Generates a {@code List<TableType>} based on a given set of patterns.
      */
     @Override
     protected List<TableType> loadTables(List<String> catalogPatterns, List<String> schemaPatterns, List<String> tableNamePatterns) {
@@ -598,7 +598,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     /**
      * Build list of name patterns separated by vertical bar.
      * @param namePatterns {@see List} of name patterns.
-     * @return {@see String} containing list of name patterns separated by vertical bar.
+     * @return String containing list of name patterns separated by vertical bar.
      */
     private static String buildNamePatternsList(List<String> namePatterns) {
         final int count = namePatterns.size();
@@ -621,7 +621,7 @@ public class OracleHelper extends BaseDBWSBuilderHelper implements DBWSBuilderHe
     }
 
     /**
-     * Generates a List<ProcedureType> based on a given set of patterns.
+     * Generates a {@code List<ProcedureType>} based on a given set of patterns.
      */
     @Override
     protected List<ProcedureType> loadProcedures(List<String> catalogPatterns, List<String> schemaPatterns, List<String> procedureNamePatterns) {

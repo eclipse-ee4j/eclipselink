@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2009, 2018 Markus Karg, SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -113,8 +113,8 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     @Override
-    protected final Hashtable buildFieldTypes() {
-        final Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<Class, FieldTypeDefinition>();
+    protected Hashtable buildFieldTypes() {
+        final Hashtable<Class, FieldTypeDefinition> fieldTypeMapping = new Hashtable<>();
         fieldTypeMapping.put(Boolean.class, new FieldTypeDefinition("SMALLINT", false)); // TODO boolean
         fieldTypeMapping.put(Number.class, new FieldTypeDefinition("DOUBLE PRECISION", false));
         fieldTypeMapping.put(Short.class, new FieldTypeDefinition("SMALLINT", false));
@@ -171,7 +171,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
 
 
     @Override
-    protected final void initializePlatformOperators() {
+    protected void initializePlatformOperators() {
         super.initializePlatformOperators();
         this.addOperator(MaxDBPlatform.createConcatExpressionOperator());
         this.addOperator(MaxDBPlatform.createTrim2ExpressionOperator());
@@ -184,7 +184,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
         this.addNonBindingOperator(MaxDBPlatform.createNullValueOperator());
     }
 
-    private static final ExpressionOperator createConcatExpressionOperator() {
+    private static ExpressionOperator createConcatExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Concat, "||");
     }
 
@@ -193,7 +193,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
      *
      * @return the expression operator representing the JPQL function current_timestamp as defined by 4.6.17.2.3 of the JPA 2.0 specification
      */
-    private static final ExpressionOperator createTodayExpressionOperator() {
+    private static ExpressionOperator createTodayExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.Today, "TIMESTAMP");
     }
 
@@ -202,7 +202,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
      *
      * @return the expression operator representing the JPQL function current_date as defined by 4.6.17.2.3 of the JPA 2.0 specification
      */
-    private static final ExpressionOperator createCurrentDateExpressionOperator() {
+    private static ExpressionOperator createCurrentDateExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.CurrentDate, "DATE");
     }
 
@@ -211,31 +211,31 @@ public final class MaxDBPlatform extends DatabasePlatform {
      *
      * @return the expression operator representing the JPQL function current_timestamp as defined by 4.6.17.2.3 of the JPA 2.0 specification
      */
-    private static final ExpressionOperator createCurrentTimeExpressionOperator() {
+    private static ExpressionOperator createCurrentTimeExpressionOperator() {
         return ExpressionOperator.simpleLogicalNoParens(ExpressionOperator.CurrentTime, "TIME");
     }
 
-    private static final ExpressionOperator createTrim2ExpressionOperator() {
+    private static ExpressionOperator createTrim2ExpressionOperator() {
         return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Trim2, "TRIM");
     }
 
-    private static final ExpressionOperator createNullValueOperator() {
+    private static ExpressionOperator createNullValueOperator() {
         return ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.Nvl, "VALUE");
     }
 
     /* see bug 316774 */
-    private static final ExpressionOperator createCoalesceOperator() {
+    private static ExpressionOperator createCoalesceOperator() {
         ListExpressionOperator operator = (ListExpressionOperator) ExpressionOperator.coalesce();
         operator.setStartString("VALUE(");
         operator.setSelector(ExpressionOperator.Coalesce);
         return operator;
     }
 
-    private static final ExpressionOperator createToNumberOperator() {
+    private static ExpressionOperator createToNumberOperator() {
         return ExpressionOperator.simpleFunction(ExpressionOperator.ToNumber, "NUM");
     }
 
-    private static final ExpressionOperator createNullifOperator() {
+    private static ExpressionOperator createNullifOperator() {
         ExpressionOperator exOperator = new ExpressionOperator();
         exOperator.setType(ExpressionOperator.FunctionOperator);
         exOperator.setSelector(ExpressionOperator.NullIf);
@@ -263,57 +263,57 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     @Override
-    public final boolean supportsNativeSequenceNumbers() {
+    public boolean supportsNativeSequenceNumbers() {
         return true;
     }
 
     @Override
-    public final ValueReadQuery buildSelectQueryForSequenceObject(final String sequenceName, final Integer size) {
+    public ValueReadQuery buildSelectQueryForSequenceObject(final String sequenceName, final Integer size) {
         return new ValueReadQuery("SELECT " + sequenceName + ".NEXTVAL FROM DUAL");
     }
 
     @Override
-    protected final String getCreateTempTableSqlPrefix() {
+    protected String getCreateTempTableSqlPrefix() {
         return "CREATE TABLE ";
     }
 
     @Override
-    public final int getMaxFieldNameSize() {
+    public int getMaxFieldNameSize() {
         return 32;
     }
 
     @Override
-    public final boolean supportsLocalTempTables() {
+    public boolean supportsLocalTempTables() {
         return true;
     }
 
     @Override
-    public final DatabaseTable getTempTableForTable(final DatabaseTable table) {
+    public DatabaseTable getTempTableForTable(final DatabaseTable table) {
         return new DatabaseTable("$" + table.getName(), "TEMP");
     }
 
     @Override
-    public final boolean isMaxDB() {
+    public boolean isMaxDB() {
         return true;
     }
 
     @Override
-    public final boolean shouldAlwaysUseTempStorageForModifyAll() {
+    public boolean shouldAlwaysUseTempStorageForModifyAll() {
         return true;
     }
 
     @Override
-    public final boolean shouldBindLiterals() {
+    public boolean shouldBindLiterals() {
         return false;
     }
 
     @Override
-    public final boolean shouldPrintOuterJoinInWhereClause() {
+    public boolean shouldPrintOuterJoinInWhereClause() {
         return false;
     }
 
     @Override
-    public final boolean shouldUseJDBCOuterJoinSyntax() {
+    public boolean shouldUseJDBCOuterJoinSyntax() {
         return false;
     }
 
@@ -323,7 +323,7 @@ public final class MaxDBPlatform extends DatabasePlatform {
     }
 
     @Override
-    public final boolean supportsStoredFunctions() {
+    public boolean supportsStoredFunctions() {
         return true;
     }
 

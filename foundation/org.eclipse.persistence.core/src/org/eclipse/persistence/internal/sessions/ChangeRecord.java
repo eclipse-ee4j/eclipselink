@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions;
 
-import org.eclipse.persistence.mappings.*;
 import java.io.Serializable;
+
+import org.eclipse.persistence.mappings.DatabaseMapping;
 
 /**
  * <p>
@@ -92,7 +93,7 @@ public abstract class ChangeRecord implements Serializable, org.eclipse.persiste
     /**
      * INTERNAL:
      * This method is used to set the ObjectChangeSet that uses this Record in that Record.
-     * @param ObjectChangeSet The changeSet that uses this record.
+     * @param newOwner The changeSet that uses this record.
      */
     public void setOwner(ObjectChangeSet newOwner) {
         owner = newOwner;

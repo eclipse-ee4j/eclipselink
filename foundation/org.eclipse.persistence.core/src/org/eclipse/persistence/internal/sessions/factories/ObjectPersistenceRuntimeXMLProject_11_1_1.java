@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -776,7 +776,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                   (!argumentSqlTypeName.equals(""))) {
                   dbfield = new ObjectRelationalDatabaseField(dbfield);
                   ((ObjectRelationalDatabaseField)dbfield).setSqlTypeName(argumentSqlTypeName);
-                  ((ObjectRelationalDatabaseField)dbfield).setSqlType(argumentSQLType);
+                  dbfield.setSqlType(argumentSQLType);
                   if (nestedType != null) {
                       ((ObjectRelationalDatabaseField)dbfield).setNestedTypeField(
                           nestedType.getDatabaseField());
@@ -1026,7 +1026,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
                 else {
                     if (argument instanceof Object[]) {
                        Object first = ((Object[])argument)[0];
-                       DatabaseField secondField = (DatabaseField)((Object[])argument)[1];;
+                       DatabaseField secondField = (DatabaseField)((Object[])argument)[1];
                        if (first instanceof DatabaseField) {
                            DatabaseField firstField = (DatabaseField)first;
                            spa.setDatabaseField(firstField);
@@ -1183,7 +1183,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
         aMapping.setReferenceClass(AbstractNullPolicy.class);
         aMapping.setAttributeName("nullPolicy");
         aMapping.setXPath(getPrimaryNamespaceXPath() + "null-policy");
-        ((DatabaseMapping)aMapping).setAttributeAccessor(new NullPolicyAttributeAccessor());
+        aMapping.setAttributeAccessor(new NullPolicyAttributeAccessor());
         descriptor.addMapping(aMapping);
 
         return descriptor;
@@ -1385,13 +1385,13 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          XMLCompositeDirectCollectionMapping isSetParameterTypesMapping = new XMLCompositeDirectCollectionMapping();
          isSetParameterTypesMapping.setAttributeName("isSetParameterTypes");
          isSetParameterTypesMapping.setXPath(getPrimaryNamespaceXPath() + "is-set-parameter-type");
-         ((DatabaseMapping)isSetParameterTypesMapping).setAttributeAccessor(new IsSetNullPolicyIsSetParameterTypesAttributeAccessor());
+         isSetParameterTypesMapping.setAttributeAccessor(new IsSetNullPolicyIsSetParameterTypesAttributeAccessor());
          aDescriptor.addMapping(isSetParameterTypesMapping);
 
          XMLCompositeDirectCollectionMapping isSetParametersMapping = new XMLCompositeDirectCollectionMapping();
          isSetParametersMapping.setAttributeName("isSetParameters");
          isSetParametersMapping.setXPath(getPrimaryNamespaceXPath() + "is-set-parameter");
-         ((DatabaseMapping)isSetParametersMapping).setAttributeAccessor(new IsSetNullPolicyIsSetParametersAttributeAccessor());
+         isSetParametersMapping.setAttributeAccessor(new IsSetNullPolicyIsSetParametersAttributeAccessor());
          aDescriptor.addMapping(isSetParametersMapping);
 
          return aDescriptor;
@@ -1489,7 +1489,7 @@ public class ObjectPersistenceRuntimeXMLProject_11_1_1 extends ObjectPersistence
          nullPolicyClassMapping.setXPath(getPrimaryNamespaceXPath() + "null-policy");
 
          // Handle translation of (default) Null Policy states.
-         ((DatabaseMapping)nullPolicyClassMapping).setAttributeAccessor(new NullPolicyAttributeAccessor());
+         nullPolicyClassMapping.setAttributeAccessor(new NullPolicyAttributeAccessor());
          descriptor.addMapping(nullPolicyClassMapping);
 
          return descriptor;

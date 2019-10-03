@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,15 +21,16 @@ import java.util.List;
  * INTERNAL
  * <p><b>Purpose</b>: This interface specifies methods to create parse trees
  * and parse tree nodes.
- * <p><b>Responsibilities</b>:<ul>
+ * <p><b>Responsibilities</b>:
+ * <ul>
  * <li> Used by the EJBQLParser to create an internal representation of an
- * EJBQL query.
+ * EJBQL query.</li>
  * <li> Abstract from concrete parse tree and parse tree node implementation
- * classes.
+ * classes.</li>
  * <li> The parse is created in a bottom-up fashion. All methods takes any
  * child nodes for the parse tree node to be created as arguments. It is the
- * responsibility of the new<XXX> method to set the parent-child relationship
- * between the returned node any any of the child nodes passed as arguments.
+ * responsibility of the new&lt;XXX&gt; method to set the parent-child relationship
+ * between the returned node any any of the child nodes passed as arguments.</li>
  * </ul>
  */
 public interface NodeFactory {

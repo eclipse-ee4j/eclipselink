@@ -24,6 +24,7 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventListener;
+import org.eclipse.persistence.sessions.SessionEventManager;
 
 /**
  * <p><b>Purpose</b>: Used to test handling of session events.

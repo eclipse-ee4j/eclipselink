@@ -175,6 +175,7 @@ import javax.persistence.spi.PersistenceUnitTransactionType;
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
 import org.eclipse.persistence.config.CacheCoordinationProtocol;
+import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.config.DescriptorCustomizer;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.config.LoggerType;
@@ -383,13 +384,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
     // factoryCount==0; session==null
     // only composite member persistence unit can be in this state
     public static final String STATE_HALF_PREDEPLOYED_COMPOSITE_MEMBER = "HalfPredeployedCompositeMember";
+
     /**
-     *     Initial -----> HalfPredeployedCompositeMember -----> PredeployFailed
+     *     Initial -----&gt; HalfPredeployedCompositeMember -----&gt; PredeployFailed
      *                    |        ^                   |
-     *                    V------->|                   V
+     *                    V-------&gt;|                   V
      *                                                Predeployed
      */
-
     protected String state = STATE_INITIAL;
 
     /**
@@ -671,9 +672,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                             // listeners and queries require the real classes and are therefore built during deploy using the realClassLoader
                             this.processor.setClassLoader(classLoaderToUse);
                             this.processor.createDynamicClasses();
-                            if (classLoaderToUse instanceof DynamicClassLoader){
-                                this.processor.createRestInterfaces();
-                            }
 
                             this.processor.addEntityListeners();
 
@@ -1527,7 +1525,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             String defaultSharedString = (String)sharedMap.remove(PersistenceUnitProperties.DEFAULT);
             if (defaultSharedString != null) {
                 boolean defaultShared = Boolean.parseBoolean(defaultSharedString);
-                session.getProject().setDefaultIsIsolated(!defaultShared);
+                session.getProject().setDefaultCacheIsolation(defaultShared
+                        ? CacheIsolationType.SHARED : CacheIsolationType.ISOLATED);
             }
 
             Iterator it = session.getDescriptors().values().iterator();
@@ -1573,7 +1572,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
                 if (sharedString != null) {
                     boolean shared = Boolean.parseBoolean(sharedString);
-                    descriptor.setIsIsolated(!shared);
+                    descriptor.setCacheIsolation(shared ? CacheIsolationType.SHARED : CacheIsolationType.ISOLATED);
                 }
             }
         } catch (NumberFormatException exception) {
@@ -1997,7 +1996,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                     weaveEager = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_EAGER, predeployProperties, "false", session));
                     weaveFetchGroups = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_FETCHGROUPS, predeployProperties, "true", session));
                     weaveInternal = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_INTERNAL, predeployProperties, "true", session));
-                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, "true", session));
+                    weaveRest = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_REST, predeployProperties, shouldWeaveRestByDefault(classLoaderToUse), session));
                     weaveMappedSuperClass = "true".equalsIgnoreCase(EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.WEAVING_MAPPEDSUPERCLASS, predeployProperties, "true", session));
                 }
 
@@ -4622,6 +4621,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 }
             }
         }
+    }
+
+    //JPA-RS feature may be provided by a jar on the path or missing
+    private static String shouldWeaveRestByDefault(ClassLoader cl) {
+        try {
+            cl.loadClass("org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest");
+            return "true";
+        } catch (Throwable t) {
+            //ignore
+        }
+        return "false";
     }
 }
 

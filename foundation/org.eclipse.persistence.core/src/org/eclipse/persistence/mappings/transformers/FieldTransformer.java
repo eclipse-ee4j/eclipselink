@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ public interface FieldTransformer extends CoreFieldTransformer<Session> {
      * information from the mapping in order to do the transformation
      * @param mapping - the mapping this transformer is associated with.
      */
-    public void initialize(AbstractTransformationMapping mapping);
+    void initialize(AbstractTransformationMapping mapping);
 
     /**
      * @param instance - an instance of the domain class which contains the attribute
@@ -41,6 +41,5 @@ public interface FieldTransformer extends CoreFieldTransformer<Session> {
      * @param fieldName - the name of the field being transformed. Used if the user wants to use this transformer for multiple fields.
      * @return - The value to be written for the field associated with this transformer
      */
-    @Override
-    public Object buildFieldValue(Object instance, String fieldName, Session session);
+    @Override Object buildFieldValue(Object instance, String fieldName, Session session);
 }

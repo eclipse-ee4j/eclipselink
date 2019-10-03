@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -839,7 +839,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
     protected static boolean verifyFieldAndMapping(AbstractSession session, DatabaseField field, ClassDescriptor descriptor, DatabaseMapping mapping) {
         verifyField(session, field, descriptor);
         while (mapping.isAggregateObjectMapping()) {
-            ClassDescriptor referenceDescriptor = ((AggregateObjectMapping)mapping).getReferenceDescriptor();
+            ClassDescriptor referenceDescriptor = mapping.getReferenceDescriptor();
             mapping = referenceDescriptor.getObjectBuilder().getMappingForField(field);
             verifyFieldAndMapping(session, field, referenceDescriptor, mapping);
         }

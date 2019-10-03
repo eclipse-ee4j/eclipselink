@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2018 IBM Corporation, Oracle, and/or affiliates. All rights reserved.
+ * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,41 +47,47 @@ public class TestQueryCase {
             populate();
 
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            TypedQuery<EntityTbl01> query = em.createQuery(""
+                    + "SELECT t FROM EntityTbl01 t "
+                        + "WHERE t.itemString1 = ( "
+                            + "CASE t.itemInteger1 "
+                                + "WHEN 1000 THEN '047010' "
+                                + "WHEN 100 THEN '023010' "
+                                + "ELSE '033020' "
+                            + "END )", EntityTbl01.class);
 
-        TypedQuery<EntityTbl01> query = em.createQuery(""
-                + "SELECT t FROM EntityTbl01 t "
-                    + "WHERE t.itemString1 = ( "
-                        + "CASE t.itemInteger1 "
-                            + "WHEN 1000 THEN '047010' "
-                            + "WHEN 100 THEN '023010' "
-                            + "ELSE '033020' "
-                        + "END )", EntityTbl01.class);
+            List<EntityTbl01> dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(0, dto01.size());
 
-        List<EntityTbl01> dto01 = query.getResultList();
-        assertNotNull(dto01);
-        assertEquals(0, dto01.size());
+            query = em.createQuery(""
+                    + "SELECT t FROM EntityTbl01 t "
+                        + "WHERE t.itemString1 = ( "
+                            + "CASE t.itemInteger1 "
+                                + "WHEN 1 THEN 'A' "
+                                + "WHEN 100 THEN 'B' "
+                                + "ELSE 'C' "
+                            + "END )", EntityTbl01.class);
+            dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(1, dto01.size());
 
-        query = em.createQuery(""
-                + "SELECT t FROM EntityTbl01 t "
-                    + "WHERE t.itemString1 = ( "
-                        + "CASE t.itemInteger1 "
-                            + "WHEN 1 THEN 'A' "
-                            + "WHEN 100 THEN 'B' "
-                            + "ELSE 'C' "
-                        + "END )", EntityTbl01.class);
-        dto01 = query.getResultList();
-        assertNotNull(dto01);
-        assertEquals(1, dto01.size());
-
-        assertEquals("A", dto01.get(0).getItemString1());
-        assertEquals("B", dto01.get(0).getItemString2());
-        assertEquals("C", dto01.get(0).getItemString3());
-        assertEquals("D", dto01.get(0).getItemString4());
-        assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
-
-        em.getTransaction().rollback();
+            assertEquals("A", dto01.get(0).getItemString1());
+            assertEquals("B", dto01.get(0).getItemString2());
+            assertEquals("C", dto01.get(0).getItemString3());
+            assertEquals("D", dto01.get(0).getItemString4());
+            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 
     @Test
@@ -92,51 +99,57 @@ public class TestQueryCase {
             populate();
 
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            TypedQuery<EntityTbl01> query = em.createQuery(""
+                    + "SELECT t FROM EntityTbl01 t "
+                        + "WHERE t.itemString1 = ( "
+                            + "CASE "
+                                + "WHEN t.itemInteger1 = 1000 THEN '047010' "
+                                + "WHEN t.itemInteger1 = 100 THEN '023010' "
+                                + "ELSE '033020' "
+                            + "END )", EntityTbl01.class);
 
-        TypedQuery<EntityTbl01> query = em.createQuery(""
-                + "SELECT t FROM EntityTbl01 t "
+            List<EntityTbl01> dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(0, dto01.size());
+
+            query = em.createQuery(""
+                    + "SELECT t FROM EntityTbl01 t "
                     + "WHERE t.itemString1 = ( "
                         + "CASE "
-                            + "WHEN t.itemInteger1 = 1000 THEN '047010' "
-                            + "WHEN t.itemInteger1 = 100 THEN '023010' "
-                            + "ELSE '033020' "
+                            + "WHEN t.itemInteger1 = 1 THEN 'A' "
+                            + "WHEN t.itemInteger1 = 100 THEN 'B' "
+                            + "ELSE 'C' "
                         + "END )", EntityTbl01.class);
 
-        List<EntityTbl01> dto01 = query.getResultList();
-        assertNotNull(dto01);
-        assertEquals(0, dto01.size());
+            dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(1, dto01.size());
 
-        query = em.createQuery(""
-                + "SELECT t FROM EntityTbl01 t "
-                + "WHERE t.itemString1 = ( "
-                    + "CASE "
-                        + "WHEN t.itemInteger1 = 1 THEN 'A' "
-                        + "WHEN t.itemInteger1 = 100 THEN 'B' "
-                        + "ELSE 'C' "
-                    + "END )", EntityTbl01.class);
+            assertEquals("A", dto01.get(0).getItemString1());
+            assertEquals("B", dto01.get(0).getItemString2());
+            assertEquals("C", dto01.get(0).getItemString3());
+            assertEquals("D", dto01.get(0).getItemString4());
+            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
 
-        dto01 = query.getResultList();
-        assertNotNull(dto01);
-        assertEquals(1, dto01.size());
-
-        assertEquals("A", dto01.get(0).getItemString1());
-        assertEquals("B", dto01.get(0).getItemString2());
-        assertEquals("C", dto01.get(0).getItemString3());
-        assertEquals("D", dto01.get(0).getItemString4());
-        assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
-
-        query = em.createQuery(""
-                + "SELECT t FROM EntityTbl01 t "
-                + "WHERE t.itemString1 = ( "
-                    + "CASE "
-                        + "WHEN t.itemInteger1 = 1 AND t.KeyString = 'Key01' THEN 'A' "
-                        + "WHEN t.itemInteger1 = 100 THEN 'B' "
-                        + "ELSE 'C' "
-                    + "END )", EntityTbl01.class);
-
-        em.getTransaction().rollback();
+            query = em.createQuery(""
+                    + "SELECT t FROM EntityTbl01 t "
+                    + "WHERE t.itemString1 = ( "
+                        + "CASE "
+                            + "WHEN t.itemInteger1 = 1 AND t.KeyString = 'Key01' THEN 'A' "
+                            + "WHEN t.itemInteger1 = 100 THEN 'B' "
+                            + "ELSE 'C' "
+                        + "END )", EntityTbl01.class);
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 
     @Test
@@ -148,45 +161,51 @@ public class TestQueryCase {
             populate();
 
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            TypedQuery<Dto01> query = em.createQuery(""
+                    + "SELECT new org.eclipse.persistence.jpa.test.query.model.Dto01("
+                        + "t.itemString1, "               // String
+                        + "CASE t.itemString2 "           // String
+                            + "WHEN 'J' THEN 'Japan' "
+                            + "ELSE 'Other' "
+                        + "END  "
+                        + ", "
+                          + "SUM("      // Returns Long (4.8.5)
+                              + "CASE "
+                                  + "WHEN t.itemString3 = 'C' "
+                                  + "THEN 1 ELSE 0 "
+                              + "END" 
+                          +") "
+                        + ", "
+                          + "SUM("      // Returns Long (4.8.5)
+                              + "CASE "
+                                  + "WHEN t.itemString4 = 'D' "
+                                  + "THEN 1 ELSE 0 "
+                              + "END" 
+                          + ") " 
+                        + ") "
+                    + "FROM EntityTbl01 t "
+                    + "GROUP BY t.itemString1, t.itemString2", Dto01.class);
 
-        TypedQuery<Dto01> query = em.createQuery(""
-                + "SELECT new org.eclipse.persistence.jpa.test.query.model.Dto01("
-                    + "t.itemString1, "               // String
-                    + "CASE t.itemString2 "           // String
-                        + "WHEN 'J' THEN 'Japan' "
-                        + "ELSE 'Other' "
-                    + "END  "
-                    + ", "
-                      + "SUM("      // Returns Long (4.8.5)
-                          + "CASE "
-                              + "WHEN t.itemString3 = 'C' "
-                              + "THEN 1 ELSE 0 "
-                          + "END" 
-                      +") "
-                    + ", "
-                      + "SUM("      // Returns Long (4.8.5)
-                          + "CASE "
-                              + "WHEN t.itemString4 = 'D' "
-                              + "THEN 1 ELSE 0 "
-                          + "END" 
-                      + ") " 
-                    + ") "
-                + "FROM EntityTbl01 t "
-                + "GROUP BY t.itemString1, t.itemString2", Dto01.class);
-
-        List<Dto01> dto01 = query.getResultList();
-        assertNotNull(dto01);
-        assertEquals(1, dto01.size());
-        assertEquals("A", dto01.get(0).getStr1());
-        assertEquals("Other", dto01.get(0).getStr2());
-        assertNull(dto01.get(0).getStr3());
-        assertNull(dto01.get(0).getStr4());
-        assertEquals(new Integer(2), dto01.get(0).getInteger1());
-        assertEquals(new Integer(2), dto01.get(0).getInteger2());
-
-        em.getTransaction().rollback();
+            List<Dto01> dto01 = query.getResultList();
+            assertNotNull(dto01);
+            assertEquals(1, dto01.size());
+            assertEquals("A", dto01.get(0).getStr1());
+            assertEquals("Other", dto01.get(0).getStr2());
+            assertNull(dto01.get(0).getStr3());
+            assertNull(dto01.get(0).getStr4());
+            assertEquals(new Integer(2), dto01.get(0).getInteger1());
+            assertEquals(new Integer(2), dto01.get(0).getInteger2());
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 
     @Test
@@ -198,55 +217,64 @@ public class TestQueryCase {
             populate();
 
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            TypedQuery<Integer> query = em.createQuery(""
+                    + "SELECT ("
+                       + "CASE t.itemString2 "
+                       + "WHEN 'A' THEN 42 "
+                       + "WHEN 'B' THEN 100 "
+                       + "ELSE 0 "
+                       + "END "
+                    + ") "
+                    + "FROM EntityTbl01 t", Integer.class);
 
-        TypedQuery<Integer> query = em.createQuery(""
-                + "SELECT ("
-                   + "CASE t.itemString2 "
-                   + "WHEN 'A' THEN 42 "
-                   + "WHEN 'B' THEN 100 "
-                   + "ELSE 0 "
-                   + "END "
-                + ") "
-                + "FROM EntityTbl01 t", Integer.class);
-
-        List<Integer> intList = query.getResultList();
-        assertNotNull(intList);
-        assertEquals(2, intList.size());
-        assertEquals(new Integer(100), intList.get(0));
-        assertEquals(new Integer(100), intList.get(1));
-
-        em.getTransaction().rollback();
+            List<Integer> intList = query.getResultList();
+            assertNotNull(intList);
+            assertEquals(2, intList.size());
+            assertEquals(new Integer(100), intList.get(0));
+            assertEquals(new Integer(100), intList.get(1));
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 
     private void populate() {
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
 
-        em.getTransaction().begin();
+            EntityTbl01 tbl1 = new EntityTbl01();
+            tbl1.setKeyString("Key01");
+            tbl1.setItemString1("A");
+            tbl1.setItemString2("B");
+            tbl1.setItemString3("C");
+            tbl1.setItemString4("D");
+            tbl1.setItemInteger1(1);
+            em.persist(tbl1);
 
-        EntityTbl01 tbl1 = new EntityTbl01();
-        tbl1.setKeyString("Key01");
-        tbl1.setItemString1("A");
-        tbl1.setItemString2("B");
-        tbl1.setItemString3("C");
-        tbl1.setItemString4("D");
-        tbl1.setItemInteger1(1);
-        em.persist(tbl1);
+            EntityTbl01 tbl2 = new EntityTbl01();
+            tbl2.setKeyString("Key02");
+            tbl2.setItemString1("A");
+            tbl2.setItemString2("B");
+            tbl2.setItemString3("C");
+            tbl2.setItemString4("D");
+            tbl2.setItemInteger1(2);
+            em.persist(tbl2);
 
-        EntityTbl01 tbl2 = new EntityTbl01();
-        tbl2.setKeyString("Key02");
-        tbl2.setItemString1("A");
-        tbl2.setItemString2("B");
-        tbl2.setItemString3("C");
-        tbl2.setItemString4("D");
-        tbl2.setItemInteger1(2);
-        em.persist(tbl2);
+            em.getTransaction().commit();
 
-        em.getTransaction().commit();
-
-        em.close();
-
-        POPULATED = true;
+            POPULATED = true;
+        } finally {
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,42 +56,55 @@ public class TestCriteriaBuilder {
     public void testCriteriaCompoundSelectionModel() throws Exception {
         //Populate the database
         EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            L2 l2 = new L2(1, "L2-1");
+            L2 l2_2 = new L2(2, "L2-2");
 
-        em.getTransaction().begin();
+            L1 l1 = new L1(1, "L1-1", l2);
+            L1 l1_2 = new L1(2, "L1-2", l2_2);
 
-        L2 l2 = new L2(1, "L2-1");
-        L2 l2_2 = new L2(2, "L2-2");
+            em.persist(l2);
+            em.persist(l2_2);
+            em.persist(l1);
+            em.persist(l1_2);
 
-        L1 l1 = new L1(1, "L1-1", l2);
-        L1 l1_2 = new L1(2, "L1-2", l2_2);
-
-        em.persist(l2);
-        em.persist(l2_2);
-        em.persist(l1);
-        em.persist(l1_2);
-
-        em.getTransaction().commit();
-        em.clear();
-
-        em = emf.createEntityManager();
-
-        //Test CriteriaBuilder
-        final CriteriaBuilder builder = em.getCriteriaBuilder();
-        final CriteriaQuery<L1Model> query = builder.createQuery(L1Model.class);
-        final Root<L1> root = query.from(L1.class);
-        final Join<L1, L2> l1ToL2 = root.join(L1_.l2);
-        final CompoundSelection<L2Model> selection_l2 = builder.construct(L2Model.class, l1ToL2.get(L2_.id), l1ToL2.get(L2_.name));
-        final CompoundSelection<L1Model> selection = builder.construct(L1Model.class, root.get(L1_.id), root.get(L1_.name), selection_l2);
-        query.select(selection);
-
-        TypedQuery<L1Model> q = em.createQuery(query);
-        List<L1Model> l1List = q.getResultList();
-        if (l1List != null && !l1List.isEmpty()) {
-            for (L1Model l1m : l1List) {
-                Assert.assertNotNull(l1m.getL2());
+            em.getTransaction().commit();
+            em.clear();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
             }
         }
 
-        em.close();
+        em = emf.createEntityManager();
+        try {
+            //Test CriteriaBuilder
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<L1Model> query = builder.createQuery(L1Model.class);
+            final Root<L1> root = query.from(L1.class);
+            final Join<L1, L2> l1ToL2 = root.join(L1_.l2);
+            final CompoundSelection<L2Model> selection_l2 = builder.construct(L2Model.class, l1ToL2.get(L2_.id), l1ToL2.get(L2_.name));
+            final CompoundSelection<L1Model> selection = builder.construct(L1Model.class, root.get(L1_.id), root.get(L1_.name), selection_l2);
+            query.select(selection);
+
+            TypedQuery<L1Model> q = em.createQuery(query);
+            List<L1Model> l1List = q.getResultList();
+            if (l1List != null && !l1List.isEmpty()) {
+                for (L1Model l1m : l1List) {
+                    Assert.assertNotNull(l1m.getL2());
+                }
+            }
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
     }
 }

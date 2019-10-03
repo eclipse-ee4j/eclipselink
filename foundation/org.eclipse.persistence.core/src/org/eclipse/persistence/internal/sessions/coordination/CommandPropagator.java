@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ public class CommandPropagator implements Runnable {
      * Synchronously propagate the command
      */
     public void synchronousPropagateCommand() {
-        rcm.logDebug("sync_propagation", (Object[])null);
+        rcm.logDebug("sync_propagation", null);
         Iterator connections = rcm.getTransportManager().getConnectionsToExternalServicesForCommandPropagation().values().iterator();
 
         while (connections.hasNext()) {
@@ -100,7 +100,7 @@ public class CommandPropagator implements Runnable {
      */
     public void asynchronousPropagateCommand() {
         // The async logic is in the run() method
-        rcm.logDebug("async_propagation", (Object[])null);
+        rcm.logDebug("async_propagation", null);
         this.rcm.getServerPlatform().launchContainerRunnable(this);
     }
 

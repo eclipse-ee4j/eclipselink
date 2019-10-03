@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,13 +26,12 @@ public interface AggregateChangeRecord extends ChangeRecord {
      * ADVANCED:
      * This method is used to return the ObjectChangeSet representing the changed Aggregate.
      */
-    public ObjectChangeSet getChangedObject();
+    ObjectChangeSet getChangedObject();
 
     /**
      * ADVANCED:
      * If the owning UnitOfWork has shouldChangeRecordKeepOldValue set to true,
      * then return the old value of the attribute represented by this ChangeRecord.
      */
-    @Override
-    public Object getOldValue();
+    @Override Object getOldValue();
 }

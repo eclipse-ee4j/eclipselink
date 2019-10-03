@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,19 +16,20 @@ package org.eclipse.persistence.mappings.converters;
 
 import java.security.AccessController;
 
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.exceptions.DescriptorException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.descriptors.ClassNameConversionRequired;
-import org.eclipse.persistence.internal.helper.*;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
+import org.eclipse.persistence.internal.security.PrivilegedClassForName;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.sessions.*;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.serializers.JSONSerializer;
 import org.eclipse.persistence.sessions.serializers.JavaSerializer;
 import org.eclipse.persistence.sessions.serializers.Serializer;
 import org.eclipse.persistence.sessions.serializers.XMLSerializer;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedClassForName;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * <p><b>Purpose</b>: The serialized object converter can be used to store an arbitrary object or set of objects into a database binary or character field.
@@ -122,7 +123,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
         if (this.serializer.getType() == ClassConstants.APBYTE) {
             byte[] bytes;
             try {
-                bytes = (byte[])((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.APBYTE);
+                bytes = (byte[]) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.APBYTE);
             } catch (ConversionException exception) {
                 throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
             }
@@ -133,7 +134,7 @@ public class SerializedObjectConverter implements Converter, ClassNameConversion
         } else if (this.serializer.getType() == ClassConstants.STRING) {
             String text;
             try {
-                text = (String)((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
+                text = (String) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.STRING);
             } catch (ConversionException exception) {
                 throw ConversionException.couldNotBeConverted(this.mapping, this.mapping.getDescriptor(), exception);
             }

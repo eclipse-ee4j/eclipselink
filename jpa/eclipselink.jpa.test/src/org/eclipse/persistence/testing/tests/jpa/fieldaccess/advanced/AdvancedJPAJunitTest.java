@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -761,7 +761,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Object[] objectdata = (Object[])aQuery.getSingleResult();
 
             assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null) && (objectdata.length==2)) );
-            assertTrue("Address Id data returned doesn't match persisted address", (address1.getId() == ((Integer)objectdata[0]).intValue()));
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getId() == ((Long)objectdata[0]).longValue()));
             assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){

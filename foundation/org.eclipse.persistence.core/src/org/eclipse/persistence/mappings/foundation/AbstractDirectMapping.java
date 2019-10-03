@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -109,7 +109,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
         if (selectionQuery.isObjectLevelReadQuery()){
             ((ObjectLevelReadQuery)selectionQuery).addAdditionalField(baseExpression.getField(getField()));
         } else if (selectionQuery.isDataReadQuery()){
-            ((SQLSelectStatement)((DataReadQuery)selectionQuery).getSQLStatement()).addField(baseExpression.getField(getField()));
+            ((SQLSelectStatement) selectionQuery.getSQLStatement()).addField(baseExpression.getField(getField()));
         }
     }
 
@@ -848,7 +848,7 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
      */
     @Override
     public List<DatabaseField> getAllFieldsForMapKey(){
-        Vector<DatabaseField> fields = new Vector<DatabaseField>(1);
+        Vector<DatabaseField> fields = new Vector<>(1);
         fields.add(getField());
         return fields;
     }

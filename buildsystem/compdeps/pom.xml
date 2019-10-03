@@ -91,7 +91,7 @@
         <org.slf4j.version>1.7.25</org.slf4j.version>
         <wsdl4j.version>1.6.2</wsdl4j.version>
         <!-- CQ #7143 (Workswith) JGroups 3.2.8+ -->
-        <org.jgroups.version>3.6.17.Final</org.jgroups.version>
+        <org.jgroups.version>4.1.0.Final</org.jgroups.version>
     </properties>
 
     <build>

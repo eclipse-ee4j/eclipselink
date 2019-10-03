@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public class TransformationMappingChangeRecord extends ChangeRecord implements o
     /**
      * This method is used to add a changed value to the changeRecord.  The changes in a transformation
      * mapping are recorded on the database field level
-     * @param Record Record the values from the transformation mapping
+     * @param record Record the values from the transformation mapping
      */
     public void setRow(AbstractRecord record) {
         this.rowCollection = record;

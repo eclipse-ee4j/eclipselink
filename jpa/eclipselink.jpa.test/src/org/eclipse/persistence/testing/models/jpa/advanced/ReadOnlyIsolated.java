@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,11 +20,12 @@ import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ReadOnly;
+import org.eclipse.persistence.config.CacheIsolationType;
 
 @Entity
 @Table(name="CMP3_READONLY_ISOLATED")
 @ReadOnly
-@Cache(shared=false)
+@Cache(isolation=CacheIsolationType.ISOLATED)
 public class ReadOnlyIsolated  {
     private Integer id;
     private String code;

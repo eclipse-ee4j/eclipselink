@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,31 +24,31 @@ import org.w3c.dom.Node;
 import org.xml.sax.ContentHandler;
 
 public interface XMLTransformer {
-    public String getEncoding();
+    String getEncoding();
 
-    public void setEncoding(String encoding);
+    void setEncoding(String encoding);
 
-    public boolean isFormattedOutput();
+    boolean isFormattedOutput();
 
-    public void setFormattedOutput(boolean shouldFormat);
+    void setFormattedOutput(boolean shouldFormat);
 
-    public boolean isFragment();
+    boolean isFragment();
 
-    public void setFragment(boolean fragment);
+    void setFragment(boolean fragment);
 
-    public String getVersion();
+    String getVersion();
 
-    public void setVersion(String version);
+    void setVersion(String version);
 
-    public void transform(Node sourceNode, OutputStream resultOutputStream) throws XMLPlatformException;
+    void transform(Node sourceNode, OutputStream resultOutputStream) throws XMLPlatformException;
 
-    public void transform(Node sourceNode, ContentHandler resultContentHandler) throws XMLPlatformException;
+    void transform(Node sourceNode, ContentHandler resultContentHandler) throws XMLPlatformException;
 
-    public void transform(Node sourceNode, Result result) throws XMLPlatformException;
+    void transform(Node sourceNode, Result result) throws XMLPlatformException;
 
-    public void transform(Node sourceNode, Writer resultWriter) throws XMLPlatformException;
+    void transform(Node sourceNode, Writer resultWriter) throws XMLPlatformException;
 
-    public void transform(Source source, Result result) throws XMLPlatformException;
+    void transform(Source source, Result result) throws XMLPlatformException;
 
-    public void transform(Document sourceDocument, Node resultParentNode, URL stylesheet) throws XMLPlatformException;
+    void transform(Document sourceDocument, Node resultParentNode, URL stylesheet) throws XMLPlatformException;
 }

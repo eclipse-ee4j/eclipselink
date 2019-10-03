@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.exceptions.DynamicException;
  * <p>
  * The purpose of dynamic persistent objects is to enable (simple) data access when only mapping
  * information is available <br>
- * and no concrete Java model is present (specifically, no <tt>.class</tt> files .)
+ * and no concrete Java model is present (specifically, no <code>.class</code> files .)
  * <p>
  * Applications using <code>DynamicEntity</code>'s can access the persistent state using property names
  * which correspond <br>
@@ -63,7 +63,7 @@ public interface DynamicEntity {
      * @return
      *      persistent value or relationship container of the specified type
      */
-    public <T> T get(String propertyName) throws DynamicException;
+    <T> T get(String propertyName) throws DynamicException;
 
     /**
      * Set the persistence value for the given property to the specified value
@@ -78,7 +78,7 @@ public interface DynamicEntity {
      * @return
      *      the same DynamicEntity instance
      */
-    public DynamicEntity set(String propertyName, Object value) throws DynamicException;
+    DynamicEntity set(String propertyName, Object value) throws DynamicException;
 
     /**
      * Discover if a property has a persistent value
@@ -91,6 +91,6 @@ public interface DynamicEntity {
      * @throws
      *      DynamicException
      */
-    public boolean isSet(String propertyName) throws DynamicException;
+    boolean isSet(String propertyName) throws DynamicException;
 
 }

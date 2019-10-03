@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -262,8 +262,8 @@ public class TablePerMultitenantPolicy implements MultitenantPolicy, Cloneable {
         Map<DatabaseTable, Set<DatabaseTable>> existingMultipleTables = descriptor.getMultipleTableForeignKeys();
 
         if (existingMultipleTables != null && ! existingMultipleTables.isEmpty()) {
-            Map<DatabaseTable, Set<DatabaseTable>> updatedMultipleTables = new HashMap<DatabaseTable, Set<DatabaseTable>>();
-            Set<DatabaseTable> secondaryTables = new HashSet<DatabaseTable>();
+            Map<DatabaseTable, Set<DatabaseTable>> updatedMultipleTables = new HashMap<>();
+            Set<DatabaseTable> secondaryTables = new HashSet<>();
 
             for (DatabaseTable table : existingMultipleTables.keySet()) {
                 for (DatabaseTable secondaryTable : existingMultipleTables.get(table)) {

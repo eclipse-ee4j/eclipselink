@@ -315,7 +315,7 @@ public class DirectCollectionChangeRecord extends DeferrableChangeRecord impleme
         if (((DeferrableChangeRecord)mergeFromRecord).isDeferred()){
             if (this.hasChanges()){
                 //merging into existing change record need to combine changes
-                ((DeferrableChangeRecord)mergeFromRecord).getMapping().calculateDeferredChanges(mergeFromRecord, mergeToChangeSet.getSession());
+                mergeFromRecord.getMapping().calculateDeferredChanges(mergeFromRecord, mergeToChangeSet.getSession());
             }else{
                 this.isDeferred = true;
                 this.originalCollection = ((DeferrableChangeRecord)mergeFromRecord).originalCollection;

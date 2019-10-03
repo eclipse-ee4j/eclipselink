@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,13 +37,13 @@ import org.eclipse.persistence.logging.SessionLog;
 public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implements WrappingValueHolder{
 
     /** The value holder in the original object. */
-    protected transient ValueHolderInterface wrappedValueHolder;
+    protected transient ValueHolderInterface<?> wrappedValueHolder;
 
     /** The mapping for the attribute. */
     protected transient DatabaseMapping mapping;
 
     /** The value holder stored in the backup copy, should not be transient. */
-    protected ValueHolderInterface backupValueHolder;
+    protected ValueHolderInterface<Object> backupValueHolder;
 
     /** These cannot be transient because they are required for a remote unit of work.
     When the remote uow is serialized to the server to be committed, these
@@ -89,7 +89,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      */
     public abstract Object buildCloneFor(Object originalAttributeValue);
 
-    protected ValueHolderInterface getBackupValueHolder() {
+    protected ValueHolderInterface<Object> getBackupValueHolder() {
         return backupValueHolder;
     }
 
@@ -163,7 +163,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
                     }
                 }
             }
-            if (!((DatabaseValueHolder)this.wrappedValueHolder).isInstantiated()){
+            if (!this.wrappedValueHolder.isInstantiated()){
                 //if not instantiated then try and load the UOW versions to prevent the whole loading from the cache and cloning
                 //process
                 Object result = ((DatabaseValueHolder)this.wrappedValueHolder).getValue((UnitOfWorkImpl) this.session);
@@ -202,7 +202,7 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
     }
 
     @Override
-    public ValueHolderInterface getWrappedValueHolder() {
+    public ValueHolderInterface<?> getWrappedValueHolder() {
         return wrappedValueHolder;
     }
 

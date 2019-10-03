@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,6 @@ import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 
-import junit.framework.Assert;
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.eclipse.persistence.dynamic.DynamicEntity;
 import org.eclipse.persistence.dynamic.DynamicType;
 import org.eclipse.persistence.internal.jpa.config.persistenceunit.PersistenceUnitImpl;
@@ -53,7 +49,10 @@ import org.eclipse.persistence.jpa.config.RuntimeFactory;
 import org.eclipse.persistence.jpa.dynamic.JPADynamicHelper;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
-import org.eclipse.persistence.testing.tests.jpa.advanced.AdvancedJPAJunitTest;
+
+import junit.framework.Assert;
+import junit.framework.Test;
+import junit.framework.TestSuite;
 
 /**
  * JPA scripting API implementation helper class.
@@ -72,6 +71,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
     }
@@ -127,7 +127,7 @@ public class ConfigPUTestSuite extends JUnitTestCase {
         emp.setExcludeDefaultListeners(true);
         emp.setExcludeSuperclassListeners(true);
         emp.setOptimisticLocking().setType("VERSION_COLUMN").setCascade(true);
-        emp.setCache().setType("SOFT_WEAK").setSize(730).setShared(true).setDisableHits(true).setAlwaysRefresh(false).setCoordinationType("INVALIDATE_CHANGED_OBJECTS").setExpiry(1000);
+        emp.setCache().setType("SOFT_WEAK").setSize(730).setIsolation("SHARED").setDisableHits(true).setAlwaysRefresh(false).setCoordinationType("INVALIDATE_CHANGED_OBJECTS").setExpiry(1000);
         emp.addEntityListener().setClass("EmployeeListener").setPrePersist("prePersist").setPostPersist("postPersist").setPreRemove("preRemove").setPostRemove("postRemove").setPreUpdate("preUpdate").setPostUpdate("postUpdate").setPostLoad("postLoad");
         ObjectTypeConverter sexConverter = emp.addObjectTypeConverter().setName("sex").setDataType("String").setObjectType("Gender");
         sexConverter.addConversionValue().setDataValue("F").setObjectValue("Female");

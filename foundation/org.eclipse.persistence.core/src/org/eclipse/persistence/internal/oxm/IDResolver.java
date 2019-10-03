@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,13 +38,13 @@ public abstract class IDResolver {
 
     /**
      * <p>
-     * Resolve the object of Class <tt>type</tt>, uniquely identified by <tt>id</tt>.
+     * Resolve the object of Class <code>type</code>, uniquely identified by <code>id</code>.
      * </p>
      *
-     * @param id The <tt>Object</tt> that uniquely identifies the object to be found.
-     * @param type The <tt>Class</tt> of the object to be found.
+     * @param id The <code>Object</code> that uniquely identifies the object to be found.
+     * @param type The <code>Class</code> of the object to be found.
      *
-     * @return a <tt>Callable</tt> that will return the resolved object.
+     * @return a <code>Callable</code> that will return the resolved object.
      *
      * @throws SAXException
      */
@@ -52,13 +52,13 @@ public abstract class IDResolver {
 
     /**
      * <p>
-     * Resolve the object of Class <tt>type</tt>, uniquely identified by the composite key information specified in the <tt>id</tt> Map.
+     * Resolve the object of Class <code>type</code>, uniquely identified by the composite key information specified in the <code>id</code> Map.
      * </p>
      *
-     * @param id A <tt>Map</tt> of id values, keyed on the attribute name.
-     * @param type The <tt>Class</tt> of the object to be found.
+     * @param id A <code>Map</code> of id values, keyed on the attribute name.
+     * @param type The <code>Class</code> of the object to be found.
      *
-     * @return a <tt>Callable</tt> that will return the resolved object.
+     * @return a <code>Callable</code> that will return the resolved object.
      *
      * @throws SAXException
      */
@@ -66,10 +66,10 @@ public abstract class IDResolver {
 
     /**
      * <p>
-     * Bind the object <tt>obj</tt> to the identifier <tt>id</tt>.
+     * Bind the object <code>obj</code> to the identifier <code>id</code>.
      * </p>
      *
-     * @param id The id <tt>Object</tt> that uniquely identifies the object to be bound.
+     * @param id The id <code>Object</code> that uniquely identifies the object to be bound.
      * @param obj The object that will be bound to this id.
      *
      * @throws SAXException
@@ -78,10 +78,10 @@ public abstract class IDResolver {
 
     /**
      * <p>
-     * Bind the object <tt>obj</tt> to the composite key information specified in the <tt>id</tt> Map.
+     * Bind the object <code>obj</code> to the composite key information specified in the <code>id</code> Map.
      * </p>
      *
-     * @param id A <tt>Map</tt> of id values, keyed on attribute name.
+     * @param id A <code>Map</code> of id values, keyed on attribute name.
      * @param obj The object that will be bound to this id.
      *
      * @throws SAXException

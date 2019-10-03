@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -57,8 +57,8 @@ public class DynamicClassLoader extends ClassLoader {
      * of the same name, same writer type, and the same parent class are
      * permitted but different parent classes or different writer types are not.
      */
-    protected Map<String, EclipseLinkClassWriter> classWriters = new HashMap<String, EclipseLinkClassWriter>();
-    protected Map<String, EnumInfo> enumInfoRegistry = new HashMap<String, EnumInfo>();
+    protected Map<String, EclipseLinkClassWriter> classWriters = new HashMap<>();
+    protected Map<String, EnumInfo> enumInfoRegistry = new HashMap<>();
 
     /**
      * Default writer to use if one is not specified.
@@ -202,6 +202,33 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
+     * Create an adapter for given {@code className}
+     *
+     * @param className
+     */
+    public void createDynamicAdapter(String className) {
+        // default no-op
+    }
+
+    /**
+     * Create a collection adapter for given {@code className}
+     *
+     * @param className
+     */
+    public void createDynamicCollectionAdapter(String className) {
+        // default no-op
+    }
+
+    /**
+     * Create a reference for given {@code className}
+     *
+     * @param className
+     */
+    public void createDynamicReferenceAdapter(String className) {
+        // default no-op
+    }
+
+    /**
      * Create a new dynamic class if a ClassWriter is registered for the
      * provided className. This code is single threaded to ensure only one class
      * is created for a given name and that the ClassWriter is removed
@@ -233,8 +260,8 @@ public class DynamicClassLoader extends ClassLoader {
     }
 
     /**
-     * Converts an array of bytes into an instance of class <tt>Class</tt>.
-     * Before the <tt>Class</tt> can be used it must be resolved.
+     * Converts an array of bytes into an instance of class <code>Class</code>.
+     * Before the <code>Class</code> can be used it must be resolved.
      *
      * @param name
      * @param b
@@ -277,7 +304,7 @@ public class DynamicClassLoader extends ClassLoader {
 
     public static class EnumInfo {
         String className;
-        List<String> literalLabels = new ArrayList<String>();
+        List<String> literalLabels = new ArrayList<>();
 
         public EnumInfo(String className) {
             this.className = className;
@@ -297,4 +324,5 @@ public class DynamicClassLoader extends ClassLoader {
             }
         }
     }
+
 }

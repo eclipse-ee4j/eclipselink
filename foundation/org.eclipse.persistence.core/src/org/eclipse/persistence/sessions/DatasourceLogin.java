@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -777,9 +777,9 @@ public abstract class DatasourceLogin implements org.eclipse.persistence.session
         PrintWriter writer = new PrintWriter(stringWriter);
         writer.write(Helper.getShortClassName(getClass()));
         writer.println("(");
-        writer.println("\t" + ToStringLocalization.buildMessage("platform", (Object[])null) + "=> " + getDatasourcePlatform());
+        writer.println("\t" + ToStringLocalization.buildMessage("platform", null) + "=> " + getDatasourcePlatform());
         if (!shouldUseExternalConnectionPooling()) {
-            writer.println("\t" + ToStringLocalization.buildMessage("user_name", (Object[])null) + "=> \"" + getUserName() + "\"");
+            writer.println("\t" + ToStringLocalization.buildMessage("user_name", null) + "=> \"" + getUserName() + "\"");
         }
         writer.print("\t");
         getConnector().toString(writer);

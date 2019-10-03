@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,16 +14,20 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.expressions;
 
-import java.util.*;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.history.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.history.*;
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.querykeys.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.history.AsOfClause;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.history.DecoratedDatabaseTable;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.querykeys.QueryKey;
 
 /**
  * Superclass for all expression that have a context.
@@ -340,9 +344,9 @@ public abstract class DataExpression extends BaseExpression {
     /**
      * ADVANCED: Return an expression representing a sub-select in the from clause.
      * <p> Example:
-     * <pre><blockquote>
+     * <pre>
      *  builder.getAlias(builder.subQuery(reportQuery)).get("type").equal("S");
-     * </blockquote></pre>
+     * </pre>
      */
     @Override
     public Expression getAlias(Expression subSelect) {

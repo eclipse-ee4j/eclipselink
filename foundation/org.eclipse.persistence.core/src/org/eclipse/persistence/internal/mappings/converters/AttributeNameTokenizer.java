@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -82,8 +82,8 @@ public class AttributeNameTokenizer implements Iterable<String> {
 
     /**
      * INTERNAL:
-     * Returns an {@link Iterator<String>} over attribute name tokens.
-     * @return An {@link Iterator<String>} over attribute name tokens.
+     * Returns an {@code Iterator<String>} over attribute name tokens.
+     * @return An {@code Iterator<String>} over attribute name tokens.
      */
     @Override
     public Iterator<String> iterator() {
@@ -94,8 +94,8 @@ public class AttributeNameTokenizer implements Iterable<String> {
     // class casting.
     /**
      * INTERNAL:
-     * Returns an {@link TokensIterator} over attribute name tokens.
-     * @return An {@link TokensIterator} over attribute name tokens.
+     * Returns an {@code TokensIterator} over attribute name tokens.
+     * @return An {@code TokensIterator} over attribute name tokens.
      */
     public TokensIterator tokensIterator() {
         return new TokensIterator(attributeName);
@@ -103,7 +103,7 @@ public class AttributeNameTokenizer implements Iterable<String> {
 
     /**
      * INTERNAL:
-     * Attribute name tokenizer parser implemented as an {@link Iterator<String>} over individual attribute name tokens.
+     * Attribute name tokenizer parser implemented as an {@code Iterator<String>} over individual attribute name tokens.
      *
      */
     public static final class TokensIterator
@@ -194,7 +194,7 @@ public class AttributeNameTokenizer implements Iterable<String> {
         /**
          * INTERNAL:
          * Returns {@code true} if the iteration has more elements. In other words, returns {@code true}
-         * if {@see #next()} would return an element rather than throwing an exception.
+         * if {@link #next()} would return an element rather than throwing an exception.
          * @return Value of {@code true} if the iteration has more elements or {@code false} otherwise.
          */
         @Override
@@ -223,7 +223,6 @@ public class AttributeNameTokenizer implements Iterable<String> {
         /**
          * INTERNAL:
          * Removal of attribute name tokens makes no sense.
-         * @return Never returns any value.
          * @throws UnsupportedOperationException is always thrown on invocation.
          */
         @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,12 @@ import org.eclipse.persistence.oxm.documentpreservation.AppendNewElementsOrderin
  * INTERNAL:
  * <p><b>Purpose:</b>Provide an implementation of DocumentPreservation Policy that accesses the
  * session cache to store Objects and their associated nodes.
- * <p><b>Responsibilities:</b><ul>
+ * <p><b>Responsibilities:</b>
+ * <ul>
  * <li>Add new objects and their associated nodes into the Session cache, wrapping them in a weak
- * reference.
- * <li>Lookup the node for a given Object
+ * reference.</li>
+ * <li>Lookup the node for a given Object</li>
+ * </ul>
  *
  * @author mmacivor
  * @since TopLink 11g

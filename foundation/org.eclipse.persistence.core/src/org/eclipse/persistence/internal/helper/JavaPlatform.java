@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,6 @@ import java.util.regex.Pattern;
  *  JavaPlatform abstracts the version of the JDK we are using.  It allows any operation
  *  which is dependent on JDK version to be called from a single place and then delegates
  *  the call to its JDKPlatform
- *  @see JDPlatform
  *  @author Tom Ware
  */
 public class JavaPlatform {

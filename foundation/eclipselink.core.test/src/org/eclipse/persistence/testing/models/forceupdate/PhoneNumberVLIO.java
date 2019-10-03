@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,7 @@ public class PhoneNumberVLIO implements Serializable {
     public String number;
 
     /** Owner maintains the 1:1 mapping to an Employee (required for 1:M relationship in Employee) */
-    public ValueHolderInterface owner;
+    public ValueHolderInterface<EmployeeVLIO> owner;
 
     public PhoneNumberVLIO() {
         this("home", "###", "#######");
@@ -45,7 +45,7 @@ public class PhoneNumberVLIO implements Serializable {
         this.type = type;
         this.areaCode = theAreaCode;
         this.number = theNumber;
-        this.owner = new ValueHolder();
+        this.owner = new ValueHolder<>();
     }
 
     public String getAreaCode() {
@@ -57,7 +57,7 @@ public class PhoneNumberVLIO implements Serializable {
     }
 
     public org.eclipse.persistence.testing.models.forceupdate.EmployeeVLIO getOwner() {
-        return (EmployeeVLIO)owner.getValue();
+        return owner.getValue();
     }
 
     public String getType() {

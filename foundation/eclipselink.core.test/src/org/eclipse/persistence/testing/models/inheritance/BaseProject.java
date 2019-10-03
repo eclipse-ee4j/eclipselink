@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,11 @@ import org.eclipse.persistence.indirection.*;
 public class BaseProject {
     private long id;
     private String name;
-    private ValueHolderInterface teamLeader;
+    private ValueHolderInterface<ProjectWorker> teamLeader;
 
     public BaseProject() {
         this.name = "";
-        this.teamLeader = new ValueHolder();
+        this.teamLeader = new ValueHolder<>();
     }
 
     public long getId() {
@@ -39,7 +39,7 @@ public class BaseProject {
     }
 
     public ProjectWorker getTeamLeader() {
-        return (ProjectWorker)teamLeader.getValue();
+        return teamLeader.getValue();
     }
 
     public void setName(String name) {

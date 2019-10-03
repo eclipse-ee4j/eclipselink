@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,9 +47,9 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
 
     /** Store the value partitions. Each partition maps a value to a connectionPool. */
-    protected Map<Object, String> partitions = new HashMap<Object, String>();
+    protected Map<Object, String> partitions = new HashMap<>();
     /** Store the value partitions by name. Initialized at runtime. */
-    protected Map<String, String> partitionNames = new HashMap<String, String>();
+    protected Map<String, String> partitionNames = new HashMap<>();
 
     /** The type name of the partition value names. Initialized at runtime */
     protected String partitionValueTypeName;
@@ -58,7 +58,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
     protected Class partitionValueType;
 
     /** Use to track order for compute UCP index. */
-    protected List<String> orderedPartitions = new ArrayList<String>();
+    protected List<String> orderedPartitions = new ArrayList<>();
 
     /** The default connection pool is used for any unmapped values. */
     protected String defaultConnectionPool;
@@ -196,7 +196,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
         if (value == null) {
             if (this.unionUnpartitionableQueries) {
                 // Use all connections.
-                List<Accessor> accessors = new ArrayList<Accessor>(this.partitions.size());
+                List<Accessor> accessors = new ArrayList<>(this.partitions.size());
                 for (String poolName : this.partitions.values()) {
                     accessors.add(getAccessor(poolName, session, query, false));
                 }
@@ -207,7 +207,7 @@ public class ValuePartitioningPolicy extends FieldPartitioningPolicy {
             }
         }
         // Use the mapped connection pool.
-        List<Accessor> accessors = new ArrayList<Accessor>(1);
+        List<Accessor> accessors = new ArrayList<>(1);
         String poolName = this.partitions.get(value);
         if (poolName == null) {
             if (this.defaultConnectionPool == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,8 +17,6 @@ package org.eclipse.persistence.internal.oxm;
 
 import javax.xml.namespace.QName;
 
-import org.xml.sax.Attributes;
-
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.core.sessions.CoreAbstractSession;
 import org.eclipse.persistence.internal.oxm.mappings.CollectionReferenceMapping;
@@ -27,6 +25,7 @@ import org.eclipse.persistence.internal.oxm.record.MarshalContext;
 import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.ObjectMarshalContext;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
+import org.xml.sax.Attributes;
 
 /**
  * INTERNAL:
@@ -234,7 +233,6 @@ public class XMLCollectionReferenceMappingNodeValue extends MappingNodeValue imp
     }
 
     /**
-     * @override
      * @param xPathFragment
      * @param unmarshalRecord
      * @param atts

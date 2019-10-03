@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -215,7 +215,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Add an unconverted property (to be initialiazed at runtime)
      */
     public void addUnconvertedProperty(String propertyName, String propertyValue, String propertyType) {
-        List<String> valuePair = new ArrayList<String>(2);
+        List<String> valuePair = new ArrayList<>(2);
         valuePair.add(propertyValue);
         valuePair.add(propertyType);
         getUnconvertedProperties().put(propertyName, valuePair);
@@ -919,7 +919,7 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      */
     public Map<String, List<String>> getUnconvertedProperties() {
         if (unconvertedProperties == null) {
-            unconvertedProperties = new HashMap<String, List<String>>(5);
+            unconvertedProperties = new HashMap<>(5);
         }
 
         return unconvertedProperties;
@@ -980,7 +980,6 @@ public abstract class DatabaseMapping extends CoreMapping<AttributeAccessor, Abs
      * Allow for initialization of properties and validation.
      */
     public void initialize(AbstractSession session) throws DescriptorException {
-        ;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public abstract class CodeDefinition {
      * Assumes that typeName contains only a package name (optional) and a short name,
      * potentially with subtended brackets.
      *
-     * (e.g. int -> int, java.util.Vector -> Vector, java.lang.Boolean[] -> Boolean[], etc.)
+     * (e.g. int -&gt; int, java.util.Vector -&gt; Vector, java.lang.Boolean[] -&gt; Boolean[], etc.)
      */
     protected static String adjustTypeName(String typeName, Map typeNameMap) {
         if (adjustmentNeededForType(typeName, typeNameMap)) {

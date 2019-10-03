@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2065,7 +2065,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     beginTransaction(em2);
 
                     HashMap<String, Object> properties = new HashMap<String, Object>();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5000);
                     Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
@@ -2118,7 +2118,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     beginTransaction(em2);
 
                     HashMap<String, Object> properties = new HashMap<String, Object>();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5000);
                     Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
@@ -5500,10 +5500,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertEquals("Does not return unit of work", uow, uow1);
             JpaEntityManager jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
             assertEquals("Does not return underlying entitymanager", jem, jem1);
+
+            Connection conn1 = em.unwrap(java.sql.Connection.class);
+            assertNotNull("Connection returned was null", conn1);
             // TODO: This should be supported.
-            /*Connection conn1;
-            conn1 = em.unwrap(java.sql.Connection.class);
-            Connection conn = uowImpl.getAccessor().getConnection();
+            /*Connection conn = uowImpl.getAccessor().getConnection();
             assertEquals("Does not return underlying connection", conn, conn1);*/
         } finally {
             rollbackTransaction(em);

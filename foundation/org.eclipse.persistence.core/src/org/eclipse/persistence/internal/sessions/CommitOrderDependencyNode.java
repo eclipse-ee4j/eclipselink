@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -104,9 +104,9 @@ public class CommitOrderDependencyNode {
                  mappings.hasMoreElements();) {
             DatabaseMapping mapping = (DatabaseMapping)mappings.nextElement();
             if (mapping.isForeignReferenceMapping()) {
-                if (((ForeignReferenceMapping)mapping).hasConstraintDependency()) {
+                if (mapping.hasConstraintDependency()) {
                     Class ownedClass;
-                    ClassDescriptor refDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                    ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
                     if (refDescriptor == null) {
                         refDescriptor = session.getDescriptor(((ForeignReferenceMapping)mapping).getReferenceClass());
                     }
@@ -120,9 +120,9 @@ public class CommitOrderDependencyNode {
 
                     // I could remove duplicates here, but it's not that big a deal.
                     Helper.addAllToVector(relatedNodes, ownedNodes);
-                } else if (((ForeignReferenceMapping)mapping).hasInverseConstraintDependency()) {
+                } else if (mapping.hasInverseConstraintDependency()) {
                     Class ownerClass;
-                    ClassDescriptor refDescriptor = ((ForeignReferenceMapping)mapping).getReferenceDescriptor();
+                    ClassDescriptor refDescriptor = mapping.getReferenceDescriptor();
                     if (refDescriptor == null) {
                         refDescriptor = session.getDescriptor(((ForeignReferenceMapping)mapping).getReferenceClass());
                     }
@@ -173,7 +173,7 @@ public class CommitOrderDependencyNode {
     @Override
     public String toString() {
         if (descriptor == null) {
-            return ToStringLocalization.buildMessage("empty_commit_order_dependency_node", (Object[])null);
+            return ToStringLocalization.buildMessage("empty_commit_order_dependency_node", null);
         } else {
             Object[] args = { descriptor };
             return ToStringLocalization.buildMessage("node", args);
@@ -211,7 +211,7 @@ public class CommitOrderDependencyNode {
             InheritancePolicy policy = node.getDescriptor().getInheritancePolicy();
 
             // For bug 3019934 replace getChildDescriptors with getAllChildDescriptors.
-            List<ClassDescriptor> childDescriptors = new ArrayList<ClassDescriptor>();
+            List<ClassDescriptor> childDescriptors = new ArrayList<>();
             childDescriptors.addAll(policy.getAllChildDescriptors());
 
             // Sort Child Descriptors before adding them to related nodes.

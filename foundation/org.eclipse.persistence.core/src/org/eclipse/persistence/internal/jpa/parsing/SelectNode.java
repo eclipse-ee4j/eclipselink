@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
+import org.eclipse.persistence.queries.ReportQuery;
 
 /**
  * INTERNAL:
@@ -262,8 +265,8 @@ public class SelectNode extends QueryNode {
     /**
      * Answer true if the variable name given as argument is SELECTed.
      *
-     * True: "SELECT OBJECT(emp) ...." & variableName = "emp"
-     * False: "SELECT OBJECT(somethingElse) ..." & variableName = "emp"
+     * True: "SELECT OBJECT(emp) ...." &amp; variableName = "emp"
+     * False: "SELECT OBJECT(somethingElse) ..." &amp; variableName = "emp"
      */
     public boolean isSelected(String variableName) {
         for (Iterator i = selectExpressions.iterator(); i.hasNext();) {

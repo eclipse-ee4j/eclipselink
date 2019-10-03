@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -55,10 +55,9 @@ public class TestLobMerge {
             Assert.assertTrue("Platform \""+ pl +"\". Test will run on Oracle only", true);
             return;
         }
-        EntityManager em = null;
-        try {
-            em = emf.createEntityManager();
 
+        EntityManager em = emf.createEntityManager();
+        try {
             final Set<CollectedEntity> col1 = new HashSet<CollectedEntity>(
                     Arrays.asList(new CollectedEntity[] { 
                             new CollectedEntity("label1", "content1"),
@@ -76,22 +75,17 @@ public class TestLobMerge {
                             new CollectedEntity("label2", "content2") }));
             final ParentEntity newEntity = new ParentEntity(pdo.getId(), col2);
 
-            try {
-                em.getTransaction().begin();
-                em.merge(newEntity);
-                //Failure would occur on merge, if it passed merge, test passed
-                em.getTransaction().commit();
-            } catch (final Exception e) {
-                System.err.println("Exception: " + e);
+            em.getTransaction().begin();
+            em.merge(newEntity);
+            //Failure would occur on merge, if it passed merge, test passed
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-        } catch (Exception e) {
-            Assert.fail(e.getLocalizedMessage());
-        } finally {
-            if (em != null) {
+            if(em.isOpen()) {
                 em.close();
             }
         }
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,16 +16,30 @@
 //     Dmitry Kornilov - 2014/11/25 - ApplicationAccessWLS fixed to reflect changes in WLS
 package org.eclipse.persistence.sdo.helper;
 
-import commonj.sdo.Type;
-import commonj.sdo.helper.CopyHelper;
-import commonj.sdo.helper.DataFactory;
-import commonj.sdo.helper.DataHelper;
-import commonj.sdo.helper.EqualityHelper;
-import commonj.sdo.helper.HelperContext;
-import commonj.sdo.helper.TypeHelper;
-import commonj.sdo.helper.XMLHelper;
-import commonj.sdo.helper.XSDHelper;
-import commonj.sdo.impl.ExternalizableDelegator;
+import java.io.File;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.management.AttributeChangeNotification;
+import javax.management.MBeanServer;
+import javax.management.MBeanServerFactory;
+import javax.management.Notification;
+import javax.management.NotificationFilterSupport;
+import javax.management.NotificationListener;
+import javax.management.ObjectName;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.eclipse.persistence.exceptions.SDOException;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -39,28 +53,16 @@ import org.eclipse.persistence.sdo.helper.delegates.SDOXMLHelperDelegate;
 import org.eclipse.persistence.sdo.helper.delegates.SDOXSDHelperDelegate;
 import org.eclipse.persistence.sdo.types.SDOWrapperType;
 
-import javax.management.AttributeChangeNotification;
-import javax.management.MBeanServer;
-import javax.management.MBeanServerFactory;
-import javax.management.Notification;
-import javax.management.NotificationFilterSupport;
-import javax.management.NotificationListener;
-import javax.management.ObjectName;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.io.File;
-import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import commonj.sdo.Type;
+import commonj.sdo.helper.CopyHelper;
+import commonj.sdo.helper.DataFactory;
+import commonj.sdo.helper.DataHelper;
+import commonj.sdo.helper.EqualityHelper;
+import commonj.sdo.helper.HelperContext;
+import commonj.sdo.helper.TypeHelper;
+import commonj.sdo.helper.XMLHelper;
+import commonj.sdo.helper.XSDHelper;
+import commonj.sdo.impl.ExternalizableDelegator;
 
 /**
  * <b>Purpose:</b>
@@ -99,7 +101,7 @@ public class SDOHelperContext implements HelperContext {
      * <p>
      * See {@link #isStrictTypeCheckingEnabled()} for more details.
      * By this property, the initial value can be changed.
-     * Default value is <tt>true</tt>.
+     * Default value is <code>true</code>.
      * </p>
      */
     public static final String STRICT_TYPE_CHECKING_PROPERTY_NAME = "eclipselink.sdo.strict.type.checking";

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -31,17 +31,17 @@ import java.util.Set;
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.exceptions.DescriptorException;
 import org.eclipse.persistence.exceptions.ValidationException;
-import org.eclipse.persistence.mappings.DatabaseMapping;
-import org.eclipse.persistence.mappings.ObjectReferenceMapping;
-import org.eclipse.persistence.mappings.converters.Converter;
-import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
-import org.eclipse.persistence.queries.UpdateObjectQuery;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ObjectReferenceMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
+import org.eclipse.persistence.queries.UpdateObjectQuery;
 
 /**
  * <p>
@@ -445,7 +445,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
         }
 
         Object keyInstance = getPKClassInstance();
-        Set<ObjectReferenceMapping> usedObjectReferenceMappings = new HashSet<ObjectReferenceMapping>();
+        Set<ObjectReferenceMapping> usedObjectReferenceMappings = new HashSet<>();
         for (int index = 0; index < pkElementArray.length; index++) {
             Object keyObj = object;
             KeyElementAccessor accessor = pkElementArray[index];
@@ -596,12 +596,12 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
      * This is the interface used to encapsulate the the type of key class element
      */
     protected static interface KeyElementAccessor {
-        public String getAttributeName();
-        public DatabaseField getDatabaseField();
-        public DatabaseMapping getMapping();
-        public Object getValue(Object object, AbstractSession session);
-        public void setValue(Object object, Object value);
-        public boolean isNestedAccessor();
+        String getAttributeName();
+        DatabaseField getDatabaseField();
+        DatabaseMapping getMapping();
+        Object getValue(Object object, AbstractSession session);
+        void setValue(Object object, Object value);
+        boolean isNestedAccessor();
     }
 
     /**

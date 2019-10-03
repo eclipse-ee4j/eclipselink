@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,7 +74,7 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
             mv.visitCode();
             mv.visitVarInsn(ALOAD, 0);
             mv.visitLdcInsn(accessor.getAttributeName());
-            mv.visitMethodInsn(INVOKESPECIAL, parentClassType, "get", "(" + LJAVA_LANG_STRING + ")" + LJAVA_LANG_OBJECT);
+            mv.visitMethodInsn(INVOKESPECIAL, parentClassType, "get", "(" + LJAVA_LANG_STRING + ")" + LJAVA_LANG_OBJECT, false);
             mv.visitTypeInsn(CHECKCAST, returnType.getInternalName());
             mv.visitInsn(ARETURN);
             mv.visitMaxs(2, 1);
@@ -86,7 +86,7 @@ public class MetadataDynamicClassWriter extends DynamicClassWriter {
             mv.visitVarInsn(ALOAD, 0);
             mv.visitLdcInsn("id");
             mv.visitVarInsn(ALOAD, 1);
-            mv.visitMethodInsn(INVOKESPECIAL, parentClassType, SET, "(" + LJAVA_LANG_STRING + LJAVA_LANG_OBJECT + ")" + LDYNAMIC_ENTITY);
+            mv.visitMethodInsn(INVOKESPECIAL, parentClassType, SET, "(" + LJAVA_LANG_STRING + LJAVA_LANG_OBJECT + ")" + LDYNAMIC_ENTITY, false);
             mv.visitInsn(POP);
             mv.visitInsn(RETURN);
             mv.visitMaxs(3, 2);

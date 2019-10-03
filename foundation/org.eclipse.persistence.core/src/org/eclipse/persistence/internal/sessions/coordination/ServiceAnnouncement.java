@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,7 +91,7 @@ public class ServiceAnnouncement {
      *
      * Assumptions:
      *    - Same character converters exist on the reading and storing sides
-     *    - channel, id and converted to bytes < 256 bytes each
+     *    - channel, id and converted to bytes &lt; 256 bytes each
      *
      * Byte storage:
      *    - 1 byte to store length of String that is to follow

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,11 @@ import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping
  * <p>EIS Transformation Mappings allow the creation of custom mappings where one or more fields
  * in an EIS Record can be used to create the object to be stored in a Java class's attribute.
  *
- * <table summary="" border="1">
+ * <table border="1">
+ * <caption>Record formats</caption>
  * <tr>
- * <th id="c1" align="left">Record Type</th>
- * <th id="c2" align="left">Description</th>
+ * <th id="c1">Record Type</th>
+ * <th id="c2">Description</th>
  * </tr>
  * <tr>
  * <td headers="c1">Indexed</td>

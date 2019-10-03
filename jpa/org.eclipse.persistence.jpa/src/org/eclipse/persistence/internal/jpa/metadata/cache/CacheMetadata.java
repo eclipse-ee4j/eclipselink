@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,16 +20,14 @@
 //       - 337323: Multi-tenant with shared schema support (part 1)
 package org.eclipse.persistence.internal.jpa.metadata.cache;
 
-import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.CacheCoordinationType;
+import org.eclipse.persistence.annotations.CacheType;
 import org.eclipse.persistence.annotations.DatabaseChangeNotificationType;
-
 import org.eclipse.persistence.config.CacheIsolationType;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.invalidation.DailyCacheInvalidationPolicy;
 import org.eclipse.persistence.descriptors.invalidation.TimeToLiveCacheInvalidationPolicy;
 import org.eclipse.persistence.exceptions.ValidationException;
-
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.ORMetadata;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.MetadataAccessor;
@@ -53,7 +51,6 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 public class CacheMetadata extends ORMetadata {
     protected Boolean m_alwaysRefresh;
     protected Boolean m_disableHits;
-    protected Boolean m_shared;
     protected String m_isolation;
     protected Boolean m_refreshOnlyIfNewer;
 
@@ -93,7 +90,6 @@ public class CacheMetadata extends ORMetadata {
             m_expiryTimeOfDay = new TimeOfDayMetadata(expiryTimeOfDay, accessor);
         }
 
-        m_shared = cache.getAttributeBooleanDefaultTrue("shared");
         m_isolation = cache.getAttributeString("isolation");
         m_size = cache.getAttributeInteger("size");
         m_type = cache.getAttributeString("type");
@@ -113,10 +109,6 @@ public class CacheMetadata extends ORMetadata {
             }
 
             if (! valuesMatch(m_disableHits, cache.getDisableHits())) {
-                return false;
-            }
-
-            if (! valuesMatch(m_shared, cache.getShared())) {
                 return false;
             }
 
@@ -158,7 +150,6 @@ public class CacheMetadata extends ORMetadata {
     public int hashCode() {
         int result = m_alwaysRefresh != null ? m_alwaysRefresh.hashCode() : 0;
         result = 31 * result + (m_disableHits != null ? m_disableHits.hashCode() : 0);
-        result = 31 * result + (m_shared != null ? m_shared.hashCode() : 0);
         result = 31 * result + (m_isolation != null ? m_isolation.hashCode() : 0);
         result = 31 * result + (m_refreshOnlyIfNewer != null ? m_refreshOnlyIfNewer.hashCode() : 0);
         result = 31 * result + (m_coordinationType != null ? m_coordinationType.hashCode() : 0);
@@ -218,14 +209,6 @@ public class CacheMetadata extends ORMetadata {
        return m_refreshOnlyIfNewer;
     }
 
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public Boolean getShared() {
-       return m_shared;
-    }
-
     public String getIsolation(){
         return m_isolation;
     }
@@ -280,11 +263,7 @@ public class CacheMetadata extends ORMetadata {
             classDescriptor.getCachePolicy().setIdentityMapSize(m_size);
         }
 
-        // Process shared.
-        if ( (m_shared !=null && !m_shared.booleanValue()) || (m_shared == null && descriptor.getProject().isSharedCacheModeEnableSelective())){
-            classDescriptor.getCachePolicy().setCacheIsolation(CacheIsolationType.ISOLATED);
-        }
-
+        // Process isolation.
         if (m_isolation != null){
             classDescriptor.getCachePolicy().setCacheIsolation(CacheIsolationType.valueOf(m_isolation));
         }
@@ -405,14 +384,6 @@ public class CacheMetadata extends ORMetadata {
      */
     public void setRefreshOnlyIfNewer(Boolean refreshOnlyIfNewer) {
         m_refreshOnlyIfNewer = refreshOnlyIfNewer;
-    }
-
-    /**
-     * INTERNAL:
-     * Used for OX mapping.
-     */
-    public void setShared(Boolean shared) {
-       m_shared = shared;
     }
 
     public void setIsolation(String isolation){

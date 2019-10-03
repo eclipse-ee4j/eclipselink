@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -149,6 +149,7 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
                 properties.put(entry.getKey(), entry.getValue());
             }
         }
+        properties.putIfAbsent(PersistenceUnitProperties.WEAVING_REST, "true");
         return properties;
     }
 
@@ -161,22 +162,24 @@ public class PersistenceFactoryBase implements PersistenceContextFactory {
 
         if (persistenceContext == null) {
             try {
-                DynamicClassLoader dcl = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
+                DynamicClassLoader dcl = new DynamicRestClassLoader(Thread.currentThread().getContextClassLoader());
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
                 if (initializationProperties != null) {
                     properties.putAll(initializationProperties);
                 }
+                properties.putIfAbsent(PersistenceUnitProperties.WEAVING_REST, "true");
 
                 EntityManagerFactoryImpl factory = (EntityManagerFactoryImpl) Persistence.createEntityManagerFactory(persistenceUnitName, properties);
                 ClassLoader sessionLoader = factory.getServerSession().getLoader();
                 if (!DynamicClassLoader.class.isAssignableFrom(sessionLoader.getClass())) {
                     properties = new HashMap<>();
-                    dcl = new DynamicClassLoader(sessionLoader);
+                    dcl = new DynamicRestClassLoader(sessionLoader);
                     properties.put(PersistenceUnitProperties.CLASSLOADER, dcl);
                     if (initializationProperties != null) {
                         properties.putAll(initializationProperties);
                     }
+                    properties.putIfAbsent(PersistenceUnitProperties.WEAVING_REST, "true");
                     factory.refreshMetadata(properties);
                 }
 

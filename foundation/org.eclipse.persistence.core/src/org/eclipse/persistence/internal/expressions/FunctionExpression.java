@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -310,7 +311,7 @@ public class FunctionExpression extends BaseExpression {
      *
      */
     @Override
-    public Vector getFields() {
+    public List<DatabaseField> getFields() {
         return getBaseExpression().getFields();
     }
 
@@ -706,7 +707,7 @@ public class FunctionExpression extends BaseExpression {
      * INTERNAL: called from SQLSelectStatement.writeFieldsFromExpression(...)
      */
     @Override
-    public void writeFields(ExpressionSQLPrinter printer, Vector newFields, SQLSelectStatement statement) {
+    public void writeFields(ExpressionSQLPrinter printer, List<DatabaseField> newFields, SQLSelectStatement statement) {
         //print ", " before each selected field except the first one
         if (printer.isFirstElementPrinted()) {
             printer.printString(", ");
@@ -740,14 +741,14 @@ public class FunctionExpression extends BaseExpression {
                 }
             }
 
-            newFields.addElement(field);
+            newFields.add(field);
         } else {
             // This field is a complex function value so any name can be used.
             DatabaseField field = new DatabaseField("*");
             // If the result type is set, use it.
             field.setSqlType(DatabaseField.NULL_SQL_TYPE);
             field.setType(getResultType());
-            newFields.addElement(field);
+            newFields.add(field);
         }
 
         printSQL(printer);
@@ -776,7 +777,7 @@ public class FunctionExpression extends BaseExpression {
         if (getOperator().getSelector() == ExpressionOperator.Count) {
             Expression baseExp = getBaseExpression();
             boolean distinctUsed = false;
-            if (baseExp.isFunctionExpression() && (((FunctionExpression)baseExp).getOperator().getSelector() == ExpressionOperator.Distinct)) {
+            if (baseExp.isFunctionExpression() && (baseExp.getOperator().getSelector() == ExpressionOperator.Distinct)) {
                 distinctUsed = true;
                 baseExp = ((FunctionExpression)baseExp).getBaseExpression();
             }
@@ -951,5 +952,18 @@ public class FunctionExpression extends BaseExpression {
         return null;
     }
 
+    /**
+     * INTERNAL:
+     * Lookup the mapping for this item by traversing its expression recursively.
+     */
+    @Override
+    public DatabaseMapping getLeafMapping(DatabaseQuery query, ClassDescriptor rootDescriptor, AbstractSession session) {
+        int selector = this.operator.getSelector();
 
+        //MAX and MIN functions require mappings for their result value. See JPA 2.1; section 4.8.5
+        if (this.baseExpression != null && ((selector == ExpressionOperator.Maximum) || (selector == ExpressionOperator.Minimum))) {
+            return this.baseExpression.getLeafMapping(query, rootDescriptor, session);
+        }
+        return super.getLeafMapping(query, rootDescriptor, session);
+    }
 }

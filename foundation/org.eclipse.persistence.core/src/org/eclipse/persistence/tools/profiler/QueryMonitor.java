@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,8 +37,8 @@ import org.eclipse.persistence.queries.*;
  */
 public class QueryMonitor {
 
-    public static final Map<String, Number> cacheHits = new ConcurrentHashMap<String, Number>();
-    public static final Map<String, Number> cacheMisses = new ConcurrentHashMap<String, Number>();
+    public static final Map<String, Number> cacheHits = new ConcurrentHashMap<>();
+    public static final Map<String, Number> cacheMisses = new ConcurrentHashMap<>();
     public static long dumpTime = System.currentTimeMillis();
     public static Boolean shouldMonitor;
 
@@ -66,7 +66,7 @@ public class QueryMonitor {
             writer.write("\t");
             writer.write("Database");
             writer.write("\n");
-            Set<String> queries = new TreeSet<String>(cacheMisses.keySet());
+            Set<String> queries = new TreeSet<>(cacheMisses.keySet());
             queries.addAll(cacheHits.keySet());
             for (String query : queries) {
                 Number hits = cacheHits.get(query);

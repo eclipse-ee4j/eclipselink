@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,11 @@ public interface ChangeTracker {
      * PUBLIC:
      * Return the PropertyChangeListener for the object.
      */
-    public PropertyChangeListener _persistence_getPropertyChangeListener();
+    PropertyChangeListener _persistence_getPropertyChangeListener();
 
     /**
      * PUBLIC:
      * Set the PropertyChangeListener for the object.
      */
-    public void _persistence_setPropertyChangeListener(PropertyChangeListener listener);
+    void _persistence_setPropertyChangeListener(PropertyChangeListener listener);
 }

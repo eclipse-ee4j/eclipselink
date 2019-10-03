@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.mappings.CollectionMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.OneToOneMapping;
 import org.eclipse.persistence.oxm.documentpreservation.DocumentPreservationPolicy;
@@ -181,7 +180,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * @see SessionEventManager
      */
     public XMLContext(Project project, ClassLoader classLoader, SessionEventListener sessionEventListener) {
-        Collection<SessionEventListener> sessionEventListeners = new ArrayList<SessionEventListener>(1);
+        Collection<SessionEventListener> sessionEventListeners = new ArrayList<>(1);
         sessionEventListeners.add(sessionEventListener);
         contextState = new XMLContextState(this, project, classLoader, sessionEventListeners);
     }
@@ -528,7 +527,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
                             if(refDescriptor != null) {
                                 DatabaseMapping backpointerMapping =refDescriptor.getMappingForAttributeName(refMapping.getInverseReferenceMapping().getAttributeName());
                                 if(backpointerMapping != null && backpointerMapping.isCollectionMapping()) {
-                                    refMapping.getInverseReferenceMapping().getContainerPolicy().setContainerClass(((CollectionMapping)backpointerMapping).getContainerPolicy().getContainerClass());
+                                    refMapping.getInverseReferenceMapping().getContainerPolicy().setContainerClass(backpointerMapping.getContainerPolicy().getContainerClass());
                                 }
                             }
                         }
@@ -750,7 +749,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
             session.setLogLevel(SessionLog.OFF);
             setupSession(session);
             if(null == sessions) {
-                sessions = new ArrayList<DatabaseSession>();
+                sessions = new ArrayList<>();
             }
             if(null != this.session) {
                 sessions.add(this.session);
@@ -944,7 +943,7 @@ public class XMLContext extends Context<AbstractSession, XMLDescriptor, XMLField
      * @return descriptors from all sessions
      */
     public List<Descriptor> getDescriptors() {
-        List<Descriptor> descriptors = new ArrayList<Descriptor>();
+        List<Descriptor> descriptors = new ArrayList<>();
         List<Session> sessions = getSessions();
         for (Session session : sessions) {
             List<Descriptor> orderedDescriptors = (List) session.getProject().getOrderedDescriptors();

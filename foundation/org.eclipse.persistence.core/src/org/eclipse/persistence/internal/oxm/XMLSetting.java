@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,12 +35,12 @@ public interface XMLSetting {
     /**
      * @return The TopLink OXM mapping associated with this setting
      */
-    public Mapping getMapping();
+    Mapping getMapping();
 
     /**
      * Gets the value to be marshalled using the specified mapping.
      * @return The value to be marshalled.
      */
-    public Object getValue();
+    Object getValue();
 
 }

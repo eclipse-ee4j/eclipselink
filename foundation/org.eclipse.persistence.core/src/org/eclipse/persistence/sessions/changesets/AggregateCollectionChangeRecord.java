@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,5 +31,5 @@ public interface AggregateCollectionChangeRecord extends ChangeRecord {
      * Return the values representing the changed AggregateCollection.
      * @return java.util.Vector
      */
-    public List<ObjectChangeSet> getChangedValues();
+    List<ObjectChangeSet> getChangedValues();
 }

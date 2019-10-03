@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,9 +27,9 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * a <b>FALSE</b> result. If one operand is <b>NULL</b> and the other operand is either
  * <b>TRUE</b> or <b>NULL</b>, the result is <b>NULL</b> (unknown).
  * <p>
- * The following table shows how the <b>AND</b> operator is evaluated based on its two operands:
  *
- * <table summary="" cellspacing="0" cellpadding="2" border="1" width="250" style="border:1px outset darkgrey;">
+ * <table border="1" style="border:1px outset darkgrey;">
+ * <caption>The following table shows how the <code><b>AND</b></code> operator is evaluated based on its two operands:</caption>
  * <tr><td></td>            <td><b>TRUE</b></td><td><b>FALSE</b></td><td><b>NULL</b></td></tr>
  * <tr><td><b>TRUE</b> </td><td>   TRUE    </td><td>   FALSE    </td><td>   NULL    </td></tr>
  * <tr><td><b>FALSE</b></td><td>   FALSE   </td><td>   FALSE    </td><td>   FALSE   </td></tr>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,14 +19,12 @@ import javax.activation.DataHandler;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.core.queries.CoreContainerPolicy;
 import org.eclipse.persistence.internal.oxm.mappings.BinaryDataCollectionMapping;
-import org.eclipse.persistence.internal.oxm.mappings.BinaryDataMapping;
 import org.eclipse.persistence.internal.oxm.mappings.Field;
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;
 import org.eclipse.persistence.internal.oxm.record.UnmarshalRecord;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -85,9 +83,9 @@ public class XMLBinaryAttachmentHandler extends org.eclipse.persistence.internal
     public void endElement(String namespaceURI, String localName, String qName) throws SAXException {
             Field xmlField = null;
             if(isCollection) {
-                xmlField = (Field)((BinaryDataCollectionMapping)mapping).getField();
+                xmlField = (Field) mapping.getField();
               } else {
-                xmlField = (Field)((BinaryDataMapping)mapping).getField();
+                xmlField = (Field) mapping.getField();
             }
             if(INCLUDE_ELEMENT_NAME.equals(localName) || INCLUDE_ELEMENT_NAME.equals(qName)) {
                 if(record.isNamespaceAware() && !Constants.XOP_URL.equals(namespaceURI)){

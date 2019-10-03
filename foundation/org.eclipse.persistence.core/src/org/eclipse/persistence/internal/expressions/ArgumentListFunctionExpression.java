@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,8 +33,8 @@ import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
  * of a query involving this expression.  After normalization, the behavior is undefined.
  *
  * @see ListExpressionOperator
- * @see Expression.coalesce()
- * @see Expression.caseStatement()
+ * @see Expression#coalesce()
+ * @see Expression#caseStatement()
  * @author tware
  *
  */

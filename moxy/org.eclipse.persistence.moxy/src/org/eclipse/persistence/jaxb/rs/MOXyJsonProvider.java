@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,6 +56,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -67,8 +68,10 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.exceptions.JSONException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -203,6 +206,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  */
 @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD, "application/x-javascript"})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+@Provider
 public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
 
     private static final String APPLICATION_XJAVASCRIPT = "application/x-javascript";
@@ -657,6 +661,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             JAXBContext jaxbContext = getJAXBContext(domainClasses, annotations, mediaType, httpHeaders);
+            SessionLog logger = AbstractSessionLog.getLog();
+
+            if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_read_from_moxy_json_provider", new Object[0]);
+            }
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             unmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, attributePrefix);
@@ -734,6 +743,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             throw new WebApplicationException(unmarshalException, builder.build());
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
+        } catch(NullPointerException nullPointerException) {
+            throw new WebApplicationException(JSONException.errorInvalidDocument(nullPointerException));
         }
     }
 
@@ -943,6 +954,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             JAXBContext jaxbContext = getJAXBContext(domainClasses, annotations, mediaType, httpHeaders);
+            SessionLog logger = AbstractSessionLog.getLog();
+
+            if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_write_to_moxy_json_provider", new Object[0]);
+            }
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formattedOutput);
             marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
@@ -978,5 +994,4 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             throw new WebApplicationException(jaxbException);
         }
     }
-
 }

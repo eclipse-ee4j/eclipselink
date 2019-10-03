@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,11 +24,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
@@ -41,7 +39,6 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.InvalidObject;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
@@ -677,24 +674,6 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
     /**
      * PUBLIC:
-     * The primary key can be specified if used instead of an expression or selection object.
-     * If composite the primary must be in the same order as defined in the descriptor.
-     * @deprecated since EclipseLink 2.1, replaced by getSelectionId()
-     * @see #getSelectionId()
-     */
-    @Deprecated
-    public Vector getSelectionKey() {
-        if (this.selectionId instanceof CacheId) {
-            return new Vector(Arrays.asList(((CacheId)this.selectionId).getPrimaryKey()));
-        }
-        Vector primaryKey = new Vector(1);
-        primaryKey.add(this.selectionId);
-        return (Vector)selectionId;
-
-    }
-
-    /**
-     * PUBLIC:
      * Return the selection object of the query.
      * This can be used instead of a where clause expression for single object primary key queries.
      * The selection object given should have a primary key defined,
@@ -999,24 +978,6 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
 
     /**
      * PUBLIC:
-     * The primary key can be specified if used instead of an expression or selection object.
-     * If composite the primary must be in the same order as defined in the descriptor.
-     * @deprecated since EclipseLink 2.1, replaced by setSelectionId(Object)
-     * @see #setSelectionId(Object)
-     */
-    @Deprecated
-    public void setSelectionKey(List selectionKey) {
-        if (selectionKey == null) {
-            this.selectionId = null;
-        } else if (selectionKey.size() == 1) {
-            this.selectionId = selectionKey.get(0);
-        } else {
-            this.selectionId = new CacheId(selectionKey.toArray());
-        }
-    }
-
-    /**
-     * PUBLIC:
      * Used to set the where clause of the query.
      * This can be used instead of a where clause expression for single object primary key queries.
      * The selection object given should have a primary key defined,
@@ -1047,19 +1008,6 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
      */
     public void setShouldLoadResultIntoSelectionObject(boolean shouldLoadResultIntoSelectionObject) {
         this.shouldLoadResultIntoSelectionObject = shouldLoadResultIntoSelectionObject;
-    }
-
-    /**
-     * PUBLIC:
-     * The primary key can be specified if used instead of an expression or selection object.
-     * @deprecated since EclipseLink 2.1, replaced by setSelectionId(Object)
-     * @see #setSelectionId(Object)
-     */
-    @Deprecated
-    public void setSingletonSelectionKey(Object selectionKey) {
-        Vector key = new NonSynchronizedVector();
-        key.add(selectionKey);
-        setSelectionKey(key);
     }
 
     /**

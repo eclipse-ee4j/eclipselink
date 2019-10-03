@@ -256,7 +256,7 @@ public abstract class DatasourceAccessor implements Accessor {
             return;
         }
 
-        session.log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_transaction", (Object[])null, this);
+        session.log(SessionLog.FINER, SessionLog.TRANSACTION, "begin_transaction", null, this);
 
         try {
             session.startOperationProfile(SessionProfiler.Transaction);
@@ -411,7 +411,7 @@ public abstract class DatasourceAccessor implements Accessor {
             return;
         }
 
-        session.log(SessionLog.FINER, SessionLog.TRANSACTION, "commit_transaction", (Object[])null, this);
+        session.log(SessionLog.FINER, SessionLog.TRANSACTION, "commit_transaction", null, this);
 
         try {
             session.startOperationProfile(SessionProfiler.Transaction);
@@ -501,7 +501,7 @@ public abstract class DatasourceAccessor implements Accessor {
      */
     @Override
     public void disconnect(AbstractSession session) throws DatabaseException {
-        session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "disconnect", (Object[])null, this);
+        session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "disconnect", null, this);
 
         if (this.datasourceConnection == null) {
             return;
@@ -558,7 +558,7 @@ public abstract class DatasourceAccessor implements Accessor {
         }
 
         if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {// pre-check to improve performance
-            session.log(SessionLog.FINE, SessionLog.SQL, call.getLogString(this), (Object[])null, this, false);
+            session.log(SessionLog.FINE, SessionLog.SQL, call.getLogString(this), null, this, false);
         }
 
         Object result = basicExecuteCall(call, translationRow, session);
@@ -704,7 +704,7 @@ public abstract class DatasourceAccessor implements Accessor {
             return;
         }
 
-        session.log(SessionLog.FINER, SessionLog.TRANSACTION, "rollback_transaction", (Object[])null, this);
+        session.log(SessionLog.FINER, SessionLog.TRANSACTION, "rollback_transaction", null, this);
 
         try {
             session.startOperationProfile(SessionProfiler.Transaction);

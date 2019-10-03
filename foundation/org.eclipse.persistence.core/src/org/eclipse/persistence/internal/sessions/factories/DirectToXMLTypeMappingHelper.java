@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.sessions.factories;
 
+import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;
-import org.eclipse.persistence.internal.codegen.NonreflectiveMethodDefinition;
 
 /**
  * Helper class to abstract the XML mapping for DirectToXMLType.
@@ -67,7 +67,6 @@ public class DirectToXMLTypeMappingHelper {
 
     /**
      * Invoked from a descriptor add the descriptor for DirectToXMLTypeMapping
-     * @param namespacePrefix
      */
     public void addXDBDescriptors(String name, DatabaseSessionImpl session,
         NamespaceResolver namespaceResolver) {

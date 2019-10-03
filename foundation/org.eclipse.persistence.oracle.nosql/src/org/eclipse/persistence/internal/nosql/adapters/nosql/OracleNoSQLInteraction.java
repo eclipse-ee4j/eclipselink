@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,8 +23,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import javax.resource.*;
-import javax.resource.cci.*;
+import javax.resource.ResourceException;
+import javax.resource.cci.Connection;
+import javax.resource.cci.Interaction;
+import javax.resource.cci.InteractionSpec;
+import javax.resource.cci.Record;
+import javax.resource.cci.ResourceWarning;
+
+import org.eclipse.persistence.eis.EISException;
+import org.eclipse.persistence.exceptions.ValidationException;
 
 import oracle.kv.Direction;
 import oracle.kv.Key;
@@ -33,9 +40,6 @@ import oracle.kv.Operation;
 import oracle.kv.OperationResult;
 import oracle.kv.Value;
 import oracle.kv.ValueVersion;
-
-import org.eclipse.persistence.eis.EISException;
-import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
  * Interaction to Oracle NoSQL JCA adapter.
@@ -219,7 +223,7 @@ public class OracleNoSQLInteraction implements Interaction {
      * Convert the key into a proper key list.
      * NoSQL uses a List of key values for major keys,
      * this allows for a special key syntax to be used, or a list.
-     * "[<key1>,<key2>,..]"
+     * "[&lt;key1&gt;,&lt;key2&gt;,..]"
      */
     protected List createMajorKey(Object key) {
         List majorKeys = null;

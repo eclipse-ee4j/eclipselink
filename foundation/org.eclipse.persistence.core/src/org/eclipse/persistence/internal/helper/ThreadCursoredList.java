@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,13 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+import java.util.Vector;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -40,7 +46,7 @@ public class ThreadCursoredList extends Vector {
 
     /**
      * Construct an empty list so that its internal data array
-     * has size <tt>10</tt> and its standard capacity increment is zero.
+     * has size <code>10</code> and its standard capacity increment is zero.
      */
     public ThreadCursoredList() {
         this(10);

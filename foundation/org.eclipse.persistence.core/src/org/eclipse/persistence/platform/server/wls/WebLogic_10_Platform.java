@@ -317,7 +317,7 @@ public class WebLogic_10_Platform extends WebLogic_9_Platform implements JMXEnab
                 // weblogic.work.ExecuteThreadRuntime.<getMethodName>
                 Method getMethod = PrivilegedAccessHelper.getPublicMethod(executeThread.getClass(), getMethodName, new Class[] {}, false);
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                    classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, executeThread, (Object[]) null));
+                    classLoaderOrString = AccessController.doPrivileged(new PrivilegedMethodInvoker(getMethod, executeThread, null));
                 } else {
                     classLoaderOrString = PrivilegedAccessHelper.invokeMethod(getMethod, executeThread);
                 }

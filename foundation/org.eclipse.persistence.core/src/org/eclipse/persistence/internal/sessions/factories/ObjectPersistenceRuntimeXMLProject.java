@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ import java.util.Vector;
 // Java extension imports
 import javax.xml.namespace.QName;
 
+import org.eclipse.persistence.config.CacheIsolationType;
 // EclipseLink imports
 import org.eclipse.persistence.descriptors.AllFieldsLockingPolicy;
 import org.eclipse.persistence.descriptors.CMPPolicy;
@@ -123,7 +124,6 @@ import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedClassForName;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.AggregateCollectionMapping;
 import org.eclipse.persistence.mappings.AggregateMapping;
 import org.eclipse.persistence.mappings.AggregateObjectMapping;
@@ -762,7 +762,7 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
                 }
 
                 Object attributeValue;
-                Class attributeClass = (Class)((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+                Class attributeClass = (Class) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
                 try {
                     if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                         try {
@@ -1373,9 +1373,9 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
             public void setAttributeValueInObject(Object object, Object value) {
                 DatabaseQuery query = (DatabaseQuery)object;
                 List queryArguments = (List)value;
-                List<String> arguments = new ArrayList<String>(queryArguments.size());
-                List<Class> types = new ArrayList<Class>(queryArguments.size());
-                List<Object> values = new ArrayList<Object>(queryArguments.size());
+                List<String> arguments = new ArrayList<>(queryArguments.size());
+                List<Class> types = new ArrayList<>(queryArguments.size());
+                List<Object> values = new ArrayList<>(queryArguments.size());
                 for (int index = 0; index < queryArguments.size(); index++) {
                     QueryArgument queryArgument = (QueryArgument)queryArguments.get(index);
                     arguments.add((String)queryArgument.getKey());
@@ -2294,12 +2294,17 @@ public class ObjectPersistenceRuntimeXMLProject extends NamespaceResolvableProje
         descriptor.addMapping(shouldAlwaysConformResultsInUnitOfWorkMapping);
 
         XMLDirectMapping isIsolatedMapping = new XMLDirectMapping();
-        isIsolatedMapping.setAttributeName("isIsolated");
-        isIsolatedMapping.setGetMethodName("isIsolated");
-        isIsolatedMapping.setSetMethodName("setIsIsolated");
+        isIsolatedMapping.setAttributeName("cacheIsolation");
+        isIsolatedMapping.setGetMethodName("getCacheIsolation");
+        isIsolatedMapping.setSetMethodName("setCacheIsolation");
         isIsolatedMapping.setXPath(getPrimaryNamespaceXPath() + "caching/" + getPrimaryNamespaceXPath() + "isolated/text()");
-        isIsolatedMapping.setNullValue(Boolean.FALSE);
+        ObjectTypeConverter isIsolatedConverter = new ObjectTypeConverter();
+        isIsolatedConverter.addConversionValue("true", CacheIsolationType.ISOLATED);
+        isIsolatedConverter.addConversionValue("false", CacheIsolationType.SHARED);
+        isIsolatedMapping.setConverter(isIsolatedConverter);
+        isIsolatedMapping.setNullValue(CacheIsolationType.SHARED);
         descriptor.addMapping(isIsolatedMapping);
+
         XMLDirectMapping unitOfWorkCacheIsolationLevelMapping = new XMLDirectMapping();
         unitOfWorkCacheIsolationLevelMapping.setAttributeName("unitOfWorkCacheIsolationLevel");
         unitOfWorkCacheIsolationLevelMapping.setGetMethodName("getUnitOfWorkCacheIsolationLevel");

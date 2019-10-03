@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,8 +62,8 @@ public abstract class Context<
         private Collection<SESSION_EVENT_LISTENER> sessionEventListeners;
 
         protected ContextState() {
-            descriptorsByQName = new HashMap<XPathQName, DESCRIPTOR>();
-            descriptorsByGlobalType = new HashMap<XPathFragment, DESCRIPTOR>();
+            descriptorsByQName = new HashMap<>();
+            descriptorsByGlobalType = new HashMap<>();
         }
 
         protected ContextState(Context context, PROJECT project, ClassLoader classLoader, Collection<SESSION_EVENT_LISTENER> sessionEventListeners) {
@@ -180,7 +180,7 @@ public abstract class Context<
             String defaultRootName;
 
             if (processedDescriptors == null) {
-                processedDescriptors = new HashSet<DESCRIPTOR>();
+                processedDescriptors = new HashSet<>();
             }
 
             if (processedDescriptors.contains(descriptor)) {
@@ -257,7 +257,7 @@ public abstract class Context<
 
         public void storeDescriptorsByQName(CoreSession session) {
             Iterator iterator = session.getProject().getOrderedDescriptors().iterator();
-            Set<DESCRIPTOR> processedDescriptors = new HashSet<DESCRIPTOR>();
+            Set<DESCRIPTOR> processedDescriptors = new HashSet<>();
             while (iterator.hasNext()) {
                 DESCRIPTOR descriptor = (DESCRIPTOR) iterator.next();
                 storeDescriptorByQName(descriptor, session.getDatasourcePlatform(), processedDescriptors);

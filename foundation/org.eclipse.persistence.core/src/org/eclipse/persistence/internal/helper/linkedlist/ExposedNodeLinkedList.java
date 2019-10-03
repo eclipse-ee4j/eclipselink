@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,12 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.helper.linkedlist;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.NoSuchElementException;
+
 import org.eclipse.persistence.exceptions.ValidationException;
 
 /**
@@ -206,7 +211,7 @@ public class ExposedNodeLinkedList implements List {
 
     /**
      * Appends the given contents to the end of this list.  (Identical in
-     * function to the <tt>add</tt> method; included only for consistency.)
+     * function to the <code>add</code> method; included only for consistency.)
      *
      * @param o the contents to be inserted at the end of this list.
      */
@@ -215,13 +220,13 @@ public class ExposedNodeLinkedList implements List {
     }
 
     /**
-     * Returns <tt>true</tt> if this list contains the specified contents.
-     * More formally, returns <tt>true</tt> if and only if this list contains
-     * at least one contents <tt>e</tt> such that <tt>(o==null ? e==null
-     * : o.equals(e))</tt>.
+     * Returns <code>true</code> if this list contains the specified contents.
+     * More formally, returns <code>true</code> if and only if this list contains
+     * at least one contents <code>e</code> such that <code>(o==null ? e==null
+     * : o.equals(e))</code>.
      *
      * @param o contents whose presence in this list is to be tested.
-     * @return <tt>true</tt> if this list contains the specified contents.
+     * @return <code>true</code> if this list contains the specified contents.
      */
     @Override
     public boolean contains(Object o) {
@@ -252,7 +257,7 @@ public class ExposedNodeLinkedList implements List {
      * Returns the index in this list of the first occurrence of the
      * specified contents, or -1 if the List does not contain this
      * contents.  More formally, returns the lowest index i such that
-     * <tt>(o==null ? get(i)==null : o.equals(get(i)))</tt>, or -1 if
+     * <code>(o==null ? get(i)==null : o.equals(get(i)))</code>, or -1 if
      * there is no such index.
      *
      * @param o contents to search for.

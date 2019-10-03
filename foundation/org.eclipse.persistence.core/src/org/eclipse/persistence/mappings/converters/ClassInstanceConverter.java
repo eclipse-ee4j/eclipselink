@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,14 +17,13 @@ package org.eclipse.persistence.mappings.converters;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.exceptions.ConversionException;
+import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.foundation.AbstractDirectMapping;
+import org.eclipse.persistence.sessions.Session;
 
 /**
  * <b>Purpose</b>: Allows a class name to be converted to and from a new instance of the class.
@@ -53,7 +52,7 @@ public class ClassInstanceConverter implements Converter {
     public Object convertDataValueToObjectValue(Object fieldValue, Session session) {
         Object attributeValue = null;
         if (fieldValue != null) {
-            Class attributeClass = (Class)((AbstractSession)session).getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
+            Class attributeClass = (Class) session.getDatasourcePlatform().convertObject(fieldValue, ClassConstants.CLASS);
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -165,13 +165,14 @@ public class IndexMetadata extends ORMetadata {
 
     /**
      * INTERNAL:
-     * Sub classed must that can uniquely be identified must override this
-     * message to allow the overriding and merging to uniquely identify objects.
-     * It will also be used when logging messages (that is provide a more
-     * detailed message).
+     * Sub classes that can uniquely be identified must override this method to
+     * allow the overriding and merging to uniquely identify objects. It will
+     * also be used when logging messages, that is, to provide a more detailed
+     * message.
      *
-     * @see shouldOverride
-     * @see mergeListsAndOverride
+     * @see #shouldOverride(ORMetadata)
+     * @see #mergeORObjects(ORMetadata, ORMetadata)
+     * @see #mergeORObjectLists(List, List)
      */
     @Override
     protected String getIdentifier() {

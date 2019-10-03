@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,7 +49,7 @@ public class DirectMapChangeRecord extends DeferrableChangeRecord {
         if (((DeferrableChangeRecord)mergeFromRecord).isDeferred()){
             if (this.hasChanges()){
                 //merging into existing change record need to combine changes
-                ((DeferrableChangeRecord)mergeFromRecord).getMapping().calculateDeferredChanges(mergeFromRecord, mergeToChangeSet.getSession());
+                mergeFromRecord.getMapping().calculateDeferredChanges(mergeFromRecord, mergeToChangeSet.getSession());
             }else{
                 this.isDeferred = true;
                 this.originalCollection = ((DeferrableChangeRecord)mergeFromRecord).originalCollection;

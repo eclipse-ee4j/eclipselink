@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,5 +29,5 @@ public interface TransformationMappingChangeRecord extends ChangeRecord {
      * This method is used to access the changes of the fields in a transformation mapping.
      * @return org.eclipse.persistence.sessions.Record
      */
-    public Record getRecord();
+    Record getRecord();
 }

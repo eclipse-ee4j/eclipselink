@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +56,7 @@ public interface Login extends CoreLogin<Platform> {
      * this feature can be turned off. Turning this feature off will prevent EclipseLink from being able to
      * retry queries in the case of database failure.
      */
-    public boolean isConnectionHealthValidatedOnError();
+    boolean isConnectionHealthValidatedOnError();
 
     /**
      * PUBLIC:
@@ -139,40 +139,40 @@ public interface Login extends CoreLogin<Platform> {
      * PUBLIC:
      * Return the qualifier for the all of the tables.
      */
-    public String getTableQualifier();
+    String getTableQualifier();
 
     /**
      * INTERNAL:
      * Used for cache isolation.
      */
-    public boolean shouldAllowConcurrentReadWrite();
+    boolean shouldAllowConcurrentReadWrite();
 
     /**
      * INTERNAL:
      * Used for Cache Isolation.  Causes EclipseLink to lock at the class level on
      * cache updates.
      */
-    public boolean shouldSynchronizeWrites();
+    boolean shouldSynchronizeWrites();
 
     /**
      * INTERNAL:
      * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access.
      */
-    public boolean shouldSynchronizeObjectLevelReadWrite();
+    boolean shouldSynchronizeObjectLevelReadWrite();
 
     /**
      * INTERNAL:
      * Used for Cache Isolation.  Causes EclipseLink to lock at the object level on
      * cache updates and cache access, based on database transaction.
      */
-    public boolean shouldSynchronizeObjectLevelReadWriteDatabase();
+    boolean shouldSynchronizeObjectLevelReadWriteDatabase();
 
     /**
      * INTERNAL:
      * Used for cache isolation.
      */
-    public boolean shouldSynchronizedReadOnWrite();
+    boolean shouldSynchronizedReadOnWrite();
 
     /**
      * PUBLIC:
@@ -181,19 +181,19 @@ public interface Login extends CoreLogin<Platform> {
      * NOTE: Do not set the password directly by getting the properties and
      * setting the "password" property directly. Use the method DatabaseLogin.setPassword(String).
      */
-    public Object getProperty(String name);
+    Object getProperty(String name);
 
     /**
      * PUBLIC:
      * The properties are additional, driver-specific, connection information
      * to be passed to the JDBC driver.
      */
-    public void setProperties(Properties properties);
+    void setProperties(Properties properties);
 
     /**
      * PUBLIC:
      * Some JDBC drivers require additional, driver-specific, properties.
      * Add the specified property to those to be passed to the JDBC driver.
      */
-    public void setProperty(String propertyName, Object propertyValue);
+    void setProperty(String propertyName, Object propertyValue);
 }

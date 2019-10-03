@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -76,11 +76,13 @@ import org.xml.sax.ext.Locator2Impl;
 /**
  * <p><b>Purpose:</b>Provide an implementation of ContentHandler that is used by TopLink OXM to
  * build mapped Java Objects from SAX events.
- * <p><b>Responsibilities:</b><ul>
+ * <p><b>Responsibilities:</b>
+ * <ul>
  * <li>Implement the ContentHandler and LexicalHandler interfaces</li>
  * <li>Make calls into the appropriate NodeValues based on the incoming SAXEvents</li>
  * <li>Make callbacks into XMLReader for newObject events</li>
  * <li>Maintain a map of Collections to be populated for collection mappings.</li>
+ * </ul>
  *
  * @see org.eclipse.persistence.internal.oxm.XPathNode
  * @see org.eclipse.persistence.internal.oxm.NodeValue
@@ -337,7 +339,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     @Override
     public List getNullCapableValues() {
         if (null == nullCapableValues) {
-            this.nullCapableValues = new ArrayList<NullCapableValue>();
+            this.nullCapableValues = new ArrayList<>();
         }
         return this.nullCapableValues;
     }
@@ -618,7 +620,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
             if (null != xPathNode.getSelfChildren()) {
                 int selfChildrenSize = xPathNode.getSelfChildren().size();
-                selfRecords = new ArrayList<UnmarshalRecord>(selfChildrenSize);
+                selfRecords = new ArrayList<>(selfChildrenSize);
                 for (int x = 0; x < selfChildrenSize; x++) {
                     NodeValue nv = xPathNode.getSelfChildren().get(x).getNodeValue();
                     if (null != nv) {
@@ -747,7 +749,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
                         if (unmarshaller.getIDResolver() != null) {
                             try {
                                 if (primaryKeyFieldsSize > 1) {
-                                    Map<String, Object> idWrapper = new HashMap<String, Object>();
+                                    Map<String, Object> idWrapper = new HashMap<>();
                                     for (int x = 0; x < primaryKeyFieldsSize; x++) {
                                         String idName = (String) xmlDescriptor.getPrimaryKeyFieldNames().get(x);
                                         Object idValue = pk.getPrimaryKey()[x];
@@ -1666,7 +1668,7 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
     @Override
     public Map<String, String> getPrefixesForFragment() {
     if(prefixesForFragment == null){
-        prefixesForFragment = new HashMap<String, String>();
+        prefixesForFragment = new HashMap<>();
     }
 
         return prefixesForFragment;

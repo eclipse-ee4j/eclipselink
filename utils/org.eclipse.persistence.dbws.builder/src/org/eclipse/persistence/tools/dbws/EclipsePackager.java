@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import static org.eclipse.persistence.tools.dbws.DBWSPackager.ArchiveUse.noArchi
 /**
  * <p>
  * <b>PUBLIC:</b> EclipsePackager extends {@link IDEPackager}. It is responsible for generating<br>
- * the source code of the DBWS Provider (instead of a <tt>.class</tt> file) and packaging in a<br>
+ * the source code of the DBWS Provider (instead of a <code>.class</code> file) and packaging in a<br>
  * Eclipse-friendly directory structure all the other DBWS files produced by its parent:
  * <pre>
  * \--- JDev <b>Projectnnn</b> root directory

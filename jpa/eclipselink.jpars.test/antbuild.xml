@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -466,7 +466,7 @@
             <echo message="Running @{testclass} suite"/>
             <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-            <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" failureproperty="junit.failed" logfailedtests="true"
+            <junit jvm="${test.junit.jvm.exec}" printsummary="yes" failureproperty="junit.failed" logfailedtests="true"
                    fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
@@ -476,7 +476,7 @@
                 <jvmarg line="${additional.jvmargs}"/>
                 <jvmarg value="-javaagent:../${jparstest.2.base.dir}/${eclipselink.jar}"/>
                 <jvmarg value="${remoteDebugJvmArgs}"/>
-                <!--jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/-->
+                <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/>-->
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="tempFileDir" value="${tmp.dir}"/>
                 <sysproperty key="ignoreCRLF" value="true"/>

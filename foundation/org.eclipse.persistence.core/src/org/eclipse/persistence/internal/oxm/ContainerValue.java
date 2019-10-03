@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,11 @@ import org.eclipse.persistence.internal.oxm.record.MarshalRecord;
  */
 
 public interface ContainerValue {
-    public Object getContainerInstance();
+    Object getContainerInstance();
 
-    public void setContainerInstance(Object object, Object containerInstance);
+    void setContainerInstance(Object object, Object containerInstance);
 
-    public CoreContainerPolicy getContainerPolicy();
+    CoreContainerPolicy getContainerPolicy();
 
     /**
      * Marshal only one of the values from the collection.
@@ -44,22 +44,22 @@ public interface ContainerValue {
      * @param namespaceResolver
      * @param marshalContext
      */
-    public boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
+    boolean marshalSingleValue(XPathFragment xPathFragment, MarshalRecord marshalRecord, Object object, Object value, CoreAbstractSession session, NamespaceResolver namespaceResolver, MarshalContext marshalContext);
 
-    public Mapping getMapping();
+    Mapping getMapping();
 
     /**
      * Return true if the original container on the object should be used if
      * present.  If it is not present then the container policy will be used to
      * create the container.
      */
-    public boolean getReuseContainer();
+    boolean getReuseContainer();
 
     /**
      *  INTERNAL:
      *  Used to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      */
-    public int getIndex();
+    int getIndex();
 
     /**
      * INTERNAL
@@ -67,21 +67,21 @@ public interface ContainerValue {
      * is no presence of the collection in the XML document.
      * @since EclipseLink 2.3.3
      */
-    public boolean isDefaultEmptyContainer();
+    boolean isDefaultEmptyContainer();
 
     /**
      * For media types that provide a native representation of collections (such
      * as JSON arrays), can the representation be simplified so that the
      * grouping element can be used as the collection name.
      */
-    public boolean isWrapperAllowedAsCollectionName();
+    boolean isWrapperAllowedAsCollectionName();
 
     /**
      * INTERNAL:
      * Set to track the index of the corresponding containerInstance in the containerInstances Object[] on UnmarshalRecord
      * Set during TreeObjectBuilder initialization
      */
-    public void setIndex(int index);
+    void setIndex(int index);
 
 
 

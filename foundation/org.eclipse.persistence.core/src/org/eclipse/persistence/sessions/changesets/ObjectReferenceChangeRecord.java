@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,12 +28,12 @@ public interface ObjectReferenceChangeRecord extends ChangeRecord {
      * Returns the new reference for this object
      * @return org.eclipse.persistence.sessions.changesets.ObjectChangeSet
      */
-    public ObjectChangeSet getNewValue();
+    ObjectChangeSet getNewValue();
 
     /**
      * Return the old value of the object reference.
      * This is used during the commit for private-owned references.
      */
     @Override
-    public Object getOldValue();
+    Object getOldValue();
 }

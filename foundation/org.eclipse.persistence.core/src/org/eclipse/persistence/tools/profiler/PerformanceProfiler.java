@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,15 +14,23 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.tools.profiler;
 
-import java.util.*;
-import java.io.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.sessions.Record;
-import org.eclipse.persistence.sessions.SessionProfilerAdapter;
-import org.eclipse.persistence.internal.localization.*;
+import java.io.IOException;
+import java.io.Serializable;
+import java.io.Writer;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.queries.DatabaseQuery;
+import org.eclipse.persistence.sessions.Record;
+import org.eclipse.persistence.sessions.SessionProfilerAdapter;
 
 /**
  * <p><b>Purpose</b>: A tool used to provide high level performance profiling information.
@@ -47,34 +55,6 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
      */
     public PerformanceProfiler() {
         this(true);
-    }
-
-    /**
-     * OBSOLETE:
-     * Create a new profiler.
-     * The profiler can be registered with a session to log performance information on queries.
-     * @deprecated replaced by PerformanceProfiler()
-     */
-    @Deprecated
-    public PerformanceProfiler(org.eclipse.persistence.sessions.Session session) {
-        this(session, true);
-    }
-
-    /**
-     * OBSOLETE:
-     * Create a new profiler.
-     * The profiler can be registered with a session to log performance information on queries.
-     * @deprecated replaced by PerformanceProfiler()
-     */
-    @Deprecated
-    public PerformanceProfiler(org.eclipse.persistence.sessions.Session session, boolean shouldLogProfile) {
-        super();
-        this.profiles = new Vector();
-        this.session = (AbstractSession)session;
-        this.shouldLogProfile = shouldLogProfile;
-        this.nestLevel = 0;
-        this.operationTimingsByThread = new Hashtable();
-        this.operationStartTimesByThread = new Hashtable();
     }
 
     /**
@@ -418,7 +398,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
         try {
             if (shouldLogProfile()) {
                 writeNestingTabs(writer);
-                writer.write(ToStringLocalization.buildMessage("begin_profile_of", (Object[])null) + "{" + query.toString() + Helper.cr());
+                writer.write(ToStringLocalization.buildMessage("begin_profile_of", null) + "{" + query.toString() + Helper.cr());
                 writer.flush();
             }
 
@@ -463,7 +443,7 @@ public class PerformanceProfiler extends SessionProfilerAdapter implements Seria
                     profile.write(writer, this);
                     writer.write(Helper.cr());
                     writeNestingTabs(writer);
-                    writer.write("}" + ToStringLocalization.buildMessage("end_profile", (Object[])null));
+                    writer.write("}" + ToStringLocalization.buildMessage("end_profile", null));
                     writer.write(Helper.cr());
                     writer.flush();
                 }

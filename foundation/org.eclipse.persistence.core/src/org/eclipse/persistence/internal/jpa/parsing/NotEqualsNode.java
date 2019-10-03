@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import org.eclipse.persistence.expressions.*;
+import org.eclipse.persistence.expressions.Expression;
 
 /**
  * INTERNAL
- * <p><b>Purpose</b>: Represent a '<>' in EJBQL
- * <p><b>Responsibilities</b>:<ul>
- * <li> Generate the correct expression for an '<>' in EJBQL
+ * <p><b>Purpose</b>: Represent a '&lt;&gt;' in EJBQL
+ * <p><b>Responsibilities</b>:
+ * <ul>
+ * <li> Generate the correct expression for an '&lt;&gt;' in EJBQL</li>
  * </ul>
  *    @author Jon Driscoll and Joel Lucuik
  *    @since TopLink 4.0

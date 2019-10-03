@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public interface CoreFieldTransformer<SESSION extends CoreSession> extends Seria
     /**
      * Method name should be same as the value of this field. This field is used to find method name in reflection call.
      */
-    public static final String BUILD_FIELD_VALUE_METHOD = "buildFieldValue";
+    String BUILD_FIELD_VALUE_METHOD = "buildFieldValue";
 
     /**
      * @param instance - an instance of the domain class which contains the attribute
@@ -36,6 +36,6 @@ public interface CoreFieldTransformer<SESSION extends CoreSession> extends Seria
      * @param fieldName - the name of the field being transformed. Used if the user wants to use this transformer for multiple fields.
      * @return - The value to be written for the field associated with this transformer
      */
-    public Object buildFieldValue(Object instance, String fieldName, SESSION session);
+    Object buildFieldValue(Object instance, String fieldName, SESSION session);
 
 }

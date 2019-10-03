@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -574,9 +574,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Convert the object to an instance of Double.
      * @param                    sourceObject Object of type String or Number.
-     * @caught exception    The Double(String) constructor throws a
-     *         NumberFormatException if the String does not contain a
-     *        parsable double.
+     * @throws ConversionException  The Double(String) constructor throws a
+     *         NumberFormatException if the String does not contain a parsable double.
      */
    @Override
    protected Double convertObjectToDouble(Object sourceObject) throws ConversionException {
@@ -597,9 +596,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
    /**
     * Build a valid Float instance from a String or another Number instance.
-    * @caught exception    The Float(String) constructor throws a
-    *         NumberFormatException if the String does not contain a
-    *        parsable Float.
+    * @throws ConversionException  The Float(String) constructor throws a
+    *         NumberFormatException if the String does not contain a parsable Float.
     */
    @Override
    protected Float convertObjectToFloat(Object sourceObject) throws ConversionException {
@@ -617,9 +615,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
    /**
     * Build a valid Integer instance from a String or another Number instance.
-    * @caught exception    The Integer(String) constructor throws a
-    *         NumberFormatException if the String does not contain a
-    *        parsable integer.
+    * @throws ConversionException The Integer(String) constructor throws a
+    *         NumberFormatException if the String does not contain a parsable integer.
     */
    @Override
    protected Integer convertObjectToInteger(Object sourceObject) throws ConversionException {
@@ -636,9 +633,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 
    /**
     * Build a valid Long instance from a String or another Number instance.
-    * @caught exception    The Long(String) constructor throws a
-    *         NumberFormatException if the String does not contain a
-    *        parsable long.
+    * @throws ConversionException  The Long(String) constructor throws a
+    *         NumberFormatException if the String does not contain a parsable long.
     *
     */
   @Override
@@ -657,9 +653,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
   /**
    * INTERNAL:
    * Build a valid Short instance from a String or another Number instance.
-   * @caught exception    The Short(String) constructor throws a
-   *     NumberFormatException if the String does not contain a
-   *    parsable short.
+   * @throws ConversionException  The Short(String) constructor throws a
+   *     NumberFormatException if the String does not contain a parsable short.
    */
   @Override
   protected Short convertObjectToShort(Object sourceObject) throws ConversionException {
@@ -679,9 +674,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
    * Build a valid BigDecimal instance from a String or another
    * Number instance.  BigDecimal is the most general type so is
    * must be returned when an object is converted to a number.
-   * @caught exception    The BigDecimal(String) constructor throws a
-   *     NumberFormatException if the String does not contain a
-   *    parsable BigDecimal.
+   * @throws ConversionException The BigDecimal(String) constructor throws a
+   *     NumberFormatException if the String does not contain a parsable BigDecimal.
    */
   @Override
   protected BigDecimal convertObjectToNumber(Object sourceObject) throws ConversionException {
@@ -745,9 +739,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
 /**
     * Build a valid instance of Byte from the provided sourceObject
     * @param sourceObject    Valid instance of String or any Number
-    * @caught exception        The Byte(String) constructor throws a
-    *     NumberFormatException if the String does not contain a
-    *        parsable byte.
+    * @throws ConversionException The Byte(String) constructor throws a
+    *     NumberFormatException if the String does not contain a parsable byte.
     *
     */
     @Override
@@ -830,7 +823,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Return an XMLGregorianCalander created with a given date string
      *
-     * @param dateString
+     * @param sourceString
      * @return
      */
     public XMLGregorianCalendar convertStringToXMLGregorianCalendar(String sourceString) {
@@ -881,7 +874,7 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
     /**
      * Return a Duration created with a given date string.
      *
-     * @param dateString
+     * @param sourceString
      * @return
      */
     public Duration convertStringToDuration(String sourceString) {
@@ -1281,8 +1274,8 @@ public class XMLConversionManager extends ConversionManager implements org.eclip
      * This method returns a string representing a given java.util.Date
      * based on a given schema type QName.
      *
-     * BC dates (sourceDate.getTime() < YEAR_ONE_AD_TIME) are handled
-     * as follows: '2007 BC' --> '-2006 AD'.
+     * BC dates (sourceDate.getTime() &lt; YEAR_ONE_AD_TIME) are handled
+     * as follows: '2007 BC' --&gt; '-2006 AD'.
      *
      * @param sourceDate
      * @param schemaType

@@ -14,17 +14,16 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.annotations;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_OBJECT_CHANGES;
+import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
+import static org.eclipse.persistence.config.CacheIsolationType.SHARED;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.eclipse.persistence.config.CacheIsolationType;
-import static org.eclipse.persistence.config.CacheIsolationType.SHARED;
-
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
-import static org.eclipse.persistence.annotations.CacheCoordinationType.SEND_OBJECT_CHANGES;
 
 /**
  * The Cache annotation is used to configure the EclipseLink object cache.
@@ -63,15 +62,6 @@ public @interface Cache {
      * The default is 100.
      */
     int size() default 100;
-
-    /**
-     * (Optional) Cached instances in the shared cache,
-     * or only a per EntityManager isolated cache.
-     * The default is shared.
-     * @deprecated  As of Eclipselink 2.2.  See the attribute 'isolation'
-     */
-    @Deprecated
-    boolean shared() default true;
 
     /**
      * (Optional) Controls the level of caching this Entity will use.

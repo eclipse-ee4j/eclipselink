@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,71 +25,71 @@ import org.eclipse.persistence.queries.*;
  */
 public interface SessionProfiler {
     //dms sensor weight constants
-    public static final int NONE = 0;
-    public static final int NORMAL = 5;
-    public static final int HEAVY = 10;
-    public static final int ALL = Integer.MAX_VALUE;
+    int NONE = 0;
+    int NORMAL = 5;
+    int HEAVY = 10;
+    int ALL = Integer.MAX_VALUE;
 
     // Sensors display name
-    public static final String SessionName = "Info:SessionName";
-    public static final String LoginTime = "Info:LoginTime";
-    public static final String RcmStatus = "Info:CacheCoordinationStatus";
-    public static final String CacheSize = "Info:CacheSize";//TODO
+    String SessionName = "Info:SessionName";
+    String LoginTime = "Info:LoginTime";
+    String RcmStatus = "Info:CacheCoordinationStatus";
+    String CacheSize = "Info:CacheSize";//TODO
 
-    public static final String ClientSessionCreated = "Counter:ClientSessionCreates";
-    public static final String ClientSessionReleased = "Counter:ClientSessionReleases";
-    public static final String UowCreated = "Counter:UnitOfWorkCreates";
-    public static final String UowReleased = "Counter:UnitOfWorkReleases";
-    public static final String UowCommits = "Counter:UnitOfWorkCommits";
-    public static final String UowRollbacks = "Counter:UnitOfWorkRollbacks";
-    public static final String OptimisticLockException = "Counter:OptimisticLocks";
-    public static final String RcmReceived = "Counter:MessagesReceived";
-    public static final String RcmSent = "Counter:MessagesSent";
-    public static final String RemoteChangeSet = "Counter:RemoteChangeSets";
-    public static final String Connects = "Counter:ConnectCalls";
-    public static final String Disconnects = "Counter:DisconnectCalls";
-    public static final String CacheHits = "Counter:CacheHits";
-    public static final String CacheMisses = "Counter:CacheMisses";
-    public static final String ChangeSetsProcessed = "Counter:ChangesProcessed";
-    public static final String ChangeSetsNotProcessed = "Counter:ChangesNotProcessed";
+    String ClientSessionCreated = "Counter:ClientSessionCreates";
+    String ClientSessionReleased = "Counter:ClientSessionReleases";
+    String UowCreated = "Counter:UnitOfWorkCreates";
+    String UowReleased = "Counter:UnitOfWorkReleases";
+    String UowCommits = "Counter:UnitOfWorkCommits";
+    String UowRollbacks = "Counter:UnitOfWorkRollbacks";
+    String OptimisticLockException = "Counter:OptimisticLocks";
+    String RcmReceived = "Counter:MessagesReceived";
+    String RcmSent = "Counter:MessagesSent";
+    String RemoteChangeSet = "Counter:RemoteChangeSets";
+    String Connects = "Counter:ConnectCalls";
+    String Disconnects = "Counter:DisconnectCalls";
+    String CacheHits = "Counter:CacheHits";
+    String CacheMisses = "Counter:CacheMisses";
+    String ChangeSetsProcessed = "Counter:ChangesProcessed";
+    String ChangeSetsNotProcessed = "Counter:ChangesNotProcessed";
 
-    public static final String DescriptorEvent = "Timer:DescriptorEvents";
-    public static final String SessionEvent = "Timer:SessionEvents";
-    public static final String QueryPreparation = "Timer:QueryPreparation";
-    public static final String SqlGeneration = "Timer:SqlGeneration";
-    public static final String SqlPrepare = "Timer:SqlPrepare";
-    public static final String StatementExecute = "Timer:StatementExecute";
-    public static final String RowFetch = "Timer:RowFetch";
-    public static final String ObjectBuilding = "Timer:ObjectBuilding";
-    public static final String Register = "Timer:Register";
-    public static final String Merge = "Timer:Merge";
-    public static final String DistributedMerge = "Timer:DistributedMerge";
-    public static final String AssignSequence = "Timer:Sequencing";
-    public static final String Caching = "Timer:Caching";
-    public static final String CacheCoordinationSerialize = "Timer:CacheCoordinationSerialize";
-    public static final String CacheCoordination = "Timer:CacheCoordination";
-    public static final String ConnectionManagement = "Timer:ConnectionManagement";
-    public static final String Logging = "Timer:Logging";
-    public static final String JtsBeforeCompletion = "Timer:TXBeforeCompletion";
-    public static final String JtsAfterCompletion = "Timer:TXAfterCompletion";
-    public static final String Transaction = "Timer:Transactions";
-    public static final String UowCommit = "Timer:UnitOfWorkCommit";
-    public static final String ConnectionPing = "Timer:ConnectionPing";
-    public static final String Remote = "Timer:Remote";
-    public static final String RemoteLazy = "Timer:RemoteLazy";
-    public static final String RemoteMetadata = "Timer:RemoteMetadata";
-
-    /**
-     * INTERNAL:
-     * End the operation timing.
-     */
-    public void endOperationProfile(String operationName);
+    String DescriptorEvent = "Timer:DescriptorEvents";
+    String SessionEvent = "Timer:SessionEvents";
+    String QueryPreparation = "Timer:QueryPreparation";
+    String SqlGeneration = "Timer:SqlGeneration";
+    String SqlPrepare = "Timer:SqlPrepare";
+    String StatementExecute = "Timer:StatementExecute";
+    String RowFetch = "Timer:RowFetch";
+    String ObjectBuilding = "Timer:ObjectBuilding";
+    String Register = "Timer:Register";
+    String Merge = "Timer:Merge";
+    String DistributedMerge = "Timer:DistributedMerge";
+    String AssignSequence = "Timer:Sequencing";
+    String Caching = "Timer:Caching";
+    String CacheCoordinationSerialize = "Timer:CacheCoordinationSerialize";
+    String CacheCoordination = "Timer:CacheCoordination";
+    String ConnectionManagement = "Timer:ConnectionManagement";
+    String Logging = "Timer:Logging";
+    String JtsBeforeCompletion = "Timer:TXBeforeCompletion";
+    String JtsAfterCompletion = "Timer:TXAfterCompletion";
+    String Transaction = "Timer:Transactions";
+    String UowCommit = "Timer:UnitOfWorkCommit";
+    String ConnectionPing = "Timer:ConnectionPing";
+    String Remote = "Timer:Remote";
+    String RemoteLazy = "Timer:RemoteLazy";
+    String RemoteMetadata = "Timer:RemoteMetadata";
 
     /**
      * INTERNAL:
      * End the operation timing.
      */
-    public void endOperationProfile(String operationName, DatabaseQuery query, int weight);
+    void endOperationProfile(String operationName);
+
+    /**
+     * INTERNAL:
+     * End the operation timing.
+     */
+    void endOperationProfile(String operationName, DatabaseQuery query, int weight);
 
     /**
      * INTERNAL:
@@ -99,59 +99,59 @@ public interface SessionProfiler {
      *
      * @return the execution result of the query.
      */
-    public Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session);
+    Object profileExecutionOfQuery(DatabaseQuery query, Record row, AbstractSession session);
 
     /**
      * INTERNAL:
      * Set the session.
      */
-    public void setSession(Session session);
+    void setSession(Session session);
 
     /**
      * INTERNAL:
      * Start the operation timing.
      */
-    public void startOperationProfile(String operationName);
+    void startOperationProfile(String operationName);
 
     /**
      * INTERNAL:
      * Start the operation timing.
      */
-    public void startOperationProfile(String operationName, DatabaseQuery query, int weight);
+    void startOperationProfile(String operationName, DatabaseQuery query, int weight);
 
     /**
      * INTERNAL:
      * Update the value of the State sensor.(DMS)
      */
-    public void update(String operationName, Object value);
+    void update(String operationName, Object value);
 
     /**
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
-    public void occurred(String operationName, AbstractSession session);
+    void occurred(String operationName, AbstractSession session);
 
     /**
      * INTERNAL:
      * Increase DMS Event sensor occurrence.(DMS)
      */
-    public void occurred(String operationName, DatabaseQuery query, AbstractSession session);
+    void occurred(String operationName, DatabaseQuery query, AbstractSession session);
 
     /**
      * INTERNAL:
      * Set DMS sensor weight(DMS)
      */
-    public void setProfileWeight(int weight);
+    void setProfileWeight(int weight);
 
     /**
      * INTERNAL:
      * Return DMS sensor weight(DMS)
      */
-    public int getProfileWeight();
+    int getProfileWeight();
 
     /**
      * INTERNAL:
      * Initialize EclipseLink noun tree(DMS)
      */
-    public void initialize();
+    void initialize();
 }

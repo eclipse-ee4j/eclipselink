@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,6 @@ public interface CharacterEscapeHandler {
      *  <li>org.xml.sax.ContentHandler</li>
      *  <li>org.w3c.dom.Node</li>
      * </ul>
-     * </p>
      *
      * @param buffer Array of characters to be escaped
      * @param start The starting position
@@ -46,6 +45,6 @@ public interface CharacterEscapeHandler {
      * @param out The resulting escaped characters will be written to this Writer
      * @throws IOException In an error condition, IOException can be thrown to stop the marshalling process
      */
-    public void escape(char[] buffer, int start, int length, boolean isAttributeValue, Writer out) throws IOException;
+    void escape(char[] buffer, int start, int length, boolean isAttributeValue, Writer out) throws IOException;
 
 }

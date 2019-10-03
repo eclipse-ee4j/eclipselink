@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.parsing;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.JPQLException;
 
@@ -151,7 +158,7 @@ public class ParseTreeContext {
      * getVariableNameForClass():
      *        Answer the name mapped to the specified class. Answer null if none found.
      * SELECT OBJECT (emp) FROM Employee emp
-     *   getVariableNameForClass(Employee.class) => "emp"
+     *   getVariableNameForClass(Employee.class) =&gt; "emp"
      */
     public String getVariableNameForClass(Class theClass, GenerationContext context) {
         for (Iterator i = variableDecls.entrySet().iterator(); i.hasNext(); ) {

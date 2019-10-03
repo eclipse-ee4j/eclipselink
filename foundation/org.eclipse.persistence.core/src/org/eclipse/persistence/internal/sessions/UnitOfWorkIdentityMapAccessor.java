@@ -46,7 +46,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     @Override
     public void clearQueryCache() {
-        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache();
+        this.session.getParent().getIdentityMapAccessor().clearQueryCache();
     }
 
     /**
@@ -55,7 +55,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     @Override
     public void invalidateQueryCache(Class classThatChanged) {
-        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().invalidateQueryCache(classThatChanged);
+        this.session.getParent().getIdentityMapAccessor().invalidateQueryCache(classThatChanged);
     }
 
     /**
@@ -64,7 +64,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     @Override
     public void clearQueryCache(ReadQuery query) {
-        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache(query);
+        this.session.getParent().getIdentityMapAccessor().clearQueryCache(query);
     }
 
     /**
@@ -73,7 +73,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     @Override
     public void clearQueryCache(String sessionQueryName) {
-        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getQuery(sessionQueryName));
+        this.session.getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getQuery(sessionQueryName));
     }
 
     /**
@@ -82,7 +82,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     @Override
     public void clearQueryCache(String descriptorQueryName, Class queryClass) {
-        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getDescriptor(queryClass).getQueryManager().getQuery(descriptorQueryName));
+        this.session.getParent().getIdentityMapAccessor().clearQueryCache((ReadQuery)session.getDescriptor(queryClass).getQueryManager().getQuery(descriptorQueryName));
     }
 
     /**
@@ -94,7 +94,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
         if (getIdentityMapManager().containsKey(primaryKey, theClass, descriptor)) {
             return true;
         }
-        return ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, theClass, descriptor);
+        return this.session.getParent().getIdentityMapAccessorInstance().containsObjectInIdentityMap(primaryKey, theClass, descriptor);
     }
 
     /**
@@ -222,7 +222,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     @Override
     public Object getQueryResult(ReadQuery query, List parameters, boolean checkExpiry) {
-        return ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().getQueryResult(query, parameters, checkExpiry);
+        return this.session.getParent().getIdentityMapAccessorInstance().getQueryResult(query, parameters, checkExpiry);
     }
 
     /**
@@ -235,7 +235,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
      */
     @Override
     public void putQueryResult(ReadQuery query, List parameters, Object results) {
-        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessorInstance().putQueryResult(query, parameters, results);
+        this.session.getParent().getIdentityMapAccessorInstance().putQueryResult(query, parameters, results);
     }
 
     /**
@@ -252,7 +252,7 @@ public class UnitOfWorkIdentityMapAccessor extends IdentityMapAccessor {
     @Override
     public void initializeAllIdentityMaps() {
         super.initializeAllIdentityMaps();
-        ((UnitOfWorkImpl)this.session).getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
+        this.session.getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
     /**

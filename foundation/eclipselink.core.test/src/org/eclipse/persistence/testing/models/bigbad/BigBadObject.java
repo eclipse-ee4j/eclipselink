@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,16 +116,16 @@ public class BigBadObject implements Serializable {
     public java.sql.Timestamp timestamp09;
     public java.sql.Timestamp timestamp10;
 
-    public ValueHolderInterface ref01;
-    public ValueHolderInterface ref02;
-    public ValueHolderInterface ref03;
-    public ValueHolderInterface ref04;
-    public ValueHolderInterface ref05;
-    public ValueHolderInterface ref06;
-    public ValueHolderInterface ref07;
-    public ValueHolderInterface ref08;
-    public ValueHolderInterface ref09;
-    public ValueHolderInterface ref10;
+    public ValueHolderInterface<BigBadReferenceData> ref01;
+    public ValueHolderInterface<BigBadReferenceData> ref02;
+    public ValueHolderInterface<BigBadReferenceData> ref03;
+    public ValueHolderInterface<BigBadReferenceData> ref04;
+    public ValueHolderInterface<BigBadReferenceData> ref05;
+    public ValueHolderInterface<BigBadReferenceData> ref06;
+    public ValueHolderInterface<BigBadReferenceData> ref07;
+    public ValueHolderInterface<BigBadReferenceData> ref08;
+    public ValueHolderInterface<BigBadReferenceData> ref09;
+    public ValueHolderInterface<BigBadReferenceData> ref10;
 
     public BigBadAggregate agg01;
     public BigBadAggregate agg02;

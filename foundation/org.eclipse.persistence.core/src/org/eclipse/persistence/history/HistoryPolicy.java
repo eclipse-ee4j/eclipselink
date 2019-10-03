@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,21 +15,38 @@
 package org.eclipse.persistence.history;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.internal.databaseaccess.*;
-import org.eclipse.persistence.internal.expressions.*;
-import org.eclipse.persistence.internal.history.*;
-import org.eclipse.persistence.internal.helper.*;
-import org.eclipse.persistence.internal.queries.*;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
+import org.eclipse.persistence.internal.expressions.ConstantExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
+import org.eclipse.persistence.internal.expressions.SQLDeleteStatement;
+import org.eclipse.persistence.internal.expressions.SQLInsertStatement;
+import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
+import org.eclipse.persistence.internal.expressions.TableExpression;
+import org.eclipse.persistence.internal.helper.ClassConstants;
+import org.eclipse.persistence.internal.helper.ConversionManager;
+import org.eclipse.persistence.internal.helper.DatabaseField;
+import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.history.HistoricalDatabaseTable;
+import org.eclipse.persistence.internal.queries.StatementQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
-import org.eclipse.persistence.mappings.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.mappings.DirectCollectionMapping;
+import org.eclipse.persistence.mappings.ManyToManyMapping;
+import org.eclipse.persistence.queries.DataModifyQuery;
+import org.eclipse.persistence.queries.DeleteAllQuery;
+import org.eclipse.persistence.queries.ModifyQuery;
+import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
-import org.eclipse.persistence.queries.*;
 
 /**
  * <b>Purpose:</b>Expresses how historical data is saved on the data store.
@@ -172,7 +189,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
         if (shouldUseDatabaseTime()) {
             AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
             while (readSession.isUnitOfWork()) {
-                readSession = ((UnitOfWorkImpl)readSession).getParent().getSessionForClass(getDescriptor().getJavaClass());
+                readSession = readSession.getParent().getSessionForClass(getDescriptor().getJavaClass());
             }
             return readSession.getDatasourceLogin().getDatasourcePlatform().getTimestampFromServer(session, readSession.getName());
         }
@@ -186,7 +203,7 @@ public class HistoryPolicy implements Cloneable, Serializable {
     public long getMinimumTimeIncrement(AbstractSession session) {
         AbstractSession readSession = session.getSessionForClass(getDescriptor().getJavaClass());
         while (readSession.isUnitOfWork()) {
-            readSession = ((UnitOfWorkImpl)readSession).getParent().getSessionForClass(getDescriptor().getJavaClass());
+            readSession = readSession.getParent().getSessionForClass(getDescriptor().getJavaClass());
         }
         return readSession.getPlatform().minimumTimeIncrement();
     }
