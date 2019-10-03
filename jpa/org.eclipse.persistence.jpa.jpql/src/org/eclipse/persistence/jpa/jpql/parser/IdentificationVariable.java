@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,9 +13,13 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.util.List;
+import java.util.Locale;
+
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
@@ -166,7 +170,7 @@ public final class IdentificationVariable extends AbstractExpression {
      */
     public String getVariableName() {
         if (variableName == null) {
-            variableName = getText().toUpperCase().intern();
+            variableName = getText().toUpperCase(Locale.ROOT).intern();
         }
         return variableName;
     }

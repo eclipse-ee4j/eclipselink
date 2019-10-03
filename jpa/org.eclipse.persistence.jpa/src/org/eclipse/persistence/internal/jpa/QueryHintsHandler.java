@@ -27,7 +27,8 @@
 //       - 456067 : Added support for defining query timeout units
 //     09/04/2018-3.0 Ravi Babu Tummuru
 //       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
-
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa;
 
 import java.security.AccessController;
@@ -36,6 +37,7 @@ import java.sql.Time;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -398,7 +400,7 @@ public class QueryHintsHandler {
         }
 
         static String getUpperCaseString(Object hintValue) {
-            return hintValue != null ? hintValue.toString().toUpperCase() : null;
+            return hintValue != null ? hintValue.toString().toUpperCase(Locale.ROOT) : null;
         }
 
         static Class loadClass(String className, DatabaseQuery query, ClassLoader loader) throws QueryException {
@@ -448,7 +450,7 @@ public class QueryHintsHandler {
                         }
                     }
                 }
-                defaultValueToApply = valueMap.get(defaultValue.toUpperCase());
+                defaultValueToApply = valueMap.get(defaultValue.toUpperCase(Locale.ROOT));
             }
         }
 

@@ -41,6 +41,8 @@
 //       - 512255: Eclipselink JPA/Auditing capablity in EE Environment fails with JNDI name parameter type
 //     07/16/2019-2.7 Jody Grassel
 //       - 547173: EntityManager.unwrap(Connection.class) returns null
+//     09/02/2019-2.7 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.ArrayList;
@@ -49,6 +51,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -319,7 +322,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             put(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, new PropertyProcessor() {
             @Override
             void process(String name, Object value, EntityManagerImpl em) {
-                em.commitOrder = CommitOrderType.valueOf(getPropertiesHandlerProperty(name, (String)value).toUpperCase());
+                em.commitOrder = CommitOrderType.valueOf(getPropertiesHandlerProperty(name, (String)value).toUpperCase(Locale.ROOT));
                 if (em.hasActivePersistenceContext()) {
                     em.extendedPersistenceContext.setCommitOrder(em.commitOrder);
                 }

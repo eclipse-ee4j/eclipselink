@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,6 +105,8 @@
 //       - 374688: JPA 2.1 Converter support
 //     05/19/2014-2.6 Tomas Kraus
 //       - 437578: @Cacheable annotation value is now passed to CachePolicy
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.JPA_ACCESS_FIELD;
@@ -114,6 +116,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.persistence.annotations.ExistenceType;
@@ -675,7 +678,7 @@ public class MetadataDescriptor {
      * it is the table name of the root descriptor metadata.
      */
     public String getDefaultTableName() {
-        String defaultTableName =(getProject().useDelimitedIdentifier()) ? getAlias() : getAlias().toUpperCase();
+        String defaultTableName =(getProject().useDelimitedIdentifier()) ? getAlias() : getAlias().toUpperCase(Locale.ROOT);
 
         if (isInheritanceSubclass()) {
             if (getInheritanceRootDescriptor().usesSingleTableInheritanceStrategy()) {
