@@ -11,7 +11,7 @@
  */
 
 // Contributors:
-//     09/02/2019-3.0 Alexandre Jacob
+//     09/02/2019-2.7 Alexandre Jacob
 //        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.jpa.tests.jpql.parser;
 
@@ -31,20 +31,25 @@ public class JPQLExpressionTurkishLocaleTest {
 
     @Test
     public void testJPQLExpressionWithTurkishLocale() {
-        Locale.setDefault(new Locale("tr", "TR"));
+        Locale current = Locale.getDefault();
+        try {
+            Locale.setDefault(new Locale("tr", "TR"));
 
-        JPQLGrammar grammar = DefaultEclipseLinkJPQLGrammar.instance();
-        JPQLExpression expression = new JPQLExpression(
-            "select u from sec$User u where u.loginLowerCase like :login and u.deleteDate is null", 
-            DefaultEclipseLinkJPQLGrammar.instance(),
-            true
-        );
+            JPQLGrammar grammar = DefaultEclipseLinkJPQLGrammar.instance();
+            JPQLExpression expression = new JPQLExpression(
+                "select u from sec$User u where u.loginLowerCase like :login and u.deleteDate is null", 
+                DefaultEclipseLinkJPQLGrammar.instance(),
+                true
+            );
 
-        Collection<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
-        EclipseLinkGrammarValidator grammarValidator = new EclipseLinkGrammarValidator(grammar);
-        grammarValidator.setProblems(problems);
-        expression.accept(grammarValidator);
+            Collection<JPQLQueryProblem> problems = new LinkedList<JPQLQueryProblem>();
+            EclipseLinkGrammarValidator grammarValidator = new EclipseLinkGrammarValidator(grammar);
+            grammarValidator.setProblems(problems);
+            expression.accept(grammarValidator);
 
-        Assert.assertTrue(problems.isEmpty());
+            Assert.assertTrue(problems.isEmpty());
+        } finally {
+            Locale.setDefault(current);
+        }
     }
 }
