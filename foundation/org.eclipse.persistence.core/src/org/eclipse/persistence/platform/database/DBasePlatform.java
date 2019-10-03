@@ -15,6 +15,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -90,6 +91,20 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
             databaseValue = databaseValue.toString();
         }
         super.setParameterValueInDatabaseCall(databaseValue, statement, index, session);
+    }
+
+    /**
+     * INTERNAL:
+     * DBase does not support Time/Timestamp so we must map to strings.
+     */
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter,
+            CallableStatement statement, String name, AbstractSession session) throws SQLException {
+        Object databaseValue = super.convertToDatabaseType(parameter);
+        if ((databaseValue instanceof java.sql.Time) || (databaseValue instanceof java.sql.Timestamp)) {
+            databaseValue = databaseValue.toString();
+        }
+        super.setParameterValueInDatabaseCall(databaseValue, statement, name, session);
     }
 
     /**

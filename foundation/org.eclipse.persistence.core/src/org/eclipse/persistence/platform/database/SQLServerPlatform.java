@@ -22,6 +22,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -858,7 +859,19 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
             statement.setObject(index, parameter);
             return;
         }
-        
+
         super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+    }
+
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name,
+            AbstractSession session) throws SQLException {
+        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
+            // avoid default logic, which loses offset when converting to java.sql.Timestamp
+            statement.setObject(name, parameter);
+            return;
+        }
+
+        super.setParameterValueInDatabaseCall(parameter, statement, name, session);
     }
 }

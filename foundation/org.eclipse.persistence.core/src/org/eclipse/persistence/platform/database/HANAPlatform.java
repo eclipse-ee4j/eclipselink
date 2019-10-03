@@ -497,11 +497,6 @@ public final class HANAPlatform extends DatabasePlatform {
     }
 
     @Override
-    public boolean requiresProcedureCallOuputToken() {
-        return false;
-    }
-
-    @Override
     public boolean supportsStoredFunctions() {
         return false;
     }

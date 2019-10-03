@@ -664,6 +664,11 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         statement.registerOutParameter(index, jdbcType, getTypeStrings().get(jdbcType));
     }
 
+    @Override
+    public void registerOutputParameter(CallableStatement statement, int index, int jdbcType, String typeName) throws SQLException {
+        statement.registerOutParameter(index, jdbcType, getTypeStrings().get(jdbcType));
+    }
+
     /**
      * USed for sp calls.
      */
