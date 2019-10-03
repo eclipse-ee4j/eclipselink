@@ -157,7 +157,7 @@
     <echo message="${msg.jdbc.driver.jar.configured}"/>
 
     <!-- controls which goals to invoke with maven (default is 'verify') -->
-    <property name="maven.goals" value="verify"/>
+    <property name="maven.goals" value="-B verify"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -495,7 +495,7 @@
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Declipselink.full=true"/>
-             <arg value="clean"/>
+             <arg line="-B clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
@@ -559,12 +559,12 @@
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
-        <echo message="    clean verify"/>
+        <echo message="    -B clean verify"/>
         <java dir="${eclipselink.compdeps.internal}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-            <arg line="clean verify"/>
+            <arg line="-B clean verify"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>
@@ -579,12 +579,12 @@
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
-        <echo message="    clean verify"/>
+        <echo message="    -B clean verify"/>
         <java dir="${eclipselink.compdeps}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
-            <arg line="clean verify"/>
+            <arg line="-B clean verify"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>
@@ -740,7 +740,7 @@
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
-             <arg value="clean"/>
+             <arg line="-B clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
