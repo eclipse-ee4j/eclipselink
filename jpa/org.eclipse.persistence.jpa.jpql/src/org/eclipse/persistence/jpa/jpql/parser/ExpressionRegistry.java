@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,11 +13,14 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.jpa.jpql.parser;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.persistence.jpa.jpql.Assert;
@@ -131,7 +134,7 @@ public class ExpressionRegistry {
      */
     public ExpressionFactory expressionFactoryForIdentifier(String identifier) {
 
-        identifier = identifier.toUpperCase();
+        identifier = identifier.toUpperCase(Locale.ROOT);
 
         if (Expression.SELECT.equalsIgnoreCase(identifier)) {
             return getExpressionFactory(SimpleSelectStatementFactory.ID);
@@ -165,7 +168,7 @@ public class ExpressionRegistry {
      * @return The {@link IdentifierRole} of the given JPQL identifier
      */
     public IdentifierRole getIdentifierRole(String identifier) {
-        return identifiers.get(identifier.toUpperCase());
+        return identifiers.get(identifier.toUpperCase(Locale.ROOT));
     }
 
     /**
@@ -194,7 +197,7 @@ public class ExpressionRegistry {
      * @return The version in which the identifier was introduced
      */
     public JPAVersion getIdentifierVersion(String identifier) {
-        JPAVersion version = identifierVersions.get(identifier.toUpperCase());
+        JPAVersion version = identifierVersions.get(identifier.toUpperCase(Locale.ROOT));
         return (version != null) ? version : JPAVersion.VERSION_1_0;
     }
 
@@ -226,7 +229,7 @@ public class ExpressionRegistry {
      * @return <code>true</code> if the word is an identifier, <code>false</code> otherwise
      */
     public boolean isIdentifier(String text) {
-        return identifiers.containsKey(text.toUpperCase());
+        return identifiers.containsKey(text.toUpperCase(Locale.ROOT));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,8 @@
 //       - 333488: Serializable attribute being defaulted to a variable one to one mapping and causing exception
 //     07/16/2013-2.5.1 Guy Pelletier
 //       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
 
 import java.io.Serializable;
@@ -32,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -358,7 +361,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
     public MetadataMethod getMethodForPropertyName(String propertyName) {
         MetadataMethod method;
 
-        String leadingChar = String.valueOf(propertyName.charAt(0)).toUpperCase();
+        String leadingChar = String.valueOf(propertyName.charAt(0)).toUpperCase(Locale.ROOT);
         String restOfName = propertyName.substring(1);
 
         // Look for a getPropertyName() method

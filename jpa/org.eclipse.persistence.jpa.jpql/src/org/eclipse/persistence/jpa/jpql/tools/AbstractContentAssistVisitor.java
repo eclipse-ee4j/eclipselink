@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,6 +13,8 @@
 // Contributors:
 //     Oracle - initial API and implementation
 //
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.jpa.jpql.tools;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Stack;
 import org.eclipse.persistence.jpa.jpql.AbstractValidator.JPQLQueryBNFValidator;
@@ -10367,7 +10370,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
         protected boolean isPossibleCompositeIdentifier(String clause, String fragment) {
 
             for (String identifier : compositeIdentifiersAfter(clause)) {
-                if (identifier.toLowerCase().startsWith(fragment)) {
+                if (identifier.toLowerCase(Locale.ROOT).startsWith(fragment)) {
                     return true;
                 }
             }
@@ -10463,7 +10466,7 @@ public abstract class AbstractContentAssistVisitor extends AnonymousExpressionVi
 
                 // Special case for composite identifiers
                 if (!complete) {
-                    String fragment = expression.toParsedText().toLowerCase();
+                    String fragment = expression.toParsedText().toLowerCase(Locale.ROOT);
                     complete = isPossibleCompositeIdentifier(clause, fragment);
                 }
             }

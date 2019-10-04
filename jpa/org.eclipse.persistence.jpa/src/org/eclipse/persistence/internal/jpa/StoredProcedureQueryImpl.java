@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -511,13 +512,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         if (isValidCallableStatement()) {
             try {
-                Integer position = getCall().getCursorOrdinalPosition(parameterName);
+                Object obj = ((CallableStatement) executeStatement).getObject(parameterName);
 
-                if (position == null) {
-                    return ((CallableStatement) executeStatement).getObject(parameterName);
-                } else {
-                    return getOutputParameterValue(position);
+                if (obj instanceof ResultSet) {
+                    // If a result set is returned we have to build the objects.
+                    return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords((ResultSet) obj), ++executeResultSetIndex);
                 }
+                return obj;
             } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_name", new Object[] { parameterName, exception.getMessage() }), exception);
             }
@@ -813,10 +814,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             call.addNamedArgument(parameterName, parameterName, type);
         } else if (mode.equals(ParameterMode.OUT)) {
             call.addNamedOutputArgument(parameterName, parameterName, type);
-            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
         } else if (mode.equals(ParameterMode.INOUT)) {
             call.addNamedInOutputArgument(parameterName, parameterName, parameterName, type);
-            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
         } else if (mode.equals(ParameterMode.REF_CURSOR)) {
             call.useNamedCursorOutputAsResultSet(parameterName);
         }

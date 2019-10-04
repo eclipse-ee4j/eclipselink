@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,11 +64,14 @@
 //       - 357474: Address primaryKey option from tenant discriminator column
 //     11/19/2012-2.5 Guy Pelletier
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa.metadata.accessors;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.persistence.annotations.Converter;
@@ -329,7 +332,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * defaulting.
      */
     protected String getDefaultAttributeName() {
-        return (getProject().useDelimitedIdentifier()) ? getAttributeName() : getAttributeName().toUpperCase();
+        return (getProject().useDelimitedIdentifier()) ? getAttributeName() : getAttributeName().toUpperCase(Locale.ROOT);
     }
 
     /**
@@ -586,7 +589,7 @@ public abstract class MetadataAccessor extends ORMetadata {
      * Return the upper case java class that defines this accessor.
      */
     protected String getUpperCaseShortJavaClassName() {
-        return Helper.getShortClassName(getJavaClassName()).toUpperCase();
+        return Helper.getShortClassName(getJavaClassName()).toUpperCase(Locale.ROOT);
     }
 
     /**

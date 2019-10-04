@@ -423,10 +423,13 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Used for sp calls.
+     * INTERNAL:
+     * Should the variable name of a stored procedure call be printed as part of the procedure call
+     * e.g. EXECUTE PROCEDURE MyStoredProc(myvariable = ?)
      */
-    public String getProcedureArgumentSetter() {
-        return " => ";
+    @Override
+    public boolean shouldPrintStoredProcedureArgumentNameInCall() {
+        return false;
     }
 
     /**
