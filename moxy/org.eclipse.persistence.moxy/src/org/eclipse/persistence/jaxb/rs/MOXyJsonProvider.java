@@ -43,21 +43,21 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.activation.DataSource;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -102,7 +102,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * package org.example;
 
  * import java.util.*;
- * import javax.ws.rs.core.Application;
+ * import jakarta.ws.rs.core.Application;
  * import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
  *
  * public class ExampleApplication  extends Application {
@@ -125,7 +125,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * package org.example;
  *
  * import java.util.*;
- * import javax.ws.rs.core.Application;
+ * import jakarta.ws.rs.core.Application;
  * import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
  *
  * public class CustomerApplication  extends Application {
@@ -159,9 +159,9 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * import java.lang.annotation.Annotation;
  * import java.lang.reflect.Type;
  *
- * import javax.ws.rs.*;
- * import javax.ws.rs.core.*;
- * import javax.ws.rs.ext.Provider;
+ * import jakarta.ws.rs.*;
+ * import jakarta.ws.rs.core.*;
+ * import jakarta.ws.rs.ext.Provider;
  * import javax.xml.bind.*;
  *
  * import org.eclipse.persistence.jaxb.MarshallerProperties;

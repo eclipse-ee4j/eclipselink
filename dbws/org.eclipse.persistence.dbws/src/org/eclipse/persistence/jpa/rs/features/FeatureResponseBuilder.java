@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.rs.features;
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import java.util.Map;
 

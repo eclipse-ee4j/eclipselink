@@ -19,7 +19,7 @@ import org.eclipse.persistence.jpa.rs.QueryParameters;
 import org.eclipse.persistence.jpa.rs.annotations.RestPageable;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 import java.lang.reflect.Field;
 
 /**

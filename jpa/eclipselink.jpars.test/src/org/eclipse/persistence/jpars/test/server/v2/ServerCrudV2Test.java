@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpars.test.util.StaticModelDatabasePopulator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * ServerCrudTest modified for JPARS v2.0.

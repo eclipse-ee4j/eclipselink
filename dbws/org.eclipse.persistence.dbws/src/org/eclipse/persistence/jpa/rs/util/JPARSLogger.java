@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.logging.Level;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.rs.features.fieldsfiltering;
 import org.eclipse.persistence.jpa.rs.exceptions.JPARSException;
 import org.eclipse.persistence.jpa.rs.resources.common.AbstractResource;
 
-import javax.ws.rs.core.UriInfo;
+import jakarta.ws.rs.core.UriInfo;
 import java.util.Map;
 
 /**

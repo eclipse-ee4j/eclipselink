@@ -22,9 +22,9 @@ import java.lang.reflect.Field;
 
 import javax.activation.DataSource;
 import javax.activation.URLDataSource;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.StreamingOutput;
 
 import junit.framework.TestCase;
 

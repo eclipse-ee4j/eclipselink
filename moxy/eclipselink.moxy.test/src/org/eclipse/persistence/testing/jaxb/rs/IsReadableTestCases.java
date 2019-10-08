@@ -26,7 +26,7 @@ import java.util.TreeMap;
 
 import javax.activation.DataSource;
 import javax.activation.URLDataSource;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import junit.framework.TestCase;
 
