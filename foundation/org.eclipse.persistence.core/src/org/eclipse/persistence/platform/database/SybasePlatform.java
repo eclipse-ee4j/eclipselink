@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -49,7 +49,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
     // assigned negative values, making them unusable as indexes without guessing at modifying them.
     // this attribute is used for registering output params in stored procedure calls.  JConnect 5.5 requires
     // that the API that accepts a string is called so we have a collection of strings to use.
-    protected Map typeStrings;
+    protected Map<Integer, String> typeStrings;
 
     public SybasePlatform(){
         super();
@@ -63,7 +63,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
         this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "7.0.0") >= 0;
     }
     
-    protected Map getTypeStrings() {
+    protected Map<Integer, String> getTypeStrings() {
         if (typeStrings == null) {
             initializeTypeStrings();
         }
@@ -72,7 +72,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
 
     protected synchronized void initializeTypeStrings() {
         if (typeStrings == null) {
-            Map types = new HashMap(30);
+            Map<Integer, String> types = new HashMap<Integer, String>(30);
             types.put(new Integer(Types.ARRAY), "ARRAY");
             types.put(new Integer(Types.BIGINT), "BIGINT");
             types.put(new Integer(Types.BINARY), "BINARY");
@@ -332,7 +332,7 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public String getJdbcTypeName(int jdbcType) {
-        return (String)getTypeStrings().get(new Integer(jdbcType));
+        return getTypeStrings().get(new Integer(jdbcType));
     }
 
     /**
@@ -642,7 +642,12 @@ public class SybasePlatform extends org.eclipse.persistence.platform.database.Da
      */
     @Override
     public void registerOutputParameter(CallableStatement statement, int index, int jdbcType) throws SQLException {
-        statement.registerOutParameter(index, jdbcType, (String)getTypeStrings().get(new Integer(jdbcType)));
+        statement.registerOutParameter(index, jdbcType, getTypeStrings().get(new Integer(jdbcType)));
+    }
+
+    @Override
+    public void registerOutputParameter(CallableStatement statement, int index, int jdbcType, String typeName) throws SQLException {
+        statement.registerOutParameter(index, jdbcType, getTypeStrings().get(jdbcType));
     }
 
     /**
