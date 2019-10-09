@@ -49,6 +49,7 @@ import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -68,6 +69,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.queries.SQLCall;
+import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.queries.ValueReadQuery;
 import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
@@ -432,14 +434,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
             }
         }
         return session.executeSelectingCall(new SQLCall(query));
-    }
-
-    /**
-     * Used for sp calls.
-     */
-    @Override
-    public String getProcedureArgumentSetter() {
-        return "=>";
     }
 
     /**
@@ -814,6 +808,15 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
     @Override
     public boolean shouldPrintStoredProcedureArgumentNameInCall() {
         return false;
+    }
+
+    @Override
+    public String getProcedureArgument(String name, Object parameter, Integer parameterType, 
+            StoredProcedureCall call, AbstractSession session) {
+        if(name != null && DatasourceCall.IN.equals(parameterType) && !call.usesBinding(session)) {
+            return name + "=>" + "?";
+        }
+        return "?";
     }
 
     /**
