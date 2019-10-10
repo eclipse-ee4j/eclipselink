@@ -17,13 +17,18 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.queries;
 
+import java.io.IOException;
+import java.io.Writer;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -1058,5 +1063,22 @@ public class StoredProcedureCall extends DatabaseCall {
 
         String name = procedureArgs.get(index);
         return statement.getObject(name);
+    }
+
+    /**
+     * Bind the parameter. Binding is determined by the call and second the platform.
+     */
+    @Override
+    public void bindParameter(Writer writer, Object parameter) {
+        if (parameter instanceof Collection) {
+            throw QueryException.inCannotBeParameterized(getQuery());
+        }
+
+        try {
+            writer.write("?");
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+        getParameters().add(parameter);
     }
 }

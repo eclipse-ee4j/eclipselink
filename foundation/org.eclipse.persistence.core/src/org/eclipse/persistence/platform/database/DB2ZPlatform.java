@@ -87,7 +87,11 @@ public class DB2ZPlatform extends DB2Platform {
     }
 
     @Override
-    public String getProcedureArgumentSetter() {
+    public String getProcedureArgument(String name, Object parameter, Integer parameterType, 
+            StoredProcedureCall call, AbstractSession session) {
+        if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
+            return ":" + name;
+        }
         return "";
     }
 
@@ -126,11 +130,9 @@ public class DB2ZPlatform extends DB2Platform {
             Integer parameterType = call.getParameterTypes().get(index);
             // If the argument is optional and null, ignore it.
             if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
-                if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
-                    writer.write(":");
-                    writer.write(name);
-                    writer.write(getProcedureArgumentSetter());
-                }
+
+                writer.write(getProcedureArgument(name, parameter, parameterType, call, session));
+
                 if (DatasourceCall.isOutputParameterType(parameterType) && requiresProcedureCallOuputToken()) {
                     writer.write(" ");
                     writer.write(getOutputProcedureToken());
