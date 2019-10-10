@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -559,6 +560,27 @@ public class Oracle9Platform extends Oracle8Platform {
             statement.setDate(index, Helper.truncateDateIgnoreMilliseconds((java.sql.Date)parameter));
         } else {
             super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+        }
+    }
+
+    /**
+     *  INTERNAL:
+     *  Note that index (not index+1) is used in statement.setObject(index, parameter)
+     *    Binding starts with a 1 not 0, so make sure that index &gt; 0.
+     *  Treat Calendar separately. Bind Calendar as TIMESTAMPTZ.
+     */
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name, AbstractSession session) throws SQLException {
+        if (parameter instanceof Calendar) {
+            Calendar calendar = (Calendar)parameter;
+            Connection conn = getConnection(session, statement.getConnection());
+            TIMESTAMPTZ tsTZ = TIMESTAMPHelper.buildTIMESTAMPTZ(calendar, conn, this.shouldPrintCalendar);
+            statement.setObject(name, tsTZ);
+        } else if (this.shouldTruncateDate && parameter instanceof java.sql.Date) {
+            // hours, minutes, seconds all set to zero
+            statement.setDate(name, Helper.truncateDateIgnoreMilliseconds((java.sql.Date)parameter));
+        } else {
+            super.setParameterValueInDatabaseCall(parameter, statement, name, session);
         }
     }
 

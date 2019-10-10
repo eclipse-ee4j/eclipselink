@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +16,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
@@ -87,6 +89,20 @@ public class DBasePlatform extends org.eclipse.persistence.platform.database.Dat
             databaseValue = databaseValue.toString();
         }
         super.setParameterValueInDatabaseCall(databaseValue, statement, index, session);
+    }
+
+    /**
+     * INTERNAL:
+     * DBase does not support Time/Timestamp so we must map to strings.
+     */
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter,
+            CallableStatement statement, String name, AbstractSession session) throws SQLException {
+        Object databaseValue = super.convertToDatabaseType(parameter);
+        if ((databaseValue instanceof java.sql.Time) || (databaseValue instanceof java.sql.Timestamp)) {
+            databaseValue = databaseValue.toString();
+        }
+        super.setParameterValueInDatabaseCall(databaseValue, statement, name, session);
     }
 
     /**

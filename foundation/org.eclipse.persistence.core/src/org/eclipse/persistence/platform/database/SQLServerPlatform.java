@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -821,7 +822,19 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
             statement.setObject(index, parameter);
             return;
         }
-        
+
         super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+    }
+
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name,
+            AbstractSession session) throws SQLException {
+        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
+            // avoid default logic, which loses offset when converting to java.sql.Timestamp
+            statement.setObject(name, parameter);
+            return;
+        }
+
+        super.setParameterValueInDatabaseCall(parameter, statement, name, session);
     }
 }
