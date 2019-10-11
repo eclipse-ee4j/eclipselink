@@ -839,12 +839,9 @@ public class DatabasePlatform extends DatasourcePlatform {
             Integer parameterType = call.getParameterTypes().get(index);
             // If the argument is optional and null, ignore it.
             if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
-                if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
-                    writer.write(getProcedureArgumentString());
-                    writer.write(name);
-                    writer.write(getProcedureArgumentSetter());
-                }
-                writer.write("?");
+
+                writer.write(getProcedureArgument(name, parameter, parameterType, call, session));
+
                 if (DatasourceCall.isOutputParameterType(parameterType)) {
                     if (requiresProcedureCallOuputToken()) {
                         writer.write(" ");
@@ -1502,17 +1499,20 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Used for sp calls.
-     */
-    public String getProcedureArgumentSetter() {
-        return " = ";
-    }
-
-    /**
      * Used for sp defs.
      */
     public String getProcedureArgumentString() {
         return "";
+    }
+
+    /**
+     * Obtain the platform specific argument string
+     */
+    public String getProcedureArgument(String name, Object parameter, Integer parameterType, StoredProcedureCall call, AbstractSession session) {
+        if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
+            return getProcedureArgumentString() + name + " = " + "?";
+        }
+        return "?";
     }
 
     /**
