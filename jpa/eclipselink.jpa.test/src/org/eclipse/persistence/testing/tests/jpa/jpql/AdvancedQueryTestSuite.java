@@ -1507,6 +1507,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         // Lock timeout only supported on Oracle.
         if (! isOnServer() && session.getPlatform().supportsWaitForUpdate()) {
             EntityManager em = createEntityManager();
+            // sleep for 2 seconds (2000 milliseconds)
+            // this timeout value must be smaller, than PESSIMISTIC_LOCK_TIMEOUT property for the second query
+            // to execute this test without LockTimeoutException
+            Thread pesimisticLockRunnerThread = new Thread(new PesimisticLockRunner(em, 2000));
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception lockTimeOutException = null;
@@ -1520,8 +1524,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setHint(QueryHints.REFRESH, true);
                 query.setParameter("id", employee.getId());
                 query.setParameter("firstName", employee.getFirstName());
-                //Set timeout for 2000 milliseconds (2 seconds)
-                query.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 2000);
                 Employee queryResult = (Employee) query.getSingleResult();
                 queryResult.toString();
 
@@ -1536,12 +1538,11 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     query2.setHint(QueryHints.REFRESH, true);
                     query2.setParameter("id", employee.getId());
                     query2.setParameter("firstName", employee.getFirstName());
+                    // Set timeout for 4000 milliseconds (4 seconds)
+                    query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 4000);
 
-                    // sleep for 2 seconds (2000 milliseconds) to allow the first lock to timeout
-                    // if a LockTimeoutException is thrown, the first lock must have set for longer than expected
-                    try {
-                        Thread.sleep(2000);
-                    } catch(Exception e){}
+                    // Release (rollback) locked rows by first query in second thread after timeout
+                    pesimisticLockRunnerThread.start();
 
                     Employee employee2 = (Employee) query2.getSingleResult();
                     employee2.setFirstName("Invalid Lock Employee");
@@ -1556,7 +1557,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     closeEntityManagerAndTransaction(em2);
                 }
 
-                rollbackTransaction(em);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -1565,6 +1565,12 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 throw ex;
             } finally {
                 closeEntityManager(em);
+            }
+            try {
+                pesimisticLockRunnerThread.join(10000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+                fail("PesimisticLockRunnerThread failed with:" + ex);
             }
 
             Assert.assertNull("A javax.persistence.LockTimeoutException was unexpectedly thrown", lockTimeOutException);
@@ -1577,6 +1583,10 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
         // Cannot create parallel entity managers in the server.
         if (! isOnServer() && session.getPlatform().supportsWaitForUpdate()) {
             EntityManager em = createEntityManager();
+            // sleep for 4 seconds (4000 milliseconds)
+            // this timeout value must be higher, than PESSIMISTIC_LOCK_TIMEOUT property for the second query
+            // a LockTimeoutException is expected to be thrown since the lock timeout should still be in effect
+            Thread pesimisticLockRunnerThread = new Thread(new PesimisticLockRunner(em, 4000));
             List result = em.createQuery("Select employee from Employee employee").getResultList();
             Employee employee = (Employee) result.get(0);
             Exception lockTimeOutException = null;
@@ -1590,9 +1600,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 query.setHint(QueryHints.REFRESH, true);
                 query.setParameter("id", employee.getId());
                 query.setParameter("firstName", employee.getFirstName());
-                //Set timeout for 2 seconds
-                query.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 2);
-                query.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "SECONDS");
                 Employee queryResult = (Employee) query.getSingleResult();
                 queryResult.toString();
 
@@ -1605,14 +1612,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Query query2 = em2.createQuery("Select employee from Employee employee where employee.id = :id and employee.firstName = :firstName");
                     query2.setLockMode(LockModeType.PESSIMISTIC_READ);
                     query2.setHint(QueryHints.REFRESH, true);
+                    // Set timeout for 2 seconds
+                    // It's smaller, than lock of the first query => throws LockTimeoutException
+                    query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 2);
+                    query2.setHint(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "SECONDS");
                     query2.setParameter("id", employee.getId());
                     query2.setParameter("firstName", employee.getFirstName());
 
-                    // only sleep for 1 second (1000 milliseconds)
-                    // a LockTimeoutException is expected to be thrown since the lock timeout should still be in effect
-                    try {
-                        Thread.sleep(1000);
-                    } catch(Exception e){}
+                    // Release (rollback) locked rows by first query in second thread after timeout
+                    pesimisticLockRunnerThread.start();
 
                     Employee employee2 = (Employee) query2.getSingleResult();
                     employee2.setFirstName("Invalid Lock Employee");
@@ -1627,7 +1635,6 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     closeEntityManagerAndTransaction(em2);
                 }
 
-                rollbackTransaction(em);
             } catch (RuntimeException ex) {
                 if (isTransactionActive(em)) {
                     rollbackTransaction(em);
@@ -1637,11 +1644,36 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
             } finally {
                 closeEntityManager(em);
             }
+            try {
+                pesimisticLockRunnerThread.join(10000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+                fail("PesimisticLockRunnerThread failed with:" + ex);
+            }
 
             Assert.assertNotNull("A javax.persistence.LockTimeoutException was expected to be thrown", lockTimeOutException);
         }
     }
-    
+
+    private class PesimisticLockRunner implements Runnable {
+        private EntityManager em;
+        private long timeout;
+
+        public PesimisticLockRunner(EntityManager em, long timeout) {
+            this.em = em;
+            this.timeout = timeout;
+        }
+
+        public void run() {
+            // sleep for "timeout" milliseconds) to allow the first lock to timeout
+            try {
+                Thread.sleep(timeout);
+            } catch (Exception e) {
+            }
+            rollbackTransaction(em);
+        }
+    }
+
     public void testLockWithSecondaryTable() {
         if ((JUnitTestCase.getServerSession()).getPlatform().isHANA()) {
             // HANA currently doesn't support pessimistic locking with queries on multiple tables
