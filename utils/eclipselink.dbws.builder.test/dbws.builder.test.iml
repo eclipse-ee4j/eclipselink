@@ -63,7 +63,7 @@
     <orderEntry type="module-library" scope="RUNTIME">
       <library>
         <CLASSES>
-          <root url="jar://$EXTENSION_LIB_EXTERNAL$/mysql-connector-java-5.1.31-bin.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/mysql/mysql-connector-java/5.1.46/mysql-connector-java-5.1.46.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

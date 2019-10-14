@@ -1,0 +1,6 @@
+<application>
+    <display-name>org.eclipse.persistence${project.version}-shared-lib</display-name>
+    <module>
+        <java></java>
+    </module>
+</application>
