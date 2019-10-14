@@ -16,6 +16,7 @@ if [ ${CONTINUOUS_BUILD} = "true" ]; then
     echo '-[ EclipseLink Continuous Build -> No publishing any artifacts]-------------------------------'
 else
     echo '-[ EclipseLink Publish to Nightly ]-----------------------------------------------------------'
-    scp -r $WORKSPACE/exported_builds/build/* genie.eclipselink@projects-storage.eclipse.org:$BUILD_RESULTS_TARGET_DIR
-    scp -r $WORKSPACE/exported_builds/test/* genie.eclipselink@projects-storage.eclipse.org:$TEST_RESULTS_TARGET_DIR
+    scp -r $WORKSPACE/exported_builds/build/bundles/* genie.eclipselink@projects-storage.eclipse.org:${BUILD_RESULTS_TARGET_DIR}
+    scp -r $WORKSPACE/exported_builds/test/* genie.eclipselink@projects-storage.eclipse.org:${TEST_RESULTS_TARGET_DIR}
+    scp -r $WORKSPACE/exported_builds/build/p2repo/* genie.eclipselink@projects-storage.eclipse.org:${P2REPO_RESULTS_TARGET_DIR}
 fi
