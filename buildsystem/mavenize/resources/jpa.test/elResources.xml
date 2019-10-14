@@ -1,0 +1,8 @@
+<resources>
+<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.antlr:jar}"/>
+<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.asm:jar}"/>
+<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:jar}"/>
+<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.core:jar}"/>
+<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}"/>
+<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.moxy:jar}"/>
+</resources>

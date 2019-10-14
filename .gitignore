@@ -24,6 +24,8 @@ build-server/
 reports/
 p2repo/
 /utils/eclipselink.utils.rename/package-rename.jar
+/utils/eclipselink.utils.sigcompare/sig-compare.jar
+/utils/eclipselink.utils.workbench*
 /jpa/eclipselink.jpa.test/jpa-performance.jar
 /jpa/eclipselink.jpa.test/jpa-performance2.jar
 foundation/targets/target.oracle/oracle.libs/*.jar
@@ -31,7 +33,7 @@ foundation/targets/target.oracle/oracle.libs/*.jar
 .idea*
 out/
 eclipselink_extracted/*
-/eclipselink.zip
+/eclipselink*.zip
 /eclipselink-src.zip
 test_*.properties
 .sonar
@@ -51,3 +53,5 @@ plugins/osgi*.jar
 plugins/pfl*.jar
 plugins/slf4j*.jar
 plugins/sun-misc*.jar
+nosql-javadocs.zip
+sdo-javadocs.zip

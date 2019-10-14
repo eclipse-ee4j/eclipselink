@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink Core Test</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.core.test</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <!--Properties used for test resources filtering/replacement-->
+        <!--DB connection properties-->
+        <dbPlatform>${db.platform}</dbPlatform>
+        <dbUser>${db.user}</dbUser>
+        <dbPassword>${db.pwd}</dbPassword>
+        <driverClass>${db.driver}</driverClass>
+        <dbURL>${db.url}</dbURL>
+        <!--Log level-->
+        <loglevel>${logging.level}</loglevel>
+
+        <test-skip-core-srg>${skipTests}</test-skip-core-srg>
+        <test-skip-core-lrg>true</test-skip-core-lrg>
+    </properties>
+
+    <dependencies>
+        <!--Test dependencies-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--Other modules-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--API dependencies-->
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--For Oracle DB driver see Oracle proprietary dependencies part. It's not limited to tests only-->
+        <!--JDBC driver (test dependency)-->
+        <dependency>
+            <groupId>${db.driver.groupId}</groupId>
+            <artifactId>${db.driver.artifactId}</artifactId>
+            <version>${db.driver.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+            <testResource>
+                <directory>${integration.test.resources.directory}</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+
+        <plugins>
+            <!--Pack test classes due dependency to other modules (Corba...)-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jar-tests</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <configuration>
+                            <includes>
+                                <include>org/eclipse/persistence/testing/tests/junit/**/*Test</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <dependenciesToScan>
+                        <dependency>org.eclipse.persistence:org.eclipse.persistence.core.test.framework</dependency>
+                    </dependenciesToScan>
+                    <!--Set system properties required for tests-->
+                    <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
+                    <workingDirectory>${project.build.directory}/test-classes</workingDirectory>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>clear-database</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${skipTests}</skipTests>
+                            <argValue>-Dignore</argValue>
+                            <includes>
+                                <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-core-srg</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <argLine>-Xmx2g</argLine>
+                            <skipTests>${test-skip-core-srg}</skipTests>
+                            <includes>
+                                <include>org.eclipse.persistence.testing.tests.SRGTestModel</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-core-lrg</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <argLine>-Xmx2g</argLine>
+                            <skipTests>${test-skip-core-lrg}</skipTests>
+                            <includes>
+                                <include>org.eclipse.persistence.testing.tests.TestRunModel</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify-integration-tests</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.carlspring.maven</groupId>
+                <artifactId>derby-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-derby</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-derby</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>test-srg</id>
+            <properties>
+                <test-skip-core-srg>false</test-skip-core-srg>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-lrg</id>
+            <properties>
+                <test-skip-core-srg>true</test-skip-core-srg>
+                <test-skip-core-lrg>false</test-skip-core-lrg>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-core-srg</id>
+            <properties>
+                <test-skip-core-srg>false</test-skip-core-srg>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-core-lrg</id>
+            <properties>
+                <test-skip-core-srg>true</test-skip-core-srg>
+                <test-skip-core-lrg>false</test-skip-core-lrg>
+            </properties>
+        </profile>
+    </profiles>
+</project>

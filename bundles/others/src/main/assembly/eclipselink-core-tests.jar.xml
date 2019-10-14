@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>eclipselink-core-tests.jar</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <includes>
+                <include>org.eclipse.persistence:org.eclipse.persistence.core.test.framework</include>
+                <include>org.eclipse.persistence:org.eclipse.persistence.core.test:test-jar</include>
+            </includes>
+            <scope>test</scope>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <includes>
+                    <include>org/eclipse/persistence/testing/models/**</include>
+                    <include>org/eclipse/persistence/testing/tests/**</include>
+                    <include>org/eclipse/persistence/tools/**</include>
+                </includes>
+                <excludes>
+                    <exclude>**/**.java</exclude>
+                    <exclude>**/**.xsd</exclude>
+                    <exclude>**/**.xml</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+</assembly>

@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink Bundles eclipselink.jar (non-OSGi)</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>eclipselink</artifactId>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.bundles</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <archive.tmp.dir>archive-tmp</archive.tmp.dir>
+        <test.jars.tmp.dir>eclipselink-test-jars</test.jars.tmp.dir>
+
+        <!--Javadoc properties-->
+        <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
+        <javadoc.jpars.prefixTitle>EclipseLink JPA-RS ${release.version}</javadoc.jpars.prefixTitle>
+        <javadoc.nosql.prefixTitle>EclipseLink NoSQL ${release.version}</javadoc.nosql.prefixTitle>
+        <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
+
+        <!--Properties used for MANIFEST.MF generation-->
+        <manifest.specification.title>Eclipse Persistence Services</manifest.specification.title>
+        <manifest.specification.vendor>Eclipse.org - EclipseLink Project</manifest.specification.vendor>
+        <manifest.implementation.title>org.eclipse.persistence</manifest.implementation.title>
+        <manifest.implementation.vendor>${manifest.specification.vendor}</manifest.implementation.vendor>
+        <manifest.main.class>org.eclipse.persistence.Version</manifest.main.class>
+        <manifest.premain.class>org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent</manifest.premain.class>
+
+        <!--Test properties-->
+        <eclipselink.unzip.dir>${project.build.directory}/eclipselink.zip-tmp/</eclipselink.unzip.dir>
+        <osgi.test.plugins.dir>osgi-test-plugins/</osgi.test.plugins.dir>
+
+    </properties>
+
+    <!-- NOTE: These dependency declarations are only required to sort this project to the
+         end of the line in the multimodule build.
+
+         Since we only include the child1 module in our assembly, we only need to ensure this
+         distribution project builds AFTER that one...
+    -->
+    <dependencies>
+        <!--Binary dependencies-->
+        <!--Other dependencies API/other libraries-->
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <version>${activation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>${mail.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-osgi</artifactId>
+            <version>${jaxb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.jms</groupId>
+            <artifactId>jakarta.jms-api</artifactId>
+            <version>${jms.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.resource</groupId>
+            <artifactId>jakarta.resource-api</artifactId>
+            <version>${resource.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${validation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>${ws-rs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jaxb.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>${ant.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
+            <version>${json.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
+            <version>${org.glassfish.corba.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-orb</artifactId>
+            <version>${org.glassfish.corba.version}</version>
+        </dependency>
+        <!--Other org.eclipse.persistence dependencies-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>jakarta.persistence</artifactId>
+            <version>${persistence22.version}</version>
+        </dependency>
+        <!--Other modules-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.antlr</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.corba</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.sdo</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--Source dependencies-->
+        <!--Sources API dependencies-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>jakarta.persistence</artifactId>
+            <version>${persistence22.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jaxb.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <!--Sources main dependencies-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.antlr</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.corba</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.sdo</artifactId>
+            <version>${project.version}</version>
+            <classifier>sources</classifier>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources/filtered</directory>
+                <filtering>true</filtering>
+            </resource>
+            <resource>
+                <directory>src/main/resources/nonfiltered</directory>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                    <use>false</use>
+                    <quiet>true</quiet>
+                    <tags>
+                        <tag>
+                            <name>author</name>
+                            <head>Author:</head>
+                        </tag>
+                        <tag>
+                            <name>since</name>
+                            <placement>a</placement>
+                            <head>Since:</head>
+                        </tag>
+                        <tag>
+                            <name>SBGen</name>
+                            <placement>a</placement>
+                            <head>SBGen:</head>
+                        </tag>
+                        <tag>
+                            <name>bug</name>
+                            <head>Related Bugs:</head>
+                        </tag>
+                    </tags>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>eclipselink-javadoc.jar</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/apidocs/eclipselink-javadoc.jar/</outputDirectory>
+                            <includeDependencySources>true</includeDependencySources>
+                            <doctitle><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></doctitle>
+                            <header><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></header>
+                            <windowtitle>${javadoc.prefixTitle}, ${javadoc.postfixTitle}</windowtitle>
+                            <dependencySourceIncludes>
+                                <!--APIs-->
+                                <dependencySourceInclude>org.eclipse.persistence:jakarta.persistence</dependencySourceInclude>
+                                <dependencySourceInclude>jakarta.xml.bind:jakarta.xml.bind-api</dependencySourceInclude>
+                                <!--Eclipselink modules-->
+                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.core</dependencySourceInclude>
+                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.corba</dependencySourceInclude>
+                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.dbws</dependencySourceInclude>
+                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpa</dependencySourceInclude>
+                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpa.jpql</dependencySourceInclude>
+                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.moxy</dependencySourceInclude>
+                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.utils.rename</dependencySourceInclude>
+                            </dependencySourceIncludes>
+                            <excludePackageNames>org.eclipse.persistence.internal.*,org.eclipse.persistence.javax.*,org.osgi.*,META-INF.*</excludePackageNames>
+                            <sourceFileExcludes>
+                                <sourceFileExclude>module-info.java</sourceFileExclude>
+                            </sourceFileExcludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>eclipselink.jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/eclipselink.jar.xml</descriptor>
+                            </descriptors>
+                            <!--<finalName>eclipselink</finalName>-->
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${manifest.main.class}</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Specification-Title>${manifest.specification.title}</Specification-Title>
+                                    <Specification-Vendor>${manifest.specification.vendor}</Specification-Vendor>
+                                    <Specification-Version>${release.version}</Specification-Version>
+                                    <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
+                                    <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
+                                    <Implementation-Version>${project.version}</Implementation-Version>
+                                    <Premain-Class>${manifest.premain.class}</Premain-Class>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>eclipselink-src.jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/eclipselink-src.jar.xml</descriptor>
+                            </descriptors>
+                            <!--<finalName>eclipselink-src</finalName>-->
+                            <!--<appendAssemblyId>false</appendAssemblyId>-->
+                            <archive>
+                                <manifestEntries>
+                                    <Specification-Title>${manifest.specification.title} Source</Specification-Title>
+                                    <Specification-Vendor>${manifest.specification.vendor}</Specification-Vendor>
+                                    <Specification-Version>${release.version}</Specification-Version>
+                                    <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
+                                    <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
+                                    <Implementation-Version>${project.version}</Implementation-Version>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

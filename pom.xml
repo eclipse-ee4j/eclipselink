@@ -1,0 +1,1213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink Parent</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.parent</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.eclipse.ee4j</groupId>
+        <artifactId>project</artifactId>
+        <version>1.0.5</version>
+    </parent>
+
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
+        <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
+    </scm>
+
+    <organization>
+        <name>Eclipse.org - EclipseLink Project</name>
+        <url>http://www.eclipse.org/eclipselink</url>
+    </organization>
+
+    <properties>
+        <!-- TOOL Properties -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- PROJECT Properties -->
+        <release.version>3.0.0</release.version>
+        <build.type>SNAPSHOT</build.type>
+        <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
+        <build.qualifier>v${maven.build.timestamp}</build.qualifier>
+        <bundle.version>${project.version}.${build.qualifier}</bundle.version>
+        <!-- In selected/deployed modules asm, core, jpa, moxy... this property will be true -->
+        <maven.deploy.skip>true</maven.deploy.skip>
+
+        <!--Common properties-->
+        <common.licenceFiles>about.html, license.html, readme.html</common.licenceFiles>
+        <oracle.modules.subdirectory>bundles</oracle.modules.subdirectory>
+        <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
+        !!!Can't start with / character!!!-->
+        <integration.test.directory>src/it/</integration.test.directory>
+        <integration.test.sources.directory>${integration.test.directory}/java/</integration.test.sources.directory>
+        <integration.test.resources.directory>${integration.test.directory}/resources/</integration.test.resources.directory>
+
+        <!--Default location for JEE servers binaries-->
+        <test.directory>${user.home}/.eclipselinktests</test.directory>
+        <installation.url>http://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.zip</installation.url>
+        <installation.checksum.md5>be42a899ba01a797ec5c097e3c5737c4</installation.checksum.md5>
+
+        <!--Test DB property file names-->
+        <test.mysql.properties.file>el-test.mysql.properties</test.mysql.properties.file>
+        <test.oracle.properties.file>el-test.oracle.properties</test.oracle.properties.file>
+        <test.mongodb.properties.file>el-test.mongodb.properties</test.mongodb.properties.file>
+        <test.derby.properties.file>el-test.derby.properties</test.derby.properties.file>
+
+        <!--Default test DB is Derby-->
+        <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
+        <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
+        <test.properties.default.directory>${project.root.location}/buildsystem/mavenize/test.properties/</test.properties.default.directory>
+        <test.database>derby</test.database>
+        <!--false: to start In-Memory database, true: not start (MySQL, Oracle)-->
+        <test.skip.in-memory.db>false</test.skip.in-memory.db>
+
+        <!--Test JEE server property file names-->
+        <testjee.glassfish.properties.file>el-testjee.glassfish.properties</testjee.glassfish.properties.file>
+        <testjee.weblogic.properties.file>el-testjee.weblogic.properties</testjee.weblogic.properties.file>
+        <testjee.wildfly.properties.file>el-testjee.wildfly.properties</testjee.wildfly.properties.file>
+        <!--Default test JEE Server is WildFly-->
+        <testjee.properties.file>${user.home}/${testjee.wildfly.properties.file}</testjee.properties.file>
+        <testjee.properties.fileName>${testjee.wildfly.properties.file}</testjee.properties.fileName>
+
+        <!--Default DB driver used for testing-->
+        <db.driver.groupId>org.apache.derby</db.driver.groupId>
+        <db.driver.artifactId>derbyclient</db.driver.artifactId>
+        <db.driver.version>${derby.version}</db.driver.version>
+
+        <!--Default JEE client used for EJB remote call (testing)-->
+        <jee.client.groupId>org.wildfly</jee.client.groupId>
+        <jee.client.artifactId>wildfly-ejb-client-bom</jee.client.artifactId>
+        <jee.client.version>${wildfly.version}</jee.client.version>
+        <jee.client.type>pom</jee.client.type>
+
+        <skip.glassfish.configuration>true</skip.glassfish.configuration>
+
+        <!--These properties are used in MOXy and SDO tests only-->
+        <test.xml.platform>org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform</test.xml.platform>
+        <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
+
+        <!--Dependencies version-->
+        <annotation.version>1.3.5</annotation.version>
+        <apache.felix.framework.version>6.0.2</apache.felix.framework.version>
+        <ant.version>1.10.1</ant.version>
+        <activation.version>1.2.1</activation.version>
+        <antlr.version>3.5.2</antlr.version>
+        <asm.version>7.1</asm.version>
+        <cdi.version>2.0.2</cdi.version>
+        <commonj.sdo.version>2.1.1</commonj.sdo.version>
+        <derby.version>10.14.2.0</derby.version>
+        <ejb.version>3.2.6</ejb.version>
+        <el.version>3.0.3</el.version>
+        <exam.version>4.11.0</exam.version>
+        <glassfish.version>5.1.0</glassfish.version>
+        <hamcrest.version>1.3</hamcrest.version>
+        <hibernate.version>6.0.17.Final</hibernate.version>
+        <jaxb.version>2.3.2</jaxb.version>
+        <jersey.version>2.29.1</jersey.version>
+        <jgroups.version>3.2.8.Final</jgroups.version>
+        <jmh.version>1.21</jmh.version>
+        <jmockit.version>1.35</jmockit.version>
+        <jms.version>2.0.3</jms.version>
+        <json.version>1.1.6</json.version>
+        <junit.version>4.12</junit.version>
+        <mail.version>1.6.4</mail.version>
+        <mongodb.version>3.2.0</mongodb.version>
+        <mysql.version>5.1.44</mysql.version>
+        <persistence21.version>2.1.1</persistence21.version>
+        <persistence22.version>2.2.3</persistence22.version>
+        <persistence.version>2.2.3</persistence.version>
+        <persistence.artifactId>jakarta.persistence</persistence.artifactId>
+        <logback.version>1.1.3</logback.version>
+        <oracle.jdbc.version>18.3.0.0</oracle.jdbc.version>
+        <oracle.fmw.version>12.2.1-2-0</oracle.fmw.version>
+        <oracle.ddlparser.version>2.7.4</oracle.ddlparser.version>
+        <oracle.nosql.version>4.4.6</oracle.nosql.version>
+        <org.glassfish.corba.version>4.2.0</org.glassfish.corba.version>
+        <osgi.version>4.3.1</osgi.version>
+        <resource.version>1.7.4</resource.version>
+        <servlet.version>4.0.3</servlet.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <springframework.version>5.1.1.RELEASE</springframework.version>
+        <transaction.varsion>1.3.3</transaction.varsion>
+        <validation.version>2.0.2</validation.version>
+        <weblogic.version>12.2.1-3</weblogic.version>
+        <wildfly.version>15.0.1.Final</wildfly.version>
+        <ws-api.version>2.3.2</ws-api.version>
+        <ws-rs.version>2.1.6</ws-rs.version>
+        <wsdl4j.version>1.6.3</wsdl4j.version>
+    </properties>
+
+    <!-- Default modules set and added to by all profiles -->
+    <modules>
+        <!--Helper parent pom for server side test modules-->
+        <module>pom_test_server.xml</module>
+
+        <module>plugins/org.eclipse.persistence.antlr.maven</module>
+        <module>plugins/org.eclipse.persistence.asm.maven</module>
+        <module>jpa/org.eclipse.persistence.jpa.jpql.maven</module>
+
+        <module>foundation/org.eclipse.persistence.core.maven</module>
+        <module>foundation/org.eclipse.persistence.core.test.framework.maven</module>
+        <module>foundation/eclipselink.core.test.maven</module>
+
+        <module>jpa/org.eclipse.persistence.jpa.maven</module>
+        <module>jpa/org.eclipse.persistence.jpa.modelgen.maven</module>
+        <module>jpa/org.eclipse.persistence.jpars.maven</module>
+        <module>jpa/org.eclipse.persistence.jpa.test.framework.maven</module>
+
+        <module>foundation/org.eclipse.persistence.corba.maven</module>
+        <module>foundation/org.eclipse.persistence.extension.maven</module>
+        <module>foundation/org.eclipse.persistence.nosql.maven</module>
+
+        <module>moxy/org.eclipse.persistence.moxy.maven</module>
+        <module>moxy/org.eclipse.persistence.moxy.utils.xjc.maven</module>
+
+        <module>dbws/org.eclipse.persistence.dbws.maven</module>
+
+        <module>sdo/org.eclipse.persistence.sdo.maven</module>
+        <module>sdo/eclipselink.sdo.test.server.maven</module>
+
+        <!--JPA test modules-->
+        <!--JPA test module (JSE, JEE tests)-->
+        <module>jpa/eclipselink.jpa.test.maven</module>
+        <!--JPA NoSQL test module-->
+        <module>jpa/eclipselink.jpa.nosql.test.maven</module>
+        <!--JPA JSE test module-->
+        <module>jpa/eclipselink.jpa.test.jse.maven</module>
+        <!--JPA JAXRS test module-->
+        <!--TODO FIXIT Doesn't work well. Temporary disabled.
+        <module>jpa/eclipselink.jaxrs.test.maven</module>
+        -->
+        <!--JPA Spring test module-->
+        <module>jpa/eclipselink.jpa.spring.test.maven</module>
+        <!--JPA WDF test module-->
+        <module>jpa/eclipselink.jpa.wdf.test.maven</module>
+        <!--JPA JPA-RS test module-->
+        <!--TODO FIXIT Doesn't work well. Temporary disabled.
+        <module>jpa/eclipselink.jpars.test.maven</module>
+        -->
+        <!--Utility modules-->
+        <module>utils/org.eclipse.persistence.dbws.builder.maven</module>
+        <module>utils/eclipselink.utils.rename.maven</module>
+        <module>utils/eclipselink.utils.sigcompare.maven</module>
+
+        <!--Oracle Extensions-->
+        <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle.maven</module>
+        <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle.nosql.maven</module>
+
+        <!--EclipseLink Bundles-->
+        <module>bundles</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!--Source dependencies used for repackaging-->
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr-runtime</artifactId>
+                <version>${antlr.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>${asm.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-commons</artifactId>
+                <version>${asm.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-tree</artifactId>
+                <version>${asm.version}</version>
+                <classifier>sources</classifier>
+            </dependency>
+            <!--API/Implementation dependencies-->
+            <dependency>
+                <groupId>com.sun.activation</groupId>
+                <artifactId>jakarta.activation</artifactId>
+                <version>${activation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>jakarta.mail</artifactId>
+                <version>${mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.bind</groupId>
+                <artifactId>jaxb-osgi</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.ws</groupId>
+                <artifactId>jaxws-rt</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.annotation</groupId>
+                <artifactId>jakarta.annotation-api</artifactId>
+                <version>${annotation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ejb</groupId>
+                <artifactId>jakarta.ejb-api</artifactId>
+                <version>${ejb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.enterprise</groupId>
+                <artifactId>jakarta.enterprise.cdi-api</artifactId>
+                <version>${cdi.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.jms</groupId>
+                <artifactId>jakarta.jms-api</artifactId>
+                <version>${jms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.json</groupId>
+                <artifactId>jakarta.json-api</artifactId>
+                <version>${json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.mail</groupId>
+                <artifactId>jakarta.mail-api</artifactId>
+                <version>${mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.resource</groupId>
+                <artifactId>jakarta.resource-api</artifactId>
+                <version>${resource.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>${servlet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.transaction</groupId>
+                <artifactId>jakarta.transaction-api</artifactId>
+                <version>${transaction.varsion}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.validation</groupId>
+                <artifactId>jakarta.validation-api</artifactId>
+                <version>${validation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.bind</groupId>
+                <artifactId>jakarta.xml.bind-api</artifactId>
+                <version>${jaxb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.xml.ws</groupId>
+                <artifactId>jakarta.xml.ws-api</artifactId>
+                <version>${ws-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>jakarta.ws.rs</groupId>
+                <artifactId>jakarta.ws.rs-api</artifactId>
+                <version>${ws-rs.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ant</groupId>
+                <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>org.apache.felix.framework</artifactId>
+                <version>${apache.felix.framework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>${persistence.artifactId}</artifactId>
+                <version>${persistence.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>commonj.sdo</artifactId>
+                <version>${commonj.sdo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.persistence</groupId>
+                <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
+                <version>${oracle.ddlparser.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.json</artifactId>
+                <version>${json.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-omgapi</artifactId>
+                <version>${org.glassfish.corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.corba</groupId>
+                <artifactId>glassfish-corba-orb</artifactId>
+                <version>${org.glassfish.corba.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jgroups</groupId>
+                <artifactId>jgroups</artifactId>
+                <version>${jgroups.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>wsdl4j</groupId>
+                <artifactId>wsdl4j</artifactId>
+                <version>${wsdl4j.version}</version>
+            </dependency>
+            <!--NoSQL DBs-->
+            <!--Mongo DB-->
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>${mongodb.version}</version>
+            </dependency>
+            <!--Oracle NoSQL DB-->
+            <dependency>
+                <groupId>com.oracle.kv</groupId>
+                <artifactId>oracle-nosql-client</artifactId>
+                <version>${oracle.nosql.version}</version>
+            </dependency>
+            <!--Test dependencies-->
+            <!--Test framework-->
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+            <!--Required for JPA server test server-test-jpa21-sessionbean.-->
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>${hamcrest.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jmockit</groupId>
+                <artifactId>jmockit</artifactId>
+                <version>${jmockit.version}</version>
+            </dependency>
+            <!--APIs and other libs used in test classes-->
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>jakarta.el</artifactId>
+                <version>${el.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-client</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.jersey.core</groupId>
+                <artifactId>jersey-common</artifactId>
+                <version>${jersey.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.main.appclient</groupId>
+                <artifactId>gf-client</artifactId>
+                <version>${glassfish.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-core</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjdk.jmh</groupId>
+                <artifactId>jmh-generator-annprocess</artifactId>
+                <version>${jmh.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-instrument</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-orm</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-tx</artifactId>
+                <version>${springframework.version}</version>
+            </dependency>
+            <!--JDBC drivers-->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.derby</groupId>
+                <artifactId>derbyclient</artifactId>
+                <version>${derby.version}</version>
+            </dependency>
+            <!--For Oracle DB driver see Oracle proprietary dependencies part. It's not limited to tests only-->
+            <!-- Hibernate validator and it's dependencies -->
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <!--PaxExam -->
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-container-forked</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-junit4</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ops4j.pax.exam</groupId>
+                <artifactId>pax-exam-link-mvn</artifactId>
+                <version>${exam.version}</version>
+            </dependency>
+            <!--Test Logging, required by Pax and extension module-->
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <!--Test OSGi core-->
+            <dependency>
+                <groupId>org.osgi</groupId>
+                <artifactId>org.osgi.core</artifactId>
+                <version>${osgi.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.coderplus.maven.plugins</groupId>
+                    <artifactId>copy-rename-maven-plugin</artifactId>
+                    <version>1.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.googlecode.maven-download-plugin</groupId>
+                    <artifactId>download-maven-plugin</artifactId>
+                    <version>1.4.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.google.code.maven-replacer-plugin</groupId>
+                    <artifactId>replacer</artifactId>
+                    <version>1.5.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.soebes.maven.plugins</groupId>
+                    <artifactId>iterator-maven-plugin</artifactId>
+                    <version>0.5.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.sun.wts.tools.ant</groupId>
+                    <artifactId>package-rename-task</artifactId>
+                    <version>1.5.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>de.empulse.eclipselink</groupId>
+                    <artifactId>staticweave-maven-plugin</artifactId>
+                    <version>1.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>maven-bundle-plugin</artifactId>
+                    <version>4.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                </plugin>
+                <!--Copy current EclipseLink JARs into GlassFish modules directory-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.0.0-M2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.0.0-M1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.7.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>3.0.0-M3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.bsc.maven</groupId>
+                    <artifactId>maven-processor-plugin</artifactId>
+                    <version>3.3.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.cargo</groupId>
+                    <artifactId>cargo-maven2-plugin</artifactId>
+                    <version>1.7.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.gmaven</groupId>
+                    <artifactId>groovy-maven-plugin</artifactId>
+                    <version>2.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.4</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.6.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>sql-maven-plugin</artifactId>
+                    <version>1.5</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>${db.driver.groupId}</groupId>
+                            <artifactId>${db.driver.artifactId}</artifactId>
+                            <version>${db.driver.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>xml-maven-plugin</artifactId>
+                    <version>1.0.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.commonjava.maven.plugins</groupId>
+                    <artifactId>directory-maven-plugin</artifactId>
+                    <version>0.3.1</version>
+                </plugin>
+                <!--This plugin (g:org.kuali.maven.plugins) is used instead typical org.codehaus.mojo:properties-maven-plugin:1.0.0
+                    due bug: "Circular property definition" if expression like this is used in the Maven pom
+                    "<server.testrunner.prefix>${modelname}/${modelname}_ejb/</server.testrunner.prefix>"
+                    -->
+                <plugin>
+                    <groupId>org.kuali.maven.plugins</groupId>
+                    <artifactId>properties-maven-plugin</artifactId>
+                    <version>2.0.1</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.reficio</groupId>
+                    <artifactId>p2-maven-plugin</artifactId>
+                    <version>1.3.0</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.3</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.carlspring.maven</groupId>
+                    <artifactId>derby-maven-plugin</artifactId>
+                    <version>1.10</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.derby</groupId>
+                            <artifactId>derby</artifactId>
+                            <version>${derby.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.derby</groupId>
+                            <artifactId>derbyclient</artifactId>
+                            <version>${derby.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.apache.derby</groupId>
+                            <artifactId>derbynet</artifactId>
+                            <version>${derby.version}</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!--Minimal JDK version-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>find-project-root</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>highest-basedir</goal>
+                        </goals>
+                        <configuration>
+                            <property>project.root.location</property>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-integration-test-sources</id>
+                        <!--<phase>generate-resources</phase>-->
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${integration.test.sources.directory}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-integration-test-resources</id>
+                        <!--<phase>generate-resources</phase>-->
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${integration.test.resources.directory}</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>add-legal-resource</id>
+                        <!--<phase>generate-resources</phase>-->
+                        <goals>
+                            <goal>add-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.root.location}</directory>
+                                    <includes>${common.licenceFiles}</includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Load maven test properties from file-->
+            <plugin>
+                <!--This plugin (g:org.kuali.maven.plugins) is used instead typical org.codehaus.mojo:properties-maven-plugin:1.0.0
+                    due bug: "Circular property definition" if expression like this is used in the Maven pom
+                    "<server.testrunner.prefix>${modelname}/${modelname}_ejb/</server.testrunner.prefix>"
+                    -->
+                <groupId>org.kuali.maven.plugins</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>read-db-jee-properties</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <locations>
+                                <location>${test.properties.file}</location>
+                                <location>${testjee.properties.file}</location>
+                            </locations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Generate OSGi bundle/manifest-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Version>${bundle.version}</Bundle-Version>
+                        <Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
+                        <Export-Package>org.eclipse.persistence.*</Export-Package>
+                        <Private-Package>org.eclipse.persistence.internal.*</Private-Package>
+                        <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
+                        <Require-Capability>osgi.ee; filter:="(&amp;(osgi.ee=JavaSE)(version>=1.8))"</Require-Capability>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Enforce certain Maven version-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>3.5.0</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Create jar file with classes and manifest with OSGi entries-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+                    </archive>
+                </configuration>
+            </plugin>
+            <!--Create jar file with source files and manifest with OSGi entries-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                                    <Bundle-Name>${project.name} Source</Bundle-Name>
+                                    <Bundle-SymbolicName>${project.artifactId}.source</Bundle-SymbolicName>
+                                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                                    <Bundle-Version>${bundle.version}</Bundle-Version>
+                                    <Eclipse-SourceBundle>${project.artifactId};version="${bundle.version}"
+                                    </Eclipse-SourceBundle>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>attach-test-sources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>test-jar-no-fork</goal>
+                        </goals>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                                    <Bundle-Name>${project.name} Test Source</Bundle-Name>
+                                    <Bundle-SymbolicName>${project.artifactId}.test.source</Bundle-SymbolicName>
+                                    <Bundle-Vendor>${project.organization.name}</Bundle-Vendor>
+                                    <Bundle-Version>${bundle.version}</Bundle-Version>
+                                    <Eclipse-SourceBundle>${project.artifactId};version="${bundle.version}"
+                                    </Eclipse-SourceBundle>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>jacoco-prepare-agent</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-default-report</id>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>sql-maven-plugin</artifactId>
+                <!-- common configuration shared by all executions -->
+                <configuration>
+                    <driver>${db.driver}</driver>
+                    <url>${db.url}</url>
+                    <username>${db.user}</username>
+                    <password>${db.pwd}</password>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.carlspring.maven</groupId>
+                <artifactId>derby-maven-plugin</artifactId>
+                <configuration>
+                    <derbyHome>${project.build.directory}/derby</derbyHome>
+                    <username>${db.user}</username>
+                    <password>${db.pwd}</password>
+                    <driver>${db.driver}</driver>
+                    <connectionURL>${db.url}</connectionURL>
+                    <!--Log SQL statements.-->
+                    <!--<debugStatements>true</debugStatements>-->
+                    <skip>${test.skip.in-memory.db}</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <configuration>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>generate-surefire-html-report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report-only</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/surefire-reports</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-failsafe-html-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>failsafe-report-only</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/failsafe-reports</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>javadoc-plugin-properties</id>
+            <activation>
+                <jdk>(1.8,</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <source>8</source>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!--JPA API change-->
+        <profile>
+            <id>jpa22</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <persistence.artifactId>jakarta.persistence</persistence.artifactId>
+                <persistence.version>${persistence22.version}</persistence.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>jpa21</id>
+            <properties>
+                <persistence.artifactId>javax.persistence</persistence.artifactId>
+                <persistence.version>${persistence21.version}</persistence.version>
+            </properties>
+        </profile>
+        <!--Testing database profiles-->
+        <!--TODO simplify properties part db.driver.XXXX to load it from file-->
+        <profile>
+            <id>derby</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
+                <test.database>derby</test.database>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>org.apache.derby</db.driver.groupId>
+                <db.driver.artifactId>derbyclient</db.driver.artifactId>
+                <db.driver.version>${derby.version}</db.driver.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>mysql</id>
+            <properties>
+                <test.properties.file>${user.home}/${test.mysql.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.mysql.properties.file}</test.properties.fileName>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>mysql</db.driver.groupId>
+                <db.driver.artifactId>mysql-connector-java</db.driver.artifactId>
+                <db.driver.version>${mysql.version}</db.driver.version>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
+            </properties>
+        </profile>
+        <profile>
+            <id>oracle</id>
+            <properties>
+                <oracle.modules.subdirectory>foundation</oracle.modules.subdirectory>
+                <test.properties.file>${user.home}/${test.oracle.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.oracle.properties.file}</test.properties.fileName>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>com.oracle.jdbc</db.driver.groupId>
+                <db.driver.artifactId>ojdbc8</db.driver.artifactId>
+                <db.driver.version>${oracle.jdbc.version}</db.driver.version>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
+            </properties>
+            <modules>
+                <!--Oracle Extensions-->
+                <module>pom_oracle.xml</module>
+            </modules>
+            <dependencyManagement>
+                <dependencies>
+                    <!--Oracle proprietary dependencies-->
+                    <!--Oracle JDBC driver could be used for testing in the non Oracle modules core test, jpa,...-->
+                    <dependency>
+                        <groupId>com.oracle.jdbc</groupId>
+                        <artifactId>ojdbc8</artifactId>
+                        <version>${oracle.jdbc.version}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
+        <!--TODO simplify properties part jee.client.XXXX to load it from file-->
+        <!--Testing JEE server profiles WildFly, GlassFish, Weblogic-->
+        <profile>
+            <id>wildfly</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <testjee.properties.file>${user.home}/${testjee.wildfly.properties.file}</testjee.properties.file>
+                <testjee.properties.fileName>${testjee.wildfly.properties.file}</testjee.properties.fileName>
+                <jee.client.groupId>org.wildfly</jee.client.groupId>
+                <jee.client.artifactId>wildfly-ejb-client-bom</jee.client.artifactId>
+                <jee.client.version>${wildfly.version}</jee.client.version>
+                <jee.client.type>pom</jee.client.type>
+                <!--Download properties-->
+                <installation.url>http://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.zip</installation.url>
+                <installation.checksum.md5>be42a899ba01a797ec5c097e3c5737c4</installation.checksum.md5>
+            </properties>
+        </profile>
+        <profile>
+            <id>glassfish</id>
+            <properties>
+                <testjee.properties.file>${user.home}/${testjee.glassfish.properties.file}</testjee.properties.file>
+                <testjee.properties.fileName>${testjee.glassfish.properties.file}</testjee.properties.fileName>
+                <jee.client.groupId>org.glassfish.main.appclient</jee.client.groupId>
+                <jee.client.artifactId>gf-client</jee.client.artifactId>
+                <jee.client.version>${glassfish.version}</jee.client.version>
+                <jee.client.type>jar</jee.client.type>
+                <skip.glassfish.configuration>false</skip.glassfish.configuration>
+                <!--Download properties-->
+                <installation.url>https://repo1.maven.org/maven2/org/glassfish/main/distributions/glassfish/5.1.0/glassfish-5.1.0.zip</installation.url>
+                <installation.checksum.md5>2ed2d211fd56e270f3daf8e2b5e01e30</installation.checksum.md5>
+            </properties>
+        </profile>
+        <profile>
+            <id>weblogic</id>
+            <properties>
+                <testjee.properties.file>${user.home}/${testjee.weblogic.properties.file}</testjee.properties.file>
+                <testjee.properties.fileName>${testjee.weblogic.properties.file}</testjee.properties.fileName>
+                <jee.client.groupId>com.oracle.weblogic</jee.client.groupId>
+                <jee.client.artifactId>wlthint3client</jee.client.artifactId>
+                <jee.client.version>${weblogic.version}</jee.client.version>
+                <jee.client.type>jar</jee.client.type>
+            </properties>
+        </profile>
+        <!--Activate perfomance tests module-->
+        <profile>
+            <id>test-performance</id>
+            <modules>
+                <!--Performance Tests module module-->
+                <module>performance/eclipselink.perf.test.maven</module>
+            </modules>
+        </profile>
+        <!--INTERNAL - Test properties fallback. Expects, that mvn command is executed from project root directory.-->
+        <profile>
+            <id>test-properties-fallback</id>
+            <activation>
+                <file>
+                    <missing>${test.properties.file}</missing>
+                </file>
+            </activation>
+            <properties>
+                <test.properties.file>${test.properties.default.directory}/${test.properties.fileName}</test.properties.file>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-jee-properties-fallback</id>
+            <activation>
+                <file>
+                    <missing>${testjee.properties.file}</missing>
+                </file>
+            </activation>
+            <properties>
+                <testjee.properties.file>${test.properties.default.directory}/${testjee.properties.fileName}</testjee.properties.file>
+            </properties>
+        </profile>
+        <!--INTERNAL - Don't start In-Memory DB in case of -DskipTests switch-->
+        <profile>
+            <id>test-skip-check</id>
+            <activation>
+                <property>
+                    <name>skipTests</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <properties>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
+            </properties>
+        </profile>
+    </profiles>
+</project>

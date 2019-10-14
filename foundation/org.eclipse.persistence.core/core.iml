@@ -118,5 +118,16 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.jpa.jpql_3.0.0.qualifier.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../../plugins/org.eclipse.persistence.jpa.jpql.source_3.0.0.qualifier.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
   </component>
 </module>

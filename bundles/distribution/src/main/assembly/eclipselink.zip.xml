@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>eclipselink.zip</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>eclipselink/jlib/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>${project.parent.groupId}:eclipselink</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/jlib/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}-src.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>${project.parent.groupId}:eclipselink:*:sources</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}-javadocs.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>${project.parent.groupId}:eclipselink:*:javadoc</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/jlib/extension/</outputDirectory>
+            <includes>
+                <include>${project.parent.groupId}:org.eclipse.persistence.extension</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/jlib/jpa/</outputDirectory>
+            <includes>
+                <include>${project.parent.groupId}:org.eclipse.persistence.jpa.modelgen.processor</include>
+                <include>${project.parent.groupId}:org.eclipse.persistence.jpars</include>
+                <include>${project.parent.groupId}:jakarta.persistence</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/jlib/moxy/api/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>jakarta.xml.bind:jakarta.xml.bind-api</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/jlib/moxy/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>com.sun.activation:jakarta.activation</include>
+                <include>org.glassfish:jakarta.json</include>
+                <include>com.sun.mail:jakarta.mail</include>
+                <include>jakarta.validation:jakarta.validation-api</include>
+                <include>com.sun.xml.bind:jaxb-osgi</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/jlib/sdo/</outputDirectory>
+            <includes>
+                <include>${project.parent.groupId}:commonj.sdo</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/utils/dbws/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>jakarta.servlet:jakarta.servlet-api</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/utils/dbws/</outputDirectory>
+            <includes>
+                <include>${project.parent.groupId}:org.eclipse.persistence.oracleddlparser</include>
+                <include>${project.parent.groupId}:org.eclipse.persistence.dbws.builder</include>
+            </includes>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>eclipselink/utils/rename/</outputDirectory>
+            <outputFileNameMapping>package-rename.jar</outputFileNameMapping>
+            <includes>
+                <include>${project.parent.groupId}:org.eclipse.persistence.utils.rename</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <!--License files-->
+        <fileSet>
+            <directory>${project.root.location}</directory>
+            <outputDirectory>eclipselink/</outputDirectory>
+            <includes>
+                <include>about.html</include>
+                <include>license.html</include>
+                <include>readme.html</include>
+            </includes>
+        </fileSet>
+        <!--Scripts to bin directory-->
+        <fileSet>
+            <directory>${project.build.scriptSourceDirectory}</directory>
+            <outputDirectory>eclipselink/bin/</outputDirectory>
+            <includes>
+                <include>*.*</include>
+            </includes>
+        </fileSet>
+        <!--Scripts to utils/dbws directory-->
+        <fileSet>
+            <directory>${project.build.scriptSourceDirectory}/dbws</directory>
+            <outputDirectory>eclipselink/utils/dbws/</outputDirectory>
+            <includes>
+                <include>*.*</include>
+            </includes>
+        </fileSet>
+        <!--Scripts to utils/rename directory-->
+        <fileSet>
+            <directory>${project.build.scriptSourceDirectory}/rename</directory>
+            <outputDirectory>eclipselink/utils/rename/</outputDirectory>
+            <includes>
+                <include>*.*</include>
+            </includes>
+        </fileSet>
+        <!--jar files to utils/dbws directory-->
+        <fileSet>
+            <directory>${project.build.directory}/${archive.tmp.dir}/eclipselink.zip/utils/dbws/</directory>
+            <outputDirectory>eclipselink/utils/dbws/</outputDirectory>
+            <includes>
+                <include>**/*.jar</include>
+            </includes>
+        </fileSet>
+        <!--package-rename.properties to utils/rename directory-->
+        <fileSet>
+            <directory>${project.build.directory}/${archive.tmp.dir}/eclipselink.zip/utils/rename/</directory>
+            <outputDirectory>eclipselink/utils/rename/</outputDirectory>
+        </fileSet>
+        <!--XML Schemas-->
+        <fileSet>
+            <directory>${project.build.directory}/${archive.tmp.dir}/eclipselink.zip/xsds/org/eclipse/persistence/</directory>
+            <outputDirectory>eclipselink/xsds/</outputDirectory>
+            <includes>
+                <include>*.xsd</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/${archive.tmp.dir}/eclipselink.zip/xsds/org/eclipse/persistence/dbws/</directory>
+            <outputDirectory>eclipselink/xsds/</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/${archive.tmp.dir}/eclipselink.zip/xsds/org/eclipse/persistence/jaxb/</directory>
+            <outputDirectory>eclipselink/xsds/</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/${archive.tmp.dir}/eclipselink.zip/xsds/org/eclipse/persistence/jpa/</directory>
+            <outputDirectory>eclipselink/xsds/</outputDirectory>
+        </fileSet>
+    </fileSets>
+    <files>
+<!--
+        <file>
+            <source>${project.build.directory}/eclipselink.jar</source>
+            <outputDirectory>eclipselink/jlib/</outputDirectory>
+        </file>
+        <file>
+            <source>${project.build.directory}/eclipselink-src.jar</source>
+            <outputDirectory>eclipselink/jlib/</outputDirectory>
+        </file>
+        <file>
+            <source>${project.build.directory}/eclipselink-javadoc.jar</source>
+            <outputDirectory>eclipselink/</outputDirectory>
+        </file>
+-->
+        <file>
+            <source>${project.build.directory}/eclipselink-jpars-javadoc.jar</source>
+            <outputDirectory>eclipselink/</outputDirectory>
+        </file>
+    </files>
+
+</assembly>
