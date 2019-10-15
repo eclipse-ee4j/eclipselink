@@ -2439,6 +2439,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         ResultSet resultSet = null;
         if (!dbCall.getReturnsResultSet()) {// no result set is expected
             if (dbCall.isCursorOutputProcedure()) {
+                result = accessor.executeNoSelect(dbCall, statement, session);
                 int index = dbCall.getCursorOutIndex();
                 resultSet = (ResultSet)dbCall.getObject((CallableStatement)statement, index - 1);
             } else {
