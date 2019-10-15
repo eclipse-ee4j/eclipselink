@@ -1,0 +1,191 @@
+<!--
+
+    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_2_0.xsd" version="2.0">
+    <persistence-unit name="jpars_auction-static" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.auction.StaticUser</class>
+        <class>org.eclipse.persistence.jpars.test.model.auction.StaticAuction</class>
+        <class>org.eclipse.persistence.jpars.test.model.auction.StaticBid</class>
+        <class>org.eclipse.persistence.jpars.test.model.auction.StaticAddress</class>
+        <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.target-server" value="Glassfish"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_auction-static-local" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.auction.StaticUser</class>
+        <class>org.eclipse.persistence.jpars.test.model.auction.StaticAuction</class>
+        <class>org.eclipse.persistence.jpars.test.model.auction.StaticBid</class>
+        <class>org.eclipse.persistence.jpars.test.model.auction.StaticAddress</class>
+        <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_auction" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.User</class>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Auction</class>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.auction.Bid</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/auction-orm.xml"/>
+            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_phonebook" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.phonebook.Person</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/phonebook-orm.xml"/>
+            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_employee-static" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Employee</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.EmployeeAddress</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.EmploymentPeriod</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.LargeProject</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.PhoneNumber</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Project</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.SmallProject</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Expertise</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Office</class>
+        <class>org.eclipse.persistence.jpars.test.model.employee.Certification</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.target-server" value="Glassfish"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_basket-static" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.basket.Basket</class>
+        <class>org.eclipse.persistence.jpars.test.model.basket.BasketItem</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_traveler-static" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.traveler.Traveler</class>
+        <class>org.eclipse.persistence.jpars.test.model.traveler.Reservation</class>
+        <exclude-unlisted-classes/>
+        <properties>
+            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="eclipselink.logging.level" value="INFO"/>
+            <property name="eclipselink.logging.level.jpars" value="FINEST"/>
+            <property name="eclipselink.logging.parameters" value="true"/>
+            <property name="eclipselink.target-server" value="Glassfish"/>
+        </properties>
+    </persistence-unit>
+
+
+    <!-- persistence-unit name="jpars_place" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.place.Place</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/place-orm.xml"/>
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+            <property name="eclipselink.nosql.property.mongo.port" value="27017"/>
+            <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.db" value="place_db"/>
+            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="javax.persistence.jdbc.user" value="test"/>
+            <property name="javax.persistence.jdbc.password" value="test"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_zip" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.place.Zips</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/zip-orm.xml"/>
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+            <property name="eclipselink.nosql.property.mongo.port" value="27017"/>
+            <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.db" value="place_db"/>
+            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="javax.persistence.jdbc.user" value="test"/>
+            <property name="javax.persistence.jdbc.password" value="test"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="jpars_person" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <class>org.eclipse.persistence.jpars.test.model.dynamic.Person</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="eclipselink.metadata-source" value="XML"/>
+            <property name="eclipselink.weaving" value="static"/>
+            <property name="eclipselink.metadata-source.xml.file" value="META-INF/complex-orm.xml"/>
+            <property name="eclipselink.target-database" value="org.eclipse.persistence.nosql.adapters.mongo.MongoPlatform"/>
+            <property name="eclipselink.nosql.connection-spec" value="org.eclipse.persistence.nosql.adapters.mongo.MongoConnectionSpec"/>
+            <property name="eclipselink.nosql.property.mongo.port" value="27017"/>
+            <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
+            <property name="eclipselink.nosql.property.mongo.db" value="person_db"/>
+            <property name="eclipselink.logging.level" value="SEVERE"/>
+            <property name="javax.persistence.jdbc.user" value="test"/>
+            <property name="javax.persistence.jdbc.password" value="test"/>
+        </properties>
+    </persistence-unit-->
+</persistence>
