@@ -1205,12 +1205,14 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     List employees2 = em2.createQuery("Select employee from Employee employee").getResultList(); //
                     Employee employee2 = (Employee) employees2.get(0);
 
-                    // Find all the departments and lock them.
+                    // Find all the employees and lock them.
                     List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
                     Employee employee = (Employee) employees.get(0);
                     employee.setFirstName("New Pessimistic Employee");
 
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ);
+                    Map<String, Object> em2LockProperties = new HashMap<>();
+                    em2LockProperties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ, em2LockProperties);
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);
@@ -1256,13 +1258,15 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     List employees2 = em2.createQuery("Select employee from Employee employee").getResultList(); //
                     Employee employee2 = (Employee) employees2.get(0);
 
-                    // Find all the departments and lock them.
-                    List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_READ).getResultList();
+                    // Find all the employees and lock them.
+                    List employees = em.createQuery("Select employee from Employee employee").setLockMode(LockModeType.PESSIMISTIC_WRITE).getResultList();
                     Employee employee = (Employee) employees.get(0);
                     employee.setFirstName("New Pessimistic Employee");
 
 
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_READ);
+                    Map<String, Object> em2LockProperties = new HashMap<>();
+                    em2LockProperties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, em2LockProperties);
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);
@@ -1685,7 +1689,9 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     Employee employee = (Employee) employees.get(0);
                     employee.setSalary(90000);
 
-                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE);
+                    Map<String, Object> em2LockProperties = new HashMap<>();
+                    em2LockProperties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
+                    em2.lock(employee2, LockModeType.PESSIMISTIC_WRITE, em2LockProperties);
                     employee2.setSalary(100000);
                     commitTransaction(em2);
                 } catch (PessimisticLockException ex) {
