@@ -31,12 +31,12 @@ export GIT_RM_CMD="git rm $GIT_DRY_RUN -r"
 export RSYNC_CMD="rsync -a"
 
 #sync/move command
-export SYNC_CMD=${RSYNC_CMD}
-export MV_CMD="mv"
+#export SYNC_CMD=${RSYNC_CMD}
+#export MV_CMD="mv"
 
 #####!!!!!!!BEWARE CODE TRANSFORMATION!!!!!!#######
-#export SYNC_CMD=${GIT_MV_CMD}
-#export MV_CMD=${GIT_MV_CMD}
+export SYNC_CMD=${GIT_MV_CMD}
+export MV_CMD=${GIT_MV_CMD}
 #####!!!!!!!BEWARE CODE TRANSFORMATION!!!!!!#######
 
 
