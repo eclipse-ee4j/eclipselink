@@ -161,58 +161,58 @@
         <!--Helper parent pom for server side test modules-->
         <module>pom_test_server.xml</module>
 
-        <module>plugins/org.eclipse.persistence.antlr.maven</module>
-        <module>plugins/org.eclipse.persistence.asm.maven</module>
-        <module>jpa/org.eclipse.persistence.jpa.jpql.maven</module>
+        <module>plugins/org.eclipse.persistence.antlr</module>
+        <module>plugins/org.eclipse.persistence.asm</module>
+        <module>jpa/org.eclipse.persistence.jpa.jpql</module>
 
-        <module>foundation/org.eclipse.persistence.core.maven</module>
-        <module>foundation/org.eclipse.persistence.core.test.framework.maven</module>
-        <module>foundation/eclipselink.core.test.maven</module>
+        <module>foundation/org.eclipse.persistence.core</module>
+        <module>foundation/org.eclipse.persistence.core.test.framework</module>
+        <module>foundation/eclipselink.core.test</module>
 
-        <module>jpa/org.eclipse.persistence.jpa.maven</module>
-        <module>jpa/org.eclipse.persistence.jpa.modelgen.maven</module>
-        <module>jpa/org.eclipse.persistence.jpars.maven</module>
-        <module>jpa/org.eclipse.persistence.jpa.test.framework.maven</module>
+        <module>jpa/org.eclipse.persistence.jpa</module>
+        <module>jpa/org.eclipse.persistence.jpa.modelgen</module>
+        <module>jpa/org.eclipse.persistence.jpars</module>
+        <module>jpa/org.eclipse.persistence.jpa.test.framework</module>
 
-        <module>foundation/org.eclipse.persistence.corba.maven</module>
-        <module>foundation/org.eclipse.persistence.extension.maven</module>
-        <module>foundation/org.eclipse.persistence.nosql.maven</module>
+        <module>foundation/org.eclipse.persistence.corba</module>
+        <module>foundation/org.eclipse.persistence.extension</module>
+        <module>foundation/org.eclipse.persistence.nosql</module>
 
-        <module>moxy/org.eclipse.persistence.moxy.maven</module>
-        <module>moxy/org.eclipse.persistence.moxy.utils.xjc.maven</module>
+        <module>moxy/org.eclipse.persistence.moxy</module>
+        <module>moxy/org.eclipse.persistence.moxy.utils.xjc</module>
 
-        <module>dbws/org.eclipse.persistence.dbws.maven</module>
+        <module>dbws/org.eclipse.persistence.dbws</module>
 
-        <module>sdo/org.eclipse.persistence.sdo.maven</module>
-        <module>sdo/eclipselink.sdo.test.server.maven</module>
+        <module>sdo/org.eclipse.persistence.sdo</module>
+        <module>sdo/eclipselink.sdo.test.server</module>
 
         <!--JPA test modules-->
         <!--JPA test module (JSE, JEE tests)-->
-        <module>jpa/eclipselink.jpa.test.maven</module>
+        <module>jpa/eclipselink.jpa.test</module>
         <!--JPA NoSQL test module-->
-        <module>jpa/eclipselink.jpa.nosql.test.maven</module>
+        <module>jpa/eclipselink.jpa.nosql.test</module>
         <!--JPA JSE test module-->
-        <module>jpa/eclipselink.jpa.test.jse.maven</module>
+        <module>jpa/eclipselink.jpa.test.jse</module>
         <!--JPA JAXRS test module-->
         <!--TODO FIXIT Doesn't work well. Temporary disabled.
-        <module>jpa/eclipselink.jaxrs.test.maven</module>
+        <module>jpa/eclipselink.jaxrs.test</module>
         -->
         <!--JPA Spring test module-->
-        <module>jpa/eclipselink.jpa.spring.test.maven</module>
+        <module>jpa/eclipselink.jpa.spring.test</module>
         <!--JPA WDF test module-->
-        <module>jpa/eclipselink.jpa.wdf.test.maven</module>
+        <module>jpa/eclipselink.jpa.wdf.test</module>
         <!--JPA JPA-RS test module-->
         <!--TODO FIXIT Doesn't work well. Temporary disabled.
-        <module>jpa/eclipselink.jpars.test.maven</module>
+        <module>jpa/eclipselink.jpars.test</module>
         -->
         <!--Utility modules-->
-        <module>utils/org.eclipse.persistence.dbws.builder.maven</module>
-        <module>utils/eclipselink.utils.rename.maven</module>
-        <module>utils/eclipselink.utils.sigcompare.maven</module>
+        <module>utils/org.eclipse.persistence.dbws.builder</module>
+        <module>utils/eclipselink.utils.rename</module>
+        <module>utils/eclipselink.utils.sigcompare</module>
 
         <!--Oracle Extensions-->
-        <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle.maven</module>
-        <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle.nosql.maven</module>
+        <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle</module>
+        <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle.nosql</module>
 
         <!--EclipseLink Bundles-->
         <module>bundles</module>
@@ -1170,7 +1170,7 @@
             <id>test-performance</id>
             <modules>
                 <!--Performance Tests module module-->
-                <module>performance/eclipselink.perf.test.maven</module>
+                <module>performance/eclipselink.perf.test</module>
             </modules>
         </profile>
         <!--INTERNAL - Test properties fallback. Expects, that mvn command is executed from project root directory.-->

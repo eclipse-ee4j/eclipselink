@@ -64,15 +64,15 @@
 
     <modules>
         <!--TODO uncomment after sdoapi dependency resolution-->
-        <!--<module>foundation/eclipselink.extension.oracle.spatial.test.maven</module>-->
+        <!--<module>foundation/eclipselink.extension.oracle.spatial.test</module>-->
         <!--JPA test module-->
         <!--TODO uncomment after sdoapi dependency resolution-->
-        <!--<module>jpa/eclipselink.jpa.oracle.test.maven</module>-->
+        <!--<module>jpa/eclipselink.jpa.oracle.test</module>-->
         <!--DBWS Oracle Test module module-->
-        <module>dbws/eclipselink.dbws.test.oracle.maven</module>
+        <module>dbws/eclipselink.dbws.test.oracle</module>
         <!--DBWS Builder Oracle Test modules-->
-        <module>utils/eclipselink.dbws.builder.test.oracle.maven</module>
-        <module>utils/eclipselink.dbws.builder.test.oracle.server.maven</module>
+        <module>utils/eclipselink.dbws.builder.test.oracle</module>
+        <module>utils/eclipselink.dbws.builder.test.oracle.server</module>
     </modules>
 
     <dependencyManagement>
