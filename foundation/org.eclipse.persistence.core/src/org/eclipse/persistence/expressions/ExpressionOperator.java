@@ -58,7 +58,7 @@ public class ExpressionOperator implements Serializable {
     static final long serialVersionUID = -7066100204792043980L;
     protected int selector;
     protected String name;
-    protected String[] databaseStrings;
+    private String[] databaseStrings;
     protected boolean isPrefix = false;
     protected boolean isRepeating = false;
     protected Class nodeClass;
@@ -757,15 +757,24 @@ public class ExpressionOperator implements Serializable {
         return true;
     }
 
-    public void copyTo(ExpressionOperator operator){
+    /**
+     * Partial deep-clone of the operator instance.
+     * <p>
+     * This is only used by <tt>ListExpressionOperator.copyTo()</tt>.
+     *
+     * @param operator
+     *            the operator to copy the current state to
+     */
+    protected void copyTo(ExpressionOperator operator){
+        // "name" is not copied.
         operator.selector = selector;
         operator.isPrefix = isPrefix;
         operator.isRepeating = isRepeating;
         operator.nodeClass = nodeClass;
         operator.type = type;
-        operator.databaseStrings = databaseStrings == null ? null : Helper.copyStringArray(databaseStrings);
-        operator.argumentIndices = argumentIndices == null ? null : Helper.copyIntArray(argumentIndices);
-        operator.javaStrings = javaStrings == null ? null : Helper.copyStringArray(javaStrings);
+        operator.databaseStrings = Helper.copyStringArray(databaseStrings);
+        operator.argumentIndices = Helper.copyIntArray(argumentIndices);
+        operator.javaStrings = Helper.copyStringArray(javaStrings);
         operator.isBindingSupported = isBindingSupported;
     }
 
