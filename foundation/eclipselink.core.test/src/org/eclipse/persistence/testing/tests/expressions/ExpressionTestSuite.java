@@ -18,6 +18,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.expressions.*;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.platform.database.*;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.testing.models.collections.Restaurant;
@@ -1803,6 +1804,7 @@ public class ExpressionTestSuite extends TestSuite {
         addBadToManyQueryKeyTest();
         addBadFieldWithTableTest();
         addBadAnyOfTest();
+        addAnyOfExpressionWithMemoryQueryPolicy();
 
         addExpressionsDefaultingFieldTest();
 
@@ -2002,6 +2004,14 @@ public class ExpressionTestSuite extends TestSuite {
         test.setName("VehicleViewTest1");
         test.setDescription("Test expression against view, or multiple table subclass read.");
         addTest(test);
+    }
+    
+    private void addAnyOfExpressionWithMemoryQueryPolicy() {
+        BadAnyOfExpressionTest test = new BadAnyOfExpressionTest();
+        test.setDescription("Test anyOf expression");
+        test.setName("BadAnyOfExpressionTest");
+        addTest(test);
+
     }
 
     protected PopulationManager getManager() {
