@@ -15,11 +15,14 @@
 echo '-[ EclipseLink Promotion Init ]-----------------------------------------------------------'
 . ${HOME}/etc/jenkins/setEnvironment.sh
 mkdir -p ${DNLD_DIR}/nightly/${VERSION}
+mkdir -p ${MILESTONE_DNLD_DIR}/${VERSION}/${RELEASE_CANDIDATE_ID}
+mkdir -p ${RELEASE_DNLD_DIR}/${VERSION}
 mkdir -p ${RELEASE_SITE_DIR}
 mkdir -p ${MILESTONE_SITE_DIR}
 mkdir -p ${NIGHTLY_SITE_DIR}
 mkdir -p ${SIGN_DIR}
 scp -r genie.eclipselink@projects-storage.eclipse.org:${DNLD_DIR_REMOTE}/nightly/${VERSION}/* ${DNLD_DIR}/nightly/${VERSION}
+scp -r genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_DNLD_DIR_REMOTE}/${VERSION}/${RELEASE_CANDIDATE_ID}/* ${MILESTONE_DNLD_DIR}/${VERSION}/${RELEASE_CANDIDATE_ID}
 
 echo '-[ EclipseLink Init ]-----------------------------------------------------------'
 

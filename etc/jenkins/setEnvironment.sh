@@ -25,12 +25,14 @@ START_DATE_DEFAULT=`date '+%y%m%d-%H%M'`
 
 DNLD_DIR_DEFAULT=${WORKSPACE}/home/data/httpd/download.eclipse.org/rt/eclipselink
 RELEASE_SITE_DIR_DEFAULT=${WORKSPACE}/home/data/httpd/download.eclipse.org/rt/eclipselink/updates
+RELEASE_DNLD_DIR_DEFAULT=${WORKSPACE}/home/data/httpd/download.eclipse.org/rt/eclipselink/releases
 MILESTONE_DNLD_DIR_DEFAULT=${WORKSPACE}/home/data/httpd/download.eclipse.org/rt/eclipselink/milestones
 MILESTONE_SITE_DIR_DEFAULT=${WORKSPACE}/home/data/httpd/download.eclipse.org/rt/eclipselink/milestone-updates
 NIGHTLY_SITE_DIR_DEFAULT=${WORKSPACE}/home/data/httpd/download.eclipse.org/rt/eclipselink/nightly-updates
 
 DNLD_DIR_REMOTE_DEFAULT=/home/data/httpd/download.eclipse.org/rt/eclipselink
 RELEASE_SITE_DIR_REMOTE_DEFAULT=/home/data/httpd/download.eclipse.org/rt/eclipselink/updates
+RELEASE_DNLD_DIR_REMOTE_DEFAULT=/home/data/httpd/download.eclipse.org/rt/eclipselink/releases
 MILESTONE_DNLD_DIR_REMOTE_DEFAULT=/home/data/httpd/download.eclipse.org/rt/eclipselink/milestones
 MILESTONE_SITE_DIR_REMOTE_DEFAULT=/home/data/httpd/download.eclipse.org/rt/eclipselink/milestone-updates
 NIGHTLY_SITE_DIR_REMOTE_DEFAULT=/home/data/httpd/download.eclipse.org/rt/eclipselink/nightly-updates
@@ -56,11 +58,13 @@ set_default_var ANT_OPTS ${ANT_OPTS_DEFAULT}
 set_default_var START_DATE ${START_DATE_DEFAULT}
 set_default_var DNLD_DIR ${DNLD_DIR_DEFAULT}
 set_default_var RELEASE_SITE_DIR ${RELEASE_SITE_DIR_DEFAULT}
+set_default_var RELEASE_DNLD_DIR ${RELEASE_DNLD_DIR_DEFAULT}
 set_default_var MILESTONE_DNLD_DIR ${MILESTONE_DNLD_DIR_DEFAULT}
 set_default_var MILESTONE_SITE_DIR ${MILESTONE_SITE_DIR_DEFAULT}
 set_default_var NIGHTLY_SITE_DIR ${NIGHTLY_SITE_DIR_DEFAULT}
 set_default_var DNLD_DIR_REMOTE ${DNLD_DIR_REMOTE_DEFAULT}
 set_default_var RELEASE_SITE_DIR_REMOTE ${RELEASE_SITE_DIR_REMOTE_DEFAULT}
+set_default_var RELEASE_DNLD_DIR_REMOTE ${RELEASE_DNLD_DIR_REMOTE_DEFAULT}
 set_default_var MILESTONE_DNLD_DIR_REMOTE ${MILESTONE_DNLD_DIR_REMOTE_DEFAULT}
 set_default_var MILESTONE_SITE_DIR_REMOTE ${MILESTONE_SITE_DIR_REMOTE_DEFAULT}
 set_default_var NIGHTLY_SITE_DIR_REMOTE ${NIGHTLY_SITE_DIR_REMOTE_DEFAULT}

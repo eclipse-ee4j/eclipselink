@@ -139,6 +139,8 @@ spec:
                             if [ ${RELEASE} == 'false' ]
                             then
                                 ${HOME}/etc/jenkins/publish_milestone.sh
+                            else
+                                ${HOME}/etc/jenkins/publish_release.sh                            
                             fi
                             """
                     }
