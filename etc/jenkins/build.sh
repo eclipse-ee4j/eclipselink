@@ -14,7 +14,4 @@
 
 echo '-[ EclipseLink Build ]-----------------------------------------------------------'
 . /etc/profile
-cd buildsystem/mavenize/
-./prepare.sh
-cd ../..
 mvn install -DskipTests -Poss-release
