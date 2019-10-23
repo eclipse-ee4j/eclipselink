@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.util.AbstractAnnotationValueVisitor6;
+import javax.lang.model.util.AbstractAnnotationValueVisitor8;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
 
@@ -34,7 +34,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataA
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor6<Object, Object> {
+public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor8<Object, Object> {
     /**
      * INTERNAL:
      */
