@@ -656,7 +656,7 @@
                                 import java.util.jar.JarInputStream
                                 import java.util.jar.Manifest
 
-                                JarInputStream jarStream = new JarInputStream(new FileInputStream("${org.eclipse.persistence:org.eclipse.persistence.asm:jar}"))
+                                JarInputStream jarStream = new JarInputStream(new FileInputStream($/${org.eclipse.persistence:org.eclipse.persistence.asm:jar}/$))
                                 Manifest mf = jarStream.getManifest()
                                 Attributes attributes = mf.getMainAttributes()
                                 String bundleVersion = attributes.getValue("Bundle-Version")
