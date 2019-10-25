@@ -385,7 +385,7 @@ public class SchemaGenerator {
                     extension.setBaseType(parentTypeInfo.getSchemaTypeName());
                 }
 
-                if(CompilerHelper.isSimpleType(parentTypeInfo)){
+                if(parentTypeInfo.getXmlValueProperty() != null){
                     SimpleContent content = new SimpleContent();
                     content.setExtension(extension);
                     type.setSimpleContent(content);
