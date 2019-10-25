@@ -25,7 +25,6 @@ public class ChildEntity extends ParentEntity {
     @XmlAttribute
     private String name;
 
-
     public String getName() {
         return name;
     }

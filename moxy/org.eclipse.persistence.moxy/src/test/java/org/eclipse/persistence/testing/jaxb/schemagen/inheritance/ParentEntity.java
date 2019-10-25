@@ -49,6 +49,4 @@ public class ParentEntity {
     public void setId(int id) {
         this.id = id;
     }
-
-
 }

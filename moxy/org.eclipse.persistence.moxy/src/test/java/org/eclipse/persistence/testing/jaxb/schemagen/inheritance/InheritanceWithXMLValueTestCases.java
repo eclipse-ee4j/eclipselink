@@ -76,7 +76,5 @@ public class InheritanceWithXMLValueTestCases extends TestCase {
         private String getSchema() {
             return stringWriter.toString();
         }
-
     }
-
 }
