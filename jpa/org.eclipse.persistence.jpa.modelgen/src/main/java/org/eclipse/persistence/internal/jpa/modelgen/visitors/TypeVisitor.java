@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 //       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
 package org.eclipse.persistence.internal.jpa.modelgen.visitors;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
@@ -25,7 +26,7 @@ import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
 import javax.lang.model.type.WildcardType;
-import javax.lang.model.util.SimpleTypeVisitor6;
+import javax.lang.model.util.SimpleTypeVisitor8;
 
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotatedElement;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataClass;
@@ -38,7 +39,7 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedElement, MetadataAnnotatedElement> {
+public class TypeVisitor<R, P> extends SimpleTypeVisitor8<MetadataAnnotatedElement, MetadataAnnotatedElement> {
     public static String GENERIC_TYPE = "? extends Object";
 
     /**
@@ -52,7 +53,7 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
      */
     @Override
     public MetadataAnnotatedElement visitArray(ArrayType arrayType, MetadataAnnotatedElement annotatedElement) {
-        annotatedElement.setType(arrayType.toString());
+        annotatedElement.setType(getName(arrayType.getComponentType()) + "[]");
         return annotatedElement;
     }
 
@@ -174,4 +175,32 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor6<MetadataAnnotatedEleme
         annotatedElement.setType(wildcardType.toString());
         return annotatedElement;
     }
+
+    private static String getName(TypeMirror type) {
+        String name = null;
+        switch (type.getKind()) {
+            case ARRAY:
+                name = getName(((ArrayType) type).getComponentType()) + "[]";
+                break;
+            case TYPEVAR:
+                name = ((TypeVariable) type).asElement().toString();
+                break;
+            case DECLARED:
+                name = ((DeclaredType) type).asElement().toString();
+                break;
+            default:
+                // type.getKind().isPrimitive()
+                name = type.toString();
+        }
+        //ignore ElementType.TYPE_USE annotations which may be applied
+        //on the componentType in the array
+        for (AnnotationMirror ann : type.getAnnotationMirrors()) {
+            String annName = ann.getAnnotationType().toString();
+            if (name.contains(annName)) {
+                name = name.substring(2 + annName.length());
+            }
+        }
+        return name;
+    }
+
 }

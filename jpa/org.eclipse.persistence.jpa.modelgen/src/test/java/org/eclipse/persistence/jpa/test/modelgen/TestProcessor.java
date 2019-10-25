@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,27 +63,6 @@ public class TestProcessor {
 
     @Test
     public void testProc() throws Exception {
-        File runDir = new File(System.getProperty("run.dir"), "testproc");
-        File srcOut = new File(runDir, "src");
-        srcOut.mkdirs();
-        File cpDir = new File(runDir, "cp");
-        cpDir.mkdirs();
-        File pxml = new File(cpDir, "META-INF/persistence.xml");
-        pxml.getParentFile().mkdirs();
-        try (BufferedWriter writer = Files.newBufferedWriter(pxml.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
-            writer.write(PXML, 0, PXML.length());
-        } catch (IOException x) {
-            throw x;
-        }
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-
-        StandardJavaFileManager sfm = compiler.getStandardFileManager(diagnostics, null, null);
-        URL apiUrl = Entity.class.getProtectionDomain().getCodeSource().getLocation();
-        sfm.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(new File(apiUrl.getFile()), cpDir));
-        sfm.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(srcOut));
-        sfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(cpDir));
-
         TestFO entity = new TestFO("org.Sample",
                 "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
         TestFO nonEntity = new TestFO("org.NotE",
@@ -92,59 +71,45 @@ public class TestProcessor {
                 "package org; import javax.annotation.Generated; @Generated(\"com.example.Generator\") public class Gen8 { public  Gen8() {} public int getY() {return 42;}}");
         TestFO generated9 = new TestFO("org.Gen9",
                 "package org; @javax.annotation.processing.Generated(\"com.example.Generator\") public class Gen9 { public  Gen9() {} public int getZ() {return 9*42;}}");
-        CompilationTask task = compiler.getTask(new PrintWriter(System.out), sfm, diagnostics,
-                getJavacOptions("-Aeclipselink.logging.level.processor=OFF"), null,
-                Arrays.asList(entity, nonEntity, generated8, generated9));
-        CanonicalModelProcessor modelProcessor = new CanonicalModelProcessor();
-        task.setProcessors(Collections.singleton(modelProcessor));
-        task.call();
 
-        for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-            System.out.println(diagnostic);
-        }
-        File outputFile = new File(srcOut, "org/Sample_.java");
+        File destDir = runProject("testProc",
+                getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
+                Arrays.asList(entity, nonEntity, generated8, generated9));
+
+        File outputFile = new File(destDir, "org/Sample_.java");
         Assert.assertTrue("Model file not generated", outputFile.exists());
         Assert.assertTrue(Files.lines(outputFile.toPath()).anyMatch(s -> s.contains("@StaticMetamodel(Sample.class)")));
     }
 
     @Test
     public void testGenerateComment() throws Exception {
-        File runDir = new File(System.getProperty("run.dir"), "testGenerateComment");
-        File srcOut = new File(runDir, "src");
-        srcOut.mkdirs();
-        File cpDir = new File(runDir, "cp");
-        cpDir.mkdirs();
-        File pxml = new File(cpDir, "META-INF/persistence.xml");
-        pxml.getParentFile().mkdirs();
-        try (BufferedWriter writer = Files.newBufferedWriter(pxml.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
-            writer.write(PXML, 0, PXML.length());
-        } catch (IOException x) {
-            throw x;
-        }
-        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
-
-        StandardJavaFileManager sfm = compiler.getStandardFileManager(diagnostics, null, null);
-        URL apiUrl = Entity.class.getProtectionDomain().getCodeSource().getLocation();
-        sfm.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(new File(apiUrl.getFile()), cpDir));
-        sfm.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(srcOut));
-        sfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(cpDir));
-
         TestFO entity = new TestFO("org.Sample",
                 "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
-        CompilationTask task = compiler.getTask(new PrintWriter(System.out), sfm, diagnostics,
-                getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS + "=false", "-Aeclipselink.logging.level.processor=OFF"), null,
-                Arrays.asList(entity));
-        CanonicalModelProcessor modelProcessor = new CanonicalModelProcessor();
-        task.setProcessors(Collections.singleton(modelProcessor));
-        task.call();
 
-        for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
-            System.out.println(diagnostic);
-        }
-        File outputFile = new File(srcOut, "org/Sample_.java");
+        File destDir = runProject("testGenerateComment",
+            getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS + "=false",
+                    "-Aeclipselink.logging.level.processor=OFF"),
+            Arrays.asList(entity));
+
+        File outputFile = new File(destDir, "org/Sample_.java");
         Assert.assertTrue("Model file not generated", outputFile.exists());
         Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("comments=")));
+    }
+
+    @Test
+    public void testTypeUse() throws Exception {
+        TestFO entity = new TestFO("org.Ent",
+                "package org; @javax.persistence.Entity public class Ent { @org.ann.NotNull private byte[] bytes;}");
+        TestFO ann = new TestFO("org.ann.NotNull",
+                "package org.ann; @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE_USE) public @interface NotNull {}");
+
+        File destDir = runProject("testTypeUse",
+            getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
+            Arrays.asList(entity, ann));
+
+        File outputFile = new File(destDir, "org/Ent_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("NotNull")));
     }
 
     @Test
@@ -263,6 +228,40 @@ public class TestProcessor {
         }
     }
 
+    private File runProject(String name, List<String> options, List<JavaFileObject> sources) throws Exception {
+                File runDir = new File(System.getProperty("run.dir"), name);
+        File srcOut = new File(runDir, "src");
+        srcOut.mkdirs();
+        File cpDir = new File(runDir, "cp");
+        cpDir.mkdirs();
+        File pxml = new File(cpDir, "META-INF/persistence.xml");
+        pxml.getParentFile().mkdirs();
+        try (BufferedWriter writer = Files.newBufferedWriter(pxml.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+            writer.write(PXML, 0, PXML.length());
+        } catch (IOException x) {
+            throw x;
+        }
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+
+        StandardJavaFileManager sfm = compiler.getStandardFileManager(diagnostics, null, null);
+        URL apiUrl = Entity.class.getProtectionDomain().getCodeSource().getLocation();
+        sfm.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(new File(apiUrl.getFile()), cpDir));
+        sfm.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(srcOut));
+        sfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(cpDir));
+
+        CompilationTask task = compiler.getTask(new PrintWriter(System.out), sfm, diagnostics,
+                options, null, sources);
+        CanonicalModelProcessor modelProcessor = new CanonicalModelProcessor();
+        task.setProcessors(Collections.singleton(modelProcessor));
+        task.call();
+
+        for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+            System.out.println(diagnostic);
+        }
+        return srcOut;
+    }
+
     private static class TestFO extends SimpleJavaFileObject {
         private final String text;
 
@@ -278,8 +277,8 @@ public class TestProcessor {
         }
     }
 
-    private static final String PXML = "<persistence xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"\n" + 
-            "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" + 
+    private static final String PXML = "<persistence xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"\n" +
+            "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
             "  xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/persistence\n" +
             "    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd\"\n" +
             "  version=\"2.2\">\n" +
