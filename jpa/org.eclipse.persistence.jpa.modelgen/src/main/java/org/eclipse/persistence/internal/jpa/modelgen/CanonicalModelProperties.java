@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,6 +79,16 @@ public abstract class CanonicalModelProperties {
      */
     public static final String CANONICAL_MODEL_USE_STATIC_FACTORY = PersistenceUnitProperties.CANONICAL_MODEL_USE_STATIC_FACTORY;
     public static final String CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT = PersistenceUnitProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT;
+
+    /**
+     * This optional property can be used to avoid adding
+     * {@code javax.annotation.Generated} annotation to generated metamodel class.
+     * The default value is true and should be left as such for full feature support.
+     * If the value is {@code false}, {@linkplain #CANONICAL_MODEL_GENERATE_TIMESTAMP}
+     * and {@linkplain #CANONICAL_MODEL_GENERATE_COMMENTS} properties are ignored.
+     */
+    public static final String CANONICAL_MODEL_GENERATE_GENERATED = PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_GENERATED;
+    public static final String CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT = PersistenceUnitProperties.CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT;
 
     /**
      * This optional property can be used to avoid using of date in

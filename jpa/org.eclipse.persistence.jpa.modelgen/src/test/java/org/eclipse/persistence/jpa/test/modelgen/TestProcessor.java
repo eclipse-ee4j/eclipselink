@@ -256,8 +256,11 @@ public class TestProcessor {
         task.setProcessors(Collections.singleton(modelProcessor));
         task.call();
 
-        for ( Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
+        for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             System.out.println(diagnostic);
+            String msg = diagnostic.getMessage(null);
+            Assert.assertFalse(msg,
+                    msg.contains("The following options were not recognized by any processor:"));
         }
         return srcOut;
     }
