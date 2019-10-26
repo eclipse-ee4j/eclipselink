@@ -38,7 +38,7 @@ env:
     - MAVEN_TEST=moxy-lrg
     - MAVEN_TEST=sdo-srg
     - MAVEN_TEST=nosql-lrg
-    - MAVEN_TEST="jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution"
+    - MAVEN_TEST="jpa-modelgen jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution"
     - MAVEN_TEST=jpa-lrg-server1-mysql
     - MAVEN_TEST=jpa-lrg-server2-mysql
 
@@ -80,8 +80,8 @@ script:
   - if [ "$MAVEN_TEST" == "moxy-lrg" ]; then mvn test -pl :org.eclipse.persistence.moxy -P test-moxy-lrg; fi
   - if [ "$MAVEN_TEST" == "sdo-srg" ]; then mvn verify -pl :org.eclipse.persistence.sdo; fi
   - if [ "$MAVEN_TEST" == "nosql-lrg" ]; then mvn verify -pl :org.eclipse.persistence.nosql -P mongodb; fi
-  - if [ "$MAVEN_TEST" == "jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution" ]; then
-      mvn verify -pl :org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.corba,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution -P mysql;
+  - if [ "$MAVEN_TEST" == "jpa-modelgen jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution" ]; then
+      mvn verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.corba,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution -P mysql;
     fi
   - if [ "$MAVEN_TEST" == "jpa-lrg-server1-mysql" ]; then
       tar -x -z -C $HOME -f $HOME/lib.external/wildfly-15.0.1.Final.tar.gz;
