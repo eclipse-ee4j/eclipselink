@@ -31,6 +31,9 @@ public class ParentEntity {
     @XmlValue
     private String value;
 
+    @XmlAttribute
+    private int id;
+
     public String getValue() {
         return this.value;
     }
@@ -38,9 +41,6 @@ public class ParentEntity {
     public void setValue(String value) {
         this.value = value;
     }
-
-    @XmlAttribute
-    private int id;
 
     public int getId() {
         return id;
