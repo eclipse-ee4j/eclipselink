@@ -72,11 +72,11 @@ public class TestProcessor {
         TestFO generated9 = new TestFO("org.Gen9",
                 "package org; @javax.annotation.processing.Generated(\"com.example.Generator\") public class Gen9 { public  Gen9() {} public int getZ() {return 9*42;}}");
 
-        File destDir = runProject("testProc",
+        Result result = runProject("testProc",
                 getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
                 Arrays.asList(entity, nonEntity, generated8, generated9));
 
-        File outputFile = new File(destDir, "org/Sample_.java");
+        File outputFile = new File(result.srcOut, "org/Sample_.java");
         Assert.assertTrue("Model file not generated", outputFile.exists());
         Assert.assertTrue(Files.lines(outputFile.toPath()).anyMatch(s -> s.contains("@StaticMetamodel(Sample.class)")));
     }
@@ -86,14 +86,31 @@ public class TestProcessor {
         TestFO entity = new TestFO("org.Sample",
                 "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
 
-        File destDir = runProject("testGenerateComment",
+        Result result = runProject("testGenerateComment",
             getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS + "=false",
                     "-Aeclipselink.logging.level.processor=OFF"),
             Arrays.asList(entity));
 
-        File outputFile = new File(destDir, "org/Sample_.java");
+        File outputFile = new File(result.srcOut, "org/Sample_.java");
         Assert.assertTrue("Model file not generated", outputFile.exists());
         Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("comments=")));
+        Assert.assertTrue("Compilation failed", result.success);
+    }
+
+    @Test
+    public void testGenerate() throws Exception {
+        TestFO entity = new TestFO("org.Sample",
+                "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+
+        Result result = runProject("testGenerate",
+            getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED + "=false",
+                    "-Aeclipselink.logging.level.processor=OFF"),
+            Arrays.asList(entity));
+
+        File outputFile = new File(result.srcOut, "org/Sample_.java");
+        Assert.assertTrue("Model file not generated", outputFile.exists());
+        Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("Generated")));
+        Assert.assertTrue("Compilation failed", result.success);
     }
 
     @Test
@@ -103,13 +120,14 @@ public class TestProcessor {
         TestFO ann = new TestFO("org.ann.NotNull",
                 "package org.ann; @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE_USE) public @interface NotNull {}");
 
-        File destDir = runProject("testTypeUse",
+        Result result = runProject("testTypeUse",
             getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
             Arrays.asList(entity, ann));
 
-        File outputFile = new File(destDir, "org/Ent_.java");
+        File outputFile = new File(result.srcOut, "org/Ent_.java");
         Assert.assertTrue("Model file not generated", outputFile.exists());
         Assert.assertTrue(Files.lines(outputFile.toPath()).noneMatch(s -> s.contains("NotNull")));
+        Assert.assertTrue("Compilation failed", result.success);
     }
 
     @Test
@@ -228,7 +246,7 @@ public class TestProcessor {
         }
     }
 
-    private File runProject(String name, List<String> options, List<JavaFileObject> sources) throws Exception {
+    private Result runProject(String name, List<String> options, List<JavaFileObject> sources) throws Exception {
                 File runDir = new File(System.getProperty("run.dir"), name);
         File srcOut = new File(runDir, "src");
         srcOut.mkdirs();
@@ -254,7 +272,7 @@ public class TestProcessor {
                 options, null, sources);
         CanonicalModelProcessor modelProcessor = new CanonicalModelProcessor();
         task.setProcessors(Collections.singleton(modelProcessor));
-        task.call();
+        boolean result = task.call();
 
         for (Diagnostic<? extends JavaFileObject> diagnostic : diagnostics.getDiagnostics()) {
             System.out.println(diagnostic);
@@ -262,7 +280,7 @@ public class TestProcessor {
             Assert.assertFalse(msg,
                     msg.contains("The following options were not recognized by any processor:"));
         }
-        return srcOut;
+        return new Result(srcOut, cpDir, result);
     }
 
     private static class TestFO extends SimpleJavaFileObject {
@@ -277,6 +295,16 @@ public class TestProcessor {
         @Override
         public CharSequence getCharContent(boolean ignoreEncodingErrors) {
             return text;
+        }
+    }
+
+    private static class Result {
+        File srcOut, binOut;
+        boolean success;
+        Result(File srcOut, File binOut, boolean success) {
+            this.srcOut = srcOut;
+            this.binOut = binOut;
+            this.success = success;
         }
     }
 

@@ -50,6 +50,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
@@ -245,7 +246,9 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     public MetadataProject getMetadataProject(SEPersistenceUnitInfo puInfo) {
         if (! metadataProjects.containsKey(puInfo.getPersistenceUnitName())) {
-            MetadataProject project = new MetadataProject(puInfo, new ServerSession(new Project(new DatabaseLogin())), false, false, false, false, false);
+            AbstractSession session = new ServerSession(new Project(new DatabaseLogin()));
+            session.setSessionLog(getLogger().getSession().getSessionLog());
+            MetadataProject project = new MetadataProject(puInfo, session, false, false, false, false, false);
             metadataProjects.put(puInfo.getPersistenceUnitName(), project);
             return project;
         } else {

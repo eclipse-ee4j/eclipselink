@@ -86,7 +86,9 @@ public class CanonicalModelProcessor extends AbstractProcessor {
     private boolean generateGenerated;
 
     private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(new HashSet<String>() {{
-        add("java.persistence/javax.persistence.*");
+        if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0) {
+            add("java.persistence/javax.persistence.*");
+        }
         add("javax.persistence.*");
         add("org.eclipse.persistence.annotations.*");
     }});
@@ -97,6 +99,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         add(CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE);
         add(CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML);
         add(CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY);
+        add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED);
         add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP);
         add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS);
         add(CanonicalModelProperties.CANONICAL_MODEL_PROCESSOR_LOG_LEVEL);
