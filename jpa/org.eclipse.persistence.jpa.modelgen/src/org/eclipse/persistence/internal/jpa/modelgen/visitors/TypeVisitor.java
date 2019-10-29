@@ -15,7 +15,7 @@
 //       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
 package org.eclipse.persistence.internal.jpa.modelgen.visitors;
 
-import javax.lang.model.element.AnnotationMirror;
+import java.util.regex.Pattern;
 import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ErrorType;
@@ -41,6 +41,8 @@ import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
  */
 public class TypeVisitor<R, P> extends SimpleTypeVisitor8<MetadataAnnotatedElement, MetadataAnnotatedElement> {
     public static String GENERIC_TYPE = "? extends Object";
+
+    private static final Pattern PATTERN = Pattern.compile("[(@:)\\s]+");
 
     /**
      * INTERNAL:
@@ -194,13 +196,13 @@ public class TypeVisitor<R, P> extends SimpleTypeVisitor8<MetadataAnnotatedEleme
         }
         //ignore ElementType.TYPE_USE annotations which may be applied
         //on the componentType in the array
-        for (AnnotationMirror ann : type.getAnnotationMirrors()) {
-            String annName = ann.getAnnotationType().toString();
-            if (name.contains(annName)) {
-                name = name.substring(2 + annName.length());
-            }
-        }
-        return name;
+        //XXX: on jdk8, returned String from TypeMirror.toString() looks like:
+        // '(@org.ann.NotNull :: byte)' while on jdk11 it looks like:
+        // '@org.ann.NotNull :: byte'. Therefore using regexp to filter out
+        //info we need
+        String[] items = PATTERN.split(name);
+        // variable name we're looking for is always the last item in the array
+        return items[items.length - 1];
     }
 
 }

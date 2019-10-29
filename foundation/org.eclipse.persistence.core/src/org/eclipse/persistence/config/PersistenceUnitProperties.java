@@ -1386,6 +1386,25 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT = "true";
 
     /**
+     * The "<code>eclipselink.canonicalmodel.use_generated</code>" optional property can be used
+     * to disable generation of {@link javax.annotation.Generated} annotation.
+     * The default value is true.
+     * If the value is {@code false}, {@linkplain #CANONICAL_MODEL_GENERATE_TIMESTAMP}
+     * and {@linkplain #CANONICAL_MODEL_GENERATE_COMMENTS} properties are ignored.
+     *
+     * @see #CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT
+     */
+    public static final String CANONICAL_MODEL_GENERATE_GENERATED = "eclipselink.canonicalmodel.use_generated";
+
+    /**
+     * Default value for the "<code>eclipselink.canonicalmodel.use_generated</code>" optional
+     * property.
+     *
+     * @see #CANONICAL_MODEL_GENERATE_GENERATED
+     */
+    public static final String CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT = "true";
+
+    /**
      * The "<code>eclipselink.canonicalmodel.generate_timestamp</code>" optional property can be used
      * to disable usage of date in declaration of {@link javax.annotation.Generated} annotation.
      * The default value is true.
