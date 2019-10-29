@@ -1386,6 +1386,25 @@ public class PersistenceUnitProperties {
     public static final String CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT = "true";
 
     /**
+     * The "<code>eclipselink.canonicalmodel.use_generated</code>" optional property can be used
+     * to disable generation of {@link javax.annotation.Generated} annotation.
+     * The default value is true.
+     * If the value is {@code false}, {@linkplain #CANONICAL_MODEL_GENERATE_TIMESTAMP}
+     * and {@linkplain #CANONICAL_MODEL_GENERATE_COMMENTS} properties are ignored.
+     *
+     * @see #CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT
+     */
+    public static final String CANONICAL_MODEL_GENERATE_GENERATED = "eclipselink.canonicalmodel.use_generated";
+
+    /**
+     * Default value for the "<code>eclipselink.canonicalmodel.use_generated</code>" optional
+     * property.
+     *
+     * @see #CANONICAL_MODEL_GENERATE_GENERATED
+     */
+    public static final String CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT = "true";
+
+    /**
      * The "<code>eclipselink.canonicalmodel.generate_timestamp</code>" optional property can be used
      * to disable usage of date in declaration of {@link javax.annotation.Generated} annotation.
      * The default value is true.
@@ -3145,7 +3164,7 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String PESSIMISTIC_LOCK_TIMEOUT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT;
-   
+
     /**
      * The "<code>eclipselink.pessimistic.lock.timeout.unit</code>" property
      * configures the query timeout unit value. Allows users more refinement.
@@ -3153,14 +3172,14 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT), 
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>", 
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see #PESSIMISTIC_LOCK_TIMEOUT_UNIT
     */
     public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT;
-    
+
     /**
      * The "<code>javax.persistence.query.timeout</code>" property configures
      * the default query timeout value. Defaults to seconds, but is configurable
@@ -3181,8 +3200,8 @@ public class PersistenceUnitProperties {
      * <p>
      * <b>Allowed Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT), 
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>", 
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see #QUERY_TIMEOUT

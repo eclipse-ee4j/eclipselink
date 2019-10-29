@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,20 +27,6 @@
 //       - 330660: Canonical model generator throws ClassCastException when using package-info.java
 package org.eclipse.persistence.internal.jpa.modelgen;
 
-import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GLOBAL_LOG_LEVEL;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PREFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_PROCESSOR_LOG_LEVEL;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_SUFFIX;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY;
-import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT;
-
 import java.io.IOException;
 import java.io.Writer;
 import java.text.SimpleDateFormat;
@@ -48,13 +34,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedOptions;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -62,10 +48,10 @@ import javax.lang.model.type.PrimitiveType;
 import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.MappedSuperclass;
-import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
 import org.eclipse.persistence.Version;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
@@ -76,8 +62,9 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnitReader;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.TypeVisitor;
-import org.eclipse.persistence.logging.LogCategory;
-import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -88,20 +75,181 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * @author Guy Pelletier
  * @since EclipseLink 1.2
  */
-@SupportedOptions({CANONICAL_MODEL_PREFIX,
-        CANONICAL_MODEL_SUFFIX,
-        CANONICAL_MODEL_SUB_PACKAGE,
-        CANONICAL_MODEL_LOAD_XML,
-        CANONICAL_MODEL_USE_STATIC_FACTORY,
-        CANONICAL_MODEL_GENERATE_TIMESTAMP,
-        ECLIPSELINK_PERSISTENCE_XML,
-        CANONICAL_MODEL_PROCESSOR_LOG_LEVEL,
-        CANONICAL_MODEL_GLOBAL_LOG_LEVEL})
-@SupportedAnnotationTypes({"javax.persistence.*", "org.eclipse.persistence.annotations.*"})
 public class CanonicalModelProcessor extends AbstractProcessor {
     protected enum AttributeType {CollectionAttribute, ListAttribute, MapAttribute, SetAttribute, SingularAttribute }
     protected MetadataMirrorFactory nonStaticFactory;
     protected static MetadataMirrorFactory staticFactory;
+    private SessionLog log;
+    private boolean useStaticFactory;
+    private boolean generateComments;
+    private boolean generateTimestamp;
+    private boolean generateGenerated;
+
+    private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(new HashSet<String>() {{
+        if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0) {
+            add("java.persistence/javax.persistence.*");
+        }
+        add("javax.persistence.*");
+        add("org.eclipse.persistence.annotations.*");
+    }});
+
+    private static final Set<String> SUPPORTED_OPTIONS = Collections.unmodifiableSet(new HashSet<String>() {{
+        add(CanonicalModelProperties.CANONICAL_MODEL_PREFIX);
+        add(CanonicalModelProperties.CANONICAL_MODEL_SUFFIX);
+        add(CanonicalModelProperties.CANONICAL_MODEL_SUB_PACKAGE);
+        add(CanonicalModelProperties.CANONICAL_MODEL_LOAD_XML);
+        add(CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY);
+        add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED);
+        add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP);
+        add(CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS);
+        add(CanonicalModelProperties.CANONICAL_MODEL_PROCESSOR_LOG_LEVEL);
+        add(CanonicalModelProperties.CANONICAL_MODEL_GLOBAL_LOG_LEVEL);
+        add(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML);
+        add("verbose"); //shortcut to enable FINER logging
+    }});
+
+    @Override
+    public Set<String> getSupportedAnnotationTypes() {
+        return SUPPORTED_ANNOTATIONS;
+    }
+
+    @Override
+    public Set<String> getSupportedOptions() {
+        return SUPPORTED_OPTIONS;
+    }
+
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
+
+    @Override
+    public synchronized void init(ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        Map<String, String> options = processingEnv.getOptions();
+
+        log = new MessagerLog(processingEnv.getMessager(), options);
+        if (Boolean.valueOf(options.get("verbose")) && log.getLevel() > SessionLog.FINER) {
+            log.setLevel(SessionLog.FINER);
+        }
+        AbstractSessionLog.setLog(log);
+
+        // Log processing environment options
+        for (Map.Entry<String, String> option : options.entrySet()) {
+            log(SessionLog.CONFIG, "Found Option: {0}, with value: {1}",
+                    new Object[]{option.getKey(), option.getValue()});
+        }
+
+        useStaticFactory = Boolean.valueOf(CanonicalModelProperties.getOption(
+                CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY,
+                CanonicalModelProperties.CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT,
+                options));
+        generateGenerated = Boolean.valueOf(CanonicalModelProperties.getOption(
+                CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED,
+                CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED_DEFAULT,
+                options));
+        if (generateGenerated) {
+            generateTimestamp = Boolean.valueOf(CanonicalModelProperties.getOption(
+                CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP,
+                CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT,
+                options));
+            generateComments = Boolean.valueOf(CanonicalModelProperties.getOption(
+                CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS,
+                CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT,
+                options));
+        }
+    }
+
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        if (! roundEnv.processingOver() && ! roundEnv.errorRaised()) {
+            MetadataMirrorFactory factory = null;
+            try {
+                if (useStaticFactory) {
+                    if (staticFactory == null) {
+                        // We must remember some state from one round to another.
+                        // In some rounds, the user may only change one class
+                        // meaning we only have one root element from the round.
+                        // If it is a child class to an existing already generated
+                        // parent class we need to know about this class, so the
+                        // factory will also hang onto static projects for each
+                        // persistence unit. Doing this is going to need careful
+                        // cleanup thoughts though. Adding classes ok, but what
+                        // about removing some?
+                        AbstractSession session = new ServerSession(new Project(new DatabaseLogin()));
+                        session.setSessionLog(log);
+                        final MetadataLogger logger = new MetadataLogger(session);
+                        staticFactory = new MetadataMirrorFactory(logger,
+                                Thread.currentThread().getContextClassLoader());
+                        log(SessionLog.INFO, "Creating static metadata factory ...");
+                    }
+
+                    factory = staticFactory;
+                } else {
+                    if (nonStaticFactory == null) {
+                        AbstractSession session = new ServerSession(new Project(new DatabaseLogin()));
+                        session.setSessionLog(log);
+                        final MetadataLogger logger = new MetadataLogger(session);
+                        nonStaticFactory = new MetadataMirrorFactory(logger,
+                                Thread.currentThread().getContextClassLoader());
+                        log(SessionLog.INFO, "Creating non-static metadata factory ...");
+                    }
+
+                    factory = nonStaticFactory;
+                }
+
+                final MetadataLogger logger = factory.getLogger();
+
+                // Step 1 - The factory is passed around so those who want the
+                // processing or round env can get it off the factory. This
+                // saves us from having to pass around multiple objects.
+                factory.setEnvironments(processingEnv, roundEnv);
+
+                // Step 2 - read the persistence xml classes (gives us extra
+                // classes and mapping files. From them we get transients and
+                // access). Metadata read from XML causes new accessors to be
+                // created and override existing ones (causing them to be un-
+                // pre-processed. We can never tell what changes in XML so we
+                // have to do this.
+                final PersistenceUnitReader puReader = new PersistenceUnitReader(logger, processingEnv);
+                puReader.initPersistenceUnits(factory);
+
+                // Step 3 - iterate over all the persistence units and generate
+                // their canonical model classes.
+                for (PersistenceUnit persistenceUnit : factory.getPersistenceUnits()) {
+
+                    // Step 3a - add the Entities not defined in XML that are
+                    // being compiled.
+                    for (Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {
+                        persistenceUnit.addEntityAccessor(element);
+                    }
+
+                    // Step 3b - add the Embeddables not defined in XML that are
+                    // being compiled.
+                    for (Element element : roundEnv.getElementsAnnotatedWith(Embeddable.class)) {
+                        persistenceUnit.addEmbeddableAccessor(element);
+                    }
+
+                    // Step 3c - add the MappedSuperclasses not defined in XML
+                    // that are being compiled.
+                    for (Element element : roundEnv.getElementsAnnotatedWith(MappedSuperclass.class)) {
+                        persistenceUnit.addMappedSuperclassAccessor(element);
+                    }
+
+                    // Step 3d - tell the persistence unit to pre-process itself.
+                    persistenceUnit.preProcessForCanonicalModel();
+
+                    // Step 3e - We're set, generate the canonical model classes.
+                    generateCanonicalModelClasses(factory, persistenceUnit);
+                }
+            } catch (Exception e) {
+                log.logThrowable(SessionLog.SEVERE, SessionLog.PROCESSOR, e);
+                throw new RuntimeException(e);
+            }
+        }
+
+        return false; // Don't claim any annotations
+    }
 
     /**
      * INTERNAL:
@@ -133,10 +281,12 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             ArrayList<String> attributes = new ArrayList<String>();
             HashMap<String, String> imports = new HashMap<String, String>();
 
-            if (isNewJava) {
-                imports.put("Generated", "javax.annotation.processing.Generated");
-            } else {
-                imports.put("Generated", "javax.annotation.Generated");
+            if (generateGenerated) {
+                if (isNewJava) {
+                    imports.put("Generated", "javax.annotation.processing.Generated");
+                } else {
+                    imports.put("Generated", "javax.annotation.Generated");
+                }
             }
 
             // Import the model class if the canonical class is generated elsewhere.
@@ -213,26 +363,28 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             // Will import the parent as well if needed.
             String parent = writeImportStatements(imports, accessor, writer, persistenceUnit, canonicalpackage);
 
-            // Write out the generation annotations.
-            String elVersion = "EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision();
-            writer.append("@Generated(value=\"");
-            if (isNewJava) {
-                writer.append(CanonicalModelProcessor.class.getName());
-            } else {
-                writer.append(elVersion);
-            }
-            writer.append("\"");
-            if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_GENERATE_TIMESTAMP, CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT, processingEnv.getOptions()))) {
-                Date date = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                writer.append(", date=\"" +  sdf.format(date) + "\"");
-            }
-            if (isNewJava && Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_GENERATE_COMMENTS, CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT, processingEnv.getOptions()))) {
-                writer.append(", comments=\"");
-                writer.append(elVersion);
+            if (generateGenerated) {
+                // Write out the generation annotations.
+                String elVersion = "EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision();
+                writer.append("@Generated(value=\"");
+                if (isNewJava) {
+                    writer.append(CanonicalModelProcessor.class.getName());
+                } else {
+                    writer.append(elVersion);
+                }
                 writer.append("\"");
+                if (generateTimestamp) {
+                    Date date = new Date();
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                    writer.append(", date=\"" +  sdf.format(date) + "\"");
+                }
+                if (isNewJava && generateComments) {
+                    writer.append(", comments=\"");
+                    writer.append(elVersion);
+                    writer.append("\"");
+                }
+                writer.append(")\n");
             }
-            writer.append(")\n");
             writer.append("@StaticMetamodel(" + className + ".class)\n");
 
             int modifier = accessor.getAccessibleObject().getModifiers();
@@ -269,9 +421,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             MetadataClass roundClass = roundElements.get(roundElement);
 
             if (persistenceUnit.containsClass(roundClass)) {
-                if (factory.getLogger().shouldLog(LogLevel.FINEST, LogCategory.PROCESSOR)) {
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "Generating class: " + roundClass.getName());
-                }
+                log(SessionLog.FINEST, "Generating class: {0}", roundClass.getName());
                 generateCanonicalModelClass(roundClass, roundElement, persistenceUnit);
             }
         }
@@ -375,130 +525,6 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         }
     }
 
-    @Override
-    public SourceVersion getSupportedSourceVersion() {
-        return SourceVersion.latest();
-    }
-
-    /**
-     * INTERNAL:
-     */
-    @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (! roundEnv.processingOver() && ! roundEnv.errorRaised()) {
-            MetadataMirrorFactory factory = null;
-            try {
-                if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_USE_STATIC_FACTORY, CANONICAL_MODEL_USE_STATIC_FACTORY_DEFAULT, processingEnv.getOptions()))) {
-                    if (staticFactory == null) {
-                        // We must remember some state from one round to another.
-                        // In some rounds, the user may only change one class
-                        // meaning we only have one root element from the round.
-                        // If it is a child class to an existing already generated
-                        // parent class we need to know about this class, so the
-                        // factory will also hang onto static projects for each
-                        // persistence unit. Doing this is going to need careful
-                        // cleanup thoughts though. Adding classes ok, but what
-                        // about removing some?
-                        final MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
-                        staticFactory = new MetadataMirrorFactory(logger,
-                                LoggerContext.buildContext(processingEnv.getOptions()),
-                                Thread.currentThread().getContextClassLoader());
-                        staticFactory.getLoggerContext().updateMetadataLogger(logger);
-                        if (logger.shouldLog(LogLevel.INFO, LogCategory.PROCESSOR)) {
-                            processingEnv.getMessager().printMessage(Kind.NOTE, "Creating static metadata factory ...");
-                        }
-                    }
-
-                    factory = staticFactory;
-                } else {
-                    if (nonStaticFactory == null) {
-                        final MetadataLogger logger = new MetadataLogger(new ServerSession(new Project(new DatabaseLogin())));
-                        nonStaticFactory = new MetadataMirrorFactory(logger,
-                                LoggerContext.buildContext(processingEnv.getOptions()),
-                                Thread.currentThread().getContextClassLoader());
-                        nonStaticFactory.getLoggerContext().updateMetadataLogger(logger);
-                        if (logger.shouldLog(LogLevel.INFO, LogCategory.PROCESSOR)) {
-                            processingEnv.getMessager().printMessage(Kind.NOTE, "Creating non-static metadata factory ...");
-                        }
-                    }
-
-                    factory = nonStaticFactory;
-                }
-
-                final MetadataLogger logger = factory.getLogger();
-                final LoggerContext logCtx = factory.getLoggerContext();
-
-                // Log processing environment options
-                if (logger.shouldLog(LogLevel.CONFIG, LogCategory.PROCESSOR)) {
-                    for (String optionKey : processingEnv.getOptions().keySet()) {
-                        processingEnv.getMessager().printMessage(Kind.OTHER, "Found Option : " + optionKey + ", with value: " + processingEnv.getOptions().get(optionKey));
-                    }
-                }
-
-                // Step 1 - The factory is passed around so those who want the
-                // processing or round env can get it off the factory. This
-                // saves us from having to pass around multiple objects.
-                factory.setEnvironments(processingEnv, roundEnv);
-
-                // Step 2 - read the persistence xml classes (gives us extra
-                // classes and mapping files. From them we get transients and
-                // access). Metadata read from XML causes new accessors to be
-                // created and override existing ones (causing them to be un-
-                // pre-processed. We can never tell what changes in XML so we
-                // have to do this.
-                final PersistenceUnitReader puReader = new PersistenceUnitReader(logger, processingEnv);
-                puReader.initPersistenceUnits(factory);
-
-                // Step 3 - iterate over all the persistence units and generate
-                // their canonical model classes.
-                for (PersistenceUnit persistenceUnit : factory.getPersistenceUnits()) {
-
-                    // Update log level using PU property when no command line logging level option is set
-                    final boolean updateLogger = logger != null && !logCtx.isAny();
-                    if (updateLogger) {
-                        LoggerContext.updateMetadataLogger(logger, persistenceUnit);
-                    }
-
-                    // Step 3a - add the Entities not defined in XML that are
-                    // being compiled.
-                    for (Element element : roundEnv.getElementsAnnotatedWith(Entity.class)) {
-                        persistenceUnit.addEntityAccessor(element);
-                    }
-
-                    // Step 3b - add the Embeddables not defined in XML that are
-                    // being compiled.
-                    for (Element element : roundEnv.getElementsAnnotatedWith(Embeddable.class)) {
-                        persistenceUnit.addEmbeddableAccessor(element);
-                    }
-
-                    // Step 3c - add the MappedSuperclasses not defined in XML
-                    // that are being compiled.
-                    for (Element element : roundEnv.getElementsAnnotatedWith(MappedSuperclass.class)) {
-                        persistenceUnit.addMappedSuperclassAccessor(element);
-                    }
-
-                    // Step 3d - tell the persistence unit to pre-process itself.
-                    persistenceUnit.preProcessForCanonicalModel();
-
-                    // Step 3e - We're set, generate the canonical model classes.
-                    generateCanonicalModelClasses(factory, persistenceUnit);
-
-                    if (updateLogger) {
-                        logCtx.updateMetadataLogger(logger);
-                    }
-                }
-            } catch (Exception e) {
-                final MetadataLogger logger = (factory != null) ? factory.getLogger() : null;
-                if (logger == null || logger.shouldLog(LogLevel.SEVERE, LogCategory.PROCESSOR)) {
-                    processingEnv.getMessager().printMessage(Kind.ERROR, e.toString());
-                }
-                throw new RuntimeException(e);
-            }
-        }
-
-        return false; // Don't claim any annotations
-    }
-
     /**
      * INTERNAL:
      */
@@ -538,4 +564,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         return parentCanonicalName;
     }
 
+    private void log(int level, String msg, Object... args) {
+        log.log(level, SessionLog.PROCESSOR, msg, args, false);
+    }
 }
