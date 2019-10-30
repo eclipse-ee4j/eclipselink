@@ -39,6 +39,7 @@
             <groupId>org.antlr</groupId>
             <artifactId>antlr-runtime</artifactId>
             <classifier>sources</classifier>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
