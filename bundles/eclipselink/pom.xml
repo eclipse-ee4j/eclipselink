@@ -21,7 +21,7 @@
     <name>EclipseLink Bundles eclipselink.jar (non-OSGi)</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>eclipselink</artifactId>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <parent>
         <groupId>org.eclipse.persistence</groupId>
