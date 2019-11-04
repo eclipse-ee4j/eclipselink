@@ -1022,6 +1022,21 @@
                             <outputDirectory>${project.build.directory}/failsafe-reports</outputDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>generate-test-summary-html-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>failsafe-report-only</goal>
+                        </goals>
+                        <configuration>
+                            <reportsDirectories>
+                                <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                                <reportsDirectory>${project.build.directory}/failsafe-reports</reportsDirectory>
+                            </reportsDirectories>
+                            <outputDirectory>${project.build.directory}/test-reports</outputDirectory>
+                            <outputName>test-summary</outputName>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
