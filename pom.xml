@@ -159,7 +159,7 @@
         <mysql.version>5.1.44</mysql.version>
         <!-- CQ #21139, 21140 -->
         <logback.version>1.3.0-alpha5</logback.version>
-        <oracle.jdbc.version>18.3.0.0</oracle.jdbc.version>
+        <oracle.jdbc.version>19.3.0.0</oracle.jdbc.version>
         <oracle.fmw.version>12.2.1-2-0</oracle.fmw.version>
         <!-- CQ #21141 -->
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
@@ -1132,7 +1132,7 @@
                 <test.properties.file>${user.home}/${test.oracle.properties.file}</test.properties.file>
                 <test.properties.fileName>${test.oracle.properties.file}</test.properties.fileName>
                 <!--Used by sql-maven-plugin-->
-                <db.driver.groupId>com.oracle.jdbc</db.driver.groupId>
+                <db.driver.groupId>com.oracle.ojdbc</db.driver.groupId>
                 <db.driver.artifactId>ojdbc8</db.driver.artifactId>
                 <db.driver.version>${oracle.jdbc.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
@@ -1146,7 +1146,7 @@
                     <!--Oracle proprietary dependencies-->
                     <!--Oracle JDBC driver could be used for testing in the non Oracle modules core test, jpa,...-->
                     <dependency>
-                        <groupId>com.oracle.jdbc</groupId>
+                        <groupId>com.oracle.ojdbc</groupId>
                         <artifactId>ojdbc8</artifactId>
                         <version>${oracle.jdbc.version}</version>
                     </dependency>

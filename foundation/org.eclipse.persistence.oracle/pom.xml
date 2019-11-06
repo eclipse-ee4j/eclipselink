@@ -62,23 +62,23 @@
         <!--Oracle proprietary dependencies-->
         <!--JDBC driver dependencies-->
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
+            <groupId>com.oracle.ojdbc</groupId>
             <artifactId>ojdbc8</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
+            <groupId>com.oracle.ojdbc</groupId>
             <artifactId>xmlparserv2</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
+            <groupId>com.oracle.ojdbc</groupId>
             <artifactId>ucp</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
-            <artifactId>xdb6</artifactId>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>xdb</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
+            <groupId>com.oracle.ojdbc</groupId>
             <artifactId>dms</artifactId>
         </dependency>
         <!--Test dependencies-->

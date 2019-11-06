@@ -79,32 +79,32 @@
         <dependencies>
             <!--Oracle proprietary dependencies-->
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
+                <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>simplefan</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
+                <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>xmlparserv2</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
+                <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>ucp</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
-                <artifactId>xdb6</artifactId>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>xdb</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
+                <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>dms</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
+                <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>ons</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
