@@ -212,7 +212,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--Skip WildFly configuration if server binaries are not available.-->
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>groovy-maven-plugin</artifactId>
@@ -278,7 +277,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 
