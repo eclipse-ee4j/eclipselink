@@ -33,6 +33,7 @@
     <properties>
         <nightlyDir>/nightlybuild/${release.version}/${build.date}</nightlyDir>
         <nightlyVersion>-${release.version}.v${build.date}-${buildNumber}</nightlyVersion>
+        <nightlyTestReportsDir>${project.build.directory}${nightlyDir}/Eclipse</nightlyTestReportsDir>
     </properties>
 
 
@@ -67,34 +68,94 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>filter-resources</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}${nightlyDir}/Eclipse</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <filtering>true</filtering>
-                                    <directory>${project.basedir}/src/main/resources</directory>
-                                    <include>**/*</include>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
                 <artifactId>copy-rename-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>prepare-nightly-build-dir</id>
+                        <id>prepare-nightly-build-dir-test-reports</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../foundation/eclipselink.core.test/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-core-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../dbws/org.eclipse.persistence.dbws/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-dbws-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../utils/org.eclipse.persistence.dbws.builder/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-dbws-util-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../moxy/org.eclipse.persistence.moxy/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jaxb-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../jpa/eclipselink.jpa.test/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpa-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../jpa/eclipselink.jpa.wdf.test/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpa-wdf-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../jpa/org.eclipse.persistence.jpars/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpars-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../moxy/org.eclipse.persistence.moxy/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-oxm-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>
+                                        ../../sdo/org.eclipse.persistence.sdo/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-sdo-lrg${nightlyVersion}.html
+                                    </destinationFile>
+                                </fileSet>
+                            </fileSets>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>prepare-nightly-build-dir-binaries</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy</goal>
@@ -103,37 +164,121 @@
                             <fileSets>
                                 <fileSet>
                                     <sourceFile>../distribution/target/eclipselink.zip</sourceFile>
-                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink${nightlyVersion}.zip</destinationFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/eclipselink${nightlyVersion}.zip
+                                    </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>../others/target/eclipselink-plugins.zip</sourceFile>
-                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-plugins${nightlyVersion}.zip</destinationFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/eclipselink-plugins${nightlyVersion}.zip
+                                    </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>../others/target/eclipselink-plugins-nosql.zip</sourceFile>
-                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-plugins-nosql${nightlyVersion}.zip</destinationFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/eclipselink-plugins-nosql${nightlyVersion}.zip
+                                    </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>../others/target/eclipselink-test-jars.zip</sourceFile>
-                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-test-jars${nightlyVersion}.zip</destinationFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/eclipselink-test-jars${nightlyVersion}.zip
+                                    </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>../others/target/eclipselink-test-src.zip</sourceFile>
-                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-test-src${nightlyVersion}.zip</destinationFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/eclipselink-test-src${nightlyVersion}.zip
+                                    </destinationFile>
                                 </fileSet>
                                 <fileSet>
-                                    <sourceFile>../distribution/target/eclipselink.zip-tmp/eclipselink/jlib/eclipselink.jar</sourceFile>
-                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink.jar</destinationFile>
+                                    <sourceFile>
+                                        ../distribution/target/eclipselink.zip-tmp/eclipselink/jlib/eclipselink.jar
+                                    </sourceFile>
+                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink.jar
+                                    </destinationFile>
                                 </fileSet>
                                 <fileSet>
-                                    <sourceFile>../distribution/target/eclipselink.zip-tmp/eclipselink/jlib/eclipselink-src.jar</sourceFile>
-                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-src${nightlyVersion}.zip</destinationFile>
+                                    <sourceFile>
+                                        ../distribution/target/eclipselink.zip-tmp/eclipselink/jlib/eclipselink-src.jar
+                                    </sourceFile>
+                                    <destinationFile>
+                                        ${project.build.directory}${nightlyDir}/eclipselink-src${nightlyVersion}.zip
+                                    </destinationFile>
                                 </fileSet>
                             </fileSets>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!--Skip WildFly configuration if server binaries are not available.-->
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>generate-ResultSummary.dat</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <source><![CDATA[
+                                import javax.xml.xpath.XPathConstants
+                                import javax.xml.xpath.XPathFactory
+                                import javax.xml.parsers.DocumentBuilderFactory
+
+                                final NO_OF_TESTS_XPATH = "/html/body/div[@id='bodyColumn']/div/div[2]/table/tr[2]/td[1]/text()"
+                                final NO_OF_ERRORS_XPATH = "/html/body/div[@id='bodyColumn']/div/div[2]/table/tr[2]/td[2]/text()"
+                                final NO_OF_FAILURES_XPATH = "/html/body/div[@id='bodyColumn']/div/div[2]/table/tr[2]/td[3]/text()"
+                                final OUTPUT_FILE = "ResultSummary.dat"
+
+                                def resultSummaryFile = new File(properties["nightlyTestReportsDir"] + "/" + OUTPUT_FILE)
+                                def reportDir = new File(properties["nightlyTestReportsDir"])
+
+                                //Evaluate XPath and return result as integer
+                                int processXml(String xml, String xpathQuery) {
+                                    def xpath = XPathFactory.newInstance().newXPath()
+                                    def dbf = DocumentBuilderFactory.newInstance()
+                                    dbf.setValidating(false)
+                                    dbf.setFeature("http://xml.org/sax/features/namespaces", false);
+                                    dbf.setFeature("http://xml.org/sax/features/validation", false);
+                                    dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-dtd-grammar", false);
+                                    dbf.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                                    def builder = dbf.newDocumentBuilder()
+                                    def inputStream = new ByteArrayInputStream(xml.bytes)
+                                    def records = builder.parse(inputStream).documentElement
+                                    def nodes = xpath.evaluate(xpathQuery, records, XPathConstants.NODESET)
+                                    return nodes.item(0).getNodeValue().toInteger()
+                                }
+
+                                if (resultSummaryFile.exists()) {
+                                    resultSummaryFile.delete()
+                                }
+                                File[] files = reportDir.listFiles()
+                                for (File file : files) {
+                                    try {
+                                        noOfTests = processXml(file.text, NO_OF_TESTS_XPATH)
+                                        noOfNewTests = noOfTests
+                                        noOfErrors = processXml(file.text, NO_OF_ERRORS_XPATH) +
+                                                processXml(file.text, NO_OF_FAILURES_XPATH)
+                                    } catch (Exception e) {
+                                        log.warn "File: " + file.getName() + " can't be parsed. Result will be marked as a failed test!"
+                                        noOfTests = 1
+                                        noOfNewTests = 1
+                                        noOfErrors = 1
+                                    }
+                                    resultSummaryFile.append file.getName() + ":" + noOfTests + ":" + noOfNewTests + ":" + noOfErrors + "\n"
+                                }
+                                println resultSummaryFile.text
+                                ]]>
+                            </source>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
