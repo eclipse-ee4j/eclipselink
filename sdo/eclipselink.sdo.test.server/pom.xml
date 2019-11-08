@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink SDO Test Server</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.sdo.server.test</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.test.server.parent</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../../pom_test_server.xml</relativePath>
+    </parent>
+
+    <properties>
+        <skip-server-test-sdo>true</skip-server-test-sdo>
+
+        <data-source-name>jdbc/EclipseLinkDS</data-source-name>
+        <data-source-name-non-jta>jdbc/ELNonJTADS</data-source-name-non-jta>
+    </properties>
+
+    <dependencies>
+        <!--Test dependencies-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--Other modules-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.antlr</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.sdo</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>commonj.sdo</artifactId>
+            <version>${commonj.sdo.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--API dependencies-->
+        <dependency>
+            <groupId>jakarta.ejb</groupId>
+            <artifactId>jakarta.ejb-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--JDBC driver (test dependency)-->
+        <dependency>
+            <groupId>${db.driver.groupId}</groupId>
+            <artifactId>${db.driver.artifactId}</artifactId>
+            <version>${db.driver.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--JEE thin client (EJB Client) library.-->
+        <dependency>
+            <groupId>${jee.client.groupId}</groupId>
+            <artifactId>${jee.client.artifactId}</artifactId>
+            <version>${jee.client.version}</version>
+            <type>${jee.client.type}</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
+        <testResources>
+            <testResource>
+                <directory>${integration.test.resources.directory}</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+
+        <plugins>
+            <!--Required for XLST to configure Wildfly modules (see sdo/eclipselink.sdo.test.server.maven/src/test/resources/wildfly/elResources.xml)-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                    <execution>
+                        <id>get-test-classpath-to-properties</id>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>eclipselink.sdo.test.server.jar</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${project.basedir}/${integration.test.directory}/assembly/eclipselink.sdo.test.server.jar.xml</descriptor>
+                            </descriptors>
+                            <finalName>eclipselink.sdo.test.server</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>eclipselink.sdo.test.server.ear</id>
+                        <phase>process-test-classes</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${project.basedir}/${integration.test.directory}/assembly/eclipselink.sdo.test.server.ear.xml</descriptor>
+                            </descriptors>
+                            <finalName>eclipselink.sdo.test.server</finalName>
+                            <appendAssemblyId>false</appendAssemblyId>
+                            <archiverConfig>
+                                <appxml>${project.build.testOutputDirectory}/META-INF/application.xml</appxml>
+                            </archiverConfig>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.carlspring.maven</groupId>
+                <artifactId>derby-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-derby</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-derby</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Itegration tests-->
+            <!--Run specified tests/test suite-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${project.build.testOutputDirectory}</workingDirectory>
+                    <!--Set system properties required for tests-->
+                    <systemPropertiesFile>${testjee.properties.file}</systemPropertiesFile>
+                    <systemProperties>
+                        <sessionBean>${ejb-jndi-name}</sessionBean>
+                        <securityPrincipal>${server.usr}</securityPrincipal>
+                        <securityCredentials>${server.pwd}</securityCredentials>
+                        <providerUrl>${server.rmi.protocol}://${server.host}:${server.rmi.port}</providerUrl>
+                        <initialCtxFactory>${server.initialCtxFactory}</initialCtxFactory>
+                    </systemProperties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <configuration>
+                            <skipTests>${skip-server-test-sdo}</skipTests>
+                            <excludes>
+                                <exclude>*</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-sdo-server</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${skip-server-test-sdo}</skipTests>
+                            <reportNameSuffix>test-skip-sdo-server</reportNameSuffix>
+                            <includes>
+                                <include>org.eclipse.persistence.testing.sdo.server.DeptServiceClientTestSuite</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify-server-test</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Skip WildFly configuration if server binaries are not available.-->
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check-wildfly-home-existence</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Set current EclipseLink JARs into JBoss/WildFly org.eclipse.persistence system module-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>transform</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Start selected JEE server configure there datasource and deploy test application-->
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <configuration>
+                    <skip>${skip-server-test-sdo}</skip>
+                    <deployables>
+                        <deployable>
+                            <location>${project.build.directory}/eclipselink.sdo.test.server.ear</location>
+                            <type>ear</type>
+                            <properties>
+                                <name>eclipselink.sdo.test.server</name>
+                            </properties>
+                        </deployable>
+                    </deployables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-container</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>restart</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-container</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <configuration>
+                            <!--Some classifier is required there. Otherwise maven-jar-plugin throw error.-->
+                            <classifier>client</classifier>
+                        </configuration>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>java11-dependencies</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>jakarta.annotation</groupId>
+                    <artifactId>jakarta.annotation-api</artifactId>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <!--SDO related profiles-->
+        <profile>
+            <id>server-test-sdo</id>
+            <properties>
+                <skip-server-test-sdo>false</skip-server-test-sdo>
+            </properties>
+        </profile>
+        <profile>
+            <id>glassfish</id>
+            <properties>
+                <ejb-jndi-name>DeptServiceBean#org.eclipse.persistence.testing.sdo.server.DeptService</ejb-jndi-name>
+                <skip-server-test-sdo>false</skip-server-test-sdo>
+            </properties>
+        </profile>
+        <profile>
+            <id>wildfly</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <ejb-jndi-name>ejb:eclipselink.sdo.test.server/eclipselink.sdo.test.server/org.eclipse.persistence.testing.sdo.server.DeptServiceBean!org.eclipse.persistence.testing.sdo.server.DeptService</ejb-jndi-name>
+                <!--TODO FIX Tests doesn't work on WildFly-->
+                <skip-server-test-sdo>true</skip-server-test-sdo>
+            </properties>
+        </profile>
+        <profile>
+            <id>weblogic</id>
+            <properties>
+                <ejb-jndi-name>DeptServiceBean#org.eclipse.persistence.testing.sdo.server.DeptService</ejb-jndi-name>
+                <skip-server-test-sdo>false</skip-server-test-sdo>
+            </properties>
+        </profile>
+    </profiles>
+</project>

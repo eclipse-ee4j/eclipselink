@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink Performance Tests</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.performance.test</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
+        <groupId>org.eclipse.persistence</groupId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <project.name>EclipseLink Performance Tests</project.name>
+        <release.version>${project.version}</release.version>
+        <componentId>performance.test</componentId>
+        <testId>org.eclipse.persistence.${componentId}.test</testId>
+
+        <!--Properties used for test resources filtering/replacement-->
+        <!--DB connection properties-->
+        <user>${db.user}</user>
+        <pwd>${db.pwd}</pwd>
+        <driver>${db.driver}</driver>
+        <url>${db.url}</url>
+        <!--Log level-->
+        <loglevel>${logging.level}</loglevel>
+
+        <test-skip-core-srg>${skipTests}</test-skip-core-srg>
+        <test-skip-core-lrg>true</test-skip-core-lrg>
+    </properties>
+
+    <dependencies>
+        <!--Test dependencies-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--Other modules-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <!--API dependencies-->
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>jakarta.persistence</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--Other dependencies-->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.el</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jmh</groupId>
+            <artifactId>jmh-generator-annprocess</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--JDBC driver (test dependency)-->
+        <dependency>
+            <groupId>${db.driver.groupId}</groupId>
+            <artifactId>${db.driver.artifactId}</artifactId>
+            <version>${db.driver.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>true</filtering>
+            </testResource>
+        </testResources>
+
+        <plugins>
+            <!--Load maven properties from file-->
+            <plugin>
+                <groupId>org.kuali.maven.plugins</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <locations>
+                                <location>${project.basedir}/el-test.performance.properties</location>
+                            </locations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Resolve and store into maven property test build classpath-->
+            <!--Required for JMH framework-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>get-test-classpath</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>maven.test-compile.classpath</outputProperty>
+                        </configuration>
+                    </execution>
+                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                    <execution>
+                        <id>get-test-classpath-to-properties</id>
+                        <goals>
+                            <goal>properties</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <classpathScope>test</classpathScope>
+                    <!--Required for JMH framework-->
+                    <systemProperties>
+                        <systemProperty>
+                            <key>java.class.path</key>
+                            <value>${project.build.testOutputDirectory}${path.separator}${maven.test-compile.classpath}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <key>eclipselink.agent</key>
+                            <value>${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</value>
+                        </systemProperty>
+                    </systemProperties>
+                    <skip>${skipTests}</skip>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>test-performance-benchmark</id>
+                        <configuration>
+                            <arguments>
+                                <argument>${warmup.iterations}</argument>
+                                <argument>${run.iterations}</argument>
+                                <argument>${project.build.directory}/${jmh.resultFile}</argument>
+                                <argument>${jmh.resultFormat}</argument>
+                            </arguments>
+                            <mainClass>org.eclipse.persistence.testing.perf.Benchmarks</mainClass>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-performance-jpa-benchmark</id>
+                        <configuration>
+                            <arguments>
+                                <argument>${warmup.iterations}</argument>
+                                <argument>${run.iterations}</argument>
+                                <argument>${project.build.directory}/jpa-${jmh.resultFile}</argument>
+                                <argument>${jmh.resultFormat}</argument>
+                            </arguments>
+                            <mainClass>org.eclipse.persistence.testing.perf.JPABenchmarks</mainClass>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Run specified tests/test suite-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.carlspring.maven</groupId>
+                <artifactId>derby-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-derby</id>
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>stop-derby</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink Test Server Parent</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.test.server.parent</artifactId>
+    <packaging>pom</packaging>
+
+    <parent>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
+        <groupId>org.eclipse.persistence</groupId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>pom.xml</relativePath>
+    </parent>
+
+    <build>
+        <plugins>
+            <!--Download and unpack JEE server automatically if property skip.jee.server.installation=false-->
+            <plugin>
+                <groupId>com.googlecode.maven-download-plugin</groupId>
+                <artifactId>download-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-jee-server</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>wget</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skip.jee.server.installation}</skip>
+                            <url>${installation.url}</url>
+                            <unpack>true</unpack>
+                            <outputDirectory>${test.directory}</outputDirectory>
+                            <md5>${installation.checksum.md5}</md5>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Skip WildFly configuration if server binaries are not available.-->
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <configuration>
+                    <source>
+                        <![CDATA[
+                        project.properties.setProperty("skip.wildfly.configuration", "true")
+                        if (properties["cargo.container.installation.home"] == null) {
+                            return
+                        }
+                        def wildFlyHomeDir = new File(properties["cargo.container.installation.home"])
+                        log.info "WildFlyHomeDir exists:" + wildFlyHomeDir.exists()
+                        if (wildFlyHomeDir.exists() && properties["server.name"] == "jboss") {
+                            project.properties.setProperty("skip.wildfly.configuration", "false")
+                        }
+                        log.info "Skip WildFly configuration: " + project.properties.getProperty("skip.wildfly.configuration")
+                        ]]>
+                    </source>
+                </configuration>
+            </plugin>
+            <!--Set current EclipseLink JARs into JBoss/WildFly org.eclipse.persistence system module-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>xml-maven-plugin</artifactId>
+                <configuration>
+                    <skip>${skip.wildfly.configuration}</skip>
+                    <transformationSets>
+                        <transformationSet>
+                            <dir>${cargo.container.installation.home}/modules/system/layers/base/org/eclipse/persistence/main</dir>
+                            <includes>
+                                <include>module.xml</include>
+                            </includes>
+                            <stylesheet>${project.build.testOutputDirectory}/wildfly/eclipselink-wildfly-module.xsl</stylesheet>
+                            <outputDir>${cargo.container.installation.home}/modules/system/layers/base/org/eclipse/persistence/main</outputDir>
+                        </transformationSet>
+                    </transformationSets>
+                </configuration>
+            </plugin>
+            <!--Copy current EclipseLink JARs into GlassFish modules directory-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>configure-glassfish-modules</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skip.glassfish.configuration}</skip>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.antlr</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.antlr_DEV.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.asm</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.asm_DEV.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.core</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.core_DEV.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.dbws</artifactId>
+                                    <destFileName>org.eclipse.persistence.dbws_DEV.jar</destFileName>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.jpa</artifactId>
+                                    <destFileName>org.eclipse.persistence.jpa_DEV.jar</destFileName>
+                                    <version>${project.version}</version>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.jpa.jpql_DEV.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.jpa.modelgen.processor_DEV.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.moxy</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.moxy_DEV.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.nosql</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.nosql_DEV.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.oracle</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.oracle_DEV.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.eclipse.persistence</groupId>
+                                    <artifactId>org.eclipse.persistence.sdo</artifactId>
+                                    <version>${project.version}</version>
+                                    <destFileName>org.eclipse.persistence.sdo_DEV.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${cargo.container.installation.home}/glassfish/modules</outputDirectory>
+                            <overWriteReleases>true</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <configuration>
+                    <container>
+                        <dependencies>
+                            <dependency>
+                                <groupId>${db.driver.groupId}</groupId>
+                                <artifactId>${db.driver.artifactId}</artifactId>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.eclipse.persistence</groupId>
+                                <artifactId>org.eclipse.persistence.antlr</artifactId>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.eclipse.persistence</groupId>
+                                <artifactId>org.eclipse.persistence.asm</artifactId>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.eclipse.persistence</groupId>
+                                <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.eclipse.persistence</groupId>
+                                <artifactId>org.eclipse.persistence.core</artifactId>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.eclipse.persistence</groupId>
+                                <artifactId>org.eclipse.persistence.jpa</artifactId>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.eclipse.persistence</groupId>
+                                <artifactId>org.eclipse.persistence.moxy</artifactId>
+                            </dependency>
+                        </dependencies>
+                        <!--<append>false</append>-->
+                        <containerId>${server.containerId}</containerId>
+                        <home>${cargo.container.installation.home}</home>
+                        <log>${project.build.directory}/logs/${server.containerId}.log</log>
+                        <output>${project.build.directory}/logs/${server.containerId}.out</output>
+                        <systemProperties>
+                            <!--Required due troubles with Docker-->
+                            <java.net.preferIPv4Stack>true</java.net.preferIPv4Stack>
+                        </systemProperties>
+                        <timeout>1800000</timeout>
+                    </container>
+                    <configuration>
+                        <!--<type>standalone</type>-->
+                        <properties>
+                            <cargo.servlet.port>${server.http.port}</cargo.servlet.port>
+                            <!--<cargo.jboss.configuration>default</cargo.jboss.configuration>-->
+                            <cargo.rmi.port>${server.rmi.port}</cargo.rmi.port>
+                            <cargo.logging>high</cargo.logging>
+                            <cargo.datasource.datasource1>
+                                cargo.datasource.driver=${db.xa.driver}|
+                                cargo.datasource.url=${db.url}|
+                                cargo.datasource.jndi=${data-source-name}|
+                                cargo.datasource.username=${db.user}|
+                                cargo.datasource.password=${db.pwd}|
+                                cargo.datasource.type=${datasource.type}|
+                                cargo.datasource.transactionsupport=${datasource.transactionsupport}|
+                                cargo.datasource.properties=${db.properties}
+                            </cargo.datasource.datasource1>
+                            <cargo.datasource.datasource2>
+                                cargo.datasource.driver=${db.xa.driver}|
+                                cargo.datasource.url=${db.url}|
+                                cargo.datasource.jndi=${data-source-name}2|
+                                cargo.datasource.username=${db.user}|
+                                cargo.datasource.password=${db.pwd}|
+                                cargo.datasource.type=${datasource.type}|
+                                cargo.datasource.transactionsupport=${datasource.transactionsupport}|
+                                cargo.datasource.properties=${db.properties}
+                            </cargo.datasource.datasource2>
+                            <cargo.datasource.datasource3>
+                                cargo.datasource.driver=${db.xa.driver}|
+                                cargo.datasource.url=${db.url}|
+                                cargo.datasource.jndi=${data-source-name}3|
+                                cargo.datasource.username=${db.user}|
+                                cargo.datasource.password=${db.pwd}|
+                                cargo.datasource.type=${datasource.type}|
+                                cargo.datasource.transactionsupport=${datasource.transactionsupport}|
+                                cargo.datasource.properties=${db.properties}
+                            </cargo.datasource.datasource3>
+                            <cargo.datasource.datasource4>
+                                cargo.datasource.driver=${db.driver}|
+                                cargo.datasource.url=${db.url}|
+                                cargo.datasource.jndi=${data-source-name-non-jta}|
+                                cargo.datasource.username=${db.user}|
+                                cargo.datasource.password=${db.pwd}
+                            </cargo.datasource.datasource4>
+                            <cargo.datasource.datasource5>
+                                cargo.datasource.driver=${db.driver}|
+                                cargo.datasource.url=${db.url}|
+                                cargo.datasource.jndi=${data-source-name-non-jta}2|
+                                cargo.datasource.username=${db.user}|
+                                cargo.datasource.password=${db.pwd}
+                            </cargo.datasource.datasource5>
+                            <cargo.datasource.datasource6>
+                                cargo.datasource.driver=${db.driver}|
+                                cargo.datasource.url=${db.url}|
+                                cargo.datasource.jndi=${data-source-name-non-jta}3|
+                                cargo.datasource.username=${db.user}|
+                                cargo.datasource.password=${db.pwd}
+                            </cargo.datasource.datasource6>
+                        </properties>
+                    </configuration>
+                    <!--<wait>false</wait>-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

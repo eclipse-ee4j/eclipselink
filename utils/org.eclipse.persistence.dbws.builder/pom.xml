@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,26 +13,158 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink DBWS Builder</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
-    <packaging>eclipse-plugin</packaging>
+    <packaging>jar</packaging>
 
     <parent>
-        <artifactId>org.eclipse.persistence.parent</artifactId>
         <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
-        <relativePath>../../buildsystem/org.eclipse.persistence.parent/pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <properties>
-        <componentId>dbws.builder</componentId>
-        <testId>eclipselink.${componentId}.test</testId>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <test-skip-dbws-builder>${skipTests}</test-skip-dbws-builder>
     </properties>
 
+    <dependencies>
+        <!--Other modules-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--API dependecies-->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!--Other dependencies-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+        <!--Test dependencies-->
+        <!--Test framework-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--JDBC driver (test dependency)-->
+        <!--API dependecies-->
+        <dependency>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${db.driver.groupId}</groupId>
+            <artifactId>${db.driver.artifactId}</artifactId>
+            <version>${db.driver.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>mysql</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
+                            <systemPropertyVariables>
+                                <db.ddl.create>true</db.ddl.create>
+                                <db.ddl.drop>true</db.ddl.drop>
+                                <db.ddl.debug>false</db.ddl.debug>
+                            </systemPropertyVariables>
+                            <workingDirectory>${project.build.directory}/test-run</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>test-dbws-builder</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${test-skip-dbws-builder}</skipTests>
+                                    <reportNameSuffix>test-dbws-builder</reportNameSuffix>
+                                    <includes>
+                                        <include>dbws.testing.*.*TestSuite</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify-integration-tests</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>test-srg</id>
+            <properties>
+                <test-skip-dbws-builder>false</test-skip-dbws-builder>
+            </properties>
+        </profile>
+        <!--DBWS Builder related profiles-->
+        <profile>
+            <id>test-dbws-builder</id>
+            <properties>
+                <test-skip-dbws-builder>false</test-skip-dbws-builder>
+            </properties>
+        </profile>
+    </profiles>
 </project>

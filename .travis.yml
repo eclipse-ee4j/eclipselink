@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,6 +12,7 @@
 
 language: java
 sudo: required
+dist: xenial
 
 branches:
   except:
@@ -19,72 +20,74 @@ branches:
 
 addons:
   apt:
-    sources:
-      - mysql-5.7-trusty
     packages:
       - libmysql-java
       - mysql-server
       - mysql-client
 
+services:
+  - mysql
+  - mongodb
+
 env:
   global:
-    - ANT_HOME=$HOME/apache-ant-1.10.5
-    - M2_HOME=/usr/local/maven-3.5.2
+    - MAVEN_OPTS="-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
   matrix:
-    - TEST_TARGET=test-core
-    - TEST_TARGET=test-jpa22
-    - TEST_TARGET=test-moxy
-    - TEST_TARGET=test-sdo
-    - TEST_TARGET="test-jpa-jse test-ext test-corba test-jpql test-wdf test-jpars test-dbws test-dbws-builder test-osgi"
-    - TEST_TARGET=test-lrg-server
-    - TEST_TARGET=build-distribution
+    - MAVEN_TEST=core-lrg-mysql
+    - MAVEN_TEST=jpa-lrg-mysql
+    - MAVEN_TEST=moxy-lrg
+    - MAVEN_TEST=sdo-srg
+    - MAVEN_TEST=nosql-lrg
+    - MAVEN_TEST="jpa-modelgen jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution"
+    - MAVEN_TEST=jpa-lrg-server1-mysql
+    - MAVEN_TEST=jpa-lrg-server2-mysql
 
 jdk:
-  - oraclejdk8
-  - oraclejdk11
+  - openjdk8
+  - openjdk11
 
 cache:
   directories:
     - .autoconf
     - $HOME/.m2
-    - $HOME/extension.lib.external
+    - $HOME/lib.external
 
 before_install:
   - sudo mysql_upgrade
-  - sudo mysql -u root -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;CREATE DATABASE IF NOT EXISTS ecltest;"
+  - sudo mysql -u root -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;CREATE DATABASE IF NOT EXISTS ecltests;"
   - sudo service mysql restart
 
 install:
-  - mkdir $HOME/extension.lib.external || true
-  - wget -nc http://repo1.maven.org/maven2/junit/junit/4.12/junit-4.12.jar -O $HOME/extension.lib.external/junit-4.12.jar || true
-  - wget -nc http://repo1.maven.org/maven2/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar -O $HOME/extension.lib.external/hamcrest-core-1.3.jar || true
-  - wget -nc http://repo1.maven.org/maven2/org/jmockit/jmockit/1.35/jmockit-1.35.jar -O $HOME/extension.lib.external/jmockit-1.35.jar || true
-  - wget -nc http://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator/6.0.7.Final/hibernate-validator-6.0.7.Final.jar -O $HOME/extension.lib.external/hibernate-validator-6.0.7.Final.jar || true
-  - wget -nc http://repo1.maven.org/maven2/org/jboss/logging/jboss-logging/3.3.0.Final/jboss-logging-3.3.0.Final.jar -O $HOME/extension.lib.external/jboss-logging-3.3.0.Final.jar || true
-  - wget -nc http://repo1.maven.org/maven2/org/glassfish/javax.el/3.0.1-b08/javax.el-3.0.1-b08.jar -O $HOME/extension.lib.external/javax.el-3.0.1-b08.jar || true
-  - wget -nc http://repo1.maven.org/maven2/com/fasterxml/classmate/1.3.1/classmate-1.3.1.jar -O $HOME/extension.lib.external/classmate-1.3.1.jar || true
-  - wget -nc http://apache.belnet.be/ant/binaries/apache-ant-1.10.5-bin.tar.gz -O $HOME/extension.lib.external/apache-ant-1.10.5-bin.tar.gz || true
-  - wget -nc http://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.tar.gz -O $HOME/extension.lib.external/wildfly-15.0.1.Final.tar.gz || true
-  - tar -x -z -C $HOME -f $HOME/extension.lib.external/apache-ant-1.10.5-bin.tar.gz
+  - mkdir $HOME/lib.external || true
+  - wget -nc http://download.jboss.org/wildfly/15.0.1.Final/wildfly-15.0.1.Final.tar.gz -O $HOME/lib.external/wildfly-15.0.1.Final.tar.gz || true
+  - cp buildsystem/mavenize/test.properties/el-test.derby.properties ~
+  - cp buildsystem/mavenize/test.properties/el-test.mysql.properties ~
+  - cp buildsystem/mavenize/test.properties/el-test.mongodb.properties ~
+  - cp buildsystem/mavenize/test.properties/el-testjee.wildfly.properties ~
+  - sed -i -e 's+skip.jee.server.installation=false+skip.jee.server.installation=true+g' ~/el-testjee.wildfly.properties
+  - sed -i -e 's+${user.home}/.eclipselinktests/wildfly-15.0.1.Final+'$HOME'/wildfly-15.0.1.Final+g' ~/el-testjee.wildfly.properties
 
 before_script:
-  - env | sort
-  - echo "extensions.depend.dir=$HOME/extension.lib.external" >> $HOME/build.properties
-  - echo "junit.lib=$HOME/extension.lib.external/junit-4.12.jar:$HOME/extension.lib.external/hamcrest-core-1.3.jar" >> $HOME/build.properties
-  - echo 'jdbc.driver.jar=/usr/share/java/mysql.jar' >> $HOME/build.properties
-  - echo 'db.driver=com.mysql.jdbc.Driver' >> $HOME/build.properties
-  - echo 'db.url=jdbc:mysql://localhost/ecltest?useSSL=false' >> $HOME/build.properties
-  - echo 'db.user=root' >> $HOME/build.properties
-  - echo 'db.pwd=root' >> $HOME/build.properties
-  - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
-  - echo 'server.name=wildfly' >> $HOME/build.properties
-  - echo "wildfly.home=$HOME/wildfly-15.0.1.Final" >> $HOME/build.properties
-  - echo 'wildfly.config=standalone-full.xml' >> $HOME/build.properties
+  - mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean install -pl '!:eclipselink,!:org.eclipse.persistence.bundles.other,!:org.eclipse.persistence.distribution,!:p2site,!:org.eclipse.persistence.nightly' -DskipTests
 
 script:
-  - cat $HOME/build.properties
-  - $ANT_HOME/bin/ant -f antbuild.xml build -Dfail.on.error=true
   - echo 'RUNNING TESTS, BE PATIENT...'
-  - if [ "$TEST_TARGET" == "test-lrg-server" ]; then tar -x -z -C $HOME -f $HOME/extension.lib.external/wildfly-15.0.1.Final.tar.gz; fi
+  - echo 'ENVIRONMENT:'
+  - env
   - set -o pipefail
-  - $ANT_HOME/bin/ant -f antbuild.xml -Dtest.fail.fast=true -Dfail.on.error=true $TEST_TARGET | grep -E "\] Running |\] Tests run:"
+  - if [ "$MAVEN_TEST" == "core-lrg-mysql" ]; then mvn verify -pl :org.eclipse.persistence.core.test -P test-core-lrg,mysql; fi
+  - if [ "$MAVEN_TEST" == "jpa-lrg-mysql" ]; then mvn verify -pl :org.eclipse.persistence.jpa.test -P test-jpa-lrg,mysql; fi
+  - if [ "$MAVEN_TEST" == "moxy-lrg" ]; then mvn test -pl :org.eclipse.persistence.moxy -P test-moxy-lrg; fi
+  - if [ "$MAVEN_TEST" == "sdo-srg" ]; then mvn verify -pl :org.eclipse.persistence.sdo; fi
+  - if [ "$MAVEN_TEST" == "nosql-lrg" ]; then mvn verify -pl :org.eclipse.persistence.nosql -P mongodb; fi
+  - if [ "$MAVEN_TEST" == "jpa-modelgen jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution" ]; then
+      mvn verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.corba,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution -P mysql;
+    fi
+  - if [ "$MAVEN_TEST" == "jpa-lrg-server1-mysql" ]; then
+      tar -x -z -C $HOME -f $HOME/lib.external/wildfly-15.0.1.Final.tar.gz;
+      mvn verify -pl :org.eclipse.persistence.jpa.test -P server-test-jpa-lrg1,mysql;
+    fi
+  - if [ "$MAVEN_TEST" == "jpa-lrg-server2-mysql" ]; then
+      tar -x -z -C $HOME -f $HOME/lib.external/wildfly-15.0.1.Final.tar.gz;
+      mvn verify -pl :org.eclipse.persistence.jpa.test -P server-test-jpa-lrg2,mysql;
+    fi

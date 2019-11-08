@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/jmockit-1.35.jar" sourcepath="/EXTENSION_LIB_EXTERNAL/jmockit-1.35-sources.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="resource"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.nosql"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.mail.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.ws.rs-api.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.xml.bind-api.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/ops4j/pax/exam/pax-exam/4.11.0/pax-exam-4.11.0.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.inject.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/osgi.core.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_7.1.0.v201909231337.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_7.1.0.v201909231337.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-osgi.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-osgi.source.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.validation-api.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamicxjc"/>
+	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/hibernate-validator-6.0.7.Final.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.json.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/ops4j/pax/exam/pax-exam-junit4/4.11.0/pax-exam-junit4-4.11.0.jar"/>
+	<classpathentry kind="var" path="M2_REPO/org/ops4j/pax/exam/pax-exam-spi/4.11.0/pax-exam-spi-4.11.0.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

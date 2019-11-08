@@ -1,0 +1,200 @@
+<!--
+
+    Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2014, 2018 IBM and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      Rick Curtis- initial API and implementation
+-->
+<project name="eclipselink.jpa.test.jse" default="test" basedir=".">
+
+    <!-- Initialize environment variables first. Do not place lines above these. -->
+    <property environment="env" />
+    <property file="${user.home}/build.properties" />
+    <property file="${test.properties}" />
+    <property file="./antbuild.properties" />
+    <property file="./test.properties" />
+
+    <property name="jse.el.root"            value="${basedir}/../.."/>
+    <property name="jse.jpa.root"           value="${basedir}/.."/>
+    
+    <property name="jse.src.dir"            value="${basedir}/src"/>
+    <property name="jse.classes.dir"        value="${basedir}/classes" />
+    <!-- Use common property name to allow override -->
+    <property name="reports.dir"            value="${basedir}/reports" />
+    <property name="jse.run.dir"            value="${basedir}/run" />
+    
+    <property name="jse.el.plugins.dir"     value="${jse.el.root}/plugins"/>
+    <property name="jse.jpa.plugins.dir"    value="${jse.jpa.root}/plugins"/>
+
+    <property name="version.qualifier"     value="qualifier"/>
+    <property name="version.string"        value="${release.version}.${version.qualifier}"/>
+
+    <!-- Not sure if there is a better way to refer to dependencies? -->
+    <property name="jse.eclipselink.jar" value="${jse.el.root}/eclipselink.jar"/>
+    <property name="javax.transaction" value="${jse.el.plugins.dir}/jakarta.transaction-api.jar"/>
+    <property name="javax.validation" value="${jse.el.plugins.dir}/jakarta.validation-api.jar"/>
+    <property name="javax.persistence" value="${jse.jpa.plugins.dir}/jakarta.persistence_2.2.2.jar"/>
+
+    <fileset id="jse.antlr.jar.path" dir="${jse.el.plugins.dir}" includes="*antlr_*.jar"/>
+    <pathconvert property="jse.antlr.jar" refid="jse.antlr.jar.path"/>
+    <fileset id="jse.asm.jar.path" dir="${jse.el.plugins.dir}" includes="*asm_*.jar"/>
+    <pathconvert property="jse.asm.jar" refid="jse.asm.jar.path"/>
+    <property name="jse.core.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
+    <property name="jse.jpa.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
+    <property name="jse.jpql.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.jpa.jpql_${version.string}.jar"/>
+    <property name="jse.modelgen.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.jpa.modelgen_${version.string}.jar"/>
+    <property name="jse.dbws.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
+
+    <!-- JVM used to run tests -->
+    <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
+    <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
+
+    <!-- JVM specific settings -->
+    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
+        <matches pattern="[1-8]\..*" string="${java.version}"/>
+    </condition>
+
+    <path id="compile.jse.path">
+        <pathelement path="${jse.eclipselink.jar}" />
+        <pathelement path="${jse.modelgen.jar}" />
+        <pathelement path="${javax.transaction}" />
+        <pathelement path="${javax.validation}" />
+        <pathelement path="${javax.persistence}" />
+        <pathelement path="${junit.lib}" />
+    </path>
+    <path id="run.jse.path">
+        <pathelement path="${jse.classes.dir}" />
+        <pathelement path="${javax.persistence}" />
+        <pathelement path="${jse.antlr.jar}" />
+        <pathelement path="${jse.asm.jar}" />
+        <pathelement path="${jse.core.jar}" />
+        <pathelement path="${jse.jpa.jar}" />
+        <pathelement path="${jse.jpql.jar}" />
+        <pathelement path="${jse.modelgen.jar}" />
+        <pathelement path="${jse.dbws.jar}" />
+        <pathelement path="${javax.transaction}" />
+        <pathelement path="${javax.validation}" />
+        <pathelement path="${junit.lib}" />
+        <pathelement path="${jdbc.driver.jar}" />
+    </path>
+
+    <pathconvert property="jse.compile.cp" refid="compile.jse.path"/>
+    <pathconvert property="jse.run.cp" refid="run.jse.path"/>
+    
+    <echo message="jse.el.root                      = ${jse.el.root}"/>
+    <echo message="jse.jpa.root                     = ${jse.jpa.root}"/>
+    <echo message="jse.eclipselink.jar              = ${jse.eclipselink.jar}"/>
+    <echo message="jse.classes.dir                  = ${jse.classes.dir}"/>
+    <echo message="jse.src.dir                      = ${jse.src.dir}"/>
+    <echo message="compile classpath                = ${jse.compile.cp}"/>
+    <echo message="run classpath                    = ${jse.run.cp}"/>   
+    <echo message="report dir                       = ${reports.dir}"/>
+    <echo message="basedir                          = ${basedir}"/>
+    <echo message="junitlib                         = ${junit.lib}"/>
+    <echo message="jse.run.cp                       = ${jse.run.cp}"/>
+
+    <target name="test-no-report" depends="test-run"/>
+    <target name="test" depends="test-run, test-report"/>
+    
+    <target name="test-run" depends="compile, weave">
+        <mkdir dir="${reports.dir}"/>
+        <mkdir dir="${jse.run.dir}"/>
+        <property name="rmi.port" value="1099"/>
+        <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
+        <property name="debugargs" value="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=7777"/>
+        <property name="rmi" value="-Djava.naming.provider.url=rmi://localhost:${rmi.port} -Djava.naming.factory.initial=com.sun.jndi.rmi.registry.RegistryContextFactory"/>
+        <junit jvm="${test.junit.jvm.exec}" printsummary="on" haltonfailure="false" failureproperty="fail" logfailedtests="true"
+               fork="yes" dir="${jse.classes.dir}" forkmode="once">
+            <jvmarg line="${test.junit.jvm.modules.prop}"/>
+            <jvmarg line="${additional.jvmargs} ${rmi}"/>
+            <sysproperty key="additional.jvmargs" value="${additional.jvmargs}"/>
+            <sysproperty key="test.junit.jvm.modules" value="${test.junit.jvm.modules.prop}"/>
+            <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
+            <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
+            <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>
+            <sysproperty key="javax.persistence.jdbc.password" value="${db.pwd}"/>
+            <sysproperty key="rmi.port" value="${rmi.port}"/>
+            <sysproperty key="run.dir" value="${jse.run.dir}"/>
+            <classpath>
+                <path refid="run.jse.path" />
+            </classpath>
+
+            <formatter type="xml"/>
+
+            <batchtest todir="${reports.dir}">
+                <fileset dir="${jse.src.dir}">
+                    <include name="**/Test*.java"/>
+                </fileset>
+            </batchtest>
+
+        </junit>
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="fail"/>
+                    <istrue value="${test.fail.fast}"/>
+                </and>
+            </condition>
+        </fail>
+    </target>
+    
+    <target name="test-report">
+        <junitreport todir="./reports">
+          <fileset dir="./reports">
+            <include name="TEST-*.xml"/>
+          </fileset>
+          <report format="frames" todir="./reports/html"/>
+        </junitreport>
+        <echo message="JUNIT results in ${user.dir}/reports/html"/>
+        <fail if="fail" message="Test failures detected, please check the results."/>
+    </target>
+
+    <!--
+    Ideally we could do something smart here to have different weaving targets to weave with different properties.
+    We can cross that bridge when / if it is needed.
+    -->
+    <target name="weave">
+        <weave source="${jse.classes.dir}" target="${jse.classes.dir}" loglevel="WARNING">
+            <classpath>
+                <path refid="compile.jse.path" />
+            </classpath>
+        </weave>
+    </target>
+
+    <target name="compile" depends="clean-test">
+        <mkdir dir="${jse.classes.dir}"/>
+        <copy todir="${jse.classes.dir}/META-INF">
+            <fileset dir="${jse.src.dir}/META-INF" includes="**/*" excludes=".git*"/>
+        </copy>
+
+        <javac debug="true" destdir="${jse.classes.dir}" includeantruntime="false" source="${javac.version}" target="${javac.version}">
+            <compilerarg value="-proc:none"/>
+            <classpath refid="compile.jse.path"/>
+            <src path="src"/>
+        </javac>
+    </target>
+
+    <target name="clean-test">
+        <delete dir="${jse.classes.dir}" />
+        <delete dir="${jse.run.dir}" />
+        <delete dir="${reports.dir}" />
+    </target>
+
+    <taskdef name="weave" classname="org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask">
+        <classpath>
+            <path refid="compile.jse.path" />
+        </classpath>
+    </taskdef>
+</project>

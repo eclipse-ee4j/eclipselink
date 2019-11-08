@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>EclipseLink Bundles Nightly Builds</name>
+    <groupId>org.eclipse.persistence</groupId>
+    <artifactId>org.eclipse.persistence.nightly</artifactId>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.bundles</artifactId>
+        <version>3.0.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <properties>
+        <nightlyDir>/nightlybuild/${release.version}/${build.date}</nightlyDir>
+        <nightlyVersion>-${release.version}.v${build.date}-${buildNumber}</nightlyVersion>
+    </properties>
+
+
+    <build>
+        <plugins>
+            <!--Initialize build.date and build.time buildNumber properties. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <configuration>
+                    <revisionOnScmFailure>false</revisionOnScmFailure>
+                    <shortRevisionLength>10</shortRevisionLength>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build.date</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                        <configuration>
+                            <timestampFormat>yyyyMMdd</timestampFormat>
+                            <timestampPropertyName>build.date</timestampPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>filter-resources</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}${nightlyDir}/Eclipse</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <filtering>true</filtering>
+                                    <directory>${project.basedir}/src/main/resources</directory>
+                                    <include>**/*</include>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.coderplus.maven.plugins</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>prepare-nightly-build-dir</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <sourceFile>../distribution/target/eclipselink.zip</sourceFile>
+                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink${nightlyVersion}.zip</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>../others/target/eclipselink-plugins.zip</sourceFile>
+                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-plugins${nightlyVersion}.zip</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>../others/target/eclipselink-plugins-nosql.zip</sourceFile>
+                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-plugins-nosql${nightlyVersion}.zip</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>../others/target/eclipselink-test-jars.zip</sourceFile>
+                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-test-jars${nightlyVersion}.zip</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>../others/target/eclipselink-test-src.zip</sourceFile>
+                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-test-src${nightlyVersion}.zip</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>../distribution/target/eclipselink.zip-tmp/eclipselink/jlib/eclipselink.jar</sourceFile>
+                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink.jar</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>../distribution/target/eclipselink.zip-tmp/eclipselink/jlib/eclipselink-src.jar</sourceFile>
+                                    <destinationFile>${project.build.directory}${nightlyDir}/eclipselink-src${nightlyVersion}.zip</destinationFile>
+                                </fileSet>
+                            </fileSets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

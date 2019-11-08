@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -13,26 +13,213 @@
 
 -->
 
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink SDO</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.sdo</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
-    <packaging>eclipse-plugin</packaging>
+    <packaging>jar</packaging>
 
     <parent>
-        <artifactId>org.eclipse.persistence.parent</artifactId>
         <groupId>org.eclipse.persistence</groupId>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
-        <relativePath>../../buildsystem/org.eclipse.persistence.parent/pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <properties>
-        <componentId>sdo</componentId>
-        <testId>eclipselink.${componentId}.test</testId>
+        <maven.deploy.skip>false</maven.deploy.skip>
+        <test-skip-sdo-srg>${skipTests}</test-skip-sdo-srg>
+        <test-skip-sdo>true</test-skip-sdo>
     </properties>
 
+    <dependencies>
+        <!--Other modules-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--Other libraries dependencies-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>commonj.sdo</artifactId>
+        </dependency>
+        <!--Test dependencies-->
+        <!--Test framework-->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--Generate OSGi bundle/manifest-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>commonj.sdo.impl</Import-Package>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <!--Add licence files (about.html, license.html, readme.html) to the build output directory-->
+                <executions>
+                    <!--Resolve and store into maven property build classpath-->
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>build-classpath</goal>
+                        </goals>
+                        <configuration>
+                            <outputProperty>maven.compile.classpath</outputProperty>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--Required for tests, because working directory for EclipseLink SDO compiler tests is .../target/test-run-->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-resources</id>
+                        <!-- here the phase you need -->
+                        <phase>test</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/test-run</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.testResources[0].directory}</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <workingDirectory>${project.build.directory}/test-run</workingDirectory>
+                    <!--Set system properties required for tests-->
+                    <systemPropertyVariables>
+                        <loggingLevelFinest>false</loggingLevelFinest>
+                        <!--<customContext>true</customContext>-->
+                        <eclipselink.xml.platform>${test.xml.platform}</eclipselink.xml.platform>
+                        <tempFileDir>${project.build.directory}/test-run</tempFileDir>
+                        <ignoreCRLF>true</ignoreCRLF>
+                        <useLogging>false</useLogging>
+                        <sdo.classgen.compile.path>${project.build.outputDirectory}${path.separator}${project.build.testOutputDirectory}${path.separator}${maven.compile.classpath}</sdo.classgen.compile.path>
+                        <useSAXParsing>true</useSAXParsing>
+                        <useDeploymentXML>false</useDeploymentXML>
+                        <jaxb.test.contextpath>oracle.toplink.testing.ox.jaxb.sax</jaxb.test.contextpath>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default-test</id>
+                        <configuration>
+                            <skipTests>true</skipTests>
+                            <excludes>
+                                <exclude>*</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-sdo-srg</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${test-skip-sdo-srg}</skipTests>
+                            <reportNameSuffix>test-sdo-srg</reportNameSuffix>
+                            <includes>
+                                <include>org.eclipse.persistence.testing.sdo.SDOSRGTestSuite</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-sdo</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${test-skip-sdo}</skipTests>
+                            <reportNameSuffix>test-sdo</reportNameSuffix>
+                            <includes>
+                                <!--<include>org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.nodenullpolicy.IsSetLoadAndSaveTestSuite</include>-->
+                                <include>**.*TestSuite</include>
+                            </includes>
+                            <excludes>
+                                <exclude>org.eclipse.persistence.testing.sdo.SDOTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.sdo.SDOSRGTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.sdo.helper.SDOHelperTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.sdo.helper.xmlhelper.SDOXMLHelperTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.sdo.helper.typehelper.define.SDOTypeHelperDefineTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.sdo.helper.xsdhelper.define.XSDHelperDefineTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.sdo.model.SDOModelTestSuite</exclude>
+                                <exclude>org.eclipse.persistence.testing.sdo.performance.*TestSuite</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>java11-dependencies</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>jakarta.xml.bind</groupId>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                    <optional>true</optional>
+                </dependency>
+            </dependencies>
+        </profile>
+        <!--SDO related profiles-->
+        <profile>
+            <id>test-sdo-srg</id>
+            <properties>
+                <test-skip-sdo-srg>false</test-skip-sdo-srg>
+            </properties>
+        </profile>
+        <profile>
+            <id>test-sdo</id>
+            <properties>
+                <test-skip-sdo-srg>true</test-skip-sdo-srg>
+                <test-skip-sdo>false</test-skip-sdo>
+            </properties>
+        </profile>
+    </profiles>
 </project>

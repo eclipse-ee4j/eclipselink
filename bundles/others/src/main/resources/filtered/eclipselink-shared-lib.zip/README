@@ -1,0 +1,7 @@
+
+How to use a different version of EclipseLink than ships with Weblogic in your application
+------------------------------------------------------------------------------------------
+
+Put the shared library (the ear in the 'shared-lib' dir) in the ...
+Package the 'weblogoc-application.xml found in the 'app' dir with your application, and...
+        
