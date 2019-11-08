@@ -72,9 +72,8 @@ final class Subroutine {
    */
   Subroutine(final Subroutine subroutine) {
     this.start = subroutine.start;
-    this.localsUsed = new boolean[subroutine.localsUsed.length];
+    this.localsUsed = subroutine.localsUsed.clone();
     this.callers = new ArrayList<>(subroutine.callers);
-    System.arraycopy(subroutine.localsUsed, 0, this.localsUsed, 0, subroutine.localsUsed.length);
   }
 
   /**

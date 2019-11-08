@@ -254,7 +254,7 @@ public class SimpleVerifier extends BasicVerifier {
           type1 = type1.getElementType();
           type2 = type2.getElementType();
         }
-        do {
+        while (true) {
           if (type1 == null || isInterface(type1)) {
             return newArrayValue(Type.getObjectType("java/lang/Object"), numDimensions);
           }
@@ -262,7 +262,7 @@ public class SimpleVerifier extends BasicVerifier {
           if (isAssignableFrom(type1, type2)) {
             return newArrayValue(type1, numDimensions);
           }
-        } while (true);
+        }
       }
       return BasicValue.UNINITIALIZED_VALUE;
     }

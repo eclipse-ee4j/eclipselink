@@ -41,6 +41,20 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
 /**
  * A {@link ClassVisitor} that remaps types with a {@link Remapper}.
  *
+ * <p><i>This visitor has several limitations</i>. A non-exhaustive list is the following:
+ *
+ * <ul>
+ *   <li>it cannot remap type names in dynamically computed strings (remapping of type names in
+ *       static values is supported).
+ *   <li>it cannot remap values derived from type names at compile time, such as
+ *       <ul>
+ *         <li>type name hashcodes used by some Java compilers to implement the string switch
+ *             statement.
+ *         <li>some compound strings used by some Java compilers to implement lambda
+ *             deserialization.
+ *       </ul>
+ * </ul>
+ *
  * @author Eugene Kuleshov
  */
 public class ClassRemapper extends ClassVisitor {
