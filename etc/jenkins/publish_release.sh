@@ -19,3 +19,7 @@
 
 echo '-[ EclipseLink Publish to Releases ]-----------------------------------------------------------'
 scp -r ${RELEASE_DNLD_DIR}/* genie.eclipselink@projects-storage.eclipse.org:${RELEASE_DNLD_DIR_REMOTE}
+cd ${RELEASE_SITE_DIR}
+P2_SITE_NAME=$(ls)
+zip -r "${P2_SITE_NAME}.zip" ${P2_SITE_NAME}/*
+scp -r ${RELEASE_SITE_DIR}/* genie.eclipselink@projects-storage.eclipse.org:${RELEASE_SITE_DIR_REMOTE}
