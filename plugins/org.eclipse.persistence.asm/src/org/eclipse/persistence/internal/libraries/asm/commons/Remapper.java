@@ -110,8 +110,7 @@ public abstract class Remapper {
       String remappedInternalName = mapType(internalName);
       if (remappedInternalName != null) {
         if (remappedInternalNames == null) {
-          remappedInternalNames = new String[internalNames.length];
-          System.arraycopy(internalNames, 0, remappedInternalNames, 0, internalNames.length);
+          remappedInternalNames = internalNames.clone();
         }
         remappedInternalNames[i] = remappedInternalName;
       }

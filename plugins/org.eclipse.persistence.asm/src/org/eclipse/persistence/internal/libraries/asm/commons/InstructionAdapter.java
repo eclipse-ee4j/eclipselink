@@ -895,47 +895,58 @@ public class InstructionAdapter extends MethodVisitor {
    * @param to a Type.
    */
   public void cast(final Type from, final Type to) {
+    cast(mv, from, to);
+  }
+
+  /**
+   * Generates the instruction to cast from the first given type to the other.
+   *
+   * @param methodVisitor the method visitor to use to generate the instruction.
+   * @param from a Type.
+   * @param to a Type.
+   */
+  static void cast(final MethodVisitor methodVisitor, final Type from, final Type to) {
     if (from != to) {
       if (from == Type.DOUBLE_TYPE) {
         if (to == Type.FLOAT_TYPE) {
-          mv.visitInsn(Opcodes.D2F);
+          methodVisitor.visitInsn(Opcodes.D2F);
         } else if (to == Type.LONG_TYPE) {
-          mv.visitInsn(Opcodes.D2L);
+          methodVisitor.visitInsn(Opcodes.D2L);
         } else {
-          mv.visitInsn(Opcodes.D2I);
-          cast(Type.INT_TYPE, to);
+          methodVisitor.visitInsn(Opcodes.D2I);
+          cast(methodVisitor, Type.INT_TYPE, to);
         }
       } else if (from == Type.FLOAT_TYPE) {
         if (to == Type.DOUBLE_TYPE) {
-          mv.visitInsn(Opcodes.F2D);
+          methodVisitor.visitInsn(Opcodes.F2D);
         } else if (to == Type.LONG_TYPE) {
-          mv.visitInsn(Opcodes.F2L);
+          methodVisitor.visitInsn(Opcodes.F2L);
         } else {
-          mv.visitInsn(Opcodes.F2I);
-          cast(Type.INT_TYPE, to);
+          methodVisitor.visitInsn(Opcodes.F2I);
+          cast(methodVisitor, Type.INT_TYPE, to);
         }
       } else if (from == Type.LONG_TYPE) {
         if (to == Type.DOUBLE_TYPE) {
-          mv.visitInsn(Opcodes.L2D);
+          methodVisitor.visitInsn(Opcodes.L2D);
         } else if (to == Type.FLOAT_TYPE) {
-          mv.visitInsn(Opcodes.L2F);
+          methodVisitor.visitInsn(Opcodes.L2F);
         } else {
-          mv.visitInsn(Opcodes.L2I);
-          cast(Type.INT_TYPE, to);
+          methodVisitor.visitInsn(Opcodes.L2I);
+          cast(methodVisitor, Type.INT_TYPE, to);
         }
       } else {
         if (to == Type.BYTE_TYPE) {
-          mv.visitInsn(Opcodes.I2B);
+          methodVisitor.visitInsn(Opcodes.I2B);
         } else if (to == Type.CHAR_TYPE) {
-          mv.visitInsn(Opcodes.I2C);
+          methodVisitor.visitInsn(Opcodes.I2C);
         } else if (to == Type.DOUBLE_TYPE) {
-          mv.visitInsn(Opcodes.I2D);
+          methodVisitor.visitInsn(Opcodes.I2D);
         } else if (to == Type.FLOAT_TYPE) {
-          mv.visitInsn(Opcodes.I2F);
+          methodVisitor.visitInsn(Opcodes.I2F);
         } else if (to == Type.LONG_TYPE) {
-          mv.visitInsn(Opcodes.I2L);
+          methodVisitor.visitInsn(Opcodes.I2L);
         } else if (to == Type.SHORT_TYPE) {
-          mv.visitInsn(Opcodes.I2S);
+          methodVisitor.visitInsn(Opcodes.I2S);
         }
       }
     }
@@ -1204,6 +1215,16 @@ public class InstructionAdapter extends MethodVisitor {
    * @param type an array Type.
    */
   public void newarray(final Type type) {
+    newarray(mv, type);
+  }
+
+  /**
+   * Generates the instruction to create and push on the stack an array of the given type.
+   *
+   * @param methodVisitor the method visitor to use to generate the instruction.
+   * @param type an array Type.
+   */
+  static void newarray(final MethodVisitor methodVisitor, final Type type) {
     int arrayType;
     switch (type.getSort()) {
       case Type.BOOLEAN:
@@ -1231,10 +1252,10 @@ public class InstructionAdapter extends MethodVisitor {
         arrayType = Opcodes.T_DOUBLE;
         break;
       default:
-        mv.visitTypeInsn(Opcodes.ANEWARRAY, type.getInternalName());
+        methodVisitor.visitTypeInsn(Opcodes.ANEWARRAY, type.getInternalName());
         return;
     }
-    mv.visitIntInsn(Opcodes.NEWARRAY, arrayType);
+    methodVisitor.visitIntInsn(Opcodes.NEWARRAY, arrayType);
   }
 
   public void arraylength() {
