@@ -62,6 +62,7 @@
         <integration.test.directory>src/it/</integration.test.directory>
         <integration.test.sources.directory>${integration.test.directory}/java/</integration.test.sources.directory>
         <integration.test.resources.directory>${integration.test.directory}/resources/</integration.test.resources.directory>
+        <integration.test.skip.verify>false</integration.test.skip.verify>
 
         <!--Default location for JEE servers binaries-->
         <test.directory>${user.home}/.eclipselinktests</test.directory>
