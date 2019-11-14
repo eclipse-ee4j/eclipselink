@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
  * A doubly linked list of {@link AbstractInsnNode} objects. <i>This implementation is not thread
  * safe</i>.
  */
-public class InsnList {
+public class InsnList implements Iterable<AbstractInsnNode> {
 
   /** The number of instructions in this list. */
   private int size;
@@ -151,6 +151,7 @@ public class InsnList {
    *
    * @return an iterator over the instructions in this list.
    */
+  @Override
   public ListIterator<AbstractInsnNode> iterator() {
     return iterator(0);
   }

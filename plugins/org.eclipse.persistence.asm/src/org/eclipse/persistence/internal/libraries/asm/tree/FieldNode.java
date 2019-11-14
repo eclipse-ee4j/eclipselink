@@ -27,7 +27,6 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
-import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
@@ -143,15 +142,9 @@ public class FieldNode extends FieldVisitor {
   public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
-      if (visibleAnnotations == null) {
-        visibleAnnotations = new ArrayList<>(1);
-      }
-      visibleAnnotations.add(annotation);
+      visibleAnnotations = Util.add(visibleAnnotations, annotation);
     } else {
-      if (invisibleAnnotations == null) {
-        invisibleAnnotations = new ArrayList<>(1);
-      }
-      invisibleAnnotations.add(annotation);
+      invisibleAnnotations = Util.add(invisibleAnnotations, annotation);
     }
     return annotation;
   }
@@ -161,25 +154,16 @@ public class FieldNode extends FieldVisitor {
       final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
-      if (visibleTypeAnnotations == null) {
-        visibleTypeAnnotations = new ArrayList<>(1);
-      }
-      visibleTypeAnnotations.add(typeAnnotation);
+      visibleTypeAnnotations = Util.add(visibleTypeAnnotations, typeAnnotation);
     } else {
-      if (invisibleTypeAnnotations == null) {
-        invisibleTypeAnnotations = new ArrayList<>(1);
-      }
-      invisibleTypeAnnotations.add(typeAnnotation);
+      invisibleTypeAnnotations = Util.add(invisibleTypeAnnotations, typeAnnotation);
     }
     return typeAnnotation;
   }
 
   @Override
   public void visitAttribute(final Attribute attribute) {
-    if (attrs == null) {
-      attrs = new ArrayList<>(1);
-    }
-    attrs.add(attribute);
+    attrs = Util.add(attrs, attribute);
   }
 
   @Override

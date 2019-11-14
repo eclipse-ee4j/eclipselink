@@ -73,27 +73,6 @@ public class Textifier extends Printer {
   /** The type of class signatures. See {@link #appendDescriptor}. */
   public static final int CLASS_SIGNATURE = 5;
 
-  /**
-   * Deprecated.
-   *
-   * @deprecated this constant has never been used.
-   */
-  @Deprecated public static final int TYPE_DECLARATION = 6;
-
-  /**
-   * Deprecated.
-   *
-   * @deprecated this constant has never been used.
-   */
-  @Deprecated public static final int CLASS_DECLARATION = 7;
-
-  /**
-   * Deprecated.
-   *
-   * @deprecated this constant has never been used.
-   */
-  @Deprecated public static final int PARAMETERS_DECLARATION = 8;
-
   /** The type of method handle descriptors. See {@link #appendDescriptor}. */
   public static final int HANDLE_DESCRIPTOR = 9;
 
@@ -1283,8 +1262,7 @@ public class Textifier extends Printer {
    *
    * @param type the type of 'value'. Must be one of {@link #INTERNAL_NAME}, {@link
    *     #FIELD_DESCRIPTOR}, {@link #FIELD_SIGNATURE}, {@link #METHOD_DESCRIPTOR}, {@link
-   *     #METHOD_SIGNATURE}, {@link #CLASS_SIGNATURE}, {@link #TYPE_DECLARATION}, {@link
-   *     #CLASS_DECLARATION}, {@link #PARAMETERS_DECLARATION} of {@link #HANDLE_DESCRIPTOR}.
+   *     #METHOD_SIGNATURE}, {@link #CLASS_SIGNATURE} or {@link #HANDLE_DESCRIPTOR}.
    * @param value an internal name, type descriptor or a type signature. May be {@literal null}.
    */
   protected void appendDescriptor(final int type, final String value) {

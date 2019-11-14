@@ -684,7 +684,7 @@ public abstract class Printer {
   /**
    * Method parameter. See {@link org.eclipse.persistence.internal.libraries.asm.MethodVisitor#visitParameter(String, int)}.
    *
-   * @param name parameter name or null if none is provided.
+   * @param name parameter name or {@literal null} if none is provided.
    * @param access the parameter's access flags, only {@code ACC_FINAL}, {@code ACC_SYNTHETIC}
    *     or/and {@code ACC_MANDATED} are allowed (see {@link Opcodes}).
    */

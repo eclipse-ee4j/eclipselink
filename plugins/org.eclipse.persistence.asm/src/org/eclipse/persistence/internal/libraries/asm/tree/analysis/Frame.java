@@ -350,23 +350,8 @@ public class Frame<V extends Value> {
         break;
       case Opcodes.DUP_X2:
         value1 = pop();
-        if (value1.getSize() == 1) {
-          value2 = pop();
-          if (value2.getSize() == 1) {
-            value3 = pop();
-            if (value3.getSize() == 1) {
-              push(interpreter.copyOperation(insn, value1));
-              push(value3);
-              push(value2);
-              push(value1);
-              break;
-            }
-          } else {
-            push(interpreter.copyOperation(insn, value1));
-            push(value2);
-            push(value1);
-            break;
-          }
+        if (value1.getSize() == 1 && executeDupX2(insn, value1, interpreter)) {
+          break;
         }
         throw new AnalyzerException(insn, "Illegal use of DUP_X2");
       case Opcodes.DUP2:
@@ -437,23 +422,8 @@ public class Frame<V extends Value> {
               break;
             }
           }
-        } else {
-          value2 = pop();
-          if (value2.getSize() == 1) {
-            value3 = pop();
-            if (value3.getSize() == 1) {
-              push(interpreter.copyOperation(insn, value1));
-              push(value3);
-              push(value2);
-              push(value1);
-              break;
-            }
-          } else {
-            push(interpreter.copyOperation(insn, value1));
-            push(value2);
-            push(value1);
-            break;
-          }
+        } else if (executeDupX2(insn, value1, interpreter)) {
+          break;
         }
         throw new AnalyzerException(insn, "Illegal use of DUP2_X2");
       case Opcodes.SWAP:
@@ -638,6 +608,28 @@ public class Frame<V extends Value> {
       default:
         throw new AnalyzerException(insn, "Illegal opcode " + insn.getOpcode());
     }
+  }
+
+  private boolean executeDupX2(
+      final AbstractInsnNode insn, final V value1, final Interpreter<V> interpreter)
+      throws AnalyzerException {
+    V value2 = pop();
+    if (value2.getSize() == 1) {
+      V value3 = pop();
+      if (value3.getSize() == 1) {
+        push(interpreter.copyOperation(insn, value1));
+        push(value3);
+        push(value2);
+        push(value1);
+        return true;
+      }
+    } else {
+      push(interpreter.copyOperation(insn, value1));
+      push(value2);
+      push(value1);
+      return true;
+    }
+    return false;
   }
 
   private void executeInvokeInsn(

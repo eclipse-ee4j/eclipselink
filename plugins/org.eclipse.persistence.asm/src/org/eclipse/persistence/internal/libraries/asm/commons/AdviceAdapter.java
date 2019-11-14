@@ -351,6 +351,8 @@ public abstract class AdviceAdapter extends GeneratorAdapter implements Opcodes 
           popValue();
           popValue();
           break;
+        case RET:
+          break;
         default:
           throw new IllegalArgumentException(INVALID_OPCODE + opcode);
       }
