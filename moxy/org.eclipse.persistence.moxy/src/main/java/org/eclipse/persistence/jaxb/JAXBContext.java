@@ -806,7 +806,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             SessionLog logger = AbstractSessionLog.getLog();
             if (properties != null && logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
                 for (Object key : properties.keySet()) {
-                    logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{key.toString(), properties.get(key).toString()});
+                    if (properties.get(key) == null) {
+                        logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{key.toString(), "NULL"});
+                    } else {
+                        logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{key.toString(), properties.get(key).toString()});
+                    }
                 }
             }
             this.properties = properties;

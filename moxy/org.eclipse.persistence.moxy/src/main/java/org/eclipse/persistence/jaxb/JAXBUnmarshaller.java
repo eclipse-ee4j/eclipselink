@@ -924,8 +924,12 @@ public class JAXBUnmarshaller implements Unmarshaller {
             xmlUnmarshaller.setDisableSecureProcessing(disabled);
         } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
             xmlUnmarshaller.setLogPayload(((boolean) value));
-        } else if (MarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
-            AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
+        } else if (UnmarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
+            if (value instanceof String) {
+                AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
+            } else {
+                AbstractSessionLog.getLog().setLevel(((LogLevel) value).getId(), SessionLog.MOXY);
+            }
         } else {
             throw new PropertyException(key, value);
         }
