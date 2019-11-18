@@ -805,11 +805,11 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         public JAXBContextInput(Map properties, ClassLoader classLoader) {
             SessionLog logger = AbstractSessionLog.getLog();
             if (properties != null && logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
-                for (Object key : properties.keySet()) {
-                    if (properties.get(key) == null) {
-                        logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{key.toString(), "NULL"});
+                for (Map.Entry<Object, Object> item : (Set<Map.Entry<Object, Object>>)(properties.entrySet())) {
+                    if (item.getValue() == null) {
+                        logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{item.getKey(), "NULL"});
                     } else {
-                        logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{key.toString(), properties.get(key).toString()});
+                        logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_jaxb_context_property", new Object[]{item.getKey(), item.getValue()});
                     }
                 }
             }
