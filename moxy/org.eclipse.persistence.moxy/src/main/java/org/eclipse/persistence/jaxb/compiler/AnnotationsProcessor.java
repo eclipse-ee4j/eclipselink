@@ -3429,7 +3429,7 @@ public final class AnnotationsProcessor {
         // class generation
         if(info.getXmlRootElement() == null) {
             //process the root element and use that as the element
-            ElementDeclaration elem = new ElementDeclaration(null, javaClass, javaClass.getQualifiedName(), false);
+            ElementDeclaration elem = new ElementDeclaration(new QName(javaClass.getQualifiedName()), javaClass, javaClass.getQualifiedName(), false);
             this.getLocalElements().add(elem);
         }
     }
