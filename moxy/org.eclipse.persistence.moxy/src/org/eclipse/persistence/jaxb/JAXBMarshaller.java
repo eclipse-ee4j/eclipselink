@@ -934,7 +934,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
                     xmlMarshaller.setLogPayload(((Boolean) value));
                 } else if (MarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
-                    AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
+                    if (value instanceof String) {
+                        AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
+                    } else {
+                        AbstractSessionLog.getLog().setLevel(((LogLevel) value).getId(), SessionLog.MOXY);
+                    }
                 } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
                     if (value == null) {
                         xmlMarshaller.setCharacterEscapeHandler(null);
