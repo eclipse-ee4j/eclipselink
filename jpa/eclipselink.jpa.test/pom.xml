@@ -84,7 +84,7 @@
         <!--Required for JPA server test server-test-jpa21-sessionbean.-->
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
+            <artifactId>hamcrest-core</artifactId>
         </dependency>
         <!--Other modules-->
         <dependency>
