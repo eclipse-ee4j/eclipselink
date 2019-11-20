@@ -635,8 +635,8 @@ public class PersistenceUnitProcessor {
      */
     public static List<SEPersistenceUnitInfo> processPersistenceArchive(Archive archive, ClassLoader loader){
         URL puRootURL = archive.getRootURL();
-        try {
-            return processPersistenceXML(puRootURL, archive.getDescriptorStream(), loader);
+        try (InputStream descriptorStream = archive.getDescriptorStream()) {
+            return processPersistenceXML(puRootURL, descriptorStream, loader);
           } catch (Exception e) {
             throw PersistenceUnitLoadingException.exceptionLoadingFromUrl(puRootURL.toString(), e);
         }
