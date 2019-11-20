@@ -186,11 +186,10 @@ public class SerialVersionUIDAdder extends ClassVisitor {
     if (computeSvuid) {
       this.name = name;
       this.access = access;
-      this.interfaces = new String[interfaces.length];
+      this.interfaces = interfaces.clone();
       this.svuidFields = new ArrayList<>();
       this.svuidConstructors = new ArrayList<>();
       this.svuidMethods = new ArrayList<>();
-      System.arraycopy(interfaces, 0, this.interfaces, 0, interfaces.length);
     }
 
     super.visit(version, access, name, signature, superName, interfaces);
