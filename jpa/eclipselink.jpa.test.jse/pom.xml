@@ -166,6 +166,9 @@
                         <goals>
                             <goal>verify</goal>
                         </goals>
+                        <configuration>
+                            <skip>${integration.test.skip.verify}</skip>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

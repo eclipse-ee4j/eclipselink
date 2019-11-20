@@ -68,7 +68,7 @@ install:
   - sed -i -e 's+${user.home}/.eclipselinktests/wildfly-15.0.1.Final+'$HOME'/wildfly-15.0.1.Final+g' ~/el-testjee.wildfly.properties
 
 before_script:
-  - mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean install -pl '!:eclipselink,!:org.eclipse.persistence.bundles.other,!:org.eclipse.persistence.distribution,!:p2site,!:org.eclipse.persistence.nightly' -DskipTests
+  - mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean install -pl '!:eclipselink,!:org.eclipse.persistence.bundles.other,!:org.eclipse.persistence.distribution,!:p2site' -DskipTests
 
 script:
   - echo 'RUNNING TESTS, BE PATIENT...'

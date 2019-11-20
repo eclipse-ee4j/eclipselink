@@ -49,6 +49,8 @@
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <build.qualifier>v${maven.build.timestamp}</build.qualifier>
         <bundle.version>${project.version}.${build.qualifier}</bundle.version>
+        <project.build.testReports.subdirectory>test-reports</project.build.testReports.subdirectory>
+        <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
         <!-- In selected/deployed modules asm, core, jpa, moxy... this property will be true -->
         <maven.deploy.skip>true</maven.deploy.skip>
 
@@ -60,6 +62,7 @@
         <integration.test.directory>src/it/</integration.test.directory>
         <integration.test.sources.directory>${integration.test.directory}/java/</integration.test.sources.directory>
         <integration.test.resources.directory>${integration.test.directory}/resources/</integration.test.resources.directory>
+        <integration.test.skip.verify>false</integration.test.skip.verify>
 
         <!--Default location for JEE servers binaries-->
         <test.directory>${user.home}/.eclipselinktests</test.directory>
@@ -590,7 +593,6 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.8.0</version>
                 </plugin>
-                <!--Copy current EclipseLink JARs into GlassFish modules directory-->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
@@ -1020,6 +1022,22 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/failsafe-reports</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-test-summary-html-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>failsafe-report-only</goal>
+                        </goals>
+                        <configuration>
+                            <reportsDirectories>
+                                <reportsDirectory>${project.build.directory}/surefire-reports</reportsDirectory>
+                                <reportsDirectory>${project.build.directory}/failsafe-reports</reportsDirectory>
+                            </reportsDirectories>
+                            <outputDirectory>${project.build.directory}/${project.build.testReports.subdirectory}</outputDirectory>
+                            <outputName>${project.build.testReports.summaryFile}</outputName>
+                            <title>${project.name} - Test Summary (more details on ${env.BUILD_URL} )</title>
                         </configuration>
                     </execution>
                 </executions>

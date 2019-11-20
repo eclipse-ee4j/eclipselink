@@ -35,7 +35,15 @@
         <module>others</module>
         <module>distribution</module>
         <module>p2site</module>
-        <module>nightly</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>test-lrg</id>
+            <modules>
+                <module>nightly</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>
