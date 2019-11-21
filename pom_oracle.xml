@@ -78,6 +78,7 @@
     <dependencyManagement>
         <dependencies>
             <!--Oracle proprietary dependencies-->
+            <!-- All files as a Oracle JDBC driver CQ #21154 -->
             <dependency>
                 <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>simplefan</artifactId>
