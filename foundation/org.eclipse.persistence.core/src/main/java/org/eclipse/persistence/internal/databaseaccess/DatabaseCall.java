@@ -1181,6 +1181,9 @@ public abstract class DatabaseCall extends DatasourceCall {
                         parametersValues.add(value);
                     }
                 } else if (parameterType == LITERAL) {
+                    if ((parameter != null) && (parameter instanceof OutputParameterForCallableStatement)) {
+                        ((OutputParameterForCallableStatement) parameter).getOutputField().setIndex(index);
+                    }
                     parametersValues.add(parameter);
                 } else if (parameterType == IN) {
                     Object value = getValueForInParameter(parameter, translationRow, modifyRow, session, true);

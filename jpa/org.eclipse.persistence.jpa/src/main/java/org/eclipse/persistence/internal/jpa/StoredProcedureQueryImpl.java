@@ -527,6 +527,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         return null;
     }
 
+    private boolean hasPositionalParameters() {
+        for (Parameter parameter: this.getParameters()) {
+            if (parameter.getName() != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Execute the query and return the query results as a List.
      * @return a list of the results
@@ -557,7 +566,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 if (hasMoreResults()) {
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
-                        List results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        List results = null;
+                        if (hasPositionalParameters()) {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                        } else {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        }
 
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
