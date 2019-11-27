@@ -30,7 +30,7 @@ p2repo/
 /jpa/eclipselink.jpa.test/jpa-performance2.jar
 foundation/targets/target.oracle/oracle.libs/*.jar
 *.iml
-.idea*
+.idea/
 out/
 eclipselink_extracted/*
 /eclipselink*.zip
