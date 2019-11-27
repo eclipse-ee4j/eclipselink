@@ -419,7 +419,8 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
             factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
             em = factory.createEntityManager();
         } catch (Exception expected) {
-            if (expected.getMessage().indexOf("Authentication failed") == -1 && expected.getMessage().indexOf("auth failed") == -1) {
+            //Different MONGO DB drivers (versions) prints different error messages
+            if (expected.getMessage().indexOf("Authentication failed") == -1 && expected.getMessage().indexOf("auth failed") == -1 && expected.getMessage().indexOf("Exception authenticating") == -1) {
                 throw expected;
             }
             errorCaught = true;
@@ -445,7 +446,8 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
             factory = Persistence.createEntityManagerFactory(getPersistenceUnitName(), properties);
             em = factory.createEntityManager();
         } catch (Exception expected) {
-            if (expected.getMessage().indexOf("Authentication failed") == -1 && expected.getMessage().indexOf("auth failed") == -1) {
+            //Different MONGO DB drivers (versions) prints different error messages
+            if (expected.getMessage().indexOf("Authentication failed") == -1 && expected.getMessage().indexOf("auth failed") == -1 && expected.getMessage().indexOf("Exception authenticating") == -1) {
                 throw expected;
             }
             errorCaught = true;

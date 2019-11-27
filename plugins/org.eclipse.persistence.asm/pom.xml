@@ -39,16 +39,19 @@
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
             <classifier>sources</classifier>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
             <classifier>sources</classifier>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-tree</artifactId>
             <classifier>sources</classifier>
+            <scope>provided</scope>
         </dependency>
         <!--Test dependencies-->
         <dependency>
