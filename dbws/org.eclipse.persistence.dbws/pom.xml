@@ -76,6 +76,34 @@
 
     <build>
         <plugins>
+            <!--Generate OSGi bundle/manifest-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>
+                            javax.activation.*;resolution:=optional,
+                            javax.naming.*;resolution:=optional,
+                            javax.persistence.*;resolution:=optional,
+                            javax.sql.*;resolution:=optional,
+                            javax.xml.*;resolution:=optional,
+                            org.w3c.dom.*;resolution:=optional,
+                            org.xml.sax.*;resolution:=optional,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>

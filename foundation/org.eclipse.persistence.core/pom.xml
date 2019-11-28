@@ -141,6 +141,22 @@
                     <instructions>
                         <!-- Java packages specified there comes from "Class.forName(...),  maven-bundle-plugin >= 4.2.0 index them as mandatory -->
                         <Import-Package>
+                            javax.activation.*;resolution:=optional,
+                            javax.crypto.*;resolution:=optional,
+                            javax.enterprise.*;resolution:=optional,
+                            javax.imageio.*;resolution:=optional,
+                            javax.jms.*;resolution:=optional,
+                            javax.json.*;resolution:=optional,
+                            javax.mail.*;resolution:=optional,
+                            javax.management.*;resolution:=optional,
+                            javax.naming.*;resolution:=optional,
+                            javax.rmi.*;resolution:=optional,
+                            javax.sql;resolution:=optional,
+                            javax.transaction.*;resolution:=optional,
+                            javax.xml.*;resolution:=optional,
+                            org.omg.CORBA*;resolution:=optional,
+                            org.w3c.dom.*;resolution:=optional,
+                            org.xml.sax.*;resolution:=optional,
                             org.eclipse.persistence.eis.adapters.xmlfile.*;resolution:=optional,
                             org.eclipse.persistence.sessions.coordination.corba.sun.*;resolution:=optional,
                             org.eclipse.persistence.internal.sessions.coordination.rmi.iiop.*;resolution:=optional,

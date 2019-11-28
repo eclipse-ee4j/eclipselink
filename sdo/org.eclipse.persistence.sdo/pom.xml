@@ -71,7 +71,15 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>commonj.sdo.impl</Import-Package>
+                        <Import-Package>
+                            commonj.sdo.impl,
+                            javax.management.*;resolution:=optional,
+                            javax.naming.*;resolution:=optional,
+                            javax.xml.*;resolution:=optional,
+                            org.w3c.dom.*;resolution:=optional,
+                            org.xml.sax.*;resolution:=optional,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
                 <executions>

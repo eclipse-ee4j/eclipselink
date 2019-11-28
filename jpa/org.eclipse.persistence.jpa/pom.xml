@@ -82,6 +82,14 @@
                         <Premain-Class>org.eclipse.persistence.internal.jpa.deployment.JavaSEC
                             MPInitializerAgent
                         </Premain-Class>
+                        <Import-Package>
+                            javax.sql;resolution:=optional,
+                            javax.transaction.xa.*;resolution:=optional,
+                            javax.xml.*;resolution:=optional,
+                            org.w3c.dom.*;resolution:=optional,
+                            org.xml.sax.*;resolution:=optional,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
                 <executions>

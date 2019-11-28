@@ -33,7 +33,8 @@
     <properties>
         <maven.deploy.skip>false</maven.deploy.skip>
         <!--Distribution directory-->
-        <distribution.directory>${project.root.location}/bundles/org.eclipse.persistence.oracle/src/main/dependencies</distribution.directory>
+        <distribution.directory>${project.root.location}/bundles/org.eclipse.persistence.oracle/src/main/dependencies
+        </distribution.directory>
         <!--Properties used for test resources filtering/replacement-->
         <pa.connection.user>PAS_CONN</pa.connection.user>
         <pa.connection.password>${db.pwd}2</pa.connection.password>
@@ -64,22 +65,27 @@
         <dependency>
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>ojdbc8</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>xmlparserv2</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>ucp</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>xdb6</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>dms</artifactId>
+            <optional>true</optional>
         </dependency>
         <!--Test dependencies-->
         <dependency>
@@ -133,6 +139,32 @@
 
     <build>
         <plugins>
+            <!--Generate OSGi bundle/manifest-->
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Import-Package>
+                            javax.naming.*;resolution:=optional,
+                            javax.sql.*;resolution:=optional,
+                            javax.xml.*;resolution:=optional,
+                            org.w3c.dom.*;resolution:=optional,
+                            org.xml.sax.*;resolution:=optional,
+                            *
+                        </Import-Package>
+                    </instructions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <!--Pack test classes due dependency to other modules (Oracle Spatial Test)-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -207,7 +239,9 @@
                                 <include>org.eclipse.persistence.testing.tests.OracleTestModel</include>
                                 <include>org.eclipse.persistence.testing.tests.xdb.XDBTestModel</include>
                                 <include>org.eclipse.persistence.testing.tests.xdb.XDBTestModelMWIntegration</include>
-                                <include>org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionXDBTestModel</include>
+                                <include>
+                                    org.eclipse.persistence.testing.tests.unwrappedconnection.UnwrapConnectionXDBTestModel
+                                </include>
                             </includes>
                         </configuration>
                     </execution>
