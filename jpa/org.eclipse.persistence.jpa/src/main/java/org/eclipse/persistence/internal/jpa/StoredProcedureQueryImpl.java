@@ -437,13 +437,18 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
                 if (parameterType == getCall().INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
-                } else if (parameterType == getCall().IN || parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
+                } else if (parameterType == getCall().IN) {
                     field = (DatabaseField) parameter;
-                } else if (parameterType == getCall().LITERAL) {
+                } else if (parameterType == getCall().OUT) {
+                    field = ((OutputParameterForCallableStatement) parameter).getOutputField();
+                } else if (parameterType == getCall().OUT_CURSOR) {
                     if (parameter instanceof OutputParameterForCallableStatement) {
-                        // Case: Oracle OUT_CURSOR after execution.
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();
+                    } else {
+                        field = (DatabaseField) parameter;
                     }
+                } else if (parameterType == getCall().LITERAL) {
+                    field = (DatabaseField) parameter;
                 }
 
                 // If field is not null (one we care about) then add it, otherwise continue.
@@ -650,7 +655,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
-                        results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        if (hasPositionalParameters()) {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                        } else {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        }
 
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());

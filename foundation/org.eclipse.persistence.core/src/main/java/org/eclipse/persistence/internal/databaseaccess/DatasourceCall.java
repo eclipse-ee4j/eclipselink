@@ -784,6 +784,11 @@ public abstract class DatasourceCall implements Call {
                         appendParameter(writer, value, session);
                     } else if (parameterType == INLINE) {
                         writer.write((String)parameter);
+                    } else if (parameterType == OUT || parameterType == OUT_CURSOR) {
+                        if (parameter instanceof DatabaseField) {
+                            parameter = null;
+                        }
+                        appendParameter(writer, parameter, session);
                     }
                     lastIndex = tokenIndex + 1;
                     parameterIndex++;

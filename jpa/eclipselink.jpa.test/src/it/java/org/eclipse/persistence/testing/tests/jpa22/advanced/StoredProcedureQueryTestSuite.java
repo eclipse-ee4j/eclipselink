@@ -76,8 +76,8 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_Named"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_Positional"));
-        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor2_Named"));
-        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor2_Positional"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_ResultList_Named"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_ResultList_Positional"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping1"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping2"));
 
@@ -1012,7 +1012,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery using a system cursor. Also tests
      * getParameters call AFTER query execution.
      */
-    public void testStoredProcedureQuerySysCursor2_Named() {
+    public void testStoredProcedureQuerySysCursor_ResultList_Named() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
 
@@ -1061,7 +1061,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery using a system cursor. Also tests
      * getParameters call AFTER query execution. Parameters are passed via position.
      */
-    public void testStoredProcedureQuerySysCursor2_Positional() {
+    public void testStoredProcedureQuerySysCursor_ResultList_Positional() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
 
