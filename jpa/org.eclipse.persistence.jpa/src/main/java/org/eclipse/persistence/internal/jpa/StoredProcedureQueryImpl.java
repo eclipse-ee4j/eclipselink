@@ -439,16 +439,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                     field = (DatabaseField) ((Object[]) parameter)[0];
                 } else if (parameterType == getCall().IN) {
                     field = (DatabaseField) parameter;
-                } else if (parameterType == getCall().OUT) {
-                    field = ((OutputParameterForCallableStatement) parameter).getOutputField();
-                } else if (parameterType == getCall().OUT_CURSOR) {
+                } else if (parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
                     if (parameter instanceof OutputParameterForCallableStatement) {
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();
                     } else {
                         field = (DatabaseField) parameter;
                     }
-                } else if (parameterType == getCall().LITERAL) {
-                    field = (DatabaseField) parameter;
                 }
 
                 // If field is not null (one we care about) then add it, otherwise continue.

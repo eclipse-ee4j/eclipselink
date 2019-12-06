@@ -1033,7 +1033,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Test the getParameters call AFTER query execution.
                 assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
 
-                List<Object[]> employees = (List<Object[]>) query.getOutputParameterValue("p_recordset");
+                List<Employee> employees = (List<Employee>) query.getResultList();
                 assertFalse("No employees were returned", employees.isEmpty());
 
                 commitTransaction(em);
@@ -1047,7 +1047,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
                 query2.execute();
 
-                List<Object[]> employees2 = (List<Object[]>) query2.getOutputParameterValue("p_recordset");
+                List<Employee> employees2 = (List<Employee>) query2.getResultList();
                 assertFalse("No employees were returned from name stored procedure query.", employees2.isEmpty());
 
                 commitTransaction(em);
@@ -1066,6 +1066,27 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
             EntityManager em = createEntityManager();
 
             try {
+                // Test stored procedure query created through API. //
+                beginTransaction(em);
+
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor");
+                query.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter(2, void.class, ParameterMode.REF_CURSOR);
+
+                query.setParameter(1, "Fred");
+
+                boolean execute = query.execute();
+
+                assertTrue("Execute returned false.", execute);
+
+                // Test the getParameters call AFTER query execution.
+                assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+
+                List<Employee> employees = (List<Employee>) query.getResultList();
+                assertFalse("No employees were returned", employees.isEmpty());
+
+                commitTransaction(em);
+
                 // Test now with the named stored procedure. //
                 beginTransaction(em);
 

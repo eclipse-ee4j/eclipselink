@@ -1480,6 +1480,17 @@
 
     <profiles>
         <profile>
+            <id>oracle</id>
+            <dependencies>
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.oracle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
             <id>weblogic</id>
             <properties>
                 <server.testrunner.prefix></server.testrunner.prefix>
