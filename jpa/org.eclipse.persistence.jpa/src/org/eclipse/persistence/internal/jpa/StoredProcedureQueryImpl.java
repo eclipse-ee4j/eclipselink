@@ -436,12 +436,14 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                     
                 if (parameterType == getCall().INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
-                } else if (parameterType == getCall().IN || parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
+                } else if (parameterType == getCall().IN) {
                     field = (DatabaseField) parameter;
-                } else if (parameterType == getCall().LITERAL) {
+                } else if (parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
                     if (parameter instanceof OutputParameterForCallableStatement) {
                         // Case: Oracle OUT_CURSOR after execution.
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();
+                    } else {
+                        field = (DatabaseField) parameter;
                     }
                 }
                     
@@ -524,6 +526,15 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         return null;
     }
 
+    private boolean hasPositionalParameters() {
+        for (Parameter parameter: this.getParameters()) {
+            if (parameter.getName() != null) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Execute the query and return the query results as a List.
      * @return a list of the results
@@ -554,8 +565,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 if (hasMoreResults()) {
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
-                        List results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
-                        
+                        List results = null;
+                        if (hasPositionalParameters()) {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                        } else {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        }
+
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
                         
@@ -633,7 +649,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                     
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
-                        results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        if (hasPositionalParameters()) {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                        } else {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        }
                         
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());

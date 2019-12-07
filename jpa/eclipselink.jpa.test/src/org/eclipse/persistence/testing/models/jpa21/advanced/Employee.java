@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -121,7 +121,15 @@ import static javax.persistence.ParameterMode.REF_CURSOR;
         }
     ),
     @NamedStoredProcedureQuery(
-        name="read_using_sys_cursor",
+        name="ReadUsingUnNamedSysCursor",
+        procedureName="Read_Using_Sys_Cursor",
+        parameters = {
+            @StoredProcedureParameter(mode=IN, type=String.class),
+            @StoredProcedureParameter(mode=REF_CURSOR, type=void.class)
+        }
+    ),
+    @NamedStoredProcedureQuery(
+        name="ReadUsingNamedSysCursor",
         procedureName="Read_Using_Sys_Cursor",
         parameters = {
             @StoredProcedureParameter(mode=IN, name="f_name_v", type=String.class),
