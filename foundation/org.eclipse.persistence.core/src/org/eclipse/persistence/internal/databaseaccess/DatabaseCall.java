@@ -756,8 +756,7 @@ public abstract class DatabaseCall extends DatasourceCall {
                 // outParameter contains all the info for registerOutputParameter call.
                 OutputParameterForCallableStatement outParameter = new OutputParameterForCallableStatement(outField, session, isCursor);
                 this.parameters.set(i, outParameter);
-                // nothing to do during translate method
-                this.parameterTypes.set(i, LITERAL);
+                this.parameterTypes.set(i, parameterType);
             }
         }
         if (this.returnsResultSet == null) {
@@ -1160,6 +1159,11 @@ public abstract class DatabaseCall extends DatasourceCall {
                 } else if (parameterType == INOUT) {
                     Object value = getValueForInOutParameter(parameter, translationRow, modifyRow, session);
                     parametersValues.add(value);
+                } else if (parameterType == OUT || parameterType == OUT_CURSOR) {
+                    if (parameter != null) {
+                        ((OutputParameterForCallableStatement) parameter).getOutputField().setIndex(index);
+                    }
+                    parametersValues.add(parameter);
                 }
             }
             setParameters(parametersValues);
