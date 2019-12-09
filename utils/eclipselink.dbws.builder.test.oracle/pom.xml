@@ -62,13 +62,13 @@
         </dependency>
         <!--Oracle proprietary dependencies-->
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
+            <groupId>com.oracle.ojdbc</groupId>
             <artifactId>xmlparserv2</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
-            <artifactId>xdb6</artifactId>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>xdb</artifactId>
             <scope>test</scope>
         </dependency>
         <!--JDBC driver (test dependency)-->
