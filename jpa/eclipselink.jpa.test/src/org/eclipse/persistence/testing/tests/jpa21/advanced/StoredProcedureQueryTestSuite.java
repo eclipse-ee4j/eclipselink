@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -83,7 +83,8 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_Named"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_Positional"));
-        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor2"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_ResultList_Named"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_ResultList_Positional"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping1"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping2"));
 
@@ -1016,9 +1017,9 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
     /**
      * Tests a StoredProcedureQuery using a system cursor. Also tests
-     * getParameters call AFTER query execution.
+     * getParameters call AFTER query execution. Parameters are passed via name.
      */
-    public void testStoredProcedureQuerySysCursor2() {
+    public void testStoredProcedureQuerySysCursor_ResultList_Named() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
 
@@ -1039,7 +1040,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Test the getParameters call AFTER query execution.
                 assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
 
-                List<Object[]> employees = (List<Object[]>) query.getOutputParameterValue("p_recordset");
+                List<Employee> employees = (List<Employee>)query.getResultList();
                 assertFalse("No employees were returned", employees.isEmpty());
 
                 commitTransaction(em);
@@ -1047,13 +1048,60 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Test now with the named stored procedure. //
                 beginTransaction(em);
 
-                StoredProcedureQuery query2 = em.createNamedStoredProcedureQuery("read_using_sys_cursor");
+                StoredProcedureQuery query2 = em.createNamedStoredProcedureQuery("ReadUsingNamedSysCursor");
                 query2.setParameter("f_name_v", "Fred");
-                Object paramValue = query2.getParameterValue("f_name_v");
 
                 boolean execute2 = query2.execute();
 
-                List<Object[]> employees2 = (List<Object[]>) query2.getOutputParameterValue("p_recordset");
+                List<Employee> employees2 = (List<Employee>)query2.getResultList();
+                assertFalse("No employees were returned from name stored procedure query.", employees2.isEmpty());
+
+                commitTransaction(em);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
+        }
+    }
+
+    /**
+     * Tests a StoredProcedureQuery using a system cursor. Also tests
+     * getParameters call AFTER query execution. Parameters are passed via position.
+     */
+    public void testStoredProcedureQuerySysCursor_ResultList_Positional() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+
+            try {
+                // Test stored procedure query created through API. //
+                beginTransaction(em);
+
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor");
+                query.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter(2, void.class, ParameterMode.REF_CURSOR);
+
+                query.setParameter(1, "Fred");
+
+                boolean execute = query.execute();
+
+                assertTrue("Execute returned false.", execute);
+
+                // Test the getParameters call AFTER query execution.
+                assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+
+                List<Employee> employees = (List<Employee>)query.getResultList();
+                assertFalse("No employees were returned", employees.isEmpty());
+
+                commitTransaction(em);
+
+                // Test now with the named stored procedure. //
+                beginTransaction(em);
+
+                StoredProcedureQuery query2 = em.createNamedStoredProcedureQuery("ReadUsingUnNamedSysCursor");
+                query2.setParameter(1, "Fred");
+
+                boolean execute2 = query2.execute();
+
+                List<Employee> employees2 = (List<Employee>)query2.getResultList();
                 assertFalse("No employees were returned from name stored procedure query.", employees2.isEmpty());
 
                 commitTransaction(em);
