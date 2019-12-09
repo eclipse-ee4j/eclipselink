@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -142,9 +142,9 @@ public class AnnotationsTestSuite extends JUnitTestCase {
         verifyMetadata(Employee.class, "javax.persistence.NamedQueries", 2);
 
         // @NamedStoredProcedureQuery
-        verifyContainerAnnotation(Employee.class, NamedStoredProcedureQueries.class, 4);
-        verifyAnnotation(Employee.class, NamedStoredProcedureQuery.class, 4);
-        verifyMetadata(Employee.class, "javax.persistence.NamedStoredProcedureQueries", 4);
+        verifyContainerAnnotation(Employee.class, NamedStoredProcedureQueries.class, 5);
+        verifyAnnotation(Employee.class, NamedStoredProcedureQuery.class, 5);
+        verifyMetadata(Employee.class, "javax.persistence.NamedStoredProcedureQueries", 5);
 
         // @PersistenceContext
         verifyContainerAnnotation(AnnotationsTestSuite.class, PersistenceContexts.class, 3);
