@@ -755,19 +755,29 @@ public class CoreAttributeGroup<
         this.name = name;
     }
 
+    //changed for EclipseLink 415779 to avoid stack overflows when using graphs with circular references
+    private int toStringLoopCount = 0;
     @Override
     public String toString() {
         String className = StringHelper.nonNullString(getClass().getSimpleName());
         String name = StringHelper.nonNullString(getName());
-        String items = StringHelper.nonNullString(toStringItems());
-        String additionalInfo = StringHelper.nonNullString(toStringAdditionalInfo());
-        StringBuilder str = new StringBuilder(className.length() + name.length()
-                + additionalInfo.length() + items.length() + 4);
-        str.append(className);
-        str.append(StringHelper.LEFT_BRACKET).append(name).append(StringHelper.RIGHT_BRACKET);
-        str.append(additionalInfo);
-        str.append(StringHelper.LEFT_BRACE).append(items).append(StringHelper.RIGHT_BRACE);
-        return str.toString();
+        if (toStringLoopCount >1) {
+            return className+StringHelper.LEFT_BRACKET+name+ " Loop detected "+ StringHelper.RIGHT_BRACKET;
+        }
+        try {
+            toStringLoopCount++;
+            String items = StringHelper.nonNullString(toStringItems());
+            String additionalInfo = StringHelper.nonNullString(toStringAdditionalInfo());
+            StringBuilder str = new StringBuilder(className.length() + name.length()
+                    + additionalInfo.length() + items.length() + 4);
+            str.append(className);
+            str.append(StringHelper.LEFT_BRACKET).append(name).append(StringHelper.RIGHT_BRACKET);
+            str.append(additionalInfo);
+            str.append(StringHelper.LEFT_BRACE).append(items).append(StringHelper.RIGHT_BRACE);
+            return str.toString();
+        } finally {
+            toStringLoopCount--;
+        }
     }
 
     /**
