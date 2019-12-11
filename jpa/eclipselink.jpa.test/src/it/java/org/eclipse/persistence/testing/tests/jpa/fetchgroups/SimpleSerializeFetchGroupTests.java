@@ -1058,11 +1058,10 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
     }
 
     public void copyGroupObjectGraph() {
-        // Search for an Department with Employees
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            TypedQuery<Department> query = em.createQuery("SELECT d FROM Department d WHERE d.id IN (SELECT MIN(dd.id) FROM Department dd)", Department.class);
+            TypedQuery<Department> query = em.createQuery("SELECT d FROM ADV_DEPT d WHERE d.id IN (SELECT MIN(dd.id) FROM ADV_DEPT dd)", Department.class);
             Department dept = query.getSingleResult();
 
             CopyGroup group = new CopyGroup();
