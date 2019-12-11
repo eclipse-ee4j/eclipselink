@@ -51,6 +51,8 @@ public class CoreAttributeGroup<
      */
     private static final String FIELD_SEP = ", ";
 
+    private int toStringLoopCount = 0;
+
     /**
      * Name of the group. This is used in subclasses where the groups are stored
      * and can be used within a query by name as with FetchGroup. For dynamic
@@ -756,7 +758,6 @@ public class CoreAttributeGroup<
     }
 
     //changed for EclipseLink 415779 to avoid stack overflows when using graphs with circular references
-    private int toStringLoopCount = 0;
     @Override
     public String toString() {
         String className = StringHelper.nonNullString(getClass().getSimpleName());
