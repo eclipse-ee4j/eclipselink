@@ -469,17 +469,17 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      * and OUT parameters. For portability, all results corresponding to result 
      * sets and update counts must be retrieved before the values of output 
      * parameters. 
-     * @param position parameter position
+     * @param position parameter position - 1-based index 
      * @return the result that is passed back through the parameter
      * @throws IllegalArgumentException if the position does not correspond to a 
      * parameter of the query or is not an INOUT or OUT parameter
      */
     public Object getOutputParameterValue(int position) {
         entityManager.verifyOpen();
-        
+
         if (isValidCallableStatement()) {
             try {
-                Object obj = ((CallableStatement) executeStatement).getObject(position);
+                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, position - 1, entityManager.getAbstractSession());
 
                 if (obj instanceof ResultSet) {
                     // If a result set is returned we have to build the objects.
@@ -491,7 +491,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_position", new Object[] { position, exception.getMessage() }), exception);
             }
         }
-        
+
         return null;
     }
 
@@ -508,10 +508,10 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
      */
     public Object getOutputParameterValue(String parameterName) {
         entityManager.verifyOpen();
-        
+
         if (isValidCallableStatement()) {
             try {
-                Object obj = ((CallableStatement) executeStatement).getObject(parameterName);
+                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, parameterName, entityManager.getAbstractSession());
 
                 if (obj instanceof ResultSet) {
                     // If a result set is returned we have to build the objects.

@@ -1041,20 +1041,15 @@ public class StoredProcedureCall extends DatabaseCall {
         this.optionalArguments = optionalArguments;
     }
 
-    /**
-     * Get the return object from the statement. Use the index to determine what return object to get.
-     * @param index - 0-based index in the argument list
-     * @return
-     */
     @Override
-    protected Object getObject(CallableStatement statement, int index) throws SQLException {
+    public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
         List<String> procedureArgs = getProcedureArgumentNames();
         if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
-            return super.getObject(statement, index);
+            return super.getOutputParameterValue(statement, index, session);
         }
 
         String name = procedureArgs.get(index);
-        return statement.getObject(name);
+        return getOutputParameterValue(statement, name, session);
     }
 
     /**
