@@ -31,7 +31,7 @@ services:
 env:
   global:
     - ANT_HOME=$HOME/apache-ant-1.10.5
-    - M2_HOME=/usr/local/maven-3.6.0
+    - M2_HOME=/usr/local/maven-3.6.2
   matrix:
     - TEST_TARGET=test-core
     - TEST_TARGET=test-jpa22
@@ -51,6 +51,7 @@ cache:
     - $HOME/extension.lib.external
 
 before_install:
+  - ls -al /usr/local
   - sudo mysql_upgrade
   - sudo mysql -u root -e "use mysql; update user set authentication_string=PASSWORD('root') where User='root'; update user set plugin='mysql_native_password';FLUSH PRIVILEGES;CREATE DATABASE IF NOT EXISTS ecltest;"
   - sudo service mysql restart
