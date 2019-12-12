@@ -2296,8 +2296,7 @@ public class DatabasePlatform extends DatasourcePlatform {
     public boolean shouldPrintOutputTokenAtStart() {
         return false;
     }
-    
-    
+
     /**
      * INTERNAL:
      * Should the variable name of a stored procedure call be printed as part of the procedure call
@@ -2441,7 +2440,7 @@ public class DatabasePlatform extends DatasourcePlatform {
             if (dbCall.isCursorOutputProcedure()) {
                 result = accessor.executeNoSelect(dbCall, statement, session);
                 int index = dbCall.getCursorOutIndex();
-                resultSet = (ResultSet)dbCall.getObject((CallableStatement)statement, index - 1);
+                resultSet = (ResultSet)dbCall.getOutputParameterValue((CallableStatement)statement, index - 1, session);
             } else {
                 accessor.executeDirectNoSelect(statement, dbCall, session);
                 
@@ -2720,6 +2719,23 @@ public class DatabasePlatform extends DatasourcePlatform {
             int jdbcType = getJDBCTypeForSetNull(databaseField);
             statement.setNull(name, jdbcType);
         }
+    }
+
+    /**
+     * INTERNAL
+     * Get the parameter from the JDBC statement with the given index.
+     * @param index - 1-based index in the argument list
+     */
+    public Object getParameterValueFromDatabaseCall(CallableStatement statement, int index, AbstractSession session) throws SQLException {
+        return statement.getObject(index);
+    }
+
+    /**
+     * INTERNAL
+     * Get the parameter from the JDBC statement with the given name.
+     */
+    public Object getParameterValueFromDatabaseCall(CallableStatement statement, String name, AbstractSession session) throws SQLException {
+        return statement.getObject(name);
     }
 
     public boolean usesBatchWriting() {
