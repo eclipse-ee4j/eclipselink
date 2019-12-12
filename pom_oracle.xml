@@ -63,6 +63,8 @@
     </pluginRepositories>
 
     <modules>
+        <module>foundation/org.eclipse.persistence.oracle.test</module>
+
         <!--TODO uncomment after sdoapi dependency resolution-->
         <!--<module>foundation/eclipselink.extension.oracle.spatial.test</module>-->
         <!--JPA test module-->

@@ -1488,6 +1488,21 @@
                     <version>${project.version}</version>
                     <scope>test</scope>
                 </dependency>
+<!--
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.oracle.test</artifactId>
+                    <version>${project.version}</version>
+                    <scope>test</scope>
+                </dependency>
+-->
+                <!--TODO Tempoary workaround there is failure com.soebes.maven.plugins:iterator-maven-plugin:0.5.1:iterator (weave-model-static)-->
+                <dependency>
+                    <groupId>com.oracle</groupId>
+                    <artifactId>orai18n-mapping</artifactId>
+                    <version>12.2.0.1</version>
+                    <scope>test</scope>
+                </dependency>
             </dependencies>
         </profile>
         <profile>
