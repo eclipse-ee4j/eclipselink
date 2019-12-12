@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.ConversionException;
@@ -161,8 +162,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
         this.sourceKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
         this.targetForeignKeyFields = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.sourceExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
-        this.targetExpressionsToPostInitialize = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(1);
+        this.sourceExpressionsToPostInitialize = new CopyOnWriteArrayList<>();
+        this.targetExpressionsToPostInitialize = new CopyOnWriteArrayList<>();
 
         this.deleteAllQuery = new DeleteAllQuery();
         this.removeTargetQuery = new DataModifyQuery();
