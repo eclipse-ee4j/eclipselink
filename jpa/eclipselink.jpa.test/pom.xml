@@ -531,6 +531,15 @@
                                     <configuration>
                                         <mainClass>org.eclipse.persistence.tools.weaving.jpa.StaticWeave</mainClass>
                                         <classpathScope>test</classpathScope>
+                                        <systemProperties>
+                                            <!-- Ensure, that JDK default parser is used. If Oracle profile enabled Oracle XMLParserV2 will crash with
+                                            Internal Exception: java.lang.NoClassDefFoundError: oracle/i18n/util/LocaleMapper.
+                                            This class is not available as a part of Oracle JDBC driver bundles-->
+                                            <systemProperty>
+                                                <key>javax.xml.parsers.DocumentBuilderFactory</key>
+                                                <value>com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</value>
+                                            </systemProperty>
+                                        </systemProperties>
                                         <additionalClasspathElements>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>
@@ -1482,25 +1491,11 @@
         <profile>
             <id>oracle</id>
             <dependencies>
+                <!--db.platform=org.eclipse.persistence.platform.database.oracle.Oracle12Platform comes from there-->
                 <dependency>
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>org.eclipse.persistence.oracle</artifactId>
                     <version>${project.version}</version>
-                    <scope>test</scope>
-                </dependency>
-<!--
-                <dependency>
-                    <groupId>org.eclipse.persistence</groupId>
-                    <artifactId>org.eclipse.persistence.oracle.test</artifactId>
-                    <version>${project.version}</version>
-                    <scope>test</scope>
-                </dependency>
--->
-                <!--TODO Tempoary workaround there is failure com.soebes.maven.plugins:iterator-maven-plugin:0.5.1:iterator (weave-model-static)-->
-                <dependency>
-                    <groupId>com.oracle</groupId>
-                    <artifactId>orai18n-mapping</artifactId>
-                    <version>12.2.0.1</version>
                     <scope>test</scope>
                 </dependency>
             </dependencies>

@@ -124,7 +124,7 @@
                                 </dependency>
             -->
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
+                <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>orai18n</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
