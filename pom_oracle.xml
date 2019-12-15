@@ -63,6 +63,8 @@
     </pluginRepositories>
 
     <modules>
+        <module>foundation/org.eclipse.persistence.oracle.test</module>
+
         <!--TODO uncomment after sdoapi dependency resolution-->
         <!--<module>foundation/eclipselink.extension.oracle.spatial.test</module>-->
         <!--JPA test module-->
@@ -122,7 +124,7 @@
                                 </dependency>
             -->
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
+                <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>orai18n</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
