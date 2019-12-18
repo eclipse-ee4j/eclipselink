@@ -377,9 +377,16 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 }
 
                 // Check output parameters by position.
-                Integer outputParamValueFromPosition = (Integer) query.getOutputParameterValue(3);
+                Object outputParamValueFromPosition = query.getOutputParameterValue(3);
+
+                // TODO: See previous investigate todo. A Long is returned here instead of an Integer on MySQL.
+                // This test also mixes index and named parameters, so this test my be invalid to begin with.
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
-                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                if (outputParamValueFromName instanceof Long) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(new Long(numberOfEmployes)));
+                } else if (outputParamValueFromName instanceof Integer) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                }
 
                 // Do some negative tests ...
                 try {
@@ -534,9 +541,16 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 }
 
                 // Check output parameters by position.
-                Integer outputParamValueFromPosition = (Integer) query.getOutputParameterValue(3);
+                Object outputParamValueFromPosition = query.getOutputParameterValue(3);
+
+                // TODO: See previous investigate todo. A Long is returned here instead of an Integer on MySQL.
+                // This test also mixes index and named parameters, so this test my be invalid to begin with.
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
-                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                if (outputParamValueFromName instanceof Long) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(new Long(numberOfEmployes)));
+                } else if (outputParamValueFromName instanceof Integer) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                }
 
                 // Do some negative tests ...
                 try {

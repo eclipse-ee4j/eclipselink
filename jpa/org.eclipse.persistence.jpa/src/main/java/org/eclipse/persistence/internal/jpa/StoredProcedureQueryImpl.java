@@ -480,7 +480,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         if (isValidCallableStatement()) {
             try {
-                Object obj = ((CallableStatement) executeStatement).getObject(position);
+                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, position - 1, entityManager.getAbstractSession());
 
                 if (obj instanceof ResultSet) {
                     // If a result set is returned we have to build the objects.
@@ -513,7 +513,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         if (isValidCallableStatement()) {
             try {
-                Object obj = ((CallableStatement) executeStatement).getObject(parameterName);
+                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, parameterName, entityManager.getAbstractSession());
 
                 if (obj instanceof ResultSet) {
                     // If a result set is returned we have to build the objects.
