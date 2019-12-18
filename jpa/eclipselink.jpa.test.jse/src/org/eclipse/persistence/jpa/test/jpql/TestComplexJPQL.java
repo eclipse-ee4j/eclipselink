@@ -162,7 +162,7 @@ public class TestComplexJPQL {
         }
     }
 
-    private DatabasePlatform getPlatform(EntityManagerFactory emf) {
+    private static DatabasePlatform getPlatform(EntityManagerFactory emf) {
         return ((EntityManagerFactoryImpl)emf).getServerSession().getPlatform();
     }
 }
