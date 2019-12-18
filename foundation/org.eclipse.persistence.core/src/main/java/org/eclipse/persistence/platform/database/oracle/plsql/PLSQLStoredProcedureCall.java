@@ -1302,8 +1302,8 @@ public class PLSQLStoredProcedureCall extends StoredProcedureCall {
     }
 
     @Override
-    protected Object getObject(CallableStatement statement, int index) throws SQLException {
-        return statement.getObject(index + 1);
+    public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
+        return session.getPlatform().getParameterValueFromDatabaseCall(statement, index + 1, session);
     }
 
     /**

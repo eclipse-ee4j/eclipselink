@@ -306,7 +306,7 @@ public abstract class DatabaseCall extends DatasourceCall {
             if (parameter instanceof OutputParameterForCallableStatement) {
                 OutputParameterForCallableStatement outParameter = (OutputParameterForCallableStatement)parameter;
                 if (!outParameter.isCursor() || !isCursorOutputProcedure()) {
-                    Object value = getObject(statement, index);
+                    Object value = getOutputParameterValue(statement, index, session);
                     DatabaseField field = outParameter.getOutputField();
                     if (value instanceof Struct){
                         ClassDescriptor descriptor = session.getDescriptor(field.getType());
@@ -1396,11 +1396,26 @@ public abstract class DatabaseCall extends DatasourceCall {
     }
 
     /**
-     * Get the return object from the statement. Use the index to determine what return object to get.
+     * 
+     * INTERNAL:
+     * 
+     * Get the return object from the statement. Use the parameter index to determine what return object to get.
      * @param index - 0-based index in the argument list
      * @return
      */
-    protected Object getObject(CallableStatement statement, int index) throws SQLException {
-        return statement.getObject(index + 1);
+    public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
+        return session.getPlatform().getParameterValueFromDatabaseCall(statement, index + 1, session);
+    }
+
+    /**
+     * 
+     * INTERNAL:
+     * 
+     * Get the return object from the statement. Use the parameter name to determine what return object to get.
+     * @param index - 0-based index in the argument list
+     * @return
+     */
+    public Object getOutputParameterValue(CallableStatement statement, String name, AbstractSession session) throws SQLException {
+        return session.getPlatform().getParameterValueFromDatabaseCall(statement, name, session);
     }
 }
