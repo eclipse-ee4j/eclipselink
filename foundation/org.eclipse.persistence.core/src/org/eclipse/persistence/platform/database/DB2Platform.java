@@ -66,6 +66,8 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
     public DB2Platform() {
         super();
+        //com.ibm.db2.jcc.DB2Types.CURSOR
+        this.cursorCode = -100008;
         this.shouldBindLiterals = false;
         this.pingSQL = "VALUES(1)";
     }
