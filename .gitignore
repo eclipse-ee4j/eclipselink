@@ -1,5 +1,8 @@
 .DS_Store
 *.class
+*.classpath
+*.settings
+*.project
 *test.jar
 *model.jar
 eclipselink*.jar
