@@ -94,6 +94,7 @@ public class Helper {
     protected final static String JAVA_PKG = "java.";
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
+    protected final static String JAVAX_RPC_PKG = "javax.xml.rpc.";
 
     private JavaClass collectionClass;
     private JavaClass setClass;
@@ -327,7 +328,7 @@ public class Helper {
         if(null == rawName) {
             return true;
         }
-        return (getXMLToJavaTypeMap().containsKey(rawName) || rawName.startsWith(JAVA_PKG) || (rawName.startsWith(JAVAX_PKG) && !rawName.startsWith(JAVAX_WS_PKG))) ;
+        return (getXMLToJavaTypeMap().containsKey(rawName) || rawName.startsWith(JAVA_PKG) || (rawName.startsWith(JAVAX_PKG) && !(rawName.startsWith(JAVAX_WS_PKG)||rawName.startsWith(JAVAX_RPC_PKG))));
     }
 
     public void setClassLoader(ClassLoader loader) {
