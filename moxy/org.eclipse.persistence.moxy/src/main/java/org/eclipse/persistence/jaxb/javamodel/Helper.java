@@ -318,8 +318,9 @@ public class Helper {
      *     JavaClass' raw name
      * 2 - the provided JavaClass' raw name starts with "java."
      * 3 - the provided JavaClass' raw name starts with "javax.", with
-     *     the exception of "javax.xml.ws."
-     *
+     *     the exception of "javax.xml.ws." and "javax.xml.rpc"
+     * Note : jax-rpc should not be considered as built-in type. The API itself is 
+     *        optional in EE space for some time already and it is going to be removed in Jakarta EE 9.
      * @param jClass
      * @return
      */
