@@ -24,9 +24,17 @@
     <version>2.7.6-SNAPSHOT</version>
 
     <properties>
-        <exam.version>4.11.0</exam.version>
+        <!-- CQ #21132 -->
+        <apache.felix.framework.version>6.0.3</apache.felix.framework.version>
+        <!-- CQ #21134, 21135, 21136, 21137 -->
+        <exam.version>4.13.1</exam.version>
+        <!-- CQ #3571 -->
+        <hibernate.version>6.1.0.Final</hibernate.version>
+        <log4j.version>2.13.0</log4j.version>
+        <!-- CQ #21139, 21140 -->
+        <logback.version>1.3.0-alpha5</logback.version>
         <url.version>2.5.2</url.version>
-        <logback.version>1.1.3</logback.version>
+        <validation.version>2.0.2</validation.version>
         <eclipselink.version>2.7.6-SNAPSHOT</eclipselink.version>
     </properties>
 
@@ -42,24 +50,25 @@
 
         <!-- Bean validation API -->
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation</artifactId>
-            <version>2.0.1</version>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>${validation.version}</version>
             <scope>system</scope>
             <systemPath>${javax.validation.lib}</systemPath>
         </dependency>
 
         <!-- Hibernate validator and it's dependencies -->
+        <!-- CQ #3571 -->
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.0.7.Final</version>
+            <version>${hibernate.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.3</version>
+            <version>${log4j.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -74,7 +83,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
-            <version>5.6.10</version>
+            <version>${apache.felix.framework.version}</version>
             <scope>test</scope>
         </dependency>
 
