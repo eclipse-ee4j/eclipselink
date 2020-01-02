@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -42,19 +42,26 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
         }
         if (serverNameAndVersion != null) {
             int idx = serverNameAndVersion.indexOf('.');
-            switch (serverNameAndVersion.substring(0, idx)) {
-                case "12":
+            try {
+                int version = Integer.valueOf(serverNameAndVersion.substring(0, idx));
+                if (version >= 12) {
                     platform = TargetServer.WebLogic_12;
-                    break;
-                case "11":
-                case "10":
-                    platform = TargetServer.WebLogic_10;
-                    break;
-                case "9":
-                    platform = TargetServer.WebLogic_9;
-                    break;
-                default:
-                    platform = TargetServer.WebLogic;
+                } else {
+                    switch (version) {
+                        case 11:
+                        case 10:
+                            platform = TargetServer.WebLogic_10;
+                            break;
+                        case 9:
+                            platform = TargetServer.WebLogic_9;
+                            break;
+                        default:
+                            platform = TargetServer.WebLogic;
+                    }
+                }
+            } catch (NumberFormatException nfe) {
+                // default fallback
+                platform = TargetServer.WebLogic;
             }
         }
         return platform;
@@ -68,12 +75,9 @@ public class WebLogicPlatformDetector implements ServerPlatformDetector {
      */
     private String getServerNameAndVersionInternal() {
         try {
-            String loaderStr = WebLogicPlatformDetector.class.getClassLoader().getClass().getName();
-            if (loaderStr.contains("weblogic")) {
-                Class versionCls = Class.forName("weblogic.version");
-                Method method = versionCls.getMethod("getReleaseBuildVersion");
-                return (String) method.invoke(null);
-            }
+            Class versionCls = Class.forName("weblogic.version");
+            Method method = versionCls.getMethod("getReleaseBuildVersion");
+            return (String) method.invoke(null);
         } catch (Throwable t) {
             //ignore
         }
