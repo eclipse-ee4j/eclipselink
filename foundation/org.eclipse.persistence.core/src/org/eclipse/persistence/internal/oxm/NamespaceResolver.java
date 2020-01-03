@@ -14,13 +14,17 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
+import java.util.List;
 
+import org.eclipse.persistence.internal.oxm.util.NamespaceResolverStorage;
+import static org.eclipse.persistence.internal.oxm.util.VectorUtils.emptyVector;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.NamedNodeMap;
@@ -58,9 +62,10 @@ import org.w3c.dom.Node;
  */
 public class NamespaceResolver implements XMLNamespaceResolver {
     private static final String BASE_PREFIX = "ns";
+    private static final Vector EMPTY_VECTOR = emptyVector();
 
     private String defaultNamespaceURI;
-    private Map<String, String> prefixesToNamespaces;
+    private NamespaceResolverStorage prefixesToNamespaces;
     int prefixCounter;
     private Node dom;
 
@@ -77,18 +82,22 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      */
     public NamespaceResolver(NamespaceResolver namespaceResolver) {
         this.defaultNamespaceURI = namespaceResolver.defaultNamespaceURI;
-        Map<String, String> namespaceResolverPrefixesToNamespaces = namespaceResolver.prefixesToNamespaces;
-        if(namespaceResolverPrefixesToNamespaces != null) {
-            this.prefixesToNamespaces = new LinkedHashMap<>(namespaceResolverPrefixesToNamespaces.size());
-            this.prefixesToNamespaces.putAll(namespaceResolver.prefixesToNamespaces);
-        }
+        setPrefixesToNamespaces(namespaceResolver.prefixesToNamespaces);
         this.prefixCounter = namespaceResolver.prefixCounter;
         this.dom = namespaceResolver.dom;
     }
 
+    private void setPrefixesToNamespaces(Map<String, String> input) {
+        if (input == null) {
+            return;
+        }
+        prefixesToNamespaces = new NamespaceResolverStorage(input.size());
+        prefixesToNamespaces.putAll(input);
+    }
+
     public Map<String, String> getPrefixesToNamespaces() {
         if(null == prefixesToNamespaces) {
-            prefixesToNamespaces = new LinkedHashMap<>();
+            prefixesToNamespaces = new NamespaceResolverStorage();
         }
         return prefixesToNamespaces;
     }
@@ -214,24 +223,25 @@ public class NamespaceResolver implements XMLNamespaceResolver {
             //This behavior is preserved, but it is now working independently on the JDK (because we are using HashMap and we are changing the order
             //of items in the LinkedHashMap so the resolver always find the prefix which is more closely (in xml schema) to the given element.
             ///@see XMLRootComplexDifferentPrefixTestCases
-            Map<String, String> removedItems = null;
-            if (getPrefixesToNamespaces().containsValue(namespaceURI.intern())) {
-                removedItems = new LinkedHashMap<>();
-                for (Map.Entry<String, String> prefixEntry : getPrefixesToNamespaces().entrySet()) {
-                    if (namespaceURI.intern().equals(prefixEntry.getValue())) {
-                        removedItems.put(prefixEntry.getKey(), prefixEntry.getValue());
+            List<String> removedKeys = null;
+            final String cachedJvmValue = namespaceURI.intern();
+            if (getPrefixesToNamespaces().containsValue(cachedJvmValue)) {
+                removedKeys = new ArrayList<>();
+                for (Map.Entry<String, String> prefixEntry : prefixesToNamespaces.entrySet()) {
+                    if (cachedJvmValue.equals(prefixEntry.getValue())) {
+                        removedKeys.add(prefixEntry.getKey());
                     }
                 }
             }
-            if (null != removedItems) {
-                for (String key : removedItems.keySet()) {
-                    getPrefixesToNamespaces().remove(key);
+            if (null != removedKeys) {
+                for (String key : removedKeys) {
+                    prefixesToNamespaces.remove(key);
                 }
             }
-            getPrefixesToNamespaces().put(prefix, namespaceURI.intern());
-            if (null != removedItems) {
-                for (Map.Entry<String, String> removedEntry : removedItems.entrySet()) {
-                    getPrefixesToNamespaces().put(removedEntry.getKey(), removedEntry.getValue());
+            prefixesToNamespaces.put(prefix, cachedJvmValue);
+            if (null != removedKeys) {
+                for (String key : removedKeys) {
+                    prefixesToNamespaces.put(key, cachedJvmValue);
                 }
             }
         }
@@ -258,14 +268,9 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      */
     public Vector getNamespaces() {
         if(!hasPrefixesToNamespaces()) {
-            return new Vector(0);
+            return EMPTY_VECTOR;
         }
-        Vector names = new Vector(prefixesToNamespaces.size());
-        for(Entry<String, String> entry: prefixesToNamespaces.entrySet()) {
-            Namespace namespace = new Namespace(entry.getKey(), entry.getValue());
-            names.addElement(namespace);
-        }
-        return names;
+        return prefixesToNamespaces.getNamespaces();
     }
 
     /**
@@ -275,12 +280,8 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @param  names A Vector of namespace URIs
      */
     public void setNamespaces(Vector names) {
-        prefixesToNamespaces = new LinkedHashMap<>(names.size());
-        for(Namespace namespace : (Vector<Namespace>) names) {
-            if ((namespace.getPrefix() != null) && (namespace.getNamespaceURI() != null)) {
-                prefixesToNamespaces.put(namespace.getPrefix(), namespace.getNamespaceURI());
-            }
-        }
+        prefixesToNamespaces = new NamespaceResolverStorage(names.size());
+        prefixesToNamespaces.setNamespaces(names);
     }
 
     public String generatePrefix() {
