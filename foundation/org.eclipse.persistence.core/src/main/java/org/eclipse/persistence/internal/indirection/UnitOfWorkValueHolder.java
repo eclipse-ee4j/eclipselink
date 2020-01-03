@@ -163,10 +163,10 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
                         return wrapped.instantiateForUnitOfWorkValueHolder(this);
                     }
                 }
-                if (!((DatabaseValueHolder)this.wrappedValueHolder).isInstantiated()){
+                if (!wrapped.isInstantiated()){
                     //if not instantiated then try and load the UOW versions to prevent the whole loading from the cache and cloning
                     //process
-                    Object result = ((DatabaseValueHolder)this.wrappedValueHolder).getValue((UnitOfWorkImpl) this.session);
+                    Object result = wrapped.getValue((UnitOfWorkImpl) this.session);
                     if (result != null){
                         return result;
                     }
