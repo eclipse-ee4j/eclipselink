@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -79,7 +79,7 @@ public class SchemaGeneratorTestCase {
     }
    
     @Test
-    public void test(final @Mocked Helper helper) {
+    public void javaxXmlRpcStringHolderTest(final @Mocked Helper helper) {
            assertFalse(helper.isBuiltInJavaType(new JavaClass() { public String getRawName() { return "javax.xml.rpc.StringHolder";}
                                                                   public JavaClassInstanceOf instanceOf() { return null; } 
                                                                   public boolean isSynthetic() { return false; }
