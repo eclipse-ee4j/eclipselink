@@ -234,7 +234,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
                 }
             }
             if (null != removedKeys) {
-                for (String key : removedKeys.keySet()) {
+                for (String key : removedKeys) {
                     prefixesToNamespaces.remove(key);
                 }
             }
