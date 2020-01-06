@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -355,20 +355,6 @@ public abstract class AbstractDirectMapping extends AbstractColumnMapping implem
     public void cascadeRegisterNewIfRequired(Object object, UnitOfWorkImpl uow, Map visitedObjects) {
         //objects referenced by this mapping are not registered as they have
         // no identity, this is a no-op.
-    }
-
-    /**
-     * INTERNAL:
-     * The mapping clones itself to create deep copy.
-     */
-    @Override
-    public Object clone() {
-        AbstractDirectMapping clone = (AbstractDirectMapping)super.clone();
-
-        // Field must be cloned so aggregates do not share fields.
-        clone.setField(getField().clone());
-
-        return clone;
     }
 
     /**
