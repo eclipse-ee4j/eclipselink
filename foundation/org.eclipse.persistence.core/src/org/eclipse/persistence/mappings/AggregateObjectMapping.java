@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -1447,7 +1447,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             // Else, silently ignored for now. These converters are set and 
             // controlled through JPA metadata processing.
         }
-        
         translateFields(clonedDescriptor, referenceSession);
 
         if (clonedDescriptor.hasInheritance() && clonedDescriptor.getInheritancePolicy().hasChildren()) {
@@ -1534,6 +1533,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             clonedDescriptor.setDefaultTable(getDescriptor().getDefaultTable());
             clonedDescriptor.setTables(getDescriptor().getTables());
             clonedDescriptor.setPrimaryKeyFields(getDescriptor().getPrimaryKeyFields());
+
+            // We need to translate the mappings field now BEFORE the clonedDescriptor gets initialized.
+            // During clonedDescriptor initialize, the mappings will be initialized and the field needs translated by then.
+            // If we wait any longer, the initialized mapping will be set as a primary key if the field name matches primaryKeyFields
+            Vector<DatabaseMapping> mappingsToTranslate = clonedDescriptor.getMappings();
+            for (DatabaseMapping mapping : mappingsToTranslate) {
+                DatabaseField field = mapping.getField();
+                if(field != null) {
+                    DatabaseField sourceField = getAggregateToSourceFields().get(field.getName());
+                    translateField(sourceField, field, clonedDescriptor);
+                }
+            }
+
             if (clonedDescriptor.hasTargetForeignKeyMapping(session) && !isJPAIdNested(session)) {
                 for (DatabaseField pkField : getDescriptor().getPrimaryKeyFields()) {
                     if (!getAggregateToSourceFields().containsKey(pkField.getName())) {
