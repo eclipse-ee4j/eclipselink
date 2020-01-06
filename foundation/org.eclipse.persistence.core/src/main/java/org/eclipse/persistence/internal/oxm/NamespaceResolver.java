@@ -238,7 +238,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
                     prefixesToNamespaces.remove(key);
                 }
             }
-            getPrefixesToNamespaces().put(prefix, namespaceURI.intern());
+            prefixesToNamespaces.put(prefix, cachedJvmValue);
             if (null != removedKeys) {
                 for (String key : removedKeys) {
                     prefixesToNamespaces.put(key, cachedJvmValue);
