@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,6 +94,7 @@ public class Helper {
     protected final static String JAVA_PKG = "java.";
     protected final static String JAVAX_PKG = "javax.";
     protected final static String JAVAX_WS_PKG = "javax.xml.ws.";
+    protected final static String JAVAX_RPC_PKG = "javax.xml.rpc.";
 
     private JavaClass collectionClass;
     private JavaClass setClass;
@@ -317,8 +318,7 @@ public class Helper {
      *     JavaClass' raw name
      * 2 - the provided JavaClass' raw name starts with "java."
      * 3 - the provided JavaClass' raw name starts with "javax.", with
-     *     the exception of "javax.xml.ws."
-     *
+     *     the exception of "javax.xml.ws." and "javax.xml.rpc"
      * @param jClass
      * @return
      */
@@ -327,7 +327,7 @@ public class Helper {
         if(null == rawName) {
             return true;
         }
-        return (getXMLToJavaTypeMap().containsKey(rawName) || rawName.startsWith(JAVA_PKG) || (rawName.startsWith(JAVAX_PKG) && !rawName.startsWith(JAVAX_WS_PKG))) ;
+        return (getXMLToJavaTypeMap().containsKey(rawName) || rawName.startsWith(JAVA_PKG) || (rawName.startsWith(JAVAX_PKG) && !(rawName.startsWith(JAVAX_WS_PKG)||rawName.startsWith(JAVAX_RPC_PKG))));
     }
 
     public void setClassLoader(ClassLoader loader) {
