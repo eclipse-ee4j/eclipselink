@@ -22,7 +22,10 @@ mkdir -p ${MILESTONE_SITE_DIR}
 mkdir -p ${NIGHTLY_SITE_DIR}
 mkdir -p ${SIGN_DIR}
 scp -r genie.eclipselink@projects-storage.eclipse.org:${DNLD_DIR_REMOTE}/nightly/${VERSION}/* ${DNLD_DIR}/nightly/${VERSION}
-scp -r genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_DNLD_DIR_REMOTE}/${VERSION}/${RELEASE_CANDIDATE_ID}/* ${MILESTONE_DNLD_DIR}/${VERSION}/${RELEASE_CANDIDATE_ID}
+
+if [ ${RELEASE} = "true" ]; then
+  scp -r genie.eclipselink@projects-storage.eclipse.org:${MILESTONE_DNLD_DIR_REMOTE}/${VERSION}/${RELEASE_CANDIDATE_ID}/* ${MILESTONE_DNLD_DIR}/${VERSION}/${RELEASE_CANDIDATE_ID}
+fi
 
 echo '-[ EclipseLink Init ]-----------------------------------------------------------'
 
