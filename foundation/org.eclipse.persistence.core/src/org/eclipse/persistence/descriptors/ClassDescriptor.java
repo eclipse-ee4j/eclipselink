@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -940,7 +940,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             } else {
                 table = getDefaultTable();
             }
-            field.setTable(table);
+            builtField.setTable(table);
             getObjectBuilder().getFieldsMap().put(builtField, builtField);
         }
         return builtField;
