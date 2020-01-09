@@ -1391,7 +1391,9 @@ public abstract class DatabaseCall extends DatasourceCall {
      * INTERNAL:
      * 
      * Get the return object from the statement. Use the parameter index to determine what return object to get.
-     * @param index - 0-based index in the argument list
+     * @param statement SQL/JDBC statement to call stored procedure/function
+     * @param index 0-based index in the argument list
+     * @param session Active database session (in connected state).
      * @return
      */
     public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
@@ -1403,7 +1405,9 @@ public abstract class DatabaseCall extends DatasourceCall {
      * INTERNAL:
      * 
      * Get the return object from the statement. Use the parameter name to determine what return object to get.
-     * @param index - 0-based index in the argument list
+     * @param statement SQL/JDBC statement to call stored procedure/function
+     * @param name parameter name
+     * @param session Active database session (in connected state).
      * @return
      */
     public Object getOutputParameterValue(CallableStatement statement, String name, AbstractSession session) throws SQLException {
