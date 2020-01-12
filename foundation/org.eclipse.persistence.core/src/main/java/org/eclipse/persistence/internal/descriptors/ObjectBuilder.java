@@ -4639,4 +4639,22 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     public AbstractRecord createRecordFromXMLContext(XMLContext context) {
         return createRecord((AbstractSession)context.getSession());
     }
+
+    public boolean checkNull(Object o, AbstractSession session) {
+        if (o == null) {
+            return true;
+        }
+        // PERF: Avoid iterator.
+        final List mappings = this.descriptor.getMappings();
+        for (int index = 0; index < mappings.size(); index++) {
+            final DatabaseMapping mapping = (DatabaseMapping)mappings.get(index);
+
+            final Object value = mapping.getAttributeValueFromObject(o);
+            if (value != null) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
