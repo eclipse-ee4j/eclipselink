@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,6 +137,8 @@ new UpdateDeepOwnershipTest((org.eclipse.persistence.testing.models.ownership.Ob
         addTest(new NestedUnitOfWorkDeleteNewObjectTest());
         //bug 3115160
         addTest(new NestedUnitOfWorkDeleteNestedNewObjectTest());
+        //bug GitHub 624
+        addTest(new NestedUnitOfWorkDeleteFromNestedObjectTest());
         //bug 3132979
         addTest(new NestedUnitOfWorkDeleteConformedNestedNewObjectTest());
         addTest(new DoubleNestedUnitOfWorkDeleteConformedNestedNewObjectTest());
