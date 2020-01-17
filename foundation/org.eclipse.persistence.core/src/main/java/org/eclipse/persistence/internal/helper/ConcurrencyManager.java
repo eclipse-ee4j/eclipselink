@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,6 +19,7 @@ import java.security.AccessController;
 import java.util.Enumeration;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Date;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -84,14 +85,39 @@ public class ConcurrencyManager implements Serializable {
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public synchronized void acquire(boolean forMerge) throws ConcurrencyException {
+
+        //FIX - BUG-30604379 - Flag the time when we start the while loop
+        final Date whileStartDate = new Date();
+        Thread currentThread = Thread.currentThread();
+        DeferredLockManager lockManager = getDeferredLockManager(currentThread);
+
         while (((this.activeThread != null) || (this.numberOfReaders > 0)) && (this.activeThread != Thread.currentThread())) {
             // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
             try {
                 this.numberOfWritersWaiting++;
-                wait();
-                this.numberOfWritersWaiting--;
+
+                // FIX - BUG-30604379 - Do not wait forever - max allowed time to wait is 10 second and then check conditions again
+                // wait();
+                wait(10000l);
+
+
+                // FIX - BUG-30604379 -
+                // Run a method that will fire up an exception if we  having been sleeping for too long
+                HackingEclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
+
+                // FIX - BUG-30604379 -  Moved to finally block to ensure it always runs
+                // this.numberOfWritersWaiting--;
             } catch (InterruptedException exception) {
+                // FIX - BUG-30604379 - If the thread is interrupted we want to make sure we release all of the locks the thread was owning
+                releaseAllLocksAquiredByThread(lockManager);
+
                 throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
+            } finally {
+                // FIX - BUG-30604379 -
+                // Since above we incremente the number of writers
+                // whether or not the thread is exploded by an interrupt
+                // we need to make sure we decrement the number of writer to not allow the code to be corrupeted
+                this.numberOfWritersWaiting--;
             }
         }
         if (this.activeThread == null) {
@@ -142,7 +168,7 @@ public class ConcurrencyManager implements Serializable {
             return true;
         } else {
             try {
-                wait(wait);
+                wait(10000l);
             } catch (InterruptedException e) {
                 return false;
             }
@@ -183,6 +209,10 @@ public class ConcurrencyManager implements Serializable {
         }
         lockManager.incrementDepth();
         synchronized (this) {
+
+            // FIX - BUG-30604379 - Flag the time when we start the while loop
+            final Date whileStartDate = new Date();
+
             while (this.numberOfReaders != 0) {
                 // There are readers of this object, wait until they are done before determining if
                 //there are any other writers.  If not we will wait on the readers for acquire.  If another
@@ -192,10 +222,30 @@ public class ConcurrencyManager implements Serializable {
                 //the object is not being built.
                 try {
                     this.numberOfWritersWaiting++;
-                    wait();
-                    this.numberOfWritersWaiting--;
+
+                    // FIX - BUG-30604379 - Do not wait forever - max allowed time to wait is 10 second and then check conditions again
+                    // wait();
+                    wait(1000l);
+
+                    // FIX - BUG-30604379 -  Moved to finally block to ensure it always runs
+                    // this.numberOfWritersWaiting--;
+
+
+                    // FIX - BUG-30604379 -
+                    // Run a method that will fire up an exception if we  having been sleeping for too long
+                    HackingEclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
                 } catch (InterruptedException exception) {
+                    // FIX - BUG-30604379 - If the thread is interrupted we want to make sure we release all of the locks the thread was owning
+                    releaseAllLocksAquiredByThread(lockManager);
+
+
                     throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
+                } finally {
+                    // FIX - BUG-30604379 -
+                    // Since above we incremente the number of writers
+                    // whether or not the thread is exploded by an interrupt
+                    // we need to make sure we decrement the number of writer to not allow the code to be corrupeted
+                    this.numberOfWritersWaiting--;
                 }
             }
             if ((this.activeThread == currentThread) || (!isAcquired())) {
@@ -438,6 +488,13 @@ public class ConcurrencyManager implements Serializable {
 
         lockManager.setIsThreadComplete(true);
 
+        // FIX - BUG-30604379 - start a date time
+        // Thread have three stages, one where they are doing work (i.e. building objects)
+        // two where they are done their own work but may be waiting on other threads to finish their work,
+        // and a third when they and all the threads they are waiting on are done.
+        // This is essentially a busy wait to determine if all the other threads are done.
+        final Date whileStartDate = new Date();
+
         // Thread have three stages, one where they are doing work (i.e. building objects)
         // two where they are done their own work but may be waiting on other threads to finish their work,
         // and a third when they and all the threads they are waiting on are done.
@@ -454,6 +511,10 @@ public class ConcurrencyManager implements Serializable {
                 } else {// Not done yet, wait and check again.
                     try {
                         Thread.sleep(1);
+
+                        // FIX - BUG-30604379 -
+                        // Run a method that will fire up an exception if we  having been sleeping for too long
+                        HackingEclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
                     } catch (InterruptedException interrupted) {
                         AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
                         lockManager.releaseActiveLocksOnThread();
@@ -582,4 +643,36 @@ public class ConcurrencyManager implements Serializable {
                 : System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK);
     }
 
+    // Hacking APIs
+    /**
+     * For the thread to release all of its locks.
+     * @param lockManager
+     *      the deferred lock manager
+     */
+    // FIX - BUG-30604379 - Put in one place the code that frees up the locks acuired by the current thread
+    protected void releaseAllLocksAquiredByThread(DeferredLockManager lockManager) {
+        Thread currentThread = Thread.currentThread();
+        // (a) Log some information in the LOG
+        String cacheKeyToString = HackingEclipseHelperUtil.SINGLETON.createToStringExplainingOwnedCacheKey(this);
+        String errMsg = "releaseAllLocksAquiredByThread has been invoked. On  " + cacheKeyToString;
+        AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, errMsg, currentThread.getName());
+
+        // (b) When this method is invoked during an aquire lock sometimes there is no lock manager
+        if(lockManager == null) {
+            AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, "Lock manager is null. "
+                    + "This might be an aquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). "
+                    + " Cache Key" + cacheKeyToString, currentThread.getName());
+            return;
+        }
+
+        // (c) Release the active locks on the thread
+        lockManager.releaseActiveLocksOnThread();
+        removeDeferredLockManager(currentThread);
+
+        // Question:
+        // Would it be safe to send a NOTIFY ALL?
+        // probably not. But there might be threads waiting for the release of the lock
+        // Normally the Notifyall is necessary when locks are released. But in this case we are even dealing with not one but ALL
+        // of hte locks owned by thread so there would be multiple objects notify - we probably cannot do this
+    }
 }
