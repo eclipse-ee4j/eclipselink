@@ -21,7 +21,8 @@ import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbynamespace.withgroupingelement.CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbynamespace.withgroupingelement.CompositeCollectionWithGroupingElementIdentifiedByNamespaceTestCases;
 import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbynamespace.withgroupingelement.CompositeCollectionWithGroupingTextTestCases;
-import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbynamespace.withoutgroupingelement.CompositeCollectionWithoutGroupingElementIdentifiedByNamespaceTestCases;
+//import org.eclipse.persistence.testing.oxm.mappings.compositecollection.identifiedbynamespace
+// .withoutgroupingelement.CompositeCollectionWithoutGroupingElementIdentifiedByNamespaceTestCases;
 
 public class IdentifiedByNamespaceTestCases extends TestCase {
 
@@ -29,7 +30,7 @@ public class IdentifiedByNamespaceTestCases extends TestCase {
     TestSuite suite = new TestSuite("Composite Collection:  Identified By Namespace Test Cases");
     suite.addTestSuite(CompositeCollectionWithGroupingElementIdentifiedByNamespaceTestCases.class);
     suite.addTestSuite(CompositeCollectionWithGroupingByNamespaceNoRefClassTestCases.class);
-    suite.addTestSuite(CompositeCollectionWithoutGroupingElementIdentifiedByNamespaceTestCases.class);
+    //suite.addTestSuite(CompositeCollectionWithoutGroupingElementIdentifiedByNamespaceTestCases.class);
     suite.addTestSuite(CompositeCollectionWithGroupingTextTestCases.class);
     return suite;
   }
