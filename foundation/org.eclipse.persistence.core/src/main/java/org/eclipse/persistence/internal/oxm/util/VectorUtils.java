@@ -189,7 +189,7 @@ public class VectorUtils {
 
         @Override
         public List<E> subList(int fromIndex, int toIndex) {
-            return Collections.unmodifiableList(subList(fromIndex, toIndex));
+            return Collections.unmodifiableList(super.subList(fromIndex, toIndex));
         }
 
         public ListIterator<E> listIterator(final int index) {
