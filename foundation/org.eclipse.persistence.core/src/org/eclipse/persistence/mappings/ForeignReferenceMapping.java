@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -2251,13 +2251,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     if (targetQuery.shouldPrepare()) {
                         targetQuery.checkPrepare(executionSession, row);
                     }
-                    targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                    targetQuery = (ReadQuery) targetQuery.clone();
                     targetQuery.setIsExecutionClone(true);
                     ((ObjectLevelReadQuery)targetQuery).setFetchGroup(targetFetchGroup);
                 }
             }
         }
-        
+
         // CR #4365, 3610825 - moved up from the block below, needs to be set with 
         // indirection off. Clone the query and set its id.
         // All indirections are triggered in sopObject, therefore if sopObject is used then indirection on targetQuery to be triggered, too.
@@ -2267,14 +2267,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 if (targetQuery.shouldPrepare()) {
                     targetQuery.checkPrepare(executionSession, row);
                 }
-                targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                targetQuery = (ReadQuery) targetQuery.clone();
                 targetQuery.setIsExecutionClone(true);
             }
             targetQuery.setQueryId(sourceQuery.getQueryId());
             if (sourceQuery.usesResultSetAccessOptimization()) {
                 targetQuery.setAccessors(sourceQuery.getAccessors());
             }
-            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
+
+            if(targetQuery.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
+            }
         }
 
         // If the source query is cascading then the target query must use the same settings.
@@ -2287,25 +2290,25 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     if (targetQuery.shouldPrepare()) {
                         targetQuery.checkPrepare(executionSession, row);
                     }
-                    targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                    targetQuery = (ReadQuery) targetQuery.clone();
                     targetQuery.setIsExecutionClone(true);
                 }
 
                 ((ObjectLevelReadQuery)targetQuery).setShouldRefreshIdentityMapResult(sourceQuery.shouldRefreshIdentityMapResult());
                 targetQuery.setCascadePolicy(sourceQuery.getCascadePolicy());
-    
+
                 // For queries that have turned caching off, such as aggregate collection, leave it off.
                 if (targetQuery.shouldMaintainCache()) {
                     targetQuery.setShouldMaintainCache(sourceQuery.shouldMaintainCache());
                 }
-    
+
                 // For flashback: Read attributes as of the same time if required.
-                if (((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) {
+                if (sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) {
                     targetQuery.setSelectionCriteria((Expression)targetQuery.getSelectionCriteria().clone());
                     ((ObjectLevelReadQuery)targetQuery).setAsOfClause(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
                 }
             }
-            
+
             if (isExtendingPessimisticLockScope(sourceQuery)) {
                 if (this.extendPessimisticLockScope == ExtendPessimisticLockScope.TARGET_QUERY) {
                     if (targetQuery == this.selectionQuery) {
@@ -2313,10 +2316,13 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                         if (targetQuery.shouldPrepare()) {
                             targetQuery.checkPrepare(executionSession, row);
                         }
-                        targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                        targetQuery = (ReadQuery) targetQuery.clone();
                         targetQuery.setIsExecutionClone(true);
                     }
-                    extendPessimisticLockScopeInTargetQuery((ObjectLevelReadQuery)targetQuery, sourceQuery);
+
+                    if(targetQuery.isObjectLevelReadQuery()) {
+                        extendPessimisticLockScopeInTargetQuery((ObjectLevelReadQuery)targetQuery, sourceQuery);
+                    }
                 } else if (this.extendPessimisticLockScope == ExtendPessimisticLockScope.DEDICATED_QUERY) {
                     ReadQuery dedicatedQuery = getExtendPessimisticLockScopeDedicatedQuery(executionSession, sourceQuery.getLockMode());
                     executionSession.executeQuery(dedicatedQuery, row);

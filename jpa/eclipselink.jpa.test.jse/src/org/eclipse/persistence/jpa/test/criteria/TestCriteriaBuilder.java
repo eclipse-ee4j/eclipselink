@@ -39,6 +39,7 @@ import org.junit.runner.RunWith;
 public class TestCriteriaBuilder {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { L1.class, L2.class })
     private EntityManagerFactory emf;
+
     /**
      * Merging ElementCollections on Oracle fails when EclipseLink generates 
      * a DELETE SQL statement with a WHERE clause containing a CLOB.
