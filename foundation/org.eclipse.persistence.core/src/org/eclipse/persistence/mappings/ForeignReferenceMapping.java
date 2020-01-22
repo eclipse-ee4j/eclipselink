@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2249,10 +2250,10 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
 
         // Bug 464088
         if (executionSession.isHistoricalSession() && !targetQuery.isPrepared()) {
-            targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+            targetQuery = (ReadQuery) targetQuery.clone();
             targetQuery.setIsExecutionClone(true);
         }
-        
+
         // Copy nested fetch group from the source query
         if (targetQuery.isObjectLevelReadQuery() && targetQuery.getDescriptor().hasFetchGroupManager()) {
             FetchGroup sourceFG = sourceQuery.getExecutionFetchGroup(this.getDescriptor());
@@ -2263,7 +2264,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     if (targetQuery.shouldPrepare()) {
                         targetQuery.checkPrepare(executionSession, row);
                     }
-                    targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                    targetQuery = (ReadQuery) targetQuery.clone();
                     targetQuery.setIsExecutionClone(true);
                     ((ObjectLevelReadQuery)targetQuery).setFetchGroup(targetFetchGroup);
                 }
@@ -2279,14 +2280,17 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 if (targetQuery.shouldPrepare()) {
                     targetQuery.checkPrepare(executionSession, row);
                 }
-                targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                targetQuery = (ReadQuery) targetQuery.clone();
                 targetQuery.setIsExecutionClone(true);
             }
             targetQuery.setQueryId(sourceQuery.getQueryId());
             if (sourceQuery.usesResultSetAccessOptimization()) {
                 targetQuery.setAccessors(sourceQuery.getAccessors());
             }
-            ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
+
+            if(targetQuery.isObjectLevelReadQuery()) {
+                ((ObjectLevelReadQuery)targetQuery).setRequiresDeferredLocks(sourceQuery.requiresDeferredLocks());
+            }
         }
 
         // If the source query is cascading then the target query must use the same settings.
@@ -2299,7 +2303,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                     if (targetQuery.shouldPrepare()) {
                         targetQuery.checkPrepare(executionSession, row);
                     }
-                    targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                    targetQuery = (ReadQuery) targetQuery.clone();
                     targetQuery.setIsExecutionClone(true);
                 }
 
@@ -2312,7 +2316,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 }
 
                 // For flashback: Read attributes as of the same time if required.
-                if (((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) {
+                if (sourceQuery.isObjectLevelReadQuery() && ((ObjectLevelReadQuery)sourceQuery).hasAsOfClause()) {
                     targetQuery.setSelectionCriteria((Expression)targetQuery.getSelectionCriteria().clone());
                     ((ObjectLevelReadQuery)targetQuery).setAsOfClause(((ObjectLevelReadQuery)sourceQuery).getAsOfClause());
                 }
@@ -2325,7 +2329,7 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                         if (targetQuery.shouldPrepare()) {
                             targetQuery.checkPrepare(executionSession, row);
                         }
-                        targetQuery = (ObjectLevelReadQuery)targetQuery.clone();
+                        targetQuery = (ReadQuery) targetQuery.clone();
                         targetQuery.setIsExecutionClone(true);
                     }
                     extendPessimisticLockScopeInTargetQuery((ObjectLevelReadQuery)targetQuery, sourceQuery);
