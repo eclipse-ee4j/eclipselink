@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,6 +18,7 @@
 //       - 534515: Incorrect return type set for CASE functions
 package org.eclipse.persistence.jpa.test.jpql;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -40,6 +41,7 @@ import org.eclipse.persistence.jpa.test.jpql.model.SuperClass;
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.DerbyPlatform;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -56,18 +58,70 @@ public class TestComplexJPQL {
     private EntityManagerFactory joinEMF;
 
     @Test
-    public void testComplexJPQLIN() {
-        if(getPlatform(inEMF) instanceof DerbyPlatform) {
-            Assert.assertTrue("Test will not run on DerbyPlatform. Derby does "
-                    + "not support multiple IN clause for prepared statements.", true);
-            return;
-        }
+    public void testINWithSubquery() {
+        DatabasePlatform platform = getPlatform(inEMF);
+        Assume.assumeFalse("Test will not run on " + platform + ". " + platform + " does "
+                + "not support multiple IN clause for prepared statements.", platform instanceof DerbyPlatform);
 
         EntityManager em = inEMF.createEntityManager();;
         try {
             Query q = em.createQuery("select t0.id from JPQLEntity t0 "
                     + "where (t0.string1, t0.string2) "
                     + "in (select t1.string1, t1.string2 from JPQLEntity t1)");
+            q.getResultList();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void test_IN_ClauseLimit() {
+        EntityManager em = inEMF.createEntityManager();
+        try {
+            Query q = em.createQuery("select t0.id from JPQLEntity t0 "
+                    + "where t0.id.value1.value <> :parameterString and t0.string1 in :parameterList");
+
+            //Create a list longer than the limit
+            int limit = getPlatform(inEMF).getINClauseLimit() + 10;
+            List<String> parameterList = new ArrayList<String>();
+            for(int p = 0; p < limit; p++) {
+                parameterList.add("" + p);
+            }
+            q.setParameter("parameterList", parameterList);
+            q.setParameter("parameterString", "Test");
+
+            q.getResultList();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void test_NOTIN_ClauseLimit() {
+        EntityManager em = inEMF.createEntityManager();
+        try {
+            Query q = em.createQuery("select t0.id from JPQLEntity t0 "
+                    + "where t0.id.value1.value <> :parameterString and t0.string1 not in :parameterList");
+
+            //Create a list longer than the limit
+            int limit = getPlatform(inEMF).getINClauseLimit() + 10;
+            List<String> parameterList = new ArrayList<String>();
+            for(int p = 0; p < limit; p++) {
+                parameterList.add("" + p);
+            }
+            q.setParameter("parameterList", parameterList);
+            q.setParameter("parameterString", "Test");
+
             q.getResultList();
         } finally {
             if (em.getTransaction().isActive()) {
