@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1261,10 +1262,33 @@ public abstract class DatabaseCall extends DatasourceCall {
                         } else {
                             parametersValues.addAll(values);
                             int size = values.size();
-                            for (int index = 0; index < size; index++) {
-                                writer.write("?");
-                                if ((index + 1) < size) {
-                                    writer.write(",");
+
+                            int limit = ((DatasourcePlatform)session.getDatasourcePlatform()).getINClauseLimit();
+                            //The database platform has a limit for the IN clause so we need to reformat the clause
+                            if(limit > 0) {
+                                boolean not = token.endsWith(" NOT IN ");
+                                String subToken = token.substring(0, token.length() - (not ? " NOT IN " : " IN ").length());
+                                int spaceIndex = subToken.lastIndexOf(' ');
+                                int braceIndex = subToken.lastIndexOf('(');
+                                String fieldName = subToken.substring((spaceIndex > braceIndex ? spaceIndex : braceIndex) + 1);
+                                String inToken = not ? ") AND " + fieldName + " NOT IN (" : ") OR " + fieldName + " IN (";
+
+                                for (int index = 0; index < size; index++) {
+                                    writer.write("?");
+                                    if ((index + 1) < size) {
+                                        if (index > 0 && (index + 1) % limit == 0) {
+                                            writer.write(inToken);
+                                        } else  {
+                                            writer.write(",");
+                                        }
+                                    }
+                                }
+                            } else {
+                                for (int index = 0; index < size; index++) {
+                                    writer.write("?");
+                                    if ((index + 1) < size) {
+                                        writer.write(",");
+                                    }
                                 }
                             }
                         }
