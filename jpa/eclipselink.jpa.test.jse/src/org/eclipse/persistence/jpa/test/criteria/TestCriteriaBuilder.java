@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,19 @@
 //       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.jpa.test.criteria;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CompoundSelection;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
+
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.criteria.model.L1;
 import org.eclipse.persistence.jpa.test.criteria.model.L1Model;
 import org.eclipse.persistence.jpa.test.criteria.model.L1_;
@@ -33,6 +37,7 @@ import org.eclipse.persistence.jpa.test.criteria.model.L2_;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -90,5 +95,71 @@ public class TestCriteriaBuilder {
         }
 
         em.close();
+    }
+
+    @Test
+    public void testCriteriaBuilder_IN_ClauseLimit() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result"
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<L1> query = builder.createQuery(L1.class);
+            Root<L1> root = query.from(L1.class);
+            query.where(root.get("name").in(builder.parameter(List.class, "parameterList")));
+
+            Query q = em.createQuery(query);
+
+            //Create a list longer than the limit
+            int limit = getPlatform(emf).getINClauseLimit() + 10;
+            List<String> parameterList = new ArrayList<String>();
+            for(int p = 0; p < limit; p++) {
+                parameterList.add("" + p);
+            }
+            q.setParameter("parameterList", parameterList);
+
+            q.getResultList();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testCriteriaBuilder_NOTIN_ClauseLimit() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id IN :result"
+            final CriteriaBuilder builder = em.getCriteriaBuilder();
+            final CriteriaQuery<L1> query = builder.createQuery(L1.class);
+            Root<L1> root = query.from(L1.class);
+            query.where(root.get("name").in(builder.parameter(List.class, "parameterList")).not());
+
+            Query q = em.createQuery(query);
+
+            //Create a list longer than the limit
+            int limit = getPlatform(emf).getINClauseLimit() + 10;
+            List<String> parameterList = new ArrayList<String>();
+            for(int p = 0; p < limit; p++) {
+                parameterList.add("" + p);
+            }
+            q.setParameter("parameterList", parameterList);
+
+            q.getResultList();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    private DatabasePlatform getPlatform(EntityManagerFactory emf) {
+        return ((EntityManagerFactoryImpl)emf).getServerSession().getPlatform();
     }
 }
