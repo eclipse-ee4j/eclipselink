@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,11 @@
         </dependency>
         <!--Other libraries dependencies-->
         <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>commonj.sdo</artifactId>
         </dependency>
@@ -71,7 +76,15 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Import-Package>commonj.sdo.impl</Import-Package>
+                        <Import-Package>
+                            commonj.sdo.impl,
+                            javax.management.*;resolution:=optional,
+                            javax.naming.*;resolution:=optional,
+                            javax.xml.*;resolution:=optional,
+                            org.w3c.dom.*;resolution:=optional,
+                            org.xml.sax.*;resolution:=optional,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
                 <executions>

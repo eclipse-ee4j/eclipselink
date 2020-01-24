@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,7 @@
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
-        <!--API dependecies-->
+        <!--API/Implementation dependencies-->
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
@@ -76,13 +76,18 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
+            <groupId>jakarta.resource</groupId>
+            <artifactId>jakarta.resource-api</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>jakarta.resource</groupId>
-            <artifactId>jakarta.resource-api</artifactId>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>jakarta.persistence</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
@@ -141,6 +146,17 @@
                     <instructions>
                         <!-- Java packages specified there comes from "Class.forName(...),  maven-bundle-plugin >= 4.2.0 index them as mandatory -->
                         <Import-Package>
+                            javax.activation.*;resolution:=optional,
+                            javax.crypto.*;resolution:=optional,
+                            javax.imageio.*;resolution:=optional,
+                            javax.management.*;resolution:=optional,
+                            javax.naming.*;resolution:=optional,
+                            javax.rmi.*;resolution:=optional,
+                            javax.sql.*;resolution:=optional,
+                            javax.xml.*;resolution:=optional,
+                            org.omg.CORBA*;resolution:=optional,
+                            org.w3c.dom.*;resolution:=optional,
+                            org.xml.sax.*;resolution:=optional,
                             org.eclipse.persistence.eis.adapters.xmlfile.*;resolution:=optional,
                             org.eclipse.persistence.sessions.coordination.corba.sun.*;resolution:=optional,
                             org.eclipse.persistence.internal.sessions.coordination.rmi.iiop.*;resolution:=optional,
