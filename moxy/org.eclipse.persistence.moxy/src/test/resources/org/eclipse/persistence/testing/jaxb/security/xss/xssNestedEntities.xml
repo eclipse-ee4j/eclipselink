@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding ="UTF-8"?>
+<!--
+
+    Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!DOCTYPE myroot[
+        <!ELEMENT myroot (elem1)>
+        <!ELEMENT elem1 (#PCDATA)>
+        <!ENTITY x100 "data1">
+        <!ENTITY  x99 "&x100;&x100;">
+        <!ENTITY  x98 "&x99;&x99;">
+        <!ENTITY  x97 "&x98;&x98;">
+        <!ENTITY  x96 "&x97;&x97;">
+        <!ENTITY  x95 "&x96;&x96;">
+        <!ENTITY  x94 "&x95;&x95;">
+        <!ENTITY  x93 "&x94;&x94;">
+        <!ENTITY  x92 "&x93;&x93;">
+        <!ENTITY  x91 "&x92;&x92;">
+        <!ENTITY  x90 "&x91;&x91;">
+        <!ENTITY  x89 "&x90;&x90;">
+        <!ENTITY  x88 "&x89;&x89;">
+        <!ENTITY  x87 "&x88;&x88;">
+        <!ENTITY  x86 "&x87;&x87;">
+        <!ENTITY  x85 "&x86;&x86;">
+        <!ENTITY  x84 "&x85;&x85;">
+        <!ENTITY  x83 "&x84;&x84;">
+        <!ENTITY  x82 "&x83;&x83;">
+        <!ENTITY  x81 "&x82;&x82;">
+        <!ENTITY  x80 "&x81;&x81;">
+        <!ENTITY  x79 "&x80;&x80;">
+        <!ENTITY  x78 "&x79;&x79;">
+        <!ENTITY  x77 "&x78;&x78;">
+        <!ENTITY  x76 "&x77;&x77;">
+        <!ENTITY  x75 "&x76;&x76;">
+        <!ENTITY  x74 "&x75;&x75;">
+        <!ENTITY  x73 "&x74;&x74;">
+        <!ENTITY  x72 "&x73;&x73;">
+        <!ENTITY  x71 "&x72;&x72;">
+        <!ENTITY  x70 "&x71;&x71;">
+        <!ENTITY  x69 "&x70;&x70;">
+        <!ENTITY  x68 "&x69;&x69;">
+        <!ENTITY  x67 "&x68;&x68;">
+        <!ENTITY  x66 "&x67;&x67;">
+        <!ENTITY  x65 "&x66;&x66;">
+        <!ENTITY  x64 "&x65;&x65;">
+        <!ENTITY  x63 "&x64;&x64;">
+        <!ENTITY  x62 "&x63;&x63;">
+        <!ENTITY  x61 "&x62;&x62;">
+        <!ENTITY  x60 "&x61;&x61;">
+        <!ENTITY  x59 "&x60;&x60;">
+        <!ENTITY  x58 "&x59;&x59;">
+        <!ENTITY  x57 "&x58;&x58;">
+        <!ENTITY  x56 "&x57;&x57;">
+        <!ENTITY  x55 "&x56;&x56;">
+        <!ENTITY  x54 "&x55;&x55;">
+        <!ENTITY  x53 "&x54;&x54;">
+        <!ENTITY  x52 "&x53;&x53;">
+        <!ENTITY  x51 "&x52;&x52;">
+        <!ENTITY  x50 "&x51;&x51;">
+        <!ENTITY  x49 "&x50;&x50;">
+        <!ENTITY  x48 "&x49;&x49;">
+        <!ENTITY  x47 "&x48;&x48;">
+        <!ENTITY  x46 "&x47;&x47;">
+        <!ENTITY  x45 "&x46;&x46;">
+        <!ENTITY  x44 "&x45;&x45;">
+        <!ENTITY  x43 "&x44;&x44;">
+        <!ENTITY  x42 "&x43;&x43;">
+        <!ENTITY  x41 "&x42;&x42;">
+        <!ENTITY  x40 "&x41;&x41;">
+        <!ENTITY  x39 "&x40;&x40;">
+        <!ENTITY  x38 "&x39;&x39;">
+        <!ENTITY  x37 "&x38;&x38;">
+        <!ENTITY  x36 "&x37;&x37;">
+        <!ENTITY  x35 "&x36;&x36;">
+        <!ENTITY  x34 "&x35;&x35;">
+        <!ENTITY  x33 "&x34;&x34;">
+        <!ENTITY  x32 "&x33;&x33;">
+        <!ENTITY  x31 "&x32;&x32;">
+        <!ENTITY  x30 "&x31;&x31;">
+        <!ENTITY  x29 "&x30;&x30;">
+        <!ENTITY  x28 "&x29;&x29;">
+        <!ENTITY  x27 "&x28;&x28;">
+        <!ENTITY  x26 "&x27;&x27;">
+        <!ENTITY  x25 "&x26;&x26;">
+        <!ENTITY  x24 "&x25;&x25;">
+        <!ENTITY  x23 "&x24;&x24;">
+        <!ENTITY  x22 "&x23;&x23;">
+        <!ENTITY  x21 "&x22;&x22;">
+        <!ENTITY  x20 "&x21;&x21;">
+        <!ENTITY  x19 "&x20;&x20;">
+        <!ENTITY  x18 "&x19;&x19;">
+        <!ENTITY  x17 "&x18;&x18;">
+        <!ENTITY  x16 "&x17;&x17;">
+        <!ENTITY  x15 "&x16;&x16;">
+        <!ENTITY  x14 "&x15;&x15;">
+        <!ENTITY  x13 "&x14;&x14;">
+        <!ENTITY  x12 "&x13;&x13;">
+        <!ENTITY  x11 "&x12;&x12;">
+        <!ENTITY  x10 "&x11;&x11;">
+        <!ENTITY  x9 "&x10;&x10;">
+        <!ENTITY  x8 "&x9;&x9;">
+        <!ENTITY  x7 "&x8;&x8;">
+        <!ENTITY  x6 "&x7;&x7;">
+        <!ENTITY  x5 "&x6;&x6;">
+        <!ENTITY  x4 "&x5;&x5;">
+        <!ENTITY  x3 "&x4;&x4;">
+        <!ENTITY  x2 "&x3;&x3;">
+        <!ENTITY  x1 "&x2;&x2;">
+        ]>
+<myroot>
+   <elem1>&x1;</elem1>
+</myroot>
