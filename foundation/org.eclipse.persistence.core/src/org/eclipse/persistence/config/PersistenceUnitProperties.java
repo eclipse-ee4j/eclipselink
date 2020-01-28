@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1030,7 +1030,7 @@ public class PersistenceUnitProperties {
      * <li>"<code>true</code>" - bindings will use platform default
      * </ul>
      * 
-     * @see org.eclipse.persistence.config.PersistenceUnitProperties.JDBC_BIND_PARAMETERS
+     * @see #JDBC_BIND_PARAMETERS
     */
    public static final String JDBC_FORCE_BIND_PARAMETERS = "eclipselink.jdbc.force-bind-parameters";
 
@@ -3053,7 +3053,7 @@ public class PersistenceUnitProperties {
      * <ul>
      * <li>a string containing a zero or greater integer value
      * </ul>
-     * @see PersistenceUnitProperties.QUERY_TIMEOUT_UNIT
+     * @see #QUERY_TIMEOUT_UNIT
      */
     public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
 
@@ -3068,7 +3068,7 @@ public class PersistenceUnitProperties {
      * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
-     * @see PersistenceUnitProperties.QUERY_TIMEOUT
+     * @see #QUERY_TIMEOUT
      */
     public static final String QUERY_TIMEOUT_UNIT = "eclipselink.query.timeout.unit";
 
