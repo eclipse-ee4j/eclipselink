@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,70 +34,70 @@ public class ConstraintViolationWrapper<T> {
     }
 
     /**
-     * {@see ConstraintViolation#getMessage}
+     * @see ConstraintViolation#getMessage
      */
     public String getMessage() {
         return constraintViolation.getMessage();
     }
 
     /**
-     * {@see ConstraintViolation#getMessageTemplate}
+     * @see ConstraintViolation#getMessageTemplate
      */
     public String getMessageTemplate() {
         return constraintViolation.getMessageTemplate();
     }
 
     /**
-     * {@see ConstraintViolation#getRootBean}
+     * @see ConstraintViolation#getRootBean
      */
     public T getRootBean() {
         return constraintViolation.getRootBean();
     }
 
     /**
-     * {@see ConstraintViolation#getRootBeanClass}
+     * @see ConstraintViolation#getRootBeanClass
      */
     public Class<T> getRootBeanClass() {
         return constraintViolation.getRootBeanClass();
     }
 
     /**
-     * {@see ConstraintViolation#getLeafBean}
+     * @see ConstraintViolation#getLeafBean
      */
     public Object getLeafBean() {
         return constraintViolation.getLeafBean();
     }
 
     /**
-     * {@see ConstraintViolation#getExecutableParameters}
+     * @see ConstraintViolation#getExecutableParameters
      */
     public Object[] getExecutableParameters() {
         return constraintViolation.getExecutableParameters();
     }
 
     /**
-     * {@see ConstraintViolation#getExecutableReturnValue}
+     * @see ConstraintViolation#getExecutableReturnValue
      */
     public Object getExecutableReturnValue() {
         return constraintViolation.getExecutableReturnValue();
     }
 
     /**
-     * {@see ConstraintViolation#getPropertyPath}
+     * @see ConstraintViolation#getPropertyPath
      */
     public Path getPropertyPath() {
         return constraintViolation.getPropertyPath();
     }
 
     /**
-     * {@see ConstraintViolation#getInvalidValue}
+     * @see ConstraintViolation#getInvalidValue
      */
     public Object getInvalidValue() {
         return constraintViolation.getInvalidValue();
     }
 
     /**
-     * {@see ConstraintViolation#getConstraintDescriptor}
+     * @see ConstraintViolation#getConstraintDescriptor
      */
     public ConstraintDescriptor<?> getConstraintDescriptor() {
         return constraintViolation.getConstraintDescriptor();
