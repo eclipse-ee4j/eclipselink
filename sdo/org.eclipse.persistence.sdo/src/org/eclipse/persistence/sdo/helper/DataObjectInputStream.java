@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -30,11 +30,14 @@
  */
 package org.eclipse.persistence.sdo.helper;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
+import java.io.*;
+import java.util.Arrays;
+
 import commonj.sdo.helper.HelperContext;
 import commonj.sdo.impl.HelperProvider;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.sdo.SDOConstants;
 
 public class DataObjectInputStream extends ObjectInputStream {
     private HelperContext aHelperContext;
@@ -79,4 +82,14 @@ public class DataObjectInputStream extends ObjectInputStream {
     public void setHelperContext(HelperContext helperContext) {
         aHelperContext = helperContext;
     }
+
+    @Override
+    protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+        if (!SDOConstants.ALLOWED_DESERIALIZATION_CLASS_NAMES.contains(desc.getName())) {
+            AbstractSessionLog.getLog().log(AbstractSessionLog.SEVERE, "sdo_error_deserialization", new Object[] {desc.getName()});
+            throw new InvalidClassException(LoggingLocalization.buildMessage("sdo_error_deserialization", new Object[] {desc.getName()}));
+        }
+        return super.resolveClass(desc);
+    }
+
 }
