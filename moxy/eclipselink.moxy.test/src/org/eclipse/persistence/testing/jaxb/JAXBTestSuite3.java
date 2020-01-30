@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperPackageInfo
 import org.eclipse.persistence.testing.jaxb.prefixmapper.PrefixMapperTestCases;
 import org.eclipse.persistence.testing.jaxb.properties.PropertyTestCases;
 import org.eclipse.persistence.testing.jaxb.readonly.ReadAndWriteOnlyTestCases;
+import org.eclipse.persistence.testing.jaxb.security.xss.SecurityXSSTestCases;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamReaderEndEventTestCases;
 import org.eclipse.persistence.testing.jaxb.stax.XMLStreamWriterDefaultNamespaceTestCases;
 import org.eclipse.persistence.testing.jaxb.unmapped.UnmappedElementsWarningTestCases;
@@ -145,6 +146,7 @@ public class JAXBTestSuite3 extends TestCase {
         suite.addTestSuite(URITestCases.class);
         suite.addTestSuite(PropertyTestCases.class);
         suite.addTestSuite(UnmappedElementsWarningTestCases.class);
+        suite.addTestSuite(SecurityXSSTestCases.class);
 
         return suite;
     }
