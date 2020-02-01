@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
 
-import org.eclipse.persistence.internal.oxm.util.NamespaceResolverStorage;
 import org.eclipse.persistence.platform.xml.XMLNamespaceResolver;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
-
-import static org.eclipse.persistence.internal.oxm.util.VectorUtils.emptyVector;
 
 /**
  * <p >It is common for an XML document to include one or more namespaces.
@@ -62,7 +59,7 @@ import static org.eclipse.persistence.internal.oxm.util.VectorUtils.emptyVector;
  */
 public class NamespaceResolver implements XMLNamespaceResolver {
     private static final String BASE_PREFIX = "ns";
-    private static final Vector EMPTY_VECTOR = emptyVector();
+    private static final Vector EMPTY_VECTOR = VectorUtils.emptyVector();
 
     private String defaultNamespaceURI;
     private NamespaceResolverStorage prefixesToNamespaces;
