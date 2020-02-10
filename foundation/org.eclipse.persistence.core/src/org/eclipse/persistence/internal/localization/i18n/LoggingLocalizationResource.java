@@ -393,13 +393,14 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "sdo_type_generation_modified_function_naming_format_to", "{0}: Generated Type [{1}] java get/set method name changed to [{2}] to follow class naming conventions."},                                            
         { "sdo_type_generation_modified_class_naming_format_to", "{0}: Generated Type [{1}] java class name changed to [{2}] to follow class naming conventions."},                                            
         { "sdo_type_generation_warning_class_name_violates_java_spec", "{0}: Generated Type [{1}] conflicts with Java specification naming rules for [{2}] and should be renamed."},                                           
-        { "sdo_type_generation_warning_class_name_violates_sdo_spec", "{0}: Generated Type [{1}] conflicts with SDO specification naming rules for [{2}] and should be renamed."},                                            
-        
+        { "sdo_type_generation_warning_class_name_violates_sdo_spec", "{0}: Generated Type [{1}] conflicts with SDO specification naming rules for [{2}] and should be renamed."},
+
         { "sdo_classgenerator_exception", "{2} A [{0}] Exception occurred - message is [{1}]"},
         { "query_has_both_join_attributes_and_partial_attributes", "{0} named {1} has both join attributes and partial attributes. These two technologies were not designed to work together, result may be unpredictible."},
         { "sdo_missing_schemaLocation", "Referenced schema with uri {0} could not be processed because no schemaLocation attribute was specified."},
         { "sdo_invalid_schemaLocation", "Could not create schemaLocation [{0}] for import with uri [{1}]."},
         { "sdo_error_processing_referenced_schema", "An {0} occurred processing referenced schema with uri {1} with schemaLocation {2}."},
+        { "sdo_error_deserialization", "Unauthorized deserialization attempt with class {0}."},
         { "ox_turn_global_logging_off", " {0} Turning global session logging off."},
         { "ox_lowering_global_logging_from_default_info_to_warning", " {0} Lowering global logging from default INFO to WARNING level."},        
         { "ox_turn_session_logging_off", " {0} Turning session logging off."},
