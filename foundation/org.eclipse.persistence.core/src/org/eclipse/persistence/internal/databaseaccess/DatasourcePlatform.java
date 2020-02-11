@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -974,5 +974,14 @@ public class DatasourcePlatform implements Platform {
         Expression subExp1 = builder.getField(field);
         Expression subExp2 = builder.getParameter(field);
         return subExp1.equal(subExp2);
+    }
+
+    
+    /**
+     * INTERNAL:
+     * Some database platforms have a limit for the number of parameters in an IN clause.
+     */
+    public int getINClauseLimit() {
+        return 0;
     }
 }
