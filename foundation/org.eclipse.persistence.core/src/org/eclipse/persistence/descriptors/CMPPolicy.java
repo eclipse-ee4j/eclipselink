@@ -434,7 +434,7 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
                         			break;
                         		}
                         	}
-                        }else {
+                        } else {
                         	mapping = nestedMapping;
                         }
                     }
