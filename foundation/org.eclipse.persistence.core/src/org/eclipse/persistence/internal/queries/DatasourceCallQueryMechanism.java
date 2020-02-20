@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -25,6 +25,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -355,10 +356,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         if (usesSequencing) {
             shouldAcquireValueAfterInsert = descriptor.getSequence().shouldAcquireValueAfterInsert();
         }
-        Collection returnFields = null;
-        if (descriptor.hasReturningPolicy()) {
-            returnFields = descriptor.getReturningPolicy().getFieldsToMergeInsert();
-        }
+        Collection returnFields = getReturnFieldsInsert(descriptor);
 
         // Check to see if sequence number should be retrieved after insert
         if (usesSequencing && !shouldAcquireValueAfterInsert) {
@@ -419,6 +417,23 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         for (Accessor accessor : executionSession.getAccessors()) {
             accessor.flushSelectCalls(executionSession);
         }
+    }
+
+    // Prepare/collect return fields from main and aggregated object descriptors for Insert operation
+    private Collection getReturnFieldsInsert(ClassDescriptor descriptor) {
+        Vector result = new NonSynchronizedVector();
+
+        if (descriptor.hasReturningPolicy()) {
+            Collection returnFieldsMain = descriptor.getReturningPolicy().getFieldsToMergeInsert();
+            result.addAll(returnFieldsMain);
+        }
+        for (DatabaseMapping databaseMapping :descriptor.getMappings()) {
+            ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+            if (referenceDescriptor != null && referenceDescriptor.hasReturningPolicy()) {
+                result.addAll(referenceDescriptor.getReturningPolicy().getFieldsToMergeInsert());
+            }
+        }
+        return (result.size() > 0) ? result : null;
     }
 
     /**
@@ -779,8 +794,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @return the row count.
      */
     public Integer updateObject() throws DatabaseException {
-        Collection returnFields = null;
         ClassDescriptor descriptor = getDescriptor();
+        Collection returnFields = getReturnFieldsUpdate(descriptor);
         if (descriptor.hasReturningPolicy()) {
             returnFields = descriptor.getReturningPolicy().getFieldsToMergeUpdate();
         }
@@ -842,6 +857,23 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         return returnedRowCount;
     }
 
+    // Prepare/collect return fields from main and aggregated object descriptors for Update operation
+    private Collection getReturnFieldsUpdate(ClassDescriptor descriptor) {
+        Vector result = new NonSynchronizedVector();
+
+        if (descriptor.hasReturningPolicy()) {
+            Collection returnFieldsMain = descriptor.getReturningPolicy().getFieldsToMergeUpdate();
+            result.addAll(returnFieldsMain);
+        }
+        for (DatabaseMapping databaseMapping :descriptor.getMappings()) {
+            ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+            if (referenceDescriptor != null && referenceDescriptor.hasReturningPolicy()) {
+                result.addAll(referenceDescriptor.getReturningPolicy().getFieldsToMergeUpdate());
+            }
+        }
+        return (result.size() > 0) ? result : null;
+    }
+    
     /**
        * Update the rows on the database.  Assume the call is correct.
        * @exception  DatabaseException - an error has occurred on the database.
