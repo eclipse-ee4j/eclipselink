@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -572,11 +572,26 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         SQLInsertStatement insertStatement = new SQLInsertStatement();
         insertStatement.setTable(table);
         insertStatement.setModifyRow(getModifyRow());
-        if (getDescriptor().hasReturningPolicy()) {
-            insertStatement.setReturnFields(getDescriptor().getReturningPolicy().getFieldsToGenerateInsert(table));
-        }
+        insertStatement.setReturnFields(getReturnFieldsInsert(getDescriptor(), table));
         insertStatement.setHintString(getQuery().getHintString());
         return insertStatement;
+    }
+
+    // Prepare/collect return fields from main and aggregated object descriptors for Insert operation
+    private Vector getReturnFieldsInsert(ClassDescriptor descriptor, DatabaseTable table) {
+        Vector result = new NonSynchronizedVector();
+
+        if (descriptor.hasReturningPolicy()) {
+            Vector returnFieldsMain = getDescriptor().getReturningPolicy().getFieldsToGenerateInsert(table);
+            result.addAll(returnFieldsMain);
+        }
+        for (DatabaseMapping databaseMapping :descriptor.getMappings()) {
+            ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+            if (referenceDescriptor != null && referenceDescriptor.hasReturningPolicy()) {
+                result.addAll(referenceDescriptor.getReturningPolicy().getFieldsToGenerateInsert(table));
+            }
+        }
+        return (result.size() > 0) ? result : null;
     }
 
     /**
@@ -825,13 +840,28 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         updateStatement.setModifyRow(getModifyRow());
         updateStatement.setTranslationRow(getTranslationRow());
-        if (getDescriptor().hasReturningPolicy()) {
-            updateStatement.setReturnFields(getDescriptor().getReturningPolicy().getFieldsToGenerateUpdate(table));
-        }
+        updateStatement.setReturnFields(getReturnFieldsUpdate(getDescriptor(), table));
         updateStatement.setTable(table);
         updateStatement.setWhereClause(getDescriptor().getObjectBuilder().buildUpdateExpression(table, getTranslationRow(), getModifyRow()));
         updateStatement.setHintString(getQuery().getHintString());
         return updateStatement;
+    }
+
+    // Prepare/collect return fields from main and aggregated object descriptors for Update operation
+    private Vector getReturnFieldsUpdate(ClassDescriptor descriptor, DatabaseTable table) {
+        Vector result = new NonSynchronizedVector();
+
+        if (descriptor.hasReturningPolicy()) {
+            Vector returnFieldsMain = getDescriptor().getReturningPolicy().getFieldsToGenerateUpdate(table);
+            result.addAll(returnFieldsMain);
+        }
+        for (DatabaseMapping databaseMapping :descriptor.getMappings()) {
+            ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+            if (referenceDescriptor != null && referenceDescriptor.hasReturningPolicy()) {
+                result.addAll(referenceDescriptor.getReturningPolicy().getFieldsToGenerateUpdate(table));
+            }
+        }
+        return (result.size() > 0) ? result : null;
     }
 
     /**
