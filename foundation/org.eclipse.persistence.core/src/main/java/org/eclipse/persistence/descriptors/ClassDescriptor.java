@@ -169,6 +169,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected transient Vector<DatabaseField> allFields;
     protected transient List<DatabaseField> selectionFields;
     protected transient List<DatabaseField> allSelectionFields;
+    protected transient Vector<DatabaseField> returnFieldsToGenerateInsert;
+    protected transient Vector<DatabaseField> returnFieldsToGenerateUpdate;
+    protected transient Vector<DatabaseField> returnFieldsToMergeInsert;
+    protected transient Vector<DatabaseField> returnFieldsToMergeUpdate;
+
     protected Vector<DatabaseMapping> mappings;
 
     //Used to track which other classes reference this class in cases where
@@ -205,6 +210,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected WrapperPolicy wrapperPolicy;
     protected ObjectChangePolicy changePolicy;
     protected ReturningPolicy returningPolicy;
+    protected List<ReturningPolicy> returningPolicies;
     protected HistoryPolicy historyPolicy;
     protected String partitioningPolicyName;
     protected PartitioningPolicy partitioningPolicy;
@@ -2058,6 +2064,22 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
     }
 
+    public Vector<DatabaseField> getReturnFieldsToGenerateInsert() {
+        return this.returnFieldsToGenerateInsert;
+    }
+
+    public Vector<DatabaseField> getReturnFieldsToGenerateUpdate() {
+        return this.returnFieldsToGenerateUpdate;
+    }
+
+    public Vector<DatabaseField> getReturnFieldsToMergeInsert() {
+        return this.returnFieldsToMergeInsert;
+    }
+
+    public Vector<DatabaseField> getReturnFieldsToMergeUpdate() {
+        return this.returnFieldsToMergeUpdate;
+    }
+
     /**
      * PUBLIC:
      * Return the amendment class.
@@ -2779,6 +2801,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     /**
+     * PUBLIC:
+     * Return returning policy from current descriptor and from mappings
+     */
+    public List<ReturningPolicy> getReturningPolicies() {
+        return returningPolicies;
+    }
+
+    /**
      * INTERNAL:
      * Get sequence number field
      */
@@ -3110,6 +3140,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public boolean hasReturningPolicy() {
         return (returningPolicy != null);
+    }
+
+    /**
+     * INTERNAL:
+     * Return if this descriptor or descriptors from mappings has Returning policy.
+     */
+    public boolean hasReturningPolicies() {
+        return (returningPolicies != null);
     }
 
     /**
@@ -3993,9 +4031,55 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
         getCachePolicy().postInitialize(this, session);
 
+        postInitializeReturningPolicies();
+
         validateAfterInitialization(session);
 
         checkDatabase(session);
+    }
+
+    private void postInitializeReturningPolicies() {
+        //Initialize ReturningPolicies
+        List<ReturningPolicy> returningPolicies = new ArrayList<>();
+        if (this.hasReturningPolicy()) {
+            returningPolicies.add(this.getReturningPolicy());
+        }
+        for (DatabaseMapping databaseMapping :this.getMappings()) {
+            ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+            if (referenceDescriptor != null && referenceDescriptor.hasReturningPolicy()) {
+                returningPolicies.add(referenceDescriptor.getReturningPolicy());
+            }
+        }
+        if (returningPolicies.size() > 0) {
+            this.returningPolicies = returningPolicies;
+            Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector();
+            Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector();
+            Vector<DatabaseField> returnFieldsToMergeInsert = new NonSynchronizedVector();
+            Vector<DatabaseField> returnFieldsToMergeUpdate = new NonSynchronizedVector();
+            Collection tmpFields;
+            for (ReturningPolicy returningPolicy: returningPolicies) {
+                tmpFields = returningPolicy.getFieldsToGenerateInsert(this.defaultTable);
+                if (tmpFields != null) {
+                    returnFieldsInsert.addAll(tmpFields);
+                }
+                tmpFields = returningPolicy.getFieldsToGenerateUpdate(this.defaultTable);
+                if (tmpFields != null) {
+                    returnFieldsUpdate.addAll(tmpFields);
+                }
+                tmpFields = returningPolicy.getFieldsToMergeInsert();
+                if (tmpFields != null) {
+                    returnFieldsToMergeInsert.addAll(tmpFields);
+                }
+                tmpFields = returningPolicy.getFieldsToMergeUpdate();
+                if (tmpFields != null) {
+                    returnFieldsToMergeUpdate.addAll(tmpFields);
+                }
+            }
+            this.returnFieldsToGenerateInsert = (returnFieldsInsert.size() > 0) ? returnFieldsInsert : null;
+            this.returnFieldsToGenerateUpdate = (returnFieldsUpdate.size() > 0) ? returnFieldsUpdate : null;
+            this.returnFieldsToMergeInsert = (returnFieldsToMergeInsert.size() > 0) ? returnFieldsToMergeInsert : null;
+            this.returnFieldsToMergeUpdate = (returnFieldsToMergeUpdate.size() > 0) ? returnFieldsToMergeUpdate: null;
+        }
     }
 
     /**
