@@ -2064,18 +2064,34 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
     }
 
+    /**
+     * INTERNAL:
+     * Return fields used to build insert statement.
+     */
     public Vector<DatabaseField> getReturnFieldsToGenerateInsert() {
         return this.returnFieldsToGenerateInsert;
     }
 
+    /**
+     * INTERNAL:
+     * Return fields used to build update statement.
+     */
     public Vector<DatabaseField> getReturnFieldsToGenerateUpdate() {
         return this.returnFieldsToGenerateUpdate;
     }
 
+    /**
+     * INTERNAL:
+     * Return fields used in to map into entity for insert.
+     */
     public Vector<DatabaseField> getReturnFieldsToMergeInsert() {
         return this.returnFieldsToMergeInsert;
     }
 
+    /**
+     * INTERNAL:
+     * Return fields used in to map into entity for update.
+     */
     public Vector<DatabaseField> getReturnFieldsToMergeUpdate() {
         return this.returnFieldsToMergeUpdate;
     }

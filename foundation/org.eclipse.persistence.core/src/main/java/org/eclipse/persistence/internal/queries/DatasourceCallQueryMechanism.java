@@ -381,7 +381,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             shouldAcquireValueAfterInsert = descriptor.getSequence().shouldAcquireValueAfterInsert();
         }
         Collection returnFields = null;
-        if (descriptor.hasReturningPolicy() && descriptor.getReturnFieldsToMergeInsert() != null) {
+        if (descriptor.getReturnFieldsToMergeInsert() != null) {
             returnFields = descriptor.getReturnFieldsToMergeInsert();
         }
 
@@ -845,7 +845,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
     public Integer updateObject() throws DatabaseException {
         ClassDescriptor descriptor = getDescriptor();
         Collection returnFields = null;
-        if (descriptor.hasReturningPolicy() && descriptor.getReturnFieldsToMergeUpdate() != null) {
+        if (descriptor.getReturnFieldsToMergeUpdate() != null) {
             returnFields = descriptor.getReturnFieldsToMergeInsert();
         }
         Integer returnedRowCount = null;
