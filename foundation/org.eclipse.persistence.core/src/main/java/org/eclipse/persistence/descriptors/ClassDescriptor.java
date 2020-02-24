@@ -4061,9 +4061,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             returningPolicies.add(this.getReturningPolicy());
         }
         for (DatabaseMapping databaseMapping :this.getMappings()) {
-            ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
-            if (referenceDescriptor != null && referenceDescriptor.hasReturningPolicy()) {
-                returningPolicies.add(referenceDescriptor.getReturningPolicy());
+            if (databaseMapping instanceof AggregateObjectMapping) {
+                ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+                if (referenceDescriptor != null && referenceDescriptor.hasReturningPolicy()) {
+                    returningPolicies.add(referenceDescriptor.getReturningPolicy());
+                }
             }
         }
         if (returningPolicies.size() > 0) {
