@@ -1401,6 +1401,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             clonedDescriptor.setReturningPolicy((ReturningPolicy)getReturningPolicy().clone());
             clonedDescriptor.getReturningPolicy().setDescriptor(clonedDescriptor);
         }
+        if (clonedDescriptor.hasReturningPolicies()) {
+            clonedDescriptor.returningPolicies = new ArrayList<>();
+            for (ReturningPolicy returningPolicy : this.returningPolicies) {
+                clonedDescriptor.returningPolicies.add((ReturningPolicy)returningPolicy.clone());
+            }
+            clonedDescriptor.prepareReturnFields(clonedDescriptor.returningPolicies);
+        }
 
         // The Object builder
         clonedDescriptor.setObjectBuilder((ObjectBuilder)getObjectBuilder().clone());
@@ -4070,34 +4077,38 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         }
         if (returningPolicies.size() > 0) {
             this.returningPolicies = returningPolicies;
-            Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector();
-            Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector();
-            Vector<DatabaseField> returnFieldsToMergeInsert = new NonSynchronizedVector();
-            Vector<DatabaseField> returnFieldsToMergeUpdate = new NonSynchronizedVector();
-            Collection tmpFields;
-            for (ReturningPolicy returningPolicy: returningPolicies) {
-                tmpFields = returningPolicy.getFieldsToGenerateInsert(this.defaultTable);
-                if (tmpFields != null) {
-                    returnFieldsInsert.addAll(tmpFields);
-                }
-                tmpFields = returningPolicy.getFieldsToGenerateUpdate(this.defaultTable);
-                if (tmpFields != null) {
-                    returnFieldsUpdate.addAll(tmpFields);
-                }
-                tmpFields = returningPolicy.getFieldsToMergeInsert();
-                if (tmpFields != null) {
-                    returnFieldsToMergeInsert.addAll(tmpFields);
-                }
-                tmpFields = returningPolicy.getFieldsToMergeUpdate();
-                if (tmpFields != null) {
-                    returnFieldsToMergeUpdate.addAll(tmpFields);
-                }
-            }
-            this.returnFieldsToGenerateInsert = (returnFieldsInsert.size() > 0) ? returnFieldsInsert : null;
-            this.returnFieldsToGenerateUpdate = (returnFieldsUpdate.size() > 0) ? returnFieldsUpdate : null;
-            this.returnFieldsToMergeInsert = (returnFieldsToMergeInsert.size() > 0) ? returnFieldsToMergeInsert : null;
-            this.returnFieldsToMergeUpdate = (returnFieldsToMergeUpdate.size() > 0) ? returnFieldsToMergeUpdate: null;
+            prepareReturnFields(returningPolicies);
         }
+    }
+
+    private void prepareReturnFields(List<ReturningPolicy> returningPolicies) {
+        Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector();
+        Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector();
+        Vector<DatabaseField> returnFieldsToMergeInsert = new NonSynchronizedVector();
+        Vector<DatabaseField> returnFieldsToMergeUpdate = new NonSynchronizedVector();
+        Collection tmpFields;
+        for (ReturningPolicy returningPolicy: returningPolicies) {
+            tmpFields = returningPolicy.getFieldsToGenerateInsert(this.defaultTable);
+            if (tmpFields != null) {
+                returnFieldsInsert.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToGenerateUpdate(this.defaultTable);
+            if (tmpFields != null) {
+                returnFieldsUpdate.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToMergeInsert();
+            if (tmpFields != null) {
+                returnFieldsToMergeInsert.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToMergeUpdate();
+            if (tmpFields != null) {
+                returnFieldsToMergeUpdate.addAll(tmpFields);
+            }
+        }
+        this.returnFieldsToGenerateInsert = (returnFieldsInsert.size() > 0) ? returnFieldsInsert : null;
+        this.returnFieldsToGenerateUpdate = (returnFieldsUpdate.size() > 0) ? returnFieldsUpdate : null;
+        this.returnFieldsToMergeInsert = (returnFieldsToMergeInsert.size() > 0) ? returnFieldsToMergeInsert : null;
+        this.returnFieldsToMergeUpdate = (returnFieldsToMergeUpdate.size() > 0) ? returnFieldsToMergeUpdate: null;
     }
 
     /**

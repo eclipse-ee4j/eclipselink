@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-package org.eclipse.persistence.testing.models.jpa.advanced.returninsert;
+package org.eclipse.persistence.jpa.returninsert.model;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -12,66 +12,82 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-package org.eclipse.persistence.testing.tests.jpa.advanced;
+package org.eclipse.persistence.jpa.returninsert;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.testing.models.jpa.advanced.returninsert.*;
-import org.eclipse.persistence.testing.tests.jpa.EntityContainerTestBase;
-
-
-import javax.persistence.EntityManager;
 import java.time.Instant;
 import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+import javax.persistence.Query;
+
+import org.eclipse.persistence.internal.databaseaccess.Platform;
+import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.jpa.returninsert.model.*;
+import org.eclipse.persistence.jpa.test.framework.EmfRunner;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.assertNotNull;
 
 /**
- * Tests for an entities that has a @ReturnInsert and @ReturnUpdate annotations.
- * exceptions on any of the CRUD operations of an employee with multiple
+ * TestSuite to test entities, that has a @ReturnInsert and @ReturnUpdate annotations.
  *
  * @author Radek Felcman
  */
-public class ReturnInsertTest extends EntityContainerTestBase  {
-    protected boolean reset = false;    // reset gets called twice on error
-    private DatabaseSession session = (DatabaseSession)((EntityManagerImpl)getEntityManager()).getActiveSession();
+public class TestReturnInsert {
 
-    public void setup () {
-        super.setup();
-        this.reset = true;
+    private EntityManagerFactory emf;
+    private EntityManager em;
 
+    @Test
+    public void test() {
+        boolean supported = true;
+        emf = Persistence.createEntityManagerFactory("returninsert-pu");
         try {
-            if (!session.getPlatform().isOracle()) {
-                session.executeNonSelectingSQL("DROP TABLE JPA22_RETURNINSERT_DETAIL");
-                session.executeNonSelectingSQL("DROP TABLE JPA22_RETURNINSERT_MASTER");
-            }
+            EntityManager em = emf.createEntityManager();
+        } catch (Exception e) {
+            supported = false;
+            System.out.println("Non supported platform. This test can be executed on OraclePlatform only!");
+        }
+        if (em != null) {
+            em.close();
+        }
+
+        if(!supported) {
+            return;
+        }
+        setup();
+        testCreate();
+        testFindUpdate();
+        emf.close();
+    }
+
+    public void setup() {
+        EntityManager em = emf.createEntityManager();
+        DatabaseSession session = ((EntityManagerImpl)em).getDatabaseSession();
+        try {
+            session.executeNonSelectingSQL("DROP TABLE JPA22_RETURNINSERT_DETAIL");
         } catch (Exception ignore) {}
         try {
-            if (!session.getPlatform().isOracle()) {
-                session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_MASTER  (ID_VIRTUAL NUMBER (2) AS ( TO_NUMBER(TO_CHAR(\"ID\",'DD')) ) VIRTUAL NOT NULL , ID     DATE NOT NULL , COL1 NUMBER (15) NOT NULL, COL1_VIRTUAL NUMBER (15) AS ( COL1 * 10 ) VIRTUAL)");
-                session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_MASTER ADD CONSTRAINT PKJPA22_RETURNINSERT_MASTER PRIMARY KEY ( ID_VIRTUAL, ID, COL1 )");
-                session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_DETAIL  (ID_VIRTUAL NUMBER (2) AS ( TO_NUMBER(TO_CHAR(\"ID\",'DD')) ) VIRTUAL NOT NULL , ID     DATE NOT NULL , COL1     NUMBER (15) NOT NULL, COL1_VIRTUAL NUMBER (15) AS ( COL1 * 10 ) VIRTUAL, COL2     VARCHAR (15) NOT NULL, COL2_VIRTUAL VARCHAR (100) AS ( COL2 || '_col2' ) VIRTUAL, COL3     VARCHAR (15) NOT NULL, COL3_VIRTUAL VARCHAR (100) AS ( COL3 || '_col3' ) VIRTUAL)");
-                session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT PKJPA22_RETURNINSERT_DETAIL PRIMARY KEY ( ID_VIRTUAL, ID, COL1, COL2 )");
-                session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT FKJPA22_RETURNINSERT_MASTER_DETAIL FOREIGN KEY ( ID_VIRTUAL, ID, COL1 ) REFERENCES JPA22_RETURNINSERT_MASTER ( ID_VIRTUAL, ID, COL1 ) NOT DEFERRABLE");
-            }
+            session.executeNonSelectingSQL("DROP TABLE JPA22_RETURNINSERT_MASTER");
         } catch (Exception ignore) {}
-
+        try {
+            session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_MASTER  (ID_VIRTUAL NUMBER (2) AS ( TO_NUMBER(TO_CHAR(\"ID\",'DD')) ) VIRTUAL NOT NULL , ID     DATE NOT NULL , COL1 NUMBER (15) NOT NULL, COL1_VIRTUAL NUMBER (15) AS ( COL1 * 10 ) VIRTUAL)");
+            session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_MASTER ADD CONSTRAINT PKJPA22_RETURNINSERT_MASTER PRIMARY KEY ( ID_VIRTUAL, ID, COL1 )");
+            session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_DETAIL  (ID_VIRTUAL NUMBER (2) AS ( TO_NUMBER(TO_CHAR(\"ID\",'DD')) ) VIRTUAL NOT NULL , ID     DATE NOT NULL , COL1     NUMBER (15) NOT NULL, COL1_VIRTUAL NUMBER (15) AS ( COL1 * 10 ) VIRTUAL, COL2     VARCHAR (15) NOT NULL, COL2_VIRTUAL VARCHAR (100) AS ( COL2 || '_col2' ) VIRTUAL, COL3     VARCHAR (15) NOT NULL, COL3_VIRTUAL VARCHAR (100) AS ( COL3 || '_col3' ) VIRTUAL)");
+            session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT PKJPA22_RETURNINSERT_DETAIL PRIMARY KEY ( ID_VIRTUAL, ID, COL1, COL2 )");
+            session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT FKJPA22_RETURNINSERT_MASTER_DETAIL FOREIGN KEY ( ID_VIRTUAL, ID, COL1 ) REFERENCES JPA22_RETURNINSERT_MASTER ( ID_VIRTUAL, ID, COL1 ) NOT DEFERRABLE");
+        } catch (Exception ignore) {}
+        em.close();
     }
 
-    public void reset () {
-        if (reset) {
-            reset = false;
-        }
-        super.reset();
-    }
-
-    public void test() throws Exception {
-        if (!session.getPlatform().isOracle()) {
-            createTest();
-            findUpdateTest();
-        }
-    }
-
-    private void createTest() {
-        EntityManager em = getEntityManager();
+    private void testCreate() {
+        EntityManager em = emf.createEntityManager();
 
         //Prepare data
         //Test Insert
@@ -90,10 +106,22 @@ public class ReturnInsertTest extends EntityContainerTestBase  {
         assertEquals("abc_col2", returnInsertDetail.getReturnInsertDetailEmbedded().getCol2Virtual());
     }
 
-    private void findUpdateTest() {
+    private void testFindUpdate() {
         //Test find and update
-        EntityManager em = getEntityManager();
+        EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();
+
+        ReturnInsertMasterPK returnInsertMasterPK = createReturnInsertMasterPK();
+        returnInsertMasterPK.setIdVirtual(1L);
+
+        /*
+        Query query  = em.createQuery("select t from ReturnInsertMaster t where t.id = :returnInsertMasterId");
+        query.setParameter("returnInsertMasterId", returnInsertMasterPK);
+        ReturnInsertMaster returnInsertMasterQueryResult = (ReturnInsertMaster) query.getResultList().get(0);
+*/
+        ReturnInsertMaster returnInsertMasterFindResult = em.find(ReturnInsertMaster.class, returnInsertMasterPK);
+
+
         ReturnInsertDetailPK returnInsertDetailPK = createReturnInsertDetailPK();
         //Must be set, it's not populated from DB virtual column
         returnInsertDetailPK.setIdVirtual(1L);

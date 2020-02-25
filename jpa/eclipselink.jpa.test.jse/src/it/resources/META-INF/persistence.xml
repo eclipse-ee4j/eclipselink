@@ -46,4 +46,17 @@
           <properties>
           </properties>
      </persistence-unit>
+
+     <persistence-unit name="returninsert-pu" transaction-type="RESOURCE_LOCAL">
+          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+          <exclude-unlisted-classes>true</exclude-unlisted-classes>
+          <class>org.eclipse.persistence.jpa.returninsert.model.ReturnInsertDetail</class>
+          <class>org.eclipse.persistence.jpa.returninsert.model.ReturnInsertDetailEmbedded</class>
+          <class>org.eclipse.persistence.jpa.returninsert.model.ReturnInsertDetailPK</class>
+          <class>org.eclipse.persistence.jpa.returninsert.model.ReturnInsertMasterPK</class>
+          <class>org.eclipse.persistence.jpa.returninsert.model.ReturnInsertMaster</class>
+          <properties>
+          </properties>
+     </persistence-unit>
+
 </persistence>

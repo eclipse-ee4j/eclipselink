@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation
-package org.eclipse.persistence.testing.models.jpa.advanced.returninsert;
+package org.eclipse.persistence.jpa.returninsert.model;
 
 import org.eclipse.persistence.annotations.ReturnInsert;
 import org.eclipse.persistence.annotations.ReturnUpdate;

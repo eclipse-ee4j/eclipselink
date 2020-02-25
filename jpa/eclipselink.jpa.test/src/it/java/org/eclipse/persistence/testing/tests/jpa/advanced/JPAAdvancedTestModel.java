@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,7 +92,6 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
 
         suite.addTest(getCallbackEventTestSuite());
         suite.addTest(getPrimaryKeyTestSuite());
-        suite.addTest(getReturnInsertTestSuite());
 
         suite.addTest(new XMLAnnotationMergingTest());
 
@@ -138,15 +137,4 @@ public class JPAAdvancedTestModel extends CMP3TestModel{
 
         return suite;
     }
-
-    public static TestSuite getReturnInsertTestSuite() {
-        TestSuite suite = new TestSuite();
-        suite.setName("ReturnInsert Tests");
-        suite.setDescription("This suite provides testing for the ReturnInsert and ReturnUpdate annotations");
-
-        suite.addTest(new PrimaryKeyClassTest());
-
-        return suite;
-    }
-
 }
