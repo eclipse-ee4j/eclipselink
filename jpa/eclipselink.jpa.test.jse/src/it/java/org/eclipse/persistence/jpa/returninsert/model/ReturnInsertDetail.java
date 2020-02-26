@@ -26,10 +26,10 @@ import java.io.Serializable;
 @Entity
 @Table(name = "JPA22_RETURNINSERT_DETAIL")
 @Cacheable(false)
-@NamedQueries({ 
+@NamedQueries({
 	@NamedQuery(name = "ReturnInsertDetail.findAll", query = "SELECT t FROM ReturnInsertDetail t"),
 })
-public class ReturnInsertDetail implements Serializable {
+public class ReturnInsertDetail extends ReturnInsertDetailParent implements Serializable {
 
 	private static final long serialVersionUID = 1712864132706065027L;
 
