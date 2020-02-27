@@ -846,7 +846,7 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         ClassDescriptor descriptor = getDescriptor();
         Collection returnFields = null;
         if (descriptor.getReturnFieldsToMergeUpdate() != null) {
-            returnFields = descriptor.getReturnFieldsToMergeInsert();
+            returnFields = descriptor.getReturnFieldsToMergeUpdate();
         }
         Integer returnedRowCount = null;
         if (hasMultipleCalls()) {
