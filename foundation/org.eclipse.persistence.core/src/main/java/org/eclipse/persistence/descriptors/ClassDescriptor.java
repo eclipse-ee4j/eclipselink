@@ -4067,17 +4067,24 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (this.hasReturningPolicy()) {
             returningPolicies.add(this.getReturningPolicy());
         }
-        for (DatabaseMapping databaseMapping :this.getMappings()) {
-            if (databaseMapping instanceof AggregateObjectMapping) {
-                ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
-                if (referenceDescriptor != null && referenceDescriptor.hasReturningPolicy()) {
-                    returningPolicies.add(referenceDescriptor.getReturningPolicy());
-                }
-            }
-        }
+        browseReturningPolicies(returningPolicies, this.getMappings());
         if (returningPolicies.size() > 0) {
             this.returningPolicies = returningPolicies;
             prepareReturnFields(returningPolicies);
+        }
+    }
+
+    private void browseReturningPolicies(List<ReturningPolicy> returningPolicies, Vector<DatabaseMapping> mappings) {
+        for (DatabaseMapping databaseMapping :mappings) {
+            if (databaseMapping instanceof AggregateObjectMapping) {
+                ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+                if (referenceDescriptor != null) {
+                    browseReturningPolicies(returningPolicies, referenceDescriptor.getMappings());
+                    if (referenceDescriptor.hasReturningPolicy()) {
+                        returningPolicies.add(referenceDescriptor.getReturningPolicy());
+                    }
+                }
+            }
         }
     }
 

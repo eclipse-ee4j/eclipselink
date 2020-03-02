@@ -92,7 +92,9 @@ public class TestReturnInsert {
                         "    COL3     VARCHAR (15) NOT NULL," +
                         "    COL3_VIRTUAL VARCHAR (100) AS ( COL3 || '_col3' ) VIRTUAL," +
                         "    COL4     VARCHAR (15) NOT NULL," +
-                        "    COL4_VIRTUAL VARCHAR (100) AS ( COL4 || '_col4' ) VIRTUAL)");
+                        "    COL4_VIRTUAL VARCHAR (100) AS ( COL4 || '_col4' ) VIRTUAL," +
+                        "    COL5     VARCHAR (15) NOT NULL," +
+                        "    COL5_VIRTUAL VARCHAR (100) AS ( COL5 || '_col5' ) VIRTUAL)");
                 session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT PKJPA22_RETURNINSERT_DETAIL PRIMARY KEY ( ID_VIRTUAL, ID, COL1, COL2 )");
                 session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT FKJPA22_RETURNINSERT_MASTER_DETAIL FOREIGN KEY ( ID_VIRTUAL, ID, COL1 ) REFERENCES JPA22_RETURNINSERT_MASTER ( ID_VIRTUAL, ID, COL1 ) NOT DEFERRABLE");
             } catch (Exception ignore) {
@@ -136,6 +138,7 @@ public class TestReturnInsert {
         assertEquals(10, returnInsertDetail.getCol1Virtual());
         assertEquals("abc_col2", returnInsertDetail.getReturnInsertDetailEmbedded().getCol2Virtual());
         assertEquals("opq_col4", returnInsertDetail.getCol4Virtual());
+        assertEquals("lmn_col5", returnInsertDetail.getReturnInsertDetailEmbedded().getReturnInsertDetailEmbeddedEmbedded().getCol5Virtual());
     }
 
     private void testFindUpdate() {
@@ -226,9 +229,14 @@ public class TestReturnInsert {
         returnInsertDetail.setId(returnInsertDetailPK);
         returnInsertDetail.setReturnInsertMaster(returnInsertMaster);
 
+        //Prepare embedded embedded part
+        ReturnInsertDetailEmbeddedEmbedded returnInsertDetailEmbeddedEmbedded = new ReturnInsertDetailEmbeddedEmbedded();
+        returnInsertDetailEmbeddedEmbedded.setCol5("lmn");
+
         //Prepare embedded part
         ReturnInsertDetailEmbedded returnInsertDetailEmbedded = new ReturnInsertDetailEmbedded();
         returnInsertDetailEmbedded.setCol3("xyz");
+        returnInsertDetailEmbedded.setReturnInsertDetailEmbeddedEmbedded(returnInsertDetailEmbeddedEmbedded);
         returnInsertDetail.setReturnInsertDetailEmbedded(returnInsertDetailEmbedded);
 
         //Inherited field

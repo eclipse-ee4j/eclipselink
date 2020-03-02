@@ -41,6 +41,9 @@ public class ReturnInsertDetailEmbedded implements Serializable {
 	@Column(name = "COL3_VIRTUAL")
 	private String col3Virtual;
 
+	@Embedded
+	private ReturnInsertDetailEmbeddedEmbedded returnInsertDetailEmbeddedEmbedded;
+
 	public ReturnInsertDetailEmbedded() {
 	}
 
@@ -66,5 +69,13 @@ public class ReturnInsertDetailEmbedded implements Serializable {
 
 	public void setCol3Virtual(String col3Virtual) {
 		this.col3Virtual = col3Virtual;
+	}
+
+	public ReturnInsertDetailEmbeddedEmbedded getReturnInsertDetailEmbeddedEmbedded() {
+		return returnInsertDetailEmbeddedEmbedded;
+	}
+
+	public void setReturnInsertDetailEmbeddedEmbedded(ReturnInsertDetailEmbeddedEmbedded returnInsertDetailEmbeddedEmbedded) {
+		this.returnInsertDetailEmbeddedEmbedded = returnInsertDetailEmbeddedEmbedded;
 	}
 }
