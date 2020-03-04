@@ -135,7 +135,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                         contentHandler.startElement(namespaceURI, localName, prefix + Constants.COLON + localName, indexedAttributeList.reset());
                     }
                 } else {
-                    contentHandler.startElement(namespaceURI, localName, null, indexedAttributeList.reset());
+                    contentHandler.startElement(namespaceURI, localName, localName, indexedAttributeList.reset());
                 }
                 break;
             }
