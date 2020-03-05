@@ -12,6 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
+//
 package org.eclipse.persistence.internal.helper;
 
 import java.io.Serializable;
@@ -86,7 +87,7 @@ public class ConcurrencyManager implements Serializable {
      */
     public synchronized void acquire(boolean forMerge) throws ConcurrencyException {
 
-        //FIX - BUG-30604379 - Flag the time when we start the while loop
+        //FIX - BUG-559307 - Flag the time when we start the while loop
         final Date whileStartDate = new Date();
         Thread currentThread = Thread.currentThread();
         DeferredLockManager lockManager = getDeferredLockManager(currentThread);
@@ -96,24 +97,24 @@ public class ConcurrencyManager implements Serializable {
             try {
                 this.numberOfWritersWaiting++;
 
-                // FIX - BUG-30604379 - Do not wait forever - max allowed time to wait is 10 second and then check conditions again
+                // FIX - BUG-559307 - Do not wait forever - max allowed time to wait is 10 second and then check conditions again
                 // wait();
-                wait(10000l);
+                wait(EclipseHelperUtil.SINGLETON.getMaxAllowedSleepTimeMs());
 
 
-                // FIX - BUG-30604379 -
+                // FIX - BUG-559307 -
                 // Run a method that will fire up an exception if we  having been sleeping for too long
-                HackingEclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
+                EclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
 
-                // FIX - BUG-30604379 -  Moved to finally block to ensure it always runs
+                // FIX - BUG-559307 -  Moved to finally block to ensure it always runs
                 // this.numberOfWritersWaiting--;
             } catch (InterruptedException exception) {
-                // FIX - BUG-30604379 - If the thread is interrupted we want to make sure we release all of the locks the thread was owning
+                // FIX - BUG-559307 - If the thread is interrupted we want to make sure we release all of the locks the thread was owning
                 releaseAllLocksAquiredByThread(lockManager);
 
                 throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
             } finally {
-                // FIX - BUG-30604379 -
+                // FIX - BUG-559307 -
                 // Since above we incremente the number of writers
                 // whether or not the thread is exploded by an interrupt
                 // we need to make sure we decrement the number of writer to not allow the code to be corrupeted
@@ -168,7 +169,7 @@ public class ConcurrencyManager implements Serializable {
             return true;
         } else {
             try {
-                wait(10000l);
+                wait(EclipseHelperUtil.SINGLETON.getMaxAllowedSleepTimeMs());
             } catch (InterruptedException e) {
                 return false;
             }
@@ -210,7 +211,7 @@ public class ConcurrencyManager implements Serializable {
         lockManager.incrementDepth();
         synchronized (this) {
 
-            // FIX - BUG-30604379 - Flag the time when we start the while loop
+            // FIX - BUG-559307 - Flag the time when we start the while loop
             final Date whileStartDate = new Date();
 
             while (this.numberOfReaders != 0) {
@@ -223,25 +224,25 @@ public class ConcurrencyManager implements Serializable {
                 try {
                     this.numberOfWritersWaiting++;
 
-                    // FIX - BUG-30604379 - Do not wait forever - max allowed time to wait is 10 second and then check conditions again
+                    // FIX - BUG-559307 - Do not wait forever - max allowed time to wait is 10 second and then check conditions again
                     // wait();
-                    wait(1000l);
+                    wait(EclipseHelperUtil.SINGLETON.getMaxAllowedSleepTimeMs());
 
-                    // FIX - BUG-30604379 -  Moved to finally block to ensure it always runs
+                    // FIX - BUG-559307 -  Moved to finally block to ensure it always runs
                     // this.numberOfWritersWaiting--;
 
 
-                    // FIX - BUG-30604379 -
+                    // FIX - BUG-559307 -
                     // Run a method that will fire up an exception if we  having been sleeping for too long
-                    HackingEclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
+                    EclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
                 } catch (InterruptedException exception) {
-                    // FIX - BUG-30604379 - If the thread is interrupted we want to make sure we release all of the locks the thread was owning
+                    // FIX - BUG-559307 - If the thread is interrupted we want to make sure we release all of the locks the thread was owning
                     releaseAllLocksAquiredByThread(lockManager);
 
 
                     throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
                 } finally {
-                    // FIX - BUG-30604379 -
+                    // FIX - BUG-559307 -
                     // Since above we incremente the number of writers
                     // whether or not the thread is exploded by an interrupt
                     // we need to make sure we decrement the number of writer to not allow the code to be corrupeted
@@ -488,7 +489,7 @@ public class ConcurrencyManager implements Serializable {
 
         lockManager.setIsThreadComplete(true);
 
-        // FIX - BUG-30604379 - start a date time
+        // FIX - BUG-559307 - start a date time
         // Thread have three stages, one where they are doing work (i.e. building objects)
         // two where they are done their own work but may be waiting on other threads to finish their work,
         // and a third when they and all the threads they are waiting on are done.
@@ -512,9 +513,9 @@ public class ConcurrencyManager implements Serializable {
                     try {
                         Thread.sleep(1);
 
-                        // FIX - BUG-30604379 -
+                        // FIX - BUG-559307 -
                         // Run a method that will fire up an exception if we  having been sleeping for too long
-                        HackingEclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
+                        EclipseHelperUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
                     } catch (InterruptedException interrupted) {
                         AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
                         lockManager.releaseActiveLocksOnThread();
@@ -649,11 +650,11 @@ public class ConcurrencyManager implements Serializable {
      * @param lockManager
      *      the deferred lock manager
      */
-    // FIX - BUG-30604379 - Put in one place the code that frees up the locks acuired by the current thread
+    // FIX - BUG-559307 - Put in one place the code that frees up the locks acuired by the current thread
     protected void releaseAllLocksAquiredByThread(DeferredLockManager lockManager) {
         Thread currentThread = Thread.currentThread();
         // (a) Log some information in the LOG
-        String cacheKeyToString = HackingEclipseHelperUtil.SINGLETON.createToStringExplainingOwnedCacheKey(this);
+        String cacheKeyToString = EclipseHelperUtil.SINGLETON.createToStringExplainingOwnedCacheKey(this);
         String errMsg = "releaseAllLocksAquiredByThread has been invoked. On  " + cacheKeyToString;
         AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, errMsg, currentThread.getName());
 

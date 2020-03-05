@@ -25,20 +25,20 @@ import org.eclipse.persistence.logging.*;
 /**
  * Helper class to help us build diagnostic strings
  */
-public class HackingEclipseHelperUtil implements Serializable {
+public class EclipseHelperUtil implements Serializable {
     
-    public static final HackingEclipseHelperUtil SINGLETON = new HackingEclipseHelperUtil();
+    public static final EclipseHelperUtil SINGLETON = new EclipseHelperUtil();
     
    
     /**
      * @return check if the user has specified a system property to control how long we are willing to wait before firing up an exception
      */
     public long getMaxAllowedSleepTimeMs() {
-        long defaultMaxAllowedSleepTimeMs = 40000;
+        long defaultMaxAllowedSleepTimeMs = 0;
         
         // (a) Check if a system property was provided by the user to control how long we tolerate before exploding thread waiting to release
         // deferred locks
-        String eclipseLinkConcurrencyManagerMaxAllowedSleepTimeMs = System.getProperty("eclipseLinkConcurrencyManagerMaxAllowedSleepTimeMs");
+        String eclipseLinkConcurrencyManagerMaxAllowedSleepTimeMs = System.getProperty(SystemProperties.CONCURRENCY_MANAGER_SLEEP_TIME);
         if(eclipseLinkConcurrencyManagerMaxAllowedSleepTimeMs != null) {
             try {
                 return Long.parseLong(eclipseLinkConcurrencyManagerMaxAllowedSleepTimeMs.trim());
@@ -108,7 +108,7 @@ public class HackingEclipseHelperUtil implements Serializable {
     public void determineIfReleaseDeferredLockAppearsToBeDeadLocked(ConcurrencyManager concurrencyManager, final Date whileStartDate, DeferredLockManager lockManager) throws InterruptedException {
         // Determine if we believe to be dealing with a dead lock
         Thread currentThread = Thread.currentThread();
-        final long maxAllowedSleepTime40ThousandMs = HackingEclipseHelperUtil.SINGLETON.getMaxAllowedSleepTimeMs();
+        final long maxAllowedSleepTime40ThousandMs = EclipseHelperUtil.SINGLETON.getMaxAllowedSleepTimeMs();
         Date whileCurrentDate = new Date();
         long elpasedTime = whileCurrentDate.getTime() - whileStartDate.getTime();
         if (elpasedTime > maxAllowedSleepTime40ThousandMs) {
@@ -119,7 +119,7 @@ public class HackingEclipseHelperUtil implements Serializable {
                     "RELEASE DEFERRED LOCK PROBLEM:  The release deffered log process has not managed to finish in: %1$s ms.%n"
                             + " (ownerCacheKey) = (%2$s). Current thread: %3$s. %n",
                     elpasedTime, ownedCacheKey, currentThread.getName());
-            String errorMessageExplainingActiveLocksOnThread = HackingEclipseHelperUtil.SINGLETON.createStringWithSummaryOfActiveLocksOnThread(lockManager);
+            String errorMessageExplainingActiveLocksOnThread = EclipseHelperUtil.SINGLETON.createStringWithSummaryOfActiveLocksOnThread(lockManager);
             String errorMessage = errorMessageBase +  errorMessageExplainingActiveLocksOnThread;
 
             AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, errorMessage,

@@ -83,4 +83,10 @@ public class SystemProperties {
      * Allowed values are: true/false.
      */
     public static final String ONETOMANY_DEFER_INSERTS = "eclipselink.mapping.onetomany.defer-inserts";
+
+    /**
+     * This property can be set to <code>10000l</code>  milliseconds.
+     * Allowed values are: long
+     */
+    public static final String CONCURRENCY_MANAGER_SLEEP_TIME  = "eclipselink.concurrency.manager.sleeptimems";
 }

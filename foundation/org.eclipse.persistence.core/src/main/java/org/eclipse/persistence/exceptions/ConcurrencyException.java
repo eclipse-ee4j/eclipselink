@@ -30,6 +30,7 @@ public class ConcurrencyException extends EclipseLinkException {
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_MERGE = 2008;
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_BUILD_OBJECT = 2009;
     public final static int ACTIVE_LOCK_ALREADY_TRANSITIONED = 2010;
+    public final static int WAIT_TIME_EXCEEDED = 2011;
 
     /**
      * INTERNAL:

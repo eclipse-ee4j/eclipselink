@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -37,7 +37,8 @@ public class ConcurrencyExceptionResource extends ListResourceBundle {
                                            { "2007", "Max number of attempts to lock object: {0} exceeded.  Failed to clone the object." },
                                            { "2008", "Max number of attempts to lock object: {0} exceeded.  Failed to merge the transaction." },
                                            { "2009", "Max number of attempts to lock object exceeded.  Failed to build the object. Thread: {0} has a lock on the object but thread: {1} is building the object"},
-                                           { "2010", "Lock has already been transitioned to a Deferred Lock.  A second attempt to transition the lock has been requested by thread: {0} during merge."}
+                                           { "2010", "Lock has already been transitioned to a Deferred Lock.  A second attempt to transition the lock has been requested by thread: {0} during merge."},
+                                           { "2011", "Wait exceeds configured Time. {0}Message: [{1}]"}
 
     };
 
