@@ -155,6 +155,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** Flag that allows call deferral to be disabled */
     protected boolean allowSQLDeferral = true;
 
+    /** Flag that allows transform named stored procedure parameters into positional/index based */
+    protected boolean namingIntoIndexed = false;
+
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
      * without creating a compile time dependency on JPA.
@@ -1289,6 +1292,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     }
 
     /**
+     * INTERNAL:
+     * Return true is allowed to transform named stored procedure parameters into positional/index based.
+     */
+    public boolean namingIntoIndexed() {
+        return this.namingIntoIndexed;
+    }
+
+    /**
      * PUBLIC:
      * Return the descriptor for  the alias
      */
@@ -1333,6 +1344,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setAllowSQLDeferral(boolean allowSQLDeferral) {
         this.allowSQLDeferral = allowSQLDeferral;
+    }
+
+    /**
+     * INTERNAL:
+     * Set whether named stored procedure parameters is allowed to transform into positional/index based.
+     */
+    public void setNamingIntoIndexed(boolean namingIntoIndexed) {
+        this.namingIntoIndexed = namingIntoIndexed;
     }
 
     /**

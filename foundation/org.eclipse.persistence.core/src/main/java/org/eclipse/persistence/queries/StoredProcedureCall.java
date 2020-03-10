@@ -20,6 +20,7 @@ package org.eclipse.persistence.queries;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -891,7 +892,11 @@ public class StoredProcedureCall extends DatabaseCall {
         DatabasePlatform platform = session.getPlatform();
         //Both lists should be the same size
         for (int index = 0; index < size; index++) {
-            platform.setParameterValueInDatabaseCall(parameters.get(index), (CallableStatement)statement, procedureArgs.get(index), session);
+            if (session.getProject().namingIntoIndexed()) {
+                platform.setParameterValueInDatabaseCall(parameters.get(index), (PreparedStatement) statement, index+1, session);
+            } else {
+                platform.setParameterValueInDatabaseCall(parameters.get(index), (CallableStatement) statement, procedureArgs.get(index), session);
+            }
         }
 
         return statement;

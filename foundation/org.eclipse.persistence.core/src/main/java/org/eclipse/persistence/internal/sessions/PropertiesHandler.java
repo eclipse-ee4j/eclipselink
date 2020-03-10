@@ -237,6 +237,7 @@ public class PropertiesHandler {
             addProp(new PessimisticLockTimeoutUnitProp());
             addProp(new BooleanProp(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.SQL_CALL_DEFERRAL, "true"));
+            addProp(new BooleanProp(PersistenceUnitProperties.NAMING_INTO_INDEXED, "false"));
         }
 
         Prop(String name) {

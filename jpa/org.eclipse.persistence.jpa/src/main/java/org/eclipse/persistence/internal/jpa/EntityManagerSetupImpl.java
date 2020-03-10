@@ -2896,6 +2896,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
             updateSQLCallDeferralDefault(m);
+            updateNamingIntoIndexed(m);
             if (!session.hasBroker()) {
                 updateCacheCoordination(m, loader);
             }
@@ -3721,6 +3722,19 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 this.session.getProject().setAllowSQLDeferral(false);
             } else {
                 this.session.handleException(ValidationException.invalidBooleanValueForProperty(defer, PersistenceUnitProperties.SQL_CALL_DEFERRAL));
+            }
+        }
+    }
+
+    private void updateNamingIntoIndexed(Map persistenceProperties) {
+        String namingIntoIndexed = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.NAMING_INTO_INDEXED, persistenceProperties, this.session);
+        if (namingIntoIndexed != null) {
+            if (namingIntoIndexed.equalsIgnoreCase("true")) {
+                this.session.getProject().setNamingIntoIndexed(true);
+            } else if (namingIntoIndexed.equalsIgnoreCase("false")) {
+                this.session.getProject().setNamingIntoIndexed(false);
+            } else {
+                this.session.handleException(ValidationException.invalidBooleanValueForProperty(namingIntoIndexed, PersistenceUnitProperties.NAMING_INTO_INDEXED));
             }
         }
     }
