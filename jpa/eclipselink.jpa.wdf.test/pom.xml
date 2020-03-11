@@ -358,6 +358,15 @@
         </profile>
         <profile>
             <id>oracle</id>
+            <dependencies>
+                <!--db.platform=org.eclipse.persistence.platform.database.oracle.Oracle12Platform comes from there-->
+                <dependency>
+                    <groupId>org.eclipse.persistence</groupId>
+                    <artifactId>org.eclipse.persistence.oracle</artifactId>
+                    <version>${project.version}</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
                     <plugin>
