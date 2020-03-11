@@ -18,6 +18,7 @@
 package org.eclipse.persistence.queries;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
@@ -1080,5 +1082,37 @@ public class StoredProcedureCall extends DatabaseCall {
             throw ValidationException.fileError(exception);
         }
         getParameters().add(parameter);
+    }
+
+    /**
+     * Return the SQL string for logging purposes.
+     */
+    @Override
+    public String getLogString(Accessor accessor) {
+        if (hasParameters()) {
+            StringWriter writer = new StringWriter();
+            writer.write(getSQLString());
+            writer.write(Helper.cr());
+            if (hasParameters()) {
+                AbstractSession session = null;
+                if (getQuery() != null) {
+                    session = getQuery().getSession();
+                }
+                List<String> procedureArgs = getProcedureArgumentNames();
+                boolean indexBased = procedureArgs.size() == 0 || procedureArgs.get(0) == null || session.getProject().namingIntoIndexed();
+                Collection<String> parameters = new ArrayList<>();
+                for (int index = 0; index < getParameters().size(); index++) {
+                    if (indexBased) {
+                        parameters.add(String.valueOf(getParameters().get(index)));
+                    } else {
+                        parameters.add(procedureArgs.get(index) + "=>" + getParameters().get(index));
+                    }
+                }
+                appendLogParameters(parameters, accessor, writer, session);
+            }
+            return writer.toString();
+        } else {
+            return getSQLString();
+        }
     }
 }
