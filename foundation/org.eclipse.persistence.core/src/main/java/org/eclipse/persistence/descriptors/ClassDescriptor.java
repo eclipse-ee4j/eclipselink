@@ -171,8 +171,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected transient List<DatabaseField> allSelectionFields;
     protected transient Vector<DatabaseField> returnFieldsToGenerateInsert;
     protected transient Vector<DatabaseField> returnFieldsToGenerateUpdate;
-    protected transient Vector<DatabaseField> returnFieldsToMergeInsert;
-    protected transient Vector<DatabaseField> returnFieldsToMergeUpdate;
+    protected transient List<DatabaseField> returnFieldsToMergeInsert;
+    protected transient List<DatabaseField> returnFieldsToMergeUpdate;
 
     protected Vector<DatabaseMapping> mappings;
 
@@ -2091,7 +2091,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * Return fields used in to map into entity for insert.
      */
-    public Vector<DatabaseField> getReturnFieldsToMergeInsert() {
+    public List<DatabaseField> getReturnFieldsToMergeInsert() {
         return this.returnFieldsToMergeInsert;
     }
 
@@ -2099,7 +2099,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * INTERNAL:
      * Return fields used in to map into entity for update.
      */
-    public Vector<DatabaseField> getReturnFieldsToMergeUpdate() {
+    public List<DatabaseField> getReturnFieldsToMergeUpdate() {
         return this.returnFieldsToMergeUpdate;
     }
 
@@ -4091,8 +4091,8 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     private void prepareReturnFields(List<ReturningPolicy> returningPolicies) {
         Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector();
         Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector();
-        Vector<DatabaseField> returnFieldsToMergeInsert = new NonSynchronizedVector();
-        Vector<DatabaseField> returnFieldsToMergeUpdate = new NonSynchronizedVector();
+        List<DatabaseField> returnFieldsToMergeInsert = new ArrayList<>();
+        List<DatabaseField> returnFieldsToMergeUpdate = new ArrayList<>();
         Collection tmpFields;
         for (ReturningPolicy returningPolicy: returningPolicies) {
             tmpFields = returningPolicy.getFieldsToGenerateInsert(this.defaultTable);
@@ -4112,10 +4112,10 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
                 returnFieldsToMergeUpdate.addAll(tmpFields);
             }
         }
-        this.returnFieldsToGenerateInsert = (returnFieldsInsert.size() > 0) ? returnFieldsInsert : null;
-        this.returnFieldsToGenerateUpdate = (returnFieldsUpdate.size() > 0) ? returnFieldsUpdate : null;
-        this.returnFieldsToMergeInsert = (returnFieldsToMergeInsert.size() > 0) ? returnFieldsToMergeInsert : null;
-        this.returnFieldsToMergeUpdate = (returnFieldsToMergeUpdate.size() > 0) ? returnFieldsToMergeUpdate: null;
+        this.returnFieldsToGenerateInsert = (returnFieldsInsert.isEmpty()) ? null : returnFieldsInsert;
+        this.returnFieldsToGenerateUpdate = (returnFieldsUpdate.isEmpty()) ? null : returnFieldsUpdate;
+        this.returnFieldsToMergeInsert = (returnFieldsToMergeInsert.isEmpty()) ? null : returnFieldsToMergeInsert;
+        this.returnFieldsToMergeUpdate = (returnFieldsToMergeUpdate.isEmpty()) ? null : returnFieldsToMergeUpdate;
     }
 
     /**
