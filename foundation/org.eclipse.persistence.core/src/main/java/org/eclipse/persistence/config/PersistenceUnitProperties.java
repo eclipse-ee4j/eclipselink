@@ -3182,7 +3182,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>javax.persistence.query.timeout</code>" property configures
-     * the default query timeout value. Defaults to seconds, but is configurable
+     * the default query timeout value. Defaults to milliseconds, but is configurable
      * with PersistenceUnitProperties.QUERY_TIMEOUT_UNIT
      * <p>
      * <b>Allowed Values:</b>
