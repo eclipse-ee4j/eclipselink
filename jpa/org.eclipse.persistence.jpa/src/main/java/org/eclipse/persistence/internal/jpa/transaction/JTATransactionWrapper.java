@@ -17,8 +17,8 @@ package org.eclipse.persistence.internal.jpa.transaction;
 import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceException;
 import javax.persistence.TransactionRequiredException;
-import javax.transaction.Synchronization;
-import javax.transaction.Transaction;
+import jakarta.transaction.Synchronization;
+import jakarta.transaction.Transaction;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -139,7 +139,7 @@ public class JTATransactionWrapper extends TransactionWrapperImpl implements Tra
             Object txn = checkForTransaction(true);
 //            duplicating what is done in
 //            TransactionController.registerSynchronizationListener(this, this.parent);
-//            This will need to change if javax.transaction dependencies are to be removed from JPA. See TransactionImpl
+//            This will need to change if jakarta.transaction dependencies are to be removed from JPA. See TransactionImpl
             try {
                 ((Transaction)txn).registerSynchronization(new Synchronization() {
 

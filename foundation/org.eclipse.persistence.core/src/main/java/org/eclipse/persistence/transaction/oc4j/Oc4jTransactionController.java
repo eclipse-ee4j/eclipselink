@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.transaction.oc4j;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 import org.eclipse.persistence.transaction.JTATransactionController;
 
 /**

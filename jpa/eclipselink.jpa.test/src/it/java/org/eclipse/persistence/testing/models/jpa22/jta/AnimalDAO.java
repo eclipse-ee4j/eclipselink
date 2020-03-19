@@ -15,7 +15,7 @@
 //       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
 package org.eclipse.persistence.testing.models.jpa22.jta;
 
-import javax.ejb.Stateful;
+import jakarta.ejb.Stateful;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 

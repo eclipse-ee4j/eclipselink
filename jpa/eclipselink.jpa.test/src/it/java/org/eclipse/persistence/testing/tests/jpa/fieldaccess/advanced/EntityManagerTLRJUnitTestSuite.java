@@ -552,7 +552,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
             }catch (RollbackException ex){
                 return;
             }catch (RuntimeException ex){
-                if (ex.getCause() instanceof javax.transaction.RollbackException) {
+                if (ex.getCause() instanceof jakarta.transaction.RollbackException) {
                     return;
                 }
                 if (isTransactionActive(em)){
@@ -4303,7 +4303,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
 
     // Used by testClearEntityManagerWithoutPersistenceContextSimulateJTA().
     // At first tried to use JTATransactionController class, but that introduced dependencies
-    // on javax.transaction package (and therefore failed in gf entity persistence tests).
+    // on jakarta.transaction package (and therefore failed in gf entity persistence tests).
     static class DummyExternalTransactionController extends org.eclipse.persistence.transaction.AbstractTransactionController {
         public boolean isRolledBack_impl(Object status){return false;}
         protected void registerSynchronization_impl(org.eclipse.persistence.transaction.AbstractSynchronizationListener listener, Object txn) throws Exception{}

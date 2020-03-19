@@ -975,7 +975,7 @@
                 <!-- exclude test-only dependencies -->
                 <exclude name="*hk2*"/>
                 <exclude name="*jersey*"/>
-                <exclude name="javax.inject*"/>
+                <exclude name="jakarta.inject*"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*_2.2*.jar" excludes="*preview*.jar"/>

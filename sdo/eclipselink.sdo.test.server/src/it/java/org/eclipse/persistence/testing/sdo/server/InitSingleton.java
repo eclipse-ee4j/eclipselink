@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.sdo.server;
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 
 import javax.annotation.PostConstruct;
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 
 import java.net.URL;
 import java.util.logging.Level;

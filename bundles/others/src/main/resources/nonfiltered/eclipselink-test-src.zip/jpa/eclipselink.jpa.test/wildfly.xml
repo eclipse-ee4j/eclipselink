@@ -157,7 +157,7 @@
         </pathconvert>
         <xslt style="resource/wildfly/eclipselink-module-template.xsl" in="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml.bak" out="${wildfly.modules.dir}/org/eclipse/persistence/main/module.xml" force="true">
             <param name="resources" expression="${eclipselink.jars}"/>
-            <param name="dependencies" expression="com.${db.name}:junit.junit:javax.json.api"/>
+            <param name="dependencies" expression="com.${db.name}:junit.junit:jakarta.json.api"/>
         </xslt>
         <copy todir="${wildfly.modules.dir}/org/eclipse/persistence/main" flatten="true">
             <path refid="eclipselink.lib"/>
@@ -167,9 +167,9 @@
 
         <antcall target="wildfly-start"/>
         <!-- JDBC Driver -->
-        <cli command="module add --name=com.${db.name} --resources=${jdbc.driver.lib} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
-        <cli command="module add --name=com.${db2.name} --resources=${jdbc2.driver.lib} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
-        <cli command="module add --name=com.${db3.name} --resources=${jdbc3.driver.lib} --dependencies=javax.api,javax.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
+        <cli command="module add --name=com.${db.name} --resources=${jdbc.driver.lib} --dependencies=javax.api,jakarta.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
+        <cli command="module add --name=com.${db2.name} --resources=${jdbc2.driver.lib} --dependencies=javax.api,jakarta.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
+        <cli command="module add --name=com.${db3.name} --resources=${jdbc3.driver.lib} --dependencies=javax.api,jakarta.transaction.api --module-root-dir=${wildfly.modules.dir}"/>
         <!-- JUnit -->
         <cli command="module add --name=junit.junit --resources=${junit.lib} --module-root-dir=${wildfly.modules.dir}"/>
 

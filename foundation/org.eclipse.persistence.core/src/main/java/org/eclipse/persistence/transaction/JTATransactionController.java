@@ -16,7 +16,7 @@
 //       - 526419: Modify EclipseLink to reflect changes in JTA 1.1.
 package org.eclipse.persistence.transaction;
 
-import javax.transaction.*;
+import jakarta.transaction.*;
 
 import org.eclipse.persistence.exceptions.TransactionException;
 

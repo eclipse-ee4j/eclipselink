@@ -729,7 +729,7 @@
                           *ejb*.jar,
                           javax.persistence*_1.*.jar,
                           *preview*.jar,
-                          *javax.transaction*.jar,
+                          *jakarta.transaction*.jar,
                           *jakarta.transaction*.jar,
                           jakarta.xml.bind.source*.jar,
                           *modelgen*.jar,

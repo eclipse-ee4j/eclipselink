@@ -15,7 +15,7 @@
 //     SAP - initial implementation
 package org.eclipse.persistence.transaction.sap;
 
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 
 import org.eclipse.persistence.transaction.JTATransactionController;
 

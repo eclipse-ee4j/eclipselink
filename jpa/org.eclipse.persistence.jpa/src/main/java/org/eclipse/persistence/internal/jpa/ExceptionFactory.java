@@ -17,8 +17,8 @@ package org.eclipse.persistence.internal.jpa;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.sql.SQLException;
-import javax.transaction.SystemException;
-import javax.transaction.RollbackException;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.RollbackException;
 
 public class ExceptionFactory {
     public ExceptionFactory() {

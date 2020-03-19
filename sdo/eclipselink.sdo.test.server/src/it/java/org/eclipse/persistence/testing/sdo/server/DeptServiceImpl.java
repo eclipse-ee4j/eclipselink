@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.sdo.server;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
+import jakarta.ejb.Remote;
+import jakarta.ejb.Stateless;
 
 import org.eclipse.persistence.sdo.helper.SDOHelperContext;
 

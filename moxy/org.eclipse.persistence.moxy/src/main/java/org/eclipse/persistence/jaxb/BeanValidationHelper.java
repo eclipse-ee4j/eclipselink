@@ -302,7 +302,7 @@ final public class BeanValidationHelper {
     private Executor createExecutor() {
         try {
             InitialContext jndiCtx = new InitialContext();
-            // type:      javax.enterprise.concurrent.ManagedExecutorService
+            // type:      jakarta.enterprise.concurrent.ManagedExecutorService
             // jndi-name: concurrent/ThreadPool
             return new Executor((ExecutorService) jndiCtx.lookup("java:comp/env/concurrent/ThreadPool"), false);
         } catch (NamingException ignored) {

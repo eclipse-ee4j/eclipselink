@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa21.entitylistener;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.ejb.EJB;
+import jakarta.ejb.EJB;
 import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 

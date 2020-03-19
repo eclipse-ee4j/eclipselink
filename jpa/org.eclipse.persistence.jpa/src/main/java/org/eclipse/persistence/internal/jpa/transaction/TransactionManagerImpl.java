@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.jpa.transaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.transaction.*;
+import jakarta.transaction.*;
 import org.eclipse.persistence.internal.jpa.ExceptionFactory;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;
 

@@ -15,8 +15,8 @@
 //     Praba Vijayaratnam - 2.4 - added JSON support testing
 package org.eclipse.persistence.testing.jaxrs.model;
 
-import javax.ejb.Remote;
-import javax.ejb.Stateless;
+import jakarta.ejb.Remote;
+import jakarta.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import jakarta.ws.rs.Consumes;

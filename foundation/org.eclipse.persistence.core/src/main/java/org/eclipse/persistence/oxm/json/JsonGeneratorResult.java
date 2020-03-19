@@ -14,7 +14,7 @@
 //     Denise Smith - 2.6 - initial implementation
 package org.eclipse.persistence.oxm.json;
 
-import javax.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonGenerator;
 
 import org.eclipse.persistence.internal.oxm.record.ExtendedResult;
 import org.eclipse.persistence.oxm.record.JsonGeneratorRecord;

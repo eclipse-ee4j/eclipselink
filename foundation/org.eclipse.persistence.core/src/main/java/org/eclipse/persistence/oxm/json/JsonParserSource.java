@@ -19,10 +19,10 @@ import org.eclipse.persistence.internal.oxm.record.ExtendedSource;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.json.JsonParserReader;
 
-import javax.json.stream.JsonParser;
+import jakarta.json.stream.JsonParser;
 
 /**
- *   Object to be used with Unmarshaller to unmarshal {@link javax.json.stream.JsonParser} objects
+ *   Object to be used with Unmarshaller to unmarshal {@link jakarta.json.stream.JsonParser} objects
  *
  *   Usage:
  *      JsonParserSource source = new JsonParserSource(jsonParser);

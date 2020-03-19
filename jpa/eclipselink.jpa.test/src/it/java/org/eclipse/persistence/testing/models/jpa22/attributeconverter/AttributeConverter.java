@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.models.jpa22.attributeconverter;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.persistence.Converter;
 
 import org.eclipse.persistence.testing.models.jpa22.sessionbean.InjectedBean;

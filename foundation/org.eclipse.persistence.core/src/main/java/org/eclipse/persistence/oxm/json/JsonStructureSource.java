@@ -14,7 +14,7 @@
 //     Denise Smith - 2.6 - initial implementation
 package org.eclipse.persistence.oxm.json;
 
-import javax.json.JsonStructure;
+import jakarta.json.JsonStructure;
 
 import org.eclipse.persistence.internal.oxm.Unmarshaller;
 import org.eclipse.persistence.internal.oxm.record.ExtendedSource;
@@ -22,8 +22,8 @@ import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.json.JsonStructureReader;
 
 /**
- *   Object to be used with Unmarshaller to unmarshal javax.json.JsonStructure objects
- *   (ie: javax.json.JsonObject or javax.json.JsonArray)
+ *   Object to be used with Unmarshaller to unmarshal jakarta.json.JsonStructure objects
+ *   (ie: jakarta.json.JsonObject or jakarta.json.JsonArray)
  *
  *   Usage:
  *      JsonStructureSource source = new JsonStructureSource(jsonObject);

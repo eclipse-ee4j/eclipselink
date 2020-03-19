@@ -16,7 +16,7 @@ import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
 import org.eclipse.persistence.testing.models.jpa22.attributeconverter.AttributeConverter;
 import org.eclipse.persistence.testing.models.jpa22.attributeconverter.AttributeConverterHolder;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;

@@ -16,7 +16,7 @@ import org.eclipse.persistence.testing.models.jpa22.sessionbean.InjectedBean;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.persistence.PostPersist;
 import javax.persistence.PrePersist;
 

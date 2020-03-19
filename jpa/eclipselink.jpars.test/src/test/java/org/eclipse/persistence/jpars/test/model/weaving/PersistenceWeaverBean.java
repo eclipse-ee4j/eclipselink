@@ -14,8 +14,8 @@
 //      dclarke/tware - initial
 package org.eclipse.persistence.jpars.test.model.weaving;
 
-import javax.ejb.Singleton;
-import javax.ejb.Startup;
+import jakarta.ejb.Singleton;
+import jakarta.ejb.Startup;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
 

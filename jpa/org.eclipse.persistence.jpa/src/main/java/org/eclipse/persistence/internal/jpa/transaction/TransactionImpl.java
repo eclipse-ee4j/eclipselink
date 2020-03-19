@@ -19,7 +19,7 @@ import java.lang.reflect.InvocationHandler;
 import java.util.Vector;
 import java.sql.*;
 import javax.transaction.xa.XAResource;
-import javax.transaction.*;
+import jakarta.transaction.*;
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.jpa.ExceptionFactory;
 import org.eclipse.persistence.internal.jpa.jdbc.ConnectionProxyHandler;

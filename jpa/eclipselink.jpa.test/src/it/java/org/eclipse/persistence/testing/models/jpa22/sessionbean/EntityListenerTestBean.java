@@ -14,7 +14,7 @@
 //     tware - initial contribution for Bug 366748 - JPA 2.1 Injectable Entity Listeners
 package org.eclipse.persistence.testing.models.jpa22.sessionbean;
 
-import javax.ejb.Stateless;
+import jakarta.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;

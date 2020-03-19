@@ -14,7 +14,7 @@
 //     tware - initial contribution for Bug 366748 - JPA 2.1 Injectable Entity Listeners
 package org.eclipse.persistence.testing.models.jpa21.sessionbean;
 
-import javax.ejb.Remote;
+import jakarta.ejb.Remote;
 
 @Remote
 public interface EntityListenerTest {

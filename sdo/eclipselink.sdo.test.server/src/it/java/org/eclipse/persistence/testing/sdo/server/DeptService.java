@@ -14,7 +14,7 @@
 //     etang - April 12/2010 - 2.1 - Initial implementation
 package org.eclipse.persistence.testing.sdo.server;
 
-import javax.ejb.Remote;
+import jakarta.ejb.Remote;
 
 @Remote
 public interface DeptService {

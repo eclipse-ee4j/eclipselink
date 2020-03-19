@@ -17,9 +17,9 @@ package org.eclipse.persistence.oxm.record;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import javax.json.Json;
-import javax.json.JsonArrayBuilder;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonObjectBuilder;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;

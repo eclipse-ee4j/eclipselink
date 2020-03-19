@@ -14,8 +14,8 @@
 //     Denise Smith - 2.6 - initial implementation
 package org.eclipse.persistence.oxm.json;
 
-import javax.json.Json;
-import javax.json.JsonObjectBuilder;
+import jakarta.json.Json;
+import jakarta.json.JsonObjectBuilder;
 import org.eclipse.persistence.internal.oxm.record.ExtendedResult;
 import org.eclipse.persistence.oxm.record.JsonBuilderRecord;
 

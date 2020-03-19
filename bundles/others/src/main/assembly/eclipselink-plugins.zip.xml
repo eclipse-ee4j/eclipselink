@@ -63,7 +63,7 @@
         <dependencySet>
             <outputFileNameMapping>jakarta.inject.jar</outputFileNameMapping>
             <includes>
-                <include>javax.inject:javax.inject</include>
+                <include>jakarta.inject:jakarta.inject</include>
             </includes>
             <scope>test</scope>
         </dependencySet>

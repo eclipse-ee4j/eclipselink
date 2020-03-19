@@ -173,7 +173,7 @@ public class TransactionException extends EclipseLinkException {
     }
 
     /**
-     * Build transaction exception instance when obtaining of {@link javax.transaction.TransactionSynchronizationRegistry} instance failed.
+     * Build transaction exception instance when obtaining of {@link jakarta.transaction.TransactionSynchronizationRegistry} instance failed.
      *
      * @param internalException {@link TransactionException} cause
      * @return new instance of {@link TransactionException}
