@@ -14,7 +14,7 @@
 // dmccann - August 25/2009 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmldiscriminator;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

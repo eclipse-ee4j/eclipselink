@@ -15,5 +15,5 @@
 @XmlAccessorType(XmlAccessType.NONE)
 package org.eclipse.persistence.testing.jaxb.xmlvalue.none;
 
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;

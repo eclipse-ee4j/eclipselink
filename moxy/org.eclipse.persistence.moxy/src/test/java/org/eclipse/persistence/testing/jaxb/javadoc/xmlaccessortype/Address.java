@@ -13,7 +13,7 @@
 // Contributors:
 //     Praba Vijayaratnam - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlaccessortype;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlRootElement(name="address")

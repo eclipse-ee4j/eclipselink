@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * non-collection properties. In this case we'll nest the billing/shipping
  * address data within the "contact-info" element.</p>
  * <pre>
- * import javax.xml.bind.annotation.*;
+ * import jakarta.xml.bind.annotation.*;
  * import org.eclipse.persistence.oxm.annotations.XmlPath;
  *
  * &#64;XmlRootElement
@@ -63,7 +63,7 @@ import java.lang.annotation.Target;
  * collection property.  Using the &#64;XmlPath extension you map non-collection
  * properties to a repeated element by index.</p>
  * <pre>
- * import javax.xml.bind.annotation.*;
+ * import jakarta.xml.bind.annotation.*;
  * import org.eclipse.persistence.oxm.annotations.XmlPath;
  *
  * &#64;XmlRootElement
@@ -94,7 +94,7 @@ import java.lang.annotation.Target;
  * adding a grouping element. {@code @XmlPath} can also be used to collapse the
  * structure by mapping two objects to the same node.</p>
  * <pre>
- * import javax.xml.bind.annotation.*;
+ * import jakarta.xml.bind.annotation.*;
  * import org.eclipse.persistence.oxm.annotations.XmlPath;
  *
  * &#64;XmlRootElement @XmlAccessorType(XmlAccessType.FIELD)
@@ -147,7 +147,7 @@ public @interface XmlPath {
      *            elementFormDefault = XmlNsForm.QUALIFIED)
      * package org.example;
      *
-     * import javax.xml.bind.annotation.*;
+     * import jakarta.xml.bind.annotation.*;
      * </pre>
      * <p>Then the following XPath:</p>
      * <pre>
@@ -159,8 +159,8 @@ public @interface XmlPath {
      * <li>address - in "http://www.example.com/BAR" namespace.</li>
      * <li>&#64;id - in no namespace.</li>
      * </ul>
-     * @see javax.xml.bind.annotation.XmlSchema
-     * @see javax.xml.bind.annotation.XmlNs
+     * @see jakarta.xml.bind.annotation.XmlSchema
+     * @see jakarta.xml.bind.annotation.XmlNs
      */
     String value();
 

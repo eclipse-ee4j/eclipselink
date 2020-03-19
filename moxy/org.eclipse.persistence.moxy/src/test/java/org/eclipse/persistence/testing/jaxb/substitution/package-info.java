@@ -17,5 +17,5 @@
 // Generated on: 2010, 2015 .05.05 at 01:57:10 PM EDT
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "myNamespace", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "myNamespace", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.substitution;

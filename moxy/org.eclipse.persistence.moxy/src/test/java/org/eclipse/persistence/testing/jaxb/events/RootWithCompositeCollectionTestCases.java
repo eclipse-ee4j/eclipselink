@@ -25,8 +25,8 @@ import org.eclipse.persistence.testing.jaxb.*;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 public class RootWithCompositeCollectionTestCases extends JAXBWithJSONTestCases {
     public JAXBMarshalListenerImpl listener;

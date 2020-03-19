@@ -18,7 +18,7 @@ package org.eclipse.persistence.internal.xr;
 // Javase imports
 
 // Java extension imports
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.oxm.ByteArrayDataSource;

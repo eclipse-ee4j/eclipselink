@@ -20,7 +20,7 @@ import java.util.NavigableSet;
 import java.util.Queue;
 import java.util.TreeSet;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;

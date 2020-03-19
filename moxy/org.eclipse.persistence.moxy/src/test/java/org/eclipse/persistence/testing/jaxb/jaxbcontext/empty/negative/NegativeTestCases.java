@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.jaxbcontext.empty.negative;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import junit.framework.TestCase;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 

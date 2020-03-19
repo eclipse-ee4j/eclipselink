@@ -345,7 +345,7 @@ public class JAXBContextProperties {
 
     /**
      * Property for setting preferred or custom validator factory.
-     * Mapped value must be of type {@link javax.validation.ValidatorFactory}.
+     * Mapped value must be of type {@link jakarta.validation.ValidatorFactory}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.MarshallerProperties#BEAN_VALIDATION_FACTORY

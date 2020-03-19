@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.rs.util.list.SingleResultQueryResult;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

@@ -14,7 +14,7 @@
 //     gonural - Initial implementation
 package org.eclipse.persistence.internal.jpa.rs.metadata.model;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 /**
  * Represents a link used in JPARS 2.0.

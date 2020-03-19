@@ -12,5 +12,5 @@
 
 // Contributors:
 // dmccann - June 17/2009 - 2.0 - Initial implementation
-@javax.xml.bind.annotation.XmlAccessorOrder(javax.xml.bind.annotation.XmlAccessOrder.UNDEFINED)
+@jakarta.xml.bind.annotation.XmlAccessorOrder(jakarta.xml.bind.annotation.XmlAccessOrder.UNDEFINED)
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessororder.packagelevel;

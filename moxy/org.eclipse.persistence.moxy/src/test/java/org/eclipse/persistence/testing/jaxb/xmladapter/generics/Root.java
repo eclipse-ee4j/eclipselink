@@ -14,8 +14,8 @@
 // Matt MacIvor - July 4th 2011
 package org.eclipse.persistence.testing.jaxb.xmladapter.generics;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement
 public class Root {

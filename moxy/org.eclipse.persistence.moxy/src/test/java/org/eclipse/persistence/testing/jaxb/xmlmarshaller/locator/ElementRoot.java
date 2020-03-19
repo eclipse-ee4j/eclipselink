@@ -14,9 +14,9 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller.locator;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="root")
 @XmlType(propOrder={"name", "child"})

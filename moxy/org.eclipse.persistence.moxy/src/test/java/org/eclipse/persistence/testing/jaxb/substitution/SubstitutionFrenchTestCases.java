@@ -14,7 +14,7 @@
 //     rbarkhouse - 2010-05-07 16:53:48 - EclipseLink 2.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.substitution;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

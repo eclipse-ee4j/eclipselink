@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.JAXBElement;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;

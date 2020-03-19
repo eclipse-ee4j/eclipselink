@@ -18,7 +18,7 @@ import java.lang.reflect.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.w3c.dom.*;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;

@@ -14,7 +14,7 @@
 //     Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.internal.jpa.rs.metadata.model.v2;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * Entity resource property. Used in JPARS 2.0 metadata model.

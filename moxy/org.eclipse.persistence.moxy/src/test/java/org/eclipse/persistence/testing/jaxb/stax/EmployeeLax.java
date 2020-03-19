@@ -14,8 +14,8 @@
 // Vikram Bhatia - Initial implementation
 package org.eclipse.persistence.testing.jaxb.stax;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.w3c.dom.Element;
 

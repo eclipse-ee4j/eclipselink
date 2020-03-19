@@ -14,7 +14,7 @@
 // mmacivor - January 09, 2009 - 1.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlcontainerproperty;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 

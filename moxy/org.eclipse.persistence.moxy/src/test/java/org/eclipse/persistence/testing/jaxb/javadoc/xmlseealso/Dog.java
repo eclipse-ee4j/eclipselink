@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlseealso;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 public class Dog extends Animal {
 

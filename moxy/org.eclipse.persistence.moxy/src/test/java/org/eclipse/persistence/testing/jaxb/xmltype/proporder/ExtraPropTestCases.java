@@ -14,7 +14,7 @@
 //     Denise Smith - October 2012
 package org.eclipse.persistence.testing.jaxb.xmltype.proporder;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import junit.framework.TestCase;
 
@@ -24,7 +24,7 @@ public class ExtraPropTestCases extends TestCase {
         try {
             JAXBContextFactory.createContext(new Class[] {ExtraPropRoot.class}, null);
 
-        } catch(javax.xml.bind.JAXBException e) {
+        } catch(jakarta.xml.bind.JAXBException e) {
             try {
                 throw e.getLinkedException();
             } catch(org.eclipse.persistence.exceptions.JAXBException e2) {

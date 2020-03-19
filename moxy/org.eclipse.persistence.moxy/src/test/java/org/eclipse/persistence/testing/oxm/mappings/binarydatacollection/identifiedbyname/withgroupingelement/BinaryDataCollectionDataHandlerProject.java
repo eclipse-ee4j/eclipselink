@@ -13,7 +13,7 @@
 // Contributors:
 //     Denise Smith - January 6th, 2010 - 2.0.1
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.identifiedbyname.withgroupingelement;
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLDescriptor;

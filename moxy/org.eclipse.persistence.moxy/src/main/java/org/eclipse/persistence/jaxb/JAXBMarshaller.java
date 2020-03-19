@@ -30,14 +30,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.MarshalException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.MarshalException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLStreamWriter;
@@ -92,18 +92,18 @@ import org.xml.sax.ContentHandler;
  *
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
- * @see javax.xml.bind.Marshaller
+ * @see jakarta.xml.bind.Marshaller
  * @see org.eclipse.persistence.jaxb.MarshallerProperties
  * @see org.eclipse.persistence.oxm.XMLMarshaller
  */
 
-public class JAXBMarshaller implements javax.xml.bind.Marshaller {
+public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
 
     private JAXBBeanValidator beanValidator;
 
     private BeanValidationMode beanValidationMode;
 
-    // The actual type is ValidatorFactory. It's done due to optional nature of javax.validation.
+    // The actual type is ValidatorFactory. It's done due to optional nature of jakarta.validation.
     private Object prefValidatorFactory;
     private boolean bvNoOptimisation = false;
     private Class<?>[] beanValidationGroups;
@@ -173,7 +173,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setDeclaredType(elt.getDeclaredType());
         xmlroot.setNil(elt.isNil());
         if (elt.getDeclaredType() == CoreClassConstants.ABYTE || elt.getDeclaredType() == CoreClassConstants.APBYTE ||
-                elt.getDeclaredType().getCanonicalName().equals("javax.activation.DataHandler") ||
+                elt.getDeclaredType().getCanonicalName().equals("jakarta.activation.DataHandler") ||
                 elt.getDeclaredType().isEnum()) {
             // need a binary data mapping so need to wrap
             Class generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
@@ -278,7 +278,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     /**
      * Get a property from the JAXBMarshaller. Attempting to get any unsupported
-     * property will result in a javax.xml.bind.PropertyException
+     * property will result in a jakarta.xml.bind.PropertyException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     @Override
@@ -732,7 +732,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             xmlroot.setSchemaType(typeMappingInfo.getSchemaType());
         } else if(value != null) {
             if (value.getClass() == CoreClassConstants.ABYTE || value.getClass() == CoreClassConstants.APBYTE ||
-                    value.getClass().getCanonicalName().equals("javax.activation.DataHandler")) {
+                    value.getClass().getCanonicalName().equals("jakarta.activation.DataHandler")) {
                 xmlroot.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
         }
@@ -862,7 +862,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     /**
      * Set a property on the JAXBMarshaller. Attempting to set any unsupported
-     * property will result in a javax.xml.bind.PropertyException
+     * property will result in a jakarta.xml.bind.PropertyException
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     @Override

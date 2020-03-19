@@ -19,8 +19,8 @@ import org.eclipse.persistence.testing.jaxb.JAXBXMLComparer;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;

@@ -16,7 +16,7 @@ package org.eclipse.persistence.eis.adapters.xmlfile;
 
 import java.io.StringWriter;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.w3c.dom.*;
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;

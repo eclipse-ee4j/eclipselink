@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.qname.defaultnamespace;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
 @XmlRootElement(name="root", namespace="myns")

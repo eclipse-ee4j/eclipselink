@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.json.characters;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class EscapeCharacterHolder {

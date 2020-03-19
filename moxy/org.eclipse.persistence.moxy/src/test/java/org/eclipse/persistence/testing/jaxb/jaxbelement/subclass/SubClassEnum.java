@@ -14,8 +14,8 @@
 //     Denise Smith - January 2012 - 2.3
 package org.eclipse.persistence.testing.jaxb.jaxbelement.subclass;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.jaxbelement.enumeration.Coin;

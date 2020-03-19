@@ -14,8 +14,8 @@
 // dmccann - May 21/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelementwrapper;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name = "name-wrapper", namespace = "http://www.example.com/Two")
 @XmlType(namespace = "http://www.example.com/Two")

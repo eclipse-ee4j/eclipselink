@@ -14,7 +14,7 @@
 // Oracle = 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements;
 
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlID;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 

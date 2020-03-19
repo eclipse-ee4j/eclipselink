@@ -14,8 +14,8 @@
 //    Denise Smith - April 2013
 package org.eclipse.persistence.testing.jaxb.jaxbelement.subclass;
 
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 @XmlRegistry
 public class ObjectFactoryFoo {

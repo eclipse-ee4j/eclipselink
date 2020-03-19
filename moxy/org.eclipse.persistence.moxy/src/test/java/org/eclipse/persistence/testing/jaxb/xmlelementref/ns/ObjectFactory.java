@@ -14,9 +14,9 @@
 //  - rbarkhouse - 17 November 2011 - 2.3.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlelementref.ns;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
 @XmlRegistry

@@ -28,8 +28,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.persistence.EntityManager;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

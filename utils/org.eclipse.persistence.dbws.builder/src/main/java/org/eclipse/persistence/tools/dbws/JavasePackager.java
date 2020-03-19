@@ -39,7 +39,7 @@ import java.util.zip.ZipEntry;
  *   QName serviceQName = new QName(serviceNamespace, serviceName);
  *   QName portQName = new QName(serviceNamespace, portName);
  *   service = Service.create(serviceQName);
- *   service.addPort(portQName, javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
+ *   service.addPort(portQName, jakarta.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING, ENDPOINT_ADDRESS);
  *   ...
  *   Dispatch&lt;SOAPMessage&gt; dispatch = testService.createDispatch(portQName, SOAPMessage.class,
  *     Service.Mode.MESSAGE);

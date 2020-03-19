@@ -14,8 +14,8 @@
 //     Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.internal.jpa.rs.metadata.model.v2;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.List;
 

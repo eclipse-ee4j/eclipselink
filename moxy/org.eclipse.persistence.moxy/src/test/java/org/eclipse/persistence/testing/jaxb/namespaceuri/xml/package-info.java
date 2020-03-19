@@ -12,5 +12,5 @@
 
 // Contributors:
 //     Denise Smith - 2.4
-@javax.xml.bind.annotation.XmlSchema(namespace = "myns" , elementFormDefault = javax.xml.bind.annotation.XmlNsForm.UNQUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "myns" , elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.UNQUALIFIED)
 package org.eclipse.persistence.testing.jaxb.namespaceuri.xml;

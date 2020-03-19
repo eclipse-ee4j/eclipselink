@@ -14,8 +14,8 @@
 //    Denise Smith - May 2012
 package org.eclipse.persistence.testing.jaxb.eventhandler;
 
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
 
 public class MyEventHandler implements ValidationEventHandler{
     private int severity = -1;

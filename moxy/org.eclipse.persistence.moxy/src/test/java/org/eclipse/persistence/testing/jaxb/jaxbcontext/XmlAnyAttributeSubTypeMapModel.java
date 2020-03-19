@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
 import java.util.HashMap;
-import javax.xml.bind.annotation.XmlAnyAttribute;
+import jakarta.xml.bind.annotation.XmlAnyAttribute;
 
 public class XmlAnyAttributeSubTypeMapModel {
     @XmlAnyAttribute

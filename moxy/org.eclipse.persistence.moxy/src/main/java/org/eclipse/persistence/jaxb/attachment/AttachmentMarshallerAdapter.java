@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.attachment;
 
-import javax.xml.bind.attachment.AttachmentMarshaller;
-import javax.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 
@@ -31,7 +31,7 @@ import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
  * 2.0 Listener without adding a dependancy on JAXB 2.0 into core TopLink. The Adapter class
  * wraps a javax.xml.bin.attachment.AttachmentMarshaller and passes on the events as they're raised
  *
- * @see javax.xml.bind.attachment.AttachmentMarshaller
+ * @see jakarta.xml.bind.attachment.AttachmentMarshaller
  * @see org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller
  * @since Oracle TopLink 11.1.1.0.0
  * @author mmacivor
@@ -51,7 +51,7 @@ public class AttachmentMarshallerAdapter implements XMLAttachmentMarshaller {
     }
 
     @Override
-    public String addMtomAttachment(javax.activation.DataHandler data, String elementName, String namespaceURI) {
+    public String addMtomAttachment(jakarta.activation.DataHandler data, String elementName, String namespaceURI) {
         return this.attachmentMarshaller.addMtomAttachment(data,  namespaceURI, elementName);
     }
 

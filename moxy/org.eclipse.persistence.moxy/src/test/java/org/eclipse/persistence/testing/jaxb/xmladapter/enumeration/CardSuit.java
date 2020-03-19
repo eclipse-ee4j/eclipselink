@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.testing.jaxb.xmladapter.enumeration;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlJavaTypeAdapter(value = SuitsAdapter.class)
 public enum CardSuit {

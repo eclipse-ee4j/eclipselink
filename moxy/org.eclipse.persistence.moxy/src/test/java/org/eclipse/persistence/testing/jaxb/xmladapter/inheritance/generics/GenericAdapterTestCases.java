@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.inheritance.generics;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.jaxb.MarshallerProperties;

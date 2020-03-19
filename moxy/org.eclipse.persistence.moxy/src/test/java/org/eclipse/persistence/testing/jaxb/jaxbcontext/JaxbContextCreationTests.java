@@ -18,7 +18,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.util.*;
 
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 

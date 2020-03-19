@@ -246,7 +246,7 @@
         <path id="run.common.path" cache="true">
             <path refid="jpa.compile.common.path"/>
 <!--            <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jakarta.validation.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
@@ -382,7 +382,7 @@
             <pathelement path="${extensions.depend.dir}/${jboss-logging.jar}"/>
             <pathelement path="${extensions.depend.dir}/${javax.el.jar}"/>
             <pathelement path="${extensions.depend.dir}/${classmate.jar}"/>
-            <!--<pathelement path="${extensions.depend.dir}/${javax.validation.jar}"/>-->
+            <!--<pathelement path="${extensions.depend.dir}/${jakarta.validation.jar}"/>-->
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.bean.validation.classpath.common"/>
@@ -544,7 +544,7 @@
         <property name="test.junit.jvm.modules.prop" value=""/>
         <path id="jpatest.compile.core.deps" cache="true">
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jakarta.validation.jar}"/>
         </path>
         <path id="jpatest.compile.module.path" cache="true"></path>
         <path id="jpatest.upgrade.module.path" cache="true"></path>
@@ -561,7 +561,7 @@
         <path id="jpatest.compile.core.deps" cache="true"/>
         <path id="jpatest.compile.module.path" cache="true">
             <!--<pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence22.jar}"/>-->
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jakarta.validation.jar}"/>
         </path>
         <path id="jpatest.upgrade.module.path" cache="true">
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>

@@ -15,4 +15,4 @@
 @XmlSchema(namespace="a")
 package org.eclipse.persistence.testing.jaxb.schemagen.imports.url.a;
 
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlSchema;

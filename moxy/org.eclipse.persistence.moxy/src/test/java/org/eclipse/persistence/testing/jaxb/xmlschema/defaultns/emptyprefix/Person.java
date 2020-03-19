@@ -14,8 +14,8 @@
 //     rbarkhouse - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlschema.defaultns.emptyprefix;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Person {

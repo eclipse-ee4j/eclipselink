@@ -20,7 +20,7 @@
             <java-attributes>
                 <xml-element java-attribute="hexBytes">
                     <xml-schema-type name="hexBinary" />
-                    <xml-java-type-adapter value="javax.xml.bind.annotation.adapters.HexBinaryAdapter" />
+                    <xml-java-type-adapter value="jakarta.xml.bind.annotation.adapters.HexBinaryAdapter" />
                 </xml-element>
                 <xml-element java-attribute="base64Bytes" />
             </java-attributes>

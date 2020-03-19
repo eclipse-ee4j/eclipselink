@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.w3c.dom.Node;

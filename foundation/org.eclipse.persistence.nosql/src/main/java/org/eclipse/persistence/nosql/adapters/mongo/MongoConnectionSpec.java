@@ -16,8 +16,8 @@ package org.eclipse.persistence.nosql.adapters.mongo;
 
 import java.util.Properties;
 
-import javax.resource.cci.Connection;
-import javax.resource.cci.ConnectionFactory;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.cci.ConnectionFactory;
 
 import org.eclipse.persistence.eis.EISAccessor;
 import org.eclipse.persistence.eis.EISConnectionSpec;

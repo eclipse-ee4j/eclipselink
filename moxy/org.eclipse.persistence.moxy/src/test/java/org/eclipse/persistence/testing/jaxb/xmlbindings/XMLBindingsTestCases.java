@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlbindings;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;

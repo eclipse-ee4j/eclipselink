@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 /**
  * <p>The <code>RecordConverter</code> interface allows conversion of an adapter

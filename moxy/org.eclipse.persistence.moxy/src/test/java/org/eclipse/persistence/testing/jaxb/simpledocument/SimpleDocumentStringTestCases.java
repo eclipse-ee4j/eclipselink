@@ -20,7 +20,7 @@ import java.util.Map;
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 /**
  * Tests mapping a simple document containing a single xs:string element to a String object

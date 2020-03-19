@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlinlinebinary;
 
 import java.util.ArrayList;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.internal.oxm.XMLBinaryDataHelper;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

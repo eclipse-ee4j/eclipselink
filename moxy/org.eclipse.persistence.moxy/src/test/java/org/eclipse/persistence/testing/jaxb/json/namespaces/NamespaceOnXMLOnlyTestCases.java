@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.jaxb.json.namespaces.model.PurchaseOrderT
 import org.eclipse.persistence.testing.jaxb.json.namespaces.model.USAddress;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.util.ArrayList;

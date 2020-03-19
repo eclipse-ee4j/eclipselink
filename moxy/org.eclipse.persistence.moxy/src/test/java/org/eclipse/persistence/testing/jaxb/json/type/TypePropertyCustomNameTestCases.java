@@ -20,7 +20,7 @@ import org.eclipse.persistence.jaxb.UnmarshallerProperties;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;
 import org.eclipse.persistence.testing.jaxb.json.type.model.*;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Ondrej Cerny
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www.example.org/base",
-                                     elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://www.example.org/base",
+                                     elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.annotations.xmlschema.model.base;
 

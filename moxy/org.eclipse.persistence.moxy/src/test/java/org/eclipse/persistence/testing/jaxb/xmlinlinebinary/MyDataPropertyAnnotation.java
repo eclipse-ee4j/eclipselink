@@ -17,15 +17,15 @@ package org.eclipse.persistence.testing.jaxb.xmlinlinebinary;
 import java.util.Arrays;
 
 
-@javax.xml.bind.annotation.XmlRootElement(name="my-data")
+@jakarta.xml.bind.annotation.XmlRootElement(name="my-data")
 public class MyDataPropertyAnnotation {
 
-    @javax.xml.bind.annotation.XmlInlineBinaryData
+    @jakarta.xml.bind.annotation.XmlInlineBinaryData
     public byte[] bytes;
     public Byte[] bigBytes;
 
-    @javax.xml.bind.annotation.XmlInlineBinaryData
-    @javax.xml.bind.annotation.XmlAttribute
+    @jakarta.xml.bind.annotation.XmlInlineBinaryData
+    @jakarta.xml.bind.annotation.XmlAttribute
     public byte[] bytesAttr;
     public boolean equals(Object obj) {
         MyDataPropertyAnnotation mdObj;

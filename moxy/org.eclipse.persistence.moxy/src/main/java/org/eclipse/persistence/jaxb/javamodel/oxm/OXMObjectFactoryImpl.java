@@ -85,7 +85,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
             components.put(SUBSTITUTION_HEAD_NAME, xmlElementDecl.getSubstitutionHeadName());
             components.put(SUBSTITUTION_HEAD_NAMESPACE, xmlElementDecl.getSubstitutionHeadNamespace());
 
-            Annotation anno = AnnotationProxy.getProxy(components, javax.xml.bind.annotation.XmlElementDecl.class,
+            Annotation anno = AnnotationProxy.getProxy(components, jakarta.xml.bind.annotation.XmlElementDecl.class,
                     this.javaModel.getClassLoader(), XMLConversionManager.getDefaultManager());
             annotations.add(new JavaAnnotationImpl(anno));
         }

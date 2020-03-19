@@ -14,8 +14,8 @@
 //     Denise Smith - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.defaultvalue;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 
 @XmlRootElement(name = "testObject")
 public class TestXmlValueObject {

@@ -17,7 +17,7 @@ package org.eclipse.persistence.jaxb.dynamic;
 import java.io.InputStream;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.transform.Source;
 
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
@@ -63,7 +63,7 @@ import org.xml.sax.EntityResolver;
  * jaxbContext.createMarshaller().(employee, System.out);
  * </code></p>
  *
- * @see javax.xml.bind.JAXBContext
+ * @see jakarta.xml.bind.JAXBContext
  * @see org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContext
  * @see org.eclipse.persistence.dynamic.DynamicEntity
  * @see org.eclipse.persistence.dynamic.DynamicType
@@ -81,8 +81,8 @@ public class DynamicJAXBContextFactory {
     /**
      * Create a <code>DynamicJAXBContext</code>, using either an XML Schema, EclipseLink OXM file,
      * or EclipseLink <code>sessions.xml</code> as the metadata source.  This creation method will be
-     * called if the user calls the <code>newInstance()</code> method on <code>javax.xml.bind.JAXBContext</code>,
-     * and has specified <code>javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.DynamicJAXBContextFactory</code> in their
+     * called if the user calls the <code>newInstance()</code> method on <code>jakarta.xml.bind.JAXBContext</code>,
+     * and has specified <code>jakarta.xml.bind.context.factory=org.eclipse.persistence.jaxb.DynamicJAXBContextFactory</code> in their
      * <code>jaxb.properties</code> file.<p>
      *
      * <b>-- Context Creation From XML Schema --</b><p>

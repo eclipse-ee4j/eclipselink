@@ -22,4 +22,4 @@
 )
 package org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.xmlns.a;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

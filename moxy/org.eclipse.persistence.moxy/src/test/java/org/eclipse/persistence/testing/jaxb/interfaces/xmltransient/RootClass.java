@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.testing.jaxb.interfaces.xmltransient;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 public class RootClass {
 

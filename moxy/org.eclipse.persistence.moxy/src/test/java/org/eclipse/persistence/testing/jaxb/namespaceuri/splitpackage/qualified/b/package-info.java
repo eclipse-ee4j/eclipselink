@@ -17,4 +17,4 @@
     elementFormDefault = XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.qualified.b;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

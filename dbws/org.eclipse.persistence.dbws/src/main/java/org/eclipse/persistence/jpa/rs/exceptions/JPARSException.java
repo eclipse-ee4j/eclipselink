@@ -19,7 +19,7 @@ import org.eclipse.persistence.exceptions.JPARSErrorCodes;
 import org.eclipse.persistence.exceptions.i18n.ExceptionMessageGenerator;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 public class JPARSException extends EclipseLinkException {
     private Status httpStatusCode;

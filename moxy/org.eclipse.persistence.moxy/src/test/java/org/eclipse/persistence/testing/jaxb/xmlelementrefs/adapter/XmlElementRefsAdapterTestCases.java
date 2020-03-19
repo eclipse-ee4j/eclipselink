@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.jaxb.xmlelementrefs.adapter;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.Binder;
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.Binder;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.oxm.Constants;

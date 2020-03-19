@@ -14,8 +14,8 @@
 //     Blaise Doughan - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
 
 public class TestAttachmentMarshaller extends AttachmentMarshaller {
 

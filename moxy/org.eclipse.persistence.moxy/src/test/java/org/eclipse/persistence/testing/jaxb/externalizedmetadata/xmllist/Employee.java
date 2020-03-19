@@ -14,7 +14,7 @@
 // dmccann - October 15/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmllist;
 
-import javax.xml.bind.annotation.XmlList;
+import jakarta.xml.bind.annotation.XmlList;
 
 public class Employee {
     public java.util.List<String> data;

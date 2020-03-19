@@ -63,6 +63,11 @@
             <artifactId>jakarta.servlet-api</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>jakarta.xml.ws</groupId>
+            <artifactId>jakarta.xml.ws-api</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!--Other dependencies-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>

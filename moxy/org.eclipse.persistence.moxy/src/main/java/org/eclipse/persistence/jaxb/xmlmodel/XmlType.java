@@ -16,10 +16,10 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 
 /**
@@ -33,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
- *       &lt;attribute name="factory-class" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlType.DEFAULT" /&gt;
+ *       &lt;attribute name="factory-class" type="{http://www.w3.org/2001/XMLSchema}string" default="jakarta.xml.bind.annotation.XmlType.DEFAULT" /&gt;
  *       &lt;attribute name="factory-method" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="prop-order"&gt;
  *         &lt;simpleType&gt;
@@ -48,7 +48,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@javax.xml.bind.annotation.XmlType(name = "")
+@jakarta.xml.bind.annotation.XmlType(name = "")
 @XmlRootElement(name = "xml-type")
 public class XmlType {
 
@@ -129,7 +129,7 @@ public class XmlType {
      */
     public String getFactoryClass() {
         if (factoryClass == null) {
-            return "javax.xml.bind.annotation.XmlType.DEFAULT";
+            return "jakarta.xml.bind.annotation.XmlType.DEFAULT";
         } else {
             return factoryClass;
         }

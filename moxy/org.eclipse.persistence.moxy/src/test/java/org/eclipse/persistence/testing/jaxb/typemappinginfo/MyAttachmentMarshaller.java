@@ -15,8 +15,8 @@
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.util.HashMap;
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
 
 public class MyAttachmentMarshaller extends AttachmentMarshaller {
     public static int count = 0;

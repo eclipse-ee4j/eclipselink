@@ -2964,7 +2964,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     return (T) accessor.getConnection();
                 }
                 return null;
-            } else if (cls.getName().equals("javax.resource.cci.Connection")) {
+            } else if (cls.getName().equals("jakarta.resource.cci.Connection")) {
                 UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
                 if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
                     return (T) unitOfWork.getAccessor().getConnection();

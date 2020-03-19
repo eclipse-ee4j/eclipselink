@@ -16,16 +16,16 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinar
 
 import java.util.Arrays;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
-@javax.xml.bind.annotation.XmlRootElement(name="my-data")
+@jakarta.xml.bind.annotation.XmlRootElement(name="my-data")
 public class MyDataPropertyAnnotation {
     private DataHandler myDataHandler;
 
-    @javax.xml.bind.annotation.XmlInlineBinaryData
+    @jakarta.xml.bind.annotation.XmlInlineBinaryData
     public byte[] bytes;
 
-    @javax.xml.bind.annotation.XmlInlineBinaryData
+    @jakarta.xml.bind.annotation.XmlInlineBinaryData
     public DataHandler getData() { return myDataHandler; }
     public void setData(DataHandler data) { myDataHandler = data; }
 

@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata;
 
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlInlineBinaryData;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlInlineBinaryData;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class PropertyRoot {

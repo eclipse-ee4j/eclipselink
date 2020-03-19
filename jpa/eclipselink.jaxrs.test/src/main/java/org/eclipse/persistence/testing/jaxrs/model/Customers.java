@@ -14,7 +14,7 @@
 //     Praba Vijayaratnam - 2.3 - inital implementation
 package org.eclipse.persistence.testing.jaxrs.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
 

@@ -14,8 +14,8 @@
 //     Denise Smith - October 2012
 package org.eclipse.persistence.testing.jaxb.xmltype.proporder;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import junit.framework.TestCase;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -26,7 +26,7 @@ public class MissingPropTestCases extends TestCase {
 
         try {
             JAXBContextFactory.createContext(new Class[] {MissingPropRoot.class}, null);
-        } catch(javax.xml.bind.JAXBException e) {
+        } catch(jakarta.xml.bind.JAXBException e) {
             try {
                 throw e.getLinkedException();
             } catch(org.eclipse.persistence.exceptions.JAXBException e2) {

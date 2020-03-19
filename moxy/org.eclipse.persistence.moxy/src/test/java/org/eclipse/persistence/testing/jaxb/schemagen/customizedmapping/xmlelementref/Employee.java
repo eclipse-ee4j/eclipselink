@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlelem
 
 import java.util.ArrayList;
 
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.testing.jaxb.schemagen.employee.Department;
 

@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * XmlElementNillable annotation.
  * </p>
  *
- * @see javax.xml.bind.annotation.XmlElement
+ * @see jakarta.xml.bind.annotation.XmlElement
  */
 @Target({ ElementType.TYPE, ElementType.PACKAGE })
 @Retention(RetentionPolicy.RUNTIME)

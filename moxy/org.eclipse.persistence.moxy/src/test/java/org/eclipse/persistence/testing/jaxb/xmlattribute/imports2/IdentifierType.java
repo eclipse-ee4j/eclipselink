@@ -14,8 +14,8 @@
 //     Denise Smith - 2.4 - February 11, 2013
 package org.eclipse.persistence.testing.jaxb.xmlattribute.imports2;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType
 @XmlEnum

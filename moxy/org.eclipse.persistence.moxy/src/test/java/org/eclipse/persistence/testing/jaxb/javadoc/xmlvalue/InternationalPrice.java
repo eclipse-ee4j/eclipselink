@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue;
 
 import java.math.BigDecimal;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name="global-price")
 public class InternationalPrice {

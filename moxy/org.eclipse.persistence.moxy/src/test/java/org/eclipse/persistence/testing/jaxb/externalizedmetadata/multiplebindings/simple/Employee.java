@@ -15,9 +15,9 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindin
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlList;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlList;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace.Address;
 

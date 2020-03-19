@@ -14,8 +14,8 @@
 //     Denise Smith - June 24/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
-import javax.activation.DataHandler;
-import javax.mail.util.ByteArrayDataSource;
+import jakarta.activation.DataHandler;
+import jakarta.mail.util.ByteArrayDataSource;
 
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;
 import org.eclipse.persistence.sessions.Project;

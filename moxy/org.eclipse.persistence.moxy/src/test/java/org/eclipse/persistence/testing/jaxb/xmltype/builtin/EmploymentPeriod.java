@@ -12,8 +12,8 @@
 
 package org.eclipse.persistence.testing.jaxb.xmltype.builtin;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 @XmlType

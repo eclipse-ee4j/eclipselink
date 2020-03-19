@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.pac
 
 import java.math.BigDecimal;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel.MyCalendar;
 

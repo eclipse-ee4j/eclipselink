@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.4.1 - Initial Implementation
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 public class Link {
 

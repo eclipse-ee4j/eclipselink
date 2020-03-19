@@ -14,9 +14,9 @@
 //     Blaise Doughan - 2.3.2 - initial implementation
  package org.eclipse.persistence.testing.jaxb.attachments.contenttype;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlMimeType;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.Source;
 
 @XmlRootElement

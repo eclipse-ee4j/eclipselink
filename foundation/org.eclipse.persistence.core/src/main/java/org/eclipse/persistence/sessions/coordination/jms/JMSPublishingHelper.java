@@ -36,7 +36,7 @@ public class JMSPublishingHelper {
      *
      *
      */
-    public static void processJMSMessage(javax.jms.Message message, AbstractSession session){
+    public static void processJMSMessage(jakarta.jms.Message message, AbstractSession session){
         RemoteCommandManager rcm = (RemoteCommandManager)session.getCommandManager();
         if(rcm.isStopped()){
             throw RemoteCommandManagerException.remoteCommandManagerIsClosed();

@@ -15,9 +15,9 @@
 
 package org.eclipse.persistence.testing.jaxb.annotations.xmlidref;
 
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlIDREF;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Owner {

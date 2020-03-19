@@ -14,7 +14,7 @@
 // dmccann - January 11/2010 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum;
 
-@javax.xml.bind.annotation.XmlRootElement(name="hand")
+@jakarta.xml.bind.annotation.XmlRootElement(name="hand")
 public class Game {
     public Card card;
     public Coin coin;

@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmltype;
 
 import java.math.BigInteger;
 
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlValue;
 
 // map class to anonymous simple type.
 @XmlType(name="")

@@ -17,7 +17,7 @@ package org.eclipse.persistence.internal.nosql.adapters.mongo;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;

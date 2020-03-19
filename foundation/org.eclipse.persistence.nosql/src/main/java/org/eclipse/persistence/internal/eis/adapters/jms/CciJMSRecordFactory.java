@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.eis.adapters.jms;
 
 
 // JDK imports
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 // TopLink imports
 import org.eclipse.persistence.exceptions.ValidationException;

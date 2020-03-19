@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref;
 public class Employee {
     public String name;
 
-    @javax.xml.bind.annotation.XmlIDREF
+    @jakarta.xml.bind.annotation.XmlIDREF
     public Address homeAddress;
 
     public Address workAddress;

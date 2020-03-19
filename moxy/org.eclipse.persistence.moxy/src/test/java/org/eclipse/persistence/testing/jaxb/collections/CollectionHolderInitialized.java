@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.collections;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class CollectionHolderInitialized extends CollectionHolder{

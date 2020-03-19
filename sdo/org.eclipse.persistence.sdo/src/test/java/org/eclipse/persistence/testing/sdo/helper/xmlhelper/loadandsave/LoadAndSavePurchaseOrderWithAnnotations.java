@@ -235,7 +235,7 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
         List baseTypes = new ArrayList();
         baseTypes.add(SDOConstants.SDO_BYTES);
         myBinaryTypeType.set("baseType", baseTypes);
-        myBinaryTypeType.set(SDOConstants.JAVA_CLASS_PROPERTY, "javax.activation.DataHandler");
+        myBinaryTypeType.set(SDOConstants.JAVA_CLASS_PROPERTY, "jakarta.activation.DataHandler");
         Type theType = typeHelper.define(myBinaryTypeType);
 
         return theType;

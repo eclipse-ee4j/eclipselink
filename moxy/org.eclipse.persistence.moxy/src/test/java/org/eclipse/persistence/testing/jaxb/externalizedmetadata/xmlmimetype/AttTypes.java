@@ -17,10 +17,10 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmimetype;
 import java.awt.Image;
 import java.util.Arrays;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import javax.xml.transform.Source;
 
-@javax.xml.bind.annotation.XmlRootElement(name="att-types")
+@jakarta.xml.bind.annotation.XmlRootElement(name="att-types")
 public class AttTypes {
     public byte[] b;
     public DataHandler d;

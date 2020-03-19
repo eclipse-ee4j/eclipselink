@@ -14,7 +14,7 @@
 //     Denise Smith - 2.4 - April 2012
 package org.eclipse.persistence.testing.jaxb.json.emptyroot;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Root {

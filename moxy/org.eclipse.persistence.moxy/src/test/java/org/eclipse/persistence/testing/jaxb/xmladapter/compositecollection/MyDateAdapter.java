@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.xmladapter.compositecollection;
 
 import java.util.Date;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class MyDateAdapter extends XmlAdapter<MyDateType, Date> {
     public MyDateType marshal(Date arg0) throws Exception {

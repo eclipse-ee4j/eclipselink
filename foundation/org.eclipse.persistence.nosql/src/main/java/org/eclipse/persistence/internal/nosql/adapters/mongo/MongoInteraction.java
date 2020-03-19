@@ -19,8 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 
 import org.eclipse.persistence.eis.EISException;
 

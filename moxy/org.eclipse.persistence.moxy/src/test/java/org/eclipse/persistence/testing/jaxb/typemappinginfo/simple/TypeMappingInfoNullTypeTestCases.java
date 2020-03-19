@@ -14,7 +14,7 @@
 //     Denise Smith -  February 9, 2010 - Since 2.1
 package org.eclipse.persistence.testing.jaxb.typemappinginfo.simple;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.JAXBException;

@@ -14,7 +14,7 @@
 //  - rbarkhouse - 28 September 2012 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ChoiceAdapter extends XmlAdapter<Object, Address> {
 

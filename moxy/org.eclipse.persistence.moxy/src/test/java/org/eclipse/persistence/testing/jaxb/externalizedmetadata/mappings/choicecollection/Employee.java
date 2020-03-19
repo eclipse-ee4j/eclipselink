@@ -21,9 +21,9 @@ public class Employee {
     public List<Object> readOnlyThings;
     public List<Object> writeOnlyThings;
 
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
     public List<Object> getThings() {

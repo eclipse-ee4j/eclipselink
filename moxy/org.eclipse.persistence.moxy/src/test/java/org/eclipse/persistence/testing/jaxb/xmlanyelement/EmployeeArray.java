@@ -14,7 +14,7 @@
 //     Denise Smith - 2.3
 package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;

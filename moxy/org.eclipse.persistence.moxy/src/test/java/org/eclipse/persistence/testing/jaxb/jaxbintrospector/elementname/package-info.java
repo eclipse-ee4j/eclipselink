@@ -12,8 +12,8 @@
 
 // Contributors:
 //     Denise Smith - October 2011 - 2.3
-@javax.xml.bind.annotation.XmlSchema(namespace = "someUri",
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "someUri",
                                      elementFormDefault =
-                                     javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+                                     jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.jaxbintrospector.elementname;
 

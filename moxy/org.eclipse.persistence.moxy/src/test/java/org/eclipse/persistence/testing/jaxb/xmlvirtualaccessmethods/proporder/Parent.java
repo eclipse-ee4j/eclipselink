@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlvirtualaccessmethods.proporder;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 

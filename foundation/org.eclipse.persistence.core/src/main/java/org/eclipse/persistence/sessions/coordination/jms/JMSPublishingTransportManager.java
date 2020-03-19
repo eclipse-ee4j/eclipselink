@@ -16,8 +16,8 @@ package org.eclipse.persistence.sessions.coordination.jms;
 
 import java.util.Map;
 
-import javax.jms.Topic;
-import javax.jms.TopicConnectionFactory;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnectionFactory;
 import javax.naming.Context;
 import javax.naming.NamingException;
 

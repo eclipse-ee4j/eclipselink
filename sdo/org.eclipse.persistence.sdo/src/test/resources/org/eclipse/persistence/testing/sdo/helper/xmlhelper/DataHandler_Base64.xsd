@@ -24,7 +24,7 @@
      </sequence>
     </complexType>
   </element>
-  <simpleType name="base64Binary-DataHandler" sdoJava:instanceClass="javax.activation.DataHandler">
+  <simpleType name="base64Binary-DataHandler" sdoJava:instanceClass="jakarta.activation.DataHandler">
     <restriction base="base64Binary"/>
   </simpleType>
 </schema>

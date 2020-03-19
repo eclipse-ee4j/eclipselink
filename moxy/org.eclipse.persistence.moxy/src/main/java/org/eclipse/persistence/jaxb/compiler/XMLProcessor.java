@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.JAXBException;
@@ -1217,7 +1217,7 @@ public class XMLProcessor {
             setContainerType(oldProperty, xmlElement.getContainerType());
         }
         // set type
-        if (xmlElement.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT")) {
+        if (xmlElement.getType().equals("jakarta.xml.bind.annotation.XmlElement.DEFAULT")) {
             // if xmlElement has no type, and the property type was set via
             // @XmlElement, reset it to the original value
             if (oldProperty.isXmlElementType()) {

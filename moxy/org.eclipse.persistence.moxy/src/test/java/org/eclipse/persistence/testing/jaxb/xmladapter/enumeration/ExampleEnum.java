@@ -14,9 +14,9 @@
 //     Matt MacIvor - 2.4.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmladapter.enumeration;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlEnum()
 @XmlType(name = "EXAMLE_ENUM")

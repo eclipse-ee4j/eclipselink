@@ -731,7 +731,7 @@
                           *preview*.jar,
                           *javax.transaction*.jar,
                           *jakarta.transaction*.jar,
-                          javax.xml.bind.source*.jar,
+                          jakarta.xml.bind.source*.jar,
                           *modelgen*.jar,
                           *soap*.jar,
                           *xml.ws*.jar,

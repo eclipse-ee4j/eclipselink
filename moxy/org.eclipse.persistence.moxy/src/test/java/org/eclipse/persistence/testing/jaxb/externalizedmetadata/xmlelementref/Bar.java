@@ -14,7 +14,7 @@
 // dmccann - December 03/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
 
-//@javax.xml.bind.annotation.XmlRootElement(name="foobar")
+//@jakarta.xml.bind.annotation.XmlRootElement(name="foobar")
 public class Bar {
     public int id;
 

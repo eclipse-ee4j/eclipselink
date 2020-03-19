@@ -344,7 +344,7 @@ public class JavaSECMPInitializer extends JPAInitializer {
                 // Forced to check for java. and javax. packages here, because even if the class
                 // has been loaded by parent loader we would load it again
                 // (see comment in loadClass)
-                return !name.startsWith("java.") && !name.startsWith("javax.") && ((classNames == null) || !classNames.contains(name));
+                return !name.startsWith("java.") && !name.startsWith("javax.") && !name.startsWith("jakarta.") && ((classNames == null) || !classNames.contains(name));
             }
         }
 

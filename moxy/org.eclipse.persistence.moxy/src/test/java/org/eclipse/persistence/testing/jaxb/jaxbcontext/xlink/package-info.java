@@ -13,5 +13,5 @@
 // Contributors:
 //  - rbarkhouse - 28 February 2013 - 2.4.2 - Initial implementation
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "myNamespace", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "myNamespace", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.jaxbcontext.xlink;

@@ -12,8 +12,8 @@
 
 package org.eclipse.persistence.testing.jaxb.schemagen.inheritance;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(
         name = "childType",

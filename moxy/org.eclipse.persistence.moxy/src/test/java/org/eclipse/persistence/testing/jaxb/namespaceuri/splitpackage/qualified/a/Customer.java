@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.qualified.a;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.testing.jaxb.namespaceuri.splitpackage.qualified.b.Address;
 

@@ -14,10 +14,10 @@
 //  - Denise Smith February 12, 2013
 package org.eclipse.persistence.testing.jaxb.xmlelementref.prefix2;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
 
 import org.eclipse.persistence.testing.jaxb.xmlelementref.prefix3.Other;
 

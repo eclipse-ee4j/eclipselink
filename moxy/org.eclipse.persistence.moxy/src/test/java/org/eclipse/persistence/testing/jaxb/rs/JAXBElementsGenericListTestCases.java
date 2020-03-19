@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;

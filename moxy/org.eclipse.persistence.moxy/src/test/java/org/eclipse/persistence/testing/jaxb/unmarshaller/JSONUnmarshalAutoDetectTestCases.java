@@ -20,9 +20,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.UnmarshalException;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.UnmarshalException;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.dom.DOMSource;

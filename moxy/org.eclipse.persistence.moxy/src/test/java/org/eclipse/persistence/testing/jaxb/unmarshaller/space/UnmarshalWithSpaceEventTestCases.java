@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.unmarshaller.space;
 
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;

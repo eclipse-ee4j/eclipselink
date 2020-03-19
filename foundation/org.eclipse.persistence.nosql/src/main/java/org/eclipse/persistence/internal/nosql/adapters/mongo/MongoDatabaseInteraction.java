@@ -19,12 +19,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.resource.ResourceException;
-import javax.resource.cci.Connection;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.InteractionSpec;
-import javax.resource.cci.Record;
-import javax.resource.cci.ResourceWarning;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.cci.Interaction;
+import jakarta.resource.cci.InteractionSpec;
+import jakarta.resource.cci.Record;
+import jakarta.resource.cci.ResourceWarning;
 
 import org.bson.Document;
 import org.eclipse.persistence.eis.EISException;

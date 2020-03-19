@@ -14,7 +14,7 @@
 //     Praba Vijayaratnam - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlschematype;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import java.util.Calendar;
 

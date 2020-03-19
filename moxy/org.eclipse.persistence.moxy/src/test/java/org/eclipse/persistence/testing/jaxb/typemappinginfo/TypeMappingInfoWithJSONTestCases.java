@@ -18,8 +18,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Iterator;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.PropertyException;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.PropertyException;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 

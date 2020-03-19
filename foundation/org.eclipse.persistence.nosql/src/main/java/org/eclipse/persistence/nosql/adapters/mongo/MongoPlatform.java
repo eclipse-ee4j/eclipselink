@@ -20,9 +20,9 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Vector;
 
-import javax.resource.cci.InteractionSpec;
-import javax.resource.cci.MappedRecord;
-import javax.resource.cci.Record;
+import jakarta.resource.cci.InteractionSpec;
+import jakarta.resource.cci.MappedRecord;
+import jakarta.resource.cci.Record;
 
 import org.eclipse.persistence.descriptors.DescriptorQueryManager;
 import org.eclipse.persistence.eis.EISAccessor;

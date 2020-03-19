@@ -14,8 +14,8 @@
 // dmccann - December 17/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmladapter.elementref;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 

@@ -14,7 +14,7 @@
 //     Martin Vojtek - 2.6 - Initial contribution
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlid;
 
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class MyID {
 

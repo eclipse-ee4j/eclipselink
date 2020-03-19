@@ -14,8 +14,8 @@
 // Martin Vojtek - November 14/2014 - 2.6.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.customizedmapping.xmlvalue;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 
 
 @XmlRootElement (name="root")

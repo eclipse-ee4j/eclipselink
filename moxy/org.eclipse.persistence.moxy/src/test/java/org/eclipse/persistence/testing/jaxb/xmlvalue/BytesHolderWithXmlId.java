@@ -14,10 +14,10 @@
 //     Denise Smith - initial API and implementation
 package org.eclipse.persistence.testing.jaxb.xmlvalue;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlValue;
 import java.util.Arrays;
 
 public class BytesHolderWithXmlId {

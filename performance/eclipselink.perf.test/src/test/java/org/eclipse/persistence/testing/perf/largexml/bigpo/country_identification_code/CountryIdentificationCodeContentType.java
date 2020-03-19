@@ -14,8 +14,8 @@
 //     Martin Vojtek - 2.6.0 - initial implementation
 package org.eclipse.persistence.testing.perf.largexml.bigpo.country_identification_code;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**

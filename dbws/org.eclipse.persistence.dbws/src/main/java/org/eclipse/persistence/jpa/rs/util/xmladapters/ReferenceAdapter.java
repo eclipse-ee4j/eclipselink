@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -56,7 +56,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
      * (non-Javadoc)
      *
      * @see
-     * javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+     * jakarta.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -85,7 +85,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
      * (non-Javadoc)
      *
      * @see
-     * javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+     * jakarta.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override

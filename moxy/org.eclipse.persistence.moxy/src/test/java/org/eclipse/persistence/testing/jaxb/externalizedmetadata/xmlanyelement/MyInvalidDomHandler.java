@@ -14,9 +14,9 @@
 // dmccann - October 27/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement;
 
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.DomHandler;
-import javax.xml.bind.annotation.W3CDomHandler;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.DomHandler;
+import jakarta.xml.bind.annotation.W3CDomHandler;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 

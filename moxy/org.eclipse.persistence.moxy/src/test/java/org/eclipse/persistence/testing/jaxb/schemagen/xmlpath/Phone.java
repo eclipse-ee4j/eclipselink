@@ -14,7 +14,7 @@
 //     Matt MacIvor - October 2011 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.xmlpath;
 
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class Phone {
 

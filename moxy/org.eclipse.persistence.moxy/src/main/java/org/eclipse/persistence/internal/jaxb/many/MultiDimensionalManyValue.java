@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.4 - initial implementation
 package org.eclipse.persistence.internal.jaxb.many;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 @XmlTransient
 public abstract class MultiDimensionalManyValue<T extends ManyValue<?, Object>> extends ManyValue<T, Object> {

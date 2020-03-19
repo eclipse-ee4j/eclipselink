@@ -14,7 +14,7 @@
 // Denise Smith - Oct 6/2009 - 2.0
 package org.eclipse.persistence.testing.jaxb.listofobjects.externalizedmetadata;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(namespace="myns")
 public class Job {

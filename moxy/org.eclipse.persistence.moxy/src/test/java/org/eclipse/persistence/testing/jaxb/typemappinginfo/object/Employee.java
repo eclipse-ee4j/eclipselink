@@ -14,7 +14,7 @@
 //    2.3.1
 package org.eclipse.persistence.testing.jaxb.typemappinginfo.object;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name="employee", namespace="someuri")
 public class Employee {

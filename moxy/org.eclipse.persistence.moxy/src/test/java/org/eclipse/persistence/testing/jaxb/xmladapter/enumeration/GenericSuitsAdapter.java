@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.testing.jaxb.xmladapter.enumeration;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public abstract class GenericSuitsAdapter<T extends Enum> extends XmlAdapter<String, Enum> {
     @Override

@@ -16,14 +16,14 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyattribut
 
 import javax.xml.namespace.QName;
 
-@javax.xml.bind.annotation.XmlRootElement
+@jakarta.xml.bind.annotation.XmlRootElement
 public class Employee {
     public int a;
     public String b;
 
     public java.util.Map<QName, Object> stuff;
 
-    @javax.xml.bind.annotation.XmlAnyAttribute
+    @jakarta.xml.bind.annotation.XmlAnyAttribute
     public java.util.Map<QName, Object> stuffs;
 
     public boolean equals(Object obj) {

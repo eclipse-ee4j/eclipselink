@@ -28,20 +28,20 @@ import org.eclipse.persistence.testing.jaxb.beanvalidation.special.InheritanceAn
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.MethodAnnotatedEmployee;
 import org.eclipse.persistence.testing.jaxb.beanvalidation.special.NonConstrainedClass;
 
-import javax.validation.ClockProvider;
-import javax.validation.ConstraintValidatorFactory;
-import javax.validation.ConstraintViolation;
-import javax.validation.MessageInterpolator;
-import javax.validation.ParameterNameProvider;
-import javax.validation.Path;
-import javax.validation.TraversableResolver;
-import javax.validation.Validator;
-import javax.validation.ValidatorContext;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableValidator;
-import javax.validation.metadata.BeanDescriptor;
-import javax.validation.metadata.ConstraintDescriptor;
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.validation.ClockProvider;
+import jakarta.validation.ConstraintValidatorFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.MessageInterpolator;
+import jakarta.validation.ParameterNameProvider;
+import jakarta.validation.Path;
+import jakarta.validation.TraversableResolver;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorContext;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.executable.ExecutableValidator;
+import jakarta.validation.metadata.BeanDescriptor;
+import jakarta.validation.metadata.ConstraintDescriptor;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
@@ -65,7 +65,7 @@ import static org.eclipse.persistence.testing.jaxb.beanvalidation.ContentCompara
  */
 public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase {
 
-    private static final String NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
+    private static final String NOT_NULL_MESSAGE = "{jakarta.validation.constraints.NotNull.message}";
     private static final String CUSTOM_ANNOTATION_MESSAGE = "{org.eclipse.persistence.moxy.CustomAnnotation.message}";
 
     private static final String GENERATOR_SCHEMA_WITH_FACETS =
@@ -79,7 +79,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
 
             Map<String, Object> props = new HashMap<>();
             props.put(JAXBContextProperties.BEAN_VALIDATION_FACETS, true);
-            javax.xml.bind.JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[] {Employee.class}, props);
+            jakarta.xml.bind.JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[] {Employee.class}, props);
 
             String generatorSchemaWithFacetsPath = Thread.currentThread().getContextClassLoader().getResource(GENERATOR_SCHEMA_WITH_FACETS).getPath();
             GENERATOR_SCHEMA = generatorSchemaWithFacetsPath.substring(0, generatorSchemaWithFacetsPath.lastIndexOf('/') + 1) + GENERATOR_SCHEMA_SUFFIX;

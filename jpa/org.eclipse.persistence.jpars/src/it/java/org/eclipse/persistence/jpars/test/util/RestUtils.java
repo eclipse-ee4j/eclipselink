@@ -16,7 +16,7 @@
 //      Dmitry Kornilov - Upgrade to Jersey 2.x
 package org.eclipse.persistence.jpars.test.util;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 import org.eclipse.persistence.jpa.rs.MatrixParameters;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;
 import org.eclipse.persistence.jpa.rs.QueryParameters;
@@ -27,11 +27,11 @@ import org.eclipse.persistence.jpa.rs.util.list.SimpleHomogeneousList;
 import org.eclipse.persistence.jpars.test.server.RestCallFailedException;
 
 import javax.imageio.ImageIO;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBException;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.xml.bind.JAXBException;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;

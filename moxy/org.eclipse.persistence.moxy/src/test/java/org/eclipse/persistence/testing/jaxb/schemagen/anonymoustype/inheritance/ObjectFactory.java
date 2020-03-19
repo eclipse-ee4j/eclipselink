@@ -14,9 +14,9 @@
 //     Matt MacIvor - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.anonymoustype.inheritance;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
 

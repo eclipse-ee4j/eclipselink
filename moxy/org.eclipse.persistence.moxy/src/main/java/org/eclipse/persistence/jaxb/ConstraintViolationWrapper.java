@@ -14,12 +14,12 @@
 //     Dmitry Kornilov - initial implementation
 package org.eclipse.persistence.jaxb;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Path;
-import javax.validation.metadata.ConstraintDescriptor;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Path;
+import jakarta.validation.metadata.ConstraintDescriptor;
 
 /**
- * Wrapper over {@link ConstraintViolation} class. Required due to optional nature of javax.validation bundle.
+ * Wrapper over {@link ConstraintViolation} class. Required due to optional nature of jakarta.validation bundle.
  *
  * @author Dmitry Kornilov
  * @since 2.7.0

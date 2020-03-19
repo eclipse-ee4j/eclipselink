@@ -14,7 +14,7 @@
 // dmccann - July 21/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.classlevel;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="myClass")
 public class MyClass {

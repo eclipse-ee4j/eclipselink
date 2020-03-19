@@ -19,8 +19,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement(name="theRoot")
 public class Person {

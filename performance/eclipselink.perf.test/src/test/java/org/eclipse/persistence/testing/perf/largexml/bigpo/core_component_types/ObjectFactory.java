@@ -14,7 +14,7 @@
 //     Martin Vojtek - 2.6.0 - initial implementation
 package org.eclipse.persistence.testing.perf.largexml.bigpo.core_component_types;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

@@ -15,7 +15,7 @@
 package org.eclipse.persistence.internal.eis.adapters.aq;
 
 import java.util.ArrayList;
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 /**
  * Simple indexed record.

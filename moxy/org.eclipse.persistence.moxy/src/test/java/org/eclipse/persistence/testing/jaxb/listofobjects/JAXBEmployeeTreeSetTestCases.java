@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class JAXBEmployeeTreeSetTestCases extends JAXBEmployeeListTestCases {

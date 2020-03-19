@@ -15,10 +15,10 @@
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.Size;
-import javax.validation.constraints.Max;
-import javax.validation.Valid;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.Valid;
 import java.util.Collection;
 
 @Entity(name = "CMP3_BV_EMPLOYEE")

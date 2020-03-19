@@ -730,7 +730,7 @@ public class SDODataHelper implements DataHelper {
             } else if (sdoType.equals(SDOConstants.SDO_YEARMONTHDAY)) {
                 return toYearMonthDay((Date) value);
             }
-        } else if (value.getClass().getName().equals("javax.activation.DataHandler")) {
+        } else if (value.getClass().getName().equals("jakarta.activation.DataHandler")) {
             // convert a DataHandler to a string, by getting the bytes and then
             // calling into conversion manager
             try {

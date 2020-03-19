@@ -18,13 +18,13 @@ import java.io.*;
 
 import java.net.URL;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.MarshalException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.UnmarshalException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.MarshalException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.UnmarshalException;
 
-import javax.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.ValidationEventHandler;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;

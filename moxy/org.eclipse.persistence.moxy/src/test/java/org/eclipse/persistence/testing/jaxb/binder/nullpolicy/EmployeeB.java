@@ -14,8 +14,8 @@
 //     Matt MacIvor - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.binder.nullpolicy;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;

@@ -14,8 +14,8 @@
 // dmccann - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref;
 
-//@javax.xml.bind.annotation.XmlRootElement
+//@jakarta.xml.bind.annotation.XmlRootElement
 public class Bar {
-    //@javax.xml.bind.annotation.XmlAttribute
+    //@jakarta.xml.bind.annotation.XmlAttribute
     public String id;
 }

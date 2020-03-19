@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.eis.adapters.jms;
 
-import javax.jms.*;
+import jakarta.jms.*;
 import javax.naming.InitialContext;
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.eis.EISException;
 
 /**
@@ -299,7 +299,7 @@ public class CciJMSInteraction implements Interaction {
      * @return the cci connection
      */
     @Override
-    public javax.resource.cci.Connection getConnection() {
+    public jakarta.resource.cci.Connection getConnection() {
         return connection;
     }
 

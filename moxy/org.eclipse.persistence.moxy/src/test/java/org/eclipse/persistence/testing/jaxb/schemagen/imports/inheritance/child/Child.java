@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.schemagen.imports.inheritance.child
 
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.inheritance.parent.Parent;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(namespace="childnamespace", name="childRoot")
 @XmlType(namespace="childnamespace")

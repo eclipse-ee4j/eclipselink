@@ -14,7 +14,7 @@
 //     Denise Smith - January 2013
 package org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.noxmlrootelement;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 public class Foo {
 

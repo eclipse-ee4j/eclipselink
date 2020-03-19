@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
 import javax.persistence.Embeddable;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 @Embeddable
 public class Address {

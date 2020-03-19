@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.tests.eis.xmlfile;
 
 import java.io.*;
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.eis.*;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.*;
 import org.eclipse.persistence.testing.framework.*;

@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * <p>When using xml bindings with XmlID property, it has same behavior as when XmlIDExtension is used.
  * It means that there is no need to specify XmlIDExtension in xml, because the behavior is provided by default.
  * </p>
- * @see javax.xml.bind.annotation.XmlID
+ * @see jakarta.xml.bind.annotation.XmlID
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

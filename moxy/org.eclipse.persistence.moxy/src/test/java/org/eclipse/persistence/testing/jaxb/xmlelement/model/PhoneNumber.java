@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlelement.model;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"type", "number"})
 public class PhoneNumber {

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class MyListAdapter extends XmlAdapter<Object, List<String>> {
     public static String VAL0 = "00";

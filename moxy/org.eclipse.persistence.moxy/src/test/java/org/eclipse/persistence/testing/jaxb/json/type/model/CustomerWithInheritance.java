@@ -14,7 +14,7 @@
 //     Martin Vojtek - 2.6.0 - initial implementation
 package org.eclipse.persistence.testing.jaxb.json.type.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class CustomerWithInheritance extends PersonWithType {

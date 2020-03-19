@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlvariablenode.method;
 import java.util.List;
 import java.util.TreeMap;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
 

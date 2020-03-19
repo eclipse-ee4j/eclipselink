@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.4.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlidref.self;
 
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlID;
 
 public class PhoneNumber {
 

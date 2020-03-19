@@ -45,12 +45,12 @@ import _dbws.ProviderListener;
 /**
  * <p>
  * <b>INTERNAL:</b> ProviderPackager extends {@link XRPackager}. It is responsible for generating<br>
- * the {@code javax.servlet.ServletContextListener} and the JAX-WS {@code javax.xml.ws.Provider} and saves the generated WSDL
+ * the {@code jakarta.servlet.ServletContextListener} and the JAX-WS {@code jakarta.xml.ws.Provider} and saves the generated WSDL
  * to ${stageDir}
  * <pre>
  * ${PACKAGER_ROOT}
- *   | DBWSProvider.class     -- code-generated javax.xml.ws.Provider
- *   | ProviderListener.class -- code-generated javax.servlet.ServletContextListener
+ *   | DBWSProvider.class     -- code-generated jakarta.xml.ws.Provider
+ *   | ProviderListener.class -- code-generated jakarta.servlet.ServletContextListener
  * </pre>
  *
  * @author Mike Norman - michael.norman@oracle.com
@@ -62,9 +62,9 @@ public class ProviderPackager extends XRPackager {
 
     public static final String PROVIDER_LISTENER_SOURCE =
         "package _dbws;\n\n" +
-        "import javax.servlet.ServletContext;\n" +
-        "import javax.servlet.ServletContextEvent;\n" +
-        "import javax.servlet.ServletContextListener;\n\n" +
+        "import jakarta.servlet.ServletContext;\n" +
+        "import jakarta.servlet.ServletContextEvent;\n" +
+        "import jakarta.servlet.ServletContextListener;\n\n" +
         "public class ProviderListener implements ServletContextListener {\n\n" +
         "    public static ServletContext SC = null;\n\n" +
         "    public  ProviderListener() {\n" +
@@ -84,20 +84,20 @@ public class ProviderPackager extends XRPackager {
         "import javax.annotation.PostConstruct;\n" +
         "import javax.annotation.PreDestroy;\n" +
         "import javax.annotation.Resource;\n" +
-        "import javax.servlet.ServletContext;\n" +
-        "import javax.xml.soap.SOAPMessage;\n" +
-        "import javax.xml.ws.BindingType;\n" +
-        "import javax.xml.ws.Provider;\n" +
-        "import javax.xml.ws.ServiceMode;\n" +
-        "import javax.xml.ws.WebServiceContext;\n" +
-        "import javax.xml.ws.WebServiceProvider;\n" +
-        "import static javax.xml.ws.Service.Mode.MESSAGE;\n";
+        "import jakarta.servlet.ServletContext;\n" +
+        "import jakarta.xml.soap.SOAPMessage;\n" +
+        "import jakarta.xml.ws.BindingType;\n" +
+        "import jakarta.xml.ws.Provider;\n" +
+        "import jakarta.xml.ws.ServiceMode;\n" +
+        "import jakarta.xml.ws.WebServiceContext;\n" +
+        "import jakarta.xml.ws.WebServiceProvider;\n" +
+        "import static jakarta.xml.ws.Service.Mode.MESSAGE;\n";
     public static final String DBWS_PROVIDER_SOURCE_SOAP11HTTP_MTOM_BINDING =
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING;\n";
+        "import static jakarta.xml.ws.soap.SOAPBinding.SOAP11HTTP_MTOM_BINDING;\n";
     public static final String DBWS_PROVIDER_SOURCE_SOAP12HTTP_BINDING =
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;\n";
+        "import static jakarta.xml.ws.soap.SOAPBinding.SOAP12HTTP_BINDING;\n";
     public static final String DBWS_PROVIDER_SOURCE_SOAP12HTTP_MTOM_BINDING =
-        "import static javax.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING;\n";
+        "import static jakarta.xml.ws.soap.SOAPBinding.SOAP12HTTP_MTOM_BINDING;\n";
     public static final String DBWS_PROVIDER_SOURCE_PREAMBLE_END =
         "\n//EclipseLink imports\n" +
         "import " + ProviderHelper.class.getName() + ";\n" +

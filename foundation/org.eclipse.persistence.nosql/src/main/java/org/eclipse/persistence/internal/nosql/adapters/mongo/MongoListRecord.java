@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
 import java.util.ArrayList;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 /**
  * Simple list result.

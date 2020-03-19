@@ -14,9 +14,9 @@
 // dmccann - August 30/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.jaxb.xmlmodel;
 
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  *
  */
-@XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
+@XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
 @XmlType(name = "java-attribute")
 @XmlSeeAlso({
     XmlValue.class,
@@ -57,9 +57,9 @@ import javax.xml.bind.annotation.XmlType;
 })
 public abstract class JavaAttribute {
 
-    @javax.xml.bind.annotation.XmlAttribute(name = "java-attribute")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "java-attribute")
     protected String javaAttribute;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
 
     /**

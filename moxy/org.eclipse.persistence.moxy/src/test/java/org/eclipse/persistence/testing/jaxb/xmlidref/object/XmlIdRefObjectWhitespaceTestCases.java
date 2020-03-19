@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlidref.object;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 

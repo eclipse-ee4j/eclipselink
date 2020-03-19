@@ -14,7 +14,7 @@
 //     Oracle - December 2011
 package org.eclipse.persistence.testing.jaxb.inheritance.ns;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(namespace = "someNamespace")
 public class SubType extends BaseType{

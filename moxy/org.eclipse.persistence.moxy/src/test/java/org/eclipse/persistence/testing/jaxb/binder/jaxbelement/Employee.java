@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.3
 package org.eclipse.persistence.testing.jaxb.binder.jaxbelement;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Employee {

@@ -14,7 +14,7 @@
 //    Denise Smith - May 2012
 package org.eclipse.persistence.testing.jaxb.eventhandler;
 
-import javax.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEvent;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

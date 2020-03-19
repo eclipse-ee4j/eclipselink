@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlrootelement;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class InnerClassTestCases extends JAXBWithJSONTestCases {

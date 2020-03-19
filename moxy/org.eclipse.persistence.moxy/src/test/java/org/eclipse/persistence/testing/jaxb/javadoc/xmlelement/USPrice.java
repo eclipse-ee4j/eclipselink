@@ -14,8 +14,8 @@
 //     Praba Vijayaratnam - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlelement;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 @XmlRootElement
 public class USPrice {

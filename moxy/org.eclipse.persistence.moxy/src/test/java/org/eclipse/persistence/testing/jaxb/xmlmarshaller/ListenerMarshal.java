@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 
 public class ListenerMarshal extends Marshaller.Listener {
 

@@ -14,8 +14,8 @@
 //     mmacivor - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlwriteonly;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlWriteOnly;
 

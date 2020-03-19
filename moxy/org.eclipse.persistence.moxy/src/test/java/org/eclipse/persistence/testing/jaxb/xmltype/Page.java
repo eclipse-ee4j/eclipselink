@@ -16,14 +16,14 @@ package org.eclipse.persistence.testing.jaxb.xmltype;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="Page", namespace="##default")
 @XmlAccessorType(value=XmlAccessType.FIELD)
-@XmlType (factoryMethod="", name="", propOrder={}, factoryClass=javax.xml.bind.annotation.XmlType.DEFAULT.class, namespace="##default")
+@XmlType (factoryMethod="", name="", propOrder={}, factoryClass=jakarta.xml.bind.annotation.XmlType.DEFAULT.class, namespace="##default")
 public class Page implements Serializable {
     protected String isEmailLinkRequired;
 

@@ -14,7 +14,7 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.testing.jaxb.beanvalidation.dom;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author Marcel Valovy - marcel.valovy@oracle.com

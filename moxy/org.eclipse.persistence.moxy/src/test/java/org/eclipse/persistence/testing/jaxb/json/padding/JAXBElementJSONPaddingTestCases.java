@@ -14,7 +14,7 @@
 //     Denise Smith - November 2012
 package org.eclipse.persistence.testing.jaxb.json.padding;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.oxm.JSONWithPadding;

@@ -14,7 +14,7 @@
 //     Denise Smith  November 2011 - 2.3
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class EmployeeNillableTestCases extends EmployeeTestCases{

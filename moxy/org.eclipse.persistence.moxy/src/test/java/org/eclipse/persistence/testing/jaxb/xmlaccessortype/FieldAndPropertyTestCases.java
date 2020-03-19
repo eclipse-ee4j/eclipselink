@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlaccessortype;
 
 import java.io.IOException;
 
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 

@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.testing.jaxb.jaxbelement.nested;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 

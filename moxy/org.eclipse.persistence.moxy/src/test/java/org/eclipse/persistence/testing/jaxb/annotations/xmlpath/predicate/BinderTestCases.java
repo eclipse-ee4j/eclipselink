@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate;
 
 import java.io.InputStream;
 
-import javax.xml.bind.Binder;
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.Binder;
+import jakarta.xml.bind.JAXBContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 

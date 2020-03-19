@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multi
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class DateAdapter extends XmlAdapter<CustomDateType, Calendar> {
     public DateAdapter() {}

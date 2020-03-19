@@ -262,6 +262,6 @@ public class OXMJAXBElementImpl implements JavaClass {
         return null;
     }
 
-    private static final String JAVAX_XML_BIND_JAXBELEMENT = "javax.xml.bind.JAXBElement";
+    private static final String JAVAX_XML_BIND_JAXBELEMENT = "jakarta.xml.bind.JAXBElement";
 
 }

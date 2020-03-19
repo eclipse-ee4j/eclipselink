@@ -17,8 +17,8 @@ package org.eclipse.persistence.eis.adapters.jms;
 
 // JDK imports
 import java.util.Properties;
-import javax.jms.ConnectionFactory;
-import javax.resource.cci.*;
+import jakarta.jms.ConnectionFactory;
+import jakarta.resource.cci.*;
 
 //TopLink imports
 import org.eclipse.persistence.eis.*;

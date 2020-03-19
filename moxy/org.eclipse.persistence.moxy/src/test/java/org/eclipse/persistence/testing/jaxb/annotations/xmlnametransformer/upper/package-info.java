@@ -17,6 +17,6 @@
 )
 @XmlNameTransformer(MyUpperNameTransformer.class)
 package org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.upper;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import org.eclipse.persistence.oxm.annotations.XmlNameTransformer;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.upper.MyUpperNameTransformer;

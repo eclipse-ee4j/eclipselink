@@ -14,9 +14,9 @@
 //     Rick Barkhouse - 2012-03-27 - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransient;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlTransient
 @XmlRootElement

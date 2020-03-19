@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.4.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.json.wrapper;
 
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlID;
 
 public class PhoneNumber {
 

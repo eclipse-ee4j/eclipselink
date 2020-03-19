@@ -28,8 +28,8 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.infra.Blackhole;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -88,7 +88,7 @@ public class ReferenceResolverBenchmark {
         c = ClassicMoxyContainer.createHugeContainer();
         JAXBContext context = (JAXBContext) JAXBContextFactory.createContext(
                 new Class[]{ClassicMoxyContainer.class, Layer.class, Component.class}, new HashMap());
-        javax.xml.bind.JAXBContext contextJaxb = JAXBContext.newInstance(
+        jakarta.xml.bind.JAXBContext contextJaxb = JAXBContext.newInstance(
                 ClassicMoxyContainer.class, Layer.class, Component.class);
         marshaller = context.createMarshaller();
         marshaller.setProperty(JAXBMarshaller.JAXB_FORMATTED_OUTPUT, true);

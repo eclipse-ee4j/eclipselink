@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.eis.xmlfile;
 
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.*;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 

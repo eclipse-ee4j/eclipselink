@@ -12,8 +12,8 @@
 
 package org.eclipse.persistence.testing.jaxb.inheritance.ns;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(namespace = "someNamespace")
 @XmlRootElement

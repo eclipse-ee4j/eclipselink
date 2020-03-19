@@ -14,9 +14,9 @@
 //  - rbarkhouse - 27 February - 2.3.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.sun.idresolver;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlIDREF;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNodes;

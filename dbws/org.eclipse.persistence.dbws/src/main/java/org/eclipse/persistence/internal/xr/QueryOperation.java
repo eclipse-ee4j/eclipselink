@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.Vector;
 
 // Java extension imports
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import javax.xml.namespace.QName;
 
 // EclipseLink imports

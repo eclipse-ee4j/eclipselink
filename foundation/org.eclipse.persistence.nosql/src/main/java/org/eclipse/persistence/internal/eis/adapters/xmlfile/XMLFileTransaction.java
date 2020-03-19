@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.resource.ResourceException;
-import javax.resource.cci.LocalTransaction;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.LocalTransaction;
 
 import org.eclipse.persistence.eis.EISDOMRecord;
 

@@ -14,7 +14,7 @@
 // dmccann - August 5/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.sessions.Record;
 

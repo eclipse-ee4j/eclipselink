@@ -20,8 +20,8 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Map;
 
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;

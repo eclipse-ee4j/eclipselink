@@ -25,11 +25,11 @@ public class Employee {
     public Department department;
     public Department aDept;
 
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean isADeptSet;
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
     public Department getDepartment() {

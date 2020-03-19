@@ -21,4 +21,4 @@
 
 package org.eclipse.persistence.testing.jaxb.json.namespaces;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

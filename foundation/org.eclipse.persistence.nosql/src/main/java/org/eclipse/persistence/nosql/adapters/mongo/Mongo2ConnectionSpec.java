@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation
  package org.eclipse.persistence.nosql.adapters.mongo;
 
-import javax.resource.cci.ConnectionFactory;
+import jakarta.resource.cci.ConnectionFactory;
 
 import org.eclipse.persistence.internal.nosql.adapters.mongo.MongoConnectionFactory;
 

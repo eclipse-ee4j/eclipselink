@@ -19,10 +19,10 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAttachmentRef;
-import javax.xml.bind.annotation.XmlMimeType;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAttachmentRef;
+import jakarta.xml.bind.annotation.XmlMimeType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;

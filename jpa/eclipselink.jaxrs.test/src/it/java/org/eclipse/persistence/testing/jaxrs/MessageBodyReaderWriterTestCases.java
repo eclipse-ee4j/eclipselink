@@ -22,7 +22,7 @@ import org.eclipse.persistence.testing.jaxrs.model.PhoneNumber;
 import org.eclipse.persistence.testing.jaxrs.utils.JAXRSPopulator;
 import org.eclipse.persistence.testing.jaxrs.utils.JAXRSTableCreator;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;

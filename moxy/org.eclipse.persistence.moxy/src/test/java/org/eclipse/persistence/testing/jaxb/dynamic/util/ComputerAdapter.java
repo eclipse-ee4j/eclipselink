@@ -18,7 +18,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.StringTokenizer;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicEntity;

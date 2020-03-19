@@ -113,7 +113,7 @@ public class JPAModelHelper {
      */
     public static void deleteModel(final EntityManager em) {
         EntityManagerHelper.beginTransaction(em);
-        final KVStore store = ((OracleNoSQLConnection)em.unwrap(javax.resource.cci.Connection.class)).getStore();
+        final KVStore store = ((OracleNoSQLConnection)em.unwrap(jakarta.resource.cci.Connection.class)).getStore();
         final Iterator<Key> iterator = store.storeKeysIterator(Direction.UNORDERED, 0);
         while (iterator.hasNext()) {
             store.multiDelete(iterator.next(), null, null);

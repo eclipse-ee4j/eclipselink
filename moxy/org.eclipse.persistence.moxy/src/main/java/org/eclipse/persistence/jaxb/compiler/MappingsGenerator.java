@@ -35,13 +35,13 @@ import java.util.SortedSet;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlMixed;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
-import javax.xml.bind.annotation.adapters.NormalizedStringAdapter;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlMixed;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.adapters.CollapsedStringAdapter;
+import jakarta.xml.bind.annotation.adapters.NormalizedStringAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
@@ -415,7 +415,7 @@ public class MappingsGenerator {
         String elementName;
         String namespace;
 
-        if (javaClass.getSuperclass() != null && javaClass.getSuperclass().getName().equals("javax.xml.bind.JAXBElement")) {
+        if (javaClass.getSuperclass() != null && javaClass.getSuperclass().getName().equals("jakarta.xml.bind.JAXBElement")) {
             generateDescriptorForJAXBElementSubclass(javaClass, project, getNamespaceResolverForDescriptor(namespaceInfo));
             return;
         }
@@ -662,7 +662,7 @@ public class MappingsGenerator {
 
             JavaClass valueType = null;
             String sValType = xja.getValueType();
-            if (sValType.equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
+            if (sValType.equals("jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
                 valueType = property.getActualType();
             } else {
                 valueType = helper.getJavaClass(xja.getValueType());
@@ -1460,7 +1460,7 @@ public class MappingsGenerator {
             }
             if (!element.isXmlRootElement()) {
                 Class scopeClass = element.getScopeClass();
-                if (scopeClass == javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
+                if (scopeClass == jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class){
                     scopeClass = JAXBElement.GlobalScope.class;
                 }
 
@@ -3453,7 +3453,7 @@ public class MappingsGenerator {
     }
 
     private boolean isBinaryData(JavaClass type){
-        return areEquals(type, CoreClassConstants.APBYTE) ||areEquals(type, "javax.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "javax.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
+        return areEquals(type, CoreClassConstants.APBYTE) ||areEquals(type, "jakarta.activation.DataHandler") || areEquals(type, "java.awt.Image") || areEquals(type, "javax.xml.transform.Source") || areEquals(type, "javax.mail.internet.MimeMultipart");
     }
 
     // Made static final for performance reasons.

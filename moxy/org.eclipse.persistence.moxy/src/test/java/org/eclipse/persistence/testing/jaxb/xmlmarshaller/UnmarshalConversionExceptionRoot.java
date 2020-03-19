@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
 public class UnmarshalConversionExceptionRoot {

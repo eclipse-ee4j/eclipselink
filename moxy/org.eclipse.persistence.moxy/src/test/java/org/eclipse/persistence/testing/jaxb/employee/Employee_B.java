@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.3.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.employee;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Employee_B

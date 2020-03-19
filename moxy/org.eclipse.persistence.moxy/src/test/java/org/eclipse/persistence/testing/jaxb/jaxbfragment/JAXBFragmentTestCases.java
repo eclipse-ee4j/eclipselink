@@ -14,7 +14,7 @@
 //    Denise Smith - September 2012
 package org.eclipse.persistence.testing.jaxb.jaxbfragment;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

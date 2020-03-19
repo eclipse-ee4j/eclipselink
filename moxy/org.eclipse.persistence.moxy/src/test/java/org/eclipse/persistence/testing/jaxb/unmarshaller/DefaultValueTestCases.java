@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.unmarshaller;
 import java.io.File;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 

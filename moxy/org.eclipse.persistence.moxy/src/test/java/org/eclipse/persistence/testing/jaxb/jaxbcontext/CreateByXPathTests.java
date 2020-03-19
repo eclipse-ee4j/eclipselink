@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 import java.net.URL;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;

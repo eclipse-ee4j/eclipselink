@@ -14,9 +14,9 @@
 //     Blaise Doughan - 2.4.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 public class ListenerElementDeclObject {
 

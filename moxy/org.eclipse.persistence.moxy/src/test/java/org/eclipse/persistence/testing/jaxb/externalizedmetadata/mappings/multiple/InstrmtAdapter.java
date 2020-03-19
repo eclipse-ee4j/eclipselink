@@ -14,7 +14,7 @@
 // dmccann - November 23/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.multiple;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class InstrmtAdapter extends XmlAdapter<String, String> {
     public InstrmtAdapter() {}

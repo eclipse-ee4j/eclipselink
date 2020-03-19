@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.json.attribute;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.PropertyException;
+import jakarta.xml.bind.PropertyException;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.jaxb.MarshallerProperties;

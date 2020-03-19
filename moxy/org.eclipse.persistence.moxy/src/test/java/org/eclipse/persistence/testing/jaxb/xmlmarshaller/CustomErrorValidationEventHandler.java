@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.ValidationEvent;
 
 public class CustomErrorValidationEventHandler implements ValidationEventHandler {
 

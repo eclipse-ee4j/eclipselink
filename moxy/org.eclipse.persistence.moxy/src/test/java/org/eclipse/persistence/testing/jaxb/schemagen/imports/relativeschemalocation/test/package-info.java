@@ -18,6 +18,6 @@
         @XmlNs(namespaceURI="http://test2.org", prefix="t2")})
 package org.eclipse.persistence.testing.jaxb.schemagen.imports.relativeschemalocation.test;
 
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlSchema;
 

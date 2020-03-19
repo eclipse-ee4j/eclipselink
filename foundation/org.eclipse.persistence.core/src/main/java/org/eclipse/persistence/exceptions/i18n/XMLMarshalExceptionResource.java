@@ -48,7 +48,7 @@ public class XMLMarshalExceptionResource extends ListResourceBundle {
                                            { "25018", "The fromString method on the enum class {0} does not exist or could not be invoked." },
                                            { "25019", "The specified enum class {0} could not be found." },
                                            { "25020", "The method \"getResult()\" must not be called before the \"endDocument()\" event has been called." },
-                                           { "25021", "Class {0} invalid for SwaRef. Must be javax.activation.DataHandler." },
+                                           { "25021", "Class {0} invalid for SwaRef. Must be jakarta.activation.DataHandler." },
                                            { "25022", "Unable to marshal Image. No encoder available for mimeType {0}." },
                                            { "25023", "No descriptor found while unmarshalling element mapped to attribute {0}." },
                                            { "25024", "An error occurred instantiating the UnmappedContentHandler class {0}." },

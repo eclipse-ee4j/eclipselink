@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.jaxb.many;
 
 import java.util.Collection;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 

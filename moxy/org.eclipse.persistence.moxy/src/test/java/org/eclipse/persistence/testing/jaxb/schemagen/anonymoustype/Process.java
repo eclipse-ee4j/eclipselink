@@ -14,9 +14,9 @@
 // dmccann - Sept.22/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.anonymoustype;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name = "")
 @XmlRootElement(name = "process")

@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlelement;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name="root")
 @XmlAccessorType(XmlAccessType.FIELD)

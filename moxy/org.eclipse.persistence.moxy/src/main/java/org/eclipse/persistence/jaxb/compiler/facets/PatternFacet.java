@@ -14,7 +14,7 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.jaxb.compiler.facets;
 
-import javax.validation.constraints.Pattern;
+import jakarta.validation.constraints.Pattern;
 
 /**
  * @author Marcel Valovy - marcel.valovy@oracle.com
@@ -24,7 +24,7 @@ public class PatternFacet implements Facet {
 
     private final String regexp;
 
-    private final javax.validation.constraints.Pattern.Flag[] flags;
+    private final jakarta.validation.constraints.Pattern.Flag[] flags;
 
     public PatternFacet(String regexp, Pattern.Flag[] flags) {
         this.regexp = regexp;

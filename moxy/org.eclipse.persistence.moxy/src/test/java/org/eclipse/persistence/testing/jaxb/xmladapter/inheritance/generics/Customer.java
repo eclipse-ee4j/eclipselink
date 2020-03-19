@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.inheritance.generics;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Customer {

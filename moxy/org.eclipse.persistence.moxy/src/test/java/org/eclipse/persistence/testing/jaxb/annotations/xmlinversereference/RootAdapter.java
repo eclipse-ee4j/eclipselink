@@ -14,7 +14,7 @@
 //  - rbarkhouse - 9/20/2012 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class RootAdapter<T extends Linkable> extends XmlAdapter<T, T> {
 

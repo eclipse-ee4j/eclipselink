@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.nosql.adapters.nosql;
 
 import java.util.HashMap;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 /**
  * Simple mapped record.

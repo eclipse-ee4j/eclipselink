@@ -14,7 +14,7 @@
 // Denise Smith - March 4/2010 - 2.0.2
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschema.namespace;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="address")
 public class Address {

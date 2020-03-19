@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.jaxb.xmlelement.nulls;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.testing.jaxb.xmlelement.model.Address;
 

@@ -15,7 +15,7 @@ package org.eclipse.persistence.testing.jaxb.namespaceuri.schemacontext;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import junit.framework.TestCase;

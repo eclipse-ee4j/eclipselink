@@ -112,7 +112,7 @@ public class OXMJavaModelImpl extends JavaModelImpl implements JavaModel  {
             return null;
         }
 
-        // javax.xml.bind.annotation.XmlElement.DEFAULT
+        // jakarta.xml.bind.annotation.XmlElement.DEFAULT
         if (className.contains(DEFAULT)) {
             return getClass(JAVA_LANG_OBJECT);
         }

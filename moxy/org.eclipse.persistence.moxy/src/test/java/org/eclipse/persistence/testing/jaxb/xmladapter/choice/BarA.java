@@ -14,7 +14,7 @@
 // Matt MacIvor - July 4th 2011
 package org.eclipse.persistence.testing.jaxb.xmladapter.choice;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlJavaTypeAdapter(BarAToStringAdapter.class)
 public class BarA {

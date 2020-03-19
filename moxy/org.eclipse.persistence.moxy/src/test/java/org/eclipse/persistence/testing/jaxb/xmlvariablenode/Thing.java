@@ -14,8 +14,8 @@
 //     Denise Smith - May 2013
 package org.eclipse.persistence.testing.jaxb.xmlvariablenode;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 import javax.xml.namespace.QName;
 
 public class Thing {

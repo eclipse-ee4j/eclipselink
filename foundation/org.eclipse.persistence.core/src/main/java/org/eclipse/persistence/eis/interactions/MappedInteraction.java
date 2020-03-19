@@ -15,8 +15,8 @@
 package org.eclipse.persistence.eis.interactions;
 
 import java.util.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;

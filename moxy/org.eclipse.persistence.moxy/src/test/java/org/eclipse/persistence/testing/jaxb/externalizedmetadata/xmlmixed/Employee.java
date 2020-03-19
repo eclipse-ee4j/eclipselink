@@ -14,7 +14,7 @@
 // dmccann - November 04/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmixed;
 
-@javax.xml.bind.annotation.XmlRootElement
+@jakarta.xml.bind.annotation.XmlRootElement
 public class Employee {
     public int a;
     public String b;
@@ -22,8 +22,8 @@ public class Employee {
     /*
      * The following annotations will be done via XML metadata:
      *
-     * @javax.xml.bind.annotation.XmlAnyElement
-     * @javax.xml.bind.annotation.XmlMixed
+     * @jakarta.xml.bind.annotation.XmlAnyElement
+     * @jakarta.xml.bind.annotation.XmlMixed
      */
     public java.util.List<Object> stuff;
 }

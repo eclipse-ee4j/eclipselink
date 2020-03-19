@@ -14,7 +14,7 @@
 //     Denise Smith - August 2013
 package org.eclipse.persistence.testing.jaxb.xsitype;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Foo {

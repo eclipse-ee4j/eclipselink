@@ -14,7 +14,7 @@
 // Denise Smith - February 8, 2013
 package org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unqualified;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class RootNoAttributes {

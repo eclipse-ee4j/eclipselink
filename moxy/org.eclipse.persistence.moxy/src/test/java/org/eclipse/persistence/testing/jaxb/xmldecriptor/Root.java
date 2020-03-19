@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.1.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmldecriptor;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Root {

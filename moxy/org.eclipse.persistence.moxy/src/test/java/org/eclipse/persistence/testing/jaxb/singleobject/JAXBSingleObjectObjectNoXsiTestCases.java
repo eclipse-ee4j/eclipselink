@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.singleobject;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLEventReader;

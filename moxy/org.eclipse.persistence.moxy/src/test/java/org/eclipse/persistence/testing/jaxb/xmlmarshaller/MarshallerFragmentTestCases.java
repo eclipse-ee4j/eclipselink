@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
 import java.io.InputStream;
 import java.io.StringWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.eclipse.persistence.oxm.XMLConstants;

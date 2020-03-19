@@ -14,7 +14,7 @@
 //  -Matt MacIvor - Initial Implementation - 2.4.1
 package org.eclipse.persistence.testing.jaxb.inheritance.interfaces;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 public interface CustomerBaseInt {
     @XmlElement

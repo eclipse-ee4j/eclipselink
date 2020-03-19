@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNodes;

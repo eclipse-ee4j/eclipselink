@@ -14,8 +14,8 @@
 //     Blaise Doughan - 2.5.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
 public class CrNewLineRoot {

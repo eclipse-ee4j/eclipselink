@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlenum;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name="employee")
 public class EmployeeMultipleDepartmentChoice {

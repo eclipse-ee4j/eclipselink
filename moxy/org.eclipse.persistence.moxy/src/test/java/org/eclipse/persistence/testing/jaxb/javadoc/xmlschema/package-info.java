@@ -19,4 +19,4 @@
 
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlschema;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

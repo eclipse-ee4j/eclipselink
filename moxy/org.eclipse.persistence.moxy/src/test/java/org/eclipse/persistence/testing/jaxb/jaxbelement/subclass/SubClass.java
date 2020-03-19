@@ -14,8 +14,8 @@
 //     Matt MacIvor - October 2011 - 2.4
 package org.eclipse.persistence.testing.jaxb.jaxbelement.subclass;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 
 @XmlRootElement(name = "root")

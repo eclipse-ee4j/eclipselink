@@ -14,7 +14,7 @@
 //     bdoughan - May 19/2010 - 2.1 - Initial implementation
 package org.eclipse.persistence.testing.sdo.helper.jaxbhelper.jaxb.inverse;
 
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlValue;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 

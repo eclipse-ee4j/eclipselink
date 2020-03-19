@@ -14,7 +14,7 @@
 //     Denise Smith - June 24/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.oxm.mappings.binarydata;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.oxm.XMLMarshaller;
 import org.eclipse.persistence.oxm.mappings.XMLBinaryDataMapping;

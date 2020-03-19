@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.jaxb.beanvalidation.special.ExternallyCon
 import org.junit.After;
 import org.junit.Before;
 
-import javax.validation.Validation;
+import jakarta.validation.Validation;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -36,10 +36,10 @@ import java.util.Set;
  */
 public class ValidationXMLTestCase extends junit.framework.TestCase {
 
-    private static final String NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
-    private static final String MIN_MESSAGE = "{javax.validation.constraints.Min.message}";
+    private static final String NOT_NULL_MESSAGE = "{jakarta.validation.constraints.NotNull.message}";
+    private static final String MIN_MESSAGE = "{jakarta.validation.constraints.Min.message}";
     private static final String MOXY_JAXBCONTEXT_FACTORY = JAXBContextFactory.class.getName();
-    private static final String SYSTEM_PROPERTY_JAXBCONTEXT = "javax.xml.bind.JAXBContext";
+    private static final String SYSTEM_PROPERTY_JAXBCONTEXT = "jakarta.xml.bind.JAXBContext";
     private static final String VALIDATION_XML = "META-INF/validation.xml";
     private static final String CONSTRAINTS_XML = "META-INF/validation/constraints.xml";
     private static final String CONSTRAINTS2_XML = "META-INF/validation/constraints2.xml";

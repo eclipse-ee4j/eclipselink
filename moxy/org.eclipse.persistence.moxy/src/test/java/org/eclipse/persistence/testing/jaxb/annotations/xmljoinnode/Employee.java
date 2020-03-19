@@ -14,8 +14,8 @@
 // dmccann - September 14/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmljoinnode;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlJoinNode;
 import org.eclipse.persistence.oxm.annotations.XmlJoinNodes;

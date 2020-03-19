@@ -14,9 +14,9 @@
 //     Denise Smith - August 2013
 package org.eclipse.persistence.testing.jaxb.xsitype;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

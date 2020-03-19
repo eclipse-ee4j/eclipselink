@@ -14,7 +14,7 @@
 //  - Matt MacIvor - 9/20/2012 - 2.4.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class OwnedAdapter extends XmlAdapter<Adapted, Owned>{
 

@@ -49,7 +49,7 @@
    <xsd:simpleType name="SKU" sdoJava:instanceClass="org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave.MySKU" sdoXML:name="SKUSDO">
       <xsd:restriction base="xsd:string"/>
    </xsd:simpleType>
-   <xsd:simpleType name="myBinaryHandlerType" sdoJava:instanceClass="javax.activation.DataHandler">
+   <xsd:simpleType name="myBinaryHandlerType" sdoJava:instanceClass="jakarta.activation.DataHandler">
       <xsd:restriction base="xsd:base64Binary"/>
    </xsd:simpleType>
    <xsd:simpleType name="MyTimeStamp" sdoJava:instanceClass="java.sql.Timestamp"/>

@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.jaxbelement.nil;
 
 import java.io.InputStream;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;

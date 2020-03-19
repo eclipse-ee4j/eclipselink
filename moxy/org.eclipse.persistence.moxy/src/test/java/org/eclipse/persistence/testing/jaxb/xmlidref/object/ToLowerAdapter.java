@@ -14,7 +14,7 @@
 //  - rbarkhouse - 19 July 2012 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlidref.object;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ToLowerAdapter extends XmlAdapter<String, String> {
 

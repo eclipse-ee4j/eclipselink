@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlvariablenode;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import javax.xml.bind.Binder;
+import jakarta.xml.bind.Binder;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;

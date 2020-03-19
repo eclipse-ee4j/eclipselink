@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.jaxb.security.xss;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "myroot")
 public class MyRoot {

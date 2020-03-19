@@ -14,7 +14,7 @@
 //     Radek Felcman - March 2019 - 2.7.5 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.json.attribute;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)

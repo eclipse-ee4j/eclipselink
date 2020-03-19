@@ -14,7 +14,7 @@
 //     Marcel Valovy - 2.6.0 - initial implementation
 package org.eclipse.persistence.testing.jaxb.casesensitivity;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 /**
  * This class serves as a bridge between {@link org.eclipse.persistence.testing.jaxb.casesensitivity.correctCase.CustomerImpl}

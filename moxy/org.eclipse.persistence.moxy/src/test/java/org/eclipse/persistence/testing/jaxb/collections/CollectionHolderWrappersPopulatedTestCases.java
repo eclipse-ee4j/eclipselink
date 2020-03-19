@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.collections;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.oxm.platform.XMLPlatform;

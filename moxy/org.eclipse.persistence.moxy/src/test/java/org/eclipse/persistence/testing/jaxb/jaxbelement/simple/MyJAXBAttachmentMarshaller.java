@@ -16,10 +16,10 @@
 package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 
 import java.util.HashMap;
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 
-public class MyJAXBAttachmentMarshaller extends javax.xml.bind.attachment.AttachmentMarshaller {
+public class MyJAXBAttachmentMarshaller extends jakarta.xml.bind.attachment.AttachmentMarshaller {
     public static int count = 0;
     public static HashMap attachments = new HashMap();
     public boolean returnNull = false;

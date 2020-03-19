@@ -14,8 +14,8 @@
 // Denise Smith - September 15 /2009
 package org.eclipse.persistence.testing.jaxb.schemagen.scope;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement(name="classARoot")
 public class ClassA {

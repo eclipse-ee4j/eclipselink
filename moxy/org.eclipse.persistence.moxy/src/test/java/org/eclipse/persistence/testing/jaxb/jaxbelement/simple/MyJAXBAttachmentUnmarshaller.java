@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.jaxbelement.simple;
 
 import java.util.HashMap;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 

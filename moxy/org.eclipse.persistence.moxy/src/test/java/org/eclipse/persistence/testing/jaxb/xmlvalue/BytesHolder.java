@@ -14,7 +14,7 @@
 //     Denise Smith - initial API and implementation
 package org.eclipse.persistence.testing.jaxb.xmlvalue;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name="theRoot")
 public class BytesHolder {

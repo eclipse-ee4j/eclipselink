@@ -18,7 +18,7 @@ import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 

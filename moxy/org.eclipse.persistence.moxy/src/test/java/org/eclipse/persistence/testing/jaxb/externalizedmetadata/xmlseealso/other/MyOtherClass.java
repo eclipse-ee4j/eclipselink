@@ -14,7 +14,7 @@
 // dmccann - June 17/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlseealso.other;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="myotherclass", namespace="http://www.example.com/xsd")
 public class MyOtherClass {

@@ -19,7 +19,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.ObjectOutputStream;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 import org.eclipse.persistence.sdo.helper.DataObjectInputStream;

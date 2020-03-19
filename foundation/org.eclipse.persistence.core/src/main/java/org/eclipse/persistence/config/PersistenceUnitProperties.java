@@ -1114,11 +1114,11 @@ public class PersistenceUnitProperties {
     /**
      * The "<code>javax.persistence.validation.factory</code>" property
      * specifies an instance of <a href =
-     * http://docs.oracle.com/javaee/6/api/javax/validation/ValidatorFactory.html>javax.validation.ValidatorFactory</a> used by
+     * http://docs.oracle.com/javaee/6/api/jakarta.validation/ValidatorFactory.html>jakarta.validation.ValidatorFactory</a> used by
      * EclipseLink to perform Automatic Validation upon Lifecycle Events. If the
      * property is not specified, and if Bean Validation API is visible to
      * EclipseLink, it will try to instantiate an instance of
-     * <code>javax.validation.ValidationFactory</code> by calling
+     * <code>jakarta.validation.ValidationFactory</code> by calling
      * <code>Validation.buildDefaultValidatorFactory()</code>.
      */
     public static final String VALIDATOR_FACTORY = "javax.persistence.validation.factory";
@@ -3747,7 +3747,7 @@ public class PersistenceUnitProperties {
      * An NoSQL datasource is a non-relational datasource such as a legacy database, NoSQL database,
      * XML database, transactional and messaging systems, or ERP systems.
      *
-     * @see javax.resource.cci.ConnectionFactory
+     * @see jakarta.resource.cci.ConnectionFactory
      */
     public static final String NOSQL_CONNECTION_FACTORY = "eclipselink.nosql.connection-factory";
 

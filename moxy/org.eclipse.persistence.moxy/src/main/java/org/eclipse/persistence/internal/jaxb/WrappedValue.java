@@ -15,7 +15,7 @@
 // bdoughan - July 17/2009 - 2.0 - Refactored to extend JAXBElement
 package org.eclipse.persistence.internal.jaxb;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 /**

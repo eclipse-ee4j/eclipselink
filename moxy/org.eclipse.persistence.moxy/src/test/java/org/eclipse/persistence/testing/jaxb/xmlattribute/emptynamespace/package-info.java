@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Denise Smith - 2.3
-@XmlSchema(namespace="theNamespace", attributeFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED, elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@XmlSchema(namespace="theNamespace", attributeFormDefault=jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED, elementFormDefault=jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.xmlattribute.emptynamespace;
 
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlSchema;

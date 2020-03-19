@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlJavaTypeAdapter(MiddleAdapter.class)
 public class Middle {

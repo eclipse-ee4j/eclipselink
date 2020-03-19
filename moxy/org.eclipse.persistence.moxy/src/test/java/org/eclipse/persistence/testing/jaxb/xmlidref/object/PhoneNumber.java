@@ -14,7 +14,7 @@
 //     bdoughan - April 14/2010 - 2.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlidref.object;
 
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlID;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 

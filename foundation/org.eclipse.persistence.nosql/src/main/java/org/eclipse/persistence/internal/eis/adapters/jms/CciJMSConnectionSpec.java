@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.eis.adapters.jms;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 /**
  * INTERNAL:
@@ -27,7 +27,7 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
     protected String username;// username for queue connection
     protected char[] password;// password for queue connection
     protected String connectionFactoryURL;// JNDI name of the connection factory
-    protected javax.jms.ConnectionFactory connectionFactory;// if no JNDI, the provider class
+    protected jakarta.jms.ConnectionFactory connectionFactory;// if no JNDI, the provider class
 
     /**
      * The default constructor.
@@ -56,7 +56,7 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
      *
      * @param factory - the connection factory class
      */
-    public CciJMSConnectionSpec(javax.jms.ConnectionFactory factory) {
+    public CciJMSConnectionSpec(jakarta.jms.ConnectionFactory factory) {
         username = "";
         password = new char[0];
         connectionFactoryURL = "";
@@ -84,7 +84,7 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
      * @param name - the username to be used when obtaining the queue connection
      * @param pass - the password to be used when obtaining the queue connection
      */
-    public CciJMSConnectionSpec(javax.jms.ConnectionFactory factory, String name, String pass) {
+    public CciJMSConnectionSpec(jakarta.jms.ConnectionFactory factory, String name, String pass) {
         username = name;
         setPassword(pass);
         connectionFactoryURL = "";
@@ -179,7 +179,7 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
      *
      * @param connFactory - the factory class to be used
      */
-    public void setConnectionFactory(javax.jms.ConnectionFactory connFactory) {
+    public void setConnectionFactory(jakarta.jms.ConnectionFactory connFactory) {
         connectionFactory = connFactory;
     }
 
@@ -188,7 +188,7 @@ public class CciJMSConnectionSpec implements ConnectionSpec {
      *
      * @return connection factory class
      */
-    public javax.jms.ConnectionFactory getConnectionFactory() {
+    public jakarta.jms.ConnectionFactory getConnectionFactory() {
         return connectionFactory;
     }
 }

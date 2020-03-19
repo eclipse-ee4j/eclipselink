@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.eis.adapters.jms;
 
-import javax.jms.JMSException;
-import javax.resource.cci.*;
+import jakarta.jms.JMSException;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.eis.EISException;
 
 /**

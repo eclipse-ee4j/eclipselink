@@ -14,8 +14,8 @@
 //     mmacivor - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlID;
 
 public class Address {
 

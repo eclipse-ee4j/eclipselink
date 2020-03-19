@@ -14,7 +14,7 @@
 //    Martin Grebac - 2.6
 package org.eclipse.persistence.testing.jaxb.json.multiline;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 @SuppressWarnings("EqualsAndHashcode")

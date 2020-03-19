@@ -14,10 +14,10 @@
 //     Marcel Valovy - 2.6.0 - initial implementation
 package org.eclipse.persistence.testing.jaxb.beanvalidation.special;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Contains only constructor constraint.

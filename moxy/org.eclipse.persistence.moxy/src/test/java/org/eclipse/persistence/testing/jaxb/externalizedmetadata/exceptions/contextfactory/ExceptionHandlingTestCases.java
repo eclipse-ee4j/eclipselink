@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
@@ -222,7 +222,7 @@ public class ExceptionHandlingTestCases extends OXTestCase {
 
         try {
             JAXBContext ctx = JAXBContextFactory.createContext(contextPath, getClass().getClassLoader(), properties);
-        } catch (javax.xml.bind.JAXBException e) {
+        } catch (jakarta.xml.bind.JAXBException e) {
             assertTrue(e.getLinkedException() instanceof JAXBException);
             assertEquals(JAXBException.JAVATYPE_NOT_ALLOWED_IN_BINDINGS_FILE, ((JAXBException)e.getLinkedException()).getErrorCode());
             return;

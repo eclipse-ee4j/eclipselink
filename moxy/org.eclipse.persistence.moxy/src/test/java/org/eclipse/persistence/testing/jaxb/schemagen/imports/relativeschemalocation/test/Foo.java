@@ -14,7 +14,7 @@
 // dmccann - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.imports.relativeschemalocation.test;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.relativeschemalocation.test2.Bar;
 

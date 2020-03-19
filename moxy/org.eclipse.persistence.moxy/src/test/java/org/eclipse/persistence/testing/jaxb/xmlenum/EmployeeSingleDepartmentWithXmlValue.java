@@ -14,7 +14,7 @@
 //     Oracle - August 26, 2009 initial test case
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name="employee")
 public class EmployeeSingleDepartmentWithXmlValue {

@@ -306,7 +306,7 @@ public class MarshallerProperties {
 
     /**
      * Property for setting preferred or custom validator factory.
-     * Mapped value must be instance of {@link javax.validation.ValidatorFactory}.
+     * Mapped value must be instance of {@link jakarta.validation.ValidatorFactory}.
      *
      * @since 2.6
      * @see org.eclipse.persistence.jaxb.JAXBContextProperties#BEAN_VALIDATION_FACTORY

@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 import java.util.Collections;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBContext;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;

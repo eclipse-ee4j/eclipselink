@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlidref;
 public class Address {
     public String id;
 
-    @javax.xml.bind.annotation.XmlID
+    @jakarta.xml.bind.annotation.XmlID
     public String city;
 
 

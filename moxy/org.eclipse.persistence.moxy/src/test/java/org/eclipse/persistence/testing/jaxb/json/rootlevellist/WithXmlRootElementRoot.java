@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.json.rootlevellist;
 
 import java.util.UUID;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
 public class WithXmlRootElementRoot {//implements Comparable<WithXmlRootElementRoot>{

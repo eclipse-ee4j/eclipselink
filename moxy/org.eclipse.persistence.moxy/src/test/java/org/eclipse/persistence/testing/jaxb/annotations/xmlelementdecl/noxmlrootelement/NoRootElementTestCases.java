@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.noxmlroo
 import java.io.InputStream;
 import java.io.StringReader;
 
-import javax.xml.bind.MarshalException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.MarshalException;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

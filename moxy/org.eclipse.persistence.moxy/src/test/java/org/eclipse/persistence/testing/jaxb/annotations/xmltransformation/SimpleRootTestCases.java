@@ -14,8 +14,8 @@
 // October 30, 2012
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransformation;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

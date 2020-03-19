@@ -18,9 +18,9 @@ package org.eclipse.persistence.jpa.rs.util.list;
 
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**

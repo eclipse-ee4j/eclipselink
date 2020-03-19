@@ -14,7 +14,7 @@
 // mmacivor - June 05/2008 - 1.0 - Initial implementation
 package org.eclipse.persistence.jaxb.compiler;
 
-import javax.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlElementDecl;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;

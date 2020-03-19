@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
+import jakarta.ws.rs.core.UriInfo;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest;

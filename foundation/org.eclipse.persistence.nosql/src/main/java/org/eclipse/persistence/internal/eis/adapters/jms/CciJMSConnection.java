@@ -16,8 +16,8 @@ package org.eclipse.persistence.internal.eis.adapters.jms;
 
 
 // JDK imports
-import javax.jms.*;
-import javax.resource.cci.*;
+import jakarta.jms.*;
+import jakarta.resource.cci.*;
 
 // TopLink imports
 import org.eclipse.persistence.eis.EISException;
@@ -30,8 +30,8 @@ import org.eclipse.persistence.exceptions.ValidationException;
  * @author Dave McCann
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public class CciJMSConnection implements javax.resource.cci.Connection {
-    protected javax.jms.Connection connection;
+public class CciJMSConnection implements jakarta.resource.cci.Connection {
+    protected jakarta.jms.Connection connection;
     protected CciJMSConnectionSpec connectionSpec;
     protected Session session;
     protected CciJMSTransaction transaction;
@@ -39,7 +39,7 @@ public class CciJMSConnection implements javax.resource.cci.Connection {
     /**
      * Construct the CCI connection.
      */
-    public CciJMSConnection(Session session, javax.jms.Connection conn, CciJMSConnectionSpec spec) {
+    public CciJMSConnection(Session session, jakarta.jms.Connection conn, CciJMSConnectionSpec spec) {
         this.session = session;
         connection = conn;
         connectionSpec = spec;
@@ -49,7 +49,7 @@ public class CciJMSConnection implements javax.resource.cci.Connection {
     /**
      * Return the JMS connection.
      */
-    public javax.jms.Connection getConnection() {
+    public jakarta.jms.Connection getConnection() {
         return connection;
     }
 
@@ -117,7 +117,7 @@ public class CciJMSConnection implements javax.resource.cci.Connection {
      * @return the CciJMSConnectionMetaData for this connection
      */
     @Override
-    public javax.resource.cci.ConnectionMetaData getMetaData() {
+    public jakarta.resource.cci.ConnectionMetaData getMetaData() {
         return new CciJMSConnectionMetaData(this);
     }
 

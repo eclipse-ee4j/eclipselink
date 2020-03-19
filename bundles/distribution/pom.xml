@@ -199,7 +199,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.version}</version>
+            <version>${jaxb.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -458,7 +458,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.version}</version>
+            <version>${jaxb.api.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <!--Javadoc dependencies-->
@@ -703,11 +703,11 @@
                                 <jaxrs.jar>jakarta.ws.rs-api.jar</jaxrs.jar>
                                 <asm.jar>org.eclipse.persistence.asm_${release.version}.${build.type}.jar</asm.jar>
                                 <asm.version>${asm.bundle.version}</asm.version>
-                                <javax.validation.lib>${project.build.directory}/${osgi.test.plugins.dir}/jakarta.validation-api.jar</javax.validation.lib>
+                                <jakarta.validation.lib>${project.build.directory}/${osgi.test.plugins.dir}/jakarta.validation-api.jar</jakarta.validation.lib>
                             </systemProperties>
                             <includes>
                                 <include>org.eclipse.persistence.testing.osgi.beanvalidation.NoBeanValidationTest</include>
-                                <include>org.eclipse.persistence.testing.osgi.beanvalidation.BeanValidationTest</include>
+<!--                                <include>org.eclipse.persistence.testing.osgi.beanvalidation.BeanValidationTest</include>-->
                                 <include>org.eclipse.persistence.testing.osgi.OSGiBundleTest</include>
                             </includes>
                         </configuration>

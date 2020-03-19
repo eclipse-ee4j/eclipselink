@@ -26,7 +26,7 @@ import javax.json.Json;
 import javax.json.JsonReader;
 import javax.json.JsonStructure;
 import javax.json.stream.JsonParser;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBContext;

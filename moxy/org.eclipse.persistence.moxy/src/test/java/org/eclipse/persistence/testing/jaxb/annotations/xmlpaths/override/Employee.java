@@ -14,8 +14,8 @@
 // Oracle = 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpaths.override;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElements;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 import org.eclipse.persistence.oxm.annotations.XmlPaths;

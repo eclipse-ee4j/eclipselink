@@ -16,9 +16,9 @@ package org.eclipse.persistence.eis.adapters.jms;
 
 
 // JDK imports
-import javax.jms.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.jms.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 
 // TopLink imports
 import org.eclipse.persistence.eis.*;

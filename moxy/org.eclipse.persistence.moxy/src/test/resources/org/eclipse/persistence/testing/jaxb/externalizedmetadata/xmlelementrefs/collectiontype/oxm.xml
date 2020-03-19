@@ -26,8 +26,8 @@
             <xml-root-element name="root" />
             <java-attributes>
                 <xml-element-refs java-attribute="dateOrTime">
-                    <xml-element-ref name="date" type="javax.xml.bind.JAXBElement" />
-                    <xml-element-ref name="time" type="javax.xml.bind.JAXBElement" />
+                    <xml-element-ref name="date" type="jakarta.xml.bind.JAXBElement" />
+                    <xml-element-ref name="time" type="jakarta.xml.bind.JAXBElement" />
                 </xml-element-refs>
             </java-attributes>
         </java-type>

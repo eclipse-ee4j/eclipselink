@@ -14,7 +14,7 @@
 //     Denise Smith - 2.3
 package org.eclipse.persistence.testing.jaxb.annotations.xmlnametransformer.upper;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name = "employee-data")
 @XmlAccessorType(XmlAccessType.FIELD)

@@ -14,7 +14,7 @@
 // Denise Smith 2.3
 package org.eclipse.persistence.testing.jaxb.xmltype;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class b {

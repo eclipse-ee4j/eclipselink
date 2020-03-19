@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
@@ -61,7 +61,7 @@ public class NameTransformerExceptionTestCases extends OXTestCase{
          types[0] = Employee.class;
          try{
              JAXBContext jaxbContext = JAXBContextFactory.createContext(types, getPropertiesWithException(), Thread.currentThread().getContextClassLoader());
-         } catch (javax.xml.bind.JAXBException e) {
+         } catch (jakarta.xml.bind.JAXBException e) {
 //             e.printStackTrace();
 
         Exception linkedException = (Exception) e.getLinkedException();
@@ -81,7 +81,7 @@ public class NameTransformerExceptionTestCases extends OXTestCase{
         types[0] = Employee.class;
         try{
             JAXBContext jaxbContext = JAXBContextFactory.createContext(types, getProperties(), Thread.currentThread().getContextClassLoader());
-        } catch (javax.xml.bind.JAXBException e) {
+        } catch (jakarta.xml.bind.JAXBException e) {
             Exception linkedException = (Exception) e.getLinkedException();
             Exception nestedExcpetion = (Exception) e.getCause();
             assertTrue(nestedExcpetion instanceof JAXBException);

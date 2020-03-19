@@ -15,4 +15,4 @@
 @XmlSchema(namespace="urn:FOO", elementFormDefault=XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.json.wrapper;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

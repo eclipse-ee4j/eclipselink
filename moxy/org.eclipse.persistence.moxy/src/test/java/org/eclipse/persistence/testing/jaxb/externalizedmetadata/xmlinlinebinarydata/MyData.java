@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlinlinebinar
 
 import java.util.Arrays;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
-@javax.xml.bind.annotation.XmlRootElement(name="my-data")
+@jakarta.xml.bind.annotation.XmlRootElement(name="my-data")
 public class MyData {
     private DataHandler myDataHandler;
 

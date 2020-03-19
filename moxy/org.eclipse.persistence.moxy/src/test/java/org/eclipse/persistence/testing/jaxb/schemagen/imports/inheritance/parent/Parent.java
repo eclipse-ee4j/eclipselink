@@ -14,7 +14,7 @@
 // Denise Smith- 2.4
 package org.eclipse.persistence.testing.jaxb.schemagen.imports.inheritance.parent;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(namespace="parentnamespace")
 public class Parent {

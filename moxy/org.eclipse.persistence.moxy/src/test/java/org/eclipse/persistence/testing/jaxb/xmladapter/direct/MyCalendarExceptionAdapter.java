@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.xmladapter.direct;
 
 import java.util.Calendar;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class MyCalendarExceptionAdapter extends XmlAdapter<Calendar, MyCalendarType> {
     public static boolean unmarshalHit;

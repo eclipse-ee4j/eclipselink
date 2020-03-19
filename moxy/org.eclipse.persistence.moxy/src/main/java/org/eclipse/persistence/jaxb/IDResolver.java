@@ -14,7 +14,7 @@
 //  - rbarkhouse - 07 October 2011 - 2.4 - Initial implementation
 package org.eclipse.persistence.jaxb;
 
-import javax.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.ValidationEventHandler;
 
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;

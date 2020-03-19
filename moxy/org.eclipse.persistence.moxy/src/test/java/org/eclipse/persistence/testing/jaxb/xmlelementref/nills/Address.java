@@ -12,8 +12,8 @@
 
 package org.eclipse.persistence.testing.jaxb.xmlelementref.nills;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.testing.jaxb.xmlelementref.nills.Employee.Task;
 

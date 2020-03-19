@@ -30,7 +30,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname
 
 import java.util.Vector;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.internal.oxm.Namespace;
 import org.eclipse.persistence.oxm.NamespaceResolver;

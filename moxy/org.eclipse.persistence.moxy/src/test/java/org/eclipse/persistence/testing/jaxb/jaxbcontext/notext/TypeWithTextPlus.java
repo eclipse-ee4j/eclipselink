@@ -14,8 +14,8 @@
 //      rbarkhouse - 2013 June 24 - 2.5.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.jaxbcontext.notext;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class TypeWithTextPlus {
 

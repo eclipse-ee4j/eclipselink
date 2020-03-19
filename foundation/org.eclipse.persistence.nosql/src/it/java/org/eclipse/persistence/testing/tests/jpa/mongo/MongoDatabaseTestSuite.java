@@ -111,7 +111,7 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            MongoDatabaseConnection con = ((MongoDatabaseConnection)em.unwrap(javax.resource.cci.Connection.class));
+            MongoDatabaseConnection con = ((MongoDatabaseConnection)em.unwrap(jakarta.resource.cci.Connection.class));
             String version = con.getMetaData().getEISProductVersion();
             return version.compareTo("2.6") > 0;
         } catch (Throwable e) {
@@ -277,7 +277,7 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // First clear old database.
         beginTransaction(em);
-        MongoDatabase db = ((MongoDatabaseConnection)em.unwrap(javax.resource.cci.Connection.class)).getDB();
+        MongoDatabase db = ((MongoDatabaseConnection)em.unwrap(jakarta.resource.cci.Connection.class)).getDB();
         db.drop();
         commitTransaction(em);
         beginTransaction(em);

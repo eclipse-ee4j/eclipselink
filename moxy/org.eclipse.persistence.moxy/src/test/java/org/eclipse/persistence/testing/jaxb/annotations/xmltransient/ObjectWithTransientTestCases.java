@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmltransient;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.MarshalException;
+import jakarta.xml.bind.MarshalException;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.exceptions.XMLMarshalException;

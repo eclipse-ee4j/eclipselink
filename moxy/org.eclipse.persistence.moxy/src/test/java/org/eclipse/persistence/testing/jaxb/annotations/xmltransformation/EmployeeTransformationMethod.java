@@ -14,8 +14,8 @@
 // Oracle = 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransformation;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlReadTransformer;
 import org.eclipse.persistence.oxm.annotations.XmlTransformation;

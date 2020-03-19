@@ -28,7 +28,7 @@ public class NonTransientTestCases extends TestCase {
     public void testCreateContext() {
         try {
             JAXBContextFactory.createContext(new Class[] {ChildOfRoot.class}, null);
-        } catch(javax.xml.bind.JAXBException e) {
+        } catch(jakarta.xml.bind.JAXBException e) {
             JAXBException jaxbException = (JAXBException) e.getCause();
             assertEquals(JAXBException.NON_EXISTENT_PROPERTY_IN_PROP_ORDER, jaxbException.getErrorCode());
             return;

@@ -23,7 +23,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonWriter;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.oxm.json.JsonObjectBuilderResult;
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;

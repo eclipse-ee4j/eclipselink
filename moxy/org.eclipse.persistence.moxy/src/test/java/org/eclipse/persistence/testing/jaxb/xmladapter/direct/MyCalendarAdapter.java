@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.direct;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class MyCalendarAdapter extends XmlAdapter<Calendar, MyCalendarType> {
     public MyCalendarType unmarshal(Calendar arg0) throws Exception {

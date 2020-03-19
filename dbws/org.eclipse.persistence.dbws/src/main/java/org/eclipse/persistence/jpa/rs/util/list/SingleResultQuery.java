@@ -14,7 +14,7 @@
 //      Dmitry Kornilov - Initial implementation
 package org.eclipse.persistence.jpa.rs.util.list;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import java.util.List;
 
 /**

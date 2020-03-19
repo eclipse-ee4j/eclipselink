@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlschematype;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="holder")
 public class XSDTypesHolder {

@@ -14,7 +14,7 @@
 // Denise Smith - September 15 /2009
 package org.eclipse.persistence.testing.jaxb.any;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;

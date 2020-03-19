@@ -16,8 +16,8 @@ package org.eclipse.persistence.internal.jpa.rs.metadata.model.v2;
 
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.LinkV2;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.List;
 
 /**

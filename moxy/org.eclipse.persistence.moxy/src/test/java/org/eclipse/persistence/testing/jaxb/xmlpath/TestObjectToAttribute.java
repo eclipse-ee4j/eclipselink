@@ -14,7 +14,7 @@
 // Denise Smith - 2.4
 package org.eclipse.persistence.testing.jaxb.xmlpath;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 

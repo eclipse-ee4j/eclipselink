@@ -29,8 +29,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Scanner;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Result;

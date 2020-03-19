@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.helpers.DefaultValidationEventHandler;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.helpers.DefaultValidationEventHandler;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
@@ -60,13 +60,13 @@ import org.xml.sax.InputSource;
  * </ul>
  * <p>
  * This class is the entry point into in EclipseLink's JAXB 2.1 Runtime. It provides the required
- * factory methods and is invoked by javax.xml.bind.JAXBContext.newInstance() to create new
+ * factory methods and is invoked by jakarta.xml.bind.JAXBContext.newInstance() to create new
  * instances of JAXBContext. When creating a JAXBContext from a contextPath, the list of classes is
  * derived either from an ObjectFactory class (schema-to-java) or a jaxb.index file
  * (java-to-schema).
  *
  * @author mmacivor
- * @see javax.xml.bind.JAXBContext
+ * @see jakarta.xml.bind.JAXBContext
  * @see org.eclipse.persistence.jaxb.JAXBContext
  * @see org.eclipse.persistence.jaxb.compiler.Generator
  */
@@ -96,7 +96,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on the array of Class objects.  The JAXBContext will
      * also be aware of classes reachable from the classes in the array.
      */
-    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties) throws JAXBException {
         ClassLoader loader = null;
         if (classesToBeBound.length > 0) {
             loader = classesToBeBound[0].getClassLoader();
@@ -108,7 +108,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on the array of Class objects.  The JAXBContext will
      * also be aware of classes reachable from the classes in the array.
      */
-    public static javax.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(Class[] classesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         Type[] types = new Type[classesToBeBound.length];
         System.arraycopy(classesToBeBound, 0, types, 0, classesToBeBound.length);
         return createContext(types, properties, classLoader);
@@ -118,7 +118,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on context path.  The JAXBContext will
      * also be aware of classes reachable from the classes on the context path.
      */
-    public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader) throws JAXBException {
         return createContext(contextPath, classLoader, null);
     }
 
@@ -126,7 +126,7 @@ public class JAXBContextFactory {
      * Create a JAXBContext on context path.  The JAXBContext will
      * also be aware of classes reachable from the classes on the context path.
      */
-    public static javax.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, Map properties) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(String contextPath, ClassLoader classLoader, Map properties) throws JAXBException {
         JAXBContextInput contextInput = new ContextPathInput(contextPath, properties, classLoader);
         JAXBContext context = new JAXBContext(contextInput);
         if (context.isRefreshable()) {
@@ -141,7 +141,7 @@ public class JAXBContextFactory {
      * preferred means of creating a Type aware JAXBContext is to create the
      * JAXBContext with an array of TypeMappingInfo objects.
      */
-    public static javax.xml.bind.JAXBContext createContext(Type[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(Type[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         Map<Type, TypeMappingInfo> typeToTypeMappingInfo = new HashMap<Type, TypeMappingInfo>();
         TypeMappingInfo[] typeMappingInfos = new TypeMappingInfo[typesToBeBound.length];
         for(int i = 0; i < typesToBeBound.length; i++) {
@@ -162,7 +162,7 @@ public class JAXBContextFactory {
      * JAXBContext will also be aware of classes reachable from the types in the
      * array.  This is the preferred means of creating a Type aware JAXBContext.
      */
-    public static javax.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
+    public static jakarta.xml.bind.JAXBContext createContext(TypeMappingInfo[] typesToBeBound, Map properties, ClassLoader classLoader) throws JAXBException {
         JAXBContextInput contextInput = new TypeMappingInfoInput(typesToBeBound, properties, classLoader);
         JAXBContext context = new JAXBContext(contextInput);
         if (context.isRefreshable()) {
@@ -372,7 +372,7 @@ public class JAXBContextFactory {
                 return bindingsJaxbElement.getValue();
             }
             throw org.eclipse.persistence.exceptions.JAXBException.incorrectValueParameterTypeForOxmXmlKey();
-        }catch(javax.xml.bind.JAXBException ex){
+        }catch(jakarta.xml.bind.JAXBException ex){
             throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ex);
         }catch(IOException ioException){
              throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(ioException);

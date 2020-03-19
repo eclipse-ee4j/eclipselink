@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.annotation.XmlAttachmentRef;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.annotation.XmlAttachmentRef;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.JAXBContext;

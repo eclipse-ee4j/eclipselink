@@ -14,7 +14,7 @@
 //     Praba Vijayaratnam - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlrootelement;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name="point3d")
 public class Point3D extends Point2D

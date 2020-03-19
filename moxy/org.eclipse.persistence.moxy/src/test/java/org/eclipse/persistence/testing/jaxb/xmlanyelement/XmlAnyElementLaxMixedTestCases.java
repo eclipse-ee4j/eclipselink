@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlanyelement;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

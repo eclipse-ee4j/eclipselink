@@ -14,8 +14,8 @@
 //     Denise Smith - September 2013
 package org.eclipse.persistence.testing.jaxb.xmlanyelement.ns2;
 
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.w3c.dom.Element;

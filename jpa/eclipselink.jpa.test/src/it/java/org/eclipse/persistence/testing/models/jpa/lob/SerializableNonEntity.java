@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.lob;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class is used to test serialization to persistent fields in other entities,

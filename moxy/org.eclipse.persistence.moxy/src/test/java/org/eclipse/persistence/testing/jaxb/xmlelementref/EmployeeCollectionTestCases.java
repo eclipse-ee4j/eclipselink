@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.xmlelementref;
 
 import java.util.ArrayList;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

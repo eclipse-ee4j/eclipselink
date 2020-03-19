@@ -14,8 +14,8 @@
 //     Praba Vijayaratnam - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlattachmentref;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
+import jakarta.activation.DataHandler;
+import jakarta.activation.FileDataSource;
 
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 

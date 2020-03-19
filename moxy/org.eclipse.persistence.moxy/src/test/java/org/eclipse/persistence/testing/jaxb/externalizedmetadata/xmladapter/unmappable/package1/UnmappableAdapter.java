@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package1;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.unmappable.package2.Unmappable;;
 

@@ -15,4 +15,4 @@
 @XmlJavaTypeAdapter(value=ClassAtoClassBAdapter.class, type=ClassB.class)
 package org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

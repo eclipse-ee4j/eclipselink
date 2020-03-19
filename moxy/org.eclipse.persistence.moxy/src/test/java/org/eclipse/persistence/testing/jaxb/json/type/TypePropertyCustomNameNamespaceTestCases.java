@@ -19,7 +19,7 @@ import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.json.type.modelns.*;
 import org.junit.Test;
 
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import java.io.ByteArrayInputStream;
 import java.io.StringWriter;
 import java.util.*;

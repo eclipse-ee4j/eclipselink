@@ -20,9 +20,9 @@ import org.w3c.dom.Node;
 public class Employee {
     public Object stuff;
 
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
     public Object getStuff() {

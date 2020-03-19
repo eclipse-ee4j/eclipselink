@@ -14,8 +14,8 @@
 // Denise Smith - February 8, 2013
 package org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unqualified;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

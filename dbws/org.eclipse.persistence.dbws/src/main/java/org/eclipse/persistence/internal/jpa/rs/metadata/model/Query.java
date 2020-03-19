@@ -17,8 +17,8 @@ package org.eclipse.persistence.internal.jpa.rs.metadata.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement
 @XmlType(propOrder = { "queryName", "returnTypes", "linkTemplate", "jpql" })

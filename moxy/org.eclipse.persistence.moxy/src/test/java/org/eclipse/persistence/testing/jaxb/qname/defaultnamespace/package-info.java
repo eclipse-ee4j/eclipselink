@@ -15,4 +15,4 @@
 @XmlSchema(namespace="myns", elementFormDefault=XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.qname.defaultnamespace;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

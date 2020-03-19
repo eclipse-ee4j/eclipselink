@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.cycle;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 import com.sun.xml.bind.CycleRecoverable;
 

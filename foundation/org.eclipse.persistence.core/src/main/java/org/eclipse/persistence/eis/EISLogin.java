@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.sessions.DatasourceLogin;

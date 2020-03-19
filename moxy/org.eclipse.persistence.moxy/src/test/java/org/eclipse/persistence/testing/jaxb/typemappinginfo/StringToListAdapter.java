@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class StringToListAdapter extends XmlAdapter<List<String>, String> {
 

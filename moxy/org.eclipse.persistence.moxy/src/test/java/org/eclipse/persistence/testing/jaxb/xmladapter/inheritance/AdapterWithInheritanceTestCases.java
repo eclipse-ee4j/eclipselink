@@ -14,7 +14,7 @@
 //  - rbarkhouse -01 March 2012 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmladapter.inheritance;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.jaxb.JAXBMarshaller;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

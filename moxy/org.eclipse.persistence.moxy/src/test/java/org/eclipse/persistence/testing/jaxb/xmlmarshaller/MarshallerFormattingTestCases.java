@@ -15,9 +15,9 @@
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
 import java.io.StringWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
 import junit.textui.TestRunner;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 

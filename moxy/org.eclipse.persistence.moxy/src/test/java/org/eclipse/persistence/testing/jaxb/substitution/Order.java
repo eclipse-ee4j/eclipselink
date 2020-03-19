@@ -14,8 +14,8 @@
 //     Denise Smith - March 2013
 package org.eclipse.persistence.testing.jaxb.substitution;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
 
 public class Order {
 

@@ -14,8 +14,8 @@
 //     Ondrej Cerny
 package org.eclipse.persistence.testing.jaxb.annotations.xmlschema.model.extended;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 @XmlSeeAlso(ExtendedObject.class)
 @XmlRootElement

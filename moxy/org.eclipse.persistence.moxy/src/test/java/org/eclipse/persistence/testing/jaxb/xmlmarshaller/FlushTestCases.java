@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
 import java.io.*;
 
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import javax.xml.stream.*;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;

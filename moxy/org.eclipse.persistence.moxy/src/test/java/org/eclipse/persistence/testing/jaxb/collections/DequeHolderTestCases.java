@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;

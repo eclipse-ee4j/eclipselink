@@ -17,9 +17,9 @@ package org.eclipse.persistence.testing.jaxb.binder.jaxbelement;
 import java.io.File;
 import java.io.StringReader;
 
-import javax.xml.bind.Binder;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.Binder;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
 
 import junit.framework.TestCase;
 

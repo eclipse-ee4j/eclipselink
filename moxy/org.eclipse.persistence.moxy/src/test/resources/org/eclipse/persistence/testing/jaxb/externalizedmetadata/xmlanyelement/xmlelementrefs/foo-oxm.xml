@@ -20,8 +20,8 @@
             <java-attributes>
                 <xml-any-element java-attribute="others" lax="true">
                     <xml-element-refs xml-mixed="true">
-                        <xml-element-ref name="a" type="javax.xml.bind.JAXBElement" />
-                        <xml-element-ref name="b" type="javax.xml.bind.JAXBElement" />
+                        <xml-element-ref name="a" type="jakarta.xml.bind.JAXBElement" />
+                        <xml-element-ref name="b" type="jakarta.xml.bind.JAXBElement" />
                     </xml-element-refs>
                 </xml-any-element>
             </java-attributes>

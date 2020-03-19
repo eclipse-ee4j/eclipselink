@@ -18,10 +18,10 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.StringWriter;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.MarshalException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.MarshalException;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.transform.dom.DOMSource;
 
 import org.eclipse.persistence.exceptions.ConversionException;

@@ -14,7 +14,7 @@
 //     Oracle - December 2011
 package org.eclipse.persistence.testing.jaxb.inheritance.ns;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root", namespace="rootNamespace")
 public class Root {

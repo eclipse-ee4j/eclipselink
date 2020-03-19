@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.eis.adapters.aq;
 
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 import oracle.AQ.*;
 import org.eclipse.persistence.eis.EISException;
 

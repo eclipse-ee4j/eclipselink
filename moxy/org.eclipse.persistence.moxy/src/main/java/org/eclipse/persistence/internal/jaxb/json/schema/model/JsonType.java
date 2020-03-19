@@ -14,8 +14,8 @@
 //     Matt MacIvor - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.internal.jaxb.json.schema.model;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnumValue;
 /**
  * INTERNAL:
  * <p><b>Purpose:</b>

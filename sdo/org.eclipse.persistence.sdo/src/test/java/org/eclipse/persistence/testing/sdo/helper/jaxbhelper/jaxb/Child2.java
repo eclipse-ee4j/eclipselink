@@ -14,8 +14,8 @@
 //     bdoughan - Jan 27/2009 - 1.1 - Initial implementation
 package org.eclipse.persistence.testing.sdo.helper.jaxbhelper.jaxb;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement
 @XmlType(name="")

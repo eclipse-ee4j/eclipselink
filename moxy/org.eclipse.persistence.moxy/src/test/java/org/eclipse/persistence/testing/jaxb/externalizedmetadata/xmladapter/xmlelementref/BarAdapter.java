@@ -14,7 +14,7 @@
 // dmccann - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class BarAdapter extends XmlAdapter<Object, String> {
     public BarAdapter() {}

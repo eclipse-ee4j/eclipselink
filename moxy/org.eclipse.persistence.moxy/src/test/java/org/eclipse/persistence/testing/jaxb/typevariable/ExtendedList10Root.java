@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.5.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
 public class ExtendedList10Root implements ExtendedList8Interface {

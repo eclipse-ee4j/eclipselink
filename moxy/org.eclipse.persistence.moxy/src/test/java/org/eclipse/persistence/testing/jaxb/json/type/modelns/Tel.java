@@ -14,8 +14,8 @@
 //     Radek Felcman - 2.7.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.json.type.modelns;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Tel {

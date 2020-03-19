@@ -18,7 +18,7 @@ package org.eclipse.persistence.internal.eis.adapters.jms;
 //JDK imports
 import java.util.ArrayList;
 
-import javax.resource.cci.IndexedRecord;
+import jakarta.resource.cci.IndexedRecord;
 
 /**
  * INTERNAL:

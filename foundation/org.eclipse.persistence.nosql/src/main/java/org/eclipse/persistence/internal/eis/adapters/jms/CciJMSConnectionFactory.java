@@ -16,9 +16,9 @@ package org.eclipse.persistence.internal.eis.adapters.jms;
 
 
 // JDK imports
-import javax.jms.*;
+import jakarta.jms.*;
 import javax.naming.*;
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.eis.EISException;
 
 /**
@@ -28,7 +28,7 @@ import org.eclipse.persistence.eis.EISException;
  * @author Dave McCann
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFactory {
+public class CciJMSConnectionFactory implements jakarta.resource.cci.ConnectionFactory {
 
     /**
      * Default constructor
@@ -43,7 +43,7 @@ public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFac
      * @throws EISException
      */
     @Override
-    public javax.resource.cci.Connection getConnection() throws EISException {
+    public jakarta.resource.cci.Connection getConnection() throws EISException {
         return getConnection(new CciJMSConnectionSpec());
     }
 
@@ -54,18 +54,18 @@ public class CciJMSConnectionFactory implements javax.resource.cci.ConnectionFac
      * @throws EISException
      */
     @Override
-    public javax.resource.cci.Connection getConnection(ConnectionSpec spec) throws EISException {
+    public jakarta.resource.cci.Connection getConnection(ConnectionSpec spec) throws EISException {
         CciJMSConnectionSpec jmsSpec = null;
         Session session = null;
-        javax.jms.Connection conn = null;
-        javax.jms.ConnectionFactory factory;
+        jakarta.jms.Connection conn = null;
+        jakarta.jms.ConnectionFactory factory;
 
         try {
             jmsSpec = (CciJMSConnectionSpec)spec;
 
             // should have either a JNDI lookup name or connection factory class set in the spec
             if (jmsSpec.hasConnectionFactoryURL()) {
-                factory = (javax.jms.ConnectionFactory)new InitialContext().lookup(jmsSpec.getConnectionFactoryURL());
+                factory = (jakarta.jms.ConnectionFactory)new InitialContext().lookup(jmsSpec.getConnectionFactoryURL());
             } else {
                 factory = jmsSpec.getConnectionFactory();
 

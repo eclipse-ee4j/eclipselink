@@ -14,9 +14,9 @@
 // Matt MacIvor - 2.4.1
 package org.eclipse.persistence.testing.jaxb.prefixmapper;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(namespace="someuri")
 @XmlType(name="emp-type", namespace="someuri")

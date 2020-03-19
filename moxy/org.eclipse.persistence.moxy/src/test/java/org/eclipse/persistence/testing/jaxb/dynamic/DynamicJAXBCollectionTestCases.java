@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;

@@ -12,5 +12,5 @@
 
 // Contributors:
 //     Blaise Doughan - 2.4 - initial implementation
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:example", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "urn:example", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.qualified;

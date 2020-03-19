@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement(name = "employee-data")
 @XmlAccessorType(XmlAccessType.FIELD)

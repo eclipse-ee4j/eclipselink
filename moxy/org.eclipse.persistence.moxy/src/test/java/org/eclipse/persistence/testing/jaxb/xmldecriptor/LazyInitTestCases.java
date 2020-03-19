@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmldecriptor;
 
 import java.lang.reflect.Field;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;

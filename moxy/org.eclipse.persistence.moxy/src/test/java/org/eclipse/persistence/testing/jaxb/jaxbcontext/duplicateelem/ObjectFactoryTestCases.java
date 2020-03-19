@@ -14,7 +14,7 @@
 //     Denise Smith
 package org.eclipse.persistence.testing.jaxb.jaxbcontext.duplicateelem;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import junit.framework.TestCase;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 

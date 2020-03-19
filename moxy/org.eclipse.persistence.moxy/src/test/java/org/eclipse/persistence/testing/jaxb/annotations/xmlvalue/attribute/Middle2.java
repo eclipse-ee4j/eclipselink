@@ -14,8 +14,8 @@
 //     Blaise Doughan - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.attribute;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlValue;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 

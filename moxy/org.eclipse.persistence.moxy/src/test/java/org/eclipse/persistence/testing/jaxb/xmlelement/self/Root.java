@@ -14,7 +14,7 @@
 //     Denise Smith - September 2013
 package org.eclipse.persistence.testing.jaxb.xmlelement.self;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 

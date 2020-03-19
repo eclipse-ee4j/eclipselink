@@ -15,5 +15,5 @@
 @XmlSchema(namespace="c", location="http://someuri.com/myschema.xsd")
 package org.eclipse.persistence.testing.jaxb.schemagen.imports.url.c;
 
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlSchema;
 

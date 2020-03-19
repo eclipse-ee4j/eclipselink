@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.xmlinlinebinary;
 
 import java.util.List;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
 public class Root {

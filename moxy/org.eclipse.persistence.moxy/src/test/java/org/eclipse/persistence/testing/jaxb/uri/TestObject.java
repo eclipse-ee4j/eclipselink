@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.uri;
 import java.net.URI;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class TestObject {

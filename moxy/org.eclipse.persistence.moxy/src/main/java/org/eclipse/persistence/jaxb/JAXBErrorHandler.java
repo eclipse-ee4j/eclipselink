@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb;
 
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.helpers.ValidationEventImpl;
-import javax.xml.bind.helpers.ValidationEventLocatorImpl;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.helpers.ValidationEventImpl;
+import jakarta.xml.bind.helpers.ValidationEventLocatorImpl;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.oxm.record.ValidatingMarshalRecord.MarshalSAXParseException;

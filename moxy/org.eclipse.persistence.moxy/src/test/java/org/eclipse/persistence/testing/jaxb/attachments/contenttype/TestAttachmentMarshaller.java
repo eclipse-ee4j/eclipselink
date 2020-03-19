@@ -14,8 +14,8 @@
 //     Blaise Doughan - 2.3.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.attachments.contenttype;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
 
 public class TestAttachmentMarshaller extends AttachmentMarshaller {
 

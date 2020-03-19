@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.rs.util.xmladapters;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.CollectionWrapper;

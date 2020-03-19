@@ -18,8 +18,8 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 

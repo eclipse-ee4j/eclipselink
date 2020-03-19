@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.eis.adapters.jms;
 
 
 // JDK imports
-import javax.resource.cci.ResourceAdapterMetaData;
+import jakarta.resource.cci.ResourceAdapterMetaData;
 
 // TopLink imports
 import org.eclipse.persistence.Version;

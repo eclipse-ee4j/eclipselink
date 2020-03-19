@@ -25,7 +25,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 //java eXtension imports
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import javax.wsdl.WSDLException;
 
 //JUnit4 imports

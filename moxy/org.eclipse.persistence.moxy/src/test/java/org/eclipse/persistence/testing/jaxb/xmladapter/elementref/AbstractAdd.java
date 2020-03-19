@@ -14,7 +14,7 @@
 // dmccann - December 17/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmladapter.elementref;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 @XmlSeeAlso({InvoiceAdd.class, SalesOrderAdd.class})
 public class AbstractAdd {

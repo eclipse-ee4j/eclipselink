@@ -14,7 +14,7 @@
 //     Denise Smith - 2.4
 package org.eclipse.persistence.testing.jaxb.xmlelementref.notincontext;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="subbar")
 public class SubBar extends Bar {

@@ -14,8 +14,8 @@
 //    Denise Smith - June 2012
 package org.eclipse.persistence.testing.jaxb.inheritance.simple;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Complex extends Simple {

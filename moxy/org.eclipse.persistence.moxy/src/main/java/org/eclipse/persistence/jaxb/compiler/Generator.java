@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.sessions.CoreProject;

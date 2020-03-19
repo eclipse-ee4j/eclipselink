@@ -21,9 +21,9 @@ public class MyData {
     public byte[] readOnlyBytes;
     public byte[] writeOnlyBytes;
 
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
     public byte[] getBytes() {

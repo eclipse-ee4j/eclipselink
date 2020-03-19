@@ -45,14 +45,14 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 import javax.persistence.RollbackException;
 import javax.persistence.spi.PersistenceUnitInfo;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
@@ -1062,7 +1062,7 @@ public class PersistenceContext {
              * ReferenceAdaptor unmarshal throws exception if the object referred by a link
              * doesn't exist, and this handler is required to interrupt the unmarshal
              * operation under this condition.
-             * (non-Javadoc) @see javax.xml.bind.ValidationEventHandler#handleEvent(javax.xml.bind.ValidationEvent)
+             * (non-Javadoc) @see jakarta.xml.bind.ValidationEventHandler#handleEvent(jakarta.xml.bind.ValidationEvent)
              *
              */
             public boolean handleEvent(ValidationEvent event) {

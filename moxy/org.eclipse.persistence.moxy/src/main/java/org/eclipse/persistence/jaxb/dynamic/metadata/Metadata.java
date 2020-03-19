@@ -16,7 +16,7 @@ package org.eclipse.persistence.jaxb.dynamic.metadata;
 
 import java.util.Map;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;

@@ -22,7 +22,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 import java.io.IOException;
 import java.util.HashMap;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 
 public class MyAttachmentUnmarshaller implements XMLAttachmentUnmarshaller {

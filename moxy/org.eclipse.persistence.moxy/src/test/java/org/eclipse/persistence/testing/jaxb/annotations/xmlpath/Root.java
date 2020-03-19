@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlpath;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 

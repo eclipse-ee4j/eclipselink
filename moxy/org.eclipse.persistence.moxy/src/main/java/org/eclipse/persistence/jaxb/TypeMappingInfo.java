@@ -99,7 +99,7 @@ public class TypeMappingInfo {
         this.type = t;
         if(type instanceof Class){
             if (((Class)type) == CoreClassConstants.ABYTE || ((Class)type) == CoreClassConstants.APBYTE ||
-               ((Class)type).getCanonicalName().equals("javax.activation.DataHandler")) {
+               ((Class)type).getCanonicalName().equals("jakarta.activation.DataHandler")) {
                schemaType = Constants.BASE_64_BINARY_QNAME;
             }
         }

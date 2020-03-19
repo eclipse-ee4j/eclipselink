@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.binder.nullpolicy;
 
 import java.lang.reflect.Method;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;

@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import com.sun.xml.bind.AccessorFactory;
 import com.sun.xml.bind.api.AccessorException;

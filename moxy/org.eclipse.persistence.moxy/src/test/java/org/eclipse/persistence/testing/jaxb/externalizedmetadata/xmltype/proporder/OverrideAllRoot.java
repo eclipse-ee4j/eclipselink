@@ -14,10 +14,10 @@
 //     Blaise Doughan - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype.proporder;
 
-import javax.xml.bind.annotation.XmlAccessOrder;
-import javax.xml.bind.annotation.XmlAccessorOrder;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessOrder;
+import jakarta.xml.bind.annotation.XmlAccessorOrder;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="root")
 @XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)

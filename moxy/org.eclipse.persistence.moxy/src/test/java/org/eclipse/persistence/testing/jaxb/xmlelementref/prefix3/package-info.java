@@ -16,4 +16,4 @@
             @XmlNs(namespaceURI = "namespace3", prefix = "otherPrefix")}, elementFormDefault = XmlNsForm.QUALIFIED, attributeFormDefault = XmlNsForm.QUALIFIED)
             package org.eclipse.persistence.testing.jaxb.xmlelementref.prefix3;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

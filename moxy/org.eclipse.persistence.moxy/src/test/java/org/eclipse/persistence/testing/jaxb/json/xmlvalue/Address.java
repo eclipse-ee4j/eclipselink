@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.json.xmlvalue;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class Address {
 

@@ -14,9 +14,9 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.testing.perf.moxy.referenceresolver;
 
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

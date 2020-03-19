@@ -14,7 +14,7 @@
 //    Denise Smith - April 2013
 package org.eclipse.persistence.testing.jaxb.jaxbelement.subclass;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class Foo

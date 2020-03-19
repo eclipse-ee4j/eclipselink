@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 public class ListenerUnmarshal extends Unmarshaller.Listener {
 

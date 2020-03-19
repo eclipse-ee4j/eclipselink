@@ -22,9 +22,9 @@ public class Employee {
     public List<Address> readOnlyAddressList;
     public List<Address> writeOnlyAddressList;
 
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
     public List<Address> getAddresses() {

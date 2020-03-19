@@ -15,8 +15,8 @@
 
 package org.eclipse.persistence.testing.jaxb.xmlelementref.mixed;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlValue;
 
 @XmlRootElement(name="task")
 public class Task {

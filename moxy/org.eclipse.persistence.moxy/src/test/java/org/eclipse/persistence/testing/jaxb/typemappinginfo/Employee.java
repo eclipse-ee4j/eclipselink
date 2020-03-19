@@ -14,7 +14,7 @@
 // mmacivor - December 15/2009 - 2.0.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name="employee", namespace="someUri")
 public class Employee {

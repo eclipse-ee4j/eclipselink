@@ -14,9 +14,9 @@
 //     mmacivor - 2010-03-09 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlelementref.duplicatename;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="bean-b")
 public class BeanB {

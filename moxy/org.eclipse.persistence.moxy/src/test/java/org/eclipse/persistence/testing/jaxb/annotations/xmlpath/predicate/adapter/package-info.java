@@ -20,5 +20,5 @@
 )
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.predicate.adapter;
 
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlSchema;

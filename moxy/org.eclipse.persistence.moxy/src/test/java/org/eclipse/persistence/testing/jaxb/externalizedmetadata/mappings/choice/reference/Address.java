@@ -14,9 +14,9 @@
 // dmccann - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choice.reference;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlID;
 
 import org.eclipse.persistence.oxm.annotations.XmlKey;
 import org.eclipse.persistence.oxm.annotations.XmlPath;

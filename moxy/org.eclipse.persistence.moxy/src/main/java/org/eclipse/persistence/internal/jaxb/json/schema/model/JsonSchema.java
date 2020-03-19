@@ -18,8 +18,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
 
 import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
 import org.eclipse.persistence.oxm.annotations.XmlVariableNode;

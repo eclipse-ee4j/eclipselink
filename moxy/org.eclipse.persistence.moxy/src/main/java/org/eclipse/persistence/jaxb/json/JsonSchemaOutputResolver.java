@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.5.1 - Initial Implementation
 package org.eclipse.persistence.jaxb.json;
 
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.SchemaOutputResolver;
 
 /**
  * PUBLIC:

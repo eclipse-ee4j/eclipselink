@@ -17,7 +17,7 @@ package org.eclipse.persistence.jaxb;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 /**

@@ -14,8 +14,8 @@
 // mmacivor - April 20/2010 - 2.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmlinversereference;
 
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 

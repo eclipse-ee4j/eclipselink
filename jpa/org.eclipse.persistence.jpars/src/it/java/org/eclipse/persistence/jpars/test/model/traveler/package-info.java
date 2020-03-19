@@ -15,7 +15,7 @@
         xmlns = { @XmlNs(prefix = "ns1", namespaceURI = "http://www.example.org/traveler") })
 package org.eclipse.persistence.jpars.test.model.traveler;
 
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlSchema;
 

@@ -16,14 +16,14 @@ package org.eclipse.persistence.internal.jaxb;
 
 import java.io.IOException;
 
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelOutputResolver;
 
 /**
  * Implementation of a SchemaModelOutputResolver that wraps a
- * javax.xml.bind.SchemaOutputResolver instance.
+ * jakarta.xml.bind.SchemaOutputResolver instance.
  *
  */
 public class JAXBSchemaOutputResolver implements SchemaModelOutputResolver {

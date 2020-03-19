@@ -14,7 +14,7 @@
 //  - Denise Smith - September 2013
 package org.eclipse.persistence.testing.jaxb.xmladapter.noarg;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class MyAdapter extends XmlAdapter<String, Something> {
     public MyAdapter() {

@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydata.identifiedbyname
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.testing.oxm.mappings.binarydata.Employee;
 import org.eclipse.persistence.testing.oxm.mappings.binarydatacollection.MyAttachmentUnmarshaller;

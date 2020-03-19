@@ -14,8 +14,8 @@
 //     Denise Smith - 2.4
 package org.eclipse.persistence.testing.jaxb.json.namespaces;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name="employee", namespace="namespace0")
 public class Employee extends Person {

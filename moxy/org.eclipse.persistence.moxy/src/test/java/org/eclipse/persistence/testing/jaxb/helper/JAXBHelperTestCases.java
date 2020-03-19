@@ -14,10 +14,10 @@
 //     dmccann - September 15/2009 - 1.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.helper;
 
-import javax.xml.bind.Binder;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Binder;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.jaxb.JAXBBinder;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;

@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlpath.attributecollection;
 
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlID;
 
 public class XmlPathCollectionRefAttributeChild {
 

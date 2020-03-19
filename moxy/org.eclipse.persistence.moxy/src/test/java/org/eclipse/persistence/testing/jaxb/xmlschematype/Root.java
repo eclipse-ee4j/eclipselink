@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlschematype;
 
 import java.math.BigInteger;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement

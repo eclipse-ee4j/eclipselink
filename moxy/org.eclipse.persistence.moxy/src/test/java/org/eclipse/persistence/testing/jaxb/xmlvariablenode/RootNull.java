@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlvariablenode;
 
 import org.eclipse.persistence.oxm.annotations.XmlVariableNode;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 

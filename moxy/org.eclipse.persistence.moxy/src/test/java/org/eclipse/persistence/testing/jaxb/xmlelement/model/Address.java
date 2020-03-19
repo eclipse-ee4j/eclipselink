@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.jaxb.xmlelement.model;
 
 import java.util.Arrays;
 
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"street", "city", "id", "coords"})
 public class Address {

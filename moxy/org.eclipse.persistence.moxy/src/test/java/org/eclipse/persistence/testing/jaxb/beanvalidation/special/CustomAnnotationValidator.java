@@ -14,8 +14,8 @@
 // Marcel Valovy - initial API and implementation
 package org.eclipse.persistence.testing.jaxb.beanvalidation.special;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * @author Marcel Valovy

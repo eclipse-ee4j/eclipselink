@@ -14,10 +14,10 @@
 //     Praba Vijayaratnam - 2.3 - initial implementation
 @XmlSchema(
         xmlns = {
-        @javax.xml.bind.annotation.XmlNs(prefix = "po",namespaceURI="http://www.example.com/myPO1"),
+        @jakarta.xml.bind.annotation.XmlNs(prefix = "po",namespaceURI="http://www.example.com/myPO1"),
 
-        @javax.xml.bind.annotation.XmlNs(prefix = "xs",namespaceURI="http://www.w3.org/2001/XMLSchema")
+        @jakarta.xml.bind.annotation.XmlNs(prefix = "xs",namespaceURI="http://www.w3.org/2001/XMLSchema")
 })
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlns;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

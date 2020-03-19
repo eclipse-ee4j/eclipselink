@@ -32,7 +32,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * Custom {@link DynamicClassWriter} adding getter methods for virtual
- * attributes so that 3rd party frameworks such as javax.validation can access
+ * attributes so that 3rd party frameworks such as jakarta.validation can access
  * the attribute values.
  *
  * @author dclarke

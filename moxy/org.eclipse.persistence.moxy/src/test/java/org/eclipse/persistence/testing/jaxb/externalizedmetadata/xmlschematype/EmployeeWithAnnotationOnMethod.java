@@ -15,8 +15,8 @@
 // Martin Vojtek - 2.6 - Added XmlIDExtension
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
 
 import org.eclipse.persistence.oxm.annotations.XmlIDExtension;
 
@@ -26,16 +26,16 @@ public class EmployeeWithAnnotationOnMethod {
     private java.util.GregorianCalendar hireDate;
 
 
-    @javax.xml.bind.annotation.XmlElement
-    @javax.xml.bind.annotation.XmlID
+    @jakarta.xml.bind.annotation.XmlElement
+    @jakarta.xml.bind.annotation.XmlID
     @XmlIDExtension
-    @javax.xml.bind.annotation.XmlSchemaType(name="string")
+    @jakarta.xml.bind.annotation.XmlSchemaType(name="string")
     public int getId() {
         return id;
     }
 
-    @javax.xml.bind.annotation.XmlElement
-    @javax.xml.bind.annotation.XmlSchemaType(name="date")
+    @jakarta.xml.bind.annotation.XmlElement
+    @jakarta.xml.bind.annotation.XmlSchemaType(name="date")
     public java.util.GregorianCalendar getHireDate() {
         return hireDate;
     }

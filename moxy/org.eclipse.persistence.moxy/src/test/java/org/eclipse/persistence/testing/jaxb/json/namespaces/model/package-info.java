@@ -12,5 +12,5 @@
 
 // Contributors:
 //     Radek Felcman - January 2019 - Initial implementation
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://tempuri.org/PurchaseOrderSchema.xsd", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://tempuri.org/PurchaseOrderSchema.xsd", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.eclipse.persistence.testing.jaxb.json.namespaces.model;

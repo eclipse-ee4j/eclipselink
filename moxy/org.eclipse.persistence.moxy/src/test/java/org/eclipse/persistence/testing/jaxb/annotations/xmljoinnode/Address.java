@@ -15,10 +15,10 @@
 // Martin Vojtek - November 14/2014 - 2.6 - Added XmlIDExtension
 package org.eclipse.persistence.testing.jaxb.annotations.xmljoinnode;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlIDExtension;
 import org.eclipse.persistence.oxm.annotations.XmlKey;

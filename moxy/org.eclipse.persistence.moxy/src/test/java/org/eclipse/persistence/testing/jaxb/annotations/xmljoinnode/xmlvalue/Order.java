@@ -14,9 +14,9 @@
 //     Matt MacIvor - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmljoinnode.xmlvalue;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlID;
 
 
 public class Order {

@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.jaxb.xmlvariablenode;
 import org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class ChildNull {
 

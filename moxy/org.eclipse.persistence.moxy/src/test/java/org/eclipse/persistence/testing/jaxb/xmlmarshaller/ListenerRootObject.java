@@ -14,10 +14,10 @@
 //     Blaise Doughan - 2.4.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement(name="root")
 public class ListenerRootObject {

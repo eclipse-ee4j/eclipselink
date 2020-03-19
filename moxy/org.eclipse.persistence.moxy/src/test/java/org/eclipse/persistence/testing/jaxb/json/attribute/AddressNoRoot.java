@@ -14,7 +14,7 @@
 //     Denise Smith - August 2011 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.json.attribute;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 public class AddressNoRoot {
 

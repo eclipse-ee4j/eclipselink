@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.testing.jaxb.xmladapter.enumeration;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.internal.jaxb.GenericsClassHelper;
 

@@ -14,7 +14,7 @@
 //     Praba Vijayaratnam - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 /*
  * Example 1: Map a class to XML Schema simpleType

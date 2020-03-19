@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmltype.proporder;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"childProp", "parentProp"})
 public class ChildOfRoot extends Root {

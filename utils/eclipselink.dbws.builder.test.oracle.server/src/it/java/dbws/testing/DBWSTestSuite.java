@@ -41,8 +41,8 @@ import org.w3c.dom.NodeList;
 
 //java eXtension imports
 import javax.wsdl.WSDLException;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPMessage;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPMessage;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;

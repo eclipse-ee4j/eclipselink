@@ -12,5 +12,5 @@
 
 // Contributors:
 //     Martin Vojtek - 2.6.0 - initial implementation
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://org.eclipse.persistence.testing.perf/workItem")
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://org.eclipse.persistence.testing.perf/workItem")
 package org.eclipse.persistence.testing.perf.smallxml.workorder;

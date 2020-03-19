@@ -14,9 +14,9 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.testing.jaxb.beanvalidation.dom;
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Future;
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Future;
+import jakarta.xml.bind.annotation.XmlAttribute;
 import java.util.Date;
 
 /**

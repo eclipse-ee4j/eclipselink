@@ -12,5 +12,5 @@
 
 // Contributors:
 //     bdoughan - Jan 27/2009 - 1.1 - Initial implementation
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:jaxb")
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "urn:jaxb")
 package org.eclipse.persistence.testing.sdo.helper.jaxbhelper.jaxb;

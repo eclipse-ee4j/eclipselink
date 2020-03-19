@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlvalue.none;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
@@ -30,7 +30,7 @@ public class InvalidTestCases extends TestCase {
     public void testCreateContext() throws Exception {
         try {
             JAXBContextFactory.createContext(new Class[] {InvalidChild.class}, null);
-        } catch(javax.xml.bind.JAXBException e) {
+        } catch(jakarta.xml.bind.JAXBException e) {
             JAXBException moxyException = (JAXBException) e.getCause();
             assertEquals(JAXBException.SUBCLASS_CANNOT_HAVE_XMLVALUE, moxyException.getErrorCode());
             return;

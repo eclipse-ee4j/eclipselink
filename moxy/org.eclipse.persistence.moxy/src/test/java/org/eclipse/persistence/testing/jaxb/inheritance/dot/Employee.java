@@ -14,7 +14,7 @@
 //     Denise Smith - September 2013
 package org.eclipse.persistence.testing.jaxb.inheritance.dot;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name="a.b.employee")
 public class Employee extends Person{

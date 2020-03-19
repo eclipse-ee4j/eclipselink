@@ -14,7 +14,7 @@
 //     Denise Smith - August 2013
 package org.eclipse.persistence.testing.jaxb.inheritance.id;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)

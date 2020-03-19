@@ -14,7 +14,7 @@
 // mmacivor - June 05/2008 - 1.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlelementref;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

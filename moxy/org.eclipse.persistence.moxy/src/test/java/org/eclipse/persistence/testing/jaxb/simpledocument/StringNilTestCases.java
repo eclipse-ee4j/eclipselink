@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.simpledocument;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.jaxb.JAXBContextProperties;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

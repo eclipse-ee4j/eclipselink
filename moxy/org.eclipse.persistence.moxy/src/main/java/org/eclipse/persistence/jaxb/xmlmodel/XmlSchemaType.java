@@ -14,11 +14,11 @@
 // dmccann - June 29/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.jaxb.xmlmodel;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -32,7 +32,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="http://www.w3.org/2001/XMLSchema" /&gt;
- *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlSchemaType.DEFAULT" /&gt;
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="jakarta.xml.bind.annotation.XmlSchemaType.DEFAULT" /&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -114,7 +114,7 @@ public class XmlSchemaType {
      */
     public String getType() {
         if (type == null) {
-            return "javax.xml.bind.annotation.XmlSchemaType.DEFAULT";
+            return "jakarta.xml.bind.annotation.XmlSchemaType.DEFAULT";
         } else {
             return type;
         }

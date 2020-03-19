@@ -14,7 +14,7 @@
 //  -Matt MacIvor - Initial Implementation - 2.4.1
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransient;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 @XmlTransient
 public class SuperClass {

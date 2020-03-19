@@ -15,6 +15,6 @@
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements;
 
 public class Phone {
-    //@javax.xml.bind.annotation.XmlID
+    //@jakarta.xml.bind.annotation.XmlID
     public String id;
 }

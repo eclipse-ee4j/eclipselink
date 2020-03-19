@@ -14,7 +14,7 @@
 // dmccann - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmltype;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class A2BCDESomeTest {

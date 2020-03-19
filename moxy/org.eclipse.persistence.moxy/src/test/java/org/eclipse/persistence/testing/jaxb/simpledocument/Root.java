@@ -14,7 +14,7 @@
 //     rbarkhouse - 2009-06-16 10:40:00 - initial implementation
 package org.eclipse.persistence.testing.jaxb.simpledocument;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
 public class Root {

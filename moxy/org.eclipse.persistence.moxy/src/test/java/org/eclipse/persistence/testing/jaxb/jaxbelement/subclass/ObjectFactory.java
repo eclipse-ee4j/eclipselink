@@ -14,8 +14,8 @@
 //     Matt MacIvor - October 2011 - 2.4
 package org.eclipse.persistence.testing.jaxb.jaxbelement.subclass;
 
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
 @XmlRegistry

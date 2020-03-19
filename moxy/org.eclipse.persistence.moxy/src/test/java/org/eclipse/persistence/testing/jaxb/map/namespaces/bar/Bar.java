@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.map.namespaces.bar;
 
 import java.util.*;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Bar {

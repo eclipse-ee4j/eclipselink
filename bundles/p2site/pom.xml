@@ -184,7 +184,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.version}</version>
+            <version>${jaxb.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -437,7 +437,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.version}</version>
+            <version>${jaxb.api.version}</version>
             <classifier>sources</classifier>
         </dependency>
     </dependencies>

@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.5.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class SpaceRoot {

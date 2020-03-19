@@ -14,7 +14,7 @@
 // dmccann - December 30/2010 - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmladapter.list;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class MyAdapter extends XmlAdapter<Object, String> {
     public static String VAL0 = "00";

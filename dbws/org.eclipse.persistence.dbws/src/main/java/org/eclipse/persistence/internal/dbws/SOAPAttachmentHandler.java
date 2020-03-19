@@ -21,7 +21,7 @@ import java.util.Map;
 import static java.util.UUID.randomUUID;
 
 // Java extension imports
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.oxm.ByteArrayDataSource;

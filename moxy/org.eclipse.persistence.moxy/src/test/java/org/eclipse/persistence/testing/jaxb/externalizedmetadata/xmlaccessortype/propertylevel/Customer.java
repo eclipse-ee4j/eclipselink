@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.4 - Initial Implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.propertylevel;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="customer")
 public class Customer {

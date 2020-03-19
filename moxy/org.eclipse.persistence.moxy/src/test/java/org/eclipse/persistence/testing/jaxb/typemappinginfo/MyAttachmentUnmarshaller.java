@@ -15,8 +15,8 @@
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
 import java.io.IOException;
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 
 public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller {
     public static final String PHOTO_PATH1 = "http://www.example.com/admin/images/ocom/oralogo_small.gif";

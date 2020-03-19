@@ -14,8 +14,8 @@
 //     Blaise Doughan - 2.5.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.typevariable;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

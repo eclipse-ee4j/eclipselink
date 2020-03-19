@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.typevariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root")
 public class PropertyRoot<FOO extends Foo, BAR extends Bar> {

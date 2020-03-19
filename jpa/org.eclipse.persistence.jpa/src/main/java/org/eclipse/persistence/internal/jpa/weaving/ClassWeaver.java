@@ -93,7 +93,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
 
     // Transient
     public static final String JPA_TRANSIENT_DESCRIPTION = "Ljavax/persistence/Transient;";
-    public static final String XML_TRANSIENT_DESCRIPTION = "Ljavax/xml/bind/annotation/XmlTransient;";
+    public static final String XML_TRANSIENT_DESCRIPTION = "Ljakarta/xml/bind/annotation/XmlTransient;";
 
     public static final String PERSISTENCE_SET = Helper.PERSISTENCE_SET;
     public static final String PERSISTENCE_GET = Helper.PERSISTENCE_GET;
@@ -205,7 +205,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     public static boolean isJAXBOnPath() {
         if (isJAXBOnPath == null) {
             try {
-                Class.forName("javax.xml.bind.annotation.XmlTransient");
+                Class.forName("jakarta.xml.bind.annotation.XmlTransient");
                 isJAXBOnPath = true;
             } catch (Exception notThere) {
                 isJAXBOnPath = false;

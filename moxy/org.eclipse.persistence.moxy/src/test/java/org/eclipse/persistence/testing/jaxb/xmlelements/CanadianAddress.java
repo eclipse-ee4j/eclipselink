@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlelements;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name="canadian-address")
 public class CanadianAddress extends Address {

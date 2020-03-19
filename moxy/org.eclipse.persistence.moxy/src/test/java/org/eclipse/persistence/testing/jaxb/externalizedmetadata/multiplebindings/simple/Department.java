@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.multiplebindings.simple;
 
-import javax.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnum;
 
 @XmlEnum
 public enum Department {

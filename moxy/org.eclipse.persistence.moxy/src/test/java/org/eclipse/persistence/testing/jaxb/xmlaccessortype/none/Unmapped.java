@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlaccessortype.none;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 public class Unmapped {
 

@@ -14,7 +14,7 @@
 //     Denise Smith - EclipseLink 2.4
 package org.eclipse.persistence.testing.jaxb.xmlidref.inheritance;
 
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlID;
 
 import org.eclipse.persistence.oxm.annotations.XmlIDExtension;
 

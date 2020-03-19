@@ -16,9 +16,9 @@ package org.eclipse.persistence.internal.xr;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 
@@ -26,7 +26,7 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
  * This class is responsible for holding a list of XmlBindings.
  *
  */
-@XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
+@XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
 @XmlRootElement(name="xml-bindings-list", namespace="http://www.eclipse.org/eclipselink/xsds/persistence/oxm")
 public class XmlBindingsModel {
     @XmlElement(name="xml-bindings", namespace="http://www.eclipse.org/eclipselink/xsds/persistence/oxm")

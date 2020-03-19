@@ -14,8 +14,8 @@
 //  -Matt MacIvor - Initial Implementation - 2.4.1
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransient;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="child")
 @XmlType(propOrder={"firstName", "lastName"})

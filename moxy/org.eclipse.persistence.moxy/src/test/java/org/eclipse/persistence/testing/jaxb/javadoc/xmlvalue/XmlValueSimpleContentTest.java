@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.jaxb.javadoc.xmlvalue;
 
 import java.io.StringWriter;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;

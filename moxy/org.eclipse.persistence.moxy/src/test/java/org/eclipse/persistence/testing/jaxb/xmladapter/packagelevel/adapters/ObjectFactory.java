@@ -14,9 +14,9 @@
 // Denise Smith - September 10 /2009
 package org.eclipse.persistence.testing.jaxb.xmladapter.packagelevel.adapters;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.xmlmodel.XmlEnumValue;

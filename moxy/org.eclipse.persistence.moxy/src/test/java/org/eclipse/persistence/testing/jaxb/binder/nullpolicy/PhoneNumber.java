@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.binder.nullpolicy;
 
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class PhoneNumber {
 

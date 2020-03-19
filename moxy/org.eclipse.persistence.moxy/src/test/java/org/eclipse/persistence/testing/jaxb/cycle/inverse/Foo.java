@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.cycle.inverse;
 
 import java.util.TreeSet;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 
 public class Foo {

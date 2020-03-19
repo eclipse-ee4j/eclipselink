@@ -16,7 +16,7 @@ package org.eclipse.persistence.jpars.test.server;
 
 import org.eclipse.persistence.jpa.rs.exceptions.ErrorResponse;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public class RestCallFailedException extends RuntimeException {
     private static final long serialVersionUID = 1L;

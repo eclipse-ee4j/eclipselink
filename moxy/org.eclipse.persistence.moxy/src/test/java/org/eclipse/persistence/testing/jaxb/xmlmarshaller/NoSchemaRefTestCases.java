@@ -14,10 +14,10 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.ValidationException;
-import javax.xml.bind.Validator;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.ValidationException;
+import jakarta.xml.bind.Validator;
 
 import junit.framework.TestCase;
 

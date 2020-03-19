@@ -17,7 +17,7 @@ package org.eclipse.persistence.internal.nosql.adapters.nosql;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 /**
  * Defines connection information for connecting to Oracle NoSQL.

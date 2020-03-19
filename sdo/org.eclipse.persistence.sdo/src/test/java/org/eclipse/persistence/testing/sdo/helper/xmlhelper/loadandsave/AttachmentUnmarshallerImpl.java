@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.sdo.helper.xmlhelper.loadandsave;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller;
 
 /**

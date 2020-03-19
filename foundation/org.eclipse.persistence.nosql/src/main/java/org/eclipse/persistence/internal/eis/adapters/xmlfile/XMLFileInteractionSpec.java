@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.eis.adapters.xmlfile;
 
-import javax.resource.cci.InteractionSpec;
+import jakarta.resource.cci.InteractionSpec;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.w3c.dom.Element;

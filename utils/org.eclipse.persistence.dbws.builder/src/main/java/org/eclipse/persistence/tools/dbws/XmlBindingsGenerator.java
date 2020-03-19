@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -66,7 +66,7 @@ import org.eclipse.persistence.oxm.mappings.nullpolicy.XMLNullRepresentationType
  */
 public class XmlBindingsGenerator {
     public static final String SIMPLE_XML_FORMAT_PKG = "org.eclipse.persistence.internal.xr.sxf";
-    public static final String DATAHANDLER_CLASSNAME = "javax.activation.DataHandler";
+    public static final String DATAHANDLER_CLASSNAME = "jakarta.activation.DataHandler";
 
     /**
      * Generate one or more XmlBindings based on a given list of

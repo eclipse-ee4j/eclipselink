@@ -14,7 +14,7 @@
 //     Denise Smith - November 2012
 package org.eclipse.persistence.testing.jaxb.json.padding;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Simple {

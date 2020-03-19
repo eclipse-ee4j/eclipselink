@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.rs.util.list;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAnyElement;
 
 /**
  * This class is used to wrap collection of attributes of a record returned by a JPA report query.

@@ -17,12 +17,12 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlType;
  *                 &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
  *                 &lt;attribute name="defaultValue" type="{http://www.w3.org/2001/XMLSchema}string" default="\u0000" /&gt;
  *                 &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
- *                 &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" /&gt;
+ *                 &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL" /&gt;
  *                 &lt;attribute name="substitutionHeadName" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
  *                 &lt;attribute name="substitutionHeadNamespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
  *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
@@ -139,7 +139,7 @@ public class XmlRegistry {
      *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
      *       &lt;attribute name="defaultValue" type="{http://www.w3.org/2001/XMLSchema}string" default="\u0000" /&gt;
      *       &lt;attribute name="namespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
-     *       &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" /&gt;
+     *       &lt;attribute name="scope" type="{http://www.w3.org/2001/XMLSchema}string" default="jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL" /&gt;
      *       &lt;attribute name="substitutionHeadName" type="{http://www.w3.org/2001/XMLSchema}string" default="" /&gt;
      *       &lt;attribute name="substitutionHeadNamespace" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
      *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
@@ -285,7 +285,7 @@ public class XmlRegistry {
          */
         public String getScope() {
             if (scope == null) {
-                return "javax.xml.bind.annotation.XmlElementDecl.GLOBAL";
+                return "jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL";
             } else {
                 return scope;
             }

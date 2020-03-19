@@ -14,7 +14,7 @@
 //     Denise Smith - September 2011 - 2.4
 package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class AddressWithRootElement extends Address{

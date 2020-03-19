@@ -21,8 +21,8 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlMimeType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlMimeType;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.TypeMappingInfo;

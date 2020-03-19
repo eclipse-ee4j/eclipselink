@@ -14,7 +14,7 @@
 //  - Matt MacIvor - 9/20/2012 - 2.4.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlInverseReference;
 

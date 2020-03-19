@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.simpledocument;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 /**
  * Tests mapping a simple document containing a single base64 element to a Byte Array

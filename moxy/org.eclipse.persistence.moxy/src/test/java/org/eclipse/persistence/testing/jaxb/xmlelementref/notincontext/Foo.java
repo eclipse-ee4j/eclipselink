@@ -14,8 +14,8 @@
 //     Denise Smith - 2.4
 package org.eclipse.persistence.testing.jaxb.xmlelementref.notincontext;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 
 @XmlRootElement(name="foo")
 @XmlSeeAlso(SubFoo.class)

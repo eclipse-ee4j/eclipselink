@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
-import javax.resource.cci.InteractionSpec;
+import jakarta.resource.cci.InteractionSpec;
 
 import com.mongodb.ReadPreference;
 import com.mongodb.WriteConcern;

@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.dynamic.withstatic;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlAttribute;
 
 import org.eclipse.persistence.dynamic.DynamicEntity;
 

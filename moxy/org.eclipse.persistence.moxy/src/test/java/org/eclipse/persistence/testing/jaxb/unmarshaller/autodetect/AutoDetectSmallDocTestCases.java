@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.unmarshaller.autodetect;
 
 import java.io.InputStream;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshalException;
 import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.jaxb.JAXBUnmarshaller;

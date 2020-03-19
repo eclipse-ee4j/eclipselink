@@ -20,8 +20,8 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import javax.annotation.PreDestroy;
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 import org.eclipse.persistence.jpa.rs.DataStorage;
 import org.eclipse.persistence.jpa.rs.PersistenceContextFactory;
@@ -71,7 +71,7 @@ public class JPARSApplication extends Application {
     }
 
     /* (non-Javadoc)
-     * @see javax.ws.rs.core.Application#getClasses()
+     * @see jakarta.ws.rs.core.Application#getClasses()
      */
     @Override
     public Set<Class<?>> getClasses() {

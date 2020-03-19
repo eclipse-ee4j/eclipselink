@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 import org.eclipse.persistence.oxm.annotations.XmlVirtualAccessMethods;
 

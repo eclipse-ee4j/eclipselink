@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.nosql.adapters.mongo;
 
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.CommandResult;

@@ -14,8 +14,8 @@
 //     mmacivor - Initial implementation
 package org.eclipse.persistence.testing.jaxb.json.xmlvalue;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class PhoneNumber {
 

@@ -12,5 +12,5 @@
 
 // Contributors:
 //     Matt MacIvor -  August 2011
-@javax.xml.bind.annotation.XmlSchema(namespace="someuri")
+@jakarta.xml.bind.annotation.XmlSchema(namespace="someuri")
 package org.eclipse.persistence.testing.jaxb.typemappinginfo.xsitype.self;

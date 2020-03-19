@@ -14,7 +14,7 @@
 // Matt MacIvor - July 4th 2011
 package org.eclipse.persistence.testing.jaxb.xmladapter.generics;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class AAdapter<T> extends XmlAdapter<T, A<T>> {
 

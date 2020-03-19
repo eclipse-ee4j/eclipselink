@@ -15,10 +15,10 @@ package org.eclipse.persistence.testing.jaxb.xmlAnyMixed;
 import junit.framework.TestCase;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.StringWriter;
 

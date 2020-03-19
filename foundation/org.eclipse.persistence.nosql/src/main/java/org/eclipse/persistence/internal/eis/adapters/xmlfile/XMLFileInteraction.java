@@ -17,12 +17,12 @@ package org.eclipse.persistence.internal.eis.adapters.xmlfile;
 import java.io.File;
 import java.util.List;
 
-import javax.resource.ResourceException;
-import javax.resource.cci.Connection;
-import javax.resource.cci.Interaction;
-import javax.resource.cci.InteractionSpec;
-import javax.resource.cci.Record;
-import javax.resource.cci.ResourceWarning;
+import jakarta.resource.ResourceException;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.cci.Interaction;
+import jakarta.resource.cci.InteractionSpec;
+import jakarta.resource.cci.Record;
+import jakarta.resource.cci.ResourceWarning;
 
 import org.eclipse.persistence.eis.EISDOMRecord;
 import org.eclipse.persistence.eis.EISException;

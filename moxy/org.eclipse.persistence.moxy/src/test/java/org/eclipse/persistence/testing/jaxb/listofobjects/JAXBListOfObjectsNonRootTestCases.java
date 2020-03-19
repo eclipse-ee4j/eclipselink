@@ -29,7 +29,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class JAXBListOfObjectsNonRootTestCases extends JAXBListOfObjectsNoJSONTestCases {

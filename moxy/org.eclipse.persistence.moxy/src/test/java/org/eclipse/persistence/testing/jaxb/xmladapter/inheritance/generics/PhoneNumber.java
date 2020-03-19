@@ -14,9 +14,9 @@
 //  - rbarkhouse - 30 August 2012 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmladapter.inheritance.generics;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlJavaTypeAdapter(PhoneNumberAdapter.class)
 public class PhoneNumber implements Linkable {

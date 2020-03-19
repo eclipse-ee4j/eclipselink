@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.internal.nosql.adapters.nosql;
 
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 
 import oracle.kv.KVVersion;
 

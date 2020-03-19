@@ -22,7 +22,7 @@
          <xsd:element name="photo" type="base64Binary-DataHandler" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
-   <xsd:simpleType name="base64Binary-DataHandler" sdoJava:instanceClass="javax.activation.DataHandler">
+   <xsd:simpleType name="base64Binary-DataHandler" sdoJava:instanceClass="jakarta.activation.DataHandler">
       <xsd:restriction base="xsd:string"/>
    </xsd:simpleType>
 </xsd:schema>

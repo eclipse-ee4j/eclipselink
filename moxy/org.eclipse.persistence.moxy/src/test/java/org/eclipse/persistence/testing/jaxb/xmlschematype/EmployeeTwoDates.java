@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.jaxb.xmlschematype;
 
 import java.util.Calendar;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
 
 @XmlRootElement(name="employee")
 public class EmployeeTwoDates {

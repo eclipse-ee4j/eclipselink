@@ -14,7 +14,7 @@
 //     Denise Smith - September 2013
 package org.eclipse.persistence.testing.jaxb.inheritance.dot;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;

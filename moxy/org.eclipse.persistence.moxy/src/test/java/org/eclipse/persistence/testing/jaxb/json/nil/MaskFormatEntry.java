@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.json.nil;
 
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 
 @XmlRootElement(name = "maskFormatEntry")

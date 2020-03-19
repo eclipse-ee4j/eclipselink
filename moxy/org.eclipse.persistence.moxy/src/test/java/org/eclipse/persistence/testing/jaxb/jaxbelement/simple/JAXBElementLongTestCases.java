@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.jaxbelement.JAXBElementTestCases;

@@ -14,8 +14,8 @@
 //     bdoughan - July 21/2010 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.interfaces;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public interface PhoneNumber {
 

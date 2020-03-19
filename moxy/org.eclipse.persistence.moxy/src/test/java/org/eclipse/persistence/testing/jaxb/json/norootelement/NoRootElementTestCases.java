@@ -14,7 +14,7 @@
 //     Denise Smith - August 2011 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.testing.jaxb.json.JSONMarshalUnmarshalTestCases;

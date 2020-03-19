@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.EntityManagerFactory;
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import org.eclipse.persistence.jpa.JpaHelper;
 import org.eclipse.persistence.jpa.rs.PersistenceContext;

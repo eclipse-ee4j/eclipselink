@@ -14,9 +14,9 @@
 // Denise Smith - 2.3
 package org.eclipse.persistence.testing.jaxb.xmlschema.attributeformdefault.unset;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="address", namespace="myns")
 @XmlType(namespace="myns")

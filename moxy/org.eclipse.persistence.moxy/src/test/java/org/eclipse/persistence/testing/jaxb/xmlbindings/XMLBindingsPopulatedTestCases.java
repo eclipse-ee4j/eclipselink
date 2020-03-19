@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 

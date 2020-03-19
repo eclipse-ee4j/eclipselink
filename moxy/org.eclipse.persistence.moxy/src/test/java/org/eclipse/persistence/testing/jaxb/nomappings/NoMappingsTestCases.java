@@ -14,7 +14,7 @@
 //     Denise Smith - 2.4
 package org.eclipse.persistence.testing.jaxb.nomappings;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;

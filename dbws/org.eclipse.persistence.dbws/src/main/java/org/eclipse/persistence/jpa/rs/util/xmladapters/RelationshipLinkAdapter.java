@@ -14,7 +14,7 @@
 //      tware - initial
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.internal.jpa.rs.metadata.model.Link;
 import org.eclipse.persistence.internal.jpa.rs.weaving.RelationshipInfo;

@@ -14,7 +14,7 @@
 //     Radek Felcman - 2.7.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.json.type.model;
 
-import javax.xml.bind.annotation.XmlSeeAlso;
+import jakarta.xml.bind.annotation.XmlSeeAlso;
 import java.util.Objects;
 
 @XmlSeeAlso({Address.class, Phone.class})

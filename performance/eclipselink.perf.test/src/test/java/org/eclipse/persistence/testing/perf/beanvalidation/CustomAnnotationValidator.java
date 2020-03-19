@@ -14,8 +14,8 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.testing.perf.beanvalidation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class CustomAnnotationValidator implements ConstraintValidator<CustomAnnotation, Integer> {
 

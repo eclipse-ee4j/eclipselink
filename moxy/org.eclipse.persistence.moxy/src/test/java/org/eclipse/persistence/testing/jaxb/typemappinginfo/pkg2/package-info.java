@@ -10,8 +10,8 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-@javax.xml.bind.annotation.XmlSchema(namespace =
+@jakarta.xml.bind.annotation.XmlSchema(namespace =
                                      "namespace1",
                                      elementFormDefault =
-                                     javax.xml.bind.annotation.XmlNsForm.QUALIFIED) package org.eclipse.persistence.testing.jaxb.typemappinginfo.pkg2;
+                                     jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED) package org.eclipse.persistence.testing.jaxb.typemappinginfo.pkg2;
 

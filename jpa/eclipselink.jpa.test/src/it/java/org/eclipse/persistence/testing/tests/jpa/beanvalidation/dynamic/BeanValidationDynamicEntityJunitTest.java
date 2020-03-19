@@ -14,8 +14,8 @@ package org.eclipse.persistence.testing.tests.jpa.beanvalidation.dynamic;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
 
 import junit.framework.Test;
 import org.eclipse.persistence.config.PersistenceUnitProperties;

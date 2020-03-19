@@ -14,7 +14,7 @@
 //     Matt MacIvor -  January, 2010
 package org.eclipse.persistence.testing.jaxb.typemappinginfo;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 public class Customer {
 

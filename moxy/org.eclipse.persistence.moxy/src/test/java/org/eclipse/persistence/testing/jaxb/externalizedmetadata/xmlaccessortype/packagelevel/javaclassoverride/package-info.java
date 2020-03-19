@@ -12,6 +12,6 @@
 
 // Contributors:
 // dmccann - June 17/2009 - 2.0 - Initial implementation
-@javax.xml.bind.annotation.XmlAccessorType(XmlAccessType.PROPERTY)
+@jakarta.xml.bind.annotation.XmlAccessorType(XmlAccessType.PROPERTY)
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlaccessortype.packagelevel.javaclassoverride;
-import javax.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessType;

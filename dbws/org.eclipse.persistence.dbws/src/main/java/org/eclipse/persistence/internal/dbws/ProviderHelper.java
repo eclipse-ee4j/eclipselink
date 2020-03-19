@@ -17,10 +17,10 @@ package org.eclipse.persistence.internal.dbws;
 
 //javase imports
 
-import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
-import static javax.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
+import static jakarta.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
+import static jakarta.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
+import static jakarta.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static jakarta.xml.ws.handler.MessageContext.INBOUND_MESSAGE_ATTACHMENTS;
 import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.RECEIVER_QNAME;
 import static org.eclipse.persistence.internal.dbws.SOAPResponseWriter.SERVER_QNAME;
 import static org.eclipse.persistence.internal.xr.Util.DBWS_SCHEMA_XML;
@@ -42,25 +42,25 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.activation.DataHandler;
-import javax.servlet.ServletContext;
+import jakarta.activation.DataHandler;
+import jakarta.servlet.ServletContext;
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPBodyElement;
-import javax.xml.soap.SOAPElement;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
-import javax.xml.soap.SOAPMessage;
+import jakarta.xml.soap.SOAPBodyElement;
+import jakarta.xml.soap.SOAPElement;
+import jakarta.xml.soap.SOAPEnvelope;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPFactory;
+import jakarta.xml.soap.SOAPFault;
+import jakarta.xml.soap.SOAPMessage;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.ws.Provider;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.soap.SOAPFaultException;
+import jakarta.xml.ws.Provider;
+import jakarta.xml.ws.WebServiceException;
+import jakarta.xml.ws.handler.MessageContext;
+import jakarta.xml.ws.soap.SOAPFaultException;
 
 import org.eclipse.persistence.dbws.DBWSModelProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -119,7 +119,7 @@ import org.w3c.dom.NodeList;
  *          |   |
  *          |   +---_dbws
  *          |   |    DBWSProvider.java         -- (source provided as a convenience for IDE integration)
- *          |   |    DBWSProvider.class        -- ASM-generated javax.xml.ws.Provider
+ *          |   |    DBWSProvider.class        -- ASM-generated jakarta.xml.ws.Provider
  *          |   |
  *          |   \---foo                        -- optional domain classes
  *          |       \---bar

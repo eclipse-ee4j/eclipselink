@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlmarshaller.locator;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Child {

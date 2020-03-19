@@ -14,8 +14,8 @@
 //     Denise Smith - 2.4
 package org.eclipse.persistence.testing.jaxb.json.namespaces;
 
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"id", "street", "city"})
 public class Address {

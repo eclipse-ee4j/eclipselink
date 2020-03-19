@@ -14,7 +14,7 @@
 //     bdoughan - March 16/2010 - 2.0.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.date;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Employee {

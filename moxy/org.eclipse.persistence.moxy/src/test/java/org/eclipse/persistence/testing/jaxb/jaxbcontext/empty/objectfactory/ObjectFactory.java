@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.jaxbcontext.empty.objectfactory;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 @XmlRegistry
 public class ObjectFactory {

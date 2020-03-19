@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.inheritance;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType
 public class Z {

@@ -29,7 +29,7 @@ import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Iterator;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;

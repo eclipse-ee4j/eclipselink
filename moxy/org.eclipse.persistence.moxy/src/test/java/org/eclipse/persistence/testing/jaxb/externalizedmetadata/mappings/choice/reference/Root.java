@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.choic
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlPath;
 

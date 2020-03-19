@@ -16,7 +16,7 @@ package org.eclipse.persistence.nosql.adapters.nosql;
 
 import java.util.Properties;
 
-import javax.resource.cci.Connection;
+import jakarta.resource.cci.Connection;
 
 import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLConnectionFactory;
 import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLJCAConnectionSpec;

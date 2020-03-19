@@ -14,8 +14,8 @@
 //     Denise Smith - 2.4 - February 11, 2013
 @XmlSchema(
 namespace = "testNamespace",
-elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-attributeFormDefault = javax.xml.bind.annotation.XmlNsForm.UNQUALIFIED)
+elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED,
+attributeFormDefault = jakarta.xml.bind.annotation.XmlNsForm.UNQUALIFIED)
 package org.eclipse.persistence.testing.jaxb.xmlattribute.imports;
 
-import javax.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlSchema;

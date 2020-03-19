@@ -14,7 +14,7 @@
 // Denise Smith - September 10 /2009
 package org.eclipse.persistence.testing.jaxb.xmladapter.classlevel;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 public class ClassBSubClass extends ClassB {
     private String extraString;

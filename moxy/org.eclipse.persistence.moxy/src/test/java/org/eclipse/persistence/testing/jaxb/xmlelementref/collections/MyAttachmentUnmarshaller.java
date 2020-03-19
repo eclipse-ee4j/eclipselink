@@ -14,8 +14,8 @@
 //     Denise Smith - February 2012
 package org.eclipse.persistence.testing.jaxb.xmlelementref.collections;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 
 public class MyAttachmentUnmarshaller extends AttachmentUnmarshaller{
     public static DataHandler theDataHandler = new DataHandler("THISISATEXTSTRINGFORTHISDATAHANDLER", "text");

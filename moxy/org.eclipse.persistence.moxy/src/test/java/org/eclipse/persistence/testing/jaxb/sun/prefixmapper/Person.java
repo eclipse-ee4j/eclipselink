@@ -14,8 +14,8 @@
 // Matt MacIvor - 2.4
 package org.eclipse.persistence.testing.jaxb.sun.prefixmapper;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="person", namespace="someuri")
 @XmlType(name="person-type", namespace="someuri")

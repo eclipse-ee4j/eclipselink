@@ -14,7 +14,7 @@
 //     rbarkhouse - 2009-10-19 13:43:05  - initial implementation
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import junit.framework.TestCase;
 

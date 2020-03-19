@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.io.InputStream;
 import java.lang.reflect.Type;

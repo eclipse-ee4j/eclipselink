@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlenum;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 

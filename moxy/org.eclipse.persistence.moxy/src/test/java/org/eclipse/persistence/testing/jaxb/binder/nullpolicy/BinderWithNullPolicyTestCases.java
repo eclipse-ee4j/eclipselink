@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.jaxb.binder.nullpolicy;
 import java.io.File;
 import java.io.StringReader;
 
-import javax.xml.bind.Binder;
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.Binder;
+import jakarta.xml.bind.JAXBContext;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;

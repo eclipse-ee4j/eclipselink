@@ -14,7 +14,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlanyelement.
 
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.w3c.dom.Node;

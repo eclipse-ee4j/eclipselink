@@ -12,11 +12,11 @@
 
 // Contributors:
 // dmccann - November 09/2010 - 2.2 - Initial implementation
-@javax.xml.bind.annotation.XmlSchema(
+@jakarta.xml.bind.annotation.XmlSchema(
         namespace="http://www.eclipse.org/eclipselink/xsds/persistence/oxm/junk",
-        attributeFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-        elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+        attributeFormDefault=jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED,
+        elementFormDefault=jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED,
         xmlns= {
-            @javax.xml.bind.annotation.XmlNs(prefix="nsx", namespaceURI="http://www.example.com/xsds/fake")
+            @jakarta.xml.bind.annotation.XmlNs(prefix="nsx", namespaceURI="http://www.example.com/xsds/fake")
         })
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlmetadatacomplete;

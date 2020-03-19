@@ -20,7 +20,7 @@
 @XmlAccessorType(PUBLIC_MEMBER)
 package org.eclipse.persistence.testing.jaxb.typemappinginfo.object.prefixes;
 
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlAccessorType;
-import static javax.xml.bind.annotation.XmlAccessType.PUBLIC_MEMBER;
+import jakarta.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import static jakarta.xml.bind.annotation.XmlAccessType.PUBLIC_MEMBER;

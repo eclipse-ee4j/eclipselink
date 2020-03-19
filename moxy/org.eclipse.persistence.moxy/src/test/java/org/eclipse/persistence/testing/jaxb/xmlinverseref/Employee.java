@@ -14,7 +14,7 @@
 //     Denise Smith, February 2013
 package org.eclipse.persistence.testing.jaxb.xmlinverseref;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Employee implements AddressOwner{

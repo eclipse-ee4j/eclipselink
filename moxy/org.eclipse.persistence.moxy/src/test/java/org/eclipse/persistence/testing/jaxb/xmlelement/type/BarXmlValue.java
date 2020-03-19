@@ -14,7 +14,7 @@
 //     Denise Smith - May 2013
 package org.eclipse.persistence.testing.jaxb.xmlelement.type;
 
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class BarXmlValue {
 

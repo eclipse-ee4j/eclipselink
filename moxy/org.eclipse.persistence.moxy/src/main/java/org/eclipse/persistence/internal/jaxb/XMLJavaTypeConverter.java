@@ -19,7 +19,7 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.core.mappings.converters.CoreConverter;
@@ -46,7 +46,7 @@ import org.xml.sax.SAXParseException;
 /**
  * Converter that wraps an XmlAdapter.
  *
- * @see javax.xml.bind.annotation.adapters.XmlAdapter
+ * @see jakarta.xml.bind.annotation.adapters.XmlAdapter
  */
 public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.converters.XMLConverterAdapter {
     protected Class boundType = Object.class;
@@ -250,7 +250,7 @@ public class XMLJavaTypeConverter extends org.eclipse.persistence.oxm.mappings.c
             }
         }
 
-        // validate adapter class extends javax.xml.bind.annotation.adapters.XmlAdapter
+        // validate adapter class extends jakarta.xml.bind.annotation.adapters.XmlAdapter
         if (!XmlAdapter.class.isAssignableFrom(xmlAdapterClass)) {
             throw JAXBException.invalidAdapterClass(getXmlAdapterClassName());
         }

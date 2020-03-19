@@ -14,7 +14,7 @@
 //     Denise Smith -  January 2014
 package org.eclipse.persistence.testing.jaxb.typemappinginfo.pkg3;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class OtherThing {

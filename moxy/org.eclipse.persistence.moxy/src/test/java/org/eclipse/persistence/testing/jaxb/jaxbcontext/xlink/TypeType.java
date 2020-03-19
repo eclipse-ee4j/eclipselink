@@ -15,9 +15,9 @@
 
 package org.eclipse.persistence.testing.jaxb.jaxbcontext.xlink;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name = "typeType")
 @XmlEnum

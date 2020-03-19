@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * <p>When using xml bindings with XmlValue property, it has same behavior as when XmlValueExtension is used.
  * It means that there is no need to specify XmlValueExtension in xml, because the behavior is provided by default.
  * </p>
- * @see javax.xml.bind.annotation.XmlValue
+ * @see jakarta.xml.bind.annotation.XmlValue
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

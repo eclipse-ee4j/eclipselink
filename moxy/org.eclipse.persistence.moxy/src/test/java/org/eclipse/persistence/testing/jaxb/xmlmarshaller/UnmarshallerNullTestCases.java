@@ -20,7 +20,7 @@ import java.io.Reader;
 import java.lang.reflect.Type;
 import java.net.URL;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;

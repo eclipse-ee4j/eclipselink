@@ -18,9 +18,9 @@ package org.eclipse.persistence.internal.dbws;
 // Javase imports
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI;
 import static javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI;
-import static javax.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
-import static javax.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
+import static jakarta.xml.soap.SOAPConstants.SOAP_1_2_PROTOCOL;
+import static jakarta.xml.soap.SOAPConstants.URI_NS_SOAP_1_1_ENVELOPE;
+import static jakarta.xml.soap.SOAPConstants.URI_NS_SOAP_1_2_ENVELOPE;
 import static org.eclipse.persistence.internal.oxm.Constants.BASE_64_BINARY;
 import static org.eclipse.persistence.internal.oxm.Constants.SCHEMA_INSTANCE_PREFIX;
 import static org.eclipse.persistence.internal.oxm.Constants.SCHEMA_PREFIX;
@@ -31,13 +31,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import javax.xml.namespace.QName;
-import javax.xml.soap.AttachmentPart;
-import javax.xml.soap.MessageFactory;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPMessage;
+import jakarta.xml.soap.AttachmentPart;
+import jakarta.xml.soap.MessageFactory;
+import jakarta.xml.soap.SOAPBody;
+import jakarta.xml.soap.SOAPException;
+import jakarta.xml.soap.SOAPMessage;
 
 import org.eclipse.persistence.internal.oxm.schema.model.ComplexType;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

@@ -14,7 +14,7 @@
 // dmccann - October 27/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlvalue.adapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Adapts from True/False to T/F.

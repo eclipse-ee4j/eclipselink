@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltransient.unset.prop;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 public class PhoneNumber {
     private String type;

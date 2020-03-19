@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.sdo.helper.jaxbhelper.jaxb.inverse;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 public class Customer {
 

@@ -14,7 +14,7 @@
 // mmacivor - April 8th/2010 - 2.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.simpledocument;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

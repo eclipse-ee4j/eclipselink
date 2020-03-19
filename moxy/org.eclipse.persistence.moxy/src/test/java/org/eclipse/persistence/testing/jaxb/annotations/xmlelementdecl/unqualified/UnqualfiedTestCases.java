@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.unqualified;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 

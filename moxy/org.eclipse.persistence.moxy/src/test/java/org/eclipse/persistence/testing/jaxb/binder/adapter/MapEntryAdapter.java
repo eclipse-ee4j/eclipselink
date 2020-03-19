@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.binder.adapter;
 import java.util.Map;
 import java.util.TreeMap;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * Adapter that converts between Map<Integer, String> and MapEntry.

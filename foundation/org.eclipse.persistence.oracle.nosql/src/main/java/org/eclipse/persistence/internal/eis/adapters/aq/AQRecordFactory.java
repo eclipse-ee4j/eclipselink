@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.eis.adapters.aq;
 
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.exceptions.ValidationException;
 
 /**

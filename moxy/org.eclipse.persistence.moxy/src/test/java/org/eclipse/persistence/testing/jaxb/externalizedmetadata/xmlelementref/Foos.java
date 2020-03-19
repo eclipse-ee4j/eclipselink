@@ -14,10 +14,10 @@
 // dmccann - December 03/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
 
-//@javax.xml.bind.annotation.XmlRootElement
+//@jakarta.xml.bind.annotation.XmlRootElement
 public class Foos {
-    //@javax.xml.bind.annotation.XmlElementWrapper(name="items")
-    //@javax.xml.bind.annotation.XmlElementRef(type=Bar.class)
+    //@jakarta.xml.bind.annotation.XmlElementWrapper(name="items")
+    //@jakarta.xml.bind.annotation.XmlElementRef(type=Bar.class)
     public java.util.List<Bar> items;
 
     public boolean equals(Object obj){

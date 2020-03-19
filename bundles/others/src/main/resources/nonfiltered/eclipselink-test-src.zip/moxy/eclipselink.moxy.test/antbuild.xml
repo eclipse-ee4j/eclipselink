@@ -92,7 +92,7 @@
     <property name="eclipselink.lib" value="${moxytest.2.trunk.dir}/${eclipselink.jar}"/>
     <property name="jaxb-api.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
     <property name="jaxb-impl.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
-    <property name="javax.validation.lib" value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
+    <property name="jakarta.validation.lib" value="${moxytest.2.common.plugins.dir}/${jakarta.validation.jar}"/>
     <property name="validation-impl.lib" value="${extensions.depend.dir}/${validation-impl.jar}"/>
     <property name="jboss-logging.lib" value="${extensions.depend.dir}/${jboss-logging.jar}"/>
     <property name="javax.el.lib" value="${extensions.depend.dir}/${javax.el.jar}"/>
@@ -147,7 +147,7 @@
         <pathelement path="${moxytest.2.core.dir}/target/${classes.dir}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
-        <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${jakarta.validation.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="jaxb.run.path">
@@ -172,7 +172,7 @@
         <pathelement path="${jboss-logging.lib}"/>
         <pathelement path="${javax.el.lib}"/>
         <pathelement path="${classmate.lib}"/>
-        <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${jakarta.validation.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="oxm.compile.path">
@@ -224,7 +224,7 @@
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
-        <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${jakarta.validation.lib}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <path id="jaxb.run.against.jar.path">
@@ -242,7 +242,7 @@
         <pathelement path="${eclipselink.lib}"/>
         <pathelement path="${jaxb-impl.lib}"/>
         <pathelement path="${jaxb-core.lib}"/>
-        <pathelement path="${javax.validation.lib}"/>
+        <pathelement path="${jakarta.validation.lib}"/>
         <pathelement path="${validation-impl.lib}"/>
         <pathelement path="${jboss-logging.lib}"/>
         <pathelement path="${javax.el.lib}"/>
@@ -383,7 +383,7 @@
             <!--<arg line="-Dmaven.surefire.debug clean install"/>-->
             <arg line="clean test"/>
             <arg line="-Dmoxytest.2.common.plugins.dir=${basedir}/../../plugins/"/>
-            <arg line="-Djavax.validation.lib=${basedir}/${javax.validation.lib}"/>
+            <arg line="-Djakarta.validation.lib=${basedir}/${jakarta.validation.lib}"/>
             <arg line="-Dbuild.qualifier=${version.qualifier}"/>
             <arg line="-Drelease.version=${release.version}"/>
             <arg line="-Djaxb-api.jar=${jaxb-api.jar}"/>

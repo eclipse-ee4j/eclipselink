@@ -22,9 +22,9 @@ public class MyData {
     public List<byte[]> readOnlyBytes;
     public List<byte[]> writeOnlyBytes;
 
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
     public List<byte[]> getBytes() {

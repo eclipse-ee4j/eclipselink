@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class MyHashMapAdapter extends XmlAdapter<MyHashMapType, LinkedHashMap> {
     public MyHashMapType marshal(LinkedHashMap arg0) throws Exception {

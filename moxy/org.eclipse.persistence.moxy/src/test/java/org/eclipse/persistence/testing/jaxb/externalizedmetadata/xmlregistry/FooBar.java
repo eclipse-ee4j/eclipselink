@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry;
 
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlElementRefs;
 
 public class FooBar {
     //@XmlElementRefs({

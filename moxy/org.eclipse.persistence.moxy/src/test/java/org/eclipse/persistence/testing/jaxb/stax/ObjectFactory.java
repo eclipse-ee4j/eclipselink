@@ -14,7 +14,7 @@
 // Vikram Bhatia - Initial implementation
 package org.eclipse.persistence.testing.jaxb.stax;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

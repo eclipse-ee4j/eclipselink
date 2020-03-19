@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.xmlelement.order;
 
 import java.util.ArrayList;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement
 @XmlType(propOrder={"albums", "resultCount"})

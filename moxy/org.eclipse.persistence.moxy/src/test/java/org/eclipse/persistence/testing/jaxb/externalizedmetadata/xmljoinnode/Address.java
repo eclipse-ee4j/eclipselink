@@ -14,8 +14,8 @@
 // dmccann - August 26/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmljoinnode;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlID;
 
 import org.eclipse.persistence.oxm.annotations.XmlKey;
 import org.eclipse.persistence.oxm.annotations.XmlPath;

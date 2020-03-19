@@ -14,8 +14,8 @@
 //     Marcel Valovy - initial implementation
 package org.eclipse.persistence.testing.jaxb.beanvalidation.special;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Constrained externally through validation.xml.

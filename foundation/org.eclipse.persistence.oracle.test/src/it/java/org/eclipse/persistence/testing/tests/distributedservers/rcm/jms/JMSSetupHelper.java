@@ -16,12 +16,12 @@ package org.eclipse.persistence.testing.tests.distributedservers.rcm.jms;
 
 import java.util.Properties;
 
-import javax.jms.ObjectMessage;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicConnectionFactory;
+import jakarta.jms.TopicPublisher;
+import jakarta.jms.TopicSession;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;

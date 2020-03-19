@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.jaxb.xmlinlinebinary;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
-import javax.activation.DataHandler;
-import javax.mail.internet.MimeMultipart;
+import jakarta.activation.DataHandler;
+import jakarta.mail.internet.MimeMultipart;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;

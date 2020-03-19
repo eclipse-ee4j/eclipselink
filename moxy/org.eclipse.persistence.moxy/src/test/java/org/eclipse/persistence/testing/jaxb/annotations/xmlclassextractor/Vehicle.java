@@ -14,8 +14,8 @@
 // Oracle - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlclassextractor;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.eclipse.persistence.oxm.annotations.XmlClassExtractor;
 import org.eclipse.persistence.sessions.Record;

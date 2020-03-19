@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * {@code <foo><![CDATA[1 < 2]]></foo>}.<p>
  * <b>Example</b>
  * <pre>
- * import javax.xml.bind.annotation.XmlRootElement;
+ * import jakarta.xml.bind.annotation.XmlRootElement;
  * import org.eclipse.persistence.oxm.annotations.XmlCDATA;
  *
  * &#64;XmlRootElement()

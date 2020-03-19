@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.jaxb.events.sessionevents;
 
 import java.util.Iterator;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.persistence.core.sessions.CoreProject;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -80,7 +80,7 @@ public class SessionEventTestCases extends TestCase {
     }
 
     protected JAXBContext setupContext(Class[] classesToBeBound, SessionEventListener sel) throws Exception {
-        javax.xml.bind.JAXBContext jaxbContext = null;
+        jakarta.xml.bind.JAXBContext jaxbContext = null;
         XMLContext xmlContext = null;
         JaxbClassLoader loader = new JaxbClassLoader(Thread.currentThread().getContextClassLoader());
         try {

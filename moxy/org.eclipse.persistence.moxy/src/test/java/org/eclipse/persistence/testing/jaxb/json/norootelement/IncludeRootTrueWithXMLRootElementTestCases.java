@@ -14,7 +14,7 @@
 //     Denise Smith - September 2011 - 2.4
 package org.eclipse.persistence.testing.jaxb.json.norootelement;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;

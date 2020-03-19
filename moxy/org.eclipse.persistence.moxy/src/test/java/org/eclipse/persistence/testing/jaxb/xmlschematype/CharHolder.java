@@ -14,8 +14,8 @@
 //    Denise Smith - March 2013
 package org.eclipse.persistence.testing.jaxb.xmlschematype;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
 
 @XmlRootElement
 public class CharHolder {

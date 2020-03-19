@@ -14,7 +14,7 @@
 //     Denise Smith   April 2013
 package org.eclipse.persistence.testing.jaxb.xmlenum.xmlvalue;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class Root {

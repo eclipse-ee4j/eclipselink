@@ -16,11 +16,11 @@ package org.eclipse.persistence.testing.jaxrs.model;
 
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
-@javax.ws.rs.ApplicationPath("rest/*")
+@jakarta.ws.rs.ApplicationPath("rest/*")
 public class CustomerApplication extends Application {
 
     @Override

@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.attachment;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 /**
  * <p><b>Purpose:</b> Provides an interface through which EclipseLink can allow a user to do

@@ -14,7 +14,7 @@
 // dmccann - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.schemagen.imports.relativeschemalocation.test2;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(namespace="http://test2.org")
 public class Bar {

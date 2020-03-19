@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlelementref.nills2;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class XmlElementRefNillStringRootNamespaceTestCases extends JAXBWithJSONTestCases {

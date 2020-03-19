@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.xmladapter.map;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlList;
+import jakarta.xml.bind.annotation.XmlList;
 
 public class MyObject {
     @XmlList

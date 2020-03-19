@@ -14,8 +14,8 @@
 //     Blaise Doughan - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlaccessortype.none;
 
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class Mapped {
 

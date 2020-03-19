@@ -14,7 +14,7 @@
 //  - Denise Smith - September 2013
 package org.eclipse.persistence.testing.jaxb.xmladapter.noarg;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jaxb.JAXBContext;

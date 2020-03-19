@@ -14,7 +14,7 @@
 // bdoughan - August 5/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.jaxb;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;

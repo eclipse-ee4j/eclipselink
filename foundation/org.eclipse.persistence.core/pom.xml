@@ -85,6 +85,10 @@
             <artifactId>jakarta.resource-api</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -184,11 +188,6 @@
                 <jdk>[11,)</jdk>
             </activation>
             <dependencies>
-                <dependency>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                    <optional>true</optional>
-                </dependency>
                 <dependency>
                     <groupId>org.glassfish.corba</groupId>
                     <artifactId>glassfish-corba-omgapi</artifactId>

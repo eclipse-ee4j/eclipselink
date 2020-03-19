@@ -607,7 +607,8 @@ public class MetadataClass extends MetadataAnnotatedElement {
     public void setName(String name) {
         super.setName(name);
 
-        if ((!MetadataFactory.ALLOW_JDK) && (name.startsWith("java.") || name.startsWith("javax.")
+        if ((!MetadataFactory.ALLOW_JDK) && (name.startsWith("java.")
+                || name.startsWith("javax.") || name.startsWith("jakarta.")
                 || name.startsWith("org.eclipse.persistence.internal."))) {
             setIsJDK(true);
         }

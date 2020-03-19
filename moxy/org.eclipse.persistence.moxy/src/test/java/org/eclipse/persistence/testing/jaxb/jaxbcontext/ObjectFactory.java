@@ -12,8 +12,8 @@
 
 package org.eclipse.persistence.testing.jaxb.jaxbcontext;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRegistry
 public class ObjectFactory {

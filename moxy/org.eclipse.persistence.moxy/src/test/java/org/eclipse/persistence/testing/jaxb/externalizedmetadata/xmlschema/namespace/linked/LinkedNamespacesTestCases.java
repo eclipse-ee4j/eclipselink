@@ -26,10 +26,10 @@ import java.util.List;
 import java.util.Map;
 
 import javax.xml.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -60,7 +60,7 @@ import org.xml.sax.SAXException;
  */
 @RunWith(Parameterized.class)
 public class LinkedNamespacesTestCases {
-    private static final String JAXB_FACTORY_KEY = "javax.xml.bind.context.factory";
+    private static final String JAXB_FACTORY_KEY = "jakarta.xml.bind.context.factory";
     private static final String MOXY_JAXB_FACTORY = "org.eclipse.persistence.jaxb.JAXBContextFactory";
     private static String jaxbFactoryBackup;
 

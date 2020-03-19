@@ -17,9 +17,9 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.objec
 public class Employee {
     public Address workAddress;
 
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasGetCalled;
-    @javax.xml.bind.annotation.XmlTransient
+    @jakarta.xml.bind.annotation.XmlTransient
     public boolean wasSetCalled;
 
     public Address getWorkAddress() {

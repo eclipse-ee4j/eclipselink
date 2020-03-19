@@ -14,8 +14,8 @@
 // dmccann - June 17/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmltype;
 
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(name="my-employee-type", propOrder= {"id", "firstName", "lastName"})
 public class Employee {

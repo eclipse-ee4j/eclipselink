@@ -14,7 +14,7 @@
 //     Radek Felcman - 2.7.4 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlidref.inheritance;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.Objects;
 
 @XmlRootElement(name="LeafNode")

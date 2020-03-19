@@ -14,7 +14,7 @@
 //     bdoughan - January 13/2010 - 2.0.1 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.typemappinginfo.rootelement;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="annotation-address")
 public class Address {

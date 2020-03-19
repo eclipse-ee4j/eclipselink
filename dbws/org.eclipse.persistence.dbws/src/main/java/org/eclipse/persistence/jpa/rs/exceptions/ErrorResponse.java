@@ -14,8 +14,8 @@
 //      gonural - initial implementation
 package org.eclipse.persistence.jpa.rs.exceptions;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 import org.eclipse.persistence.jpa.rs.ReservedWords;
 

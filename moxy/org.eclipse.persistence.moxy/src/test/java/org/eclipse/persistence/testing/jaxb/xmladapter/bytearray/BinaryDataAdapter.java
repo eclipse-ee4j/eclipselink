@@ -14,7 +14,7 @@
 //     Blaise Doughan - 2.3.2 - initial implementation
 package org.eclipse.persistence.testing.jaxb.xmladapter.bytearray;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class BinaryDataAdapter extends XmlAdapter<byte[], BinaryData>{
 

@@ -14,5 +14,5 @@
 // Denise Smith - 2.3
 @XmlNameTransformer(org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer.MyLowerTransformer.class)
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlnametransformer;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import org.eclipse.persistence.oxm.annotations.XmlNameTransformer;

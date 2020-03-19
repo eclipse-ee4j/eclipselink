@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.jaxb.xmlanyelement.domhandler;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.DomHandler;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.DomHandler;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Source;

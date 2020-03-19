@@ -14,7 +14,7 @@
 // Denise Smith - September 10 /2009
 package org.eclipse.persistence.testing.jaxb.xmladapter.classlevel;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlJavaTypeAdapter(ClassAtoClassBAdapter.class)
 public class ClassB {

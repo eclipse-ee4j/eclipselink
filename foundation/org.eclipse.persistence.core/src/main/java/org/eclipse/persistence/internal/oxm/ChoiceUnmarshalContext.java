@@ -14,7 +14,7 @@
 //     bdoughan - August 7/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.internal.oxm;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 import org.eclipse.persistence.internal.oxm.mappings.Mapping;
 import org.eclipse.persistence.internal.oxm.mappings.XMLConverterMapping;

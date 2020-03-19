@@ -18,9 +18,9 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlList;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlList;
 
 
 /**
@@ -75,55 +75,55 @@ import javax.xml.bind.annotation.XmlList;
  *
  *
  */
-@XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
-@javax.xml.bind.annotation.XmlType(name = "", propOrder = {
+@XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
+@jakarta.xml.bind.annotation.XmlType(name = "", propOrder = {
 
 })
-@javax.xml.bind.annotation.XmlRootElement(name = "java-type")
+@jakarta.xml.bind.annotation.XmlRootElement(name = "java-type")
 public class JavaType {
 
-    @javax.xml.bind.annotation.XmlElement(name = "xml-type")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-type")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-root-element")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-root-element")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlRootElement xmlRootElement;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-virtual-access-methods")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-virtual-access-methods")
     protected XmlVirtualAccessMethods xmlVirtualAccessMethods;
     @XmlList
-    @javax.xml.bind.annotation.XmlElement(name = "xml-see-also")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-see-also")
     protected List<String> xmlSeeAlso;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-class-extractor")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-class-extractor")
     protected XmlClassExtractor xmlClassExtractor;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-properties")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
-    @javax.xml.bind.annotation.XmlElement(name = "java-attributes")
+    @jakarta.xml.bind.annotation.XmlElement(name = "java-attributes")
     protected JavaType.JavaAttributes javaAttributes;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-named-object-graphs")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-named-object-graphs")
     protected XmlNamedObjectGraphs xmlNamedObjectGraphs;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-null-policy")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-null-policy")
     protected XmlNullPolicy xmlNullPolicy;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-element-nillable")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-element-nillable")
     protected XmlElementNillable xmlElementNillable;
-    @javax.xml.bind.annotation.XmlAttribute(name = "name")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "name")
     protected String name;
-    @javax.xml.bind.annotation.XmlAttribute(name = "super-type")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "super-type")
     protected String superType;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-order")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-accessor-order")
     protected XmlAccessOrder xmlAccessorOrder;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-accessor-type")
     protected org.eclipse.persistence.jaxb.xmlmodel.XmlAccessType xmlAccessorType;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-customizer")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-customizer")
     protected String xmlCustomizer;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-discriminator-node")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-discriminator-node")
     protected String xmlDiscriminatorNode;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-discriminator-value")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-discriminator-value")
     protected String xmlDiscriminatorValue;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-inline-binary-data")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-inline-binary-data")
     protected Boolean xmlInlineBinaryData;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-transient")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-transient")
     protected Boolean xmlTransient;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-name-transformer")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-name-transformer")
     protected String xmlNameTransformer;
 
     /**
@@ -706,13 +706,13 @@ public class JavaType {
      *
      *
      */
-    @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
-    @javax.xml.bind.annotation.XmlType(name = "", propOrder = {
+    @XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
+    @jakarta.xml.bind.annotation.XmlType(name = "", propOrder = {
         "javaAttribute"
     })
     public static class JavaAttributes {
 
-        @javax.xml.bind.annotation.XmlElementRef(name = "java-attribute", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", type = JAXBElement.class)
+        @jakarta.xml.bind.annotation.XmlElementRef(name = "java-attribute", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", type = JAXBElement.class)
         protected List<JAXBElement<? extends JavaAttribute>> javaAttribute;
 
         /**

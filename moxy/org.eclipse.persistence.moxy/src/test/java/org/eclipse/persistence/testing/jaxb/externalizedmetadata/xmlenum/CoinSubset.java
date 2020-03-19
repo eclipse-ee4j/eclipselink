@@ -14,13 +14,13 @@
 //   Denise Smith  - Dec 2012
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum;
 
-import javax.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnum;
 
 @XmlEnum(Coin.class)
 public enum CoinSubset {
 
-    @javax.xml.bind.annotation.XmlEnumValue("1") PENNY(Coin.PENNY),
-    @javax.xml.bind.annotation.XmlEnumValue("5") NICKEL(Coin.NICKEL);
+    @jakarta.xml.bind.annotation.XmlEnumValue("1") PENNY(Coin.PENNY),
+    @jakarta.xml.bind.annotation.XmlEnumValue("5") NICKEL(Coin.NICKEL);
 
     CoinSubset(Coin coin){
 

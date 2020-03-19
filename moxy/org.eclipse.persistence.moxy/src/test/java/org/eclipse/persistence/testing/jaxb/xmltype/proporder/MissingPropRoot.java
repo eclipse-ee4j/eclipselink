@@ -14,7 +14,7 @@
 //     Denise Smith - October 2012
 package org.eclipse.persistence.testing.jaxb.xmltype.proporder;
 
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType;
 
 @XmlType(propOrder={"a", "b"})
 public class MissingPropRoot {

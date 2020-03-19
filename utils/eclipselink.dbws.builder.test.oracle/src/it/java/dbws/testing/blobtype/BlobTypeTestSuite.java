@@ -26,7 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 //java eXtension imports
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import javax.wsdl.WSDLException;
 
 //EclipseLink imports

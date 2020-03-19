@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.listofobjects;
 
 import java.lang.reflect.Array;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="root", namespace="urn:example")
 public class MultiDimensionalArrayRoot {

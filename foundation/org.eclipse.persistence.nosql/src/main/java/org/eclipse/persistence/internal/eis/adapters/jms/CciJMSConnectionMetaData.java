@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.eis.adapters.jms;
 
 
 // JDK imports
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.eis.EISException;
 
 /**

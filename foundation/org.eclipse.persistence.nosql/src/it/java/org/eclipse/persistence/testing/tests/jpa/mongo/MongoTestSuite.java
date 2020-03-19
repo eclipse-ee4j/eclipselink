@@ -256,7 +256,7 @@ public class MongoTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // First clear old database.
         beginTransaction(em);
-        DB db = ((MongoConnection)em.unwrap(javax.resource.cci.Connection.class)).getDB();
+        DB db = ((MongoConnection)em.unwrap(jakarta.resource.cci.Connection.class)).getDB();
         db.dropDatabase();
         commitTransaction(em);
         beginTransaction(em);

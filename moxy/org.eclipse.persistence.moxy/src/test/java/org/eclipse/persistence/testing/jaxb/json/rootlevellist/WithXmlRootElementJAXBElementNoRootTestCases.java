@@ -20,7 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.UUID;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.jaxb.MarshallerProperties;

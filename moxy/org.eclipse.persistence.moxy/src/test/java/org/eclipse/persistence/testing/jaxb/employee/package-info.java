@@ -14,4 +14,4 @@
     xmlns = {@XmlNs(prefix="x", namespaceURI="examplenamespace")}
 )
 package org.eclipse.persistence.testing.jaxb.employee;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

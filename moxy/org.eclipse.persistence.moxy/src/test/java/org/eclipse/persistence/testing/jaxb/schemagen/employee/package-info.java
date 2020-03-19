@@ -18,4 +18,4 @@ package org.eclipse.persistence.testing.jaxb.schemagen.employee;
 
 import java.util.Calendar;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

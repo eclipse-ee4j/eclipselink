@@ -14,7 +14,7 @@
 //     Denise Smith - May 2013
 package org.eclipse.persistence.testing.jaxb.xmlvariablenode;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class ThingAdapter extends XmlAdapter<OtherThing, Thing>{
 

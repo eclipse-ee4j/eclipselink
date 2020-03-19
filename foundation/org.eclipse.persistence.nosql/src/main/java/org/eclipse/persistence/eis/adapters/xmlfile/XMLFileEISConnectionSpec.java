@@ -15,7 +15,7 @@
 package org.eclipse.persistence.eis.adapters.xmlfile;
 
 import java.util.Properties;
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.eis.*;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.*;
 import org.eclipse.persistence.exceptions.*;

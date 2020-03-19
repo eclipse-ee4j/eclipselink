@@ -13,7 +13,7 @@
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.jaxb.schemagen.employee;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 
 @XmlEnum(Integer.class)

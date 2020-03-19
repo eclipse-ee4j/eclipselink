@@ -14,8 +14,8 @@
 //     Marcel Valovy - initial implementation
 package org.eclipse.persistence.testing.jaxb.beanvalidation.special;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Contains only custom constraint, and as such serves as a good testing class for whether we recognize custom

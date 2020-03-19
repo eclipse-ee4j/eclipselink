@@ -1043,7 +1043,7 @@
                 <include name="${eclipselink.sdo.test}/**"/>
                 <include name="${eclipselink.sdo.base}/eclipselink.sdo.test.server/**"/>
                 <include name="plugins/eclipselink-jpa-modelgen_*.jar"/>
-                <include name="plugins/javax.validation.api_*.jar"/>
+                <include name="plugins/jakarta.validation.api_*.jar"/>
                 <include name="jpa/plugins/javax.persistence_2.*.jar"/>
                 <include name="sdo/plugins/commonj.sdo_*.jar"/>
                 <exclude name="**/.settings/**"/>
@@ -1105,10 +1105,10 @@
         </path>
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
-        <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
+        <delete dir="${build.dir}/jakarta.xml.bind" failonerror="false"/>
         <delete dir="${unified.javadocs}" failonerror="false"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence22.src.jar}" dest="${build.dir}/jpa22/src"/>
-        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
+        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/jakarta.xml.bind/src"/>
         <javadoc
             maxmemory="768m"
             Verbose="false"
@@ -1133,7 +1133,7 @@
             <fileset dir="${build.dir}/jpa22/src" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
             </fileset>
-            <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
+            <fileset dir="${build.dir}/jakarta.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
             </fileset>
             <!-- *** EclipseLink modules *** -->
@@ -1229,10 +1229,10 @@
     <target name="build-main-javadocs" depends="build-sdo-javadocs">
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
-        <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
+        <delete dir="${build.dir}/jakarta.xml.bind" failonerror="false"/>
         <delete dir="${eclipselink.javadocs}" failonerror="false"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence22.src.jar}" dest="${build.dir}/jpa22/src"/>
-        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
+        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/jakarta.xml.bind/src"/>
         <javadoc
             maxmemory="768m"
             Verbose="false"
@@ -1257,7 +1257,7 @@
             <fileset dir="${build.dir}/jpa22/src" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
             </fileset>
-            <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
+            <fileset dir="${build.dir}/jakarta.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
                 <exclude name="module-info.java"/>
             </fileset>

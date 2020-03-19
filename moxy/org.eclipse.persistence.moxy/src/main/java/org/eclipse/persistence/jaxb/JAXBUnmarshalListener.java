@@ -19,7 +19,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Map;
 
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -39,7 +39,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshalListener;
  *
  * @since Oracle TopLink 11.1.1.0.0
  * @author mmacivor
- * @see javax.xml.bind.Marshaller.Listener
+ * @see jakarta.xml.bind.Marshaller.Listener
  * @see org.eclipse.persistence.oxm.XMLMarshalListener
  */
 

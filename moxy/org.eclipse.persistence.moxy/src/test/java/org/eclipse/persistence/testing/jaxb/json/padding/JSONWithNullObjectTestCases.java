@@ -14,7 +14,7 @@
 //     Denise Smith - November 2012
 package org.eclipse.persistence.testing.jaxb.json.padding;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.oxm.JSONWithPadding;

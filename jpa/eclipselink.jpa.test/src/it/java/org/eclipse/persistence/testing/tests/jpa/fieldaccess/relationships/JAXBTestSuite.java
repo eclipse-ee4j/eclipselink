@@ -18,7 +18,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import javax.persistence.*;
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 
 import junit.framework.*;
 

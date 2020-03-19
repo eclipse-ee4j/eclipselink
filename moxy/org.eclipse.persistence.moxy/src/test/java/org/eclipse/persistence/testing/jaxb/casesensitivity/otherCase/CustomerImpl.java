@@ -14,9 +14,9 @@
 //     Marcel Valovy - 2.6.0 - initial implementation
 package org.eclipse.persistence.testing.jaxb.casesensitivity.otherCase;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Implementation of Customer with XML Elements and Attributes in case differing from that in the xml resource.

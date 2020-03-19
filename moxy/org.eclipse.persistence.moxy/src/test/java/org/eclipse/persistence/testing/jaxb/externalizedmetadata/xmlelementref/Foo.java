@@ -14,13 +14,13 @@
 // dmccann - December 03/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementref;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
-@javax.xml.bind.annotation.XmlAccessorType(XmlAccessType.FIELD)
-//@javax.xml.bind.annotation.XmlRootElement
+@jakarta.xml.bind.annotation.XmlAccessorType(XmlAccessType.FIELD)
+//@jakarta.xml.bind.annotation.XmlRootElement
 public class Foo {
-    //@javax.xml.bind.annotation.XmlElementRef(type=Bar.class)
+    //@jakarta.xml.bind.annotation.XmlElementRef(type=Bar.class)
     public Bar item;
 
     @XmlTransient

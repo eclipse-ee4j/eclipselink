@@ -14,8 +14,8 @@
 // mmacivor - April 25/2008 - 1.0M8 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.simpledocument;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.*;
+import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.*;
 import javax.xml.namespace.*;
 import java.util.Date;
 

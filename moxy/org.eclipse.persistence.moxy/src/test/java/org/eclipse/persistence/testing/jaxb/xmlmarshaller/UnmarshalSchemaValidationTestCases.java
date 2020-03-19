@@ -21,8 +21,8 @@ import java.lang.reflect.Type;
 import java.net.URL;
 
 import org.eclipse.persistence.oxm.XMLConstants;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.UnmarshalException;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.UnmarshalException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.stream.XMLEventReader;

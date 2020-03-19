@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.security.xss;
 
 import junit.framework.TestCase;
 
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import java.io.File;
 import java.util.HashMap;
 
@@ -57,11 +57,11 @@ public class SecurityXSSTestCases extends TestCase {
         File file = new File(ClassLoader.getSystemResource(fileName).getFile());
         try {
             testObject = unmarshaller.unmarshal(file);
-            fail("javax.xml.bind.UnmarshalException was not occured for " + fileName);
+            fail("jakarta.xml.bind.UnmarshalException was not occured for " + fileName);
         } catch (UnmarshalException e) {
             assertNotNull(e);
         } catch (Exception e) {
-            fail("No expected javax.xml.bind.UnmarshalException was thrown: " + e);
+            fail("No expected jakarta.xml.bind.UnmarshalException was thrown: " + e);
         }
         // the deserialized object variable must be null
         assertNull(testObject);

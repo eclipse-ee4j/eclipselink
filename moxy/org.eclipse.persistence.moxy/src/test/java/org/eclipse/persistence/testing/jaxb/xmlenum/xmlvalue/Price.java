@@ -14,8 +14,8 @@
 //     Denise Smith   April 2013
 package org.eclipse.persistence.testing.jaxb.xmlenum.xmlvalue;
 
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlValue;
 
 public class Price {
     @XmlValue public int i;

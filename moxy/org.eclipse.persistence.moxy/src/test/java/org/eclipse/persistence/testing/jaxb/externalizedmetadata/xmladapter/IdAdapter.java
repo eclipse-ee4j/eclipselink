@@ -14,7 +14,7 @@
 // dmccann - October 20/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public final class IdAdapter extends XmlAdapter<String, Integer> {
     public IdAdapter() {}

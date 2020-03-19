@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Collection;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class WithoutXmlRootElementJAXBElementSetTestCases extends WithoutXmlRootElementJAXBElementTestCases {

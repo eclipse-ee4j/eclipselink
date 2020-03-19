@@ -25,8 +25,8 @@
         <java-type name="org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlregistry.FooBar">
             <java-attributes>
                 <xml-element-refs java-attribute="fooOrBar" >
-                    <xml-element-ref name="foo" type="javax.xml.bind.JAXBElement" />
-                    <xml-element-ref name="bar" type="javax.xml.bind.JAXBElement" />
+                    <xml-element-ref name="foo" type="jakarta.xml.bind.JAXBElement" />
+                    <xml-element-ref name="bar" type="jakarta.xml.bind.JAXBElement" />
                 </xml-element-refs>
             </java-attributes>
         </java-type>

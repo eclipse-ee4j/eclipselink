@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.jaxb.xmlidref.xmlelements.wrapper;
 
 import java.util.*;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 @XmlRootElement
 public class Foo {

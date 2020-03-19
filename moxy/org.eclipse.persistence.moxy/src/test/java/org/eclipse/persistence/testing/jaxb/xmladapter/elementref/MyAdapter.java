@@ -14,7 +14,7 @@
 // dmccann - December 17/2010 - 2.2 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmladapter.elementref;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 public class MyAdapter extends XmlAdapter<AbstractAdd, String> {
     private static String SALES = "salesOrderAdd";

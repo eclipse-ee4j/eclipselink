@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Vector;
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.oxm.conversion.Base64;

@@ -15,4 +15,4 @@
 
 package org.eclipse.persistence.testing.jaxb.javadoc.xmlschematype;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;

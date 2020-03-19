@@ -14,7 +14,7 @@
 //     mkos - December 20/2013 - 1.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.file;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 
 @XmlRootElement

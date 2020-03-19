@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.events;
 
 import java.util.ArrayList;
 
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 public class JAXBUnmarshalListenerImpl extends Unmarshaller.Listener {
     static Integer EMPLOYEE_BEFORE_UNMARSHAL = new Integer(0);

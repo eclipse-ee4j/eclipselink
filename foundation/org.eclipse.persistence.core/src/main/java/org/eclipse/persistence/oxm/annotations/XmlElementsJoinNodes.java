@@ -53,7 +53,7 @@ import java.lang.annotation.Target;
  *
  *   @see XmlJoinNodes
  *   @see XmlJoinNode
- *   @see javax.xml.bind.annotation.XmlElements XmlElements
+ *   @see jakarta.xml.bind.annotation.XmlElements XmlElements
  *   @see XmlKey
  */
 @Target({METHOD, FIELD})

@@ -14,8 +14,8 @@
 //     Denise Smith - February 2012
 package org.eclipse.persistence.testing.jaxb.xmlelementref.collections;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentMarshaller;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentMarshaller;
 
 public class MyAttachmentMarshaller extends AttachmentMarshaller{
 

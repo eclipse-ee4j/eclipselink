@@ -14,11 +14,11 @@
 // dmccann - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref;
 
-//@javax.xml.bind.annotation.XmlRootElement
+//@jakarta.xml.bind.annotation.XmlRootElement
 public class Foo {
-    //@javax.xml.bind.annotation.XmlElementRefs({@javax.xml.bind.annotation.XmlElementRef(type=Bar.class), @javax.xml.bind.annotation.XmlElementRef(type=FooBar.class)})
-    //@javax.xml.bind.annotation.XmlElementRef(type=Bar.class)
-    //@javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter(value=BarAdapter.class)
+    //@jakarta.xml.bind.annotation.XmlElementRefs({@jakarta.xml.bind.annotation.XmlElementRef(type=Bar.class), @jakarta.xml.bind.annotation.XmlElementRef(type=FooBar.class)})
+    //@jakarta.xml.bind.annotation.XmlElementRef(type=Bar.class)
+    //@jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter(value=BarAdapter.class)
     public String item;
 
     public boolean equals(Object o) {

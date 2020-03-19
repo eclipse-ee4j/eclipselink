@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.jaxbcontext.multielemref;
 
 import java.io.ByteArrayOutputStream;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import junit.framework.TestCase;
 
@@ -45,7 +45,7 @@ public class MultipleXmlElementRefTestCases extends TestCase {
             root.things.add(c3);
 
             ctx.createMarshaller().marshal(root, new ByteArrayOutputStream());
-        } catch (javax.xml.bind.JAXBException e) {
+        } catch (jakarta.xml.bind.JAXBException e) {
             caughtException = e;
             Throwable nested = e.getLinkedException();
             if (nested instanceof JAXBException) {

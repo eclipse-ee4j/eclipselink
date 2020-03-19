@@ -15,7 +15,7 @@
 package org.eclipse.persistence.internal.eis.adapters.xmlfile;
 
 import javax.naming.Reference;
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 
 /**
  * Connection factory for XML file JCA adapter.

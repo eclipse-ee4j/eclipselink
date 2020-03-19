@@ -14,7 +14,7 @@
 //     Rick Barkhouse - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmltransient;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 

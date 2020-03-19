@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.jaxb.events;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.*;
+import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.*;
 import java.util.ArrayList;
 @XmlRootElement(name="employee")
 public class Employee {

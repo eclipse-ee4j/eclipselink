@@ -14,7 +14,7 @@
 //     Rick Barkhouse - 2.3.1 - initial implementation
 package org.eclipse.persistence.testing.jaxb.substitution;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 
 public class Person2 {
 

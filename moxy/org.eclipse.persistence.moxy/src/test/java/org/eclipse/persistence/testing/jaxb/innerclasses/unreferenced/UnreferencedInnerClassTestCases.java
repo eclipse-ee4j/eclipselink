@@ -14,7 +14,7 @@
 //     Matt MacIvor - 2.3.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.innerclasses.unreferenced;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import junit.framework.TestCase;
 

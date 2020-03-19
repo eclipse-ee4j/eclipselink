@@ -20,7 +20,7 @@
 package org.eclipse.persistence.testing.oxm.mappings.binarydatacollection;
 
 import java.util.HashMap;
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import org.eclipse.persistence.oxm.attachment.XMLAttachmentMarshaller;
 
 public class MyAttachmentMarshaller implements XMLAttachmentMarshaller {

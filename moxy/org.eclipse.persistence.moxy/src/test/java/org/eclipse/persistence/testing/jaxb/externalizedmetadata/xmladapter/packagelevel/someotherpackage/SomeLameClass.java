@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.pac
 
 import java.util.Calendar;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * This class is used to verify that the package level adapter (DateAdapter) is

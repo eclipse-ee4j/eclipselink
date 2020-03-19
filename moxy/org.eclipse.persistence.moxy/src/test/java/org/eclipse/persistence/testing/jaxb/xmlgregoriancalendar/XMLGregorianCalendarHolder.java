@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.xmlgregoriancalendar;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 @XmlRootElement(name="root")

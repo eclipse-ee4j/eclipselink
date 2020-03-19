@@ -14,7 +14,7 @@
 //     Marcel Valovy
 package org.eclipse.persistence.testing.jaxb.beanvalidation.special;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Contains only inherited method constraint.

@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.testing.jaxb.jaxbelement.dom;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
