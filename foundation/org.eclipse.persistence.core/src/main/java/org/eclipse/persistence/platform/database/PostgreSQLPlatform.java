@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,11 +19,14 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
@@ -635,4 +638,23 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return call;
     }
 
+    @Override
+    protected void setNullFromDatabaseField(DatabaseField databaseField, PreparedStatement statement, int index) throws SQLException {
+        // Substituted null value for the corresponding DatabaseField.
+        // Cannot bind null through set object, so we must compute the type, this is not good.
+        // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the
+        // user defined type to setNull as well.
+        if (databaseField instanceof ObjectRelationalDatabaseField) {
+            ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
+            //Fix for bug 537657: Inserting empty or null varchar arrays doesn't work with PostgreSQL since driver version 42.2.4
+            if (field.getSqlType() == Types.ARRAY) {
+                statement.setNull(index, field.getSqlType());
+            } else {
+                statement.setNull(index, field.getSqlType(), field.getSqlTypeName());
+            }
+        } else {
+            int jdbcType = getJDBCTypeForSetNull(databaseField);
+            statement.setNull(index, jdbcType);
+        }
+    }
 }
