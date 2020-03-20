@@ -75,6 +75,7 @@
         <test.mongodb.properties.file>el-test.mongodb.properties</test.mongodb.properties.file>
         <test.derby.properties.file>el-test.derby.properties</test.derby.properties.file>
         <test.mssql.properties.file>el-test.mssql.properties</test.mssql.properties.file>
+        <test.pgsql.properties.file>el-test.pgsql.properties</test.pgsql.properties.file>
 
         <!--Default test DB is Derby-->
         <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
@@ -159,6 +160,7 @@
         <mongodb.version>3.11.2</mongodb.version>
         <mysql.version>5.1.44</mysql.version>
         <mssql.version>7.4.1.jre8</mssql.version>
+        <pgsql.version>42.2.11</pgsql.version>
         <!-- CQ #21139, 21140 -->
         <logback.version>1.3.0-alpha5</logback.version>
         <oracle.jdbc.version>19.3.0.0</oracle.jdbc.version>
@@ -508,6 +510,11 @@
                 <groupId>com.microsoft.sqlserver</groupId>
                 <artifactId>mssql-jdbc</artifactId>
                 <version>${mssql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${pgsql.version}</version>
             </dependency>
             <!--For Oracle DB driver see Oracle proprietary dependencies part. It's not limited to tests only-->
             <!-- Hibernate validator and it's dependencies -->
@@ -1141,6 +1148,18 @@
                 <db.driver.groupId>com.microsoft.sqlserver</db.driver.groupId>
                 <db.driver.artifactId>mssql-jdbc</db.driver.artifactId>
                 <db.driver.version>${mssql.version}</db.driver.version>
+                <test.skip.in-memory.db>true</test.skip.in-memory.db>
+            </properties>
+        </profile>
+        <profile>
+            <id>pgsql</id>
+            <properties>
+                <test.properties.file>${user.home}/${test.pgsql.properties.file}</test.properties.file>
+                <test.properties.fileName>${test.pgsql.properties.file}</test.properties.fileName>
+                <!--Used by sql-maven-plugin-->
+                <db.driver.groupId>org.postgresql</db.driver.groupId>
+                <db.driver.artifactId>postgresql</db.driver.artifactId>
+                <db.driver.version>${pgsql.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
         </profile>
