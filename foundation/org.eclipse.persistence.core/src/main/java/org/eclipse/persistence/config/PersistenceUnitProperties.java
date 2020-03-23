@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -3882,6 +3882,29 @@ public class PersistenceUnitProperties {
      * </ul>
      */
     public static final String SQL_CALL_DEFERRAL = "eclipselink.jpa.sql-call-deferral";
+
+    /**
+     * The "<code>eclipselink.jpa.naming_into_indexed</code>" property defines if stored procedure parameters passed by name
+     * should be transformed into positional/index based passing if property value will be <code>true</code>. e.g.
+     * For stored procedure:
+     * <code>CREATE PROCEDURE test_stored_proc1( IN param1 TEXT, IN param2 INTEGER )</code>
+     * following Java call
+     * <code>query.registerStoredProcedureParameter( "param1",Integer.class,ParameterMode.IN );</code>
+     * <code>query.registerStoredProcedureParameter( "param2",String.class,ParameterMode.IN );</code>
+     * will be transformed into following e.g.
+     * <code>{call test_stored_proc1(10, 'abcd')}</code>
+     * instead of default
+     * <code>{call test_stored_proc1(param1 => 10, param2 => 'abcd')}</code>
+     * It's important to register parameters in Java in a same order as they specified in the stored procedure.
+     * This code was added there to ensure backward compatibility with older EclipseLink releases.
+     * <p>
+     * <b>Allowed Values</b> (String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT)
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String NAMING_INTO_INDEXED = "eclipselink.jpa.naming_into_indexed";
 
     /**
      * INTERNAL: The following properties will not be displayed through logging
