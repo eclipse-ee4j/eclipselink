@@ -19,6 +19,8 @@
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 
