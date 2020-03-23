@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,9 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.testing.tests.jpa22.advanced;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.StoredProcedureQuery;
@@ -37,7 +39,9 @@ import javax.persistence.StoredProcedureQuery;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa22.advanced.Address;
@@ -64,6 +68,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryGetResultListWithNamedCursors"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithMultipleResults"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNamedColumnResult"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNamedColumnResultTranslationIntoNumbered"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNamedFieldResult"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNumberedFieldResult"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithResultClass"));
@@ -302,6 +307,52 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
                 assertNotNull("No results returned from store procedure call", values[1]);
                 assertTrue("Address not found using stored procedure", address.getStreet().equals(values[1]));
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    /**
+     * Tests a NamedStoredProcedureQuery using positional paramters transalated from named.
+     */
+    public void testQueryWithNamedColumnResultTranslationIntoNumbered() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put(PersistenceUnitProperties.NAMING_INTO_INDEXED, "true");
+            EntityManager em = createEntityManager(properties);
+            QuerySQLTracker querySQLTracker = new QuerySQLTracker(((org.eclipse.persistence.jpa.JpaEntityManager)em).getServerSession());
+
+            try {
+                beginTransaction(em);
+
+                Address address = new Address();
+                address.setCity("Ottawa");
+                address.setPostalCode("K1G 6P3");
+                address.setProvince("ON");
+                address.setStreet("123 Street");
+                address.setCountry("Canada");
+                em.persist(address);
+                commitTransaction(em);
+
+                // Clear the cache
+                em.clear();
+                clearCache();
+
+                Object[] values = (Object[]) em.createNamedStoredProcedureQuery("ReadAddressMappedNamedColumnResult").setParameter("address_id_v", address.getId()).getSingleResult();
+                assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
+                assertNotNull("No results returned from store procedure call", values[1]);
+                assertTrue("Address not found using stored procedure", address.getStreet().equals(values[1]));
+
+                String sqlStatement = querySQLTracker.getSqlStatements().get(0);
+                int count = (sqlStatement.split("=>", -1).length) - 1;
+                assertEquals("Transformation into numbered parameters was not called", 1, count);
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);
