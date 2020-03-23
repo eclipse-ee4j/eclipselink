@@ -689,7 +689,7 @@ public class ReportQuery extends ReadAllQuery {
         for (int index = 0; index < size; index++) {
             // GF_ISSUE_395
             Object result = buildObject((AbstractRecord)rows.get(index), rows);
-            if (result != return ResultStatus.IGNORED) {
+            if (result != ResultStatus.IGNORED) {
                 containerPolicy.addInto(result, reportResults, this.session);
             }
             //end GF_ISSUE
