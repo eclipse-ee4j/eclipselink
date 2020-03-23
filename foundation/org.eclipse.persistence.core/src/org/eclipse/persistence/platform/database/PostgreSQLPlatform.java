@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -333,6 +333,12 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Date.class, new FieldTypeDefinition("DATE", false));
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
+
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME", false));
 
         return fieldTypeMapping;
     }
