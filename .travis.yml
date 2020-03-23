@@ -41,6 +41,7 @@ env:
     - MAVEN_TEST="jpa-modelgen jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution"
     - MAVEN_TEST=jpa-lrg-server1-mysql
     - MAVEN_TEST=jpa-lrg-server2-mysql
+    - MAVEN_TEST=javadoc
 
 jdk:
   - openjdk8
@@ -92,3 +93,4 @@ script:
       tar -x -z -C $HOME -f $HOME/lib.external/wildfly-18.0.0.Final.tar.gz;
       mvn verify -pl :org.eclipse.persistence.jpa.test -P server-test-jpa-lrg2,mysql;
     fi
+  - if [ "$MAVEN_TEST" == "javadoc" ]; then mvn package -DskipTests -Poss-release; fi
