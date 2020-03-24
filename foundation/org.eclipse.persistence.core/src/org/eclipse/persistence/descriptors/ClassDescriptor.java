@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -2578,9 +2578,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Must also be added to child descriptors.
      */
     public void addPreDeleteMapping(DatabaseMapping mapping) {
-        if (mapping.getAttributeName() == null) {
-            System.out.println(mapping);
-        }
         getPreDeleteMappings().add(mapping);
     }
 

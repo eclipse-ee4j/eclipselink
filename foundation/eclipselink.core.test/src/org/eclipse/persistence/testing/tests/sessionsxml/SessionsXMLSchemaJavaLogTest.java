@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,6 +19,7 @@ import java.io.LineNumberReader;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -58,6 +59,7 @@ SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
         try {
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaJavaLog.xml");
             employeeSession = (DatabaseSession)SessionManager.getManager().getSession(loader, "EmployeeSession", getClass().getClassLoader(), false, true);
+            employeeSession.setLogLevel(SessionLog.FINE);
 
             Logger.getLogger("org.eclipse.persistence").addHandler(new FileHandler(fileName));
             employeeSession.login();

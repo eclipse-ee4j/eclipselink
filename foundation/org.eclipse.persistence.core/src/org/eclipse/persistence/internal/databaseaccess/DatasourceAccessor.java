@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -424,8 +424,9 @@ public abstract class DatasourceAccessor implements Accessor {
         session.incrementProfile(SessionProfiler.Connects);
 
         try {
-            if (session.shouldLog(SessionLog.CONFIG, SessionLog.CONNECTION)) {// Avoid printing if no logging required.
-                session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "connecting", new Object[] { login }, this);
+            if (session.shouldLog(SessionLog.FINE, SessionLog.CONNECTION)) {// Avoid printing if no logging required.
+                Object[] args = { login };
+                session.log(SessionLog.FINE, SessionLog.CONNECTION, "connecting", args, this);
             }
             setLogin(login);
             this.setDatasourcePlatform((DatasourcePlatform)session.getDatasourceLogin().getDatasourcePlatform());
@@ -485,7 +486,7 @@ public abstract class DatasourceAccessor implements Accessor {
      * Disconnect from the datasource.
      */
     public void disconnect(AbstractSession session) throws DatabaseException {
-        session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "disconnect", (Object[])null, this);
+        session.log(SessionLog.FINE, SessionLog.CONNECTION, "disconnect", (Object[])null, this);
 
         if (this.datasourceConnection == null) {
             return;
@@ -556,9 +557,9 @@ public abstract class DatasourceAccessor implements Accessor {
      * pre-check whether messages should be logged.
      */
     public void reestablishConnection(AbstractSession session) throws DatabaseException {
-        if (session.shouldLog(SessionLog.CONFIG, SessionLog.CONNECTION)) {// Avoid printing if no logging required.		
+        if (session.shouldLog(SessionLog.FINE, SessionLog.CONNECTION)) {// Avoid printing if no logging required.		
             Object[] args = { getLogin() };
-            session.log(SessionLog.CONFIG, SessionLog.CONNECTION, "reconnecting", args, this);
+            session.log(SessionLog.FINE, SessionLog.CONNECTION, "reconnecting", args, this);
         }
         reestablishCustomizer();
         reconnect(session);
@@ -575,7 +576,8 @@ public abstract class DatasourceAccessor implements Accessor {
      * Note: Connections that are participating in transactions will not be refreshed.^M
      */
     protected void reconnect(AbstractSession session) throws DatabaseException {
-        session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool");
+        session.log(SessionLog.FINEST, SessionLog.CONNECTION, "reconnecting_to_external_connection_pool", (Object[])null, this);
+
         session.startOperationProfile(SessionProfiler.ConnectionManagement);
         try {
             connectInternal(this.login, session);
