@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -236,6 +236,7 @@ public class PropertiesHandler {
             addProp(new PessimisticLockTimeoutUnitProp());
             addProp(new BooleanProp(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "false"));
             addProp(new BooleanProp(PersistenceUnitProperties.SQL_CALL_DEFERRAL, "true"));
+            addProp(new BooleanProp(PersistenceUnitProperties.NAMING_INTO_INDEXED, "false"));
         }
 
         Prop(String name) {
