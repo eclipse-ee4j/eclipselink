@@ -2653,9 +2653,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Must also be added to child descriptors.
      */
     public void addPreDeleteMapping(DatabaseMapping mapping) {
-        if (mapping.getAttributeName() == null) {
-            System.out.println(mapping);
-        }
         getPreDeleteMappings().add(mapping);
     }
 

@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +22,7 @@ import java.io.LineNumberReader;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
@@ -32,9 +34,7 @@ import org.eclipse.persistence.sessions.factories.XMLSessionConfigLoader;
  * This test will read a session xml with logging set to java log and test to ensure an
  * expected logging message is generated in a log file.
  */
-public class
-
-SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
+public class SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
     DatabaseSession employeeSession;
     protected Exception generationException = null;
     protected Exception fileReadException = null;
@@ -60,6 +60,7 @@ SessionsXMLSchemaJavaLogTest extends AutoVerifyTestCase {
         try {
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaJavaLog.xml");
             employeeSession = (DatabaseSession)SessionManager.getManager().getSession(loader, "EmployeeSession", getClass().getClassLoader(), false, true);
+            employeeSession.setLogLevel(SessionLog.FINE);
 
             Logger.getLogger("org.eclipse.persistence").addHandler(new FileHandler(fileName));
             employeeSession.login();

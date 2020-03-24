@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2017 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,15 +81,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // CONFIG, INFO, WARNING and SEVERE level messages.
         { "topLink_version", "EclipseLink, version: {0}" },
         { "application_server_name_and_version", "Server: {0}" },
-        { "login_successful", "{0} login successful" },
-        { "logout_successful", "{0} logout successful" },
 
         { "connected_user_database_driver", "Connected: {0}{6}User: {1}{6}Database: {2}  Version: {3}{6}Driver: {4}  Version: {5}" },
         { "connected_user_database", "Connected: {3}{4}User: {0}{3}{4}Database: {1}  Version: {2}" },
         { "JDBC_driver_does_not_support_meta_data", "Connected: unknown (JDBC Driver does not support meta data.)" },
-        { "connecting", "connecting({0})" },
-        { "disconnect", "disconnect" },
-        { "reconnecting", "reconnecting({0})" },
         { "connected_sdk", "Connected: SDK" },
 
         { "no_session_found", "Could not find the session with the name [{0}] in the session.xml file [{1}]" },
