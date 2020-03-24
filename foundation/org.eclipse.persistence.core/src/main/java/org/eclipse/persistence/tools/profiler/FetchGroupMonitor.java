@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
  */
 public class FetchGroupMonitor {
 
-    public static Hashtable fetchedAttributes = new Hashtable();
+    public static Hashtable<Class<?>, Set<String>> fetchedAttributes = new Hashtable<Class<?>, Set<String>>();
     public static Boolean shouldMonitor;
 
     public static boolean shouldMonitor() {
@@ -47,19 +47,18 @@ public class FetchGroupMonitor {
         return shouldMonitor.booleanValue();
     }
 
-    public static void recordFetchedAttribute(Class domainClass, String attributeName) {
+    public static void recordFetchedAttribute(Class<?> domainClass, String attributeName) {
         if (! shouldMonitor()) {
             return;
         }
         synchronized (fetchedAttributes) {
-            Set classesFetchedAttributes = (Set) fetchedAttributes.get(domainClass);
+            Set<String> classesFetchedAttributes = fetchedAttributes.get(domainClass);
             if (classesFetchedAttributes == null) {
-                classesFetchedAttributes = new HashSet();
+                classesFetchedAttributes = new HashSet<String>();
                 fetchedAttributes.put(domainClass, classesFetchedAttributes);
             }
             if (!classesFetchedAttributes.contains(attributeName)) {
                 classesFetchedAttributes.add(attributeName);
-                System.out.println("Fetched attributes: " + domainClass + " - " + classesFetchedAttributes);
             }
         }
     }
