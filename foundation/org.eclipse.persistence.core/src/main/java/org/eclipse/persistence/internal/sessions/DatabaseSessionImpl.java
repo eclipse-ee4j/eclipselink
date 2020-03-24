@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -890,7 +890,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
         }
 
-        log(SessionLog.INFO, SessionLog.CONNECTION, "login_successful", this.getName());
+        log(SessionLog.FINE, SessionLog.CONNECTION, "login_successful", this.getName());
         // postLogin event should not be risen before descriptors have been initialized
         if (!hasBroker()) {
             postLogin();
@@ -1004,7 +1004,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (this.eventManager != null) {
             this.eventManager.postLogout(this);
         }
-        log(SessionLog.INFO, SessionLog.CONNECTION, "logout_successful", this.getName());
+        log(SessionLog.FINE, SessionLog.CONNECTION, "logout_successful", this.getName());
 
     }
 
@@ -1085,7 +1085,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 try {
                     // Give the failover time to recover.
                     Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
-                    log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", (Object[])null, null);
+                    Object[] args = new Object[1];
+                    args[0] = ex;
+                    log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", args, null);
                 } catch (InterruptedException intEx) {
                     break;
                 }
