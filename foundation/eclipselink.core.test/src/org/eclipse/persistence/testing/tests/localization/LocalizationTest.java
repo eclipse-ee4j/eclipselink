@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -24,12 +24,12 @@ public class LocalizationTest extends AutoVerifyTestCase {
     }
 
     public void test() {
-        localizedString = LoggingLocalization.buildMessage("login_successful", new Object[] { "LoggingTestSession" });
+        localizedString = LoggingLocalization.buildMessage("topLink_version", new Object[] { "EXAMPLE" });
         nonLocalizedString = LoggingLocalization.buildMessage("message_not_exist");
     }
 
     protected void verify() {
-        if (!localizedString.equals("LoggingTestSession login successful")) {
+        if (!localizedString.equals("EclipseLink, version: EXAMPLE")) {
             throw new TestErrorException("LoggingLocalization.buildMessage could not find the correct translation.");
         }
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -24,6 +24,8 @@ import java.util.ListResourceBundle;
  */
 public class TraceLocalizationResource extends ListResourceBundle {
     static final Object[][] contents = {
+                                           { "login_successful", "{0} login successful" },
+                                           { "logout_successful", "{0} logout successful" },
                                            { "acquire_unit_of_work_with_argument", "acquire unit of work: {0}" },
                                            { "external_transaction_has_begun_internally", "external transaction has begun internally" },
                                            { "external_transaction_has_committed_internally", "external transaction has committed internally" },
@@ -61,6 +63,9 @@ public class TraceLocalizationResource extends ListResourceBundle {
                                            { "query_column_meta_data_with_column", "query column meta data ({0}.{1}.{2}.{3})" },
                                            { "query_column_meta_data", "query table meta data ({0}.{1}.{2})" },
                                            { "reconnecting_to_external_connection_pool", "reconnecting to external connection pool" },
+                                           { "connecting", "connecting({0})" },
+                                           { "disconnect", "disconnect" },
+                                           { "reconnecting", "reconnecting({0})" },
                                            { "begin_transaction", "begin transaction" },
                                            { "commit_transaction", "commit transaction" },
                                            { "rollback_transaction", "rollback transaction" },
@@ -291,6 +296,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
 
                                            { "field_type_set_to_java_lang_string", "The default table generator could not locate or convert a java type ({1}) into a database type for database field ({0}). The generator uses 'java.lang.String' as default java type for the field." },
                                            { "default_tables_created", "The table ({0}) is created."},
+                                           { "cannot_create_table", "The table ({0}) could not be created due to exception: {1}" },
+                                           { "cannot_add_field_to_table", "The field ({0}) could not be added to the table ({1}) due to exception: {2}" },
                                            { "default_tables_already_existed", "The table ({0}) is already in the database, and won't be created."},
                                            { "identity_map_does_not_exist",  "Identity Map [{0}] does not exist" },
                                            { "identity_map_is_empty",  "Identity Map [{0}] is empty" },

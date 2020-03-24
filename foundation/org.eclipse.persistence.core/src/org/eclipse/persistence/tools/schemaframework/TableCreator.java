@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -516,7 +516,7 @@ public class TableCreator {
                                 try {
                                     table.addFieldOnDatabase(abstractSession, fieldDef);
                                 } catch(DatabaseException addFieldEx) {
-                                    session.getSessionLog().log(SessionLog.FINEST,  SessionLog.DDL, "table_cannot_add_field", dbField.getName(), table.getFullName(), addFieldEx.getMessage());
+                                    session.getSessionLog().log(SessionLog.FINEST,  SessionLog.DDL, "cannot_add_field_to_table", dbField.getName(), table.getFullName(), addFieldEx.getMessage());
                                     if (!shouldIgnoreDatabaseException()) {
                                         throw addFieldEx;
                                     }
