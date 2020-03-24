@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -792,7 +792,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     // Give the failover time to recover.
                     Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
                     Object[] args = new Object[1];
-                    args[0] = databaseException;
+                    args[0] = exceptionToThrow;
                     log(SessionLog.INFO, SessionLog.TRANSACTION, "communication_failure_attempting_begintransaction_retry", args, null);
                 } catch (InterruptedException intEx) {
                     break;
