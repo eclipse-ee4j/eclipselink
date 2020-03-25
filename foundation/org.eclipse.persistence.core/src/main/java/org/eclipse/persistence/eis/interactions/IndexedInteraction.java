@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -106,7 +106,7 @@ public class IndexedInteraction extends EISInteraction {
      * Populate the data into the record from this interaction's arguments.
      */
     @Override
-    public Record createInputRecord(EISAccessor accessor) {
+    public javax.resource.cci.Record createInputRecord(EISAccessor accessor) {
         try {
             IndexedRecord record = accessor.getRecordFactory().createIndexedRecord(getInputRecordName());
             for (int index = 0; index < getParameters().size(); index++) {
@@ -126,7 +126,7 @@ public class IndexedInteraction extends EISInteraction {
      * Also handles MappedRecords for case of input being indexed but mapped ouput.
      */
     @Override
-    public AbstractRecord buildRow(Record record, EISAccessor accessor) {
+    public AbstractRecord buildRow(javax.resource.cci.Record record, EISAccessor accessor) {
         AbstractRecord row = null;
         if (record instanceof IndexedRecord) {
             IndexedRecord indexedRecord = (IndexedRecord)record;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -116,7 +116,7 @@ public class Computer implements Serializable {
         return mainframe;
     }
 
-    public static Class getClassFromRow(Record row) {
+    public static Class getClassFromRow(org.eclipse.persistence.sessions.Record row) {
         if (row.get("CTYPE").equals("PC")) {
             if (row.get("PCTYPE").equals("IBM")) {
                 return org.eclipse.persistence.testing.models.inheritance.IBMPC.class;

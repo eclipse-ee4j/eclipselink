@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -159,27 +159,27 @@ public class RedirectorOnDescriptorTest extends TestCase {
      */
     public static
 
-    Object deleteObject(DatabaseQuery query, Record row, org.eclipse.persistence.sessions.Session session) {
+    Object deleteObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
         redirectedDeleteObject = true;
         return null;
     }
 
-    public static Object insertObject(DatabaseQuery query, Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object insertObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
         redirectedInsert = true;
         return null;
     }
 
-    public static Object readAll(DatabaseQuery query, Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object readAll(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
         redirectedReadAll = true;
         return null;
     }
 
-    public static Object readObject(DatabaseQuery query, Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object readObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
         redirectedReadObject = true;
         return null;
     }
 
-    public static Object updateObject(DatabaseQuery query, Record row, org.eclipse.persistence.sessions.Session session) {
+    public static Object updateObject(DatabaseQuery query, org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
         redirectedUpdate = true;
         return null;
     }
