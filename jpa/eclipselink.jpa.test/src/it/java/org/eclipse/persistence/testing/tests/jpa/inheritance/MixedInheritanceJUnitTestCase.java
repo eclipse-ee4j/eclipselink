@@ -43,7 +43,7 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.listeners.TireInfo
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public class MixedInheritanceJUnitTestCase extends JUnitTestCase {
     private static int mudTireId;

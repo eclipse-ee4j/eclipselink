@@ -81,9 +81,9 @@ public class ProviderPackager extends XRPackager {
     public static final String DBWS_PROVIDER_SOURCE_PREAMBLE_START =
         "package _dbws;\n" +
         "\n//Java extension libraries\n" +
-        "import javax.annotation.PostConstruct;\n" +
-        "import javax.annotation.PreDestroy;\n" +
-        "import javax.annotation.Resource;\n" +
+        "import jakarta.annotation.PostConstruct;\n" +
+        "import jakarta.annotation.PreDestroy;\n" +
+        "import jakarta.annotation.Resource;\n" +
         "import jakarta.servlet.ServletContext;\n" +
         "import jakarta.xml.soap.SOAPMessage;\n" +
         "import jakarta.xml.ws.BindingType;\n" +

@@ -54,6 +54,10 @@
             <artifactId>jakarta.ejb-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>${persistence.artifactId}</artifactId>
             <version>${persistence.version}</version>

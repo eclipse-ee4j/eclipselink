@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import javax.rmi.PortableRemoteObject;
 
 import junit.framework.*;

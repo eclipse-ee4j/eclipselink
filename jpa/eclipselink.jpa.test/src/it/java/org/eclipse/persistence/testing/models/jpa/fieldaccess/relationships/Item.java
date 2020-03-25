@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.relationships;
 
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity(name="FieldAccessItem")
 @Table(name="CMP3_FIELDACCESS_ITEM")

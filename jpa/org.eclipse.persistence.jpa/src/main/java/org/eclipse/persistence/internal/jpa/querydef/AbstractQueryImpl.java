@@ -22,13 +22,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.criteria.AbstractQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 
@@ -42,7 +42,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
  * SubQuery.
  * <p>
  *
- * @see javax.persistence.criteria CriteriaQuery
+ * @see jakarta.persistence.criteria CriteriaQuery
  *
  * @author gyorke
  * @since EclipseLink 1.2

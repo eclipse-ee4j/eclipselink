@@ -18,10 +18,10 @@ package org.eclipse.persistence.jpa.tests.jpql.tools.spi.java;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
 
 /**

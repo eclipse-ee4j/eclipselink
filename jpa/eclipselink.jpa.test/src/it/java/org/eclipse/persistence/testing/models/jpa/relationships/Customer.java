@@ -19,10 +19,10 @@ import java.util.HashSet;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
 
 @Entity
 @Table(name="CMP3_CUSTOMER")

@@ -16,8 +16,8 @@
 //       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * The Employee class demonstrates several JPA, JPA 2.0, and EclipseLink mapping features including:

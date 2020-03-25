@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.datatypes.arraypks;
 
 import java.util.UUID;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "CMP3_PBYTEARRAYPK_TYPE")

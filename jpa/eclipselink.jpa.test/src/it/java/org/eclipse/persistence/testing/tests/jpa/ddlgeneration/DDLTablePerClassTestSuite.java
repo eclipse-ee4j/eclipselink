@@ -42,7 +42,7 @@ import junit.framework.TestSuite;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * JUnit test case(s) for DDL generation.

@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.io.Serializable;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class VegetablePK implements Serializable {

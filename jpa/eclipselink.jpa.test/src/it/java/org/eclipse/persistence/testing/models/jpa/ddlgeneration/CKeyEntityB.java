@@ -16,10 +16,10 @@
 //       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.Index;

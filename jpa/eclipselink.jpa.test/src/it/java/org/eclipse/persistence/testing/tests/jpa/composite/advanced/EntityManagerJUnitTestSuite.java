@@ -51,24 +51,24 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
-import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.PessimisticLockScope;
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
-import javax.persistence.TemporalType;
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.TypedQuery;
-import javax.persistence.spi.LoadState;
-import javax.persistence.spi.ProviderUtil;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitUtil;
+import jakarta.persistence.PessimisticLockScope;
+import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.spi.LoadState;
+import jakarta.persistence.spi.ProviderUtil;
 
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CacheUsageIndirectionPolicy;
@@ -809,7 +809,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.refresh(dept2, LockModeType.PESSIMISTIC_READ, properties);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                    if (ex instanceof jakarta.persistence.PessimisticLockException) {
                         pessimisticLockException = ex;
                     } else {
                         throw ex;
@@ -871,7 +871,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.refresh(dept2, LockModeType.PESSIMISTIC_WRITE, properties);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                    if (ex instanceof jakarta.persistence.PessimisticLockException) {
                         pessimisticLockException = ex;
                     } else {
                         throw ex;
@@ -1146,7 +1146,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.persist(emp);
             result = (Employee) query.getSingleResult();
             result.toString();
-        } catch (javax.persistence.NoResultException ex) {
+        } catch (jakarta.persistence.NoResultException ex) {
             // failed to flush to database
             flushed = false;
         } finally {
@@ -1206,7 +1206,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
                 Employee result = (Employee) readQuery.getSingleResult();
                 result.toString();
-            }catch (javax.persistence.EntityNotFoundException ex){
+            }catch (jakarta.persistence.EntityNotFoundException ex){
                 rollbackTransaction(em);
                 fail("Failed to flush to database");
             }
@@ -1318,7 +1318,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 if (ex.getCause() instanceof jakarta.transaction.RollbackException) {
                     return;
                 }
-                if (ex.getCause() instanceof javax.persistence.RollbackException) {
+                if (ex.getCause() instanceof jakarta.persistence.RollbackException) {
                     return;
                 }
                 if (isTransactionActive(em)){
@@ -1848,7 +1848,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.lock(dept2, LockModeType.PESSIMISTIC_READ, properties);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                    if (ex instanceof jakarta.persistence.PessimisticLockException) {
                         pessimisticLockException = ex;
                     } else {
                         throw ex;
@@ -1912,7 +1912,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                     em2.lock(dept2, LockModeType.PESSIMISTIC_WRITE, properties);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.PessimisticLockException) {
+                    if (ex instanceof jakarta.persistence.PessimisticLockException) {
                         pessimisticLockException = ex;
                     } else {
                         throw ex;
@@ -2112,7 +2112,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     if (isTransactionActive(em2)) {
                         rollbackTransaction(em2);
                     }
-                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                    if (ex instanceof jakarta.persistence.LockTimeoutException) {
                         lockTimeOutException = ex;
                     } else {
                         throw ex;
@@ -2166,7 +2166,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     if (isTransactionActive(em2)) {
                         rollbackTransaction(em2);
                     }
-                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                    if (ex instanceof jakarta.persistence.LockTimeoutException) {
                         lockTimeOutException = ex;
                     } else {
                         throw ex;
@@ -2211,7 +2211,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
             dept = em.find(Department.class, dept.getId(), LockModeType.PESSIMISTIC_FORCE_INCREMENT);
             rollbackTransaction(em);
-            fail("An Expected javax.persistence.PersistenceException was not thrown");
+            fail("An Expected jakarta.persistence.PersistenceException was not thrown");
         } catch (PersistenceException ex) {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
@@ -2280,7 +2280,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                             properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 0);
                             em2.lock(lp2, LockModeType.PESSIMISTIC_WRITE, properties);
                         } catch (PersistenceException ex) {
-                            if (!(ex instanceof javax.persistence.PessimisticLockException)) {
+                            if (!(ex instanceof jakarta.persistence.PessimisticLockException)) {
                                 throw ex;
                             }
                         } finally {
@@ -4645,7 +4645,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             factory = Persistence.createEntityManagerFactory("broken-PU", JUnitTestCaseHelper.getDatabaseProperties());
             EntityManager em = factory.createEntityManager();
             em.close();
-        } catch (javax.persistence.PersistenceException e)  {
+        } catch (jakarta.persistence.PersistenceException e)  {
             ArrayList expectedExceptions = new ArrayList();
             expectedExceptions.add(48);
             expectedExceptions.add(48);

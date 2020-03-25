@@ -15,8 +15,8 @@
 //       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
 

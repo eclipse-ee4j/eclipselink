@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.merge.advanced;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * This class is used to test XML and annotation merging. This class is mapped

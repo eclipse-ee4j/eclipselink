@@ -75,7 +75,7 @@
 //     11/05/2015 - Dalia Abo Sheasha
 //       - 480787 : Wrap several privileged method calls with a doPrivileged block
 //     12/03/2015-2.6 Dalia Abo Sheasha
-//       - 483582: Add the javax.persistence.sharedCache.mode property
+//       - 483582: Add the jakarta.persistence.sharedCache.mode property
 //     09/29/2016-2.7 Tomas Kraus
 //       - 426852: @GeneratedValue(strategy=GenerationType.IDENTITY) support in Oracle 12c
 //     09/14/2017-2.6 Will Dazey
@@ -156,21 +156,21 @@ import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.persistence.SharedCacheMode;
-import javax.persistence.ValidationMode;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.CollectionAttribute;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.SetAttribute;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.spi.ClassTransformer;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.PersistenceUnitTransactionType;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.ValidationMode;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
 
 import org.eclipse.persistence.annotations.IdValidation;
 import org.eclipse.persistence.config.BatchWriting;
@@ -2031,7 +2031,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                         EntityManagerSetupImpl.updateCaseSensitivitySettings(predeployProperties, processor.getProject(), session);
                     }
 
-                    // Set the shared cache mode to the javax.persistence.sharedCache.mode property value.
+                    // Set the shared cache mode to the jakarta.persistence.sharedCache.mode property value.
                     updateSharedCacheMode(predeployProperties);
 
                     // Process the Object/relational metadata from XML and annotations.
@@ -3599,10 +3599,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
 
 
     /**
-     * Sets the SharedCacheMode with values from the javax.persistence.sharedCache.mode property. If
+     * Sets the SharedCacheMode with values from the jakarta.persistence.sharedCache.mode property. If
      * user enters an invalid caching type, valueOf will throw an illegal argument exception, e.g.
      * java.lang.IllegalArgumentException: No enum const class
-     * javax.persistence.SharedCacheMode.ALLBOGUS
+     * jakarta.persistence.SharedCacheMode.ALLBOGUS
      */
     protected void updateSharedCacheMode(Map m) {
         String sharedCacheMode = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.SHARED_CACHE_MODE, m, session);

@@ -17,7 +17,7 @@
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import java.util.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.util.Date;
 

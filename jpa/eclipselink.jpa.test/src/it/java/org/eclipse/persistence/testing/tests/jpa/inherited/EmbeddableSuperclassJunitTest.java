@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Vector;
 import java.util.Calendar;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 

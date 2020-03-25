@@ -15,7 +15,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.util.List;
 import java.util.Vector;
 
-import javax.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Selection;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -28,7 +28,7 @@ import org.eclipse.persistence.queries.ReportQueryResult;
  * <b>Description</b>: A subclass of ReportQuery this query type combines multiple selections into
  * <p>
  *
- * @see javax.persistence.criteria CriteriaQuery
+ * @see jakarta.persistence.criteria CriteriaQuery
  *
  * @author gyorke
  * @since EclipseLink 1.2

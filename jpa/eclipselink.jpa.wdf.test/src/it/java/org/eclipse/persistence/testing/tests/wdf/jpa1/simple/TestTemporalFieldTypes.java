@@ -19,7 +19,7 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.simple;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.Assert;
 

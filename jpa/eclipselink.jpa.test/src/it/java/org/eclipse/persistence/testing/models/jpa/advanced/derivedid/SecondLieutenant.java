@@ -17,11 +17,11 @@
 //       - 290567: mappedbyid support incomplete
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.MapsId;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 /**
  * This model tests Example #6 of the mapsId cases.

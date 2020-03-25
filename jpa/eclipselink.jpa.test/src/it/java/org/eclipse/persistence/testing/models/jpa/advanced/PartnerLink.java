@@ -16,10 +16,10 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Table(name = "MW")

@@ -17,8 +17,8 @@
 //       - 295790: JPA 2.0 adding @MapsId to one entity causes initialization errors in other entities
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class MasterCorporalId {

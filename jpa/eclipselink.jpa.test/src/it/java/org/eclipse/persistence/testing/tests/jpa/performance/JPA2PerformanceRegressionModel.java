@@ -16,8 +16,8 @@
 
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.models.jpa.performance2.*;
 import org.eclipse.persistence.testing.tests.jpa.performance.misc.JPA2BootstrapPerformanceTest;

@@ -17,7 +17,7 @@
 package org.eclipse.persistence.jpa.test.ddl;
 
 import java.util.Properties;
-import javax.persistence.Persistence;
+import jakarta.persistence.Persistence;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.EntityManagerSetupException;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -40,9 +40,9 @@ public class TestSchemaGen {
     /**
      * This test checks that PersistenceUnits with JTA transaction types can be
      * used to generate schema given that the 2.1 required properties are
-     * included: javax.persistence.database-product-name
-     * javax.persistence.database-major-version
-     * javax.persistence.database-minor-version
+     * included: jakarta.persistence.database-product-name
+     * jakarta.persistence.database-major-version
+     * jakarta.persistence.database-minor-version
      */
     @Test
     public void testJTASchemaGenerationWithProps() throws Exception {

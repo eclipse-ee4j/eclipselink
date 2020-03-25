@@ -20,8 +20,8 @@ import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.ManagedType;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 
@@ -76,7 +76,7 @@ public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
     }
 
     @Override
-    public javax.persistence.metamodel.Attribute.PersistentAttributeType getPersistentAttributeType() {
+    public jakarta.persistence.metamodel.Attribute.PersistentAttributeType getPersistentAttributeType() {
         return getAttribute().getPersistentAttributeType();
     }
 

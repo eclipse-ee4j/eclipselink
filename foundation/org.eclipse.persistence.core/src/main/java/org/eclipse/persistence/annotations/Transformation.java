@@ -22,9 +22,9 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.persistence.FetchType;
+import jakarta.persistence.FetchType;
 
-import static javax.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.EAGER;
 
 /**
  * Transformation is an optional annotation for org.eclipse.persistence.mappings.TransformationMapping.

@@ -14,9 +14,9 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="CMP3_CITRUS_FRUIT")

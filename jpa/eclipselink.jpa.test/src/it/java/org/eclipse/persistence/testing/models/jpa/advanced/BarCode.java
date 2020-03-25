@@ -14,9 +14,9 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Embeddable
 public class BarCode {

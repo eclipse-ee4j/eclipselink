@@ -22,7 +22,7 @@ import test.org.eclipse.persistence.testing.models.jpa.spring.Address;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Route;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * This class is a JPA data access object and implements Spring's jpaTemplate which functions

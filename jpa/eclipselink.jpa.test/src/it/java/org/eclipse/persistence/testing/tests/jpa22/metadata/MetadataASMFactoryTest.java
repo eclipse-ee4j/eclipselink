@@ -51,12 +51,12 @@ public class MetadataASMFactoryTest extends JUnitTestCase {
     public void testMetadataAnnotations() {
         MetadataAsmFactory fact = new MetadataAsmFactory(new MetadataLogger(null), MetadataASMFactoryTest.class.getClassLoader());
         MetadataClass metadataClass = fact.getMetadataClass(Employee.class.getName());
-        MetadataAnnotation annotation = metadataClass.getAnnotation("javax.persistence.Entity");
+        MetadataAnnotation annotation = metadataClass.getAnnotation("jakarta.persistence.Entity");
         Assert.assertNotNull(annotation);
         Assert.assertTrue(PersistenceUnitProcessor.isEntity(metadataClass));
         Assert.assertNotNull(PersistenceUnitProcessor.getEntityAnnotation(metadataClass));
 
-        annotation = metadataClass.getAnnotation("javax.persistence.EntityListeners");
+        annotation = metadataClass.getAnnotation("jakarta.persistence.EntityListeners");
         Assert.assertNotNull(annotation);
     }
 

@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipException;
 
-import javax.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.ClassTransformer;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerSetupImpl;
 import org.eclipse.persistence.internal.jpa.StaticWeaveInfo;

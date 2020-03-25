@@ -45,15 +45,15 @@ import java.lang.annotation.Repeatable;
  * and MappedSuperclasses. In case of a conflict property value defined directly
  * on a class always overrides the value passed from class's parent.
  *
- * @see javax.persistence.Embeddable
- * @see javax.persistence.Entity
- * @see javax.persistence.Id
- * @see javax.persistence.Basic
- * @see javax.persistence.ManyToMany
- * @see javax.persistence.ManyToOne
- * @see javax.persistence.MappedSuperclass
- * @see javax.persistence.OneToMany
- * @see javax.persistence.OneToOne
+ * @see jakarta.persistence.Embeddable
+ * @see jakarta.persistence.Entity
+ * @see jakarta.persistence.Id
+ * @see jakarta.persistence.Basic
+ * @see jakarta.persistence.ManyToMany
+ * @see jakarta.persistence.ManyToOne
+ * @see jakarta.persistence.MappedSuperclass
+ * @see jakarta.persistence.OneToMany
+ * @see jakarta.persistence.OneToOne
  * @see org.eclipse.persistence.annotations.BasicCollection
  * @see org.eclipse.persistence.annotations.BasicMap
  * @see org.eclipse.persistence.annotations.Properties

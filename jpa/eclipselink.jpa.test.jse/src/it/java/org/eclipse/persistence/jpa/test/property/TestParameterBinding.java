@@ -16,10 +16,10 @@
 //       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.jpa.test.property;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TypedQuery;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
@@ -49,7 +49,7 @@ public class TestParameterBinding {
             properties = {
                     @Property(name = "eclipselink.jdbc.force-bind-parameters", value = "true"),
                     //Setting query timeout just to speed up tests and eliminate retries if they fail
-                    @Property(name = "javax.persistence.query.timeout", value = "1000"),
+                    @Property(name = "jakarta.persistence.query.timeout", value = "1000"),
                     @Property(name = "eclipselink.logging.level", value = "ALL"),
                     @Property(name = "eclipselink.logging.level.sql", value = "FINE"),
                     @Property(name = "eclipselink.logging.parameters", value = "true")})

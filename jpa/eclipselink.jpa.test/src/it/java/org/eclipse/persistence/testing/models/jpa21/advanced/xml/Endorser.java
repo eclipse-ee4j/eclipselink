@@ -15,10 +15,10 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 package org.eclipse.persistence.testing.models.jpa21.advanced.xml;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 public class Endorser {
     public Integer id;

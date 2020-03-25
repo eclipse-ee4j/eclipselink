@@ -18,7 +18,7 @@
 //       - 465063 : Changed VendorNameToPlatformMapping file. Updating tests.
 package org.eclipse.persistence.jpa.test.ddl;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.internal.helper.DBPlatformHelper;
 import org.eclipse.persistence.jpa.test.basic.model.Employee;

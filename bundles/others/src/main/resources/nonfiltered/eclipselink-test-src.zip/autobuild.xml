@@ -696,10 +696,10 @@
                 <exclude name="*oracleddl*.jar"/>
             </fileset>
         </copy>
-        <!-- get javax.persistence* -->
+        <!-- get jakarta.persistence* -->
         <copy todir="${tmp.maven.dir}" flatten="true">
             <fileset dir="${temp.rebuild.dir}/bundlezip">
-                <include name="javax.persistence*2.0*.jar"/>
+                <include name="jakarta.persistence*2.0*.jar"/>
             </fileset>
         </copy>
         <!-- get commonj.sdo -->

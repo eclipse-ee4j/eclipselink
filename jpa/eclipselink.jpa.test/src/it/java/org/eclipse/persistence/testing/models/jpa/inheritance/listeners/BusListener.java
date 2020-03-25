@@ -16,12 +16,12 @@
 
 package org.eclipse.persistence.testing.models.jpa.inheritance.listeners;
 
-import javax.persistence.PrePersist;
-import javax.persistence.PostPersist;
-import javax.persistence.PreRemove;
-import javax.persistence.PostRemove;
-import javax.persistence.PreUpdate;
-import javax.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.PostUpdate;
 
 /**
  * A listener for the Bus entity.

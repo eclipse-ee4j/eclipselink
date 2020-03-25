@@ -14,9 +14,9 @@
 //     ailitchev - 2010.01.08 Bug 299147 - em.find isolated read-only entity throws exception
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ReadOnly;

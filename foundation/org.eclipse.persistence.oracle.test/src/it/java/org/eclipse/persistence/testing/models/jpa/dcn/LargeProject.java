@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.dcn;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="DCN_LPROJECT")

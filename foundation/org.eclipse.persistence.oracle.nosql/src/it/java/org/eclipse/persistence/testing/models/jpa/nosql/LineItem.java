@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.nosql;
 
 import java.math.*;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 import org.eclipse.persistence.nosql.annotations.NoSql;
 

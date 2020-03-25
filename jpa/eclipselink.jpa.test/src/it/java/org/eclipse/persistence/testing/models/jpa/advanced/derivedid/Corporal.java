@@ -15,9 +15,9 @@
 //       - 270011: JPA 2.0 MappedById support
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * This model tests Example #3 of the mapsId cases (mapped from Private)

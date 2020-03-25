@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
 import java.io.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * <p><b>Purpose</b>: Describes an BeerConsumers's telephone number.

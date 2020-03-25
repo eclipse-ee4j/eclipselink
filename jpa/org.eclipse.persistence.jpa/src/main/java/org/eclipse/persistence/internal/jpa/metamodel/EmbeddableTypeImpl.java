@@ -18,7 +18,7 @@
 //       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import javax.persistence.metamodel.EmbeddableType;
+import jakarta.persistence.metamodel.EmbeddableType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
@@ -30,7 +30,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * <b>Description</b>:
  *  Instances of the type EmbeddableType represent embeddable types.
  *
- * @see javax.persistence.metamodel.EmbeddableType
+ * @see jakarta.persistence.metamodel.EmbeddableType
  *
  * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The represented type.

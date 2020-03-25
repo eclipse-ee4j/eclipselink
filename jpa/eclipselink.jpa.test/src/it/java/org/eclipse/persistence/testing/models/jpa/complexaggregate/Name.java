@@ -16,9 +16,9 @@
 //       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.GenerationType.IDENTITY;
+import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Embeddable
 public class Name implements Cloneable {

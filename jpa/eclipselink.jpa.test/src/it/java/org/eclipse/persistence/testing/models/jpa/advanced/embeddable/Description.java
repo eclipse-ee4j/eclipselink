@@ -16,8 +16,8 @@
 //       - 496836: NullPointerException on ObjectChangeSet.mergeObjectChanges
 package org.eclipse.persistence.testing.models.jpa.advanced.embeddable;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Description {

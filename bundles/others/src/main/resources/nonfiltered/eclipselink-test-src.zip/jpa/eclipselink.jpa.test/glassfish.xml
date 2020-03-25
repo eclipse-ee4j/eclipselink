@@ -121,14 +121,14 @@
     <target name="copy-eclipselink-and-persistence-latest-jars-to-glassfish3" if="is.revised">
         <delete>
             <fileset dir="${glassfish.home}/modules">
-                <include name="javax.persistence*.jar"/>
+                <include name="jakarta.persistence*.jar"/>
                 <include name="org.eclipse.persistence.*.jar"/>
             </fileset>
         </delete>
         <copy todir="${glassfish.home}/modules" overwrite="true" failonerror="false">
             <fileset dir="${jpatest.basedir}/../plugins/">
-                <include name="javax.persistence_2*.jar"/>
-                <exclude name="javax.persistence_2*_preview.jar"/>
+                <include name="jakarta.persistence_2*.jar"/>
+                <exclude name="jakarta.persistence_2*_preview.jar"/>
             </fileset>
             <fileset dir="${jpatest.basedir}/../../plugins/"
                 includes="org.eclipse.persistence.antlr_*.jar

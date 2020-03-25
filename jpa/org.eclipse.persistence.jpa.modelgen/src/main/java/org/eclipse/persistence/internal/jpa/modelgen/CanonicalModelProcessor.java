@@ -45,9 +45,9 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.PrimitiveType;
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.MappedSuperclass;
 import javax.tools.JavaFileObject;
 
 import org.eclipse.persistence.Version;
@@ -87,9 +87,9 @@ public class CanonicalModelProcessor extends AbstractProcessor {
 
     private static final Set<String> SUPPORTED_ANNOTATIONS = Collections.unmodifiableSet(new HashSet<String>() {{
         if (SourceVersion.latest().compareTo(SourceVersion.RELEASE_8) > 0) {
-            add("java.persistence/javax.persistence.*");
+            add("java.persistence/jakarta.persistence.*");
         }
-        add("javax.persistence.*");
+        add("jakarta.persistence.*");
         add("org.eclipse.persistence.annotations.*");
     }});
 
@@ -283,9 +283,9 @@ public class CanonicalModelProcessor extends AbstractProcessor {
 
             if (generateGenerated) {
                 if (isNewJava) {
-                    imports.put("Generated", "javax.annotation.processing.Generated");
+                    imports.put("Generated", "jakarta.annotation.processing.Generated");
                 } else {
-                    imports.put("Generated", "javax.annotation.Generated");
+                    imports.put("Generated", "jakarta.annotation.Generated");
                 }
             }
 
@@ -309,23 +309,23 @@ public class CanonicalModelProcessor extends AbstractProcessor {
                     if (mappingAccessor.isBasic()) {
                         types = types + ", " + getUnqualifiedType(getBoxedType(annotatedElement, rawClass), imports);
                         attributeType = AttributeType.SingularAttribute.name();
-                        imports.put(attributeType, "javax.persistence.metamodel.SingularAttribute");
+                        imports.put(attributeType, "jakarta.persistence.metamodel.SingularAttribute");
                     } else {
                         if (rawClass.isList()) {
                             attributeType = AttributeType.ListAttribute.name();
-                            imports.put(attributeType, "javax.persistence.metamodel.ListAttribute");
+                            imports.put(attributeType, "jakarta.persistence.metamodel.ListAttribute");
                         } else if (rawClass.isSet()) {
                             attributeType = AttributeType.SetAttribute.name();
-                            imports.put(attributeType, "javax.persistence.metamodel.SetAttribute");
+                            imports.put(attributeType, "jakarta.persistence.metamodel.SetAttribute");
                         } else if (rawClass.isMap()) {
                             attributeType = AttributeType.MapAttribute.name();
-                            imports.put(attributeType, "javax.persistence.metamodel.MapAttribute");
+                            imports.put(attributeType, "jakarta.persistence.metamodel.MapAttribute");
                         } else if (rawClass.isCollection()) {
                             attributeType = AttributeType.CollectionAttribute.name();
-                            imports.put(attributeType, "javax.persistence.metamodel.CollectionAttribute");
+                            imports.put(attributeType, "jakarta.persistence.metamodel.CollectionAttribute");
                         } else {
                             attributeType = AttributeType.SingularAttribute.name();
-                            imports.put(attributeType, "javax.persistence.metamodel.SingularAttribute");
+                            imports.put(attributeType, "jakarta.persistence.metamodel.SingularAttribute");
                         }
 
                         if (mappingAccessor.isMapAccessor()) {
@@ -536,7 +536,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         imps.addAll(typeImports.values());
 
         // Add the standard canonical model generator imports.
-        imps.add("javax.persistence.metamodel.StaticMetamodel");
+        imps.add("jakarta.persistence.metamodel.StaticMetamodel");
 
         // Import the parent canonical class if need be.
         MetadataClass parentCls = accessor.getJavaClass().getSuperclass();

@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.relationships;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import junit.framework.*;
 

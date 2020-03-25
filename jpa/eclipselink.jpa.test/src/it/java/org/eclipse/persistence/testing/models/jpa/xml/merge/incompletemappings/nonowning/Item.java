@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.nonowning;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Collection;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity(name="XMLIncompleteItem")
 @Table(name="CMP3_XML_INC_ITEM")

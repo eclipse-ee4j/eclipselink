@@ -38,9 +38,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -223,7 +223,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                 race = em.find(Race.class, race.getId());
                 //trigger indirection
                 race.getOrganizers().get(responsibility);
-            } catch (javax.persistence.PersistenceException pe) {
+            } catch (jakarta.persistence.PersistenceException pe) {
                 if (pe.getCause() == null ||
                         !ResponsibilityConverter.THROW_EXCEPTION_IN_TO_ENTITY_ATTRIBUTE.equals(pe.getCause().getMessage())) {
                     //rethrow this exception because it does not contain the expected application generated RuntimeException
@@ -270,7 +270,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                 em.persist(race);
                 em.persist(organizer);
                 em.flush();
-            } catch (javax.persistence.PersistenceException pe) {
+            } catch (jakarta.persistence.PersistenceException pe) {
                 if (pe.getCause() == null ||
                         !ResponsibilityConverter.THROW_EXCEPTION_IN_TO_DATABASE_COLUMN.equals(pe.getCause().getMessage())) {
                     //rethrow this exception because it does not contain the expected application generated RuntimeException

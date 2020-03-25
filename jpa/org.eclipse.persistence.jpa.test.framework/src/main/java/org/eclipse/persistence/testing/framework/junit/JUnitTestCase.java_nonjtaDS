@@ -28,7 +28,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.rmi.PortableRemoteObject;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import junit.framework.*;
 

@@ -13,9 +13,9 @@
 package jpql.query;
 
 import java.util.Date;
-import javax.persistence.Embeddable;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Embeddable
 public class ShelfLife {

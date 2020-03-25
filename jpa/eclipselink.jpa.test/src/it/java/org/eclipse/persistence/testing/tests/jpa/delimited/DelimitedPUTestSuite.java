@@ -20,8 +20,8 @@ package org.eclipse.persistence.testing.tests.jpa.delimited;
 import java.sql.Date;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import junit.framework.Assert;
 import junit.framework.Test;

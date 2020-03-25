@@ -12,7 +12,7 @@
 
 package jpql.query;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class SmallProject extends Project {

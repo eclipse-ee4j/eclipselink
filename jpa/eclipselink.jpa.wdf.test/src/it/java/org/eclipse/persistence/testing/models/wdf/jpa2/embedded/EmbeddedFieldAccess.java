@@ -16,10 +16,10 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa2.embedded;
 
-import static javax.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.FIELD;
 
-import javax.persistence.Access;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 @Access(FIELD)

@@ -130,7 +130,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * INTERNAL:
      * Called on attempt to get value of an attribute that hasn't been fetched yet.
-     * Returns an error message in case javax.persistence.EntityNotFoundException
+     * Returns an error message in case jakarta.persistence.EntityNotFoundException
      * should be thrown by the calling method,
      * null otherwise.
      * <p>
@@ -178,7 +178,7 @@ public class FetchGroup extends AttributeGroup {
     /**
      * INTERNAL:
      * Called on attempt to assign value to an attribute that hasn't been fetched yet.
-     * Returns an error message in case javax.persistence.EntityNotFoundException
+     * Returns an error message in case jakarta.persistence.EntityNotFoundException
      * should be thrown by the calling method,
      * null otherwise.
      * <p>

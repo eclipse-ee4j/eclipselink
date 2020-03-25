@@ -16,9 +16,9 @@
 //       - 248293: JPA 2.0 Element Collections (part 2)
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Table(name="CMP3_HOCKEY_PLAYER")

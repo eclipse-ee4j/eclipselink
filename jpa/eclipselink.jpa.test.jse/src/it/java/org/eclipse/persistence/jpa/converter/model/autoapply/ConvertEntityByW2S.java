@@ -17,9 +17,9 @@
 
 package org.eclipse.persistence.jpa.converter.model.autoapply;
 
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class ConvertEntityByW2S {

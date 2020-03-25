@@ -21,8 +21,8 @@
 package org.eclipse.persistence.jpa.dynamic;
 
 //java eXtension imports
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;

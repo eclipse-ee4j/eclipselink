@@ -18,7 +18,7 @@
 //       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import javax.persistence.metamodel.BasicType;
+import jakarta.persistence.metamodel.BasicType;
 
 /**
  * <p>
@@ -29,7 +29,7 @@ import javax.persistence.metamodel.BasicType;
  * Instances of the type BasicType represent basic types (including
  * temporal and enumerated types).
  *
- * @see javax.persistence.metamodel.BasicType
+ * @see jakarta.persistence.metamodel.BasicType
  *
  * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The type of the represented basic type

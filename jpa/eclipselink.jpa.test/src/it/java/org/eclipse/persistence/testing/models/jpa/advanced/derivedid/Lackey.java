@@ -15,14 +15,14 @@
 //       - Bug#280350: NoSuchFieldException on deploy when using parent's compound PK class as derived ID
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 
 @Entity
 @Table(name="JPA_LACKEY")

@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import junit.framework.TestSuite;
 

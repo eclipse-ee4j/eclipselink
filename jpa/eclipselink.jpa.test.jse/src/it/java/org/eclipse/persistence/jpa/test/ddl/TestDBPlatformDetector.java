@@ -16,7 +16,7 @@
 //       - 464641: Test that 2.1 oracle12 platform is correctly returned
 package org.eclipse.persistence.jpa.test.ddl;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;

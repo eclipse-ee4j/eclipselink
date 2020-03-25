@@ -15,9 +15,9 @@
 //       - #559346: ClassCastException: DataReadQuery incompatible with ObjectLevelReadQuery
 package org.eclipse.persistence.jpa.test.criteria.model;
 
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.StaticMetamodel;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
 
 @StaticMetamodel(CriteriaCar.class)
 public class CriteriaCar_ {

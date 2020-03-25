@@ -15,14 +15,14 @@
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Entity;
-import javax.persistence.IdClass;
-import javax.persistence.OneToOne;
-import static javax.persistence.GenerationType.*;
-import javax.persistence.GeneratedValue;
-import javax.persistence.TableGenerator;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.OneToOne;
+import static jakarta.persistence.GenerationType.*;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.TableGenerator;
 
 @Entity
 @Table(name="CMP3_CUBICLE")

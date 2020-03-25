@@ -24,9 +24,9 @@
 //         http://wiki.eclipse.org/EclipseLink/Development/JPA_2.0/metamodel_api#DI_47:_20090715:_Implement_IdentifiableType.getIdType.28.29_for_composite_keys
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
@@ -39,7 +39,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  * <b>Description</b>:
  *  Instances of the type EntityType represent entity types.
  *
- * @see javax.persistence.metamodel.EntityType
+ * @see jakarta.persistence.metamodel.EntityType
  *
  * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The represented entity type.

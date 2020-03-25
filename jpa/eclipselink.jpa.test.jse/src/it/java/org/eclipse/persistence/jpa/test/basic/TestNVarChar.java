@@ -16,8 +16,8 @@
 //       - 458877 : Add national character support
 package org.eclipse.persistence.jpa.test.basic;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.jpa.test.basic.model.NvarcharEntity;

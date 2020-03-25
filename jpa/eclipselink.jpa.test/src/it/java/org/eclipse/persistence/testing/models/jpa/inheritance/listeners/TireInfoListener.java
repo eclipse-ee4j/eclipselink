@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.inheritance.listeners;
 
-import javax.persistence.PrePersist;
-import javax.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PostPersist;
 
 /**
  * A listener for all TireInfo entities.

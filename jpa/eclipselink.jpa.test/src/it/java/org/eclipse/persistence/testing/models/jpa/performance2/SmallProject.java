@@ -15,7 +15,7 @@
 //              mbraeuer - annotated version
 package org.eclipse.persistence.testing.models.jpa.performance2;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * The SmallProject class demonstrates usage of a way to limit a subclass to its

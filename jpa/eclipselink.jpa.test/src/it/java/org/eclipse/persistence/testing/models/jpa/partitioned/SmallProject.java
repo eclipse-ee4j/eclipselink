@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Local interface for the small project bean.

@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.structconverter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import oracle.spatial.geometry.JGeometry;
 import org.eclipse.persistence.annotations.StructConverter;

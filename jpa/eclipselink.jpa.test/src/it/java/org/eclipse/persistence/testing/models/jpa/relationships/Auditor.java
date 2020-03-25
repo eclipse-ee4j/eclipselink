@@ -17,9 +17,9 @@ package org.eclipse.persistence.testing.models.jpa.relationships;
 import java.util.HashSet;
 import java.util.Collection;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Table(name="JPA_AUDITOR")

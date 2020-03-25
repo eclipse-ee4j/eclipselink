@@ -17,8 +17,8 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.io.Serializable;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
 
 public class OrderImpl implements Order, Serializable{
 

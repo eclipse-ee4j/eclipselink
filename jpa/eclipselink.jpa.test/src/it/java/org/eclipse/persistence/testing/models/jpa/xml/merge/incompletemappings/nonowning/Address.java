@@ -16,10 +16,10 @@
 package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.nonowning;
 
 import java.io.Serializable;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
 
 /**
  *

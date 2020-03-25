@@ -21,7 +21,7 @@ import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.Map;
 
-import javax.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.ClassTransformer;
 
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;

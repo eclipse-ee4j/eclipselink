@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_1;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.*;
 
 import org.eclipse.persistence.annotations.NamedStoredFunctionQuery;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;

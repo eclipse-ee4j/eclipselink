@@ -18,8 +18,8 @@
 //       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
 
 /**
  * This class is mapped in:

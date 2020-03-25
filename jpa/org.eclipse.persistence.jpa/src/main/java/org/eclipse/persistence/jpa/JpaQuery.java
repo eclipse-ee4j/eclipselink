@@ -22,10 +22,10 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 /**
  * PUBLIC:
  * EclipseLInk specific JPA query interface.  Provides the functionality defined in
- * javax.persistence.Query and adds access to the underlying database query for EclipseLink specific
+ * jakarta.persistence.Query and adds access to the underlying database query for EclipseLink specific
  * functionality.
  */
-public interface JpaQuery<X> extends javax.persistence.TypedQuery<X> {
+public interface JpaQuery<X> extends jakarta.persistence.TypedQuery<X> {
 
     /**
      * PUBLIC:

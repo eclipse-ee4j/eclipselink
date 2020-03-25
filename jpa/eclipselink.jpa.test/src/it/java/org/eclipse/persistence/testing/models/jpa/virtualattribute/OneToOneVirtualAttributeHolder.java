@@ -17,10 +17,10 @@ package org.eclipse.persistence.testing.models.jpa.virtualattribute;
 
 import java.util.HashMap;
 
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
 
 @Entity
 @Table(name="O_O_VIRTUAL")

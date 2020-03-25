@@ -14,8 +14,8 @@
 //      tware - initial
 package org.eclipse.persistence.jpars.test.util;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.jpars.test.model.auction.StaticAddress;
 import org.eclipse.persistence.jpars.test.model.auction.StaticAuction;

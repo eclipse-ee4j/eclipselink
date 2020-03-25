@@ -22,7 +22,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.List;
 
-import javax.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
 
@@ -35,7 +35,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * Instances of the type ListAttribute represent persistent
  * List-valued attributes.
  *
- * @see javax.persistence.metamodel.ListAttribute
+ * @see jakarta.persistence.metamodel.ListAttribute
  *
  * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The type the represented List belongs to

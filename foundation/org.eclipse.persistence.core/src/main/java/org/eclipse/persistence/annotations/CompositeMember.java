@@ -29,8 +29,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * composite member persistence unit other than the source composite member persistence unit.
  * That allows the source and target to be mapped to different databases.
  *
- * @see javax.persistence.ElementCollection
- * @see javax.persistence.CollectionTable
+ * @see jakarta.persistence.ElementCollection
+ * @see jakarta.persistence.CollectionTable
  * @see org.eclipse.persistence.config.PersistenceUnitProperties#COMPOSITE_UNIT
  *
  * A CompositeMember can be specified on within an Entity, MappedSuperclass

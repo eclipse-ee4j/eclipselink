@@ -14,8 +14,8 @@
 //     Guy Pelletier - initial API and implementation
 package org.eclipse.persistence.jpa.config;
 
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.PersistenceUnitTransactionType;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
 
 /**
  * JPA scripting API implementation.

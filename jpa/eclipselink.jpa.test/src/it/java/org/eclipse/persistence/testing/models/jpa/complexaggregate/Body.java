@@ -15,9 +15,9 @@
 //       - 330755: Nested embeddables can't be used as embedded ids
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="JPA_BODY")

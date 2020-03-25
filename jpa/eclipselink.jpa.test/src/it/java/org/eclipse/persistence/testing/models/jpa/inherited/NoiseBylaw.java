@@ -17,11 +17,11 @@
 //       - 260296: mixed access with no Transient annotation does not result in error
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="JPA_NOISY")

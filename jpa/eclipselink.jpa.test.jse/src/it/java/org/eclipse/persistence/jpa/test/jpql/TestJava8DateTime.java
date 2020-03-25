@@ -16,9 +16,9 @@
 //       - 550951: Parameter binding for java.time types results in SQL syntax exception
 package org.eclipse.persistence.jpa.test.jpql;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;

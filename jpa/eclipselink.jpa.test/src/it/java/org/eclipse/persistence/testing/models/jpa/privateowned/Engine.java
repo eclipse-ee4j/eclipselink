@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.privateowned;
 
 import java.util.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.*;
 

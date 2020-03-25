@@ -24,7 +24,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.Project;
 
 import java.util.Vector;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;

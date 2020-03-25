@@ -16,8 +16,8 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TMP_BROKER_ACC")

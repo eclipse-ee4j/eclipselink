@@ -15,8 +15,8 @@
 
 package org.eclipse.persistence.testing.models.jpa.virtualattribute;
 
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Table(name="CMP3_VIRTUAL")

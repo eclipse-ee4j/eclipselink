@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.jpa.timestamptz;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.timestamptz.TStamp;

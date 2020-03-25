@@ -16,7 +16,7 @@
 package org.eclipse.persistence.testing.models.jpa.performance2;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Simple Address class with Basic mappings.

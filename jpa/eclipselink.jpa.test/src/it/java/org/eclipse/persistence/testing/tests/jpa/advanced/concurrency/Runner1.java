@@ -12,8 +12,8 @@
 
 package org.eclipse.persistence.testing.tests.jpa.advanced.concurrency;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;

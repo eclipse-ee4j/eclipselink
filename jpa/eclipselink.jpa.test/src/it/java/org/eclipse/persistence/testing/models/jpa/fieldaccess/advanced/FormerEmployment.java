@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.io.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * <p><b>Purpose</b>: Defines the former employment of an Employee.

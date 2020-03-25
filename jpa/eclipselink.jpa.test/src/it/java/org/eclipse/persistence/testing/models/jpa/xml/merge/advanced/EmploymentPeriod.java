@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.xml.merge.advanced;
 
 import java.sql.Date;
 import java.io.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * This class is used to test XML and annotation merging. This class is mapped

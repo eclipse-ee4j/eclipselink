@@ -20,8 +20,8 @@ package org.eclipse.persistence.testing.tests.jpa.datetime;
 import java.util.Date;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.datetime.DateTime;

@@ -16,12 +16,12 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity(name = "Woman")
 @Table(name = "CMP3_FA_WOMAN")

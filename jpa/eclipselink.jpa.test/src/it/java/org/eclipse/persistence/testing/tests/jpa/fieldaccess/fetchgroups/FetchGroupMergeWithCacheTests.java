@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.fetchgroups;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.queries.FetchGroup;

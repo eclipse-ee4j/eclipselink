@@ -40,11 +40,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
-import javax.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;

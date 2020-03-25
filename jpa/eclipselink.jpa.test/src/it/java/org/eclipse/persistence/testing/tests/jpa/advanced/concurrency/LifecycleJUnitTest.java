@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.tests.jpa.advanced.concurrency;
 
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;

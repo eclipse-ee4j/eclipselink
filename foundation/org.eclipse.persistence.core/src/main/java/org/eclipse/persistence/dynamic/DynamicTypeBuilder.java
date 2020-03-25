@@ -26,7 +26,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;

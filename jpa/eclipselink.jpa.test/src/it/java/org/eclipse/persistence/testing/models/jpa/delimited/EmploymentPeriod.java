@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.delimited;
 
 import java.sql.Date;
 import java.io.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.Property;
 

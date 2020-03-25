@@ -19,7 +19,7 @@ import java.util.HashSet;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PreDestroy;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
 

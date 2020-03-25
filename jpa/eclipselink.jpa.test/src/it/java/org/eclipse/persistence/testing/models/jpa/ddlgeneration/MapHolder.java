@@ -14,11 +14,11 @@
 //     07/17/2009 - tware - added tests for DDL generation of maps
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.ALL;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;

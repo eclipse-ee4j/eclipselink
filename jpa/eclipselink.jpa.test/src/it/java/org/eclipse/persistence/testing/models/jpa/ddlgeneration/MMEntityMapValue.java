@@ -14,12 +14,12 @@
 //     07/17/2009 - tware - added tests for DDL generation of maps
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.ALL;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="DDL_MVMM")

@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Vector;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;

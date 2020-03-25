@@ -14,10 +14,10 @@
 //     tware - initial contribution for Bug 366748 - JPA 2.1 Injectable Entity Listeners
 package org.eclipse.persistence.testing.models.jpa22.entitylistener;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 
 public class EntityListener extends AbstractEntityListener<EntityListenerHolder> {
     @Override

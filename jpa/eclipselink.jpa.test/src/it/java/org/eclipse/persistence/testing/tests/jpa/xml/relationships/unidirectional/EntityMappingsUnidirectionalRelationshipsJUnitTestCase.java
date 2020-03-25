@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.tests.jpa.xml.relationships.unidirection
 
 import java.util.Collection;
 import java.util.Iterator;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import junit.framework.*;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.testing.models.jpa.xml.relationships.unidirectional.PhoneNumber;

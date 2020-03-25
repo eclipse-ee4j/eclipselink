@@ -24,12 +24,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-import javax.persistence.PersistenceException;
-import javax.persistence.SharedCacheMode;
-import javax.persistence.ValidationMode;
-import javax.persistence.spi.ClassTransformer;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.PersistenceUnitTransactionType;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.ValidationMode;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import javax.sql.DataSource;
 
 /**
@@ -37,7 +37,7 @@ import javax.sql.DataSource;
  * Used by our Java SE implementation so common method calls can be used in setting
  * of Container and non-Container EntityManagerFactories.
  */
-public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceUnitInfo {
+public class SEPersistenceUnitInfo implements jakarta.persistence.spi.PersistenceUnitInfo {
 
     // What about 2.0 in 1.0 container here ...
     protected SharedCacheMode cacheMode;
@@ -323,7 +323,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public void setSharedCacheMode(String sharedCacheMode) {
         // If user enters an invalid caching type valueOf will throw an illegal
         // argument exception, e.g.
-        // java.lang.IllegalArgumentException: No enum const class javax.persistence.SharedCacheMode.ALLBOGUS
+        // java.lang.IllegalArgumentException: No enum const class jakarta.persistence.SharedCacheMode.ALLBOGUS
         this.cacheMode = SharedCacheMode.valueOf(sharedCacheMode);
     }
 
@@ -334,7 +334,7 @@ public class SEPersistenceUnitInfo implements javax.persistence.spi.PersistenceU
     public void setValidationMode(String validationMode) {
         // If user enters an invalid validation mode valueOf will throw an illegal
         // argument exception, e.g.
-        // java.lang.IllegalArgumentException: No enum const class javax.persistence.ValidationMode.ALLBOGUS
+        // java.lang.IllegalArgumentException: No enum const class jakarta.persistence.ValidationMode.ALLBOGUS
         this.validationMode = ValidationMode.valueOf(validationMode);
     }
 

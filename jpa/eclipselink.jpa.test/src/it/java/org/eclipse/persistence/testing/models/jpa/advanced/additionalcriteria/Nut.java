@@ -15,12 +15,12 @@
 //       - 322008: Improve usability of additional criteria applied to queries at the session/EM
 package org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="JPA_AC_NUT")

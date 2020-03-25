@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import javax.sql.DataSource;
 import jakarta.transaction.TransactionManager;
 

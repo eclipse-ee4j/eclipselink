@@ -27,8 +27,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.Vector;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -2147,7 +2147,7 @@ public class JUnitJPQLSimpleTestSuite extends JUnitTestCase {
         Employee emp2 = new Employee();
 
         try {
-            javax.persistence.Query query = em.createNamedQuery("findEmployeeByPK");
+            jakarta.persistence.Query query = em.createNamedQuery("findEmployeeByPK");
             query.setParameter("id", emp1.getId());
             query.setHint("lockMode", new Short((short)1));
 

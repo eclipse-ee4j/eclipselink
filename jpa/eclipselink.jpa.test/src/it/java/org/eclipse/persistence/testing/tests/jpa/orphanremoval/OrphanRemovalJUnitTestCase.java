@@ -19,7 +19,7 @@ package org.eclipse.persistence.testing.tests.jpa.orphanremoval;
 
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.orphanremoval.*;

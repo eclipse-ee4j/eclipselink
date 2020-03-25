@@ -978,7 +978,7 @@
                 <exclude name="jakarta.inject*"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*_2.2*.jar" excludes="*preview*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="jakarta.persistence*_2.2*.jar" excludes="*preview*.jar"/>
             <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
             <zipfileset dir="${eclipselink.util.plugins}/">
                 <include name="javax.wsdl*.jar"/>
@@ -1044,7 +1044,7 @@
                 <include name="${eclipselink.sdo.base}/eclipselink.sdo.test.server/**"/>
                 <include name="plugins/eclipselink-jpa-modelgen_*.jar"/>
                 <include name="plugins/jakarta.validation.api_*.jar"/>
-                <include name="jpa/plugins/javax.persistence_2.*.jar"/>
+                <include name="jpa/plugins/jakarta.persistence_2.*.jar"/>
                 <include name="sdo/plugins/commonj.sdo_*.jar"/>
                 <exclude name="**/.settings/**"/>
                 <exclude name="**/eclipselink.moxy.test/moxy/**"/>
@@ -1131,7 +1131,7 @@
 
             <!-- *** include Dependent APIs in Javadoc  *** -->
             <fileset dir="${build.dir}/jpa22/src" defaultexcludes="yes">
-                <include name="javax/persistence/**/*.java"/>
+                <include name="jakarta/persistence/**/*.java"/>
             </fileset>
             <fileset dir="${build.dir}/jakarta.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>

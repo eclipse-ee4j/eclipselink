@@ -18,13 +18,13 @@ package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Cacheable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Cacheable(true)
 @Entity

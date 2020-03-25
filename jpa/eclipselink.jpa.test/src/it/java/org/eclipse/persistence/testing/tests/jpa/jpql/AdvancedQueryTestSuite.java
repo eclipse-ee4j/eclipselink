@@ -23,16 +23,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.persistence.PessimisticLockException;
-import javax.persistence.Query;
-import javax.persistence.EntityManager;
-import javax.persistence.RollbackException;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.RollbackException;
+import jakarta.persistence.TypedQuery;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -1228,7 +1228,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);
-                } catch (javax.persistence.PessimisticLockException ex) {
+                } catch (jakarta.persistence.PessimisticLockException ex) {
                     pessimisticLockException = ex;
                 } finally {
                     closeEntityManagerAndTransaction(em2);
@@ -1282,7 +1282,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     employee2.setFirstName("Invalid Lock Employee");
 
                     commitTransaction(em2);
-                } catch (javax.persistence.PessimisticLockException ex) {
+                } catch (jakarta.persistence.PessimisticLockException ex) {
                     pessimisticLockException = ex;
                 } finally {
                     closeEntityManagerAndTransaction(em2);
@@ -1413,7 +1413,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                    if (ex instanceof jakarta.persistence.LockTimeoutException) {
                         lockTimeOutException = ex;
                     } else {
                         throw ex;
@@ -1476,7 +1476,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                    if (ex instanceof jakarta.persistence.LockTimeoutException) {
                         lockTimeOutException = ex;
                     } else {
                         throw ex;
@@ -1548,7 +1548,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                    if (ex instanceof jakarta.persistence.LockTimeoutException) {
                         lockTimeOutException = ex;
                     } else {
                         throw ex;
@@ -1573,7 +1573,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 fail("PesimisticLockRunnerThread failed with:" + ex);
             }
 
-            Assert.assertNull("A javax.persistence.LockTimeoutException was unexpectedly thrown", lockTimeOutException);
+            Assert.assertNull("A jakarta.persistence.LockTimeoutException was unexpectedly thrown", lockTimeOutException);
         }
     }
 
@@ -1626,7 +1626,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
                 } catch (PersistenceException ex) {
-                    if (ex instanceof javax.persistence.LockTimeoutException) {
+                    if (ex instanceof jakarta.persistence.LockTimeoutException) {
                         lockTimeOutException = ex;
                     } else {
                         throw ex;
@@ -1651,7 +1651,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                 fail("PesimisticLockRunnerThread failed with:" + ex);
             }
 
-            Assert.assertNotNull("A javax.persistence.LockTimeoutException was expected to be thrown", lockTimeOutException);
+            Assert.assertNotNull("A jakarta.persistence.LockTimeoutException was expected to be thrown", lockTimeOutException);
         }
     }
 
@@ -2933,7 +2933,7 @@ public class AdvancedQueryTestSuite extends JUnitTestCase {
                             Employee emp = query2.getSingleResult(); // might wait for lock to be released
                             emp.setFirstName("Trouba");
                             commitTransaction(em2); // might wait for lock to be released
-                        } catch (javax.persistence.RollbackException ex) {
+                        } catch (jakarta.persistence.RollbackException ex) {
                             if (!ex.getMessage().contains("org.eclipse.persistence.exceptions.DatabaseException")) {
                                 ex.printStackTrace();
                                 fail("it's not the right exception:" + ex);

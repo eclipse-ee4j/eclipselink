@@ -1076,7 +1076,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      */
     public void addFetchGroupVariables() {
         FieldVisitor fv = cv.visitField(ACC_PROTECTED, "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, null);
-        // Only add javax.persistence.Transient annotation if attribute access
+        // Only add jakarta.persistence.Transient annotation if attribute access
         // is being used
         if (classDetails.usesAttributeAccess()) {
             fv.visitAnnotation(JPA_TRANSIENT_DESCRIPTION, true).visitEnd();

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 public abstract class RatedBeerConsumer<X, Y, Z> extends BeerConsumer {
     private Collection<X> acclaims;

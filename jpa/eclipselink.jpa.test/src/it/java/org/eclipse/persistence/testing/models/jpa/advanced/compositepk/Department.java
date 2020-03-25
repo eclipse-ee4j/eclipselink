@@ -19,17 +19,17 @@ package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 import java.util.Vector;
 import java.util.Collection;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Entity;
-import javax.persistence.OrderBy;
-import javax.persistence.IdClass;
-import javax.persistence.OneToMany;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.OneToMany;
 
-import static javax.persistence.FetchType.EAGER;
+import static jakarta.persistence.FetchType.EAGER;
 
 @Entity
 @Table(name="CMP3_DEPARTMENT")

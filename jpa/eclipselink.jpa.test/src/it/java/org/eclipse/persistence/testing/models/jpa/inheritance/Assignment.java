@@ -15,11 +15,11 @@
 //       - 259829: TABLE_PER_CLASS with abstract classes does not work
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
 
-import static javax.persistence.InheritanceType.TABLE_PER_CLASS;
+import static jakarta.persistence.InheritanceType.TABLE_PER_CLASS;
 
 @Entity
 @Inheritance(strategy=TABLE_PER_CLASS)

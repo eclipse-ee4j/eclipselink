@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.CommunicationException;

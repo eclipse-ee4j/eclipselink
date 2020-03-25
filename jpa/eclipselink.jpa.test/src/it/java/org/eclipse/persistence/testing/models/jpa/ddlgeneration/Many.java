@@ -23,7 +23,7 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * This class is only usable within the ddlTableSuffix persistence unit

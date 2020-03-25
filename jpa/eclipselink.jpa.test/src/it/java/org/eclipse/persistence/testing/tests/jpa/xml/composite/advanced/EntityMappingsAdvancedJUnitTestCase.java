@@ -28,9 +28,9 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
-import javax.persistence.Query;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityNotFoundException;
 
 import junit.framework.*;
 

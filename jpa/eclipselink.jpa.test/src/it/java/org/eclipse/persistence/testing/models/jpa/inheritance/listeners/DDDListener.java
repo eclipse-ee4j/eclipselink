@@ -16,7 +16,7 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance.listeners;
 
 import java.util.EventListener;
-import javax.persistence.PostLoad;
+import jakarta.persistence.PostLoad;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.DDD;
 import org.eclipse.persistence.testing.models.jpa.inheritance.Vehicle;

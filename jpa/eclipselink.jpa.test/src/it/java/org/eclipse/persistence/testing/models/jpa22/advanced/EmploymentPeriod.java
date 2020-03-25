@@ -23,9 +23,9 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.OneToMany;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.OneToMany;
 
 @Embeddable
 public class EmploymentPeriod implements Serializable, Cloneable {

@@ -15,10 +15,10 @@
 //       - 300458: EclispeLink should throw a more specific exception than NPE
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class Bylaw implements CityNumberPair {

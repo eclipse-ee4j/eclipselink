@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.test.mapping.model;
 
 import java.util.List;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "POST_A")

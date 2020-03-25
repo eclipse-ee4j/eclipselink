@@ -17,7 +17,7 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.*;

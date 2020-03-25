@@ -14,13 +14,13 @@
 //      gonural - initial
 package org.eclipse.persistence.jpars.test.model.employee;
 
-import static javax.persistence.TemporalType.TIMESTAMP;
+import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 import java.util.Calendar;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Temporal;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Temporal;
 
 @Embeddable
 public class Certification {

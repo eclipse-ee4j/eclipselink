@@ -15,8 +15,8 @@
 //       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class CoronaTag {

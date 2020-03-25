@@ -31,8 +31,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 //java eXtension imports
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.servlet.ServletContext;
 import javax.wsdl.WSDLException;
 import jakarta.xml.bind.JAXBContext;

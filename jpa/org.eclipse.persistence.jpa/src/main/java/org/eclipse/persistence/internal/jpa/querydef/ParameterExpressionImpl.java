@@ -15,8 +15,8 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.ClassConstants;

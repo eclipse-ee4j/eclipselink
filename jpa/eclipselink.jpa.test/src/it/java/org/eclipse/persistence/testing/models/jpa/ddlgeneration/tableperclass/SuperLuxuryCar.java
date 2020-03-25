@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass;
 
 import java.io.Serializable;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("S_LUXURY")

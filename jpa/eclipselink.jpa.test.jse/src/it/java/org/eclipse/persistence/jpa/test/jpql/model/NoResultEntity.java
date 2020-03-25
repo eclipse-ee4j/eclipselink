@@ -12,9 +12,9 @@
  */
 package org.eclipse.persistence.jpa.test.jpql.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 /**
  * The purpose of this class is for querying an Entity table with no results.

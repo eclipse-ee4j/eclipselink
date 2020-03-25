@@ -14,9 +14,9 @@
 //              ljungmann - initial implementation
 package org.eclipse.persistence.testing.tests.jpa22.metadata;
 
-import javax.persistence.PostRemove;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 public class LogListener {
 

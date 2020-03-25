@@ -26,7 +26,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Repeatable;
 
-import javax.persistence.QueryHint;
+import jakarta.persistence.QueryHint;
 
 /**
  * A NamedStoredProcedureQuery annotation allows the definition of queries that

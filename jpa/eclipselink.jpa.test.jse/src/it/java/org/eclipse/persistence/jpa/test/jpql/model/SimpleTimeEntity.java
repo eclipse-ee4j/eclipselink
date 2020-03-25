@@ -16,8 +16,8 @@
 //       - 550951: Parameter binding for java.time types results in SQL syntax exception
 package org.eclipse.persistence.jpa.test.jpql.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class SimpleTimeEntity {

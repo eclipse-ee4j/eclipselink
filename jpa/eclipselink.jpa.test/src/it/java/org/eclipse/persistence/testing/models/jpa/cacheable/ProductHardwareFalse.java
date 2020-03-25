@@ -14,11 +14,11 @@
 //     Tomas Kraus - Initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.cacheable;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * jUnit test data model to verify <code>@Cacheable</code> annotation functionality.

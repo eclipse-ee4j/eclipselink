@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.framework;
 
 import java.io.*;
 import java.util.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.sessions.*;

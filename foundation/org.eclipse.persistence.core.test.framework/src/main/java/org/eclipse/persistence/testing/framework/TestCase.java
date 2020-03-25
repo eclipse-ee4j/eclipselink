@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.lang.ref.WeakReference;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.exceptions.EclipseLinkException;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;

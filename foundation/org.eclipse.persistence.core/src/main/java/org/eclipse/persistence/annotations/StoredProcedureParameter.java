@@ -19,7 +19,7 @@ package org.eclipse.persistence.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.persistence.ParameterMode;
+import jakarta.persistence.ParameterMode;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 

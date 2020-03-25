@@ -22,7 +22,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Collection;
 
-import javax.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.CollectionAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
 
@@ -35,7 +35,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * Instances of the type CollectionAttribute represent persistent
  * Collection-valued attributes.
  *
- * @see javax.persistence.metamodel.CollectionAttribute
+ * @see jakarta.persistence.metamodel.CollectionAttribute
  *
  * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The type the represented Collection belongs to

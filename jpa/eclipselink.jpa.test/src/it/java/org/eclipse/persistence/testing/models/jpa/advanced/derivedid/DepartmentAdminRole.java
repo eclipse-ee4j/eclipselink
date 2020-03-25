@@ -15,13 +15,13 @@
 //       - 241765: JPA 2.0 Derived identities
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.Table;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.compositepk.Department;
 

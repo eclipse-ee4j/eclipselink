@@ -15,8 +15,8 @@
 //       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Table;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Table;
 
 @Table(name="XML_PADS")
 @DiscriminatorValue("PAD")

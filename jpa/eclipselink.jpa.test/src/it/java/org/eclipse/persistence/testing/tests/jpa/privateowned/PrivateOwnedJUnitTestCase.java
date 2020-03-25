@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.tests.jpa.privateowned;
 
 import java.util.Iterator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import junit.framework.*;
 

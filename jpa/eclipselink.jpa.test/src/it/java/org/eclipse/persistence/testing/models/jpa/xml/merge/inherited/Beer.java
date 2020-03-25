@@ -18,12 +18,12 @@
 //       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.JoinColumn;
-import static javax.persistence.FetchType.LAZY;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.JoinColumn;
+import static jakarta.persistence.FetchType.LAZY;
 
 import java.sql.Timestamp;
 

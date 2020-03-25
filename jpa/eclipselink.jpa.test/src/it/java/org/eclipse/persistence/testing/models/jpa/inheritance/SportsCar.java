@@ -16,10 +16,10 @@
 
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.FetchType.LAZY;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.LAZY;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.inheritance.listeners.SportsCarListener.class)

@@ -23,12 +23,12 @@ package org.eclipse.persistence.testing.models.jpa.inherited;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import javax.persistence.Inheritance;
+import jakarta.persistence.Inheritance;
 
-import javax.persistence.Table;
-import javax.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
 
-import static javax.persistence.InheritanceType.SINGLE_TABLE;
+import static jakarta.persistence.InheritanceType.SINGLE_TABLE;
 
 @Entity
 @Inheritance(strategy=SINGLE_TABLE)

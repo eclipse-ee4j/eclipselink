@@ -15,8 +15,8 @@
 //       - 531726 - COUNT with TREAT generates incorrect joins for Joined Inheritance
 package org.eclipse.persistence.testing.models.jpa21.advanced.animals;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * {@code Rodent} entity is direct {@code Animal} entity descendant and ancestor of the {@code Beaver} entity.

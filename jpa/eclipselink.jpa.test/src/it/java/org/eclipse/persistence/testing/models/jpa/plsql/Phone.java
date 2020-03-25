@@ -14,8 +14,8 @@
 //     James - initial impl
 package org.eclipse.persistence.testing.models.jpa.plsql;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import org.eclipse.persistence.annotations.Struct;
 import org.eclipse.persistence.platform.database.oracle.annotations.PLSQLParameter;

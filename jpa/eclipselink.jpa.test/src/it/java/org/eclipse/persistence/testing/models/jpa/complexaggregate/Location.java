@@ -14,7 +14,7 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Location {

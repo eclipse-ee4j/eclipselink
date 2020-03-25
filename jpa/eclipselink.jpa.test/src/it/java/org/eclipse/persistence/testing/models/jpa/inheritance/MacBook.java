@@ -15,9 +15,9 @@
 //       - 211323: Add class extractor support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.Entity;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 
 @Entity
 @NamedQuery(

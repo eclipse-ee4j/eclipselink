@@ -16,7 +16,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.util.EventListener;

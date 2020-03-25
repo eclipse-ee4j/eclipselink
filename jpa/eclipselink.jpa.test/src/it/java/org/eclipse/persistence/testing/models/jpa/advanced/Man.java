@@ -16,10 +16,10 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 public class Man implements Serializable {

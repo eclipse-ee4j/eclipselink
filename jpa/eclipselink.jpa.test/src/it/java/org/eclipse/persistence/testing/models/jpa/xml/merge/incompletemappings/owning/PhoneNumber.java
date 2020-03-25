@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning;
 
 import java.io.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * <p><b>Purpose</b>: Describes an Employee's phone number.

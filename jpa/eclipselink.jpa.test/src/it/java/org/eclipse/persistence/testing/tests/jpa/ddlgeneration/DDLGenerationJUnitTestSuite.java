@@ -107,11 +107,11 @@ import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.impl.Por
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.*;
 import org.eclipse.persistence.testing.models.jpa.ddlgeneration.weaving.Equipment;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 
 /**
  * JUnit test case(s) for DDL generation.

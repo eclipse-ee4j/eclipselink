@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package test.org.eclipse.persistence.testing.models.jpa.spring;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="Spring_TLE_Truck")

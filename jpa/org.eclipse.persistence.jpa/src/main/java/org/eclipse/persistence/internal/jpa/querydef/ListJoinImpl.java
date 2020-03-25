@@ -16,14 +16,14 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
 
@@ -35,7 +35,7 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
  * <b>Description</b>: This class represents a join of an attribute from a "From"element.
  * <p>
  *
- * @see javax.persistence.criteria ListJoin
+ * @see jakarta.persistence.criteria ListJoin
  *
  * @author gyorke
  * @since EclipseLink 1.2
@@ -61,8 +61,8 @@ public class ListJoinImpl<Z, X>  extends JoinImpl<Z, X> implements ListJoin<Z, X
     * the target of the join
     */
     @Override
-    public javax.persistence.metamodel.ListAttribute<? super Z, X> getModel(){
-        return (javax.persistence.metamodel.ListAttribute<? super Z, X>)this.modelArtifact;
+    public jakarta.persistence.metamodel.ListAttribute<? super Z, X> getModel(){
+        return (jakarta.persistence.metamodel.ListAttribute<? super Z, X>)this.modelArtifact;
     }
 
     @Override

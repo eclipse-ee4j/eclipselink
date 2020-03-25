@@ -27,7 +27,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * <p>
  * <b>Purpose</b>: Defines the Interface for EclipseLink extensions to the EntityManagerFactory
  * </p>
- * @see javax.persistence.EntityManagerFactory
+ * @see jakarta.persistence.EntityManagerFactory
  */
 public interface JpaEntityManagerFactory {
 

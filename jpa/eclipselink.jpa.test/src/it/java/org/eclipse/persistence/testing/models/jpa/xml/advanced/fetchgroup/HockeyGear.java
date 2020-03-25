@@ -15,18 +15,18 @@
 //       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.models.jpa.xml.advanced.fetchgroup;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 
-import static javax.persistence.GenerationType.TABLE;
-import static javax.persistence.InheritanceType.JOINED;
+import static jakarta.persistence.GenerationType.TABLE;
+import static jakarta.persistence.InheritanceType.JOINED;
 
 @Table(name="XML_HOCKEY_GEAR")
 @Inheritance(strategy=JOINED)

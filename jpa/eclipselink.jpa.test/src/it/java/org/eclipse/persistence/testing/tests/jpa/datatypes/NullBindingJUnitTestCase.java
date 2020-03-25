@@ -19,8 +19,8 @@ import org.eclipse.persistence.testing.models.jpa.datatypes.*;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 

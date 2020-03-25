@@ -18,10 +18,10 @@ package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
 import java.util.List;
 import java.util.ArrayList;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Table(name="CMP3_HOCKEY_TEAM")

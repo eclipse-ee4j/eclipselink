@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="DDL_MVBP")

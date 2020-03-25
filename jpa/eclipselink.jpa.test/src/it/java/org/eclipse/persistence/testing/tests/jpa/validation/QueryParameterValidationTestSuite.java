@@ -16,7 +16,7 @@
 
 package org.eclipse.persistence.testing.tests.jpa.validation;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

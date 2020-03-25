@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.jpa.metamodel.proxy;
 
 import java.util.List;
 
-import javax.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
 
 /**
  * A proxy class that allows EclipseLink to trigger the deployment of a persistence unit

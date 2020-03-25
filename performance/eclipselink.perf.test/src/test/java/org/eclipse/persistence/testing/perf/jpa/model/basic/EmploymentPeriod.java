@@ -17,9 +17,9 @@ package org.eclipse.persistence.testing.perf.jpa.model.basic;
 
 import java.util.Calendar;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 /**
  * Represents the period of time an employee has worked for the company. A null

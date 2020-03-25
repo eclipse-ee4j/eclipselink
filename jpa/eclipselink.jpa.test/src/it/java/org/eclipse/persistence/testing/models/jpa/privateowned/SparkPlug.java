@@ -14,7 +14,7 @@
 //     02/19/09 dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.privateowned;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity(name="PO_SparkPlug")
 @Table(name="CMP3_PO_SPARK_PLUG")

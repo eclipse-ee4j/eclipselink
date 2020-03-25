@@ -15,12 +15,12 @@
 //            - 327940: @OrderColumn does not work when list read in through uow
 package org.eclipse.persistence.testing.models.jpa.cacheable;
 
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.GenerationType.TABLE;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 
 @Entity(name="JPA_CACHEABLE_FALSE_DETAIL")
 @Cacheable(false)

@@ -15,9 +15,9 @@
 package org.eclipse.persistence.testing.models.jpa.proxyauthentication;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Table(name="PAS_CONN.JPA_PROXY_EMPLOYEE")

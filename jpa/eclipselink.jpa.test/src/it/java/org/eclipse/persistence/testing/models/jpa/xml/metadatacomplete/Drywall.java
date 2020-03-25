@@ -15,7 +15,7 @@
 //       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
 package org.eclipse.persistence.testing.models.jpa.xml.metadatacomplete;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 /**
  * Included in the following mapping files:

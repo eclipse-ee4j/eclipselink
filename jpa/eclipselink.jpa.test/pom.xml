@@ -88,6 +88,10 @@
         </dependency>
         <!--Other modules-->
         <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <version>${project.version}</version>
@@ -540,6 +544,7 @@
                                                 <value>com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl</value>
                                             </systemProperty>
                                         </systemProperties>
+<!--                                        <commandlineArgs>-loglevel ALL</commandlineArgs>-->
                                         <additionalClasspathElements>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-annotation-model.jar</additionalClasspathElement>
                                             <additionalClasspathElement>${project.build.directory}/eclipselink-xml-only-model.jar</additionalClasspathElement>

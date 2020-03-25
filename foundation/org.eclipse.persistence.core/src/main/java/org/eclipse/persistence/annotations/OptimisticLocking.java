@@ -20,7 +20,7 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 import static org.eclipse.persistence.annotations.OptimisticLockingType.VERSION_COLUMN;
 

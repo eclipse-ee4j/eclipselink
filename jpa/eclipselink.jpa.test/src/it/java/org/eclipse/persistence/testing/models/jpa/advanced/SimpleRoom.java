@@ -14,8 +14,8 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 
 @Entity
 public class SimpleRoom {

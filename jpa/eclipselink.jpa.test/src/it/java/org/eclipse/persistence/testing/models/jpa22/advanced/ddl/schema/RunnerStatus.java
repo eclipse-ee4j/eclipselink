@@ -15,8 +15,8 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.testing.models.jpa22.advanced.ddl.schema;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import org.eclipse.persistence.testing.models.jpa22.advanced.enums.RunningStatus;
 

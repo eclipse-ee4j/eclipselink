@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.internal.nosql.adapters.nosql.OracleNoSQLConnection;
 import org.eclipse.persistence.testing.models.jpa.nosql.mapped.Address;

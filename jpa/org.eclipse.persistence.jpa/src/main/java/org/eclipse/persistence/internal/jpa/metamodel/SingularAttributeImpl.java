@@ -23,9 +23,9 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.lang.reflect.Field;
 
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.logging.AbstractSessionLog;
@@ -47,7 +47,7 @@ import org.eclipse.persistence.mappings.structures.ReferenceMapping;
  * single-valued properties or fields.
  *
  * @author Michael O'Brien
- * @see javax.persistence.metamodel.SingularAttribute
+ * @see jakarta.persistence.metamodel.SingularAttribute
  * @since EclipseLink 1.2 - JPA 2.0
  *
  * @param <X> The type containing the represented attribute

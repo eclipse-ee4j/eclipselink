@@ -21,9 +21,9 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.PersistenceException;
 
 /**
  * <p>

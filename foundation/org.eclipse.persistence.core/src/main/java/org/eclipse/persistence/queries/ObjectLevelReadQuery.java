@@ -2538,7 +2538,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * returns the javax.persistence.LockModeType string value set on this query.
+     * returns the jakarta.persistence.LockModeType string value set on this query.
      */
     public String getLockModeType(){
         return this.lockModeType;
@@ -2546,7 +2546,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
 
     /**
      * INTERNAL:
-     * Sets a javax.persistence.LockModeType to used with this queries execution.
+     * Sets a jakarta.persistence.LockModeType to used with this queries execution.
      * The valid types are:
      *  - WRITE
      *  - READ

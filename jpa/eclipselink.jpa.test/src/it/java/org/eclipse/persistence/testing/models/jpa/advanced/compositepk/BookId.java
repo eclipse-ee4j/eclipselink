@@ -14,8 +14,8 @@ package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
 import java.io.Serializable;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 @Embeddable
 public class BookId implements Serializable {

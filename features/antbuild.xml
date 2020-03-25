@@ -727,7 +727,7 @@
                           *jms*.jar,
                           eclipselink*.jar,
                           *ejb*.jar,
-                          javax.persistence*_1.*.jar,
+                          jakarta.persistence*_1.*.jar,
                           *preview*.jar,
                           *jakarta.transaction*.jar,
                           *jakarta.transaction*.jar,

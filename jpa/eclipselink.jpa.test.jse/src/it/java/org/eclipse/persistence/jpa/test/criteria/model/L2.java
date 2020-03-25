@@ -16,7 +16,7 @@
 //       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.jpa.test.criteria.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class L2 {

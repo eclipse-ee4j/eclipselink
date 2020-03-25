@@ -59,9 +59,9 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.VehicleDirectory;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
 
 public class EntityManagerJUnitTestCase extends JUnitTestCase {
 

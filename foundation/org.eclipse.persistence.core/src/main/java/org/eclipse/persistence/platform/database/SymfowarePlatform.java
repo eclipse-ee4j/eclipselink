@@ -206,7 +206,7 @@ public class SymfowarePlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.lang.Byte[].class, new FieldTypeDefinition(
                 "BLOB", 1024));
         // Symfoware's range for a VARCHAR is 1-32000, but the default value of
-        // @javax.persistence.Column#length is 255
+        // @jakarta.persistence.Column#length is 255
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR",
                 255));
         fieldTypeMapping.put(java.lang.Character[].class,

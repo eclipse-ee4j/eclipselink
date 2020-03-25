@@ -20,7 +20,7 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.employee;
 
 //java eXtension imports
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 //JUnit4 imports
 import org.junit.AfterClass;

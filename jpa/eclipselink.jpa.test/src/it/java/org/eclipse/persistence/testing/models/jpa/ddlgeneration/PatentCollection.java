@@ -14,8 +14,8 @@
 //     tware - testing for DDL issue with embedded and MTM
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import javax.persistence.Embeddable;
-import javax.persistence.ManyToMany;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.ManyToMany;
 
 import org.eclipse.persistence.annotations.CascadeOnDelete;
 

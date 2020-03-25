@@ -16,9 +16,9 @@
 //       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
 
 @Entity
 @EntityListeners({

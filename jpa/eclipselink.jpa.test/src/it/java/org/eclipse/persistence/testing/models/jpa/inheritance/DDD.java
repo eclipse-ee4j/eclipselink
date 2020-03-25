@@ -15,7 +15,7 @@
 //       - 307664:  Lifecycle callbacks not called for object from IndirectSet
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.TypeConverter;

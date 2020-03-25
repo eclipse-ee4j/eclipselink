@@ -15,8 +15,8 @@
 
 package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning;
 
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
 
 /**
  *

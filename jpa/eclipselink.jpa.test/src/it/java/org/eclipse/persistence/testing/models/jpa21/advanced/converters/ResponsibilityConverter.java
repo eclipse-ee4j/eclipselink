@@ -17,8 +17,8 @@
 //       - 402029: Application exceptions need to be wrapped in PersistenceException
 package org.eclipse.persistence.testing.models.jpa21.advanced.converters;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.RunningStatus;
 

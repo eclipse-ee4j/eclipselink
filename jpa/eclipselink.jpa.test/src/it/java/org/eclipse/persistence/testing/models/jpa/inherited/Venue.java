@@ -15,8 +15,8 @@
 //       - 248293: JPA 2.0 Element Collections (part 2)
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 @Embeddable
 public class Venue {

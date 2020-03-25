@@ -19,7 +19,7 @@
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
 import java.util.Date;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * This class is mapped in:

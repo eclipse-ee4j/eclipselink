@@ -25,8 +25,8 @@
 //
 package org.eclipse.persistence.internal.jpa;
 
-import javax.persistence.Cache;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.Cache;
+import jakarta.persistence.PersistenceException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;

@@ -15,11 +15,11 @@
 //       - 248293: JPA 2.0 Element Collections (part 2)
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Access;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
-import static javax.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.AccessType.PROPERTY;
 
 @Embeddable
 @Access(PROPERTY)

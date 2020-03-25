@@ -15,21 +15,21 @@
 //
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import javax.persistence.criteria.CollectionJoin;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.MapJoin;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.SetJoin;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.CollectionAttribute;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.CollectionJoin;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.SetJoin;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * Special type of Join that does not allow further joins.
  * <p>
  *
- * @see javax.persistence.criteria ListJoin
+ * @see jakarta.persistence.criteria ListJoin
  *
  * @author gyorke
  * @since EclipseLink 1.2
@@ -122,7 +122,7 @@ public class BasicListJoinImpl<Z, E> extends ListJoinImpl<Z, E> {
     }
 
     @Override
-    public <Y> SetJoin<E, Y> join(javax.persistence.metamodel.SetAttribute<? super E, Y> set, JoinType jt) {
+    public <Y> SetJoin<E, Y> join(jakarta.persistence.metamodel.SetAttribute<? super E, Y> set, JoinType jt) {
         throw new IllegalStateException(ExceptionLocalization.buildMessage("pathnode_is_primitive_node"));
     }
 

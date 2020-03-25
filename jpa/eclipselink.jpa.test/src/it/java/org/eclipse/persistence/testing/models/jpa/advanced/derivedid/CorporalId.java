@@ -15,8 +15,8 @@
 //       - 270011: JPA 2.0 MappedById support
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class CorporalId {

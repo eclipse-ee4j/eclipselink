@@ -18,8 +18,8 @@ package org.eclipse.persistence.testing.models.wdf.jpa1.jpql;
 
 import java.io.Serializable;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Lob;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Lob;
 
 @Embeddable
 public class Tesla implements Serializable {

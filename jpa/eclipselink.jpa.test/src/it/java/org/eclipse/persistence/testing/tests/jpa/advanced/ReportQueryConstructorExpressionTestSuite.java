@@ -30,7 +30,7 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import java.util.Vector;
 import java.util.Iterator;

@@ -17,11 +17,11 @@ package org.eclipse.persistence.testing.models.jpa.xml.metadatacomplete;
 
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.AttributeOverride;
-import javax.persistence.Table;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Table;
 
 /**
  * Included in the following mapping files:

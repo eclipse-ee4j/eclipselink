@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.AttributeOverride;
 
 // This one should get picked up since there is not attribute override
 // specified in the XML for this class.

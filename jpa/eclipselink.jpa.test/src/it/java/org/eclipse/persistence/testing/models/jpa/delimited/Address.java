@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.models.jpa.delimited;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.*;
 
 /**
  * <p><b>Purpose</b>: Represents the mailing address on an Employee

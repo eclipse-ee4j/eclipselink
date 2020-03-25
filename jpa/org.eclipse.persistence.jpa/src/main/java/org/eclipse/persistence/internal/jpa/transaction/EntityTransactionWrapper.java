@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.jpa.transaction;
 
-import javax.persistence.EntityTransaction;
-import javax.persistence.TransactionRequiredException;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.TransactionRequiredException;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;

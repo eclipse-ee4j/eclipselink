@@ -16,7 +16,7 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa2.employee;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Address {

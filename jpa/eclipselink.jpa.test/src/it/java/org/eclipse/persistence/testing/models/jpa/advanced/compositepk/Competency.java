@@ -15,11 +15,11 @@
 //       - 314941: multiple joinColumns without referenced column names defined, no error
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
-import javax.persistence.Access;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
-import static javax.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.FIELD;
 
 @Embeddable
 @Access(FIELD)

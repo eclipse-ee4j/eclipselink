@@ -14,7 +14,7 @@
 //     James Sutherland (Oracle) - initial API and implementation
  package org.eclipse.persistence.testing.tests.jpa.performance.misc;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.testing.framework.*;
 

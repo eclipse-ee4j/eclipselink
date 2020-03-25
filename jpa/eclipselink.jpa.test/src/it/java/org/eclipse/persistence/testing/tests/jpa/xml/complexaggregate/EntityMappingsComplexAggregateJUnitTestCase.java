@@ -17,7 +17,7 @@
 //       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.tests.jpa.xml.complexaggregate;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 

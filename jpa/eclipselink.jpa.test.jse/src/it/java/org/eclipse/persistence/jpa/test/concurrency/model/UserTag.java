@@ -16,7 +16,7 @@
 //       - 500753: Synchronize initialization of InsertQuery
 package org.eclipse.persistence.jpa.test.concurrency.model;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class UserTag {

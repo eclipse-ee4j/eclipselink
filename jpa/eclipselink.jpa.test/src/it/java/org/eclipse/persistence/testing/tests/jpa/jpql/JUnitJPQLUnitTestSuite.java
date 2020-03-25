@@ -22,8 +22,8 @@ import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.Query;
-import javax.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;

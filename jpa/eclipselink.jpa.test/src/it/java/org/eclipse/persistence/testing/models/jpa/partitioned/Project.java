@@ -15,14 +15,14 @@
 package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.Partitioned;
 import org.eclipse.persistence.annotations.RangePartition;
 import org.eclipse.persistence.annotations.RangePartitioning;
 
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.InheritanceType.*;
 
 /**
  * Employees have a many-to-many relationship with Projects through the

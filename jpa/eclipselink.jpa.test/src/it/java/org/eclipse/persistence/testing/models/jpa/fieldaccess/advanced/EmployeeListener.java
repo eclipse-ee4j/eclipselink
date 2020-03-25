@@ -16,7 +16,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.EventListener;
 
 public class EmployeeListener implements EventListener {

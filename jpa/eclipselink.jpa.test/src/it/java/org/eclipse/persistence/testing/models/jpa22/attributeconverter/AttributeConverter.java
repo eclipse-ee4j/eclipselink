@@ -12,15 +12,15 @@
 
 package org.eclipse.persistence.testing.models.jpa22.attributeconverter;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
-import javax.persistence.Converter;
+import jakarta.persistence.Converter;
 
 import org.eclipse.persistence.testing.models.jpa22.sessionbean.InjectedBean;
 
 @Converter
-public class AttributeConverter implements javax.persistence.AttributeConverter<String,String> {
+public class AttributeConverter implements jakarta.persistence.AttributeConverter<String,String> {
 
     public static boolean INJECTED_RETURN_VALUE = false;
     public static int CONVERT_TO_DB_CALLS = 0;

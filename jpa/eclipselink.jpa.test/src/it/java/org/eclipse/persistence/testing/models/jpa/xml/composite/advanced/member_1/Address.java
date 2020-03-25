@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member
 
 import java.io.Serializable;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 /**
  * <p>

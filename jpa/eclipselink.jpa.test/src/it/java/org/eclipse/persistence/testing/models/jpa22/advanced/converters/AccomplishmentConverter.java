@@ -15,8 +15,8 @@
 //       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.testing.models.jpa22.advanced.converters;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply=false)
 public class AccomplishmentConverter implements AttributeConverter<String, String> {

@@ -14,7 +14,7 @@
 //     dminsky,lukas - initial implementation
 package org.eclipse.persistence.jpa.test.sequence;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseTable;

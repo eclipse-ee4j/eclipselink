@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Calendar;
 
 //java eXtensions
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;

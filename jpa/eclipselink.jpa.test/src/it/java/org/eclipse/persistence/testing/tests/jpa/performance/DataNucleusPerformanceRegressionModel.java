@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.tests.jpa.performance;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.jpa.performance.EmployeeTableCreator;
@@ -44,11 +44,11 @@ public class DataNucleusPerformanceRegressionModel extends JPAPerformanceRegress
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
         Map properties = new HashMap();
-        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
-        properties.put("javax.persistence.jdbc.driver", getSession().getLogin().getDriverClassName());
-        properties.put("javax.persistence.jdbc.url", getSession().getLogin().getConnectionString());
-        properties.put("javax.persistence.jdbc.user", getSession().getLogin().getUserName());
-        properties.put("javax.persistence.jdbc.password", getSession().getLogin().getPassword());
+        //properties.put("jakarta.persistence.nonJtaDataSource", "datasource");
+        properties.put("jakarta.persistence.jdbc.driver", getSession().getLogin().getDriverClassName());
+        properties.put("jakarta.persistence.jdbc.url", getSession().getLogin().getConnectionString());
+        properties.put("jakarta.persistence.jdbc.user", getSession().getLogin().getUserName());
+        properties.put("jakarta.persistence.jdbc.password", getSession().getLogin().getPassword());
         if (getSession().shouldLogMessages()) {
             //properties.put("openjpa.Log", "DefaultLevel=WARN,SQL=TRACE");
         }

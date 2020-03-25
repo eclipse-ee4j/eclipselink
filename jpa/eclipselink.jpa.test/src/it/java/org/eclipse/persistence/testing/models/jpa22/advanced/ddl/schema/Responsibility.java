@@ -15,7 +15,7 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.testing.models.jpa22.advanced.ddl.schema;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Responsibility {

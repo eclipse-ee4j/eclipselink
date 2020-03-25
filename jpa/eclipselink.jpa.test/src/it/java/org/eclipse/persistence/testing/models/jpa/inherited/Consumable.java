@@ -14,7 +14,7 @@
 //     tware - initial implementation
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.GenericTestInterface1;
 

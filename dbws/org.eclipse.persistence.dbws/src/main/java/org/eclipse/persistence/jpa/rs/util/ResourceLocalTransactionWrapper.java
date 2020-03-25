@@ -14,7 +14,7 @@
 //      tware - initial
 package org.eclipse.persistence.jpa.rs.util;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public class ResourceLocalTransactionWrapper extends TransactionWrapper {
 

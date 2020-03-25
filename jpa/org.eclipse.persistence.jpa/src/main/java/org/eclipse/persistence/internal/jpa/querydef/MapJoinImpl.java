@@ -18,17 +18,17 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.util.Map;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.MapJoin;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.Type.PersistenceType;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -41,7 +41,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <b>Description</b>: This class represents a join of an attribute from a "From"element.
  * <p>
  *
- * @see javax.persistence.criteria MapJoin
+ * @see jakarta.persistence.criteria MapJoin
  *
  * @author gyorke
  * @since EclipseLink 1.2
@@ -67,8 +67,8 @@ public class MapJoinImpl<Z, K, V>  extends JoinImpl<Z, V> implements MapJoin<Z, 
     * the target of the join
     */
     @Override
-    public javax.persistence.metamodel.MapAttribute<? super Z, K, V> getModel(){
-        return (javax.persistence.metamodel.MapAttribute<? super Z, K, V>)this.modelArtifact;
+    public jakarta.persistence.metamodel.MapAttribute<? super Z, K, V> getModel(){
+        return (jakarta.persistence.metamodel.MapAttribute<? super Z, K, V>)this.modelArtifact;
     }
 
     @Override

@@ -16,7 +16,7 @@
 //       - 500145 : Nested Embeddables Test
 package org.eclipse.persistence.jpa.embeddable.model;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Zipcode {

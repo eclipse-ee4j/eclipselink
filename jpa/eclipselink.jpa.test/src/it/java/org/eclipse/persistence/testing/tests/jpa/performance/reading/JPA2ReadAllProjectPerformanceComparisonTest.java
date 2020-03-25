@@ -15,7 +15,7 @@
  package org.eclipse.persistence.testing.tests.jpa.performance.reading;
 
 import java.util.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * This test compares the performance of read all Project.

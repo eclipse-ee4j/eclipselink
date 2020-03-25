@@ -17,7 +17,7 @@
 package org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners;
 
 import java.util.EventListener;
-import javax.persistence.PostPersist;
+import jakarta.persistence.PostPersist;
 
 /**
  * A listener for the FueledVehicle entity.

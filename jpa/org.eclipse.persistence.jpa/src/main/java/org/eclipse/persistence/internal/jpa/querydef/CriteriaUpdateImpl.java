@@ -15,14 +15,14 @@
 //       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.UpdateAllQuery;
@@ -36,7 +36,7 @@ import org.eclipse.persistence.queries.UpdateAllQuery;
  * define an Update Query.
  * <p>
  *
- * @see javax.persistence.criteria CriteriaUpdate
+ * @see jakarta.persistence.criteria CriteriaUpdate
  *
  * @author Chris Delahunt
  * @since EclipseLink 2.5

@@ -18,11 +18,11 @@ package org.eclipse.persistence.testing.models.jpa.metamodel;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.ManyToMany;
-import javax.persistence.MapKey;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.MapKey;
 
 @Embeddable
 public class Observation {

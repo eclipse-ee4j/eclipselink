@@ -20,7 +20,7 @@ import java.util.List;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

@@ -331,7 +331,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "metadata_warning_ignore_lazy", "Reverting the lazy setting on the OneToOne or ManyToOne attribute [{0}] for the entity class [{1}] since weaving was not enabled or did not occur." },
 
         { "metadata_warning_ignore_fetch_group", "Ignoring the fetch groups specified on class [{0}] for the entity [{1}] since weaving is not enabled and the entity class does not implement the FetchGroupTracker interface." },
-        { "metadata_warning_ignore_mapping_metadata", "Ignoring the javax.persistence metadata applied to the attribute [{0}] from class [{1}]. javax.persistence metadata is ignored on fields or properties that are transient, static or abstract." },
+        { "metadata_warning_ignore_mapping_metadata", "Ignoring the jakarta.persistence metadata applied to the attribute [{0}] from class [{1}]. jakarta.persistence metadata is ignored on fields or properties that are transient, static or abstract." },
 
         { "metadata_warning_multiple_id_fields_without_id_class", "You have specified multiple ids for the entity class [{0}] without specifying an @IdClass. By doing this you may lose the ability to find by identity, distributed cache support etc. Note: You may however use EntityManager find operations by passing a list of primary key fields. Else, you will have to use JPQL queries to read your entities. For other id options see @PrimaryKey." },
         { "metadata_warning_inverse_access_type_mapping_override", "Overriding the {2} mapping attribute [{1}] with the {4} mapping attribute [{3}] from class [{0}]. To avoid this warning you should mark the attribute [{1}] as transient."},

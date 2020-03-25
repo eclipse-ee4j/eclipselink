@@ -15,10 +15,10 @@
 //       - 296078: JPA 2.0 with @MapsId, em.persist generates Internal Exception IllegalArgumentException
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid.nested;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="JPA_GOLF_CLUB_SHAFT")

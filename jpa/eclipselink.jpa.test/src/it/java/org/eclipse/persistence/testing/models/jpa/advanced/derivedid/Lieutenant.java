@@ -15,12 +15,12 @@
 //       - 270011: JPA 2.0 MappedById support
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /**
  * This model tests Example #6 of the mapsId cases (mapped from Second Lieutenant).

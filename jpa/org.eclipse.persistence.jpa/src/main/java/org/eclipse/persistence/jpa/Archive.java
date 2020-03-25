@@ -22,7 +22,7 @@ import java.net.URL;
 /**
  * Provides an abstraction to deal with various kinds of URLs that can
  * be returned by
- * {@link javax.persistence.spi.PersistenceUnitInfo#getPersistenceUnitRootUrl()}
+ * {@link jakarta.persistence.spi.PersistenceUnitInfo#getPersistenceUnitRootUrl()}
  *
  * @see org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl ArchiveFactoryImpl
  * @author Sanjeeb.Sahoo@Sun.COM

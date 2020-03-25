@@ -17,7 +17,7 @@
 //       - 294803: @Column(updatable=false) has no effect on @Basic mappings
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class ServiceTime {

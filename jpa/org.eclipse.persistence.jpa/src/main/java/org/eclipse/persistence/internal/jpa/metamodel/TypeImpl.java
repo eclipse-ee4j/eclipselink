@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import javax.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -41,7 +41,7 @@ import org.eclipse.persistence.logging.SessionLog;
  * Instances of the type Type represent persistent object
  * or attribute types.
  *
- * @see javax.persistence.metamodel.Type
+ * @see jakarta.persistence.metamodel.Type
  * @since EclipseLink 1.2 - JPA 2.0
  *
  * @param <X>  The type of the represented object or attribute

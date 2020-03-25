@@ -31,8 +31,8 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Map;
 
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -50,7 +50,7 @@ import org.eclipse.persistence.mappings.foundation.MapKeyMapping;
  * Instances of the type MapAttribute represent persistent Map-valued
  * attributes.
  *
- * @see javax.persistence.metamodel.MapAttribute
+ * @see jakarta.persistence.metamodel.MapAttribute
  *
  * @since EclipseLink 1.2 - JPA 2.0
  *

@@ -16,7 +16,7 @@
 //                 "The primary key fields are not set for this descriptor"
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class HotelId {

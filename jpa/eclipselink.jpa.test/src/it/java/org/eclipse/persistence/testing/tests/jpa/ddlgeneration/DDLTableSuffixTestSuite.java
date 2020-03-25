@@ -40,7 +40,7 @@ package org.eclipse.persistence.testing.tests.jpa.ddlgeneration;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * JUnit test case(s) for DDL generation.

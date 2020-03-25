@@ -15,8 +15,8 @@
 //       - 363820: Issue with clone method from VPDMultitenantPolicy
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  * Don't add an Entity annotation to this class as we don't want this class to

@@ -14,7 +14,7 @@
 //     ailitche - testing for embedded with FK OneToMany
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class PatentInvestigation {

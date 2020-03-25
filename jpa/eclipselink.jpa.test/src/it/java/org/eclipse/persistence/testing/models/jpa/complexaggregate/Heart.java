@@ -15,8 +15,8 @@
 //       - 330755: Nested embeddables can't be used as embedded ids
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Heart {

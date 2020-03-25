@@ -14,7 +14,7 @@
 //      gonural - initial
 package org.eclipse.persistence.jpars.test.util;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 public class DBUtils {
 

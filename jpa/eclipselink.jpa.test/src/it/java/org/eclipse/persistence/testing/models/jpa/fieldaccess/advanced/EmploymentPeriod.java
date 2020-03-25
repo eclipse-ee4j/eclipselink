@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.sql.Date;
 import java.io.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * <p><b>Purpose</b>: Defines the period an Employee worked for the organization

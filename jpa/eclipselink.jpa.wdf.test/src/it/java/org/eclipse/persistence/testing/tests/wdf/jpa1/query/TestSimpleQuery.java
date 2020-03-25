@@ -16,8 +16,8 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1.query;
 
-import static javax.persistence.FlushModeType.AUTO;
-import static javax.persistence.FlushModeType.COMMIT;
+import static jakarta.persistence.FlushModeType.AUTO;
+import static jakarta.persistence.FlushModeType.COMMIT;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.SQLException;
@@ -26,12 +26,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.framework.wdf.ToBeInvestigated;

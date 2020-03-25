@@ -20,7 +20,7 @@
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
 import junit.framework.*;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;

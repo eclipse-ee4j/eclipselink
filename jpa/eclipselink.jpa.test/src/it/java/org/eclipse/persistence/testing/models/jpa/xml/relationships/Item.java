@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.relationships;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 public class Item implements java.io.Serializable {
     private Integer itemId;

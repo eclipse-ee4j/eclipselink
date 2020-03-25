@@ -15,7 +15,7 @@
 //       - 300626: Nested embeddable test case coverage
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class ObservationDetail {

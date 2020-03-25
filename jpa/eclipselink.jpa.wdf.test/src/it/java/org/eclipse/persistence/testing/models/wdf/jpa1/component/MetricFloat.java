@@ -16,9 +16,9 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa1.component;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue(value = "FLOAT")

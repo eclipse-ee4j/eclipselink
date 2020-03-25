@@ -15,8 +15,8 @@
 //       - 277039: JPA 2.0 Cache Usage Settings
 package org.eclipse.persistence.testing.models.jpa.cacheable;
 
-import javax.persistence.Cacheable;
-import javax.persistence.Entity;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.Entity;
 
 @Entity(name="JPA_SUB_CACHEABLE_FALSE")
 @Cacheable(false)

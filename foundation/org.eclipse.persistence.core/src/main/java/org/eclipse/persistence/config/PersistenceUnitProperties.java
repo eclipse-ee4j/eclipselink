@@ -44,7 +44,7 @@
 //     09/28/2015 - Will Dazey
 //       - 478331 : Added support for defining local or server as the default locale for obtaining timestamps
 //     12/03/2015 - 2.6 Dalia Abo Sheasha
-//       - 483582 : Add the javax.persistence.sharedCache.mode property
+//       - 483582 : Add the jakarta.persistence.sharedCache.mode property
 //     09/14/2017 - 2.6 Will Dazey
 //       - 522312 : Add the eclipselink.sequencing.start-sequence-at-nextval property
 //     04/11/2018 - Will Dazey
@@ -61,11 +61,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Persistence;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.IdValidation;
@@ -124,7 +124,7 @@ import org.eclipse.persistence.tools.tuning.SessionTuner;
 public class PersistenceUnitProperties {
 
     /**
-     * The "<code>javax.persistence.transactionType</code>" property specifies the
+     * The "<code>jakarta.persistence.transactionType</code>" property specifies the
      * transaction type for the persistence unit. This property overrides the
      * value specified in the persistence.xml.
      * <p>
@@ -134,10 +134,10 @@ public class PersistenceUnitProperties {
      * <li>"<code>RESOURCE_LOCAL</code>"
      * </ul>
      */
-    public static final String TRANSACTION_TYPE = "javax.persistence.transactionType";
+    public static final String TRANSACTION_TYPE = "jakarta.persistence.transactionType";
 
     /**
-     * The "<code>javax.persistence.jtaDataSource</code>" property specifies the JTA data
+     * The "<code>jakarta.persistence.jtaDataSource</code>" property specifies the JTA data
      * source name that will look up a valid {@link javax.sql.DataSource}. This
      * property is used to override the value specified in the persistence.xml.
      * <p>
@@ -147,10 +147,10 @@ public class PersistenceUnitProperties {
      * <li>an instance of {@link javax.sql.DataSource}.
      * </ul>
      */
-    public static final String JTA_DATASOURCE = "javax.persistence.jtaDataSource";
+    public static final String JTA_DATASOURCE = "jakarta.persistence.jtaDataSource";
 
     /**
-     * The "<code>javax.persistence.nonJtaDataSource</code>" property specifies the
+     * The "<code>jakarta.persistence.nonJtaDataSource</code>" property specifies the
      * non-JTA data source name that will look up a valid
      * {@link javax.sql.DataSource}. This can be used to override the value
      * specified in the persistence.xml.
@@ -162,12 +162,12 @@ public class PersistenceUnitProperties {
      * <li>an instance of {@link javax.sql.DataSource}
      * </ul>
      */
-    public static final String NON_JTA_DATASOURCE = "javax.persistence.nonJtaDataSource";
+    public static final String NON_JTA_DATASOURCE = "jakarta.persistence.nonJtaDataSource";
 
     // JDBC Properties for internal connection pooling
 
     /**
-     * The "<code>javax.persistence.jdbc.driver</code>" property specifies the JDBC
+     * The "<code>jakarta.persistence.jdbc.driver</code>" property specifies the JDBC
      * {@link DriverManager} class name used for internal connection pooling when a data
      * source is not being used.
      * <p>
@@ -177,16 +177,16 @@ public class PersistenceUnitProperties {
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
-     * {@code <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />}</pre>
+     * {@code <property name="jakarta.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />}</pre>
      * <p>
      * The previous value for this property "<code>eclipselink.jdbc.driver</code>" is now deprecated
      * and should be replaced with this new name.
      * </p>
      */
-    public static final String JDBC_DRIVER = "javax.persistence.jdbc.driver";
+    public static final String JDBC_DRIVER = "jakarta.persistence.jdbc.driver";
 
     /**
-     * The "<code>javax.persistence.jdbc.url</code>" property specifies the JDBC URL used
+     * The "<code>jakarta.persistence.jdbc.url</code>" property specifies the JDBC URL used
      * for internal connection pooling when a data source is not being used.
      * <p>
      * <b>Allowed Values:</b>
@@ -195,37 +195,37 @@ public class PersistenceUnitProperties {
      * </ul>
      * <p>
      * <b>Persistence XML example:</b><pre>
-     * {@code <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/mysql" />}</pre>
+     * {@code <property name="jakarta.persistence.jdbc.url" value="jdbc:mysql://localhost/mysql" />}</pre>
      * <p>
      * The previous value for this property "<code>eclipselink.jdbc.url</code>" is now deprecated
      * and should be replaced with this new name.
      * </p>
      */
-    public static final String JDBC_URL = "javax.persistence.jdbc.url";
+    public static final String JDBC_URL = "jakarta.persistence.jdbc.url";
 
     /**
-     * The "<code>javax.persistence.jdbc.user</code>" property specifies the data source
+     * The "<code>jakarta.persistence.jdbc.user</code>" property specifies the data source
      * or JDBC user name.
      * <p>
      * <b>Persistence XML example:</b><pre>
-     * {@code <property name="javax.persistence.jdbc.user" value="user-name" />}</pre>
+     * {@code <property name="jakarta.persistence.jdbc.user" value="user-name" />}</pre>
      * <p>
      * The previous value for this property "<code>eclipselink.jdbc.user</code>" is now deprecated and should
      * be replaced with this new name.
      */
-    public static final String JDBC_USER = "javax.persistence.jdbc.user";
+    public static final String JDBC_USER = "jakarta.persistence.jdbc.user";
 
     /**
-     * The "<code>javax.persistence.jdbc.password</code>" property specifies the data
+     * The "<code>jakarta.persistence.jdbc.password</code>" property specifies the data
      * source or JDBC password.
      * <p>
      * <b>Persistence XML example:</b><pre>
-     * {@code <property name="javax.persistence.jdbc.password" value="password" />}</pre>
+     * {@code <property name="jakarta.persistence.jdbc.password" value="password" />}</pre>
      * <p>
      * The previous value for this property "<code>eclipselink.jdbc.password</code>" is now deprecated
      * and should be replaced with this new name.
      */
-    public static final String JDBC_PASSWORD = "javax.persistence.jdbc.password";
+    public static final String JDBC_PASSWORD = "jakarta.persistence.jdbc.password";
 
     /**
      * The "<code>eclipselink.jdbc.native-sql</code>" property specifies whether
@@ -1112,7 +1112,7 @@ public class PersistenceUnitProperties {
     // Bean Validation properties
 
     /**
-     * The "<code>javax.persistence.validation.factory</code>" property
+     * The "<code>jakarta.persistence.validation.factory</code>" property
      * specifies an instance of <a href =
      * http://docs.oracle.com/javaee/6/api/jakarta.validation/ValidatorFactory.html>jakarta.validation.ValidatorFactory</a> used by
      * EclipseLink to perform Automatic Validation upon Lifecycle Events. If the
@@ -1121,10 +1121,10 @@ public class PersistenceUnitProperties {
      * <code>jakarta.validation.ValidationFactory</code> by calling
      * <code>Validation.buildDefaultValidatorFactory()</code>.
      */
-    public static final String VALIDATOR_FACTORY = "javax.persistence.validation.factory";
+    public static final String VALIDATOR_FACTORY = "jakarta.persistence.validation.factory";
 
     /**
-     * The "<code>javax.persistence.validation.mode</code>" property specifies
+     * The "<code>jakarta.persistence.validation.mode</code>" property specifies
      * whether the automatic lifecycle event validation is in effect.
      * <p>
      * <b>Allowed Values:</b>
@@ -1134,37 +1134,37 @@ public class PersistenceUnitProperties {
      * <li>"<code>NONE</code>"
      * </ul>
      */
-    public static final String VALIDATION_MODE = "javax.persistence.validation.mode";
+    public static final String VALIDATION_MODE = "jakarta.persistence.validation.mode";
 
     /**
-     * The "<code>javax.persistence.validation.group.pre-persist</code>"
+     * The "<code>jakarta.persistence.validation.group.pre-persist</code>"
      * property specifies the name of the validator groups to execute for
      * <code>preUpdate</code> event. The value should be a string with fully qualified
      * classnames separated by a comma (','). If this value is not specified in
      * both persistence.xml or using this property, the default Bean Validation
      * group (the group Default) will be validated
      */
-    public static final String VALIDATION_GROUP_PRE_PERSIST = "javax.persistence.validation.group.pre-persist";
+    public static final String VALIDATION_GROUP_PRE_PERSIST = "jakarta.persistence.validation.group.pre-persist";
 
     /**
-     * The "<code>javax.persistence.validation.group.pre-update</code>" property
+     * The "<code>jakarta.persistence.validation.group.pre-update</code>" property
      * specifies the name of the validator groups to execute for <code>preUpdate</code>
      * event. The value should be a string with fully qualified classnames
      * separated by a comma (','). If this value is not specified in both
      * persistence.xml or using this property, the default Bean Validation group
      * (the group Default) will be validated
      */
-    public static final String VALIDATION_GROUP_PRE_UPDATE = "javax.persistence.validation.group.pre-update";
+    public static final String VALIDATION_GROUP_PRE_UPDATE = "jakarta.persistence.validation.group.pre-update";
 
     /**
-     * The "<code>javax.persistence.validation.group.pre-remove</code>" property
+     * The "<code>jakarta.persistence.validation.group.pre-remove</code>" property
      * specifies the name of the validator groups to execute for <code>preRemove</code>
      * event. The value should be a string with fully qualified classnames
      * separated by a comma (','). If this value is not specified in both
      * persistence.xml or using this property, no validation will occur on
      * remove.
      */
-    public static final String VALIDATION_GROUP_PRE_REMOVE = "javax.persistence.validation.group.pre-remove";
+    public static final String VALIDATION_GROUP_PRE_REMOVE = "jakarta.persistence.validation.group.pre-remove";
 
     /**
      * Property for disabling Bean Validation optimisations.
@@ -1252,7 +1252,7 @@ public class PersistenceUnitProperties {
     public static final String CACHE_SHARED_ = "eclipselink.cache.shared.";
 
     /**
-     * The "<code>javax.persistence.sharedCache.mode</code>" property determines whether
+     * The "<code>jakarta.persistence.sharedCache.mode</code>" property determines whether
      * second-level caching is in effect for the persistence unit. This property overrides the value
      * specified by the &lt;shared-cache-mode&gt; element in the persistence.xml.
      * <p>
@@ -1265,9 +1265,9 @@ public class PersistenceUnitProperties {
      * <li>"<code>UNSPECIFIED</code>"
      * </ul>
      *
-     * @see javax.persistence.SharedCacheMode
+     * @see jakarta.persistence.SharedCacheMode
      */
-    public static final String SHARED_CACHE_MODE = "javax.persistence.sharedCache.mode";
+    public static final String SHARED_CACHE_MODE = "jakarta.persistence.sharedCache.mode";
 
     /**
      * Default caching properties - apply to all entities. May be overridden by
@@ -1387,7 +1387,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.canonicalmodel.use_generated</code>" optional property can be used
-     * to disable generation of {@link javax.annotation.Generated} annotation.
+     * to disable generation of {@link jakarta.annotation.Generated} annotation.
      * The default value is true.
      * If the value is {@code false}, {@linkplain #CANONICAL_MODEL_GENERATE_TIMESTAMP}
      * and {@linkplain #CANONICAL_MODEL_GENERATE_COMMENTS} properties are ignored.
@@ -1406,7 +1406,7 @@ public class PersistenceUnitProperties {
 
     /**
      * The "<code>eclipselink.canonicalmodel.generate_timestamp</code>" optional property can be used
-     * to disable usage of date in declaration of {@link javax.annotation.Generated} annotation.
+     * to disable usage of date in declaration of {@link jakarta.annotation.Generated} annotation.
      * The default value is true.
      *
      * @see #CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT
@@ -2019,7 +2019,7 @@ public class PersistenceUnitProperties {
     public static final String JTA_CONTROLLER = "eclipselink.jta.controller";
 
     /**
-     * <p>The "<code>javax.persistence.schema-generation.database.action</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.database.action</code>"
      * property specifies the action to be taken by the persistence provider with
      * regard to the database artifacts.</p>
      *
@@ -2028,14 +2028,14 @@ public class PersistenceUnitProperties {
      *
      * EclipseLink also supports the "<code>create-or-extend-tables</code>" option.
      *
-     * <p>If the "<code>javax.persistence.schema-generation.database.action</code>"
+     * <p>If the "<code>jakarta.persistence.schema-generation.database.action</code>"
      * property is not specified, no schema generation actions must be taken on
      * the database.</p>
      */
-    public static final String SCHEMA_GENERATION_DATABASE_ACTION = "javax.persistence.schema-generation.database.action";
+    public static final String SCHEMA_GENERATION_DATABASE_ACTION = "jakarta.persistence.schema-generation.database.action";
 
     /**
-     * <p>The "<code>javax.persistence.schema-generation.scripts.action</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.scripts.action</code>"
      * property specifies which scripts are to be generated by the persistence
      * provider.</p>
      *
@@ -2045,10 +2045,10 @@ public class PersistenceUnitProperties {
      * <p>Scripts will only be generated if script targets are specified. If
      * this property is not specified, no scripts will be generated.</p>
      */
-    public static final String SCHEMA_GENERATION_SCRIPTS_ACTION = "javax.persistence.schema-generation.scripts.action";
+    public static final String SCHEMA_GENERATION_SCRIPTS_ACTION = "jakarta.persistence.schema-generation.scripts.action";
 
     /**
-     * <p>The "<code>javax.persistence.schema-generation.create-source</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.create-source</code>"
      * property specifies whether the creation of database artifacts is to occur
      * on the basis of the object/relational mapping metadata, DDL script, or a
      * combination of the two.</p>
@@ -2057,7 +2057,7 @@ public class PersistenceUnitProperties {
      * "<code>metadata-then-script</code>", "<code>script-then-metadata</code>".</p>
      *
      * <p>If this property is not specified, and a script is specified by the
-     * "<code>javax.persistence.schema-generation.create-script-source property</code>",
+     * "<code>jakarta.persistence.schema-generation.create-script-source property</code>",
      * the script (only) will be used for schema generation; otherwise if this
      * property is not specified, schema generation will occur on the basis of
      * the object/relational mapping metadata (only).</p>
@@ -2068,10 +2068,10 @@ public class PersistenceUnitProperties {
      * specified and the resulting database actions are not disjoint, the
      * results are undefined and schema generation may fail.</p>
      */
-    public static final String SCHEMA_GENERATION_CREATE_SOURCE = "javax.persistence.schema-generation.create-source";
+    public static final String SCHEMA_GENERATION_CREATE_SOURCE = "jakarta.persistence.schema-generation.create-source";
 
     /**
-     * <p>The "<code>javax.persistence.schema-generation.drop-source</code>" property
+     * <p>The "<code>jakarta.persistence.schema-generation.drop-source</code>" property
      * specifies whether the dropping of database artifacts is to occur on the
      * basis of the object/relational mapping metadata, DDL script, or a
      * combination of the two.</p>
@@ -2080,7 +2080,7 @@ public class PersistenceUnitProperties {
      * "<code>metadata-then-script</code>", "<code>script-then-metadata</code>".</p>
      *
      * <p>If this property is not specified, and a script is specified by the
-     * "<code>javax.persistence.schema-generation.drop-script-source</code>" property,
+     * "<code>jakarta.persistence.schema-generation.drop-script-source</code>" property,
      * the script (only) will be used for the dropping of database artifacts;
      * otherwise if this property is not specified, the dropping of database
      * artifacts will occur on the basis of the object/relational mapping
@@ -2092,14 +2092,14 @@ public class PersistenceUnitProperties {
      * specified and the resulting database actions are not disjoint, the
      * results are undefined and the dropping of database artifacts may fail.</p>
      */
-    public static final String SCHEMA_GENERATION_DROP_SOURCE = "javax.persistence.schema-generation.drop-source";
+    public static final String SCHEMA_GENERATION_DROP_SOURCE = "jakarta.persistence.schema-generation.drop-source";
 
     /**
      * <p>In Java EE environments, it is anticipated that the Java EE platform
      * provider may wish to control the creation of database schemas rather than
      * delegate this task to the persistence provider.</p>
      *
-     * <p>The "<code>javax.persistence.schema-generation.create-database-schemas</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.create-database-schemas</code>"
      * property specifies whether the persistence provider is to create the
      * database schema(s) in addition to creating database objects such as
      * tables, sequences, constraints, etc.</p>
@@ -2110,70 +2110,70 @@ public class PersistenceUnitProperties {
      * is not supplied, the provider should not attempt to create database
      * schemas. This property may also be specified in Java SE environments.</p>
      */
-    public static final String SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS = "javax.persistence.schema-generation.create-database-schemas";
+    public static final String SCHEMA_GENERATION_CREATE_DATABASE_SCHEMAS = "jakarta.persistence.schema-generation.create-database-schemas";
 
     /**
      * <p>If scripts are to be generated, the target locations for the writing
      * of these scripts must be specified.</p>
      *
-     * <p>The "<code>javax.persistence.schema-generation.scripts.create-target</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.scripts.create-target</code>"
      * property specifies a java.IO.Writer configured for use by the persistence
      * provider for output of the DDL script or a string specifying the file URL
      * for the DDL script. This property should only be specified if scripts are
      * to be generated.</p>
      */
-    public static final String SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET = "javax.persistence.schema-generation.scripts.create-target";
+    public static final String SCHEMA_GENERATION_SCRIPTS_CREATE_TARGET = "jakarta.persistence.schema-generation.scripts.create-target";
 
     /**
      * <p>If scripts are to be generated, the target locations for the writing
      * of these scripts must be specified.</p>
      *
-     * <p>The "<code>javax.persistence.schema-generation.scripts.drop-target</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.scripts.drop-target</code>"
      * property specifies a java.IO.Writer configured for use by the persistence
      * provider for output of the DDL script or a string specifying the file URL
      * for the DDL script. This property should only be specified if scripts are
      * to be generated.</p>
      */
-    public static final String SCHEMA_GENERATION_SCRIPTS_DROP_TARGET = "javax.persistence.schema-generation.scripts.drop-target";
+    public static final String SCHEMA_GENERATION_SCRIPTS_DROP_TARGET = "jakarta.persistence.schema-generation.scripts.drop-target";
 
     /**
      * <p>If scripts are to be generated by the persistence provider and a
      * connection to the target database is not supplied, the
-     * "<code>javax.persistence.database-product-name</code>" property must be
+     * "<code>jakarta.persistence.database-product-name</code>" property must be
      * specified.</p>
      *
      * <p>The value of this property should be the value returned for the target
      * database by the JDBC DatabaseMetaData method getDatabaseProductName.</p>
      *
      * <p>If sufficient database version information is not included in the
-     * result of this method, the "<code>javax.persistence.database-major-version</code>"
-     * and "<code>javax.persistence.database-minor-version</code>" properties
+     * result of this method, the "<code>jakarta.persistence.database-major-version</code>"
+     * and "<code>jakarta.persistence.database-minor-version</code>" properties
      * should be specified as needed. These should contain the values returned
      * by the JDBC getDatabaseMajorVersion and getDatabaseMinor-Version methods
      * respectively.</p>
      */
-    public static final String SCHEMA_DATABASE_PRODUCT_NAME = "javax.persistence.database-product-name";
+    public static final String SCHEMA_DATABASE_PRODUCT_NAME = "jakarta.persistence.database-product-name";
 
     /**
      * <p>If sufficient database version information is not included from the
      * JDBC DatabaseMetaData method getDatabaseProductName, the
-     * "<code>javax.persistence.database-major-version</code>" property should
+     * "<code>jakarta.persistence.database-major-version</code>" property should
      * be specified as needed. This should contain the value returned by the
      * JDBC getDatabaseMajor-Version method.</p>
      */
-    public static final String SCHEMA_DATABASE_MAJOR_VERSION = "javax.persistence.database-major-version";
+    public static final String SCHEMA_DATABASE_MAJOR_VERSION = "jakarta.persistence.database-major-version";
 
     /**
      * <p>If sufficient database version information is not included from the
      * JDBC DatabaseMetaData method getDatabaseProductName, the
-     * "<code>javax.persistence.database-minor-version</code>" property should
+     * "<code>jakarta.persistence.database-minor-version</code>" property should
      * be specified as needed. This should contain the value returned by the
      * JDBC getDatabaseMinor-Version method.</p>
      */
-    public static final String SCHEMA_DATABASE_MINOR_VERSION = "javax.persistence.database-minor-version";
+    public static final String SCHEMA_DATABASE_MINOR_VERSION = "jakarta.persistence.database-minor-version";
 
     /**
-     * <p>The "<code>javax.persistence.schema-generation.create-script-source</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.create-script-source</code>"
      * is used for script execution.</p>
      *
      * <p>In Java EE container environments, it is generally expected that the
@@ -2184,14 +2184,14 @@ public class PersistenceUnitProperties {
      * EE container delegates the execution of scripts to the persistence
      * provider, this property must be specified.</p>
      *
-     * <p>The "<code>javax.persistence.schema-generation.create-script-source</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.create-script-source</code>"
      * property specifies a java.IO.Reader configured for reading of the DDL
      * script or a string designating a file URL for the DDL script.</p>
      */
-    public static final String SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE = "javax.persistence.schema-generation.create-script-source";
+    public static final String SCHEMA_GENERATION_CREATE_SCRIPT_SOURCE = "jakarta.persistence.schema-generation.create-script-source";
 
     /**
-     * <p>The "<code>javax.persistence.schema-generation.drop-script-source</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.drop-script-source</code>"
      * is used for script execution.</p>
      *
      * <p>In Java EE container environments, it is generally expected that the
@@ -2202,14 +2202,14 @@ public class PersistenceUnitProperties {
      * EE container delegates the execution of scripts to the persistence
      * provider, this property must be specified.</p>
      *
-     * <p>The "<code>javax.persistence.schema-generation.drop-script-source</code>"
+     * <p>The "<code>jakarta.persistence.schema-generation.drop-script-source</code>"
      * property specifies a java.IO.Reader configured for reading of the DDL
      * script or a string designating a file URL for the DDL script.</p>
      */
-    public static final String SCHEMA_GENERATION_DROP_SCRIPT_SOURCE = "javax.persistence.schema-generation.drop-script-source";
+    public static final String SCHEMA_GENERATION_DROP_SCRIPT_SOURCE = "jakarta.persistence.schema-generation.drop-script-source";
 
     /**
-     * <p>The "<code>javax.persistence.schema-generation.connection</code>" property
+     * <p>The "<code>jakarta.persistence.schema-generation.connection</code>" property
      * specifies the JDBC connection to be used for schema generation. This is
      * intended for use in Java EE environments, where the platform provider may
      * want to control the database privileges that are available to the
@@ -2225,7 +2225,7 @@ public class PersistenceUnitProperties {
      * <p>If this property is not specified, the persistence provider should use
      * the DataSource that has otherwise been provided.</p>
      */
-    public static final String SCHEMA_GENERATION_CONNECTION = "javax.persistence.schema-generation.connection";
+    public static final String SCHEMA_GENERATION_CONNECTION = "jakarta.persistence.schema-generation.connection";
 
     /**
      * <p>In Java EE container environments, it is generally expected that the
@@ -2235,65 +2235,65 @@ public class PersistenceUnitProperties {
      * the Java EE container delegates the execution of the load script to the
      * persistence provider, this property must be specified.</p>
      *
-     * <p>The "<code>javax.persistence.sql-load-script-source</code>" property
+     * <p>The "<code>jakarta.persistence.sql-load-script-source</code>" property
      * specifies a java.IO.Reader configured for reading of the SQL load script
      * for database initialization or a string designating a file URL for the
      * script.</p>
      */
-    public static final String SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE = "javax.persistence.sql-load-script-source";
+    public static final String SCHEMA_GENERATION_SQL_LOAD_SCRIPT_SOURCE = "jakarta.persistence.sql-load-script-source";
 
     /**
      * The parameter value "<code>create</code>"
-     * <p>For use with the "<code>javax.persistence.schema-generation.database.action</code>"
-     * and "<code>javax.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
+     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
      * <p>Specifies that database tables should be created.</p>
      */
     public static final String SCHEMA_GENERATION_CREATE_ACTION = "create";
 
     /**
      * The parameter value "<code>drop-and-create</code>"
-     * <p>For use with the "<code>javax.persistence.schema-generation.database.action</code>"
-     * and "<code>javax.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
+     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
      * <p>Specifies that database tables should be dropped, then created.</p>
      */
     public static final String SCHEMA_GENERATION_DROP_AND_CREATE_ACTION = "drop-and-create";
 
     /**
      * The parameter value "<code>drop</code>"
-     * <p>For use with the "<code>javax.persistence.schema-generation.database.action</code>"
-     * and "<code>javax.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
+     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
      * <p>Specifies that database tables should be dropped.</p>
      */
     public static final String SCHEMA_GENERATION_DROP_ACTION = "drop";
 
     /**
      * The parameter value "<code>none</code>"
-     * <p>For use with the "<code>javax.persistence.schema-generation.database.action</code>"
-     * and "<code>javax.persistence.schema-generation.scripts.action</code>" properties.</p>
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.database.action</code>"
+     * and "<code>jakarta.persistence.schema-generation.scripts.action</code>" properties.</p>
      * <p>Specifies that database tables should not be created or dropped.</p>
      */
     public static final String SCHEMA_GENERATION_NONE_ACTION = "none";
 
     /**
      * The parameter value "<code>metadata</code>"
-     * <p>For use with the "<code>javax.persistence.schema-generation.create-source</code>"
-     * and "<code>javax.persistence.schema-generation.drop-source</code>" properties.</p>
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
+     * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
      * <p>Specifies that DDL generation source will come from the metadata only.</p>
      */
     public static final String SCHEMA_GENERATION_METADATA_SOURCE = "metadata";
 
     /**
      * The parameter value "<code>script</code>"
-     * <p>For use with the "<code>javax.persistence.schema-generation.create-source</code>"
-     * and "<code>javax.persistence.schema-generation.drop-source</code>" properties.</p>
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
+     * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
      * <p>Specifies that DDL generation source will come from scripts only.</p>
      */
     public static final String SCHEMA_GENERATION_SCRIPT_SOURCE = "script";
 
     /**
      * The parameter value "<code>metadata-then-script</code>"
-     * <p>For use with the "<code>javax.persistence.schema-generation.create-source</code>"
-     * and "<code>javax.persistence.schema-generation.drop-source</code>" properties.</p>
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
+     * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
      * <p>Specifies that DDL generation source will come from the metadata first
      * followed with the scripts.</p>
      */
@@ -2301,8 +2301,8 @@ public class PersistenceUnitProperties {
 
     /**
      * The parameter value "<code>script-then-metadata</code>"
-     * <p>For use with the "<code>javax.persistence.schema-generation.create-source</code>"
-     * and "<code>javax.persistence.schema-generation.drop-source</code>" properties.</p>
+     * <p>For use with the "<code>jakarta.persistence.schema-generation.create-source</code>"
+     * and "<code>jakarta.persistence.schema-generation.drop-source</code>" properties.</p>
      * <p>Specifies that DDL generation source will come from the scripts first
      * followed with the metadata.</p>
      */
@@ -2455,10 +2455,10 @@ public class PersistenceUnitProperties {
     public static final String BATCH_WRITING_SIZE = "eclipselink.jdbc.batch-writing.size";
 
     /**
-     * The "<code>javax.persistence.bean.manager</code>" property is used to set
+     * The "<code>jakarta.persistence.bean.manager</code>" property is used to set
      * CDI BeanManager when available
      */
-    public static final String CDI_BEANMANAGER = "javax.persistence.bean.manager";
+    public static final String CDI_BEANMANAGER = "jakarta.persistence.bean.manager";
 
     /**
      * The "<code>eclipselink.persistencexml</code>" property specifies the full
@@ -3153,7 +3153,7 @@ public class PersistenceUnitProperties {
     public static final String PERSISTENCE_CONTEXT_REFERENCE_MODE = "eclipselink.persistence-context.reference-mode";
 
     /**
-     * The "<code>javax.persistence.lock.timeout</code>" property configures the
+     * The "<code>jakarta.persistence.lock.timeout</code>" property configures the
      * WAIT timeout used in pessimistic locking, if the database query exceeds
      * the timeout the database will terminate the query and return an
      * exception.
@@ -3181,7 +3181,7 @@ public class PersistenceUnitProperties {
     public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT;
 
     /**
-     * The "<code>javax.persistence.query.timeout</code>" property configures
+     * The "<code>jakarta.persistence.query.timeout</code>" property configures
      * the default query timeout value. Defaults to milliseconds, but is configurable
      * with PersistenceUnitProperties.QUERY_TIMEOUT_UNIT
      * <p>
@@ -3191,7 +3191,7 @@ public class PersistenceUnitProperties {
      * </ul>
      * @see #QUERY_TIMEOUT_UNIT
      */
-    public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
+    public static final String QUERY_TIMEOUT = "jakarta.persistence.query.timeout";
 
     /**
      * The "<code>eclipselink.query.timeout.unit</code>" property
@@ -3275,7 +3275,7 @@ public class PersistenceUnitProperties {
      * factory. Alternatively, to apply the property only to some EntityManagers
      * pass it to createEntityManager method.
      *
-     * @see EntityManager#setFlushMode(javax.persistence.FlushModeType)
+     * @see EntityManager#setFlushMode(jakarta.persistence.FlushModeType)
      * @see FlushModeType
      */
     public static final String PERSISTENCE_CONTEXT_FLUSH_MODE = "eclipselink.persistence-context.flush-mode";
@@ -3673,16 +3673,16 @@ public class PersistenceUnitProperties {
      * <pre>
      * {@code "eclipselink.composite-unit.properties" -> (
      *    ("memberPu1" -> (
-     *       "javax.persistence.jdbc.user" -> "user1",
-     *       "javax.persistence.jdbc.password" -> "password1",
-     *       "javax.persistence.jdbc.driver" -> "oracle.jdbc.OracleDriver",
-     *       "javax.persistence.jdbc.url" -> "jdbc:oracle:thin:@oracle_db_url:1521:db"
+     *       "jakarta.persistence.jdbc.user" -> "user1",
+     *       "jakarta.persistence.jdbc.password" -> "password1",
+     *       "jakarta.persistence.jdbc.driver" -> "oracle.jdbc.OracleDriver",
+     *       "jakarta.persistence.jdbc.url" -> "jdbc:oracle:thin:@oracle_db_url:1521:db"
      *    ),
      *    ("memberPu2" -> (
-     *       "javax.persistence.jdbc.user" -> "user2",
-     *       "javax.persistence.jdbc.password" -> "password2",
-     *       "javax.persistence.jdbc.driver" -> "com.mysql.jdbc.Driver",
-     *       "javax.persistence.jdbc.url" -> "jdbc:mysql://my_sql_db_url:3306/user2"
+     *       "jakarta.persistence.jdbc.user" -> "user2",
+     *       "jakarta.persistence.jdbc.password" -> "password2",
+     *       "jakarta.persistence.jdbc.driver" -> "com.mysql.jdbc.Driver",
+     *       "jakarta.persistence.jdbc.url" -> "jdbc:mysql://my_sql_db_url:3306/user2"
      *    )
      *  )}</pre>
      * @see #COMPOSITE_UNIT
@@ -3765,7 +3765,7 @@ public class PersistenceUnitProperties {
     /**
      * The "<code>eclipselink.nosql.property.user</code>" property specifies user name for NoSQL
      * connection.<br>
-     * Note that "<code>javax.persistence.jdbc.user</code>" is also supported.
+     * Note that "<code>jakarta.persistence.jdbc.user</code>" is also supported.
      *
      * @see org.eclipse.persistence.eis.EISConnectionSpec
      * @see "org.eclipse.persistence.nosql.annotations.NoSql"
@@ -3776,7 +3776,7 @@ public class PersistenceUnitProperties {
     /**
      * The "<code>eclipselink.nosql.property.password</code>" property specifies password for NoSQL
      * connection.<br>
-     * Note that "<code>javax.persistence.jdbc.password</code>" is also supported.
+     * Note that "<code>jakarta.persistence.jdbc.password</code>" is also supported.
      *
      * @see org.eclipse.persistence.eis.EISConnectionSpec
      * @see "org.eclipse.persistence.nosql.annotations.NoSql"

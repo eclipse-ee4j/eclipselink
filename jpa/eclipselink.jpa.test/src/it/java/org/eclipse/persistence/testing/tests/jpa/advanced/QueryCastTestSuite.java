@@ -17,8 +17,8 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 import java.math.BigInteger;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

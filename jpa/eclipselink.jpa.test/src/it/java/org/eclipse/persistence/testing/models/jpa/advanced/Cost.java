@@ -15,8 +15,8 @@
 //       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Cost {

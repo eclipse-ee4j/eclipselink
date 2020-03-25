@@ -20,16 +20,16 @@ package org.eclipse.persistence.testing.models.jpa.relationships;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.VariableOneToOne;
 import org.eclipse.persistence.annotations.DiscriminatorClass;
 import org.eclipse.persistence.annotations.InstantiationCopyPolicy;
 
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.DiscriminatorType.INTEGER;
-import static javax.persistence.FetchType.LAZY;
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.DiscriminatorType.INTEGER;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity
 @Table(name="CMP3_ITEM")

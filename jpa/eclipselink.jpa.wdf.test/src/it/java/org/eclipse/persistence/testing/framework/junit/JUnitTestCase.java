@@ -19,9 +19,9 @@ package org.eclipse.persistence.testing.framework.junit;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.sessions.server.ServerSession;

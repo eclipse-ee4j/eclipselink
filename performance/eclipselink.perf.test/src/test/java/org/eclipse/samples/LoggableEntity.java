@@ -12,8 +12,8 @@
 
 package org.eclipse.samples;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 
 import org.eclipse.persistence.testing.perf.jpa.model.metaannotations.EListener;
 

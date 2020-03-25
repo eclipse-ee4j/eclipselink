@@ -16,7 +16,7 @@
 //       - 531062: Incorrect expression type created for CollectionExpression
 package org.eclipse.persistence.jpa.test.jpql.model;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class JPQLEmbeddedValue {

@@ -20,7 +20,7 @@
 //       - 463726: Added DatabaseSession null check
 package org.eclipse.persistence.platform.server.jboss;
 
-import javax.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
 import org.eclipse.persistence.logging.AbstractSessionLog;

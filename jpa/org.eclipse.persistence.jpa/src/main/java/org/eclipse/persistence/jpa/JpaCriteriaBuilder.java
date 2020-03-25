@@ -15,15 +15,15 @@
 package org.eclipse.persistence.jpa;
 
 
-import javax.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Expression;
 
 /**
  * PUBLIC:
  * EclipseLInk specific JPA Criteria interface.  Provides the functionality defined in
- * javax.persistence.criteria.CriteriaBuilder and adds EclipseLink specific
+ * jakarta.persistence.criteria.CriteriaBuilder and adds EclipseLink specific
  * functionality.
  */
-public interface JpaCriteriaBuilder extends javax.persistence.criteria.CriteriaBuilder {
+public interface JpaCriteriaBuilder extends jakarta.persistence.criteria.CriteriaBuilder {
 
     /**
      * ADVANCED:

@@ -23,9 +23,9 @@
 //     08/06/2010-2.2 mobrien 322018 - reduce protected instance variables to private to enforce encapsulation
 package org.eclipse.persistence.internal.jpa.metamodel;
 
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -44,7 +44,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * Instances of the type PluralAttribute represent
  * persistent collection-valued attributes.
  *
- * @see javax.persistence.metamodel.PluralAttribute
+ * @see jakarta.persistence.metamodel.PluralAttribute
  *
  * @since EclipseLink 1.2 - JPA 2.0
  *

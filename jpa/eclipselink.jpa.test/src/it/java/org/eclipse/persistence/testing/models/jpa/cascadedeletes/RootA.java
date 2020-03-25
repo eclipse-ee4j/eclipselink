@@ -16,12 +16,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
-import static javax.persistence.FetchType.LAZY;
-import static javax.persistence.CascadeType.REMOVE;
+import static jakarta.persistence.FetchType.LAZY;
+import static jakarta.persistence.CascadeType.REMOVE;
 
 /**
  * Entity implementation class for Entity: RootA

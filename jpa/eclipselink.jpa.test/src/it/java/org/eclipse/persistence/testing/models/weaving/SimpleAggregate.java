@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.models.weaving;
 import java.io.Serializable;
 
 // J2EE persistence imports
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Embeddable
 @Table(name="SIMPLE_AGGREGATE")

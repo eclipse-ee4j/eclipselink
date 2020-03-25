@@ -17,12 +17,12 @@ package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
 import java.sql.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.SecondaryTable;
-import javax.persistence.Table;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 

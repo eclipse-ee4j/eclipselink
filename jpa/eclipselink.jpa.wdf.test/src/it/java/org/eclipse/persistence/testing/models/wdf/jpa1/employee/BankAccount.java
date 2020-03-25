@@ -16,7 +16,7 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class BankAccount extends Account {

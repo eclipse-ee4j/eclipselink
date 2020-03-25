@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.expressions.ExpressionBuilder;

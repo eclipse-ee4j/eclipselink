@@ -17,9 +17,9 @@ package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.*;
 
 import org.eclipse.persistence.annotations.Multitenant;
 

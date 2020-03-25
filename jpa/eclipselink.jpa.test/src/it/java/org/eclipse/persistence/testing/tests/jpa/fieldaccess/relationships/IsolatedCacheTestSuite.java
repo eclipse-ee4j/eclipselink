@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;

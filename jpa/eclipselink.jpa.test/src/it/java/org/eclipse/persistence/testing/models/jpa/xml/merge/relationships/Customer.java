@@ -17,14 +17,14 @@
 package org.eclipse.persistence.testing.models.jpa.xml.merge.relationships;
 
 import java.util.Collection;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.PrivateOwned;
 
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
+import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
 
 /**
  * This class is mapped in the following file:

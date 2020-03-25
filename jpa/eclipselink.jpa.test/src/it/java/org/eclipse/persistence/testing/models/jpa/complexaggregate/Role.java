@@ -15,9 +15,9 @@
 //       - 245120: unidir one-to-many within embeddable fails to deploy for missing primary key field
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.GenerationType.TABLE;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 

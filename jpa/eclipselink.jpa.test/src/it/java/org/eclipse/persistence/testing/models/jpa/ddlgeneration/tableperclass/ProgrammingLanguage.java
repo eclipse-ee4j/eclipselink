@@ -16,10 +16,10 @@
 //       - 328774: TABLE_PER_CLASS-mapped key of a java.util.Map does not work for querying
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration.tableperclass;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
 @Entity
 public class ProgrammingLanguage {

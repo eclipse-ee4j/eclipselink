@@ -24,8 +24,8 @@ import java.util.Collection;
 import java.util.List;
 
 //java eXtensions
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 //JUnit4 imports
 import org.junit.After;

@@ -42,6 +42,10 @@
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
         <!--Test dependencies-->
         <dependency>
             <groupId>junit</groupId>

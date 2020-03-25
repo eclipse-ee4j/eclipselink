@@ -14,7 +14,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.Size;
 
 @Embeddable

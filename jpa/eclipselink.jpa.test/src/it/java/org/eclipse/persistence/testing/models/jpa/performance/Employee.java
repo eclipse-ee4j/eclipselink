@@ -17,9 +17,9 @@ package org.eclipse.persistence.testing.models.jpa.performance;
 import java.util.*;
 import java.io.*;
 
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.QueryHint;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.QueryHint;
 
 import org.eclipse.persistence.config.QueryHints;
 

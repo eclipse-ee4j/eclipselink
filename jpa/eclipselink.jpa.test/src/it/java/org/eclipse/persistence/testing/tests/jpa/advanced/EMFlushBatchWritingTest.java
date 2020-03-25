@@ -15,8 +15,8 @@
 //       - bug:323370 - flush() doesn't flush native queries if batch writing is enabled
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.jpa.JpaEntityManager;

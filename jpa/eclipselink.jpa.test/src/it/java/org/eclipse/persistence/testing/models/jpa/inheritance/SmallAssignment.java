@@ -15,10 +15,10 @@
 //       - 259829: TABLE_PER_CLASS with abstract classes does not work
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @AttributeOverride(name="id", column = @Column(name="SMALL_ID"))

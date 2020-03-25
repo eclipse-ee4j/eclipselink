@@ -17,8 +17,8 @@
 
 package org.eclipse.persistence.jpa.converter.converters;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.Converter;
 
 @Converter(autoApply=true)
 public class IntToStringAutoApplyConverter implements AttributeConverter<Integer, String> {

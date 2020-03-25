@@ -32,7 +32,7 @@ public class ExamplePropertiesLoader {
 
     public static final String DEFAULT_FILENAME = "test.properties";
     public static final String ECLIPSELINK_TEST_DB_PROP_PREFIX = "db.";
-    public static final String JPA_DB_PROP_PREFIX = "javax.persistence.jdbc.";
+    public static final String JPA_DB_PROP_PREFIX = "jakarta.persistence.jdbc.";
     public static final String DB_DRIVER_KEY = "db.driver";
     public static final String DB_URL_KEY = "db.url";
     public static final String DB_USER_KEY = "db.user";
@@ -55,7 +55,7 @@ public class ExamplePropertiesLoader {
         loadProperties(properties, new File(home + System.getProperty("file.separator") + filename));
         for (Object key : System.getProperties().keySet()) {
             String keyName = (String) key;
-            if (keyName.startsWith("javax.persistence") || keyName.startsWith("eclipselink")) {
+            if (keyName.startsWith("jakarta.persistence") || keyName.startsWith("eclipselink")) {
                 String value = System.getProperty(keyName);
                 properties.put(keyName, value);
             }

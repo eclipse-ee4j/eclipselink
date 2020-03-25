@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.mapping;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Project;

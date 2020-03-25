@@ -18,9 +18,9 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.Tuple;
-import javax.persistence.TupleElement;
-import javax.persistence.criteria.Selection;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TupleElement;
+import jakarta.persistence.criteria.Selection;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.queries.ReportQueryResult;

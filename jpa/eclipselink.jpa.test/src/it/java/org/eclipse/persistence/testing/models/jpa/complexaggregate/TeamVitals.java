@@ -18,13 +18,13 @@
 //       - 248293: JPA 2.0 Element Collections (part 2)
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.persistence.FetchType.*;
-import static javax.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @Embeddable
 public class TeamVitals implements Serializable {

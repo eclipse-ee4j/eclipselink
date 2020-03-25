@@ -18,12 +18,12 @@
 //       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
-import javax.persistence.Access;
-import static javax.persistence.AccessType.FIELD;
-import static javax.persistence.AccessType.PROPERTY;
+import jakarta.persistence.Access;
+import static jakarta.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.PROPERTY;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 /**
  * The owning class has field access, and so to process this class as

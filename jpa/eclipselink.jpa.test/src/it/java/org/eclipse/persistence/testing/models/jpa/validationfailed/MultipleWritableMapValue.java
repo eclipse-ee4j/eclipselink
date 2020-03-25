@@ -14,14 +14,14 @@
 //     tware - test for bug 293827
 package org.eclipse.persistence.testing.models.jpa.validationfailed;
 
-import static javax.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.LAZY;
 
-import javax.persistence.Entity;
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Id;
 
 @Entity
 @Table(name="CMP3_MWMAPVALUE")

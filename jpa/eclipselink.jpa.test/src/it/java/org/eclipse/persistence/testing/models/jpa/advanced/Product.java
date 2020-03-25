@@ -14,9 +14,9 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.GenerationType.TABLE;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="CMP3_PRODUCT")

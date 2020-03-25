@@ -18,7 +18,7 @@
 //       - 465452: Test calling ServerPlatformUtils.createServerPlatform with a null platform class name.
 package org.eclipse.persistence.jpa.test.server;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.exceptions.ServerPlatformException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;

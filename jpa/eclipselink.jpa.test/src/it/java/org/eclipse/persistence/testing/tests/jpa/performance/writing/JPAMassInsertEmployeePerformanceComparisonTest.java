@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
  package org.eclipse.persistence.testing.tests.jpa.performance.writing;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.testing.models.jpa.performance.*;

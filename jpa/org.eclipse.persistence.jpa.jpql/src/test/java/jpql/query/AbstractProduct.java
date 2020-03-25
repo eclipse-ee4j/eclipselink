@@ -13,8 +13,8 @@
 package jpql.query;
 
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Basic;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class AbstractProduct implements Serializable {

@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.test.jpql.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class JPQLEntityId implements Serializable {

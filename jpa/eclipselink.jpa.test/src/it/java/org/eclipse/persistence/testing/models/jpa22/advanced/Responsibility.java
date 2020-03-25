@@ -15,7 +15,7 @@
 //       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.testing.models.jpa22.advanced;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class Responsibility {

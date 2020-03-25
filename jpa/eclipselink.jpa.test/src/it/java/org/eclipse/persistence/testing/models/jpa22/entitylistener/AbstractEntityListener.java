@@ -14,11 +14,11 @@ package org.eclipse.persistence.testing.models.jpa22.entitylistener;
 
 import org.eclipse.persistence.testing.models.jpa22.sessionbean.InjectedBean;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.inject.Inject;
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 
 /* Trigger Bug #495587 */
 public class AbstractEntityListener<E extends EntityListenerHolderInterface> {

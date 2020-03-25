@@ -17,8 +17,8 @@
 //       - 312123: JPA: Validation error during Id processing on parameterized generic OneToOne Entity relationship from MappedSuperclass
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Table;
-import javax.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
 
 @Entity
 @Table(name="CMP3_CORONA")

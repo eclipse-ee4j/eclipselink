@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 public class PartnerLinkPK implements Serializable {
     private int manId;

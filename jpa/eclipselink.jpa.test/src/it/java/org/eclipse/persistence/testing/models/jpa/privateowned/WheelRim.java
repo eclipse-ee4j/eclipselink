@@ -14,7 +14,7 @@
 //     02/19/09 dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.privateowned;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity(name="PO_WheelRim")
 @Table(name="CMP3_PO_WHEEL_RIM")

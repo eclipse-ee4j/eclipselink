@@ -19,7 +19,7 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.generator;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Employee;

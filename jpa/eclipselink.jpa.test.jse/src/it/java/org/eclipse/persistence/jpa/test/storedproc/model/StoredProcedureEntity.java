@@ -16,10 +16,10 @@
 //       - 558414 : Add Oracle support for named parameters with stored procedures
 package org.eclipse.persistence.jpa.test.storedproc.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 /**
  * Simple Entity that exists just so we can use the table in stored procedures

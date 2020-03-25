@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import java.io.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.Partitioned;
 import org.eclipse.persistence.queries.FetchGroupTracker;

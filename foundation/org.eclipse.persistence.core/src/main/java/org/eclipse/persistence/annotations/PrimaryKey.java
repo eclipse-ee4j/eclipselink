@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 
 /**
  *  The PrimaryKey annotation allows advanced configuration of the Id.

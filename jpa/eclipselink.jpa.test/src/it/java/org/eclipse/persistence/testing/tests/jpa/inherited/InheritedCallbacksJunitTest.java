@@ -16,7 +16,7 @@
 //       -311395 : Multiple lifecycle callback methods for the same lifecycle event
 package org.eclipse.persistence.testing.tests.jpa.inherited;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 

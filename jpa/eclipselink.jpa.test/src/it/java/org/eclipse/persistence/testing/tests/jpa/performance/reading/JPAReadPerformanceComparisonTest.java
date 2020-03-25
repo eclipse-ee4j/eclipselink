@@ -15,7 +15,7 @@
  package org.eclipse.persistence.testing.tests.jpa.performance.reading;
 
 import java.util.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.eclipse.persistence.testing.framework.*;
 
 /**

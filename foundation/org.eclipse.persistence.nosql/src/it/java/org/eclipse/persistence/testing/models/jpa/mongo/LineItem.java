@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.mongo;
 
 import java.math.*;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 import org.eclipse.persistence.nosql.annotations.DataFormatType;
 import org.eclipse.persistence.nosql.annotations.NoSql;

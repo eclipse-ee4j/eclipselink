@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpars.test.model.weaving;
 
 import jakarta.ejb.Singleton;
 import jakarta.ejb.Startup;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
 
 /**
  * Forces weaving of persistence units

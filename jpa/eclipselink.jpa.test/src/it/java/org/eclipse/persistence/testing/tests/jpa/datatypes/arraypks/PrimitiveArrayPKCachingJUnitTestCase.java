@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.tests.jpa.datatypes.arraypks;
 
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import junit.extensions.TestSetup;
 
 import junit.framework.Test;

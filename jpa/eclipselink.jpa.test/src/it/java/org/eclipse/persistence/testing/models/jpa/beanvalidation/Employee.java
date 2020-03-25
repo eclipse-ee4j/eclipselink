@@ -14,7 +14,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Max;

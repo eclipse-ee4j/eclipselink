@@ -14,15 +14,15 @@
 //     03/04/09 tware - test for bug 350599 copied from advanced model
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.GenerationType.TABLE;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 
 import org.eclipse.persistence.annotations.ReadOnly;
 

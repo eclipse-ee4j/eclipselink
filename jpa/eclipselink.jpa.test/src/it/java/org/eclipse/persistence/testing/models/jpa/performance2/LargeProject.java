@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.models.jpa.performance2;
 
 import java.util.Calendar;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * The LargeProject class demonstrates usage of JOINED inheritance.

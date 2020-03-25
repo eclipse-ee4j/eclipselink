@@ -18,8 +18,8 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.embedded;
 
 import static org.junit.Assert.assertEquals;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.testing.models.wdf.jpa1.employee.Trailer;
 import org.eclipse.persistence.testing.tests.wdf.jpa1.JPA1Base;

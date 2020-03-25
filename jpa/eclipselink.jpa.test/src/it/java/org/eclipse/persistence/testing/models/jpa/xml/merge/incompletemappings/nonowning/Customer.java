@@ -15,9 +15,9 @@
 package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.nonowning;
 
 import java.util.Collection;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
 
 @Entity(name="XMLIncompleteCustomer")
 @Table(name="CMP3_XML_INC_CUSTOMER")

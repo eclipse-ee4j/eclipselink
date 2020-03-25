@@ -1006,7 +1006,7 @@ public class ReportQuery extends ReadAllQuery {
 
     /**
      * INTERNAL:
-     * Sets a javax.persistence.LockModeType to used with this queries execution.
+     * Sets a jakarta.persistence.LockModeType to used with this queries execution.
      * The valid types are:
      *  - WRITE
      *  - READ

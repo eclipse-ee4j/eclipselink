@@ -22,8 +22,8 @@ import java.util.List;
  * PUBLIC:
  *
  * This class is used by our JPA annotation processing to discover which annotations may coexist with a
- * javax.persistence.Transient annotation.  If javax.persistence.Transient appears on a field or property with an
- * annotation in the javax.persistence or org.eclipse.persistence package that is not in the list returned by getTransientCompatibleAnnotations()
+ * jakarta.persistence.Transient annotation.  If jakarta.persistence.Transient appears on a field or property with an
+ * annotation in the jakarta.persistence or org.eclipse.persistence package that is not in the list returned by getTransientCompatibleAnnotations()
  * an exception will be thrown.
  * @author tware
  *
@@ -31,17 +31,17 @@ import java.util.List;
 public class TransientCompatibleAnnotations {
 
     private static final List<String> transientCompatibleAnnotations = Collections.unmodifiableList(new ArrayList<String>() {{
-        add("javax.persistence.PersistenceUnits");
-        add("javax.persistence.PersistenceUnit");
-        add("javax.persistence.PersistenceContext");
-        add("javax.persistence.PersistenceContexts");
-        add("javax.persistence.Access");
-        add("javax.persistence.Transient");
+        add("jakarta.persistence.PersistenceUnits");
+        add("jakarta.persistence.PersistenceUnit");
+        add("jakarta.persistence.PersistenceContext");
+        add("jakarta.persistence.PersistenceContexts");
+        add("jakarta.persistence.Access");
+        add("jakarta.persistence.Transient");
     }});
 
     /**
      * PUBLIC:
-     * Return a list of classnames of annotations that are compatible with the javax.persistence.Transient
+     * Return a list of classnames of annotations that are compatible with the jakarta.persistence.Transient
      * annotation.
      * @return
      */

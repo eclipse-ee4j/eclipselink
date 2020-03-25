@@ -14,9 +14,9 @@
 //     tware - testing for DDL issue with embedded and MTM
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Embedded;
 
 @Entity
 public class Inventor {

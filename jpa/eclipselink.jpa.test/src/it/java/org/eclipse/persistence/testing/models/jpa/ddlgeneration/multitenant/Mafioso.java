@@ -19,26 +19,26 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.Table;
 
 import org.eclipse.persistence.annotations.ConversionValue;
 import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.TenantDiscriminatorColumn;
 
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.InheritanceType.JOINED;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.InheritanceType.JOINED;
 
 @Entity
 @Table(name="DDL_MAFIOSO")

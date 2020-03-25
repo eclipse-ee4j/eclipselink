@@ -15,8 +15,8 @@
 //       - #539822: JPA Canonical metamodel not processing metamodelMappedSuperclasses
 package org.eclipse.persistence.jpa.test.canonical;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public abstract class DomainPersistable implements DomainInterface {

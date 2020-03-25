@@ -19,7 +19,7 @@ package org.eclipse.persistence.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.persistence.GeneratedValue;
+import jakarta.persistence.GeneratedValue;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -49,7 +49,7 @@ import java.lang.annotation.Repeatable;
  *    }
  * </pre>
  *
- * @see javax.persistence.GeneratedValue
+ * @see jakarta.persistence.GeneratedValue
  * @author James Sutherland
  * @since EclipseLink 2.4
  */

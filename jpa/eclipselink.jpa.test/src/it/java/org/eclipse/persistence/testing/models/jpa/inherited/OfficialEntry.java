@@ -15,12 +15,12 @@
 //       - 294803: @Column(updatable=false) has no effect on @Basic mappings
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.GenerationType.TABLE;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.TableGenerator;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.TableGenerator;
 
 @Entity(name="JPA_OFFICIAL_ENTRY")
 public class OfficialEntry {

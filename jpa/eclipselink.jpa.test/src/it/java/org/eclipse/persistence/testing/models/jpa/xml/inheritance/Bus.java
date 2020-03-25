@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.xml.inheritance;
 
 import java.util.ArrayList;
-import javax.persistence.EntityListeners;
+import jakarta.persistence.EntityListeners;
 
 // These listeners are overridden in XML. BusListener2 callbacks should be
 // called before BusListener callbacks. A BusListener3 has also been added

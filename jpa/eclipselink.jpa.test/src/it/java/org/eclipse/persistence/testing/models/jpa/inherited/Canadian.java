@@ -23,13 +23,13 @@ package org.eclipse.persistence.testing.models.jpa.inherited;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.ExistenceChecking;
 import org.eclipse.persistence.annotations.Mutable;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 
-import static javax.persistence.TemporalType.DATE;
+import static jakarta.persistence.TemporalType.DATE;
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_DATABASE;
 
 @Entity

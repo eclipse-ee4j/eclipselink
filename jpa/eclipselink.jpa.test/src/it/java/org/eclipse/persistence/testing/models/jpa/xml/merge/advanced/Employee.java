@@ -16,10 +16,10 @@ package org.eclipse.persistence.testing.models.jpa.xml.merge.advanced;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
 
 /**
  * This class is used to test XML and annotation merging. This class is mapped

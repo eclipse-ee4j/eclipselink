@@ -25,8 +25,8 @@
 //         Throw an IAE for Interfaces and Embeddable classes passed to evict()
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityManager;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.testing.models.jpa.advanced.*;

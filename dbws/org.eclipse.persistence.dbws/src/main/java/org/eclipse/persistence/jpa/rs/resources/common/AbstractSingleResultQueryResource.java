@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.rs.util.list.SingleResultQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;

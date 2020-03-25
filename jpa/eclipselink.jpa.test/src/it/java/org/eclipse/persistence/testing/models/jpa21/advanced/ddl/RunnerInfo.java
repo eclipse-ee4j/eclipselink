@@ -15,9 +15,9 @@
 //       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
 package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Health;
 import org.eclipse.persistence.testing.models.jpa21.advanced.enums.Level;

@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 
 import java.util.Vector;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import junit.framework.*;
 

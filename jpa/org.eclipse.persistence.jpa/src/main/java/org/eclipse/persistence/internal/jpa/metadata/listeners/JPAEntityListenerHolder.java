@@ -183,7 +183,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
                     Method method = serializedMethod.convertToMethod(loader);
                     newMethodList.add(method);
                 } catch (Exception e) {
-                    throw new javax.persistence.PersistenceException(e);
+                    throw new jakarta.persistence.PersistenceException(e);
                 }
             }
             table.put(event, newMethodList);

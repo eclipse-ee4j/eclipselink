@@ -16,7 +16,7 @@
 //       - 439127: Modified to use this class in jUnit test model.
 package org.eclipse.persistence.testing.models.jpa.advanced.embeddable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.*;
 
 /**

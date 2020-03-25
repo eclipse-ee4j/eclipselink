@@ -82,7 +82,7 @@ public abstract class CanonicalModelProperties {
 
     /**
      * This optional property can be used to avoid adding
-     * {@code javax.annotation.Generated} annotation to generated metamodel class.
+     * {@code jakarta.annotation.Generated} annotation to generated metamodel class.
      * The default value is true and should be left as such for full feature support.
      * If the value is {@code false}, {@linkplain #CANONICAL_MODEL_GENERATE_TIMESTAMP}
      * and {@linkplain #CANONICAL_MODEL_GENERATE_COMMENTS} properties are ignored.
@@ -92,7 +92,7 @@ public abstract class CanonicalModelProperties {
 
     /**
      * This optional property can be used to avoid using of date in
-     * {@code javax.annotation.Generated} annotation
+     * {@code jakarta.annotation.Generated} annotation
      * The default value is true and should be left as such for full feature
      * support.
      */

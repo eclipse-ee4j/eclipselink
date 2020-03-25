@@ -17,13 +17,13 @@
 
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Version;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Version;
 
 @Entity
 @SequenceGenerator(name = "MaterialEreignisSEQ", initialValue = 100, allocationSize = 100)

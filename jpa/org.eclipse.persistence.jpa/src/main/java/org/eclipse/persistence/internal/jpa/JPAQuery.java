@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.LockModeType;
+import jakarta.persistence.LockModeType;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.EntityResult;
 import org.eclipse.persistence.queries.SQLResultSetMapping;

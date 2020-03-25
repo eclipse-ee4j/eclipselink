@@ -19,9 +19,9 @@ import java.util.List;
 import jakarta.ejb.Remote;
 import jakarta.ejb.Stateless;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced.Employee;
 

@@ -28,7 +28,7 @@ package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.List;
 
-import javax.persistence.AttributeConverter;
+import jakarta.persistence.AttributeConverter;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataProject;

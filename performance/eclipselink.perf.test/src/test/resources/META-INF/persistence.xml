@@ -20,10 +20,10 @@
         <class>org.eclipse.persistence.testing.perf.beanvalidation.Employee</class>
         <class>org.eclipse.persistence.testing.perf.beanvalidation.EmployeeAnnotated</class>
         <properties>
-            <property name="javax.persistence.jdbc.driver"      value="@driver@"/>
-            <property name="javax.persistence.jdbc.url"         value="@url@"/>
-            <property name="javax.persistence.jdbc.user"        value="@user@"/>
-            <property name="javax.persistence.jdbc.password"    value="@pwd@"/>
+            <property name="jakarta.persistence.jdbc.driver"      value="@driver@"/>
+            <property name="jakarta.persistence.jdbc.url"         value="@url@"/>
+            <property name="jakarta.persistence.jdbc.user"        value="@user@"/>
+            <property name="jakarta.persistence.jdbc.password"    value="@pwd@"/>
         </properties>
     </persistence-unit>
     <persistence-unit name="jpa-performance">
@@ -40,10 +40,10 @@
         <class>org.eclipse.persistence.testing.perf.jpa.model.basic.Project</class>
         <class>org.eclipse.persistence.testing.perf.jpa.model.basic.SmallProject</class>
         <properties>
-            <property name="javax.persistence.jdbc.driver"      value="@driver@"/>
-            <property name="javax.persistence.jdbc.url"         value="@url@"/>
-            <property name="javax.persistence.jdbc.user"        value="@user@"/>
-            <property name="javax.persistence.jdbc.password"    value="@pwd@"/>
+            <property name="jakarta.persistence.jdbc.driver"      value="@driver@"/>
+            <property name="jakarta.persistence.jdbc.url"         value="@url@"/>
+            <property name="jakarta.persistence.jdbc.user"        value="@user@"/>
+            <property name="jakarta.persistence.jdbc.password"    value="@pwd@"/>
         </properties>
     </persistence-unit>
 </persistence>

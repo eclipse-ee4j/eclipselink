@@ -19,11 +19,11 @@
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.PrePersist;
-import javax.persistence.Transient;
-import static javax.persistence.TemporalType.DATE;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Transient;
+import static jakarta.persistence.TemporalType.DATE;
 
 /**
  * This class is mapped in:

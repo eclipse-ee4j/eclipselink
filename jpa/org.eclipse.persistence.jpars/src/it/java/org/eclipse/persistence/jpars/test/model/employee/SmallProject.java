@@ -12,9 +12,9 @@
 
 package org.eclipse.persistence.jpars.test.model.employee;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "JPARS_SPROJECT")

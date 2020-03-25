@@ -51,7 +51,7 @@ public class CacheAuditor extends CacheInterceptor {
             public void release() {
                 wrappedKey.release();
                 if (shouldThrow){
-                    throw new javax.persistence.OptimisticLockException("FALSE-EXCEPTION");
+                    throw new jakarta.persistence.OptimisticLockException("FALSE-EXCEPTION");
                 }
             }
 

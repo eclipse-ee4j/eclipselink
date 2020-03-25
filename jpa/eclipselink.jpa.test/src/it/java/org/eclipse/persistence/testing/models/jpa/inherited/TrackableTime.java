@@ -17,10 +17,10 @@
 //       - 362180: ConcurrentModificationException on predeploy for AttributeOverride
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.MappedSuperclass;
 
 @MappedSuperclass
 public class TrackableTime {

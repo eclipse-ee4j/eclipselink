@@ -26,7 +26,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.metamodel.MappedSuperclassType;
+import jakarta.persistence.metamodel.MappedSuperclassType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 
@@ -39,7 +39,7 @@ import org.eclipse.persistence.descriptors.ClassDescriptor;
  *  Instances of the type MappedSuperclassType represent mapped
  *  superclass types.
  *
- * @see javax.persistence.metamodel.MappedSuperclassType
+ * @see jakarta.persistence.metamodel.MappedSuperclassType
  *
  * @since EclipseLink 1.2 - JPA 2.0
  *
@@ -120,7 +120,7 @@ public class MappedSuperclassTypeImpl<X> extends IdentifiableTypeImpl<X> impleme
      *  @return persistence type
      */
     @Override
-    public javax.persistence.metamodel.Type.PersistenceType getPersistenceType() {
+    public jakarta.persistence.metamodel.Type.PersistenceType getPersistenceType() {
         return PersistenceType.MAPPED_SUPERCLASS;
     }
 

@@ -18,9 +18,9 @@ package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
 import java.sql.Date;
 
-import javax.persistence.Entity;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TMP_CREDIT_ACC")

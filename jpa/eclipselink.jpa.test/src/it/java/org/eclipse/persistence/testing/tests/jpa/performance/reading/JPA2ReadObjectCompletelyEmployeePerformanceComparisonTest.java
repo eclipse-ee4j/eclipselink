@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation
  package org.eclipse.persistence.testing.tests.jpa.performance.reading;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.testing.models.jpa.performance2.*;
 import org.eclipse.persistence.testing.framework.*;

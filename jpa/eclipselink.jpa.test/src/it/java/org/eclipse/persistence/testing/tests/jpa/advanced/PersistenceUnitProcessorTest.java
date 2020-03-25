@@ -35,7 +35,7 @@ import java.net.URLStreamHandler;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 public class PersistenceUnitProcessorTest extends JUnitTestCase {
 

@@ -19,7 +19,7 @@
  * requires certain methods but can not extend ExpressionImpl.  This interface provide a common API.
  * <p>
  *
- * @see javax.persistence.criteria Expression
+ * @see jakarta.persistence.criteria Expression
  *
  * @author gyorke
  * @since EclipseLink 1.2
@@ -39,7 +39,7 @@
 // requires certain methods but can not extend ExpressionImpl.  This interface provide a common API.
 // <p>
 //
-// @see javax.persistence.criteria Expression
+// @see jakarta.persistence.criteria Expression
 //
 // @author gyorke
 // @since EclipseLink 1.2

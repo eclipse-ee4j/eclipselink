@@ -20,7 +20,7 @@ import org.eclipse.persistence.testing.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * <p><b>Purpose</b>: Run performance tests inside JEE server.

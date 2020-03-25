@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.owning;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Local interface for the large project bean.

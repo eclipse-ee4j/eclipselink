@@ -14,11 +14,11 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.merge.incompletemappings.nonowning;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Collection;
 
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity(name="XMLIncompletePartsList")
 @Table(name="CMP3_XML_INC_PARTSLIST")

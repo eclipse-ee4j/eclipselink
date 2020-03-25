@@ -15,13 +15,13 @@
 //       - 265359: JPA 2.0 Element Collections - Metadata processing portions
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Table(name="CMP3_HOCKEY_COACH")

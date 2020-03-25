@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners;
 
-import javax.persistence.PostLoad;
-import javax.persistence.PostPersist;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PostPersist;
 
 public class DefaultListener {
     // Not going to test all the callbacks from the default listener

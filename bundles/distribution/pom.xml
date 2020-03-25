@@ -208,7 +208,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
+            <artifactId>jakarta.persistence</artifactId>
             <version>${persistence21.version}</version>
         </dependency>
         <dependency>

@@ -14,7 +14,7 @@
 //     07/17/2009 - tware - added tests for DDL generation of maps
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Embeddable
 public class AggregateMapKey {

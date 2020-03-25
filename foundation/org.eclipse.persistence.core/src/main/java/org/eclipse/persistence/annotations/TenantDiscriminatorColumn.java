@@ -20,7 +20,7 @@ package org.eclipse.persistence.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.persistence.DiscriminatorType;
+import jakarta.persistence.DiscriminatorType;
 
 import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;

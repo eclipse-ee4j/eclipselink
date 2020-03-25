@@ -14,8 +14,8 @@
 
 package org.eclipse.persistence.testing.models.jpa.beanvalidation;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.Size;
 
 @Entity(name="CMP3_BV_PROJECT")

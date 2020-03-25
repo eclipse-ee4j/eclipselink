@@ -18,8 +18,8 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.criteria.CompoundSelection;
-import javax.persistence.criteria.Selection;
+import jakarta.persistence.criteria.CompoundSelection;
+import jakarta.persistence.criteria.Selection;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
@@ -31,7 +31,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
  * <p>
  *
- * @see javax.persistence.criteria Join
+ * @see jakarta.persistence.criteria Join
  *
  * @author gyorke
  * @since EclipseLink 1.2

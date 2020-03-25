@@ -16,10 +16,10 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.OneToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.OneToOne;
 
 @SuppressWarnings("serial")
 @Entity

@@ -17,12 +17,12 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import java.io.*;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import org.eclipse.persistence.annotations.Cache;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.InheritanceType.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.InheritanceType.*;
 
 /**
  * This tests;

@@ -24,7 +24,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
  * ExpressionImpl hierarchy
  * <p>
  *
- * @see javax.persistence.criteria Expression
+ * @see jakarta.persistence.criteria Expression
  *
  * @author gyorke
  * @since EclipseLink 1.2

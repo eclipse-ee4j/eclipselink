@@ -16,9 +16,9 @@
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
 package org.eclipse.persistence.jpa.test.lob.model;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Lob;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Lob;
 
 @Embeddable
 public class CollectedEntity {

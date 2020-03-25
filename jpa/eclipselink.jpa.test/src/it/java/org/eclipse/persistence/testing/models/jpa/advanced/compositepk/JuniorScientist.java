@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class JuniorScientist extends Scientist  {

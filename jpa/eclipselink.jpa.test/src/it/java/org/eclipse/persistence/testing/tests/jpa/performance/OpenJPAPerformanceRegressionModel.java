@@ -16,8 +16,8 @@
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.EntityManager;
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.framework.TestProblemException;
 import org.eclipse.persistence.testing.models.jpa.performance.EmployeeTableCreator;
@@ -44,7 +44,7 @@ public class OpenJPAPerformanceRegressionModel extends JPAPerformanceRegressionM
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
         Map properties = new HashMap();
-        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
+        //properties.put("jakarta.persistence.nonJtaDataSource", "datasource");
         properties.put("openjpa.ConnectionDriverName", getSession().getLogin().getDriverClassName());
         properties.put("openjpa.ConnectionURL", getSession().getLogin().getConnectionString());
         properties.put("openjpa.ConnectionUserName", getSession().getLogin().getUserName());

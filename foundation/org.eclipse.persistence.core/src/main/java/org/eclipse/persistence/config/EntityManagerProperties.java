@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Collections;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 /**
  * The class defines EclipseLink properties' names for use at the EntityManager level.
@@ -132,8 +132,8 @@ public class EntityManagerProperties {
      * The property set in persistence.xml or passed to createEntityManagerFactory affects all EntityManagers
      * created by the factory.
      * Alternatively, to apply the property only to some EntityManagers pass it to createEntityManager method.
-     * @see javax.persistence.EntityManager#setFlushMode(javax.persistence.FlushModeType)
-     * @see javax.persistence.FlushModeType
+     * @see jakarta.persistence.EntityManager#setFlushMode(jakarta.persistence.FlushModeType)
+     * @see jakarta.persistence.FlushModeType
      */
     public static final String PERSISTENCE_CONTEXT_FLUSH_MODE = PersistenceUnitProperties.PERSISTENCE_CONTEXT_FLUSH_MODE;
 
@@ -178,7 +178,7 @@ public class EntityManagerProperties {
      * JTA DataSource.
      * The value may be either data source or its name.
      * Note that this property will be ignore in case persistence unit was setup to NOT use JTA:
-     * persistence.xml or createEntityManagerFactory had property "javax.persistence.transactionType" with RESOURCE_LOCAL value.
+     * persistence.xml or createEntityManagerFactory had property "jakarta.persistence.transactionType" with RESOURCE_LOCAL value.
      * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
      * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
@@ -191,7 +191,7 @@ public class EntityManagerProperties {
      * NON JTA DataSource.
      * The value may be either data source or its name.
      * Note that this property will be ignore in case persistence unit was setup to use JTA:
-     * persistence.xml or createEntityManagerFactory had property "javax.persistence.transactionType" with JTA value.
+     * persistence.xml or createEntityManagerFactory had property "jakarta.persistence.transactionType" with JTA value.
      * To avoid a conflict resulting in exception don't specify this property together with either JDBC_DRIVER or JDBC_URL;
      * however this property may override JDBC_DRIVER or JDBC_URL specified in persistence.xml or in createEntityManagerFactory method.
      * This property alters ConnectionPolicy.
@@ -305,16 +305,16 @@ public class EntityManagerProperties {
      * <p>
      * "eclipselink.composite-unit.properties" {@literal ->} (<br>
      *  &nbsp;("memberPu1" {@literal ->} (<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.user" {@literal ->} "user1",<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.password" {@literal ->} "password1",<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.driver" {@literal ->} "oracle.jdbc.OracleDriver",<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.url" {@literal ->} "jdbc:oracle:thin:@oracle_db_url:1521:db",<br>
+     *  &nbsp;&nbsp;&nbsp;"jakarta.persistence.jdbc.user" {@literal ->} "user1",<br>
+     *  &nbsp;&nbsp;&nbsp;"jakarta.persistence.jdbc.password" {@literal ->} "password1",<br>
+     *  &nbsp;&nbsp;&nbsp;"jakarta.persistence.jdbc.driver" {@literal ->} "oracle.jdbc.OracleDriver",<br>
+     *  &nbsp;&nbsp;&nbsp;"jakarta.persistence.jdbc.url" {@literal ->} "jdbc:oracle:thin:@oracle_db_url:1521:db",<br>
      *  &nbsp;&nbsp;) ,<br>
      *  &nbsp;("memberPu2" {@literal ->} (<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.user" {@literal ->} "user2",<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.password" {@literal ->} "password2"<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.driver" {@literal ->} "com.mysql.jdbc.Driver",<br>
-     *  &nbsp;&nbsp;&nbsp;"javax.persistence.jdbc.url" {@literal ->} "jdbc:mysql://my_sql_db_url:3306/user2",<br>
+     *  &nbsp;&nbsp;&nbsp;"jakarta.persistence.jdbc.user" {@literal ->} "user2",<br>
+     *  &nbsp;&nbsp;&nbsp;"jakarta.persistence.jdbc.password" {@literal ->} "password2"<br>
+     *  &nbsp;&nbsp;&nbsp;"jakarta.persistence.jdbc.driver" {@literal ->} "com.mysql.jdbc.Driver",<br>
+     *  &nbsp;&nbsp;&nbsp;"jakarta.persistence.jdbc.url" {@literal ->} "jdbc:mysql://my_sql_db_url:3306/user2",<br>
      *  &nbsp;&nbsp;)<br>
      * )
      */

@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 //@Entity
 //@Table(name="MW")
 //@IdClass(org.eclipse.persistence.testing.models.jpa.xml.advanced.PartnerLinkPK.class)

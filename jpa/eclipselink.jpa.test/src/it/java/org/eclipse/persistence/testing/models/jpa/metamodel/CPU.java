@@ -19,10 +19,10 @@
 //                      during MetadataProject.addMetamodelMappedSuperclass()
 package org.eclipse.persistence.testing.models.jpa.metamodel;
 
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 
 /**
  * Use Case: IdClass identifiers declared across multiple mappedSuperclasses in an inheritance hierarchy.

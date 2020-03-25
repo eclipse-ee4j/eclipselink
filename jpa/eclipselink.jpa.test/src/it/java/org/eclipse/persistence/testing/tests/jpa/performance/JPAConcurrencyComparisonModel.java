@@ -17,8 +17,8 @@
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.models.jpa.performance.*;
 import org.eclipse.persistence.testing.tests.jpa.performance.concurrent.JPAAddPhoneConcurrencyComparisonTest;
@@ -220,7 +220,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         Map properties = new HashMap();
 
         // For DataSource testing.
-        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
+        //properties.put("jakarta.persistence.nonJtaDataSource", "datasource");
 
         // For JSE testing.
         properties.put("eclipselink.jdbc.driver", getSession().getLogin().getDriverClassName());

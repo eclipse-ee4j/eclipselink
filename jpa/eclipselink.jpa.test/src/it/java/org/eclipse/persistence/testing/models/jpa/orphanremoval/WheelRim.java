@@ -15,13 +15,13 @@
 //       - 249033: JPA 2.0 Orphan removal
 package org.eclipse.persistence.testing.models.jpa.orphanremoval;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
 
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Entity(name="OR_WheelRim")
 @Table(name="JPA_OR_WHEEL_RIM")

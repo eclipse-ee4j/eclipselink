@@ -20,7 +20,7 @@
 package org.eclipse.persistence.testing.tests.jpa.dynamic.simple.sequencing;
 
 //java eXtension imports
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 //JUnit4 imports
 import org.junit.AfterClass;

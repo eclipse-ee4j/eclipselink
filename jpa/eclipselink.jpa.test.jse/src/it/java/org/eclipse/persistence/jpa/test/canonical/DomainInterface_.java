@@ -15,8 +15,8 @@
 //       - #539822: JPA Canonical metamodel not processing metamodelMappedSuperclasses
 package org.eclipse.persistence.jpa.test.canonical;
 
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.StaticMetamodel;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.StaticMetamodel;
 
 @StaticMetamodel(DomainPersistable.class)
 public class DomainInterface_ {

@@ -18,8 +18,8 @@
 //       - 506168 : Nested Embeddables AttributeOverride Test
 package org.eclipse.persistence.jpa.embeddable;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.jpa.JpaEntityManager;

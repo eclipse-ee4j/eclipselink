@@ -34,18 +34,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
-import javax.persistence.RollbackException;
-import javax.persistence.TransactionRequiredException;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
+import jakarta.persistence.RollbackException;
+import jakarta.persistence.TransactionRequiredException;
 
 import org.eclipse.persistence.config.CacheUsage;
 import org.eclipse.persistence.config.CascadePolicy;
@@ -543,7 +543,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             em.persist(emp);
             result = (Employee) query.getSingleResult();
             result.toString();
-        } catch (javax.persistence.NoResultException ex) {
+        } catch (jakarta.persistence.NoResultException ex) {
             // failed to flush to database
             flushed = false;
         } finally {
@@ -593,7 +593,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                 }
                 Employee result = (Employee) readQuery.getSingleResult();
                 result.toString();
-            }catch (javax.persistence.EntityNotFoundException ex){
+            }catch (jakarta.persistence.EntityNotFoundException ex){
                 rollbackTransaction(em);
                 fail("Failed to flush to database");
             }

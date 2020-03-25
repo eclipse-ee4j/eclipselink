@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.ArchiveFactory;
 
 /**
  * This class is written to deal with various URLs that can be returned by
- * {@link javax.persistence.spi.PersistenceUnitInfo#getPersistenceUnitRootUrl()}
+ * {@link jakarta.persistence.spi.PersistenceUnitInfo#getPersistenceUnitRootUrl()}
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */

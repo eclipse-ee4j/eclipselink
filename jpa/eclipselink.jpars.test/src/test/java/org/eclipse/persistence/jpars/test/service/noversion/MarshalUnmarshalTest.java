@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;

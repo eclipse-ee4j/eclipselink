@@ -44,8 +44,8 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sessions.Session;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.PersistenceException;
 
 /**
  * A JPA attribute converter class wrapped with an EclipseLink converter. This

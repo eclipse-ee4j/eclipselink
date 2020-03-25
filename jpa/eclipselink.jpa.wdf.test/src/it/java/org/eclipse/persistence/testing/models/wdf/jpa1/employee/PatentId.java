@@ -18,8 +18,8 @@ package org.eclipse.persistence.testing.models.wdf.jpa1.employee;
 
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public final class PatentId implements Serializable {

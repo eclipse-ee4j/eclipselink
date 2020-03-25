@@ -18,9 +18,9 @@ package org.eclipse.persistence.internal.jpa.querydef;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.Metamodel;
 
 /**
  * <p>
@@ -31,7 +31,7 @@ import javax.persistence.metamodel.Metamodel;
  * result in boolean expressions that are combined to form the final expression.
  * <p>
  *
- * @see javax.persistence.criteria Predicate
+ * @see jakarta.persistence.criteria Predicate
  *
  * @author gyorke
  * @since EclipseLink 1.2

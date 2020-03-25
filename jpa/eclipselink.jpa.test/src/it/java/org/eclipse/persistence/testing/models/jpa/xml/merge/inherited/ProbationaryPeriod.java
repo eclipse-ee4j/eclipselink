@@ -15,7 +15,7 @@
 //       - 349906: NPE while using eclipselink in the application
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class ProbationaryPeriod extends WorkPeriod {

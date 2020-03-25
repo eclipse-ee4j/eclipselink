@@ -15,9 +15,9 @@
 //       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.testing.models.jpa21.advanced;
 
-import javax.persistence.Convert;
-import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.GeneratedValue;
 
 @Embeddable
 public class Responsibility {

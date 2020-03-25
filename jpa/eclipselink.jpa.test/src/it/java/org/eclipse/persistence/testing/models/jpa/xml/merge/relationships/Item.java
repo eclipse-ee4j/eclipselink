@@ -16,13 +16,13 @@
 //       - 241651: JPA 2.0 Access Type support
 package org.eclipse.persistence.testing.models.jpa.xml.merge.relationships;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Collection;
 
 import org.eclipse.persistence.annotations.*;
 
-import static javax.persistence.AccessType.PROPERTY;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.GenerationType.*;
 
 /**
  * This class is mapped in the following file:

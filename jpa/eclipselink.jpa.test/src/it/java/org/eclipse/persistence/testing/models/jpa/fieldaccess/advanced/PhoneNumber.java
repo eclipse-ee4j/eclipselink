@@ -22,8 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
-import javax.persistence.*;
-import static javax.persistence.EnumType.STRING;
+import jakarta.persistence.*;
+import static jakarta.persistence.EnumType.STRING;
 
 import org.eclipse.persistence.annotations.PrimaryKey;
 import org.eclipse.persistence.annotations.BasicCollection;

@@ -16,10 +16,10 @@
 //       - 506168 : Nested Embeddables AttributeOverride Test
 package org.eclipse.persistence.jpa.embeddable.model;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
 
 @Entity
 public class DeepOrder {

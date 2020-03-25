@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.models.jpa.lob;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.SerializedConverter;
 import org.eclipse.persistence.annotations.SerializedConverters;

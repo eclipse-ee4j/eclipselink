@@ -18,9 +18,9 @@ package org.eclipse.persistence.testing.tests.jpa.xml.advanced.compositepk;
 
 import java.util.List;
 import java.util.ArrayList;
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 

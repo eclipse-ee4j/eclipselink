@@ -16,9 +16,9 @@
 //       - 471144: Add support for AggregateObjectMappings to eclipselink.cursor impl
 package org.eclipse.persistence.jpa.test.mapping;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.config.HintValues;
 import org.eclipse.persistence.config.QueryHints;

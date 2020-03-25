@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced.multitenant;
 import java.util.Collection;
 import java.util.Vector;
 
-import static javax.persistence.CascadeType.ALL;
+import static jakarta.persistence.CascadeType.ALL;
 
 public class Capo extends Mafioso {
     private Underboss underboss;

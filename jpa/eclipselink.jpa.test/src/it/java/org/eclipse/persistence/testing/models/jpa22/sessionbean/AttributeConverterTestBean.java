@@ -17,9 +17,9 @@ import org.eclipse.persistence.testing.models.jpa22.attributeconverter.Attribute
 import org.eclipse.persistence.testing.models.jpa22.attributeconverter.AttributeConverterHolder;
 
 import jakarta.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnit;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
 
 @Stateless
 public class AttributeConverterTestBean implements InjectionTest {

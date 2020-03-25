@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.InheritanceType.*;
 
 /**
  * Employees have a many-to-many relationship with Projects through the

@@ -18,7 +18,7 @@ package org.eclipse.persistence.internal.jpa.deployment.xml.parser;
 
 import java.util.Vector;
 
-import javax.persistence.spi.PersistenceUnitTransactionType;
+import jakarta.persistence.spi.PersistenceUnitTransactionType;
 
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.jdbc.DataSourceImpl;

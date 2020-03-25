@@ -15,7 +15,7 @@
 //       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
 package org.eclipse.persistence.testing.tests.jpa.xml.metadatacomplete;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 

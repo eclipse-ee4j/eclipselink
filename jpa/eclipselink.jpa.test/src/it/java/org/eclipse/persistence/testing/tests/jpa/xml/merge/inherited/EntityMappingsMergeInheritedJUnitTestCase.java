@@ -22,7 +22,7 @@ import java.sql.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 import org.eclipse.persistence.sessions.DatabaseSession;

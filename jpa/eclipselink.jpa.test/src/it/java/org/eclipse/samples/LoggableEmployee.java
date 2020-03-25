@@ -14,8 +14,8 @@
 //              ljungmann - initial implementation
 package org.eclipse.samples;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 
 import org.eclipse.persistence.testing.tests.jpa22.metadata.LogListener;
 

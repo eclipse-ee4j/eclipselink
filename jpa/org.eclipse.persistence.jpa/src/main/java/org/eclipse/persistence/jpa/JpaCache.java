@@ -14,7 +14,7 @@
 //     James Sutherland  = 1.0 - Initial contribution
 package org.eclipse.persistence.jpa;
 
-import javax.persistence.Cache;
+import jakarta.persistence.Cache;
 
 /**
  * Extends JPA Cache interface with additional EclipseLink API.

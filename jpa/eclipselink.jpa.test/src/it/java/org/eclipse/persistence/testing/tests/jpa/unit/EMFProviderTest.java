@@ -30,13 +30,13 @@ public class EMFProviderTest extends TestCase {
     public void setUp() throws Exception {
         super.setUp();
         System.setProperty("eclipselink.testProp", "elTestPropValue");
-        System.setProperty("javax.persistence.testProp", "jxpTestPropValue");
+        System.setProperty("jakarta.persistence.testProp", "jxpTestPropValue");
         System.setProperty("persistence.testProp", "perTestPropValue");
         System.setProperty(PersistenceUnitProperties.JAVASE_DB_INTERACTION, "dbTestPropValue");
         System.setProperty("java.testProp", "should not be able to read this!");
         overrides.put("java.testProp", "some/path");
         overrides.put("eclipselink.testProp", "elOverride");
-        overrides.put("javax.persistence.testProp", "jxpOverride");
+        overrides.put("jakarta.persistence.testProp", "jxpOverride");
         overrides.put("persistence.testProp", "perOverride");
         overrides.put(PersistenceUnitProperties.JAVASE_DB_INTERACTION, "dbOverride");
     }
@@ -49,14 +49,14 @@ public class EMFProviderTest extends TestCase {
         }
         assertNull(System.getProperty("java.testProp"));
         assertNull(System.getProperty("eclipselink.testProp"));
-        assertNull(System.getProperty("javax.persistence.testProp"));
+        assertNull(System.getProperty("jakarta.persistence.testProp"));
         assertNull(System.getProperty("persistence.testProp"));
         assertNull(System.getProperty(PersistenceUnitProperties.JAVASE_DB_INTERACTION));
     }
 
     public void testGetConfigProperty() {
         assertEquals("elTestPropValue", EntityManagerFactoryProvider.getConfigPropertyAsString("eclipselink.testProp", null));
-        assertEquals("jxpTestPropValue", EntityManagerFactoryProvider.getConfigPropertyAsString("javax.persistence.testProp", null));
+        assertEquals("jxpTestPropValue", EntityManagerFactoryProvider.getConfigPropertyAsString("jakarta.persistence.testProp", null));
         assertEquals("perTestPropValue", EntityManagerFactoryProvider.getConfigPropertyAsString("persistence.testProp", null));
         assertEquals("dbTestPropValue", EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.JAVASE_DB_INTERACTION, null));
         try {
@@ -66,7 +66,7 @@ public class EMFProviderTest extends TestCase {
             //expected
         }
         assertEquals("elOverride", EntityManagerFactoryProvider.getConfigPropertyAsString("eclipselink.testProp", overrides));
-        assertEquals("jxpOverride", EntityManagerFactoryProvider.getConfigPropertyAsString("javax.persistence.testProp", overrides));
+        assertEquals("jxpOverride", EntityManagerFactoryProvider.getConfigPropertyAsString("jakarta.persistence.testProp", overrides));
         assertEquals("perOverride", EntityManagerFactoryProvider.getConfigPropertyAsString("persistence.testProp", overrides));
         assertEquals("dbOverride", EntityManagerFactoryProvider.getConfigPropertyAsString(PersistenceUnitProperties.JAVASE_DB_INTERACTION, overrides));
         assertEquals("some/path", EntityManagerFactoryProvider.getConfigPropertyAsString("java.testProp", overrides));

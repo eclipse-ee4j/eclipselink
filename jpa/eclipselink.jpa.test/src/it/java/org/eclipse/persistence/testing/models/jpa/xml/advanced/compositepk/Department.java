@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.models.jpa.xml.advanced.compositepk;
 import java.util.Vector;
 import java.util.Collection;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 public class Department {
     private String name;

@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.naming.NamingException;
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.Assert;
 

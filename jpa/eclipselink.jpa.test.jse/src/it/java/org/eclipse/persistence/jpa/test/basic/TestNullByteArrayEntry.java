@@ -16,8 +16,8 @@
 //       - 445546: Test NPE in ConversionManager.
 package org.eclipse.persistence.jpa.test.basic;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.jpa.test.basic.model.ByteArrayEntity;
 import org.eclipse.persistence.jpa.test.framework.Emf;

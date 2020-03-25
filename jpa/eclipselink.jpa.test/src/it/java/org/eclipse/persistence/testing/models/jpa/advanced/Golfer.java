@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name="CMP3_GOLFER")

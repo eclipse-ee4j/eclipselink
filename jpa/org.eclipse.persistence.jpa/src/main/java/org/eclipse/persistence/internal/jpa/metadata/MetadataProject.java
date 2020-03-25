@@ -104,7 +104,7 @@
 //     09/01/2014-2.6.0 Dmitry Kornilov
 //       - JPARS 2.0 related changes
 //     12/03/2015-2.6 Dalia Abo Sheasha
-//       - 483582: Add the javax.persistence.sharedCache.mode property
+//       - 483582: Add the jakarta.persistence.sharedCache.mode property
 //     12/05/2016-2.6 Jody Grassel
 //       - 443546: Converter autoApply does not work for primitive types
 package org.eclipse.persistence.internal.jpa.metadata;
@@ -125,8 +125,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.SharedCacheMode;
-import javax.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.SharedCacheMode;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.dynamic.DynamicClassLoader;

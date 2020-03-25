@@ -22,7 +22,7 @@ package org.eclipse.persistence.internal.jpa.metamodel;
 
 import java.util.Set;
 
-import javax.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SetAttribute;
 
 import org.eclipse.persistence.mappings.CollectionMapping;
 
@@ -35,7 +35,7 @@ import org.eclipse.persistence.mappings.CollectionMapping;
  * Instances of the type SetAttribute represent persistent Set-valued
  * attributes.
  *
- * @see javax.persistence.metamodel.SetAttribute
+ * @see jakarta.persistence.metamodel.SetAttribute
  * @since EclipseLink 1.2 - JPA 2.0
  *
  * @param <X> The type the represented Set belongs to

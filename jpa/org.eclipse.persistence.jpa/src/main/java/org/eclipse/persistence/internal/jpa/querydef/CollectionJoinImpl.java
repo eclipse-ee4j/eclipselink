@@ -16,15 +16,15 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import javax.persistence.criteria.CollectionJoin;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.CollectionAttribute;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.criteria.CollectionJoin;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.Metamodel;
 
 /**
  * <p>
@@ -34,7 +34,7 @@ import javax.persistence.metamodel.Metamodel;
  * <b>Description</b>: This class represents a join of an attribute through a collection .
  * <p>
  *
- * @see javax.persistence.criteria From
+ * @see jakarta.persistence.criteria From
  *
  * @author gyorke
  * @since EclipseLink 1.2

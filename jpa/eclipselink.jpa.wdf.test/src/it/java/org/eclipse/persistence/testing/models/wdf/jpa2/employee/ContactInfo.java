@@ -16,9 +16,9 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa2.employee;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 @Embeddable
 public class ContactInfo {

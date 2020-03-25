@@ -16,12 +16,12 @@ package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
-import static javax.persistence.CascadeType.MERGE;
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.InheritanceType.*;
 
 import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.annotations.ExistenceChecking;

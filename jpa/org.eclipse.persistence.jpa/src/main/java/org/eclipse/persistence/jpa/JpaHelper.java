@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jpa;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
 import org.eclipse.persistence.internal.jpa.*;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.jpa.JpaEntityManager;
@@ -40,7 +40,7 @@ public class JpaHelper {
      * and not in a transaction this method may incorrectly return false.
      * It is always more reliable to check isEclipseLink on the EMF or Query.
      */
-    public static boolean isEclipseLink(javax.persistence.EntityManager em) {
+    public static boolean isEclipseLink(jakarta.persistence.EntityManager em) {
         return getEntityManager(em) != null;
     }
 
@@ -121,7 +121,7 @@ public class JpaHelper {
     /**
      * Create a EclipseLink JPA query dynamically given a EclipseLink query.
      */
-    public static Query createQuery(DatabaseQuery query, javax.persistence.EntityManager em) {
+    public static Query createQuery(DatabaseQuery query, jakarta.persistence.EntityManager em) {
         return getEntityManager(em).createQuery(query);
     }
 
@@ -135,13 +135,13 @@ public class JpaHelper {
      * is to use the EntityManagerFactory to create a temporary one where the
      * application manage its lifecycle.
      */
-    public static JpaEntityManager getEntityManager(javax.persistence.EntityManager entityManager) {
+    public static JpaEntityManager getEntityManager(jakarta.persistence.EntityManager entityManager) {
         if (entityManager instanceof JpaEntityManager) {
             return (JpaEntityManager)entityManager;
         }
 
         if (entityManager.getDelegate() != null) {
-            return getEntityManager((javax.persistence.EntityManager)entityManager.getDelegate());
+            return getEntityManager((jakarta.persistence.EntityManager)entityManager.getDelegate());
         }
 
         return null;
@@ -182,7 +182,7 @@ public class JpaHelper {
      *
      * @see JpaEntityManagerFactory
      */
-    public static JpaEntityManagerFactory getEntityManagerFactory(javax.persistence.EntityManager em) {
+    public static JpaEntityManagerFactory getEntityManagerFactory(jakarta.persistence.EntityManager em) {
         JpaEntityManager entityManager = getEntityManager(em);
         if (entityManager != null){
             if (entityManager.getEntityManagerFactory() != null){
@@ -217,7 +217,7 @@ public class JpaHelper {
      * Create a EclipseLink EMF given a ServerSession that has already been created
      * and logged in.
      */
-    public static javax.persistence.EntityManagerFactory createEntityManagerFactory(Server session) {
+    public static jakarta.persistence.EntityManagerFactory createEntityManagerFactory(Server session) {
         return new EntityManagerFactoryImpl((ServerSession)session);
     }
 

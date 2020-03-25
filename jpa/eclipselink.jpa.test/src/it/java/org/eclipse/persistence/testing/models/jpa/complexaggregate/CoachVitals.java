@@ -15,7 +15,7 @@
 //       - 265359: JPA 2.0 Element Collections - Metadata processing portions
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -28,7 +28,7 @@ public class CoachVitals implements Serializable {
 
     public CoachVitals() {}
 
-    @OneToOne(fetch=javax.persistence.FetchType.LAZY)
+    @OneToOne(fetch=jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name="TEAM_ID", referencedColumnName="ID")
     public HockeyTeam getHockeyTeam() {
         return hockeyTeam;

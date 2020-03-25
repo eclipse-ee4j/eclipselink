@@ -15,9 +15,9 @@
 package org.eclipse.persistence.testing.models.jpa.relationships;
 
 
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
 import java.util.Collection;
 
 @Entity(name="SalesPerson")

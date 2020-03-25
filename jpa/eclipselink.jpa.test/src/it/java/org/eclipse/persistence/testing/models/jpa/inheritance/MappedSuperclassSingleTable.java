@@ -14,7 +14,7 @@
 //     dminsky - initial implementation
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 
 // Note: Do not add any additional attributes, zero attributes are defined deliberately.
 @MappedSuperclass

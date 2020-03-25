@@ -19,8 +19,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 
 import junit.framework.Assert;
 import junit.framework.Test;

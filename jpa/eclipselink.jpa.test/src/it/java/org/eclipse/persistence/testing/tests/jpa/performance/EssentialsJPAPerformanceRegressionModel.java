@@ -16,7 +16,7 @@
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.testing.framework.TestProblemException;
 

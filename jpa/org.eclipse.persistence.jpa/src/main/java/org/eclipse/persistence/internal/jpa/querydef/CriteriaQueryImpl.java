@@ -20,15 +20,15 @@ import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.util.*;
 
-import javax.persistence.Tuple;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.Type.PersistenceType;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -51,7 +51,7 @@ import org.eclipse.persistence.queries.ReportQuery;
  * define a query.
  * <p>
  *
- * @see javax.persistence.criteria CriteriaQuery
+ * @see jakarta.persistence.criteria CriteriaQuery
  *
  * @author gyorke
  * @since EclipseLink 1.2

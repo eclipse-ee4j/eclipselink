@@ -82,7 +82,7 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
             // Only add annotations that we care about. Be nice to have API
             // that we could call into with the annotation mirror to the
             // processor to see if it is a supported annotation. That is, it
-            // would tie into the  @SupportedAnnotationTypes({"javax.persistence.*", "org.eclipse.persistence.annotations.*"})
+            // would tie into the  @SupportedAnnotationTypes({"jakarta.persistence.*", "org.eclipse.persistence.annotations.*"})
             // declaration from CanonicalModelProcessor, but I couldn't find a
             // way to do this. For now we'll check the strings (similar to what
             // is done with our ASM factory).

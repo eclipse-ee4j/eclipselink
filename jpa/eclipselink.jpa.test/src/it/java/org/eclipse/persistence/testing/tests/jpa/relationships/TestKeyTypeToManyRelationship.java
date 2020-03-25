@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.tests.jpa.relationships;
 
 import java.util.HashMap;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

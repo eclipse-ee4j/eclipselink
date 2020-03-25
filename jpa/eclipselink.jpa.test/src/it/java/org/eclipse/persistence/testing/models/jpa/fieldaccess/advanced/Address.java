@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.CascadeType.*;
 
 import org.eclipse.persistence.annotations.NamedStoredProcedureQuery;
 import org.eclipse.persistence.annotations.NamedStoredProcedureQueries;

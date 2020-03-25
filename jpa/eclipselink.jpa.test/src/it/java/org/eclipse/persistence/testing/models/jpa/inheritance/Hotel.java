@@ -16,12 +16,12 @@
 //                 "The primary key fields are not set for this descriptor"
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import static javax.persistence.InheritanceType.TABLE_PER_CLASS;
+import static jakarta.persistence.InheritanceType.TABLE_PER_CLASS;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.Table;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.Table;
 
 /**
  * Model class added to test metadata processing error for bug 326973.

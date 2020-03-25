@@ -24,7 +24,7 @@ import java.sql.Time;
 import java.util.*;
 import java.io.Serializable;
 
-import javax.persistence.Transient;
+import jakarta.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;

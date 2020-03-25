@@ -16,11 +16,11 @@
 //       - 384275: Customizer from a mapped superclass is not overridden by an entity customizer
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import static javax.persistence.InheritanceType.JOINED;
-import javax.persistence.Inheritance;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.EmbeddedId;
+import static jakarta.persistence.InheritanceType.JOINED;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.EmbeddedId;
 
 import org.eclipse.persistence.annotations.Customizer;
 import org.eclipse.persistence.config.DescriptorCustomizer;

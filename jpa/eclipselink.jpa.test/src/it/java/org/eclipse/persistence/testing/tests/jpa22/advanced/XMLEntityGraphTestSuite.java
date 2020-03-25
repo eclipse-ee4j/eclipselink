@@ -15,8 +15,8 @@
 //       - 397772: JPA 2.1 Entity Graph Support (XML support)
 package org.eclipse.persistence.testing.tests.jpa22.advanced;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceUnitUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceUnitUtil;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

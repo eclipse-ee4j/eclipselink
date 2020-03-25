@@ -16,8 +16,8 @@
 //       - 540929 : 'jdbc.sql-cast' property does not apply
 package org.eclipse.persistence.jpa.test.property;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;

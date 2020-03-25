@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.perf.jpa.tests.basic;
 
 import java.util.Set;
 
-import javax.persistence.Persistence;
+import jakarta.persistence.Persistence;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
@@ -60,7 +60,7 @@ public class JPAMetadataProcessingTests {
         for (Class<?> javaClass : entities) {
             MetadataClass metadataClass = factory.getMetadataClass(javaClass.getName());
             PersistenceUnitProcessor.isEntity(metadataClass);
-            metadataClass.getAnnotation("javax.persistence.EntityListeners");
+            metadataClass.getAnnotation("jakarta.persistence.EntityListeners");
         }
     }
 
@@ -73,7 +73,7 @@ public class JPAMetadataProcessingTests {
         MetadataAsmFactory factory = new MetadataAsmFactory(new MetadataLogger(null), JPAMetadataProcessingTests.class.getClassLoader());
         MetadataClass metadataClass = factory.getMetadataClass(RegularEmployee.class.getName());
         PersistenceUnitProcessor.isEntity(metadataClass);
-        metadataClass.getAnnotation("javax.persistence.EntityListeners");
+        metadataClass.getAnnotation("jakarta.persistence.EntityListeners");
     }
 
     /**
@@ -86,7 +86,7 @@ public class JPAMetadataProcessingTests {
         MetadataClass metadataClass = factory.getMetadataClass(MetaEmployee.class.getName());
         PersistenceUnitProcessor.isEntity(metadataClass);
         //found through meta-annotation
-        metadataClass.getAnnotation("javax.persistence.EntityListeners");
+        metadataClass.getAnnotation("jakarta.persistence.EntityListeners");
     }
 
 }

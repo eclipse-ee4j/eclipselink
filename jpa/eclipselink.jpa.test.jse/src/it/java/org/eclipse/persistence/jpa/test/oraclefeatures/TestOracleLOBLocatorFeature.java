@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
@@ -188,7 +188,7 @@ public class TestOracleLOBLocatorFeature {
                 em.getTransaction().begin();
                 em.persist(blobEntity);
                 em.getTransaction().commit();
-            } catch (javax.persistence.RollbackException re) {
+            } catch (jakarta.persistence.RollbackException re) {
                 // Expected
                 Assert.assertThat(re, getExceptionChainMatcher(java.sql.SQLIntegrityConstraintViolationException.class));
             }

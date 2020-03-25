@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.AttributeOverride;
 
 @AttributeOverride(name="id", column=@Column(name="CANADIAN_ID_INVALID", nullable=false))
 public class Canadian extends Beer {

@@ -23,8 +23,8 @@ package org.eclipse.persistence.testing.tests.jpa.dynamic.simple.mappings;
 import java.util.Collection;
 
 //java eXtensions
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 //JUnit4 imports
 import org.junit.After;

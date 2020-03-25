@@ -22,8 +22,8 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 import javax.sql.DataSource;
 
 import junit.framework.Assert;

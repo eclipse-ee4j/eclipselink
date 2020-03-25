@@ -15,9 +15,9 @@
 package org.eclipse.persistence.testing.models.weaving;
 
 import java.util.Collection;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
 
 @Entity
 @Table(name="CMP3_CUSTOMER")

@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.relationships;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import jakarta.xml.bind.*;
 
 import junit.framework.*;

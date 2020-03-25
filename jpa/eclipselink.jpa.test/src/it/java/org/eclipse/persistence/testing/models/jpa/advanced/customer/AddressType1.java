@@ -15,9 +15,9 @@
 //     Tomas Kraus - EclipseLink jUnit tests integration
 package org.eclipse.persistence.testing.models.jpa.advanced.customer;
 
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 /**
  * First abstract {@link CustomerAddress} entity offspring.

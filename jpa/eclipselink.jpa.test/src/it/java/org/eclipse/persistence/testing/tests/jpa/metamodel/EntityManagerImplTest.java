@@ -17,9 +17,9 @@
 //
 package org.eclipse.persistence.testing.tests.jpa.metamodel;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.metamodel.Metamodel;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

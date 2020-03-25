@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.CriteriaBuilder.In;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.internal.expressions.CollectionExpression;
 import org.eclipse.persistence.internal.expressions.CompoundExpression;
@@ -40,7 +40,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <b>Description</b>: This class represents an In predicate.
  * <p>
  *
- * @see javax.persistence.criteria Join
+ * @see jakarta.persistence.criteria Join
  *
  * @author gyorke
  * @since EclipseLink 1.2

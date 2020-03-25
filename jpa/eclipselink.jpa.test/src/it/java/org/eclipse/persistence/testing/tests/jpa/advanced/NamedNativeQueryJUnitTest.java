@@ -17,7 +17,7 @@
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.List;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
@@ -88,7 +88,7 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
 
         List results_QuestionMark_Number = null;
         List results_QuestionMark = null;
-        javax.persistence.Query query;
+        jakarta.persistence.Query query;
         String errorMsg = "";
 
         boolean shouldCompareResults = true;
@@ -154,7 +154,7 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
 
         List results_QuestionMark_Number = null;
         List results_QuestionMark = null;
-        javax.persistence.Query query;
+        jakarta.persistence.Query query;
         String errorMsg = "";
 
         boolean shouldCompareResults = true;

@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 //java eXtension imports
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 //JUnit4 imports
 import static org.junit.Assert.assertEquals;

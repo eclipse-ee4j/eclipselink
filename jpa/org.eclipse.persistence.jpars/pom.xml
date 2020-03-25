@@ -54,6 +54,10 @@
             <artifactId>jakarta.ws.rs-api</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
         <!--Test dependencies-->
         <dependency>
             <groupId>junit</groupId>

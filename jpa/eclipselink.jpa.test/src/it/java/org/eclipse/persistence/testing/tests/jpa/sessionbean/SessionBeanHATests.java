@@ -30,7 +30,7 @@ import javax.rmi.PortableRemoteObject;
 
 import junit.framework.*;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.sessions.server.ServerSession;

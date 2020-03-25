@@ -16,8 +16,8 @@
 //       - 500145 : Nested Embeddables Test
 package org.eclipse.persistence.jpa.embeddable.model;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 @Embeddable
 public class OrderPK {

@@ -16,10 +16,10 @@
 
 package org.eclipse.persistence.testing.models.jpa.inheritance.listeners;
 
-import javax.persistence.PreRemove;
-import javax.persistence.PostRemove;
-import javax.persistence.PreUpdate;
-import javax.persistence.PostUpdate;
+import jakarta.persistence.PreRemove;
+import jakarta.persistence.PostRemove;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.PostUpdate;
 
 /**
  * A listener for the SportsCar entity.

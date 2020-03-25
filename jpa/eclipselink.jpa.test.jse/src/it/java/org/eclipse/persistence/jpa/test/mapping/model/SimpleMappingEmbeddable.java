@@ -16,7 +16,7 @@
 //       - 471144: Add support for AggregateObjectMappings to eclipselink.cursor impl
 package org.eclipse.persistence.jpa.test.mapping.model;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class SimpleMappingEmbeddable {

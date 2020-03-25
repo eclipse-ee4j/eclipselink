@@ -23,7 +23,7 @@ package org.eclipse.persistence.platform.server;
 
 import java.sql.SQLException;
 
-import javax.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.PersistenceUnitInfo;
 
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;

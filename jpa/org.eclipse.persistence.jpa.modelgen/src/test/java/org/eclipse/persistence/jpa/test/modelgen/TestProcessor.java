@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -64,13 +64,13 @@ public class TestProcessor {
     @Test
     public void testProc() throws Exception {
         TestFO entity = new TestFO("org.Sample",
-                "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
         TestFO nonEntity = new TestFO("org.NotE",
-                "package org; import javax.persistence.Entity; public class NotE extends some.IF { public  NotE() {} @custom.Ann public external.Cls getW() {return new Object();}}");
+                "package org; import jakarta.persistence.Entity; public class NotE extends some.IF { public  NotE() {} @custom.Ann public external.Cls getW() {return new Object();}}");
         TestFO generated8 = new TestFO("org.Gen8",
-                "package org; import javax.annotation.Generated; @Generated(\"com.example.Generator\") public class Gen8 { public  Gen8() {} public int getY() {return 42;}}");
+                "package org; import jakarta.annotation.Generated; @Generated(\"com.example.Generator\") public class Gen8 { public  Gen8() {} public int getY() {return 42;}}");
         TestFO generated9 = new TestFO("org.Gen9",
-                "package org; @javax.annotation.processing.Generated(\"com.example.Generator\") public class Gen9 { public  Gen9() {} public int getZ() {return 9*42;}}");
+                "package org; @jakarta.annotation.processing.Generated(\"com.example.Generator\") public class Gen9 { public  Gen9() {} public int getZ() {return 9*42;}}");
 
         Result result = runProject("testProc",
                 getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
@@ -84,7 +84,7 @@ public class TestProcessor {
     @Test
     public void testGenerateComment() throws Exception {
         TestFO entity = new TestFO("org.Sample",
-                "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
 
         Result result = runProject("testGenerateComment",
             getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS + "=false",
@@ -100,7 +100,7 @@ public class TestProcessor {
     @Test
     public void testGenerate() throws Exception {
         TestFO entity = new TestFO("org.Sample",
-                "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
 
         Result result = runProject("testGenerate",
             getJavacOptions("-A" + CanonicalModelProperties.CANONICAL_MODEL_GENERATE_GENERATED + "=false",
@@ -116,7 +116,7 @@ public class TestProcessor {
     @Test
     public void testTypeUse() throws Exception {
         TestFO entity = new TestFO("org.Ent",
-                "package org; @javax.persistence.Entity public class Ent { @org.ann.NotNull private byte[] bytes;}");
+                "package org; @jakarta.persistence.Entity public class Ent { @org.ann.NotNull private byte[] bytes;}");
         TestFO ann = new TestFO("org.ann.NotNull",
                 "package org.ann; @java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE_USE) public @interface NotNull {}");
 
@@ -227,7 +227,7 @@ public class TestProcessor {
         sfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(cpDir));
 
         TestFO entity = new TestFO("org.Sample",
-                "package org; import javax.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;}}");
+                "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;}}");
 
         CompilationTask task = compiler.getTask(
                 new PrintWriter(System.out), sfm, diagnostics, getJavacOptions(options), null,

@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.tests.jpa21.advanced;
 
 import java.util.Arrays;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.metamodel.ManagedType;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.metamodel.ManagedType;
 
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;

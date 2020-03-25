@@ -14,8 +14,8 @@
 //     03/04/09 tware - test for bug 350599 copied from advanced model
 package org.eclipse.persistence.testing.models.jpa.xml.advanced;
 
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.GenerationType.TABLE;
 import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;
 
 import java.io.Serializable;
@@ -24,17 +24,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.MapKey;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MapKey;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.Transient;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.PrivateOwned;

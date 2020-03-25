@@ -16,8 +16,8 @@
 //       - 493804: LEFT OUTER JOIN do not account for empty JOIN results
 package org.eclipse.persistence.jpa.test.jpql.model;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 @Entity
 @DiscriminatorValue("Sub")

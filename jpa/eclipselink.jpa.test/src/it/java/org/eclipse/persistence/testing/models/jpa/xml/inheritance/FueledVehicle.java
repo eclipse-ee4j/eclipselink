@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.xml.inheritance;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity(name="XMLFueledVehicle")
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.xml.inheritance.listeners.FueledVehicleListener.class)

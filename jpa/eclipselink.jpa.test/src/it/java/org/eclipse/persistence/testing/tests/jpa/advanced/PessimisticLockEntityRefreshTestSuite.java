@@ -16,8 +16,8 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

@@ -15,7 +15,7 @@
 //       - 362180: ConcurrentModificationException on predeploy for AttributeOverride
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class EmbeddedTimeCaption {

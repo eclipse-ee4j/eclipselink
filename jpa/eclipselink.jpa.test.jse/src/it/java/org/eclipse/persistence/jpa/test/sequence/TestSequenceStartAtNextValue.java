@@ -16,7 +16,7 @@
 //       - 522312: Add support for sequence generation to start forward from nextval
 package org.eclipse.persistence.jpa.test.sequence;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;

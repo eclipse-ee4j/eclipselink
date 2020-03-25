@@ -15,7 +15,7 @@
 //       - 347563: transient field/property in embeddable entity
 package org.eclipse.persistence.testing.models.jpa.xml.inherited;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 public class RedStripe {
     private Double alcoholContent;

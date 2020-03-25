@@ -21,10 +21,10 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.persistence.Column;
-import javax.persistence.FetchType;
+import jakarta.persistence.Column;
+import jakarta.persistence.FetchType;
 
-import static javax.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.LAZY;
 
 /**
  * A BasicMap is used to map an org.eclipse.persistence.mappings.DirectMapMapping, which
@@ -49,7 +49,7 @@ import static javax.persistence.FetchType.LAZY;
  * @since Oracle TopLink 11.1.1.0.0
  *
  * @deprecated
- * @see javax.persistence.ElementCollection
+ * @see jakarta.persistence.ElementCollection
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

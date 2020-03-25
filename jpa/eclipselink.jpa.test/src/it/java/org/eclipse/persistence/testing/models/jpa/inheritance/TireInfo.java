@@ -15,9 +15,9 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import java.io.*;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.InheritanceType.*;
 
 @Entity
 @Table(name="CMP3_TIRE")

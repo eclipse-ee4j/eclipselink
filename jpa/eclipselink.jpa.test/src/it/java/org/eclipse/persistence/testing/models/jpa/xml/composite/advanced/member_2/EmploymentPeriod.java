@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member
 import java.util.Date;
 import java.io.*;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 import org.eclipse.persistence.annotations.Properties;
 import org.eclipse.persistence.annotations.Property;

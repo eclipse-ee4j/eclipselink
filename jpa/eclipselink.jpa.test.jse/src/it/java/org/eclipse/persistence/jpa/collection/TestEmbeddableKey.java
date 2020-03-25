@@ -16,8 +16,8 @@ package org.eclipse.persistence.jpa.collection;
 
 import java.util.HashMap;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.jpa.collection.model.Level;
 import org.eclipse.persistence.jpa.collection.model.MainEntity;

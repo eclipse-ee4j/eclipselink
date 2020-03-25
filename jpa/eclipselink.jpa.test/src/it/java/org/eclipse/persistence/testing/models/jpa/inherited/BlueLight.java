@@ -15,7 +15,7 @@
 //       - 230213: ValidationException when mapping to attribute in MappedSuperClass
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 
 @Entity
 public class BlueLight extends Blue {

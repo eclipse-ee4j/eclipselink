@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.jpa.lob;
 import java.lang.Integer;
 import java.lang.reflect.Field;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import junit.framework.*;
 
 import org.eclipse.persistence.internal.helper.Helper;

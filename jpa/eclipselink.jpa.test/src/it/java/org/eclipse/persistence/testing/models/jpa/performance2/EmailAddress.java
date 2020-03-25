@@ -14,8 +14,8 @@
 //              James Sutherland - initial example
 package org.eclipse.persistence.testing.models.jpa.performance2;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import org.eclipse.persistence.annotations.ChangeTracking;
 import org.eclipse.persistence.annotations.ChangeTrackingType;

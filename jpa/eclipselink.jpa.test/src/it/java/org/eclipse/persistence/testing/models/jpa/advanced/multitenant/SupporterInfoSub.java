@@ -18,11 +18,11 @@ package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 import static org.eclipse.persistence.annotations.MultitenantType.TABLE_PER_TENANT;
 import static org.eclipse.persistence.annotations.TenantTableDiscriminatorType.PREFIX;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.eclipse.persistence.annotations.Multitenant;
 import org.eclipse.persistence.annotations.TenantTableDiscriminator;

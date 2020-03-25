@@ -18,11 +18,11 @@ package org.eclipse.persistence.testing.models.jpa.inheritance;
 
 import java.io.*;
 import org.eclipse.persistence.tools.schemaframework.*;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.InheritanceType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.InheritanceType.*;
 
 @Entity
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.inheritance.listeners.VehicleListener.class)

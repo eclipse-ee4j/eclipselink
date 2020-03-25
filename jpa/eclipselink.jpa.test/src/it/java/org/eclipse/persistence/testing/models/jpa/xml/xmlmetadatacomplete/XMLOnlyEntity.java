@@ -17,7 +17,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.xml.xmlmetadatacomplete;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 /**
  * Entity defined only by XML mapping.

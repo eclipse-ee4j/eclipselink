@@ -16,11 +16,11 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.InheritanceType.*;
+import static jakarta.persistence.FetchType.*;
 
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.CollectionTable;

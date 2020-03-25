@@ -16,7 +16,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @EntityListeners(org.eclipse.persistence.testing.models.jpa.inheritance.listeners.FueledVehicleListener.class)

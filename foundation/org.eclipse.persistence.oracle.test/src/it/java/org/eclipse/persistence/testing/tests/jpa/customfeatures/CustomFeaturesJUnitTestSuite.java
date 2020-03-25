@@ -23,7 +23,7 @@ import org.w3c.dom.*;
 
 import javax.xml.parsers.*;
 import javax.xml.transform.stream.StreamResult;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.TestCase;

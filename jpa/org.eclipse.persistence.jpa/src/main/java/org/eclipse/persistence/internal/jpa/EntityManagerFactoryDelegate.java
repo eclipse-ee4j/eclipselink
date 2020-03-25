@@ -37,17 +37,17 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceException;
-import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.Query;
-import javax.persistence.SynchronizationType;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitUtil;
+import jakarta.persistence.Query;
+import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.FlushClearCache;
@@ -82,7 +82,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * consumer of these EntityManager is assumed to be either the Container. There
  * is one EntityManagerFactory per deployment.
  *
- * @see javax.persistence.EntityManager
+ * @see jakarta.persistence.EntityManager
  * @see org.eclipse.persistence.jpa.JpaEntityManager
  * @see org.eclipse.persistence.jpa.JpaEntityManagerFactory
  *
@@ -615,7 +615,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * factory (the "second level cache").
      * @return instance of the <code>Cache</code> interface
      * @throws IllegalStateException if the entity manager factory has been closed
-     * @see javax.persistence.EntityManagerFactory#getCache()
+     * @see jakarta.persistence.EntityManagerFactory#getCache()
      * @since Java Persistence 2.0
      */
     @Override
@@ -628,7 +628,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
-     * @see javax.persistence.EntityManagerFactory#getProperties()
+     * @see jakarta.persistence.EntityManagerFactory#getProperties()
      * @since Java Persistence API 2.0
      */
     @Override
@@ -645,7 +645,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
     }
 
     /**
-     * @see javax.persistence.EntityManagerFactory#getCriteriaBuilder()
+     * @see jakarta.persistence.EntityManagerFactory#getCriteriaBuilder()
      * @since Java Persistence 2.0
      */
     @Override
@@ -660,7 +660,7 @@ public class EntityManagerFactoryDelegate implements EntityManagerFactory, Persi
      * @return Metamodel instance
      * @throws IllegalStateException
      *             if the entity manager factory has been closed.
-     * @see javax.persistence.EntityManagerFactory#getMetamodel()
+     * @see jakarta.persistence.EntityManagerFactory#getMetamodel()
      * @since Java Persistence 2.0
      */
     @Override

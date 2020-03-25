@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.Partitioned;
 import org.eclipse.persistence.annotations.RoundRobinPartitioning;
@@ -24,9 +24,9 @@ import org.eclipse.persistence.annotations.PinnedPartitioning;
 import org.eclipse.persistence.annotations.ValuePartitioning;
 import org.eclipse.persistence.annotations.ValuePartition;
 
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.GenerationType.*;
 
 /**
  * Employees is partitioned by department.

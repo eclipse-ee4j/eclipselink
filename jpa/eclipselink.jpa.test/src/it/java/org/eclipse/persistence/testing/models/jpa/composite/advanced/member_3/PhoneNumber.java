@@ -18,8 +18,8 @@ import java.io.*;
 import java.util.Collection;
 import java.util.Vector;
 
-import javax.persistence.*;
-import static javax.persistence.EnumType.STRING;
+import jakarta.persistence.*;
+import static jakarta.persistence.EnumType.STRING;
 
 import org.eclipse.persistence.annotations.CompositeMember;
 import org.eclipse.persistence.queries.FetchGroupTracker;

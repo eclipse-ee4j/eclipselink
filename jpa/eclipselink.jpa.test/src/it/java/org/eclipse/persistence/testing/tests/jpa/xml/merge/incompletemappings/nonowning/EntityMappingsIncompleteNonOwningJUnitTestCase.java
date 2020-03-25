@@ -16,7 +16,7 @@
 
 package org.eclipse.persistence.testing.tests.jpa.xml.merge.incompletemappings.nonowning;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 import org.eclipse.persistence.sessions.DatabaseSession;

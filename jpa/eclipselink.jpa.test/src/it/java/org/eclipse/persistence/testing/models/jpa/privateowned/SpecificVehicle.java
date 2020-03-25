@@ -14,8 +14,8 @@
 //     02/19/09 dminsky - initial API and implementation
 package org.eclipse.persistence.testing.models.jpa.privateowned;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 @Entity(name="PO_SpecificVehicle")
 @DiscriminatorValue("SV")

@@ -14,15 +14,15 @@
 //     tware - initial implementation
 package org.eclipse.persistence.internal.jpa.metamodel.proxy;
 
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.internal.jpa.metamodel.SingularAttributeImpl;
 
 public class SingularAttributeProxyImpl<X, T> extends AttributeProxyImpl<X, T> implements SingularAttribute<X, T> {
 
     @Override
-    public javax.persistence.metamodel.Bindable.BindableType getBindableType() {
+    public jakarta.persistence.metamodel.Bindable.BindableType getBindableType() {
         return ((SingularAttributeImpl<X, T>)getAttribute()).getBindableType();
     }
 

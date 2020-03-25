@@ -18,8 +18,8 @@ package org.eclipse.persistence.internal.jpa;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.AttributeNode;
-import javax.persistence.Subgraph;
+import jakarta.persistence.AttributeNode;
+import jakarta.persistence.Subgraph;
 
 
 /**

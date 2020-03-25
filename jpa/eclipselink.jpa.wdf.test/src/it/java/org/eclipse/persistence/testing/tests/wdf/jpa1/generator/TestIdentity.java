@@ -20,7 +20,7 @@ package org.eclipse.persistence.testing.tests.wdf.jpa1.generator;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.Assert;
 

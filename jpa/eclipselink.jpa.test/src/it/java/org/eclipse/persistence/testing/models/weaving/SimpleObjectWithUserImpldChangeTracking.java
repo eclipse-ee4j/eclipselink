@@ -18,8 +18,8 @@ package org.eclipse.persistence.testing.models.weaving;
 import java.beans.PropertyChangeListener;
 
 // J2EE persistence imports
-import static javax.persistence.GenerationType.TABLE;
-import javax.persistence.*;
+import static jakarta.persistence.GenerationType.TABLE;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.descriptors.changetracking.ChangeTracker;
 @Entity

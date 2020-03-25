@@ -14,10 +14,10 @@
 //              ljungmann - initial implementation
 package org.eclipse.persistence.testing.perf.jpa.model.metaannotations;
 
-import javax.persistence.PostPersist;
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 public class EListener {
 

@@ -39,23 +39,23 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaBuilder.Case;
-import javax.persistence.criteria.CriteriaBuilder.Coalesce;
-import javax.persistence.criteria.CriteriaBuilder.SimpleCase;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.Subquery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaBuilder.Case;
+import jakarta.persistence.criteria.CriteriaBuilder.Coalesce;
+import jakarta.persistence.criteria.CriteriaBuilder.SimpleCase;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Subquery;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -114,7 +114,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
     protected interface CriteriaQueryWrapper {
         <X,Y> Root<X> from(CriteriaQuery<Y> query, Class<X> entityClass);
         <X,Y> Fetch<X,Y> fetch(Root<X> root, Attributes attributeKey, JoinType joinType);
-        <X,Y> javax.persistence.criteria.Expression<Y> get(Path<X> path, Attributes attributeKey);
+        <X,Y> jakarta.persistence.criteria.Expression<Y> get(Path<X> path, Attributes attributeKey);
         <X,Y> Join<X,Y> join(Root<X> root, Attributes attributeKey);
         <X,Y> Join<X,Y> join(Root<X> root, Attributes attributeKey, JoinType joinType);
     }
@@ -1403,7 +1403,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
         Root<Employee> root = wrapper.from(cq, Employee.class);
-        javax.persistence.criteria.Expression empFName = wrapper.get(root, Employee_firstName);
+        jakarta.persistence.criteria.Expression empFName = wrapper.get(root, Employee_firstName);
         Predicate andOpp = qb.and(qb.equal(empFName, "Bob"), qb.equal(wrapper.get(root, Employee_lastName), "Smith"));
         cq.where( qb.or( qb.equal(empFName, "John"), andOpp ) );
 
@@ -1431,7 +1431,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE emp.id = " + emp1.getId() + "OR emp.id = " + emp2.getId()
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        javax.persistence.criteria.Expression empId = wrapper.get(wrapper.from(cq, Employee.class), Employee_id);
+        jakarta.persistence.criteria.Expression empId = wrapper.get(wrapper.from(cq, Employee.class), Employee_id);
         cq.where( qb.or( qb.equal(empId, emp1.getId()), qb.equal(empId, emp2.getId()) ) );
 
         beginTransaction(em);
@@ -1619,7 +1619,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE " + expectedResult.getFirstName().length() + " = LENGTH(emp.firstName)"
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        javax.persistence.criteria.Expression<Integer> length = qb.length(wrapper.get(wrapper.from(cq, Employee.class), Employee_firstName));
+        jakarta.persistence.criteria.Expression<Integer> length = qb.length(wrapper.get(wrapper.from(cq, Employee.class), Employee_firstName));
         cq.where( qb.equal(qb.literal(expectedResult.getFirstName().length()), length) );
 
         beginTransaction(em);
@@ -1695,7 +1695,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE "+ salarySquareRoot + " = SQRT(emp.salary)"
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        javax.persistence.criteria.Expression<Double> sqrt = qb.sqrt(wrapper.get(wrapper.from(cq, Employee.class), Employee_salary));
+        jakarta.persistence.criteria.Expression<Double> sqrt = qb.sqrt(wrapper.get(wrapper.from(cq, Employee.class), Employee_salary));
         cq.where( qb.equal(qb.literal(salarySquareRoot), sqrt) );
 
         beginTransaction(em);
@@ -1723,7 +1723,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE \"" + firstNamePart + "\" = SUBSTRING(emp.firstName, 1, 2)";
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        javax.persistence.criteria.Expression<String> substring = qb.substring(wrapper.get(wrapper.from(cq, Employee.class), Employee_firstName), 1, 2);
+        jakarta.persistence.criteria.Expression<String> substring = qb.substring(wrapper.get(wrapper.from(cq, Employee.class), Employee_firstName), 1, 2);
         cq.where( qb.equal(qb.literal(firstNamePart), substring) );
 
         beginTransaction(em);
@@ -1785,7 +1785,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         //"SELECT OBJECT(emp) FROM Employee emp WHERE SUBSTRING(emp.firstName, 1, 2) = \"" + firstNamePart + "\""
         CriteriaBuilder qb = em.getCriteriaBuilder();
         CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
-        javax.persistence.criteria.Expression<String> substring = qb.substring(wrapper.get(wrapper.from(cq, Employee.class), Employee_firstName), 1, 2);
+        jakarta.persistence.criteria.Expression<String> substring = qb.substring(wrapper.get(wrapper.from(cq, Employee.class), Employee_firstName), 1, 2);
         cq.where( qb.equal(substring, firstNamePart) );
 
         beginTransaction(em);
@@ -1999,7 +1999,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
             //"SELECT emp FROM Employee emp WHERE MOD(emp.salary, emp.salary) = 0"
             qb = em.getCriteriaBuilder();
             cq = qb.createQuery(Employee.class);
-            javax.persistence.criteria.Expression<Integer> salaryExp = wrapper.get(wrapper.from(cq, Employee.class), Employee_salary);
+            jakarta.persistence.criteria.Expression<Integer> salaryExp = wrapper.get(wrapper.from(cq, Employee.class), Employee_salary);
             cq.where( qb.equal(qb.mod(salaryExp, salaryExp), 0) );
 
             result = em.createQuery(cq).getResultList();
@@ -2840,7 +2840,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
         Root<Employee> empRoot = wrapper.from(cq1, Employee.class);
         Join<Employee, Project> join = wrapper.join(empRoot, Employee_projects);
-        javax.persistence.criteria.Expression exp = wrapper.get((Path)join.as(LargeProject.class), LargeProject_budget);
+        jakarta.persistence.criteria.Expression exp = wrapper.get((Path)join.as(LargeProject.class), LargeProject_budget);
         cq1.where(qb1.equal(exp, 5000));
         beginTransaction(em);
         try {
@@ -2898,7 +2898,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
             Root<BeerConsumer> root = wrapper.from(cq1, BeerConsumer.class);
             Join<BeerConsumer, Blue> join = wrapper.join(root, BeerConsumer_blueBeersToConsume);
-            javax.persistence.criteria.Expression exp = wrapper.get((Path)join.as(BlueLight.class), BlueLight_discount);
+            jakarta.persistence.criteria.Expression exp = wrapper.get((Path)join.as(BlueLight.class), BlueLight_discount);
             cq1.where(qb1.equal(exp, 10) );
 
             List result = em.createQuery(cq1).getResultList();
@@ -2952,7 +2952,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
 
             Root<Person> root = wrapper.from(cq1, Person.class);
             Join<Person, Car> join = wrapper.join(root, Person_car);
-            javax.persistence.criteria.Expression exp = wrapper.get((Path)join.as(SportsCar.class), SportsCar_maxSpeed);
+            jakarta.persistence.criteria.Expression exp = wrapper.get((Path)join.as(SportsCar.class), SportsCar_maxSpeed);
             cq1.where(qb1.equal(exp, 200) );
 
             List result = em.createQuery(cq1).getResultList();
@@ -2975,7 +2975,7 @@ public abstract class JUnitCriteriaSimpleTestSuiteBase<T> extends JUnitTestCase 
         CriteriaQuery<Tuple> criteria = qb.createTupleQuery();
 
         Root<Employee> emp = wrapper.from(criteria, Employee.class);
-        javax.persistence.criteria.Expression exp = wrapper.get(emp, Employee_lastName);
+        jakarta.persistence.criteria.Expression exp = wrapper.get(emp, Employee_lastName);
 
         criteria.multiselect(exp, qb.count(exp));
         criteria.where(qb.conjunction());

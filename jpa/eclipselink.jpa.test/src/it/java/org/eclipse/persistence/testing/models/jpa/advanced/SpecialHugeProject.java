@@ -16,9 +16,9 @@
 //          tables causes statements to ignore selection criteria
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 /*
  * This class uses the same table as Project, and should not have its own table or its immediate parent.

@@ -16,8 +16,8 @@
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.util.Calendar;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

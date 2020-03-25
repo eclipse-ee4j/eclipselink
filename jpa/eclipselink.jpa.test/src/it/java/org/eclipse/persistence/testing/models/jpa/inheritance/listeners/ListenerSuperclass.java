@@ -17,7 +17,7 @@
 package org.eclipse.persistence.testing.models.jpa.inheritance.listeners;
 
 import java.util.EventListener;
-import javax.persistence.PrePersist;
+import jakarta.persistence.PrePersist;
 
 /**
  * A superclass listener for SportsCar and Bus entities.

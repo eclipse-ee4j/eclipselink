@@ -14,8 +14,8 @@
 //     Marcel Valovy - 2.6 - initial implementation
 package org.eclipse.persistence.testing.perf.beanvalidation;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.xml.bind.annotation.XmlAttribute;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;

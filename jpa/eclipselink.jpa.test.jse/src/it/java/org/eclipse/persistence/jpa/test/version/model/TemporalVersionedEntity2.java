@@ -17,9 +17,9 @@
 
 package org.eclipse.persistence.jpa.test.version.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Version;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Version;
 
 @Entity
 public class TemporalVersionedEntity2 {

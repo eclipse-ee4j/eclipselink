@@ -23,9 +23,9 @@ import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Collection;
 import java.util.Enumeration;
-import javax.persistence.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.CascadeType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.CascadeType.*;
 
 /**
  * This class is mapped in:

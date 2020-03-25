@@ -25,7 +25,7 @@ import java.util.Properties;
 
 import javax.naming.CompositeName;
 import javax.naming.Context;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;

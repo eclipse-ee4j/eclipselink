@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
  package org.eclipse.persistence.testing.framework.server;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 public interface ServerPlatform {
 

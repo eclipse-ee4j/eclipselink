@@ -26,7 +26,7 @@ package org.eclipse.persistence.testing.tests.jpa22.advanced;
 import java.util.Date;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.helper.DatabaseTable;

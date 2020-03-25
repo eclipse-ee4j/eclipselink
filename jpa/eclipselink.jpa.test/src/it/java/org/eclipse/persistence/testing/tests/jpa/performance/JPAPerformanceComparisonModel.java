@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.spi.PersistenceProvider;
 
 
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -166,7 +166,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         Map properties = new HashMap();
 
         // For DataSource testing.
-        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
+        //properties.put("jakarta.persistence.nonJtaDataSource", "datasource");
 
         // For JSE testing.
         properties.put("eclipselink.jdbc.driver", getSession().getLogin().getDriverClassName());

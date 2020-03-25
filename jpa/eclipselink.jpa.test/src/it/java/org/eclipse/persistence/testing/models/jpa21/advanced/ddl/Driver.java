@@ -15,10 +15,10 @@
 //       - 441546: Foreign Key attribute when used in JoinColumn generates wrong DDL statement
 package org.eclipse.persistence.testing.models.jpa21.advanced.ddl;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "JPA21_DDL_DRIVER")

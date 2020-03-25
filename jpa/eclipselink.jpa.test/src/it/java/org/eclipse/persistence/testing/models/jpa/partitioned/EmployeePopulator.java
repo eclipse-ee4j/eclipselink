@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.models.jpa.partitioned;
 
 import java.util.*;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.eclipse.persistence.tools.schemaframework.PopulationManager;
 

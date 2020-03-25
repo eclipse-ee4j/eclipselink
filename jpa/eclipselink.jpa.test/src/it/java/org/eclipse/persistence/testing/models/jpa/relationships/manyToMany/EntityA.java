@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.models.jpa.relationships.manyToMany;
 
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.GenerationType.TABLE;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.util.Collection;
 import java.util.HashSet;

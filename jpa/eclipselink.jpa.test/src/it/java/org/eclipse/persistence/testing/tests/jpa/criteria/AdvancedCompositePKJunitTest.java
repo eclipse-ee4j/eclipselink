@@ -14,10 +14,10 @@ package org.eclipse.persistence.testing.tests.jpa.criteria;
 
 import java.util.List;
 import java.util.ArrayList;
-import javax.persistence.Query;
-import javax.persistence.criteria.*;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.*;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 

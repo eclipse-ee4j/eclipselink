@@ -371,8 +371,8 @@ public class PrivilegedAccessHelper {
      */
     private static boolean isIllegalProperty(final String key) {
         return key == null || !(legalPropertiesSet.contains(key) || key.startsWith("eclipselink.")
-                || key.startsWith("javax.persistence.") || key.startsWith("org.eclipse.persistence.")
-                || key.startsWith("persistence.") || key.startsWith("javax.xml."));
+                || key.startsWith("jakarta.persistence.") || key.startsWith("org.eclipse.persistence.")
+                || key.startsWith("persistence.") || key.startsWith("javax.xml.") || key.startsWith("jakarta.xml."));
     }
 
     /**

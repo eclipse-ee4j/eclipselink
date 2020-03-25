@@ -13,7 +13,7 @@
 package org.eclipse.persistence.testing.models.jpa.cascadedeletes;
 
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * Entity implementation class for Entity: LeafA

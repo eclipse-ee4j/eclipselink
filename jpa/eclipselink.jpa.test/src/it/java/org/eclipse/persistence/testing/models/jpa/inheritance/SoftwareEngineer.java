@@ -15,7 +15,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * This tests having two independent subclasses sharing the same table.

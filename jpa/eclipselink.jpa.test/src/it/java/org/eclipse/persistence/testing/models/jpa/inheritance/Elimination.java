@@ -15,17 +15,17 @@
 //       - 249860: Implement table per class inheritance support.
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import static javax.persistence.CascadeType.PERSIST;
-import static javax.persistence.InheritanceType.TABLE_PER_CLASS;
+import static jakarta.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.InheritanceType.TABLE_PER_CLASS;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.Inheritance;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.IdClass;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="TPC_ELIMINATION")

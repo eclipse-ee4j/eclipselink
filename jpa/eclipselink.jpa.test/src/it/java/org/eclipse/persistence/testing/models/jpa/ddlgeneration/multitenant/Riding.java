@@ -15,10 +15,10 @@
 //       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration.multitenant;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.eclipse.persistence.annotations.Multitenant;
 

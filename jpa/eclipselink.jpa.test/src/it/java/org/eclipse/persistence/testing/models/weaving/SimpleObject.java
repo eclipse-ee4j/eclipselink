@@ -18,9 +18,9 @@ package org.eclipse.persistence.testing.models.weaving;
 import java.io.Serializable;
 
 // Persistence imports
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Table(name="SIMPLE")

@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.tests.jpa.spring;
 import java.lang.reflect.Field;
 import java.util.List;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 
