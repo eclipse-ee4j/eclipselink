@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -123,7 +123,7 @@ public class NLSEmployee implements org.eclipse.persistence.testing.models.emplo
      * IMPORTANT: This method builds the value but does not set it.
      * The mapping will set it using method or direct access as defined in the descriptor.
      */
-    public Time[] buildNormalHours(Record row, Session session) {
+    public Time[] buildNormalHours(org.eclipse.persistence.sessions.Record row, Session session) {
         Time[] hours = new Time[2];
 
         /** This conversion allows for the database type not to match, i.e. may be a Timestamp or String. */

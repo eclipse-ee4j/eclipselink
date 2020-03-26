@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,7 @@ import javax.resource.cci.*;
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
 public interface RecordConverter {
-    Record converterFromAdapterRecord(Record record);
+    javax.resource.cci.Record converterFromAdapterRecord(javax.resource.cci.Record record);
 
-    Record converterToAdapterRecord(Record record);
+    javax.resource.cci.Record converterToAdapterRecord(javax.resource.cci.Record record);
 }

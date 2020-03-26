@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -208,8 +208,8 @@ public class AdapterForReturningProject extends AdapterWithReturnObjectControl {
         session.executeQuery(query);
     }
 
-    protected Record getRowForInsert(Record rowToInsert) {
-        Record row = new DatabaseRecord();
+    protected org.eclipse.persistence.sessions.Record getRowForInsert(org.eclipse.persistence.sessions.Record rowToInsert) {
+        org.eclipse.persistence.sessions.Record row = new DatabaseRecord();
         Enumeration insertFields = insertInfos.keys();
         while (insertFields.hasMoreElements()) {
             DatabaseField field = (DatabaseField)insertFields.nextElement();
@@ -222,8 +222,8 @@ public class AdapterForReturningProject extends AdapterWithReturnObjectControl {
         return row;
     }
 
-    protected Record getRowForUpdate(Record rowChange) {
-        Record row = new DatabaseRecord();
+    protected org.eclipse.persistence.sessions.Record getRowForUpdate(org.eclipse.persistence.sessions.Record rowChange) {
+        org.eclipse.persistence.sessions.Record row = new DatabaseRecord();
         Enumeration updateFields = updateInfos.keys();
         while (updateFields.hasMoreElements()) {
             DatabaseField field = (DatabaseField)updateFields.nextElement();

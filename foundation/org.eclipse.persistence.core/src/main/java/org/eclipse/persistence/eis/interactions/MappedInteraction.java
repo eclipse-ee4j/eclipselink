@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -125,7 +125,7 @@ public class MappedInteraction extends EISInteraction {
      * Populate the data into the record from this interaction's arguments.
      */
     @Override
-    public Record createInputRecord(EISAccessor accessor) {
+    public javax.resource.cci.Record createInputRecord(EISAccessor accessor) {
         try {
             MappedRecord record = null;
 
@@ -166,7 +166,7 @@ public class MappedInteraction extends EISInteraction {
      * Create a mapped input record for this interaction.
      * Populate the data into the record from this interaction's translation row.
      */
-    public Record createTranslationRecord(AbstractRecord transaltionRow, EISAccessor accessor) {
+    public javax.resource.cci.Record createTranslationRecord(AbstractRecord transaltionRow, EISAccessor accessor) {
         return (MappedRecord)createRecordElement(getInputRecordName(), transaltionRow, accessor);
     }
 
@@ -174,7 +174,7 @@ public class MappedInteraction extends EISInteraction {
      * Build a database row from the record returned from the interaction.
      */
     @Override
-    public AbstractRecord buildRow(Record record, EISAccessor accessor) {
+    public AbstractRecord buildRow(javax.resource.cci.Record record, EISAccessor accessor) {
         if (record == null) {
             return  null;
         }
@@ -185,8 +185,8 @@ public class MappedInteraction extends EISInteraction {
             if (indexedRecord.isEmpty()) {
                 return null;
             }
-            if (indexedRecord.get(0) instanceof Record) {
-                return buildRow((Record)indexedRecord.get(0), accessor);
+            if (indexedRecord.get(0) instanceof javax.resource.cci.Record) {
+                return buildRow((javax.resource.cci.Record)indexedRecord.get(0), accessor);
             }
         }
         // If not a mapped record then just put it as a result value in the row.

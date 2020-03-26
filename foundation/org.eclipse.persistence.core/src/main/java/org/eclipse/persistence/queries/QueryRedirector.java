@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,5 +48,5 @@ public interface QueryRedirector extends Serializable {
      * Perform the query.
      * This must execute the query base on the arguments and return a valid result for the query.
      */
-    Object invokeQuery(DatabaseQuery query, Record arguments, Session session);
+    Object invokeQuery(DatabaseQuery query, org.eclipse.persistence.sessions.Record arguments, Session session);
 }

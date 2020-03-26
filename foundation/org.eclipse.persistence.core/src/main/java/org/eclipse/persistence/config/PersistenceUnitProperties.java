@@ -3894,7 +3894,7 @@ public class PersistenceUnitProperties {
      * will be transformed into following e.g.
      * <code>{call test_stored_proc1(10, 'abcd')}</code>
      * instead of default
-     * <code>{call test_stored_proc1(param1 => 10, param2 => 'abcd')}</code>
+     * <code>{call test_stored_proc1(param1 ={@literal >} 10, param2 ={@literal >} 'abcd')}</code>
      * It's important to register parameters in Java in a same order as they specified in the stored procedure.
      * This code was added there to ensure backward compatibility with older EclipseLink releases.
      * <p>

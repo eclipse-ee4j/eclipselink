@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -153,13 +153,13 @@ public abstract class AbstractOrder implements Serializable {
         return ((Integer)total.getValue()).intValue();
     }
 
-    public int getTotalFromRow(Record row, Session session) {
+    public int getTotalFromRow(org.eclipse.persistence.sessions.Record row, Session session) {
         int tens = ((Number)row.get("TOTT")).intValue();
         int ones = ((Number)row.get("TOTO")).intValue();
         return (tens * 10) + ones;
     }
 
-    public int getTotalFromRow2(Record row, Session session) {
+    public int getTotalFromRow2(org.eclipse.persistence.sessions.Record row, Session session) {
         int tens = ((Number)row.get("TOTT2")).intValue();
         int ones = ((Number)row.get("TOTO2")).intValue();
         return (tens * 10) + ones;

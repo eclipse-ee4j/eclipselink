@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,7 +66,7 @@ public class DirectInteractionTest extends DirectConnectTest {
         spec.setInteractionType(XMLFileInteractionSpec.READ);
         spec.setFileName("xml-file-insert-test.xml");
 
-        Record output = interaction.execute(spec, null);
+        javax.resource.cci.Record output = interaction.execute(spec, null);
 
         getSession().logMessage("output: " + output);
         interaction.close();
@@ -94,7 +94,7 @@ public class DirectInteractionTest extends DirectConnectTest {
         spec.setInteractionType(XMLFileInteractionSpec.DELETE);
         spec.setFileName("xml-file-insert-test.xml");
 
-        Record output = interaction.execute(spec, null);
+        javax.resource.cci.Record output = interaction.execute(spec, null);
 
         interaction.close();
 
