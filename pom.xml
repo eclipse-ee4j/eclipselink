@@ -142,8 +142,8 @@
         <!-- CQ #21133 -->
         <ant.version>1.10.7</ant.version>
         <antlr.version>3.5.2</antlr.version>
-        <!-- CQ #21030 -->
-        <asm.version>7.2</asm.version>
+        <!-- CQ #21851 -->
+        <asm.version>7.3.1</asm.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.14.2.0</derby.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
