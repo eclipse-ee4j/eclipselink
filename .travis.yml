@@ -44,8 +44,8 @@ env:
     - MAVEN_TEST=javadoc
 
 jdk:
-  - openjdk8
   - openjdk11
+  - openjdk14
 
 cache:
   directories:
