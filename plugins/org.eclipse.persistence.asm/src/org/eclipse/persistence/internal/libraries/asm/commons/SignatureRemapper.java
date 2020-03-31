@@ -53,7 +53,7 @@ public class SignatureRemapper extends SignatureVisitor {
    * @param remapper the remapper to use to remap the types in the visited signature.
    */
   public SignatureRemapper(final SignatureVisitor signatureVisitor, final Remapper remapper) {
-    this(Opcodes.ASM7, signatureVisitor, remapper);
+    this(/* latest api = */ Opcodes.ASM7, signatureVisitor, remapper);
   }
 
   /**

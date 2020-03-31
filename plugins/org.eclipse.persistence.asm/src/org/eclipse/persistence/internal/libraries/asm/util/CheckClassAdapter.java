@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.TypeReference;
@@ -173,7 +174,7 @@ public class CheckClassAdapter extends ClassVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public CheckClassAdapter(final ClassVisitor classVisitor, final boolean checkDataFlow) {
-    this(Opcodes.ASM7, classVisitor, checkDataFlow);
+    this(/* latest api = */ Opcodes.ASM7, classVisitor, checkDataFlow);
     if (getClass() != CheckClassAdapter.class) {
       throw new IllegalStateException();
     }
@@ -320,6 +321,13 @@ public class CheckClassAdapter extends ClassVisitor {
   }
 
   @Override
+  public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
+    checkState();
+    CheckMethodAdapter.checkInternalName(version, permittedSubtype, "permittedSubtype");
+    super.visitPermittedSubtypeExperimental(permittedSubtype);
+  }
+
+  @Override
   public void visitOuterClass(final String owner, final String name, final String descriptor) {
     checkState();
     if (visitOuterClassCalled) {
@@ -368,6 +376,20 @@ public class CheckClassAdapter extends ClassVisitor {
   }
 
   @Override
+  public RecordComponentVisitor visitRecordComponentExperimental(
+      final int access, final String name, final String descriptor, final String signature) {
+    checkState();
+    checkAccess(access, Opcodes.ACC_DEPRECATED);
+    CheckMethodAdapter.checkUnqualifiedName(version, name, "record component name");
+    CheckMethodAdapter.checkDescriptor(version, descriptor, /* canBeVoid = */ false);
+    if (signature != null) {
+      checkFieldSignature(signature);
+    }
+    return new CheckRecordComponentAdapter(
+        api, super.visitRecordComponentExperimental(access, name, descriptor, signature));
+  }
+
+  @Override
   public FieldVisitor visitField(
       final int access,
       final String name,
@@ -386,6 +408,7 @@ public class CheckClassAdapter extends ClassVisitor {
             | Opcodes.ACC_TRANSIENT
             | Opcodes.ACC_SYNTHETIC
             | Opcodes.ACC_ENUM
+            | Opcodes.ACC_MANDATED
             | Opcodes.ACC_DEPRECATED);
     CheckMethodAdapter.checkUnqualifiedName(version, name, "field name");
     CheckMethodAdapter.checkDescriptor(version, descriptor, /* canBeVoid = */ false);
@@ -420,6 +443,7 @@ public class CheckClassAdapter extends ClassVisitor {
             | Opcodes.ACC_ABSTRACT
             | Opcodes.ACC_STRICT
             | Opcodes.ACC_SYNTHETIC
+            | Opcodes.ACC_MANDATED
             | Opcodes.ACC_DEPRECATED);
     if (!"<init>".equals(name) && !"<clinit>".equals(name)) {
       CheckMethodAdapter.checkMethodIdentifier(version, name, "method name");
@@ -1009,7 +1033,8 @@ public class CheckClassAdapter extends ClassVisitor {
       final PrintWriter printWriter) {
     ClassNode classNode = new ClassNode();
     classReader.accept(
-        new CheckClassAdapter(Opcodes.ASM7, classNode, false) {}, ClassReader.SKIP_DEBUG);
+        new CheckClassAdapter(Opcodes.ASM8_EXPERIMENTAL, classNode, false) {},
+        ClassReader.SKIP_DEBUG);
 
     Type syperType = classNode.superName == null ? null : Type.getObjectType(classNode.superName);
     List<MethodNode> methods = classNode.methods;

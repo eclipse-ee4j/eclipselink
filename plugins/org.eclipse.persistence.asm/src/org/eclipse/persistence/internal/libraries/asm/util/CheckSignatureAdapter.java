@@ -123,7 +123,7 @@ public class CheckSignatureAdapter extends SignatureVisitor {
    *     null}.
    */
   public CheckSignatureAdapter(final int type, final SignatureVisitor signatureVisitor) {
-    this(Opcodes.ASM7, type, signatureVisitor);
+    this(/* latest api = */ Opcodes.ASM7, type, signatureVisitor);
   }
 
   /**

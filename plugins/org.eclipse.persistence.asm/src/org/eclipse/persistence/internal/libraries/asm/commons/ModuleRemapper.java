@@ -49,7 +49,7 @@ public class ModuleRemapper extends ModuleVisitor {
    * @param remapper the remapper to use to remap the types in the visited module.
    */
   public ModuleRemapper(final ModuleVisitor moduleVisitor, final Remapper remapper) {
-    this(Opcodes.ASM7, moduleVisitor, remapper);
+    this(/* latest api = */ Opcodes.ASM7, moduleVisitor, remapper);
   }
 
   /**

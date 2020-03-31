@@ -155,7 +155,7 @@ public class MethodNode extends MethodVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public MethodNode() {
-    this(Opcodes.ASM7);
+    this(/* latest api = */ Opcodes.ASM7);
     if (getClass() != MethodNode.class) {
       throw new IllegalStateException();
     }
@@ -191,7 +191,7 @@ public class MethodNode extends MethodVisitor {
       final String descriptor,
       final String signature,
       final String[] exceptions) {
-    this(Opcodes.ASM7, access, name, descriptor, signature, exceptions);
+    this(/* latest api = */ Opcodes.ASM7, access, name, descriptor, signature, exceptions);
     if (getClass() != MethodNode.class) {
       throw new IllegalStateException();
     }
@@ -621,7 +621,7 @@ public class MethodNode extends MethodVisitor {
         throw new UnsupportedClassVersionException();
       }
     }
-    if (api != Opcodes.ASM7) {
+    if (api < Opcodes.ASM7) {
       for (int i = instructions.size() - 1; i >= 0; --i) {
         AbstractInsnNode insn = instructions.get(i);
         if (insn instanceof LdcInsnNode) {

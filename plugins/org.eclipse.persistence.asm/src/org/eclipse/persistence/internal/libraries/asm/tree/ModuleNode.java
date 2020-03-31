@@ -84,7 +84,7 @@ public class ModuleNode extends ModuleVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public ModuleNode(final String name, final int access, final String version) {
-    super(Opcodes.ASM7);
+    super(/* latest api = */ Opcodes.ASM7);
     if (getClass() != ModuleNode.class) {
       throw new IllegalStateException();
     }

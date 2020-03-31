@@ -287,6 +287,22 @@ public abstract class Remapper {
   }
 
   /**
+   * Maps a record component name to its new name. The default implementation of this method returns
+   * the given name, unchanged. Subclasses can override.
+   *
+   * @param owner the internal name of the owner class of the field.
+   * @param name the name of the field.
+   * @param descriptor the descriptor of the field.
+   * @return the new name of the field.
+   * @deprecated this API is experimental.
+   */
+  @Deprecated
+  public String mapRecordComponentNameExperimental(
+      final String owner, final String name, final String descriptor) {
+    return name;
+  }
+
+  /**
    * Maps a field name to its new name. The default implementation of this method returns the given
    * name, unchanged. Subclasses can override.
    *
