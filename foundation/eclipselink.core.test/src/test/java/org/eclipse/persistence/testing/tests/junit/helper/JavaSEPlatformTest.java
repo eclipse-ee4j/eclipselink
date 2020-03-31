@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,7 +59,9 @@ public class JavaSEPlatformTest {
         new VersionData( 9,  0, JavaSEPlatform.v9_0),
         new VersionData(10,  0, JavaSEPlatform.v10_0),
         new VersionData(11,  0, JavaSEPlatform.v11_0),
-        new VersionData(12,  0, LATEST)
+        new VersionData(12,  0, JavaSEPlatform.v12_0),
+        new VersionData(13,  0, JavaSEPlatform.v13_0),
+        new VersionData(14,  0, LATEST)
     };
 
     /**
