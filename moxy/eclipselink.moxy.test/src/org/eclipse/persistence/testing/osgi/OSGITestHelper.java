@@ -39,7 +39,7 @@ public class OSGITestHelper {
     private static final String RELEASE_VERSION = System.getProperty("release.version", "2.7.0");
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "jakarta.xml.bind-api.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "javax.ws.rs_1.1.1.v20101004-1200.jar");
-    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_7.2.0.v201911111540.jar");
+    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_7.3.1.v202003311108.jar");
     private static final String BEAN_VALIDATION_LIB = System.getProperty("javax.validation.lib", "jakarta.validation-api.jar");
 
     public static Option[] getDefaultOptions() {
