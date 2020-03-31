@@ -43,7 +43,7 @@ env:
     - MAVEN_TEST=jpa-lrg-server2-mysql
     - MAVEN_TEST=javadoc
     allow_failures:
-      - MAVEN_TEST="corba"
+      - env: MAVEN_TEST=corba
 
 jdk:
   - openjdk8
