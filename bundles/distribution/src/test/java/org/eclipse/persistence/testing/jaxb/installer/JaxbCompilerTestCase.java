@@ -35,16 +35,16 @@ public class JaxbCompilerTestCase extends junit.framework.TestCase {
      */
     public void testJaxbCompiler() throws Exception {
 
-        String eclipselinkUnzipDir = System.getenv("ECLIPSELINK_UNZIP_DIR");
+        String eclipselinkUnzipDir = "target/eclipselink.zip-tmp";//System.getenv("ECLIPSELINK_UNZIP_DIR");
 
         String jaxbCompiler = "jaxb-compiler";
 
         // run jaxb-compiler.cmd or jaxb-compiler.sh
         String osName = System.getProperty("os.name");
         if (null != osName && osName.startsWith("Windows")) {
-            jaxbCompiler = jaxbCompiler += ".cmd";
+            jaxbCompiler += ".cmd";
         } else {
-            jaxbCompiler = jaxbCompiler += ".sh";
+            jaxbCompiler += ".sh";
         }
 
         File resourceFile = new File(Thread.currentThread().getContextClassLoader().getResource(WORK_ITEM_RESOURCE_XSD).toURI());

@@ -21,7 +21,10 @@ import static org.ops4j.pax.exam.CoreOptions.cleanCaches;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
+import static org.ops4j.pax.exam.CoreOptions.vmOption;
 import static org.ops4j.pax.exam.CoreOptions.vmOptions;
 import static org.ops4j.pax.exam.CoreOptions.when;
 
@@ -35,23 +38,38 @@ import org.eclipse.persistence.internal.helper.JavaSEPlatform;
  */
 public class OSGITestHelper {
     // Environment variables defined in antbuild.properties/antbuild.xml
-    private static final String PLUGINS_DIR = System.getProperty("moxytest.2.common.plugins.dir");
-    private static final String QUALIFIER = System.getProperty("build.qualifier", "qualifier");
-    private static final String RELEASE_VERSION = System.getProperty("release.version", "2.7.0");
-    private static final String ACTIVATION_JAR = System.getProperty("activation.jar", "jakarta.activation.jar");
+    private static final String PLUGINS_DIR = System.getProperty("moxytest.2.common.plugins.dir","target/osgi-test-plugins/");
+    private static final String QUALIFIER = System.getProperty("build.qualifier", "SNAPSHOT");
+    private static final String RELEASE_VERSION = System.getProperty("release.version", "3.0.0");
+    private static final String ACTIVATION_JAR = System.getProperty("activation.jar", "jakarta.activation-api.jar");
+    private static final String PERSISTENCE_JAR = System.getProperty("persistence.jar", "jakarta.persistence-api.jar");
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "jakarta.xml.bind-api.jar");
+    private static final String JAXB_OSGI = System.getProperty("jaxb-osgi.jar", "jaxb-osgi.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "jakarta.ws.rs-api.jar");
-    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_7.1.0.v201909231337.jar");
+    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_3.0.0.SNAPSHOT.jar");
     private static final String ASM_VERSION = System.getProperty("asm.version", "7.1.0.v201909231337");
     private static final String BEAN_VALIDATION_LIB = System.getProperty("jakarta.validation.lib", "jakarta.validation-api.jar");
 
     public static Option[] getDefaultOptions() {
+        System.out.println(PLUGINS_DIR + "org.eclipse.persistence.moxy_" + RELEASE_VERSION + "." + QUALIFIER + ".jar");
         return options(
+
+               /* vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
+                systemTimeout(0),*/
+
                 systemProperty("asm.version").value(ASM_VERSION),
                 // JAXB API
                 bundle("file:" + PLUGINS_DIR + ACTIVATION_JAR),
                 bundle("file:" + PLUGINS_DIR + JAXB_API_JAR),
-
+                //JAXB_OSGI
+                bundle("file:" + PLUGINS_DIR + JAXB_OSGI),
+                // Jakarta Persistence api
+                bundle("file:" + PLUGINS_DIR + PERSISTENCE_JAR),
+                systemPackage("javax.rmi"),
+                systemPackage("javax.rmi.CORBA"),
+                systemPackage("org.omg.CORBA"),
+                systemPackage("org.omg.CORBA.portable"),
+                systemPackage("org.omg.CORBA_2_3.portable"),
                 // JAX-RS API
                 bundle("file:" + PLUGINS_DIR + JAXRS_JAR),
 

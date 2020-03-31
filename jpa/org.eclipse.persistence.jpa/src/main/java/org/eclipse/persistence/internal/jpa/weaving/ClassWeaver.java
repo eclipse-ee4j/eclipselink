@@ -92,7 +92,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
 
     // Transient
-    public static final String JPA_TRANSIENT_DESCRIPTION = "Ljavax/persistence/Transient;";
+    public static final String JPA_TRANSIENT_DESCRIPTION = "Ljakarta/persistence/Transient;";
     public static final String XML_TRANSIENT_DESCRIPTION = "Ljakarta/xml/bind/annotation/XmlTransient;";
 
     public static final String PERSISTENCE_SET = Helper.PERSISTENCE_SET;

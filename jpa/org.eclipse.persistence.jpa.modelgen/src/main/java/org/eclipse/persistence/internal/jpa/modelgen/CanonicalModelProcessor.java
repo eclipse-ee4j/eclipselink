@@ -283,7 +283,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
 
             if (generateGenerated) {
                 if (isNewJava) {
-                    imports.put("Generated", "jakarta.annotation.processing.Generated");
+                    imports.put("Generated", "javax.annotation.processing.Generated");
                 } else {
                     imports.put("Generated", "jakarta.annotation.Generated");
                 }

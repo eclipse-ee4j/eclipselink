@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import jakarta.annotation.Generated;
 import jakarta.persistence.Entity;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
@@ -70,7 +71,7 @@ public class TestProcessor {
         TestFO generated8 = new TestFO("org.Gen8",
                 "package org; import jakarta.annotation.Generated; @Generated(\"com.example.Generator\") public class Gen8 { public  Gen8() {} public int getY() {return 42;}}");
         TestFO generated9 = new TestFO("org.Gen9",
-                "package org; @jakarta.annotation.processing.Generated(\"com.example.Generator\") public class Gen9 { public  Gen9() {} public int getZ() {return 9*42;}}");
+                "package org; @javax.annotation.processing.Generated(\"com.example.Generator\") public class Gen9 { public  Gen9() {} public int getZ() {return 9*42;}}");
 
         Result result = runProject("testProc",
                 getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
@@ -222,7 +223,8 @@ public class TestProcessor {
 
         StandardJavaFileManager sfm = compiler.getStandardFileManager(diagnostics, null, null);
         URL apiUrl = Entity.class.getProtectionDomain().getCodeSource().getLocation();
-        sfm.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(new File(apiUrl.getFile()), cpDir));
+        URL generatedUrl = Generated.class.getProtectionDomain().getCodeSource().getLocation();
+        sfm.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(new File(apiUrl.getFile()), new File(generatedUrl.getFile()), cpDir));
         sfm.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(srcOut));
         sfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(cpDir));
 
@@ -264,7 +266,8 @@ public class TestProcessor {
 
         StandardJavaFileManager sfm = compiler.getStandardFileManager(diagnostics, null, null);
         URL apiUrl = Entity.class.getProtectionDomain().getCodeSource().getLocation();
-        sfm.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(new File(apiUrl.getFile()), cpDir));
+        URL generatedUrl = Generated.class.getProtectionDomain().getCodeSource().getLocation();
+        sfm.setLocation(StandardLocation.CLASS_PATH, Arrays.asList(new File(apiUrl.getFile()), new File(generatedUrl.getFile()), cpDir));
         sfm.setLocation(StandardLocation.SOURCE_OUTPUT, Collections.singleton(srcOut));
         sfm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(cpDir));
 

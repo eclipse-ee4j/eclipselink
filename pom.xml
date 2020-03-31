@@ -150,7 +150,7 @@
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.14.2.0</derby.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
-        <exam.version>4.13.1</exam.version>
+        <exam.version>4.13.2</exam.version>
         <hamcrest.version>1.3</hamcrest.version>
         <!-- CQ #3571 -->
         <hibernate.version>6.1.0.Final</hibernate.version>

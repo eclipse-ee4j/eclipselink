@@ -44,6 +44,14 @@
         <!--Binary dependencies-->
         <!--Other modules-->
         <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
             <version>${project.version}</version>
@@ -208,7 +216,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
+            <artifactId>javax.persistence</artifactId>
             <version>${persistence21.version}</version>
         </dependency>
         <dependency>

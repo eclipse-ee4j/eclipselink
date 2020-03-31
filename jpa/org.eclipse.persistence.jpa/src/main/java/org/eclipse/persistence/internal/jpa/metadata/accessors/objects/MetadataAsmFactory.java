@@ -307,6 +307,14 @@ public class MetadataAsmFactory extends MetadataFactory {
                     }
                 }
             }
+            if (desc.startsWith("Ljakarta")) {
+                //ignore annotations from other then 'jakarta/persistence' namespace
+                    if (desc.regionMatches(9, "persistence", 0, "persistence".length())) {
+                        isJPA = true;
+                    } else {
+                        return null;
+                    }
+            }
             if (!this.processedMemeber && this.classMetadata.isLazy()) {
                 this.classMetadata.setIsLazy(false);
             }
@@ -451,7 +459,8 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
+            if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Ljakarta/persistence")
+                    || desc.startsWith("Lorg/eclipse/persistence")) {
                 return new MetadataAnnotationVisitor(this.field, desc);
             }
             return null;
@@ -493,7 +502,8 @@ public class MetadataAsmFactory extends MetadataFactory {
 
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Lorg/eclipse/persistence")) {
+            if (desc.startsWith("Ljavax/persistence") || desc.startsWith("Ljakarta/persistence")
+                    || desc.startsWith("Lorg/eclipse/persistence")) {
                 return new MetadataAnnotationVisitor(this.method, desc);
             }
             return null;

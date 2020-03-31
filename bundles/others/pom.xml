@@ -215,7 +215,7 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
+            <artifactId>javax.persistence</artifactId>
             <version>${persistence21.version}</version>
         </dependency>
         <dependency>
@@ -611,10 +611,10 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>${project.parent.groupId}</groupId>
-                                    <artifactId>jakarta.persistence</artifactId>
+                                    <artifactId>javax.persistence</artifactId>
                                     <version>${persistence21.version}</version>
                                     <outputDirectory>${project.build.directory}/${archive.tmp.dir}/eclipselink-test-src.zip/jpa/plugins/</outputDirectory>
-                                    <destFileName>jakarta.persistence_2.1.1.v201509150925.jar</destFileName>
+                                    <destFileName>javax.persistence_2.1.1.v201509150925.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${project.parent.groupId}</groupId>

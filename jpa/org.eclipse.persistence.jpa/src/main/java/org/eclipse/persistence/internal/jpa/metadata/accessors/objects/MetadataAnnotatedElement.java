@@ -552,10 +552,6 @@ public class MetadataAnnotatedElement extends MetadataAccessibleObject {
     public boolean isAnnotationPresent(String annotationName, ClassAccessor accessor) {
         MetadataAnnotation annotation = getAnnotation(annotationName);
 
-        if (accessor.getClassName().contains("Customer")) {
-            System.out.println(accessor);
-        }
-
         if (annotation != null && accessor.ignoreAnnotations()) {
             getLogger().logConfigMessage(MetadataLogger.IGNORE_ANNOTATION, annotation, this);
             return false;
