@@ -99,14 +99,14 @@ public class FieldNode extends FieldVisitor {
       final String descriptor,
       final String signature,
       final Object value) {
-    this(Opcodes.ASM7, access, name, descriptor, signature, value);
+    this(/* latest api = */ Opcodes.ASM7, access, name, descriptor, signature, value);
     if (getClass() != FieldNode.class) {
       throw new IllegalStateException();
     }
   }
 
   /**
-   * Constructs a new {@link FieldNode}. <i>Subclasses must not use this constructor</i>.
+   * Constructs a new {@link FieldNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link Opcodes#ASM4}
    *     or {@link Opcodes#ASM5}.

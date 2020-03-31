@@ -201,7 +201,7 @@ public class GeneratorAdapter extends LocalVariablesSorter {
       final int access,
       final String name,
       final String descriptor) {
-    this(Opcodes.ASM7, methodVisitor, access, name, descriptor);
+    this(/* latest api = */ Opcodes.ASM7, methodVisitor, access, name, descriptor);
     if (getClass() != GeneratorAdapter.class) {
       throw new IllegalStateException();
     }

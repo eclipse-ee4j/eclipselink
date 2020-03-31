@@ -71,7 +71,7 @@ public class CheckModuleAdapter extends ModuleVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public CheckModuleAdapter(final ModuleVisitor moduleVisitor, final boolean isOpen) {
-    this(Opcodes.ASM7, moduleVisitor, isOpen);
+    this(/* latest api = */ Opcodes.ASM7, moduleVisitor, isOpen);
     if (getClass() != CheckModuleAdapter.class) {
       throw new IllegalStateException();
     }

@@ -59,7 +59,7 @@ public class TypeAnnotationNode extends AnnotationNode {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public TypeAnnotationNode(final int typeRef, final TypePath typePath, final String descriptor) {
-    this(Opcodes.ASM7, typeRef, typePath, descriptor);
+    this(/* latest api = */ Opcodes.ASM7, typeRef, typePath, descriptor);
     if (getClass() != TypeAnnotationNode.class) {
       throw new IllegalStateException();
     }

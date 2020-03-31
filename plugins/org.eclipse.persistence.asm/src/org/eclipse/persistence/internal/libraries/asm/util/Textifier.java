@@ -111,7 +111,7 @@ public class Textifier extends Printer {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public Textifier() {
-    this(Opcodes.ASM7);
+    this(/* latest api = */ Opcodes.ASM7);
     if (getClass() != Textifier.class) {
       throw new IllegalStateException();
     }
@@ -302,6 +302,15 @@ public class Textifier extends Printer {
   }
 
   @Override
+  public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
+    stringBuilder.setLength(0);
+    stringBuilder.append(tab).append("PERMITTEDSUBTYPE ");
+    appendDescriptor(INTERNAL_NAME, permittedSubtype);
+    stringBuilder.append('\n');
+    text.add(stringBuilder.toString());
+  }
+
+  @Override
   public void visitInnerClass(
       final String name, final String outerName, final String innerName, final int access) {
     stringBuilder.setLength(0);
@@ -317,6 +326,34 @@ public class Textifier extends Printer {
     appendDescriptor(INTERNAL_NAME, innerName);
     stringBuilder.append('\n');
     text.add(stringBuilder.toString());
+  }
+
+  @Override
+  public Printer visitRecordComponentExperimental(
+      final int access, final String name, final String descriptor, final String signature) {
+    stringBuilder.setLength(0);
+    stringBuilder.append('\n');
+    if ((access & Opcodes.ACC_DEPRECATED) != 0) {
+      stringBuilder.append(tab).append(DEPRECATED);
+    }
+    stringBuilder.append(tab);
+    appendRawAccess(access);
+    if (signature != null) {
+      stringBuilder.append(tab);
+      appendDescriptor(FIELD_SIGNATURE, signature);
+      stringBuilder.append(tab);
+      appendJavaDeclaration(name, signature);
+    }
+
+    stringBuilder.append(tab);
+    appendAccess(access);
+
+    appendDescriptor(FIELD_DESCRIPTOR, descriptor);
+    stringBuilder.append(' ').append(name);
+
+    stringBuilder.append('\n');
+    text.add(stringBuilder.toString());
+    return addNewTextifier(null);
   }
 
   @Override
@@ -672,6 +709,32 @@ public class Textifier extends Printer {
     if (name != null) {
       stringBuilder.append(name).append('=');
     }
+  }
+
+  // -----------------------------------------------------------------------------------------------
+  // Record components
+  // -----------------------------------------------------------------------------------------------
+
+  @Override
+  public Textifier visitRecordComponentAnnotationExperimental(
+      final String descriptor, final boolean visible) {
+    return visitAnnotation(descriptor, visible);
+  }
+
+  @Override
+  public Printer visitRecordComponentTypeAnnotationExperimental(
+      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+    return visitTypeAnnotation(typeRef, typePath, descriptor, visible);
+  }
+
+  @Override
+  public void visitRecordComponentAttributeExperimental(final Attribute attribute) {
+    visitAttribute(attribute);
+  }
+
+  @Override
+  public void visitRecordComponentEndExperimental() {
+    // Nothing to do.
   }
 
   // -----------------------------------------------------------------------------------------------

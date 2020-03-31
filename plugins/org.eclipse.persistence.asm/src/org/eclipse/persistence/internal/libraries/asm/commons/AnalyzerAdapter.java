@@ -116,7 +116,7 @@ public class AnalyzerAdapter extends MethodVisitor {
       final String name,
       final String descriptor,
       final MethodVisitor methodVisitor) {
-    this(Opcodes.ASM7, owner, access, name, descriptor, methodVisitor);
+    this(/* latest api = */ Opcodes.ASM7, owner, access, name, descriptor, methodVisitor);
     if (getClass() != AnalyzerAdapter.class) {
       throw new IllegalStateException();
     }
