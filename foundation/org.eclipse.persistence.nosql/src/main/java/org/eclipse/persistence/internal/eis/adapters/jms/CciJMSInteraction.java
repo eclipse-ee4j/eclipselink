@@ -46,7 +46,7 @@ public class CciJMSInteraction implements Interaction {
      * @throws EISException
      */
     @Override
-    public javax.resource.cci.Record execute(InteractionSpec spec, javax.resource.cci.Record input) throws EISException {
+    public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record input) throws EISException {
         CciJMSRecord record = new CciJMSRecord();
         execute(spec, input, record);
         return record;
@@ -63,7 +63,7 @@ public class CciJMSInteraction implements Interaction {
      * @throws EISException
      */
     @Override
-    public boolean execute(InteractionSpec spec, javax.resource.cci.Record input, javax.resource.cci.Record output) throws EISException {
+    public boolean execute(InteractionSpec spec, jakarta.resource.cci.Record input, jakarta.resource.cci.Record output) throws EISException {
         if (!(spec instanceof CciJMSInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }

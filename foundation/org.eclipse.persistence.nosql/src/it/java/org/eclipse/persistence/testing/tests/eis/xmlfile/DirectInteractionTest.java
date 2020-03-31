@@ -66,7 +66,7 @@ public class DirectInteractionTest extends DirectConnectTest {
         spec.setInteractionType(XMLFileInteractionSpec.READ);
         spec.setFileName("xml-file-insert-test.xml");
 
-        javax.resource.cci.Record output = interaction.execute(spec, null);
+        jakarta.resource.cci.Record output = interaction.execute(spec, null);
 
         getSession().logMessage("output: " + output);
         interaction.close();
@@ -94,7 +94,7 @@ public class DirectInteractionTest extends DirectConnectTest {
         spec.setInteractionType(XMLFileInteractionSpec.DELETE);
         spec.setFileName("xml-file-insert-test.xml");
 
-        javax.resource.cci.Record output = interaction.execute(spec, null);
+        jakarta.resource.cci.Record output = interaction.execute(spec, null);
 
         interaction.close();
 

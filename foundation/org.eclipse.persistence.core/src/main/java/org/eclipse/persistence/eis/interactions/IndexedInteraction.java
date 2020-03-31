@@ -106,7 +106,7 @@ public class IndexedInteraction extends EISInteraction {
      * Populate the data into the record from this interaction's arguments.
      */
     @Override
-    public javax.resource.cci.Record createInputRecord(EISAccessor accessor) {
+    public jakarta.resource.cci.Record createInputRecord(EISAccessor accessor) {
         try {
             IndexedRecord record = accessor.getRecordFactory().createIndexedRecord(getInputRecordName());
             for (int index = 0; index < getParameters().size(); index++) {
@@ -126,7 +126,7 @@ public class IndexedInteraction extends EISInteraction {
      * Also handles MappedRecords for case of input being indexed but mapped ouput.
      */
     @Override
-    public AbstractRecord buildRow(javax.resource.cci.Record record, EISAccessor accessor) {
+    public AbstractRecord buildRow(jakarta.resource.cci.Record record, EISAccessor accessor) {
         AbstractRecord row = null;
         if (record instanceof IndexedRecord) {
             IndexedRecord indexedRecord = (IndexedRecord)record;

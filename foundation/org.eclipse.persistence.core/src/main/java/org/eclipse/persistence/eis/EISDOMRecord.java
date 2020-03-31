@@ -37,7 +37,7 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord implements DOMRecord, MappedRecord {
 
     /** The original adapter record. */
-    protected javax.resource.cci.Record record;
+    protected jakarta.resource.cci.Record record;
 
     /** The record name. */
     protected String recordName;
@@ -60,7 +60,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
     /**
      * Create a TopLink record from the JCA adapter record and DOM tree.
      */
-    public EISDOMRecord(javax.resource.cci.Record record, Element dom) {
+    public EISDOMRecord(jakarta.resource.cci.Record record, Element dom) {
         super(dom);
         this.record = record;
         this.recordName = record.getRecordName();
@@ -83,7 +83,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
      * Create a TopLink record from the JCA adapter record.
      * This attempts to introspect the record to retrieve the DOM tree.
      */
-    public EISDOMRecord(javax.resource.cci.Record record) {
+    public EISDOMRecord(jakarta.resource.cci.Record record) {
         this.record = record;
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
@@ -135,14 +135,14 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
     /**
      * Return the JCA adapter record.
      */
-    public javax.resource.cci.Record getRecord() {
+    public jakarta.resource.cci.Record getRecord() {
         return record;
     }
 
     /**
      * Set the JCA adapter record.
      */
-    public void setRecord(javax.resource.cci.Record record) {
+    public void setRecord(jakarta.resource.cci.Record record) {
         this.record = record;
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
