@@ -42,7 +42,7 @@
         <pathelement path="${jse.classes.dir}" />
         <!-- <pathelement path="${jse.eclipselink.jar}" /> -->
         <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.antlr_3.2.0.v201302191141.jar" />
-        <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.asm_7.2.0.v201911121248.jar" />
+        <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.asm_7.3.1.v202004011257.jar" />
         <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.core_2.6.8.WAS.jar" />
         <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.jpa_2.6.8.WAS.jar" />
         <pathelement path="${jse.el.plugins.dir}/org.eclipse.persistence.jpa.jpql_2.6.8.WAS.jar" />

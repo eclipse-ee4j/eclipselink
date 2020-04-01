@@ -41,6 +41,7 @@ import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
+import org.eclipse.persistence.internal.libraries.asm.TypeReference;
 
 /**
  * An abstract converter from visit events to text.
@@ -453,6 +454,22 @@ public abstract class Printer {
   }
 
   /**
+   * <b>Experimental, use at your own risk. This method will be renamed when it becomes stable, this
+   * will break existing code using it</b>.
+   *
+   * <p>Visits a permitted subtypes. A permitted subtypes is one of the allowed subtypes of the
+   * current class. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitPermittedSubtypeExperimental(String)}.
+   *
+   * @param permittedSubtype the internal name of a permitted subtype.
+   * @deprecated this API is experimental.
+   */
+  @Deprecated
+  public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
    * Class inner name. See {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitInnerClass}.
    *
    * @param name the internal name of an inner class (see {@link
@@ -465,6 +482,26 @@ public abstract class Printer {
    *     class.
    */
   public abstract void visitInnerClass(String name, String outerName, String innerName, int access);
+
+  /**
+   * Visits a record component of the class. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitRecordComponentExperimental(int, String, String, String)}.
+   *
+   * @param access the record component access flags, the only possible value is {@link
+   *     Opcodes#ACC_DEPRECATED}.
+   * @param name the field's name.
+   * @param descriptor the record component descriptor (see {@link Type}).
+   * @param signature the record component signature. May be {@literal null} if the record component
+   *     type does not use generic types.
+   * @return a visitor to visit this record component annotations and attributes, or {@literal null}
+   *     if this class visitor is not interested in visiting these annotations and attributes.
+   * @deprecated this API is experimental.
+   */
+  @Deprecated
+  public Printer visitRecordComponentExperimental(
+      final int access, final String name, final String descriptor, final String signature) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
 
   /**
    * Class field. See {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitField}.
@@ -636,6 +673,73 @@ public abstract class Printer {
 
   /** Annotation end. See {@link org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor#visitEnd}. */
   public abstract void visitAnnotationEnd();
+
+  // -----------------------------------------------------------------------------------------------
+  // Record components
+  // -----------------------------------------------------------------------------------------------
+
+  /**
+   * Visits an annotation of the record component. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor#visitAnnotationExperimental}.
+   *
+   * @param descriptor the class descriptor of the annotation class.
+   * @param visible {@literal true} if the annotation is visible at runtime.
+   * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not
+   *     interested in visiting this annotation.
+   * @deprecated this API is experimental.
+   */
+  @Deprecated
+  public Printer visitRecordComponentAnnotationExperimental(
+      final String descriptor, final boolean visible) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
+   * Visits an annotation on a type in the record component signature. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor#visitTypeAnnotationExperimental}.
+   *
+   * @param typeRef a reference to the annotated type. The sort of this type reference must be
+   *     {@link TypeReference#CLASS_TYPE_PARAMETER}, {@link
+   *     TypeReference#CLASS_TYPE_PARAMETER_BOUND} or {@link TypeReference#CLASS_EXTENDS}. See
+   *     {@link TypeReference}.
+   * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
+   *     'typeRef' as a whole.
+   * @param descriptor the class descriptor of the annotation class.
+   * @param visible {@literal true} if the annotation is visible at runtime.
+   * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not
+   *     interested in visiting this annotation.
+   * @deprecated this API is experimental.
+   */
+  @Deprecated
+  public Printer visitRecordComponentTypeAnnotationExperimental(
+      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
+   * Visits a non standard attribute of the record component. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor#visitAttributeExperimental}.
+   *
+   * @param attribute an attribute.
+   * @deprecated this API is experimental.
+   */
+  @Deprecated
+  public void visitRecordComponentAttributeExperimental(final Attribute attribute) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
+   * Visits the end of the record component. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor#visitEndExperimental}. This method, which is the last
+   * one to be called, is used to inform the visitor that everything have been visited.
+   *
+   * @deprecated this API is experimental.
+   */
+  @Deprecated
+  public void visitRecordComponentEndExperimental() {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
 
   // -----------------------------------------------------------------------------------------------
   // Fields

@@ -60,7 +60,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public AnnotationNode(final String descriptor) {
-    this(Opcodes.ASM7, descriptor);
+    this(/* latest api = */ Opcodes.ASM7, descriptor);
     if (getClass() != AnnotationNode.class) {
       throw new IllegalStateException();
     }
@@ -84,7 +84,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * @param values where the visited values must be stored.
    */
   AnnotationNode(final List<Object> values) {
-    super(Opcodes.ASM7);
+    super(/* latest api = */ Opcodes.ASM7);
     this.values = values;
   }
 

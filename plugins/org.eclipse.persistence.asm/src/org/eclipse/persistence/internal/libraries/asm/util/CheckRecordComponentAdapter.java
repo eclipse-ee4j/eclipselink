@@ -29,56 +29,63 @@ package org.eclipse.persistence.internal.libraries.asm.util;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
-import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
 import org.eclipse.persistence.internal.libraries.asm.TypeReference;
 
 /**
- * A {@link FieldVisitor} that checks that its methods are properly used.
+ * A {@link RecordComponentVisitor} that checks that its methods are properly used.
  *
  * @author Eric Bruneton
+ * @author Remi Forax
  */
-public class CheckFieldAdapter extends FieldVisitor {
+public class CheckRecordComponentAdapter extends RecordComponentVisitor {
 
-  /** Whether the {@link #visitEnd} method has been called. */
+  /** Whether the {@link #visitEndExperimental()} method has been called. */
   private boolean visitEndCalled;
 
   /**
-   * Constructs a new {@link CheckFieldAdapter}. <i>Subclasses must not use this constructor</i>.
-   * Instead, they must use the {@link #CheckFieldAdapter(int, FieldVisitor)} version.
+   * Constructs a new {@link CheckRecordComponentAdapter}. <i>Subclasses must not use this
+   * constructor</i>. Instead, they must use the {@link #CheckRecordComponentAdapter(int,
+   * RecordComponentVisitor)} version.
    *
-   * @param fieldVisitor the field visitor to which this adapter must delegate calls.
+   * @param recordComponentVisitor the record component visitor to which this adapter must delegate
+   *     calls.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
-  public CheckFieldAdapter(final FieldVisitor fieldVisitor) {
-    this(/* latest api = */ Opcodes.ASM7, fieldVisitor);
-    if (getClass() != CheckFieldAdapter.class) {
+  public CheckRecordComponentAdapter(final RecordComponentVisitor recordComponentVisitor) {
+    // TODO: add 'latest api =' comment when no longer experimental.
+    this(Opcodes.ASM8_EXPERIMENTAL, recordComponentVisitor);
+    if (getClass() != CheckRecordComponentAdapter.class) {
       throw new IllegalStateException();
     }
   }
 
   /**
-   * Constructs a new {@link CheckFieldAdapter}.
+   * Constructs a new {@link CheckRecordComponentAdapter}.
    *
-   * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
-   * @param fieldVisitor the field visitor to which this adapter must delegate calls.
+   * @param api the ASM API version implemented by this visitor. Must be {@link
+   *     Opcodes#ASM8_EXPERIMENTAL}.
+   * @param recordComponentVisitor the record component visitor to which this adapter must delegate
+   *     calls.
    */
-  protected CheckFieldAdapter(final int api, final FieldVisitor fieldVisitor) {
-    super(api, fieldVisitor);
+  protected CheckRecordComponentAdapter(
+      final int api, final RecordComponentVisitor recordComponentVisitor) {
+    super(api, recordComponentVisitor);
   }
 
   @Override
-  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotationExperimental(
+      final String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
     // Annotations can only appear in V1_5 or more classes.
     CheckMethodAdapter.checkDescriptor(Opcodes.V1_5, descriptor, false);
-    return new CheckAnnotationAdapter(super.visitAnnotation(descriptor, visible));
+    return new CheckAnnotationAdapter(super.visitAnnotationExperimental(descriptor, visible));
   }
 
   @Override
-  public AnnotationVisitor visitTypeAnnotation(
+  public AnnotationVisitor visitTypeAnnotationExperimental(
       final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
     checkVisitEndNotCalled();
     int sort = new TypeReference(typeRef).getSort();
@@ -89,23 +96,23 @@ public class CheckFieldAdapter extends FieldVisitor {
     CheckClassAdapter.checkTypeRef(typeRef);
     CheckMethodAdapter.checkDescriptor(Opcodes.V1_5, descriptor, false);
     return new CheckAnnotationAdapter(
-        super.visitTypeAnnotation(typeRef, typePath, descriptor, visible));
+        super.visitTypeAnnotationExperimental(typeRef, typePath, descriptor, visible));
   }
 
   @Override
-  public void visitAttribute(final Attribute attribute) {
+  public void visitAttributeExperimental(final Attribute attribute) {
     checkVisitEndNotCalled();
     if (attribute == null) {
       throw new IllegalArgumentException("Invalid attribute (must not be null)");
     }
-    super.visitAttribute(attribute);
+    super.visitAttributeExperimental(attribute);
   }
 
   @Override
-  public void visitEnd() {
+  public void visitEndExperimental() {
     checkVisitEndNotCalled();
     visitEndCalled = true;
-    super.visitEnd();
+    super.visitEndExperimental();
   }
 
   private void checkVisitEndNotCalled() {

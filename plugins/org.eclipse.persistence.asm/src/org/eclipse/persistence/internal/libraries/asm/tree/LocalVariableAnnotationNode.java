@@ -84,7 +84,7 @@ public class LocalVariableAnnotationNode extends TypeAnnotationNode {
       final LabelNode[] end,
       final int[] index,
       final String descriptor) {
-    this(Opcodes.ASM7, typeRef, typePath, start, end, index, descriptor);
+    this(/* latest api = */ Opcodes.ASM7, typeRef, typePath, start, end, index, descriptor);
   }
 
   /**

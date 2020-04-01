@@ -53,7 +53,7 @@ public class MethodRemapper extends MethodVisitor {
    * @param remapper the remapper to use to remap the types in the visited method.
    */
   public MethodRemapper(final MethodVisitor methodVisitor, final Remapper remapper) {
-    this(Opcodes.ASM7, methodVisitor, remapper);
+    this(/* latest api = */ Opcodes.ASM7, methodVisitor, remapper);
   }
 
   /**
@@ -76,7 +76,7 @@ public class MethodRemapper extends MethodVisitor {
     AnnotationVisitor annotationVisitor = super.visitAnnotationDefault();
     return annotationVisitor == null
         ? annotationVisitor
-        : new AnnotationRemapper(api, annotationVisitor, remapper);
+        : createAnnotationRemapper(annotationVisitor);
   }
 
   @Override
@@ -85,7 +85,7 @@ public class MethodRemapper extends MethodVisitor {
         super.visitAnnotation(remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
         ? annotationVisitor
-        : new AnnotationRemapper(api, annotationVisitor, remapper);
+        : createAnnotationRemapper(annotationVisitor);
   }
 
   @Override
@@ -95,7 +95,7 @@ public class MethodRemapper extends MethodVisitor {
         super.visitTypeAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
         ? annotationVisitor
-        : new AnnotationRemapper(api, annotationVisitor, remapper);
+        : createAnnotationRemapper(annotationVisitor);
   }
 
   @Override
@@ -105,7 +105,7 @@ public class MethodRemapper extends MethodVisitor {
         super.visitParameterAnnotation(parameter, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
         ? annotationVisitor
-        : new AnnotationRemapper(api, annotationVisitor, remapper);
+        : createAnnotationRemapper(annotationVisitor);
   }
 
   @Override
@@ -209,7 +209,7 @@ public class MethodRemapper extends MethodVisitor {
         super.visitInsnAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
         ? annotationVisitor
-        : new AnnotationRemapper(api, annotationVisitor, remapper);
+        : createAnnotationRemapper(annotationVisitor);
   }
 
   @Override
@@ -225,7 +225,7 @@ public class MethodRemapper extends MethodVisitor {
         super.visitTryCatchAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
         ? annotationVisitor
-        : new AnnotationRemapper(api, annotationVisitor, remapper);
+        : createAnnotationRemapper(annotationVisitor);
   }
 
   @Override
@@ -259,6 +259,17 @@ public class MethodRemapper extends MethodVisitor {
             typeRef, typePath, start, end, index, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null
         ? annotationVisitor
-        : new AnnotationRemapper(api, annotationVisitor, remapper);
+        : createAnnotationRemapper(annotationVisitor);
+  }
+
+  /**
+   * Constructs a new remapper for annotations. The default implementation of this method returns a
+   * new {@link AnnotationRemapper}.
+   *
+   * @param annotationVisitor the AnnotationVisitor the remapper must delegate to.
+   * @return the newly created remapper.
+   */
+  protected AnnotationVisitor createAnnotationRemapper(final AnnotationVisitor annotationVisitor) {
+    return new AnnotationRemapper(api, annotationVisitor, remapper);
   }
 }

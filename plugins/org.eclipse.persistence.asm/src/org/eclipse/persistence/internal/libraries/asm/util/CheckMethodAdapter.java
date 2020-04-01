@@ -366,7 +366,7 @@ public class CheckMethodAdapter extends MethodVisitor {
    */
   public CheckMethodAdapter(
       final MethodVisitor methodVisitor, final Map<Label, Integer> labelInsnIndices) {
-    this(Opcodes.ASM7, methodVisitor, labelInsnIndices);
+    this(/* latest api = */ Opcodes.ASM7, methodVisitor, labelInsnIndices);
     if (getClass() != CheckMethodAdapter.class) {
       throw new IllegalStateException();
     }
@@ -412,7 +412,8 @@ public class CheckMethodAdapter extends MethodVisitor {
       final String descriptor,
       final MethodVisitor methodVisitor,
       final Map<Label, Integer> labelInsnIndices) {
-    this(Opcodes.ASM7, access, name, descriptor, methodVisitor, labelInsnIndices);
+    this(
+        /* latest api = */ Opcodes.ASM7, access, name, descriptor, methodVisitor, labelInsnIndices);
     if (getClass() != CheckMethodAdapter.class) {
       throw new IllegalStateException();
     }
