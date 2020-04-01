@@ -16,7 +16,8 @@ package org.eclipse.persistence.testing.osgi;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import jakarta.inject.Inject;
+import javax.inject.Inject; //TODO - this shall be jakartified as soon as PaxExam supports Injection
+                            // from jakarta.inject jakartified API
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,9 +32,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
-
-import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
-import static org.ops4j.pax.exam.CoreOptions.vmOption;
 
 /**
  * Tests that all MOXy exported bundles can be properly loaded by OSGi framework.
@@ -183,7 +181,6 @@ public class OSGiBundleTest {
         if (this.moxyBundle != null) {
             return this.moxyBundle;
         }
-        System.out.println(ctx);
         for (Bundle b : ctx.getBundles()) {
             if (b.getSymbolicName().equals(MOXY_BUNDLE_NAME)) {
                 this.moxyBundle = b;

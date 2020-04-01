@@ -23,12 +23,6 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.systemTimeout;
-import static org.ops4j.pax.exam.CoreOptions.vmOption;
-import static org.ops4j.pax.exam.CoreOptions.vmOptions;
-import static org.ops4j.pax.exam.CoreOptions.when;
-
-import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 
 /**
  * Helper class with PAX options for different kind of OSGi tests.
@@ -51,11 +45,8 @@ public class OSGITestHelper {
     private static final String BEAN_VALIDATION_LIB = System.getProperty("jakarta.validation.lib", "jakarta.validation-api.jar");
 
     public static Option[] getDefaultOptions() {
-        System.out.println(PLUGINS_DIR + "org.eclipse.persistence.moxy_" + RELEASE_VERSION + "." + QUALIFIER + ".jar");
-        return options(
 
-               /* vmOption("-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"),
-                systemTimeout(0),*/
+        return options(
 
                 systemProperty("asm.version").value(ASM_VERSION),
                 // JAXB API
