@@ -27,7 +27,7 @@
     <parent>
         <groupId>org.eclipse.ee4j</groupId>
         <artifactId>project</artifactId>
-        <version>1.0.5</version>
+        <version>1.0.6</version>
     </parent>
 
     <scm>
@@ -118,7 +118,8 @@
         <ejb.version>4.0.0-RC1</ejb.version>
         <el.version>4.0.0-RC1</el.version>
         <glassfish.version>5.1.0</glassfish.version>
-        <jaxb.version>2.4.0-SNAPSHOT</jaxb.version>
+        <jaxwsrt.version>2.4.0-SNAPSHOT</jaxwsrt.version>
+        <jaxb.version>3.0.0-M1</jaxb.version>
         <jaxb.api.version>3.0.0-RC1</jaxb.api.version>
         <soap.api.version>2.0.0-RC1</soap.api.version>
         <jersey.version>3.0-SNAPSHOT</jersey.version>
@@ -289,7 +290,7 @@
             <dependency>
                 <groupId>com.sun.xml.ws</groupId>
                 <artifactId>jaxws-rt</artifactId>
-                <version>${jaxb.version}</version>
+                <version>${jaxwsrt.version}</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.annotation</groupId>
