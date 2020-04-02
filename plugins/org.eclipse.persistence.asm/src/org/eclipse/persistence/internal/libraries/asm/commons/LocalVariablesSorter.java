@@ -81,7 +81,7 @@ public class LocalVariablesSorter extends MethodVisitor {
    */
   public LocalVariablesSorter(
       final int access, final String descriptor, final MethodVisitor methodVisitor) {
-    this(Opcodes.ASM7, access, descriptor, methodVisitor);
+    this(/* latest api = */ Opcodes.ASM7, access, descriptor, methodVisitor);
     if (getClass() != LocalVariablesSorter.class) {
       throw new IllegalStateException();
     }

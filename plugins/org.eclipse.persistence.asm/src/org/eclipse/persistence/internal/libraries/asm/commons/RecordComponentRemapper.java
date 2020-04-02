@@ -30,71 +30,61 @@ package org.eclipse.persistence.internal.libraries.asm.commons;
 
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor;
+import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
- * An {@link AnnotationVisitor} that remaps types with a {@link Remapper}.
+ * A {@link RecordComponentVisitor} that remaps types with a {@link Remapper}.
  *
- * @author Eugene Kuleshov
+ * @author Remi Forax
  */
-public class AnnotationRemapper extends AnnotationVisitor {
+public class RecordComponentRemapper extends RecordComponentVisitor {
 
-  /** The remapper used to remap the types in the visited annotation. */
+  /** The remapper used to remap the types in the visited field. */
   protected final Remapper remapper;
 
   /**
-   * Constructs a new {@link AnnotationRemapper}. <i>Subclasses must not use this constructor</i>.
-   * Instead, they must use the {@link #AnnotationRemapper(int,AnnotationVisitor,Remapper)} version.
+   * Constructs a new {@link RecordComponentRemapper}. <i>Subclasses must not use this
+   * constructor</i>. Instead, they must use the {@link
+   * #RecordComponentRemapper(int,RecordComponentVisitor,Remapper)} version.
    *
-   * @param annotationVisitor the annotation visitor this remapper must deleted to.
-   * @param remapper the remapper to use to remap the types in the visited annotation.
+   * @param recordComponentVisitor the record component visitor this remapper must delegate to.
+   * @param remapper the remapper to use to remap the types in the visited record component.
    */
-  public AnnotationRemapper(final AnnotationVisitor annotationVisitor, final Remapper remapper) {
-    this(/* latest api = */ Opcodes.ASM7, annotationVisitor, remapper);
+  public RecordComponentRemapper(
+      final RecordComponentVisitor recordComponentVisitor, final Remapper remapper) {
+    this(/* latest api = */ Opcodes.ASM7, recordComponentVisitor, remapper);
   }
 
   /**
-   * Constructs a new {@link AnnotationRemapper}.
+   * Constructs a new {@link RecordComponentRemapper}.
    *
-   * @param api the ASM API version supported by this remapper. Must be one of {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5} or {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}.
-   * @param annotationVisitor the annotation visitor this remapper must deleted to.
-   * @param remapper the remapper to use to remap the types in the visited annotation.
+   * @param api the ASM API version supported by this remapper. Must be {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8_EXPERIMENTAL}.
+   * @param recordComponentVisitor the record component visitor this remapper must delegate to.
+   * @param remapper the remapper to use to remap the types in the visited record component.
    */
-  protected AnnotationRemapper(
-      final int api, final AnnotationVisitor annotationVisitor, final Remapper remapper) {
-    super(api, annotationVisitor);
+  protected RecordComponentRemapper(
+      final int api, final RecordComponentVisitor recordComponentVisitor, final Remapper remapper) {
+    super(api, recordComponentVisitor);
     this.remapper = remapper;
   }
 
   @Override
-  public void visit(final String name, final Object value) {
-    super.visit(name, remapper.mapValue(value));
+  public AnnotationVisitor visitAnnotationExperimental(
+      final String descriptor, final boolean visible) {
+    AnnotationVisitor annotationVisitor =
+        super.visitAnnotationExperimental(remapper.mapDesc(descriptor), visible);
+    return annotationVisitor == null ? null : createAnnotationRemapper(annotationVisitor);
   }
 
   @Override
-  public void visitEnum(final String name, final String descriptor, final String value) {
-    super.visitEnum(name, remapper.mapDesc(descriptor), value);
-  }
-
-  @Override
-  public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
-    AnnotationVisitor annotationVisitor = super.visitAnnotation(name, remapper.mapDesc(descriptor));
-    if (annotationVisitor == null) {
-      return null;
-    } else {
-      return annotationVisitor == av ? this : createAnnotationRemapper(annotationVisitor);
-    }
-  }
-
-  @Override
-  public AnnotationVisitor visitArray(final String name) {
-    AnnotationVisitor annotationVisitor = super.visitArray(name);
-    if (annotationVisitor == null) {
-      return null;
-    } else {
-      return annotationVisitor == av ? this : createAnnotationRemapper(annotationVisitor);
-    }
+  public AnnotationVisitor visitTypeAnnotationExperimental(
+      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+    AnnotationVisitor annotationVisitor =
+        super.visitTypeAnnotationExperimental(
+            typeRef, typePath, remapper.mapDesc(descriptor), visible);
+    return annotationVisitor == null ? null : createAnnotationRemapper(annotationVisitor);
   }
 
   /**

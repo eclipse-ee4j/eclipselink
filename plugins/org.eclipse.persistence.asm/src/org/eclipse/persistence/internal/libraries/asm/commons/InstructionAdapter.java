@@ -53,7 +53,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public InstructionAdapter(final MethodVisitor methodVisitor) {
-    this(Opcodes.ASM7, methodVisitor);
+    this(/* latest api = */ Opcodes.ASM7, methodVisitor);
     if (getClass() != InstructionAdapter.class) {
       throw new IllegalStateException();
     }
@@ -621,7 +621,7 @@ public class InstructionAdapter extends MethodVisitor {
             || (value instanceof Type && ((Type) value).getSort() == Type.METHOD))) {
       throw new UnsupportedOperationException("This feature requires ASM5");
     }
-    if (api != Opcodes.ASM7 && value instanceof ConstantDynamic) {
+    if (api < Opcodes.ASM7 && value instanceof ConstantDynamic) {
       throw new UnsupportedOperationException("This feature requires ASM7");
     }
     if (value instanceof Integer) {
