@@ -28,13 +28,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.TraversableResolver;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.groups.Default;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
+import jakarta.validation.TraversableResolver;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.groups.Default;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -149,7 +149,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     /**
      * Returns if a bean/entity is constrained by calling the bean validation provider's
-     * #javax.validation.metadata.BeanDescriptor.isBeanConstrained method.
+     * #jakarta.validation.metadata.BeanDescriptor.isBeanConstrained method.
      */
     private boolean isBeanConstrained(final Object source, final Validator validator) {
         // If Java Security is enabled, surround this call with a doPrivileged block.

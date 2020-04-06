@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
 
 /**
  * Custom {@link DynamicClassWriter} adding getter methods for virtual
- * attributes so that 3rd party frameworks such as javax.validation can access
+ * attributes so that 3rd party frameworks such as jakarta.validation can access
  * the attribute values.
  *
  * @author dclarke

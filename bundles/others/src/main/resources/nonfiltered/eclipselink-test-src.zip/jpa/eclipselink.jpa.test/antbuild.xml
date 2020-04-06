@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -193,7 +193,7 @@
             <and>
                 <available file="${extensions.depend.dir}/${validation-impl.jar}" />
                 <available file="${extensions.depend.dir}/${jboss-logging.jar}" />
-                <available file="${extensions.depend.dir}/${javax.el.jar}" />
+                <available file="${extensions.depend.dir}/${jakarta.el.jar}" />
                 <available file="${extensions.depend.dir}/${classmate.jar}" />
             </and>
         </condition>
@@ -246,7 +246,7 @@
         <path id="run.common.path" cache="true">
             <path refid="jpa.compile.common.path"/>
 <!--            <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jakarta.validation.jar}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.framework.jar}"/>
             <pathelement path="${junit.lib}"/>
             <pathelement path="${jpatest.2.coretest.dir}/${coretest.jar}"/>
@@ -380,9 +380,9 @@
             <path refid="jpa22.run.common.path" />
             <pathelement path="${extensions.depend.dir}/${validation-impl.jar}"/>
             <pathelement path="${extensions.depend.dir}/${jboss-logging.jar}"/>
-            <pathelement path="${extensions.depend.dir}/${javax.el.jar}"/>
+            <pathelement path="${extensions.depend.dir}/${jakarta.el.jar}"/>
             <pathelement path="${extensions.depend.dir}/${classmate.jar}"/>
-            <!--<pathelement path="${extensions.depend.dir}/${javax.validation.jar}"/>-->
+            <!--<pathelement path="${extensions.depend.dir}/${jakarta.validation.jar}"/>-->
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.bean.validation.classpath.common"/>
@@ -544,7 +544,7 @@
         <property name="test.junit.jvm.modules.prop" value=""/>
         <path id="jpatest.compile.core.deps" cache="true">
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jakarta.validation.jar}"/>
         </path>
         <path id="jpatest.compile.module.path" cache="true"></path>
         <path id="jpatest.upgrade.module.path" cache="true"></path>
@@ -561,7 +561,7 @@
         <path id="jpatest.compile.core.deps" cache="true"/>
         <path id="jpatest.compile.module.path" cache="true">
             <!--<pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence22.jar}"/>-->
-            <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jakarta.validation.jar}"/>
         </path>
         <path id="jpatest.upgrade.module.path" cache="true">
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -180,7 +180,7 @@ public class BeanValidationPlugin extends Plugin {
     @Override
     public String getUsage() {
         return "  -" + PLUGIN_OPTION + "           :  convert xsd restrictions to" +
-                " javax.validation annotations. Usage with mods: -" + PLUGIN_OPTION
+                " jakarta.validation annotations. Usage with mods: -" + PLUGIN_OPTION
                 + " " + JSR_303_MOD + " " + SIMPLE_REGEX_MOD;
     }
 
@@ -235,18 +235,18 @@ public class BeanValidationPlugin extends Plugin {
     private static final JCodeModel CODEMODEL = new JCodeModel();
 
     static {
-        ANNOTATION_VALID = CODEMODEL.ref("javax.validation.Valid");
-        ANNOTATION_NOTNULL = CODEMODEL.ref("javax.validation.constraints.NotNull");
-        ANNOTATION_SIZE = CODEMODEL.ref("javax.validation.constraints.Size");
-        ANNOTATION_DECIMALMIN = CODEMODEL.ref("javax.validation.constraints.DecimalMin");
-        ANNOTATION_DECIMALMAX = CODEMODEL.ref("javax.validation.constraints.DecimalMax");
-        ANNOTATION_DIGITS = CODEMODEL.ref("javax.validation.constraints.Digits");
-        ANNOTATION_PATTERN = CODEMODEL.ref("javax.validation.constraints.Pattern");
-        ANNOTATION_PATTERNLIST = CODEMODEL.ref("javax.validation.constraints.Pattern.List");
-        ANNOTATION_ASSERTFALSE = CODEMODEL.ref("javax.validation.constraints.AssertFalse");
-        ANNOTATION_ASSERTTRUE = CODEMODEL.ref("javax.validation.constraints.AssertTrue");
-        ANNOTATION_FUTURE = CODEMODEL.ref("javax.validation.constraints.Future");
-        ANNOTATION_PAST = CODEMODEL.ref("javax.validation.constraints.Past");
+        ANNOTATION_VALID = CODEMODEL.ref("jakarta.validation.Valid");
+        ANNOTATION_NOTNULL = CODEMODEL.ref("jakarta.validation.constraints.NotNull");
+        ANNOTATION_SIZE = CODEMODEL.ref("jakarta.validation.constraints.Size");
+        ANNOTATION_DECIMALMIN = CODEMODEL.ref("jakarta.validation.constraints.DecimalMin");
+        ANNOTATION_DECIMALMAX = CODEMODEL.ref("jakarta.validation.constraints.DecimalMax");
+        ANNOTATION_DIGITS = CODEMODEL.ref("jakarta.validation.constraints.Digits");
+        ANNOTATION_PATTERN = CODEMODEL.ref("jakarta.validation.constraints.Pattern");
+        ANNOTATION_PATTERNLIST = CODEMODEL.ref("jakarta.validation.constraints.Pattern.List");
+        ANNOTATION_ASSERTFALSE = CODEMODEL.ref("jakarta.validation.constraints.AssertFalse");
+        ANNOTATION_ASSERTTRUE = CODEMODEL.ref("jakarta.validation.constraints.AssertTrue");
+        ANNOTATION_FUTURE = CODEMODEL.ref("jakarta.validation.constraints.Future");
+        ANNOTATION_PAST = CODEMODEL.ref("jakarta.validation.constraints.Past");
         ANNOTATION_XMLELEMENT = CODEMODEL.ref("javax.xml.bind.annotation.XmlElement");
     }
 

@@ -20,7 +20,7 @@
     <default-package>org.eclipse.persistence.testing.jaxb.beanvalidation.special</default-package>
     <bean class="ExternallyConstrainedEmployee2" ignore-annotations="false">
         <field name="age">
-            <constraint annotation="javax.validation.constraints.Min">
+            <constraint annotation="jakarta.validation.constraints.Min">
                 <element name="value">18</element>
             </constraint>
         </field>

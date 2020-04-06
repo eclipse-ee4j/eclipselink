@@ -19,10 +19,10 @@
     <default-package>org.eclipse.persistence.testing.models.jpa.beanvalidation</default-package>
     <bean class="DynamicEmployee" ignore-annotations="true">
         <getter name="name" ignore-annotations="true">
-            <constraint annotation="javax.validation.constraints.NotNull" />
+            <constraint annotation="jakarta.validation.constraints.NotNull" />
         </getter>
         <getter name="surname" ignore-annotations="true">
-            <constraint annotation="javax.validation.constraints.NotNull" />
+            <constraint annotation="jakarta.validation.constraints.NotNull" />
         </getter>
     </bean>
 </constraint-mappings>

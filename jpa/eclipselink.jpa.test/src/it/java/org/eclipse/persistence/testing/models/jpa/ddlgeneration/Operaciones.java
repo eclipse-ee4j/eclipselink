@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2015 Xavier Callejas. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,7 +20,6 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.AttributeOverride;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -36,7 +35,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**

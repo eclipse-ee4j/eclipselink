@@ -1043,7 +1043,7 @@
                 <include name="${eclipselink.sdo.test}/**"/>
                 <include name="${eclipselink.sdo.base}/eclipselink.sdo.test.server/**"/>
                 <include name="plugins/eclipselink-jpa-modelgen_*.jar"/>
-                <include name="plugins/javax.validation.api_*.jar"/>
+                <include name="plugins/jakarta.validation.api_*.jar"/>
                 <include name="jpa/plugins/javax.persistence_2.*.jar"/>
                 <include name="sdo/plugins/commonj.sdo_*.jar"/>
                 <exclude name="**/.settings/**"/>

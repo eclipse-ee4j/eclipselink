@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,9 @@ import org.eclipse.persistence.testing.jaxb.beanvalidation.dom.Employee;
 import org.junit.After;
 import org.junit.Before;
 
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
-import javax.validation.groups.Default;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.groups.Default;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -55,12 +55,12 @@ import java.util.Set;
 public class BeanValidationRuntimeTestCase extends junit.framework.TestCase {
 
     private static final String RESOURCES_PATH_RELATIVE = "org/eclipse/persistence/testing/jaxb/beanvalidation/rt/";
-    private static final String JAVAX_NOT_NULL_MESSAGE = "{javax.validation.constraints.NotNull.message}";
-    private static final String JAVAX_MIN_MESSAGE = "{javax.validation.constraints.Min.message}";
-    private static final String JAVAX_SIZE_MESSAGE = "{javax.validation.constraints.Size.message}";
-    private static final String JAVAX_PATTERN_MESSAGE = "{javax.validation.constraints.Pattern.message}";
-    private static final String JAVAX_FUTURE_MESSAGE = "{javax.validation.constraints.Future.message}";
-    private static final String JAVAX_DIGITS_MESSAGE = "{javax.validation.constraints.Digits.message}";
+    private static final String JAVAX_NOT_NULL_MESSAGE = "{jakarta.validation.constraints.NotNull.message}";
+    private static final String JAVAX_MIN_MESSAGE = "{jakarta.validation.constraints.Min.message}";
+    private static final String JAVAX_SIZE_MESSAGE = "{jakarta.validation.constraints.Size.message}";
+    private static final String JAVAX_PATTERN_MESSAGE = "{jakarta.validation.constraints.Pattern.message}";
+    private static final String JAVAX_FUTURE_MESSAGE = "{jakarta.validation.constraints.Future.message}";
+    private static final String JAVAX_DIGITS_MESSAGE = "{jakarta.validation.constraints.Digits.message}";
     private static final Class[] EMPLOYEE = new Class[]{Employee.class};
     private static final boolean DEBUG = false;
 

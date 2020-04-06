@@ -20,7 +20,7 @@
     <default-package>org.eclipse.persistence.testing.jaxb.beanvalidation.special</default-package>
     <bean class="ExternallyConstrainedEmployee" ignore-annotations="false">
         <field name="id">
-            <constraint annotation="javax.validation.constraints.NotNull"/>
+            <constraint annotation="jakarta.validation.constraints.NotNull"/>
         </field>
     </bean>
 </constraint-mappings>

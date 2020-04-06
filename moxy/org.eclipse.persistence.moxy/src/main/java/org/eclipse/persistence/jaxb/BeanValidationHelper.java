@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,19 +33,19 @@ import java.util.concurrent.Future;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.validation.Constraint;
-import javax.validation.Valid;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import jakarta.validation.Constraint;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 import org.eclipse.persistence.internal.cache.AdvancedProcessor;
 import org.eclipse.persistence.internal.cache.ComputableTask;
@@ -96,7 +96,7 @@ final public class BeanValidationHelper {
         knownConstraints.add(Size.class);
         knownConstraints.add(AssertTrue.class);
         knownConstraints.add(AssertFalse.class);
-        knownConstraints.add(javax.validation.constraints.Future.class);
+        knownConstraints.add(jakarta.validation.constraints.Future.class);
         knownConstraints.add(Past.class);
         knownConstraints.add(Max.List.class);
         knownConstraints.add(Min.List.class);
@@ -108,7 +108,7 @@ final public class BeanValidationHelper {
         knownConstraints.add(Size.List.class);
         knownConstraints.add(AssertTrue.List.class);
         knownConstraints.add(AssertFalse.List.class);
-        knownConstraints.add(javax.validation.constraints.Future.List.class);
+        knownConstraints.add(jakarta.validation.constraints.Future.List.class);
         knownConstraints.add(Past.List.class);
     }
 

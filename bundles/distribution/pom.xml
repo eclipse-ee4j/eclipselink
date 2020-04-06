@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -143,68 +143,55 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
-            <version>${oracle.ddlparser.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>commonj.sdo</artifactId>
-            <version>${commonj.sdo.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>jakarta.persistence</artifactId>
-            <version>${persistence22.version}</version>
         </dependency>
         <!--Other APIs/libraries-->
         <dependency>
             <groupId>com.sun.activation</groupId>
             <artifactId>jakarta.activation</artifactId>
-            <version>${activation.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <version>${mail.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-osgi</artifactId>
-            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.jms</groupId>
             <artifactId>jakarta.jms-api</artifactId>
-            <version>${jms.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.resource</groupId>
             <artifactId>jakarta.resource-api</artifactId>
-            <version>${resource.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>${servlet.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>${validation.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>${ws-rs.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>${ant.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -214,30 +201,25 @@
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
-            <version>${json.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
-            <version>${org.glassfish.corba.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
-            <version>${org.glassfish.corba.version}</version>
         </dependency>
         <!--NoSQL DBs-->
         <!--Mongo DB-->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>${mongodb.version}</version>
         </dependency>
         <!--Oracle NoSQL DB-->
         <dependency>
             <groupId>com.oracle.kv</groupId>
             <artifactId>oracle-nosql-client</artifactId>
-            <version>${oracle.nosql.version}</version>
         </dependency>
         <!--Test dependencies (used for assembly of eclipselink test classes and framework).-->
         <!--EclipseLink Core test framework-->
@@ -267,7 +249,6 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <!--API dependecies-->
@@ -280,6 +261,7 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
+            <scope>test</scope>
         </dependency>
         <!--Other dependencies-->
         <dependency>
@@ -703,7 +685,7 @@
                                 <jaxrs.jar>jakarta.ws.rs-api.jar</jaxrs.jar>
                                 <asm.jar>org.eclipse.persistence.asm_${release.version}.${build.type}.jar</asm.jar>
                                 <asm.version>${asm.bundle.version}</asm.version>
-                                <javax.validation.lib>${project.build.directory}/${osgi.test.plugins.dir}/jakarta.validation-api.jar</javax.validation.lib>
+                                <jakarta.validation.lib>${project.build.directory}/${osgi.test.plugins.dir}/jakarta.validation-api.jar</jakarta.validation.lib>
                             </systemProperties>
                             <includes>
                                 <include>org.eclipse.persistence.testing.osgi.beanvalidation.NoBeanValidationTest</include>

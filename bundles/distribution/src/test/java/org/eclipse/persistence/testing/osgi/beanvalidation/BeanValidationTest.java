@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,10 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-import javax.validation.Validation;
-import javax.validation.ValidationProviderResolver;
-import javax.validation.ValidatorFactory;
-import javax.validation.spi.ValidationProvider;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidationProviderResolver;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.spi.ValidationProvider;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;

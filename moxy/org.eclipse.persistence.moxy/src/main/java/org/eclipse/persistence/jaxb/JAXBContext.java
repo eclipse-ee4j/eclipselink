@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -68,7 +68,6 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
-import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -235,7 +234,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     /**
-     * Initializes bean validation if javax.validation.api bundle is on the class path.
+     * Initializes bean validation if jakarta.validation.api bundle is on the class path.
      */
     private void initBeanValidation() {
         if (beanValidationPresent == null) {

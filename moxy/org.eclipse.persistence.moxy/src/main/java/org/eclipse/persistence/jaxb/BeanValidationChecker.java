@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 package org.eclipse.persistence.jaxb;
 
 /**
- * Helper class. Checks that javax.validation API is present.
+ * Helper class. Checks that jakarta.validation API is present.
  *
  * @author Dmitry Kornilov
  * @since 2.7.0
@@ -23,11 +23,11 @@ package org.eclipse.persistence.jaxb;
 public class BeanValidationChecker {
 
     /**
-     * Returns true if javax.validation.api bundle is on the class path.
+     * Returns true if jakarta.validation.api bundle is on the class path.
      */
     static boolean isBeanValidationPresent() {
         try {
-            Class.forName("javax.validation.Validation").newInstance();
+            Class.forName("jakarta.validation.Validation").newInstance();
         } catch (ReflectiveOperationException e) {
             return false;
         }

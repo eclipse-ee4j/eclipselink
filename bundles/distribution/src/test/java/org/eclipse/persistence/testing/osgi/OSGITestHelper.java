@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,6 @@ import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.vmOptions;
-import static org.ops4j.pax.exam.CoreOptions.when;
-
-import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 
 /**
  * Helper class with PAX options for different kind of OSGi tests.
@@ -43,7 +39,7 @@ public class OSGITestHelper {
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "jakarta.ws.rs-api.jar");
     private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_7.1.0.v201909231337.jar");
     private static final String ASM_VERSION = System.getProperty("asm.version", "7.1.0.v201909231337");
-    private static final String BEAN_VALIDATION_LIB = System.getProperty("javax.validation.lib", "jakarta.validation-api.jar");
+    private static final String BEAN_VALIDATION_LIB = System.getProperty("jakarta.validation.lib", "jakarta.validation-api.jar");
 
     public static Option[] getDefaultOptions() {
         return options(
@@ -66,9 +62,9 @@ public class OSGITestHelper {
 
     public static Option[] getOptionsWithBeanValidation() {
         return options(
-                mavenBundle().groupId("org.hibernate.validator").artifactId("hibernate-validator").version("6.0.7.Final"),
+                mavenBundle().groupId("org.hibernate.validator").artifactId("hibernate-validator").version("7.0.0.Alpha1"),
                 mavenBundle().groupId("com.fasterxml").artifactId("classmate").version("1.3.1"),
-                mavenBundle().groupId("org.glassfish").artifactId("javax.el").version("3.0.1-b08"),
+                mavenBundle().groupId("org.glassfish").artifactId("jakarta.el").version("4.0.0-RC1"),
                 mavenBundle().groupId("org.jboss.logging").artifactId("jboss-logging").version("3.3.0.Final"),
 
                 // JAXB API
