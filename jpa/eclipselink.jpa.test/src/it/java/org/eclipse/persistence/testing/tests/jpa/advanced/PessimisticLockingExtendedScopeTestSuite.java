@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2019 SAP. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
