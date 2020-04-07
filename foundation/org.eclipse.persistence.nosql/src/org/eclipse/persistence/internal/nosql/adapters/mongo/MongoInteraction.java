@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class MongoInteraction implements Interaction {
     /**
      * Output records are not supported/required.
      */
-    public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
+    public boolean execute(InteractionSpec spec, javax.resource.cci.Record input, javax.resource.cci.Record output) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }
@@ -100,7 +100,7 @@ public class MongoInteraction implements Interaction {
      * Execute the interaction and return output record.
      * The spec is either GET, PUT or DELETE interaction.
      */
-    public Record execute(InteractionSpec spec, Record record) throws ResourceException {
+    public javax.resource.cci.Record execute(InteractionSpec spec, javax.resource.cci.Record record) throws ResourceException {
         if (!(spec instanceof MongoInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -126,11 +126,6 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
-    <!-- JVM specific settings -->
-    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern="[1-8]\..*" string="${java.version}"/>
-    </condition>
-
     <echo message="modelgen.jar                         = '${modelgen.jar}'"/>
     <echo message="ant.project.name                     = '${ant.project.name}'"/>
     <echo message="jpatest.build.location               = '${jpatest.build.location}'"/>
@@ -243,7 +238,7 @@
 
     <condition property="validate.jar.exists">
         <and>
-            <available file="${extensions.depend.dir}/${validation-impl.jar}" />
+            <available file="${jpatest.2.common.plugins.dir}/${validation-impl.jar}" />
             <available file="${extensions.depend.dir}/${jboss-logging.jar}" />
             <available file="${extensions.depend.dir}/${javax.el.jar}" />
             <available file="${extensions.depend.dir}/${classmate.jar}" />
@@ -388,7 +383,10 @@
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence20.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${javax.validation.jar}'"/>
         <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${annotation-api.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${jaxb-api.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${glassfish-corba-omgapi.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${resource.jar}'"/>
@@ -405,7 +403,10 @@
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence20.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${annotation-api.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jaxb-api.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${glassfish-corba-omgapi.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${resource.jar}"/>
@@ -430,7 +431,10 @@
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence21.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${javax.validation.jar}'"/>
         <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${annotation-api.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${jaxb-api.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${glassfish-corba-omgapi.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
         <echo message="   '${junit.lib}'"/>
@@ -445,7 +449,10 @@
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence21.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${annotation-api.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jaxb-api.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${glassfish-corba-omgapi.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
             <pathelement path="${junit.lib}"/>
@@ -468,7 +475,10 @@
         <echo message="   '${jpatest.2.jpa.plugins.dir}/${persistence22.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${javax.validation.jar}'"/>
         <echo message="   '${jpatest.2.base.dir}/${eclipselink.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${annotation-api.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${jaxb-api.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${ejb.jar}'"/>
+        <echo message="   '${jpatest.2.common.plugins.dir}/${glassfish-corba-omgapi.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${transaction.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${restfulws.jar}'"/>
         <echo message="   '${jpatest.2.common.plugins.dir}/${inject.jar}'"/>
@@ -484,7 +494,10 @@
             <pathelement path="${jpatest.2.jpa.plugins.dir}/${persistence22.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${javax.validation.jar}"/>
             <pathelement path="${jpatest.2.base.dir}/${eclipselink.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${annotation-api.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${jaxb-api.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${ejb.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${glassfish-corba-omgapi.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${transaction.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${restfulws.jar}"/>
             <pathelement path="${jpatest.2.common.plugins.dir}/${inject.jar}"/>
@@ -1659,7 +1672,7 @@
         </path>
         <path id="run.bean.validation.classpath">
             <path refid="run.classpath"/>
-            <pathelement path="${extensions.depend.dir}/${validation-impl.jar}"/>
+            <pathelement path="${jpatest.2.common.plugins.dir}/${validation-impl.jar}"/>
             <pathelement path="${extensions.depend.dir}/${jboss-logging.jar}"/>
             <pathelement path="${extensions.depend.dir}/${javax.el.jar}"/>
             <pathelement path="${extensions.depend.dir}/${classmate.jar}"/>
@@ -2501,7 +2514,7 @@
             <sysproperty key="pa.connection.password" value="${db.pwd}"/>
             <sysproperty key="pa.proxyuser" value="${pa.proxyuser}"/>
             <sysproperty key="pa.proxyuser2" value="${pa.proxyuser2}"/>
-            <jvmarg line="${test.junit.jvm.modules.prop}"/>
+            <sysproperty key="javax.xml.bind.JAXBContextFactory" value="org.eclipse.persistence.jaxb.JAXBContextFactory"/>
             <jvmarg line="${additional.jvmargs}"/>
             <jvmarg value="${TEST_AGENT}"/>
             <jvmarg value="${TEST_WEAVING}"/>

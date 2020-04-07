@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -140,12 +140,16 @@
 
     <!-- Detect compatible version of JDK (>= 1.8). -->
     <condition property="compat.jdk" value="true">
-        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*|10.*|11.*"/>
+        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*|1(?:[0-5]).*"/>
     </condition>
     <echo message="JDK version detected: '${java.version}'"/>
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
-    <!-- Add some modules required for javadoc JDK (=10.*). -->
+    <!-- Add some modules required for javadoc JDK (>10.*). -->
+    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none -classpath ${eclipselink.plugins}/${activation.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
+        <matches string="${java.version}" pattern="1(?:[0-5])\..*"/>
+    </condition>
+    <!-- Add some modules required for javadoc JDK (=9|10.*). -->
     <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none -->
     <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction-api.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
         <matches string="${java.version}" pattern="9\..*|10.*"/>
@@ -181,8 +185,10 @@
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${eclipselink.sdo.plugins}/${commonj.sdo.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
+        <pathelement path="${eclipselink.plugins}/${glassfish-corba-omgapi.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
@@ -210,6 +216,7 @@
     </path>
     <path id="jpars.javadoc.path">
         <path refid="javadoc.path"/>
+        <pathelement path="${eclipselink.plugins}/${annotation-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/com.sun.jersey_1.8.0.201204181614.jar"/>
         <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
     </path>
@@ -617,13 +624,20 @@
         <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="${cdi-api.jar}"/>
         <copy-plugin from="ch.qos.logback.classic*.jar" to="${logback-classic.jar}"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="${logback-core.jar}"/>
+        <copy-plugin from="com.sun.istack.commons-runtime*.jar" to="${istack.commons-rt.jar}"/>
         <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="${jaxb-core.jar}"/>
+        <copy-plugin from="com.sun.xml.messaging.saaj.impl*.jar" to="${saaj-impl.jar}"/>
+        <copy-plugin from="com.sun.xml.stream.buffer.streambuffer*.jar" to="${streambuffer.jar}"/>
+        <copy-plugin from="com.sun.xml.ws.policy*.jar" to="${ws-policy.jar}"/>
+        <copy-plugin from="istack-commons-runtime.jar" to="${istack.commons-rt.jar}"/>
+        <copy-plugin from="jaxws-rt*.jar" to="${ws-rt.jar}"/>
         <copy-plugin from="com.sun.activation.jakarta.activation*.jar" to="${activation.jar}"/>
         <copy-plugin from="jakarta.annotation-api*.jar" to="${annotation-api.jar}"/>
         <copy-plugin from="jakarta.ejb-api*.jar" to="${ejb-api.jar}"/>
         <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="${inject.jar}"/>
         <copy-plugin from="jakarta.interceptor-api*.jar" to="${interceptor-api.jar}"/>
         <copy-plugin from="jakarta.jms-api*.jar" to="${jms-api.jar}"/>
+        <copy-plugin from="jakarta.jws-api*.jar" to="${jws-api.jar}"/>
         <copy-plugin from="org.glassfish.jakarta.json*.jar" to="${json.jar}"/>
         <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="${mail.jar}"/>
         <copy-plugin from="jakarta.persistence_2.2.3*.jar" to="${persistence22.jar}" todir="${eclipselink.jpa.plugins}"/>
@@ -650,15 +664,19 @@
         <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="${jersey-client.jar}"/>
         <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="${jersey-common.jar}"/>
         <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="${pfl-asm.jar}"/>
+        <copy-plugin from="org.glassfish.main.bean-validator*.jar" to="${validation-impl.jar}"/>
         <copy-plugin from="org.glassfish.pfl.pfl-basic*.jar" to="${pfl-basic.jar}"/>
         <copy-plugin from="org.glassfish.pfl.pfl-basic-tools*.jar" to="${pfl-basic-tools.jar}"/>
         <copy-plugin from="org.glassfish.pfl.pfl-dynamic*.jar" to="${pfl-dynamic.jar}"/>
         <copy-plugin from="org.glassfish.pfl.pfl-test*.jar" to="${pfl-test.jar}"/>
         <copy-plugin from="org.glassfish.pfl.pfl-tf*.jar" to="${pfl-tf.jar}"/>
+        <copy-plugin from="org.jvnet.staxex.stax-ex*.jar" to="${stax-ex.jar}"/>
+        <copy-plugin from="org.jvnet.mimepull*.jar" to="${mimepull.jar}"/>
         <copy-plugin from="osgi.core*.jar" to="${osgi.core.jar}"/>
         <copy-plugin from="osgi.cmpn*.jar" to="${osgi.cmpn.jar}"/>
         <copy-plugin from="slf4j.api*.jar" to="${slf4j-api.jar}"/>
         <copy-plugin from="slf4j.nop*.jar" to="${slf4j-nop.jar}"/>
+        <copy-plugin from="stax2-api*.jar" to="${stax2-api.jar}"/>
 
         <!-- Copy source jars -->
         <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="${jaxb-api.src.jar}"/>

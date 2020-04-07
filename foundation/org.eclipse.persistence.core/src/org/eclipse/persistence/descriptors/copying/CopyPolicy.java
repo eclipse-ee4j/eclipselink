@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,7 +51,7 @@ public interface CopyPolicy extends Cloneable, Serializable {
     /**
      * Return an instance with the primary key set from the row, used for building a working copy during a unit of work transactional read.
      */
-    Object buildWorkingCopyCloneFromRow(Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException;
+    Object buildWorkingCopyCloneFromRow(org.eclipse.persistence.sessions.Record row, ObjectBuildingQuery query, Object primaryKey, UnitOfWork uow) throws DescriptorException;
 
     /**
      * Clone the CopyPolicy.

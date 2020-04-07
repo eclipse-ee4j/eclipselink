@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import org.eclipse.persistence.internal.helper.JavaSEPlatform;
 import org.eclipse.persistence.platform.server.ServerPlatform;
 import org.eclipse.persistence.platform.server.wls.WebLogic_12_Platform;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 
 public class WebLogic_12_PlatformTest {
@@ -33,11 +35,14 @@ public class WebLogic_12_PlatformTest {
 
     @After
     public void tearDown() {
-        resetContextHelper();
+        if (JavaSEPlatform.CURRENT.getMajor() < 12) {
+            resetContextHelper();
+        }
     }
 
     @Test
     public void testUsesPartitions() {
+        Assume.assumeFalse("Java version is 12 above. Test will be skipped.", JavaSEPlatform.CURRENT.getMajor() >= 12);
         ServerPlatform platform = new WebLogic_12_Platform(null);
         Assert.assertFalse(platform.usesPartitions());
 
@@ -47,6 +52,7 @@ public class WebLogic_12_PlatformTest {
 
     @Test
     public void testGetPartitionId() {
+        Assume.assumeFalse("Java version is 12 above. Test will be skipped.", JavaSEPlatform.CURRENT.getMajor() >= 12);
         setContextHelper();
         ServerPlatform platform = new WebLogic_12_Platform(null);
         ICtx.ctx = "test3";
@@ -57,6 +63,7 @@ public class WebLogic_12_PlatformTest {
 
     @Test
     public void testGetPartitionName() {
+        Assume.assumeFalse("Java version is 12 above. Test will be skipped.", JavaSEPlatform.CURRENT.getMajor() >= 12);
         setContextHelper();
         WebLogic_12_Platform platform = new WebLogic_12_Platform(null);
         ICtx.nameCtx = "test3";
@@ -67,6 +74,7 @@ public class WebLogic_12_PlatformTest {
 
     @Test
     public void testIsGlobalRuntime() {
+        Assume.assumeFalse("Java version is 12 above. Test will be skipped.", JavaSEPlatform.CURRENT.getMajor() >= 12);
         setContextHelper();
         WebLogic_12_Platform platform = new WebLogic_12_Platform(null);
         ICtx.isGlobal = true;
@@ -77,6 +85,7 @@ public class WebLogic_12_PlatformTest {
 
     @Test
     public void testContextHelper() {
+        Assume.assumeFalse("Java version is 12 above. Test will be skipped.", JavaSEPlatform.CURRENT.getMajor() >= 12);
         Class contextHelperClass = null;
         for (Class<?> declaredClass : WebLogic_12_Platform.class.getDeclaredClasses()) {
             if ("org.eclipse.persistence.platform.server.wls.WebLogic_12_Platform$ContextHelper".equals(declaredClass.getName())) {

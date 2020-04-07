@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,11 +81,6 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
-    <!-- JVM specific settings -->
-    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern="[1-8]\..*" string="${java.version}"/>
-    </condition>
-
     <!-- path to OSGi Bundle compile dependencies -->
     <path id="sdotest.bundle.compile.path">
         <fileset
@@ -107,6 +102,7 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <!-- Run path without product components -->
     <path id="sdotest.thirdparty.run.path">
@@ -115,6 +111,7 @@
         <pathelement path="${classes.dir}"/>
         <pathelement path="${jacocoagent.lib}"/>
         <pathelement path="${sdotest.2.common.plugins.dir}/${asm.jar}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
 
     <!-- Set Compile/Run Paths using product OSGi bundles -->
@@ -144,6 +141,7 @@
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
         <pathelement path="../${classes.dir}"/>
         <pathelement path="../${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
+        <pathelement path="../${sdotest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="../${sdotest.2.common.plugins.dir}/jakarta.mail.jar"/>
     </path>
 
@@ -204,7 +202,6 @@
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
             <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" failureproperty="junit.failed" logfailedtests="true"
                    fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="JAVA_HOME" value="${test.junit.jvm}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
@@ -264,7 +261,6 @@
             <echo message="customContext=@{customcontext}"/>
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="customContext" value="@{customcontext}"/>

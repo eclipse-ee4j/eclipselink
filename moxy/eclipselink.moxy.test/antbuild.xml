@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,7 +93,7 @@
     <property name="jaxb-api.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
     <property name="jaxb-impl.lib" value="${moxytest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
     <property name="javax.validation.lib" value="${moxytest.2.common.plugins.dir}/${javax.validation.jar}"/>
-    <property name="validation-impl.lib" value="${extensions.depend.dir}/${validation-impl.jar}"/>
+    <property name="validation-impl.lib" value="${moxytest.2.common.plugins.dir}/${validation-impl.jar}"/>
     <property name="jboss-logging.lib" value="${extensions.depend.dir}/${jboss-logging.jar}"/>
     <property name="javax.el.lib" value="${extensions.depend.dir}/${javax.el.jar}"/>
     <property name="classmate.lib" value="${extensions.depend.dir}/${classmate.jar}"/>
@@ -102,7 +102,7 @@
 
     <condition property="validate.jar.exists">
         <and>
-            <available file="${extensions.depend.dir}/${validation-impl.jar}"/>
+            <available file="${moxytest.2.common.plugins.dir}/${validation-impl.jar}"/>
             <available file="${extensions.depend.dir}/${jboss-logging.jar}"/>
             <available file="${extensions.depend.dir}/${javax.el.jar}"/>
             <available file="${extensions.depend.dir}/${classmate.jar}"/>
@@ -118,15 +118,6 @@
     </condition>
     <property prefix="test.junit.jdk" file="${test.junit.jvm}/release"/>
 
-    <!-- JVM specific settings -->
-    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/>
-    </condition>
-
-    <condition property="test.junit.osgi.jvm.modules.prop" value="-Dignore.modules.osgi=true" else="${test.junit.osgi.jvm.modules}">
-        <matches pattern='"[1-8]\..*"' string="${test.junit.jdk.JAVA_VERSION}"/>
-    </condition>
-
     <path id="xml.parser.path">
         <fileset
                 dir="${xml.parser.jar.dir}"
@@ -136,6 +127,8 @@
     <path id="jaxb.compile.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
@@ -156,6 +149,8 @@
     <path id="jaxb.run.path">
         <path refid="xml.parser.path"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-impl.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
@@ -179,6 +174,8 @@
     </path>
     <path id="oxm.compile.path">
         <path refid="xml.parser.path"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
@@ -192,6 +189,8 @@
     </path>
     <path id="oxm.run.path">
         <path refid="xml.parser.path"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
@@ -212,6 +211,8 @@
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
@@ -231,6 +232,7 @@
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-impl.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${mail.jar}"/>
@@ -251,6 +253,8 @@
         <pathelement path="${jaxb-api.lib}"/>
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${ejb.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${jms.jar}"/>
@@ -265,6 +269,7 @@
         <pathelement path="${jmockit.lib}"/>
         <pathelement path="${junit.lib}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${moxytest.2.common.plugins.dir}/${activation.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-api.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${json-impl.jar}"/>
         <pathelement path="${moxytest.2.common.plugins.dir}/${resource.jar}"/>
@@ -385,7 +390,6 @@
             <arg line="-Djaxrs.jar=${jaxrs.jar}"/>
             <arg line="-Dasm.jar=${asm.jar}"/>
             <arg line="-Dtest.junit.jvm=${test.junit.jvm}"/>
-            <arg line="-DargLine='${test.junit.osgi.jvm.modules.prop}'"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>
@@ -521,7 +525,6 @@
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <!--<jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>-->
                 <jvmarg value="-ea"/>
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg value="-javaagent:${jmockit.lib}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
@@ -595,7 +598,6 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.jaxb_srg" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="T_WORK" value="${tmp.dir}"/>
                 <sysproperty key="platformType" value="SAX"/>
@@ -633,7 +635,6 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_srg" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
@@ -668,7 +669,6 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="useLogging" value="false"/>
                 <sysproperty key="eclipselink.xml.platform" value="${xml.platform}"/>
@@ -725,7 +725,6 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_dom" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="JAVA"/>
@@ -784,7 +783,6 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_deploymentxml" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="XML_ECLIPSELINK"/>
@@ -861,7 +859,6 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_deploymentxml_tl" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOM"/>
                 <sysproperty key="metadataType" value="XML_TOPLINK"/>
@@ -934,7 +931,6 @@
             <junit jvm="${test.junit.jvm.exec}" failureproperty="junit.failed.oxm_docpres" logfailedtests="true"
                    printsummary="yes" fork="true" dir="${build.dir}/${test.dir}" tempdir="${build.dir}/${test.dir}" showoutput="yes" maxmemory="512m">
                 <jvmarg value="-ea"/>
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="platformType" value="DOC_PRES"/>
                 <sysproperty key="metadataType" value="JAVA"/>

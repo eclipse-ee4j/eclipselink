@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,6 +61,10 @@
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
         <com.sun.istack.version>3.0.8</com.sun.istack.version>
         <com.sun.xml.bind.version>2.3.2</com.sun.xml.bind.version>
+        <com.sun.xml.messaging.version>1.5.1</com.sun.xml.messaging.version>
+        <com.sun.xml.streambuffer.version>1.5.7</com.sun.xml.streambuffer.version>
+        <com.sun.xml.ws.policy.version>2.7.6</com.sun.xml.ws.policy.version>
+        <com.sun.xml.ws.version>2.3.2</com.sun.xml.ws.version>
         <jakarta.activation.version>1.2.1</jakarta.activation.version>
         <jakarta.annotation.version>1.3.5</jakarta.annotation.version>
         <jakarta.ejb.version>3.2.6</jakarta.ejb.version>
@@ -70,6 +74,7 @@
         <jakarta.interceptor.version>1.2.5</jakarta.interceptor.version>
         <jakarta.jms.version>2.0.3</jakarta.jms.version>
         <jakarta.json.version>1.1.6</jakarta.json.version>
+        <jakarta.jws.version>1.1.1</jakarta.jws.version>
         <jakarta.mail.version>1.6.4</jakarta.mail.version>
         <jakarta.persistence.version>2.2.3</jakarta.persistence.version>
         <jakarta.resource.version>1.7.3</jakarta.resource.version>
@@ -82,6 +87,7 @@
         <jakarta.xml.ws-api.version>2.3.2</jakarta.xml.ws-api.version>
         <!-- CQ #21133 -->
         <org.apache.ant.version>1.10.7_1</org.apache.ant.version>
+        <org.glassfish.bean-validator.version>5.1.0</org.glassfish.bean-validator.version>
         <org.glassfish.corba.version>4.2.1</org.glassfish.corba.version>
         <org.glassfish.gmbal.version>4.0.0</org.glassfish.gmbal.version>
         <org.glassfish.hk2.version>2.6.1</org.glassfish.hk2.version>
@@ -94,6 +100,9 @@
         <org.osgi.version>4.3.1</org.osgi.version>
         <!-- CQ #21339 -->
         <org.slf4j.version>1.7.30</org.slf4j.version>
+        <org.jvnet.mimepull.version>1.9.11</org.jvnet.mimepull.version>
+        <stax-ex.version>1.8.1</stax-ex.version>
+        <stax2-api.version>4.1</stax2-api.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
         <!-- CQ #21122 -->
         <org.jgroups.version>4.1.8.Final</org.jgroups.version>
@@ -238,6 +247,11 @@
             <version>${jakarta.activation.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.sun.istack</groupId>
+            <artifactId>istack-commons-runtime</artifactId>
+            <version>${com.sun.istack.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>${jakarta.mail.version}</version>
@@ -246,6 +260,26 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-osgi</artifactId>
             <version>${com.sun.xml.bind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.messaging.saaj</groupId>
+            <artifactId>saaj-impl</artifactId>
+            <version>${com.sun.xml.messaging.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.stream.buffer</groupId>
+            <artifactId>streambuffer</artifactId>
+            <version>${com.sun.xml.streambuffer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>policy</artifactId>
+            <version>${com.sun.xml.ws.policy.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>${com.sun.xml.ws.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>
@@ -281,6 +315,11 @@
             <groupId>jakarta.jms</groupId>
             <artifactId>jakarta.jms-api</artifactId>
             <version>${jakarta.jms.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.jws</groupId>
+            <artifactId>jakarta.jws-api</artifactId>
+            <version>${jakarta.jws.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.mail</groupId>
@@ -409,6 +448,11 @@
             <version>${org.glassfish.jersey.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.glassfish.main.bean-validator</groupId>
+            <artifactId>bean-validator</artifactId>
+            <version>${org.glassfish.bean-validator.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.pfl</groupId>
             <artifactId>pfl-asm</artifactId>
             <version>${org.glassfish.pfl.version}</version>
@@ -467,6 +511,21 @@
             <groupId>org.jgroups</groupId>
             <artifactId>jgroups</artifactId>
             <version>${org.jgroups.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.staxex</groupId>
+            <artifactId>stax-ex</artifactId>
+            <version>${stax-ex.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.mimepull</groupId>
+            <artifactId>mimepull</artifactId>
+            <version>${org.jvnet.mimepull.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>stax2-api</artifactId>
+            <version>${stax2-api.version}</version>
         </dependency>
     </dependencies>
 </project>
