@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -77,7 +77,7 @@ public abstract class BaseClass implements Cloneable {
         }
     }
 
-    public BigDecimal[] build_a_plus_minus_b_BigDecimal(Record row, Session session) {
+    public BigDecimal[] build_a_plus_minus_b_BigDecimal(org.eclipse.persistence.sessions.Record row, Session session) {
         BigDecimal[] a_plus_minus_b_BigDecimal = new BigDecimal[2];
         BigDecimal a = (BigDecimal)session.getDatasourcePlatform().convertObject(row.get(getFieldAName()), BigDecimal.class);
         BigDecimal b = (BigDecimal)session.getDatasourcePlatform().convertObject(row.get(getFieldBName()), BigDecimal.class);

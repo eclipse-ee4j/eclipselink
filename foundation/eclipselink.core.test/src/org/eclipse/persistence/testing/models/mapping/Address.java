@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,7 +75,7 @@ public class Address implements Serializable {
         return province;
     }
 
-    public String getProvinceFromRow(Record row, Session session) {
+    public String getProvinceFromRow(org.eclipse.persistence.sessions.Record row, Session session) {
         String code = (String)row.get("PROVINCE");
         String provinceString = null;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -105,17 +105,13 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
-    <!-- JVM specific settings -->
-    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern="[1-8]\..*" string="${java.version}"/>
-    </condition>
-
     <!-- Set Compile Path-->
     <path id="dbws_test.compile.path">
         <pathelement path="${junit.lib}"/>
         <pathelement path="../../${eclipselink.jar}"/>
         <pathelement path="${dbws_test.2.common.plugins.dir}/${asm}"/>
         <pathelement path="${dbws_test.2.common.plugins.dir}/${persistence.jar}"/>
+        <pathelement path="${dbws_test.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <fileset
             dir="${dbws_test.2.common.plugins.dir}"
             includes="${eclipselink.dbws.depend}"
@@ -272,7 +268,6 @@
           key="db.platform"
           value="${db.platform}"
         />
-        <jvmarg line="${test.junit.jvm.modules.prop}"/>
         <jvmarg line="${additional.jvmargs}"/>
         <test
           name="dbws.testing.@{package-name}.@{testsuite-name}TestSuite" outfile="${report.dir}/@{package-name}.@{testsuite-name}-test-results"

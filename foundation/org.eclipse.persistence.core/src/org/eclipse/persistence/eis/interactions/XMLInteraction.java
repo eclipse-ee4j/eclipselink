@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,8 +112,8 @@ public class XMLInteraction extends MappedInteraction {
      * Create a DOM input record for this interaction.
      * Convert the database row or arguments into an XML DOM tree.
      */
-    public Record createInputRecord(EISAccessor accessor) {
-        Record record = accessor.getEISPlatform().createDOMRecord(getInputRecordName(), accessor);
+    public javax.resource.cci.Record createInputRecord(EISAccessor accessor) {
+        javax.resource.cci.Record record = accessor.getEISPlatform().createDOMRecord(getInputRecordName(), accessor);
         Element dom = createInputDOM(accessor);
         accessor.getEISPlatform().setDOMInRecord(dom, record, this, accessor);
         if (record instanceof XMLRecord) {
@@ -173,7 +173,7 @@ public class XMLInteraction extends MappedInteraction {
     /**
      * Build a database row from the record returned from the interaction.
      */
-    public AbstractRecord buildRow(Record record, EISAccessor accessor) {
+    public AbstractRecord buildRow(javax.resource.cci.Record record, EISAccessor accessor) {
         if (record == null) {
             return null;
         }
@@ -197,7 +197,7 @@ public class XMLInteraction extends MappedInteraction {
     /**
      * Build a collection of database rows from the Record returned from the interaction.
      */
-    public Vector buildRows(Record record, EISAccessor accessor) {
+    public Vector buildRows(javax.resource.cci.Record record, EISAccessor accessor) {
         Vector rows = null;
         if (record == null) {
             return new Vector(0);
