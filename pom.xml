@@ -118,7 +118,7 @@
         <ejb.version>4.0.0-RC1</ejb.version>
         <el.version>4.0.0-RC1</el.version>
         <glassfish.version>5.1.0</glassfish.version>
-        <jaxwsrt.version>2.4.0-SNAPSHOT</jaxwsrt.version>
+        <jaxwsrt.version>2.3.3</jaxwsrt.version>  <!--TODO - put jakartified version here -->
         <jaxb.version>3.0.0-M1</jaxb.version>
         <jaxb.api.version>3.0.0-RC1</jaxb.api.version>
         <soap.api.version>2.0.0-RC1</soap.api.version>
