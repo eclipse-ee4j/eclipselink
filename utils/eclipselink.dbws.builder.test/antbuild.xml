@@ -378,7 +378,6 @@
             <sysproperty key="db.ddl.drop" value="${db.ddl.drop}" />
             <sysproperty key="db.ddl.debug" value="${db.ddl.debug}" />
             <sysproperty key="release.version" value="${release.version}" />
-            <sysproperty key="javax.xml.bind.JAXBContextFactory" value="org.eclipse.persistence.jaxb.JAXBContextFactory"/>
             <batchtest todir="${report.dir}" haltonfailure="no" haltonerror="no">
                 <fileset dir="${src.dir}">
                     <include name="dbws/testing/*/*TestSuite.java"/>
