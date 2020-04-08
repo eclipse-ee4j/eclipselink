@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,9 +14,10 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.oxm;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Vector;
@@ -58,14 +59,15 @@ import org.w3c.dom.Node;
  */
 public class NamespaceResolver implements XMLNamespaceResolver {
     private static final String BASE_PREFIX = "ns";
+    private static final Vector EMPTY_VECTOR = VectorUtils.emptyVector();
 
     private String defaultNamespaceURI;
-    private Map<String, String> prefixesToNamespaces;
-    int prefixCounter;
+    private NamespaceResolverStorage prefixesToNamespaces;
+    private int prefixCounter;
     private Node dom;
 
     /**
-    * Default constructor, creates a new NamespaceResolver.
+     * Default constructor, creates a new NamespaceResolver.
      */
     public NamespaceResolver() {
         super();
@@ -77,31 +79,36 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      */
     public NamespaceResolver(NamespaceResolver namespaceResolver) {
         this.defaultNamespaceURI = namespaceResolver.defaultNamespaceURI;
-        Map<String, String> namespaceResolverPrefixesToNamespaces = namespaceResolver.prefixesToNamespaces;
-        if(namespaceResolverPrefixesToNamespaces != null) {
-            this.prefixesToNamespaces = new LinkedHashMap<String, String>(namespaceResolverPrefixesToNamespaces.size());
-            this.prefixesToNamespaces.putAll(namespaceResolver.prefixesToNamespaces);
-        }
+        setPrefixesToNamespaces(namespaceResolver.prefixesToNamespaces);
+
         this.prefixCounter = namespaceResolver.prefixCounter;
         this.dom = namespaceResolver.dom;
     }
 
+    private void setPrefixesToNamespaces(Map<String, String> input) {
+        if (input == null) {
+            return;
+        }
+        prefixesToNamespaces = new NamespaceResolverStorage(input.size());
+        prefixesToNamespaces.putAll(input);
+    }
+
     public Map<String, String> getPrefixesToNamespaces() {
-        if(null == prefixesToNamespaces) {
-            prefixesToNamespaces = new LinkedHashMap<String, String>();
+        if (null == prefixesToNamespaces) {
+            prefixesToNamespaces = new NamespaceResolverStorage();
         }
         return prefixesToNamespaces;
     }
 
     public boolean hasPrefixesToNamespaces() {
-         return null != prefixesToNamespaces;
+        return null != prefixesToNamespaces;
     }
 
-    /** Indicates whether given {@code prefix} is assigned to a name-space.
-     *
+    /**
+     * Indicates whether given {@code prefix} is assigned to a name-space.
      * @param prefix name-space prefix
      * @return {@code true} if {@code prefix} is present in prefix to name-space map
-     *         ({@link #getPrefixesToNamespaces()}
+     * ({@link #getPrefixesToNamespaces()}
      */
     public boolean hasPrefix(String prefix) {
         return null != prefixesToNamespaces ? prefixesToNamespaces.containsKey(prefix) : false;
@@ -112,9 +119,8 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     }
 
     /**
-    * Returns the namespace URI associated with a specified namespace prefix
-     *
-     * @param  prefix The prefix to lookup a namespace URI for
+     * Returns the namespace URI associated with a specified namespace prefix
+     * @param prefix The prefix to lookup a namespace URI for
      * @return The namespace URI associated with the specified prefix
      */
     @Override
@@ -123,17 +129,17 @@ public class NamespaceResolver implements XMLNamespaceResolver {
             return defaultNamespaceURI;
         }
         String uri = null;
-        if(null != prefixesToNamespaces) {
+        if (null != prefixesToNamespaces) {
             uri = prefixesToNamespaces.get(prefix);
         }
-        if(null != uri) {
+        if (null != uri) {
             return uri;
         } else if (javax.xml.XMLConstants.XML_NS_PREFIX.equals(prefix)) {
             return javax.xml.XMLConstants.XML_NS_URI;
         } else if (javax.xml.XMLConstants.XMLNS_ATTRIBUTE.equals(prefix)) {
             return javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
         }
-        if(dom != null) {
+        if (dom != null) {
             return XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(dom, prefix);
         }
         return null;
@@ -145,12 +151,12 @@ public class NamespaceResolver implements XMLNamespaceResolver {
      * @return The prefix associated with the namespace URI.
      */
     public String resolveNamespaceURI(String uri) {
-        if(null == uri) {
+        if (null == uri) {
             return null;
         }
-        if(null != prefixesToNamespaces) {
-            for(Entry<String, String> entry : prefixesToNamespaces.entrySet()) {
-                if(uri.equals(entry.getValue())) {
+        if (null != prefixesToNamespaces) {
+            for (Entry<String, String> entry : prefixesToNamespaces.entrySet()) {
+                if (uri.equals(entry.getValue())) {
                     return entry.getKey();
                 }
             }
@@ -164,24 +170,25 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     }
 
     private String resolveNamespaceURI(Node node, String uri) {
-        if(null == node) {
+        if (null == node) {
             return null;
         }
 
         // If the element is of the same namespace URI, then return the prefix.
-        if(uri.equals(node.getNamespaceURI())) {
+        if (uri.equals(node.getNamespaceURI())) {
             return node.getPrefix();
         }
 
         // Check the namespace URI declarations.
         NamedNodeMap namedNodeMap = node.getAttributes();
-        if(null != namedNodeMap) {
+        if (null != namedNodeMap) {
             int namedNodeMapSize = namedNodeMap.getLength();
-            for(int x=0; x<namedNodeMapSize; x++) {
+            for (int x = 0; x < namedNodeMapSize; x++) {
                 Node attr = namedNodeMap.item(x);
-                if(javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attr.getNamespaceURI())) {
-                    if(uri.equals(attr.getNodeValue())) {
-                        if(attr.getLocalName() != null && (!(attr.getLocalName().equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
+                if (javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI.equals(attr.getNamespaceURI())) {
+                    if (uri.equals(attr.getNodeValue())) {
+                        if (attr.getLocalName() != null && (!(attr.getLocalName()
+                            .equals(javax.xml.XMLConstants.XMLNS_ATTRIBUTE)))) {
                             return attr.getLocalName();
                         } else {
                             return "";
@@ -197,12 +204,11 @@ public class NamespaceResolver implements XMLNamespaceResolver {
 
     /**
      * Adds a namespace to the collection of namespaces on the NamespaceResolver
-     *
-     * @param  prefix  The prefix for a namespace
-     * @param  namespaceURI  The namespace URI associated with the specified prefix
-    */
+     * @param prefix The prefix for a namespace
+     * @param namespaceURI The namespace URI associated with the specified prefix
+     */
     public void put(String prefix, String namespaceURI) {
-        if(null == prefix || 0 == prefix.length()) {
+        if (null == prefix || 0 == prefix.length()) {
             defaultNamespaceURI = namespaceURI;
         } else {
             //Replace same namespace with given prefix and put them to the end of list.
@@ -214,36 +220,36 @@ public class NamespaceResolver implements XMLNamespaceResolver {
             //This behavior is preserved, but it is now working independently on the JDK (because we are using HashMap and we are changing the order
             //of items in the LinkedHashMap so the resolver always find the prefix which is more closely (in xml schema) to the given element.
             ///@see XMLRootComplexDifferentPrefixTestCases
-            Map<String, String> removedItems = null;
-            if (getPrefixesToNamespaces().containsValue(namespaceURI.intern())) {
-                removedItems = new LinkedHashMap<String, String>();
-                for (Map.Entry<String, String> prefixEntry : getPrefixesToNamespaces().entrySet()) {
-                    if (namespaceURI.intern().equals(prefixEntry.getValue())) {
-                        removedItems.put(prefixEntry.getKey(), prefixEntry.getValue());
+            List<String> removedKeys = null;
+            final String cachedJvmValue = namespaceURI.intern();
+            if (getPrefixesToNamespaces().containsValue(cachedJvmValue)) {
+                removedKeys = new ArrayList<>();
+                for (Map.Entry<String, String> prefixEntry : prefixesToNamespaces.entrySet()) {
+                    if (cachedJvmValue.equals(prefixEntry.getValue())) {
+                        removedKeys.add(prefixEntry.getKey());
                     }
                 }
             }
-            if (null != removedItems) {
-                for (String key : removedItems.keySet()) {
-                    getPrefixesToNamespaces().remove(key);
+            if (null != removedKeys) {
+                for (String key : removedKeys) {
+                    prefixesToNamespaces.remove(key);
                 }
             }
-            getPrefixesToNamespaces().put(prefix, namespaceURI.intern());
-            if (null != removedItems) {
-                for (Map.Entry<String, String> removedEntry : removedItems.entrySet()) {
-                    getPrefixesToNamespaces().put(removedEntry.getKey(), removedEntry.getValue());
+            prefixesToNamespaces.put(prefix, cachedJvmValue);
+            if (null != removedKeys) {
+                for (String key : removedKeys) {
+                    prefixesToNamespaces.put(key, cachedJvmValue);
                 }
             }
         }
     }
 
     /**
-    * Returns the list of prefixes in the NamespaceResolver
-     *
+     * Returns the list of prefixes in the NamespaceResolver
      * @return An Enumeration containing the prefixes in the NamespaceResolver
      */
     public Enumeration getPrefixes() {
-        if(hasPrefixesToNamespaces()) {
+        if (hasPrefixesToNamespaces()) {
             return new IteratorEnumeration(getPrefixesToNamespaces().keySet().iterator());
         } else {
             return new IteratorEnumeration(null);
@@ -251,36 +257,27 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     }
 
     /**
-    * INTERNAL:
+     * INTERNAL:
      * Returns a Vector of of Namespace objects in the current Namespace Resolver
      * Used for deployment XML
-     * @return  A Vector containing the namespace URIs in the namespace resolver
+     * @return A Vector containing the namespace URIs in the namespace resolver
      */
     public Vector getNamespaces() {
-        if(!hasPrefixesToNamespaces()) {
-            return new Vector(0);
+        if (!hasPrefixesToNamespaces()) {
+            return EMPTY_VECTOR;
         }
-        Vector names = new Vector(prefixesToNamespaces.size());
-        for(Entry<String, String> entry: prefixesToNamespaces.entrySet()) {
-            Namespace namespace = new Namespace(entry.getKey(), entry.getValue());
-            names.addElement(namespace);
-        }
-        return names;
+        return prefixesToNamespaces.getNamespaces();
     }
 
     /**
-    * INTERNAL:
+     * INTERNAL:
      * Set the namespaces on the namespace resolver based on the specified Vector of Namespace objects
      * Used for deployment XML
-     * @param  names A Vector of namespace URIs
+     * @param names A Vector of namespace URIs
      */
     public void setNamespaces(Vector names) {
-        prefixesToNamespaces = new LinkedHashMap<String, String>(names.size());
-        for(Namespace namespace : (Vector<Namespace>) names) {
-            if ((namespace.getPrefix() != null) && (namespace.getNamespaceURI() != null)) {
-                prefixesToNamespaces.put(namespace.getPrefix(), namespace.getNamespaceURI());
-            }
-        }
+        prefixesToNamespaces = new NamespaceResolverStorage(names.size());
+        prefixesToNamespaces.setNamespaces(names);
     }
 
     public String generatePrefix() {
@@ -301,23 +298,23 @@ public class NamespaceResolver implements XMLNamespaceResolver {
     }
 
     public void removeNamespace(String prefix) {
-        if(null != prefixesToNamespaces) {
+        if (null != prefixesToNamespaces) {
             prefixesToNamespaces.remove(prefix);
         }
     }
 
     public void setDefaultNamespaceURI(String namespaceUri) {
-        if(namespaceUri == null){
+        if (namespaceUri == null) {
             defaultNamespaceURI = null;
-        }else{
+        } else {
             defaultNamespaceURI = namespaceUri.intern();
         }
     }
 
     public String getDefaultNamespaceURI() {
-        if(null != defaultNamespaceURI) {
+        if (null != defaultNamespaceURI) {
             return defaultNamespaceURI;
-        } else if(dom != null) {
+        } else if (dom != null) {
             return XMLPlatformFactory.getInstance().getXMLPlatform().resolveNamespacePrefix(dom, null);
         }
         return null;
@@ -333,7 +330,7 @@ public class NamespaceResolver implements XMLNamespaceResolver {
 
         @Override
         public boolean hasMoreElements() {
-            if(null == iterator) {
+            if (null == iterator) {
                 return false;
             }
             return iterator.hasNext();
