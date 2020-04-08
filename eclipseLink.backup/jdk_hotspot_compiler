@@ -1,1 +1,0 @@
-exclude org/eclipse/persistence/internal/sessions/CommitManager commitChangedObjectsForClassWithChangeSet
