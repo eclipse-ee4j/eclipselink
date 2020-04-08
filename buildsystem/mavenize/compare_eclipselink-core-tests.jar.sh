@@ -1,2 +1,0 @@
-#!/bin/bash
-compareZip.sh ../../foundation/eclipselink.core.test/eclipselink-core-tests.jar ../../bundles/others/target/archive-tmp/eclipselink-test-jars/foundation/eclipselink.core.test/eclipselink-core-tests.jar
