@@ -122,7 +122,7 @@
         <jaxb.version>3.0.0-M1</jaxb.version>
         <jaxb.api.version>3.0.0-RC1</jaxb.api.version>
         <soap.api.version>2.0.0-RC1</soap.api.version>
-        <jersey.version>3.0-SNAPSHOT</jersey.version>
+        <jersey.version>2.30.1</jersey.version> <!-- TODO : jakartify after release -->
         <jms.version>3.0.0-RC1</jms.version>
         <json.version>2.0.0-RC2</json.version>
         <jpa.api.version>3.0.0-RC1</jpa.api.version>
@@ -197,7 +197,7 @@
 
         <module>jpa/org.eclipse.persistence.jpa</module>
         <module>jpa/org.eclipse.persistence.jpa.modelgen</module>
-        <module>jpa/org.eclipse.persistence.jpars</module>
+<!--        <module>jpa/org.eclipse.persistence.jpars</module>--> <!-- TODO: revert after Jersey jakartification -->
         <module>jpa/org.eclipse.persistence.jpa.test.framework</module>
 
         <module>foundation/org.eclipse.persistence.corba</module>
@@ -1293,6 +1293,12 @@
             <properties>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
+        </profile>
+        <profile>
+            <id>excluded_due_to_jakartification</id>
+            <modules>
+                <module>jpa/org.eclipse.persistence.jpars</module>
+            </modules>
         </profile>
     </profiles>
 </project>
