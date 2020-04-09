@@ -16,10 +16,10 @@ package org.eclipse.persistence.jpa.returninsert.model;
 
 import org.eclipse.persistence.annotations.ReturnInsert;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
