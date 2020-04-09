@@ -393,8 +393,8 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "sdo_type_generation_modified_function_naming_format_to", "{0}: Generated Type [{1}] java get/set method name changed to [{2}] to follow class naming conventions."},                                            
         { "sdo_type_generation_modified_class_naming_format_to", "{0}: Generated Type [{1}] java class name changed to [{2}] to follow class naming conventions."},                                            
         { "sdo_type_generation_warning_class_name_violates_java_spec", "{0}: Generated Type [{1}] conflicts with Java specification naming rules for [{2}] and should be renamed."},                                           
-        { "sdo_type_generation_warning_class_name_violates_sdo_spec", "{0}: Generated Type [{1}] conflicts with SDO specification naming rules for [{2}] and should be renamed."},
-
+        { "sdo_type_generation_warning_class_name_violates_sdo_spec", "{0}: Generated Type [{1}] conflicts with SDO specification naming rules for [{2}] and should be renamed."},                                            
+        
         { "sdo_classgenerator_exception", "{2} A [{0}] Exception occurred - message is [{1}]"},
         { "query_has_both_join_attributes_and_partial_attributes", "{0} named {1} has both join attributes and partial attributes. These two technologies were not designed to work together, result may be unpredictible."},
         { "sdo_missing_schemaLocation", "Referenced schema with uri {0} could not be processed because no schemaLocation attribute was specified."},
