@@ -400,6 +400,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "sdo_missing_schemaLocation", "Referenced schema with uri {0} could not be processed because no schemaLocation attribute was specified."},
         { "sdo_invalid_schemaLocation", "Could not create schemaLocation [{0}] for import with uri [{1}]."},
         { "sdo_error_processing_referenced_schema", "An {0} occurred processing referenced schema with uri {1} with schemaLocation {2}."},
+        { "sdo_error_deserialization", "Unauthorized deserialization attempt with class {0}."},
         { "ox_turn_global_logging_off", " {0} Turning global session logging off."},
         { "ox_lowering_global_logging_from_default_info_to_warning", " {0} Lowering global logging from default INFO to WARNING level."},        
         { "ox_turn_session_logging_off", " {0} Turning session logging off."},
