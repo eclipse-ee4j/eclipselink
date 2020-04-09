@@ -38,14 +38,20 @@ env:
     - MAVEN_TEST=moxy-lrg
     - MAVEN_TEST=sdo-lrg
     - MAVEN_TEST=nosql-lrg
-    - MAVEN_TEST="jpa-modelgen jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution"
+    - MAVEN_TEST="jpa-modelgen jpa-jse ext jpql wdf jpars dbws dbws-builder distribution"
     - MAVEN_TEST=jpa-lrg-server1-mysql
     - MAVEN_TEST=jpa-lrg-server2-mysql
     - MAVEN_TEST=javadoc
+    - MAVEN_TEST=corba
+
+jobs:
+  allow_failures:
+    - jdk: openjdk14
 
 jdk:
   - openjdk8
   - openjdk11
+  - openjdk14
 
 cache:
   directories:
@@ -81,10 +87,11 @@ script:
   - if [ "$MAVEN_TEST" == "moxy-lrg" ]; then mvn test -pl :org.eclipse.persistence.moxy -P test-moxy-lrg; fi
   - if [ "$MAVEN_TEST" == "sdo-lrg" ]; then mvn verify -pl :org.eclipse.persistence.sdo -Ptest-sdo; fi
   - if [ "$MAVEN_TEST" == "nosql-lrg" ]; then mvn verify -pl :org.eclipse.persistence.nosql -P mongodb; fi
-  - if [ "$MAVEN_TEST" == "jpa-modelgen jpa-jse ext corba jpql wdf jpars dbws dbws-builder distribution" ]; then
+  - if [ "$MAVEN_TEST" == "jpa-modelgen jpa-jse ext jpql wdf jpars dbws dbws-builder distribution" ]; then
       mvn clean install -pl :eclipselink;
-      mvn verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.corba,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution -P mysql;
+      mvn verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution -P mysql;
     fi
+  - if [ "$MAVEN_TEST" == "corba" ]; then mvn verify -pl :org.eclipse.persistence.corba -P mysql; fi
   - if [ "$MAVEN_TEST" == "jpa-lrg-server1-mysql" ]; then
       tar -x -z -C $HOME -f $HOME/lib.external/wildfly-18.0.0.Final.tar.gz;
       mvn verify -pl :org.eclipse.persistence.jpa.test -P server-test-jpa-lrg1,mysql;
