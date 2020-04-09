@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -572,8 +572,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         SQLInsertStatement insertStatement = new SQLInsertStatement();
         insertStatement.setTable(table);
         insertStatement.setModifyRow(getModifyRow());
-        if (getDescriptor().hasReturningPolicy()) {
-            insertStatement.setReturnFields(getDescriptor().getReturningPolicy().getFieldsToGenerateInsert(table));
+        if (getDescriptor().hasReturningPolicies() && getDescriptor().getReturnFieldsToGenerateInsert() != null) {
+            insertStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateInsert());
         }
         insertStatement.setHintString(getQuery().getHintString());
         return insertStatement;
@@ -825,8 +825,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         updateStatement.setModifyRow(getModifyRow());
         updateStatement.setTranslationRow(getTranslationRow());
-        if (getDescriptor().hasReturningPolicy()) {
-            updateStatement.setReturnFields(getDescriptor().getReturningPolicy().getFieldsToGenerateUpdate(table));
+        if (getDescriptor().hasReturningPolicies() && getDescriptor().getReturnFieldsToGenerateUpdate() != null) {
+            updateStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateUpdate());
         }
         updateStatement.setTable(table);
         updateStatement.setWhereClause(getDescriptor().getObjectBuilder().buildUpdateExpression(table, getTranslationRow(), getModifyRow()));

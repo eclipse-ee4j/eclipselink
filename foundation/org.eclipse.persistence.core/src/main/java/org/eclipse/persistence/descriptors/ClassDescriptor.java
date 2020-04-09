@@ -169,6 +169,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected transient Vector<DatabaseField> allFields;
     protected transient List<DatabaseField> selectionFields;
     protected transient List<DatabaseField> allSelectionFields;
+    protected transient Vector<DatabaseField> returnFieldsToGenerateInsert;
+    protected transient Vector<DatabaseField> returnFieldsToGenerateUpdate;
+    protected transient List<DatabaseField> returnFieldsToMergeInsert;
+    protected transient List<DatabaseField> returnFieldsToMergeUpdate;
+
     protected Vector<DatabaseMapping> mappings;
 
     //Used to track which other classes reference this class in cases where
@@ -205,6 +210,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected WrapperPolicy wrapperPolicy;
     protected ObjectChangePolicy changePolicy;
     protected ReturningPolicy returningPolicy;
+    protected List<ReturningPolicy> returningPolicies;
     protected HistoryPolicy historyPolicy;
     protected String partitioningPolicyName;
     protected PartitioningPolicy partitioningPolicy;
@@ -1395,6 +1401,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             clonedDescriptor.setReturningPolicy((ReturningPolicy)getReturningPolicy().clone());
             clonedDescriptor.getReturningPolicy().setDescriptor(clonedDescriptor);
         }
+        if (clonedDescriptor.hasReturningPolicies()) {
+            clonedDescriptor.returningPolicies = new ArrayList<>();
+            for (ReturningPolicy returningPolicy : this.returningPolicies) {
+                clonedDescriptor.returningPolicies.add((ReturningPolicy)returningPolicy.clone());
+            }
+            clonedDescriptor.prepareReturnFields(clonedDescriptor.returningPolicies);
+        }
 
         // The Object builder
         clonedDescriptor.setObjectBuilder((ObjectBuilder)getObjectBuilder().clone());
@@ -2056,6 +2069,38 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         } else {
             return allSelectionFields;
         }
+    }
+
+    /**
+     * INTERNAL:
+     * Return fields used to build insert statement.
+     */
+    public Vector<DatabaseField> getReturnFieldsToGenerateInsert() {
+        return this.returnFieldsToGenerateInsert;
+    }
+
+    /**
+     * INTERNAL:
+     * Return fields used to build update statement.
+     */
+    public Vector<DatabaseField> getReturnFieldsToGenerateUpdate() {
+        return this.returnFieldsToGenerateUpdate;
+    }
+
+    /**
+     * INTERNAL:
+     * Return fields used in to map into entity for insert.
+     */
+    public List<DatabaseField> getReturnFieldsToMergeInsert() {
+        return this.returnFieldsToMergeInsert;
+    }
+
+    /**
+     * INTERNAL:
+     * Return fields used in to map into entity for update.
+     */
+    public List<DatabaseField> getReturnFieldsToMergeUpdate() {
+        return this.returnFieldsToMergeUpdate;
     }
 
     /**
@@ -2776,6 +2821,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     /**
+     * PUBLIC:
+     * Return returning policy from current descriptor and from mappings
+     */
+    public List<ReturningPolicy> getReturningPolicies() {
+        return returningPolicies;
+    }
+
+    /**
      * INTERNAL:
      * Get sequence number field
      */
@@ -3107,6 +3160,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public boolean hasReturningPolicy() {
         return (returningPolicy != null);
+    }
+
+    /**
+     * INTERNAL:
+     * Return if this descriptor or descriptors from mappings has Returning policy.
+     */
+    public boolean hasReturningPolicies() {
+        return (returningPolicies != null);
     }
 
     /**
@@ -3990,9 +4051,68 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
         getCachePolicy().postInitialize(this, session);
 
+        postInitializeReturningPolicies();
+
         validateAfterInitialization(session);
 
         checkDatabase(session);
+    }
+
+    private void postInitializeReturningPolicies() {
+        //Initialize ReturningPolicies
+        List<ReturningPolicy> returningPolicies = new ArrayList<>();
+        if (this.hasReturningPolicy()) {
+            returningPolicies.add(this.getReturningPolicy());
+        }
+        browseReturningPolicies(returningPolicies, this.getMappings());
+        if (returningPolicies.size() > 0) {
+            this.returningPolicies = returningPolicies;
+            prepareReturnFields(returningPolicies);
+        }
+    }
+
+    private void browseReturningPolicies(List<ReturningPolicy> returningPolicies, Vector<DatabaseMapping> mappings) {
+        for (DatabaseMapping databaseMapping :mappings) {
+            if (databaseMapping instanceof AggregateObjectMapping) {
+                ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+                if (referenceDescriptor != null) {
+                    browseReturningPolicies(returningPolicies, referenceDescriptor.getMappings());
+                    if (referenceDescriptor.hasReturningPolicy()) {
+                        returningPolicies.add(referenceDescriptor.getReturningPolicy());
+                    }
+                }
+            }
+        }
+    }
+
+    private void prepareReturnFields(List<ReturningPolicy> returningPolicies) {
+        Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector();
+        Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector();
+        List<DatabaseField> returnFieldsToMergeInsert = new ArrayList<>();
+        List<DatabaseField> returnFieldsToMergeUpdate = new ArrayList<>();
+        Collection tmpFields;
+        for (ReturningPolicy returningPolicy: returningPolicies) {
+            tmpFields = returningPolicy.getFieldsToGenerateInsert(this.defaultTable);
+            if (tmpFields != null) {
+                returnFieldsInsert.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToGenerateUpdate(this.defaultTable);
+            if (tmpFields != null) {
+                returnFieldsUpdate.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToMergeInsert();
+            if (tmpFields != null) {
+                returnFieldsToMergeInsert.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToMergeUpdate();
+            if (tmpFields != null) {
+                returnFieldsToMergeUpdate.addAll(tmpFields);
+            }
+        }
+        this.returnFieldsToGenerateInsert = (returnFieldsInsert.isEmpty()) ? null : returnFieldsInsert;
+        this.returnFieldsToGenerateUpdate = (returnFieldsUpdate.isEmpty()) ? null : returnFieldsUpdate;
+        this.returnFieldsToMergeInsert = (returnFieldsToMergeInsert.isEmpty()) ? null : returnFieldsToMergeInsert;
+        this.returnFieldsToMergeUpdate = (returnFieldsToMergeUpdate.isEmpty()) ? null : returnFieldsToMergeUpdate;
     }
 
     /**
