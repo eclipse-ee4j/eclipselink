@@ -49,7 +49,7 @@ public class VectorUtils {
      * vectors.  Query operations on the returned vector "read through" to the
      * specified vector, and attempts to modify the returned vector, whether
      * direct or via its iterator, result in an
-     * <tt>UnsupportedOperationException</tt>.<p>
+     * <code>UnsupportedOperationException</code>.<p>
      *
      * @param <T> the class of the objects in the vector
      * @param vector the vector for which an unmodifiable view is to be returned.
@@ -71,7 +71,7 @@ public class VectorUtils {
      * </pre>
      * @param <T> type of elements, if there were any, in the vector
      * @return an empty immutable vector
-     * @implNote Implementations of this method need not create a separate <tt>Vector</tt>
+     * Implementation Note: Implementations of this method need not create a separate <code>Vector</code>
      * object for each call.   Using this method is likely to have comparable
      * cost to using the like-named field.  (Unlike this method, the field does
      * not provide type safety.)

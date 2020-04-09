@@ -80,7 +80,7 @@
         <!--Default test DB is Derby-->
         <test.properties.file>${user.home}/${test.derby.properties.file}</test.properties.file>
         <test.properties.fileName>${test.derby.properties.file}</test.properties.fileName>
-        <test.properties.default.directory>${project.root.location}/buildsystem/mavenize/test.properties/</test.properties.default.directory>
+        <test.properties.default.directory>${project.root.location}/etc</test.properties.default.directory>
         <test.database>derby</test.database>
         <!--false: to start In-Memory database, true: not start (MySQL, Oracle)-->
         <test.skip.in-memory.db>false</test.skip.in-memory.db>

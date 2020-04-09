@@ -67,10 +67,10 @@ before_install:
 install:
   - mkdir $HOME/lib.external || true
   - wget -nc https://download.jboss.org/wildfly/18.0.0.Final/wildfly-18.0.0.Final.tar.gz -O $HOME/lib.external/wildfly-18.0.0.Final.tar.gz || true
-  - cp buildsystem/mavenize/test.properties/el-test.derby.properties ~
-  - cp buildsystem/mavenize/test.properties/el-test.mysql.properties ~
-  - cp buildsystem/mavenize/test.properties/el-test.mongodb.properties ~
-  - cp buildsystem/mavenize/test.properties/el-testjee.wildfly.properties ~
+  - cp etc/el-test.derby.properties ~
+  - cp etc/el-test.mysql.properties ~
+  - cp etc/el-test.mongodb.properties ~
+  - cp etc/el-testjee.wildfly.properties ~
   - sed -i -e 's+skip.jee.server.installation=false+skip.jee.server.installation=true+g' ~/el-testjee.wildfly.properties
   - sed -i -e 's+${user.home}/.eclipselinktests/wildfly-18.0.0.Final+'$HOME'/wildfly-18.0.0.Final+g' ~/el-testjee.wildfly.properties
 
