@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 // dmccann - 2.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmladapter.xmlelementref;
 
-//@javax.xml.bind.annotation.XmlRootElement
+//@jakarta.xml.bind.annotation.XmlRootElement
 public class Foo {
-    //@javax.xml.bind.annotation.XmlElementRefs({@javax.xml.bind.annotation.XmlElementRef(type=Bar.class), @javax.xml.bind.annotation.XmlElementRef(type=FooBar.class)})
-    //@javax.xml.bind.annotation.XmlElementRef(type=Bar.class)
-    //@javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter(value=BarAdapter.class)
+    //@jakarta.xml.bind.annotation.XmlElementRefs({@jakarta.xml.bind.annotation.XmlElementRef(type=Bar.class), @jakarta.xml.bind.annotation.XmlElementRef(type=FooBar.class)})
+    //@jakarta.xml.bind.annotation.XmlElementRef(type=Bar.class)
+    //@jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter(value=BarAdapter.class)
     public String item;
 
     public boolean equals(Object o) {

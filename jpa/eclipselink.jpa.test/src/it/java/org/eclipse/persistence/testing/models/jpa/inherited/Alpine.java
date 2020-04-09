@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,17 +24,17 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.ArrayList;
 
-import javax.persistence.PostPersist;
-import javax.persistence.Table;
-import javax.persistence.Entity;
-import javax.persistence.Column;
-import javax.persistence.TableGenerator;
-import javax.persistence.Temporal;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.PrimaryKeyJoinColumn;
-import static javax.persistence.CascadeType.ALL;
-import static javax.persistence.TemporalType.DATE;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import static jakarta.persistence.CascadeType.ALL;
+import static jakarta.persistence.TemporalType.DATE;
 
 @Entity
 @Table(name="CMP3_ALPINE")

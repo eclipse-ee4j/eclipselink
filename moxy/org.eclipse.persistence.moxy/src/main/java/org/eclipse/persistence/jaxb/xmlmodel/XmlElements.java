@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,10 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -64,17 +64,17 @@ public class XmlElements
     extends JavaAttribute
 {
 
-    @javax.xml.bind.annotation.XmlElement(name = "xml-access-methods")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-access-methods")
     protected XmlAccessMethods xmlAccessMethods;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-element")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-element")
     protected List<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> xmlElement;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-properties")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-join-nodes")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-join-nodes")
     protected List<XmlJoinNodes> xmlJoinNodes;
     @XmlAttribute(name = "xml-idref")
     protected Boolean xmlIdref;

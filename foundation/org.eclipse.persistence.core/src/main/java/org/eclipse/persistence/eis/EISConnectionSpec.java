@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,15 +17,15 @@ package org.eclipse.persistence.eis;
 import java.io.*;
 import java.util.*;
 import javax.naming.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.sessions.*;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.helper.*;
 
 /**
  * <p>An <code>EISConnectionSpec</code> specifies how the
- * <code>javax.resource.cci.Connection</code> is accessed.  There are three ways
+ * <code>jakarta.resource.cci.Connection</code> is accessed.  There are three ways
  * to connect to an EIS datasource through JCA:
  * <ul>
  * <li>Provide a JNDI name to the ConnectionFactory and use the default
@@ -194,7 +194,7 @@ public class EISConnectionSpec implements Connector {
 
     /**
      * PUBLIC:
-     * Return the javax.resource.cci.ConnectionFactory.
+     * Return the jakarta.resource.cci.ConnectionFactory.
      */
     public ConnectionFactory getConnectionFactory() {
         return connectionFactory;
@@ -202,7 +202,7 @@ public class EISConnectionSpec implements Connector {
 
     /**
      * PUBLIC:
-     * Return the javax.resource.cci.ConnectionSpec.
+     * Return the jakarta.resource.cci.ConnectionSpec.
      */
     public ConnectionSpec getConnectionSpec() {
         return connectionSpec;
@@ -237,7 +237,7 @@ public class EISConnectionSpec implements Connector {
 
     /**
      * PUBLIC:
-     * Set the javax.resource.cci.ConnectionFactory.
+     * Set the jakarta.resource.cci.ConnectionFactory.
      */
     public void setConnectionFactory(ConnectionFactory connectionFactory) {
         this.connectionFactory = connectionFactory;
@@ -245,7 +245,7 @@ public class EISConnectionSpec implements Connector {
 
     /**
      * PUBLIC:
-     * Set the javax.resource.cci.ConnectionFactory.
+     * Set the jakarta.resource.cci.ConnectionFactory.
      */
     public void setConnectionFactoryObject(Object connectionFactory) {
         setConnectionFactory((ConnectionFactory)connectionFactory);
@@ -253,7 +253,7 @@ public class EISConnectionSpec implements Connector {
 
     /**
      * PUBLIC:
-     * Set the javax.resource.cci.ConnectionSpec.
+     * Set the jakarta.resource.cci.ConnectionSpec.
      * This is only required if the default getConnection() on the connection factory is not used.
      * This must be set to the EIS adapter specific connection spec.
      */
@@ -263,7 +263,7 @@ public class EISConnectionSpec implements Connector {
 
     /**
      * PUBLIC:
-     * Set the javax.resource.cci.ConnectionSpec.
+     * Set the jakarta.resource.cci.ConnectionSpec.
      * This is only required if the default getConnection() on the connection factory is not used.
      * This must be set to the EIS adapter specific connection spec.
      */

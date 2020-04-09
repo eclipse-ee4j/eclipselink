@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,16 +17,16 @@ package org.eclipse.persistence.internal.sessions.coordination.jms;
 
 import java.io.Serializable;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Topic;
-import javax.jms.TopicConnection;
-import javax.jms.TopicConnectionFactory;
-import javax.jms.TopicPublisher;
-import javax.jms.TopicSession;
-import javax.jms.TopicSubscriber;
+import jakarta.jms.BytesMessage;
+import jakarta.jms.JMSException;
+import jakarta.jms.Message;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicConnection;
+import jakarta.jms.TopicConnectionFactory;
+import jakarta.jms.TopicPublisher;
+import jakarta.jms.TopicSession;
+import jakarta.jms.TopicSubscriber;
 
 import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -101,7 +101,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
             if(isLocalConnectionBeingCreated) {
                 // it's a local connection
                 this.topicConnection = topicConnectionFactory.createTopicConnection();
-                this.topicSession = topicConnection.createTopicSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+                this.topicSession = topicConnection.createTopicSession(false, jakarta.jms.Session.AUTO_ACKNOWLEDGE);
                 this.subscriber = topicSession.createSubscriber(topic);
                 topicConnection.start();
                 rcm.logDebug("broadcast_connection_created", getInfo());
@@ -109,7 +109,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
             } else if (reuseJMSTopicPublisher) {
                 // it's an external connection and is set to reuse the TopicPublisher (legacy)
                 this.topicConnection = topicConnectionFactory.createTopicConnection();
-                this.topicSession = topicConnection.createTopicSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+                this.topicSession = topicConnection.createTopicSession(false, jakarta.jms.Session.AUTO_ACKNOWLEDGE);
                 this.setPublisher(topicSession.createPublisher(topic));
                 rcm.logDebug("broadcast_connection_created", getInfo());
             } //else bug214534: it's an external connection, with TopicConnections, sessions and publishers created as needed
@@ -154,7 +154,7 @@ public class JMSTopicRemoteConnection extends BroadcastRemoteConnection implemen
             //if the publisher is set, reuse it.  Otherwise, create it (and the connection and session) from the topicConnectionFactory
             if ( topicPublisher == null ){
                 jmsConnection = topicConnectionFactory.createTopicConnection();
-                publishingSession = jmsConnection.createTopicSession(false, javax.jms.Session.AUTO_ACKNOWLEDGE);
+                publishingSession = jmsConnection.createTopicSession(false, jakarta.jms.Session.AUTO_ACKNOWLEDGE);
                 topicPublisher = publishingSession.createPublisher(topic);
             }
 

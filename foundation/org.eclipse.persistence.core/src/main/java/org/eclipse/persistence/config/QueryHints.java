@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -68,7 +68,7 @@ public class QueryHints {
     public static final String PARAMETER_DELIMITER = "eclipselink.jdbc.parameter-delimiter";
 
     /**
-     * "javax.persistence.cache.retrieveMode"
+     * "jakarta.persistence.cache.retrieveMode"
      * <p>Configures the behavior when data is retrieved by the find methods and
      * by the execution of queries. The cache retrieve mode is ignored for the
      * refresh method, which always causes data to be retrieved from the
@@ -76,17 +76,17 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.DatabaseQuery#dontMaintainCache()
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#shouldCheckDescriptorForCacheUsage()
      */
-    public static final String CACHE_RETRIEVE_MODE = "javax.persistence.cache.retrieveMode";
+    public static final String CACHE_RETRIEVE_MODE = "jakarta.persistence.cache.retrieveMode";
 
     /**
-     * "javax.persistence.cache.storeMode"
+     * "jakarta.persistence.cache.storeMode"
      * <p>Configures the behavior when data is read from the database and when
      * data is committed into the database.</p>
      * @see org.eclipse.persistence.queries.DatabaseQuery#dontMaintainCache()
      * @see org.eclipse.persistence.queries.DatabaseQuery#maintainCache()
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#refreshIdentityMapResult()
      */
-    public static final String CACHE_STORE_MODE = "javax.persistence.cache.storeMode";
+    public static final String CACHE_STORE_MODE = "jakarta.persistence.cache.storeMode";
 
     /**
      * "eclipselink.cache-usage"
@@ -228,14 +228,14 @@ public class QueryHints {
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setLockMode(short)
      *
      * <B>Note:</B> As of JPA 2.0 there is a standard way to configure pessimistic locking.
-     * @see javax.persistence.LockModeType
-     * @see javax.persistence.EntityManager (find(), refresh(), lock())
-     * @see javax.persistence.Query (setLockMode())
+     * @see jakarta.persistence.LockModeType
+     * @see jakarta.persistence.EntityManager (find(), refresh(), lock())
+     * @see jakarta.persistence.Query (setLockMode())
      */
     public static final String PESSIMISTIC_LOCK = "eclipselink.pessimistic-lock";
 
     /**
-     * "javax.persistence.lock.timeout"
+     * "jakarta.persistence.lock.timeout"
      * <p>Configures the WAIT timeout used in pessimistic locking, if the database
      * query exceeds the timeout the database will terminate the query and
      * return an exception. Valid values are Integer or Strings that can be
@@ -245,7 +245,7 @@ public class QueryHints {
      * @see #JDBC_TIMEOUT
      * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeout(Integer)
      */
-    public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
+    public static final String PESSIMISTIC_LOCK_TIMEOUT = "jakarta.persistence.lock.timeout";
 
     /**
      * "eclipselink.pessimistic.lock.timeout.unit"
@@ -368,13 +368,13 @@ public class QueryHints {
     public static final String JDBC_TIMEOUT = "eclipselink.jdbc.timeout";
 
     /**
-     * "javax.persistence.query.timeout" 
+     * "jakarta.persistence.query.timeout"
      * <p>Configures the default query timeout value per the JPA specification.
      * Valid values are strings containing a zero or greater integer value
      * Defaults to use seconds as the unit of time.
      * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeout(int)
      */
-    public static final String QUERY_TIMEOUT = "javax.persistence.query.timeout";
+    public static final String QUERY_TIMEOUT = "jakarta.persistence.query.timeout";
 
     /**
      * "eclipselink.jdbc.timeout.unit"
@@ -404,7 +404,7 @@ public class QueryHints {
      * the trailing rows will not be returned by the database.
      * This is the same as JPA Query setMaxResults(), but can be set in meta-data for NamedQuerys.
      * Valid values are Integer or Strings that can be parsed to int values.
-     * @see javax.persistence.Query#setMaxResults(int)
+     * @see jakarta.persistence.Query#setMaxResults(int)
      * @see org.eclipse.persistence.queries.ReadQuery#setMaxRows(int)
      */
     public static final String JDBC_MAX_ROWS = "eclipselink.jdbc.max-rows";
@@ -414,7 +414,7 @@ public class QueryHints {
      * <p>Configures the query to skip the firstResult number of rows.
      * This is the same as JPA Query setFirstResults(), but can be set in meta-data for NamedQuerys.
      * Valid values are Integer or Strings that can be parsed to int values.
-     * @see javax.persistence.Query#setFirstResult(int)
+     * @see jakarta.persistence.Query#setFirstResult(int)
      * @see org.eclipse.persistence.queries.ReadQuery#setFirstResult(int)
      */
     public static final String JDBC_FIRST_RESULT = "eclipselink.jdbc.first-result";
@@ -500,7 +500,7 @@ public class QueryHints {
      * refer to the CACHE_USAGE query hint for conforming.
      * Valid values are:  HintValues.FALSE, HintValues.TRUE,
      * "" could be used instead of default value HintValues.FALSE
-     * @see javax.persistence.EntityManager#setFlushMode(javax.persistence.FlushModeType)
+     * @see jakarta.persistence.EntityManager#setFlushMode(jakarta.persistence.FlushModeType)
      * @see PersistenceUnitProperties#PERSISTENCE_CONTEXT_FLUSH_MODE
      * @see org.eclipse.persistence.queries.DatabaseQuery#setFlushOnExecute(Boolean)
      */
@@ -702,13 +702,13 @@ public class QueryHints {
     public static final String FETCH_GROUP_LOAD = "eclipselink.fetch-group.load";
 
     /**
-     * "javax.persistence.fetchgraph"
+     * "jakarta.persistence.fetchgraph"
      * <p> Configures a jpa entity graph to be used as a fetch graph template.
      * Those attributes included in the entity graph will have their values fetched and populated.
      * Attributes of the represented entity that are not present in the entity graph will be treated
      * as FetchType.LAZY.
      */
-    public static final String JPA_FETCH_GRAPH = "javax.persistence.fetchgraph";
+    public static final String JPA_FETCH_GRAPH = "jakarta.persistence.fetchgraph";
 
     /**
      * "eclipselink.fetch-group.default"
@@ -740,13 +740,13 @@ public class QueryHints {
     public static final String LOAD_GROUP = "eclipselink.load-group";
 
     /**
-     * "javax.persistence.loadgraph"
+     * "jakarta.persistence.loadgraph"
      * <p> Configures a jpa entity graph to be used as a load graph template.
      * Those attributes included in the entity graph will have their values fetched and populated.
      * Attributes of the represented entity that are not present in the entity graph will be loaded based
      * on their mapping based FetchType settings.
      */
-    public static final String JPA_LOAD_GRAPH = "javax.persistence.loadgraph";
+    public static final String JPA_LOAD_GRAPH = "jakarta.persistence.loadgraph";
 
     /**
      * "eclipselink.load-group.attribute"
@@ -860,15 +860,15 @@ public class QueryHints {
     public static final String INDIRECTION_POLICY = "eclipselink.cache-usage.indirection-policy";
 
     /**
-     * "javax.persistence.lock.scope"
+     * "jakarta.persistence.lock.scope"
      * <p> By default pessimistic lock applied to only the tables mapped to the object being locked.
      * <p> It could be extended to apply also to relation (join) tables (ManyToMany and OneToOne case),
      * and CollectionTables (ElementCollection case).
      * Valid values are defined in PessimisticLockScope.
-     * @see javax.persistence.PessimisticLockScope
-     * @see javax.persistence.LockModeType
+     * @see jakarta.persistence.PessimisticLockScope
+     * @see jakarta.persistence.LockModeType
      */
-    public static final String PESSIMISTIC_LOCK_SCOPE = "javax.persistence.lock.scope";
+    public static final String PESSIMISTIC_LOCK_SCOPE = "jakarta.persistence.lock.scope";
 
     /**
      * "eclipselink.composite-unit.member"

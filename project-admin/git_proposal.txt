@@ -14,7 +14,7 @@ Mapping of current code into Git:
 
     <all branches> = /svnroot/rt/org.eclipse.persistence/branches/*/trunk + /svnroot/rt/org.eclipse.persistence/trunk
     <all branches>/examples                              -> git.eclipse.org/eclipselink/examples.git
-    <all branches>/jpa/plugins/javax.persistence         -> git.eclipse.org/eclipselink/javax.persistence.git
+    <all branches>/jpa/plugins/jakarta.persistence         -> git.eclipse.org/eclipselink/jakarta.persistence.git
     <all branches>/plugins/org.eclipse.persistence.antlr -> git.eclipse.org/eclipselink/org.eclipse.persistence.antlr.git
     <all branches>/plugins/org.eclipse.persistence.asm   -> git.eclipse.org/eclipselink/org.eclipse.persistence.asm.git
     <all branches>/utils/eclipselink.utils.workbench.*   -> git.eclipse.org/eclipselink/workbench.git/eclipselink.utils.workbench.*

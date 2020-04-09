@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2015 IBM Corporation.
  *
  * This program and the accompanying materials are made available under the
@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.tests.jpa.relationships;
 
 import java.util.HashMap;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

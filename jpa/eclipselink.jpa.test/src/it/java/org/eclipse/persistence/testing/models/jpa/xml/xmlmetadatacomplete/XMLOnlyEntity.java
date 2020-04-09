@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2015 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,7 +17,7 @@
 
 package org.eclipse.persistence.testing.models.jpa.xml.xmlmetadatacomplete;
 
-import javax.persistence.Id;
+import jakarta.persistence.Id;
 
 /**
  * Entity defined only by XML mapping.

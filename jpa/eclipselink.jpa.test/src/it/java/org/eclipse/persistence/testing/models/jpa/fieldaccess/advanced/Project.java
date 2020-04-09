@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,9 @@ package org.eclipse.persistence.testing.models.jpa.fieldaccess.advanced;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.InheritanceType.*;
 
 /**
  * Employees have a many-to-many relationship with Projects through the

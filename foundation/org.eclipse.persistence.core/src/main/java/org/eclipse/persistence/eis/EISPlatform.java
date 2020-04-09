@@ -19,8 +19,8 @@ import java.security.PrivilegedActionException;
 import java.util.*;
 import java.io.*;
 import java.lang.reflect.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 import org.w3c.dom.Element;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.exceptions.*;
@@ -203,8 +203,8 @@ public class EISPlatform extends DatasourcePlatform {
     /**
      * Allow the platform to create the appropriate type of record for the interaction.
      */
-    public javax.resource.cci.Record createInputRecord(EISInteraction interaction, EISAccessor accessor) {
-        javax.resource.cci.Record input = interaction.createInputRecord(accessor);
+    public jakarta.resource.cci.Record createInputRecord(EISInteraction interaction, EISAccessor accessor) {
+        jakarta.resource.cci.Record input = interaction.createInputRecord(accessor);
         if (getRecordConverter() != null) {
             input = getRecordConverter().converterToAdapterRecord(input);
         }
@@ -215,7 +215,7 @@ public class EISPlatform extends DatasourcePlatform {
      * Allow the platform to create the appropriate type of record for the interaction.
      * If an output record is not required then null is returned.
      */
-    public javax.resource.cci.Record createOutputRecord(EISInteraction interaction, AbstractRecord translationRow, EISAccessor accessor) {
+    public jakarta.resource.cci.Record createOutputRecord(EISInteraction interaction, AbstractRecord translationRow, EISAccessor accessor) {
         return null;
     }
 
@@ -223,8 +223,8 @@ public class EISPlatform extends DatasourcePlatform {
      * INTERNAL:
      * Allow the platform to handle record to row conversion.
      */
-    public AbstractRecord buildRow(javax.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
-        javax.resource.cci.Record output = record;
+    public AbstractRecord buildRow(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
+        jakarta.resource.cci.Record output = record;
         if (getRecordConverter() != null) {
             output = getRecordConverter().converterFromAdapterRecord(output);
         }
@@ -234,8 +234,8 @@ public class EISPlatform extends DatasourcePlatform {
     /**
      * Allow the platform to handle record to row conversion.
      */
-    public Vector buildRows(javax.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
-        javax.resource.cci.Record output = record;
+    public Vector buildRows(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
+        jakarta.resource.cci.Record output = record;
         if (getRecordConverter() != null) {
             output = getRecordConverter().converterFromAdapterRecord(output);
         }
@@ -246,7 +246,7 @@ public class EISPlatform extends DatasourcePlatform {
      * Allow the platform to handle the creation of the DOM record.
      * By default create a mapped record an assume it implements DOM as well.
      */
-    public javax.resource.cci.Record createDOMRecord(String recordName, EISAccessor accessor) {
+    public jakarta.resource.cci.Record createDOMRecord(String recordName, EISAccessor accessor) {
         try {
             return accessor.getRecordFactory().createMappedRecord(recordName);
         } catch (ResourceException exception) {
@@ -259,7 +259,7 @@ public class EISPlatform extends DatasourcePlatform {
      * Allow the platform to handle the creation of the Record for the DOM record.
      * By default instantiate an EISDOMRecord which introspects the record for a getDOM method.
      */
-    public AbstractRecord createDatabaseRowFromDOMRecord(javax.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
+    public AbstractRecord createDatabaseRowFromDOMRecord(jakarta.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         return new EISDOMRecord(record);
     }
 
@@ -275,7 +275,7 @@ public class EISPlatform extends DatasourcePlatform {
      * Stores the XML DOM value into the record.
      * This must be implemented by the platform if it support XML/DOM records.
      */
-    public void setDOMInRecord(Element dom, javax.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
+    public void setDOMInRecord(Element dom, jakarta.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         if (domMethod == null) {
             Class[] argumentTypes = new Class[1];
             argumentTypes[0] = Element.class;
@@ -320,7 +320,7 @@ public class EISPlatform extends DatasourcePlatform {
      */
     public void setValueInRecord(String key, Object value, MappedRecord record, EISAccessor accessor) {
         Object recordValue = value;
-        if (shouldConvertDataToStrings() && !(value instanceof javax.resource.cci.Record) && !(value instanceof Collection)) {
+        if (shouldConvertDataToStrings() && !(value instanceof jakarta.resource.cci.Record) && !(value instanceof Collection)) {
             recordValue = getConversionManager().convertObject(value, ClassConstants.STRING);
         }
         record.put(key, recordValue);

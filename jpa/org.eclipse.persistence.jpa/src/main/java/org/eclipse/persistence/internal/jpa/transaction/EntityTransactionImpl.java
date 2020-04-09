@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ package org.eclipse.persistence.internal.jpa.transaction;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import javax.persistence.RollbackException;
+import jakarta.persistence.RollbackException;
 
 import org.eclipse.persistence.exceptions.TransactionException;
 import org.eclipse.persistence.internal.jpa.QueryImpl;
@@ -36,7 +36,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  *
  * @see org.eclipse.persistence.internal.jpa.transaction.EntityTransactionImpl
  */
-public class EntityTransactionImpl implements javax.persistence.EntityTransaction {
+public class EntityTransactionImpl implements jakarta.persistence.EntityTransaction {
     /**
      * Keep a weak reference to the open queries that are executed in this entity manager.
      */
@@ -158,7 +158,7 @@ public class EntityTransactionImpl implements javax.persistence.EntityTransactio
             if (exception instanceof RollbackException) {
                 throw exception;
             } else if (exception instanceof org.eclipse.persistence.exceptions.OptimisticLockException) {
-                throw new RollbackException(new javax.persistence.OptimisticLockException(exception));
+                throw new RollbackException(new jakarta.persistence.OptimisticLockException(exception));
             } else {
                 throw new RollbackException(exception);
             }

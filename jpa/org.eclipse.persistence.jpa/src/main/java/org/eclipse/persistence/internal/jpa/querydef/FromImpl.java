@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,28 +22,28 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
-import javax.persistence.criteria.CollectionJoin;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.MapJoin;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.SetJoin;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.CollectionAttribute;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type.PersistenceType;
+import jakarta.persistence.criteria.CollectionJoin;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.From;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.SetJoin;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.PluralAttribute.CollectionType;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -58,13 +58,13 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * be the root of the query of the end node of a join statement.
  * <p>
  *
- * @see javax.persistence.criteria From
+ * @see jakarta.persistence.criteria From
  *
  * @author gyorke
  * @since EclipseLink 1.2
  */
 
-public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.criteria.From<Z, X> {
+public class FromImpl<Z, X>  extends PathImpl<X> implements jakarta.persistence.criteria.From<Z, X> {
 
     protected ManagedType managedType;
     protected Set<Join<X, ?>> joins;
@@ -390,7 +390,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     }
 
     @Override
-    public <Y> SetJoin<X, Y> join(javax.persistence.metamodel.SetAttribute<? super X, Y> set) {
+    public <Y> SetJoin<X, Y> join(jakarta.persistence.metamodel.SetAttribute<? super X, Y> set) {
         return this.join(set, JoinType.INNER);
     }
 
@@ -427,7 +427,7 @@ public class FromImpl<Z, X>  extends PathImpl<X> implements javax.persistence.cr
     }
 
     @Override
-    public <Y> SetJoin<X, Y> join(javax.persistence.metamodel.SetAttribute<? super X, Y> set, JoinType jt) {
+    public <Y> SetJoin<X, Y> join(jakarta.persistence.metamodel.SetAttribute<? super X, Y> set, JoinType jt) {
         org.eclipse.persistence.expressions.Expression node;
         Class clazz = set.getBindableJavaType();
         SetJoin<X, Y> join = null;

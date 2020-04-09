@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.naming.NamingException;
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.Assert;
 

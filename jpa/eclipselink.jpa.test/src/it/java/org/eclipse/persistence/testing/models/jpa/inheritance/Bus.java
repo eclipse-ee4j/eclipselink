@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,9 +16,9 @@
 //       - 211324: Add additional event(s) support to the EclipseLink-ORM.XML Schema
 package org.eclipse.persistence.testing.models.jpa.inheritance;
 
-import javax.persistence.*;
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
+import jakarta.persistence.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
 
 @Entity
 @EntityListeners({

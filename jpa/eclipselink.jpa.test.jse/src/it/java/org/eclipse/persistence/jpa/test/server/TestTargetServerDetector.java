@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,7 +18,7 @@
 //       - 465452: Test calling ServerPlatformUtils.createServerPlatform with a null platform class name.
 package org.eclipse.persistence.jpa.test.server;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.exceptions.ServerPlatformException;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;

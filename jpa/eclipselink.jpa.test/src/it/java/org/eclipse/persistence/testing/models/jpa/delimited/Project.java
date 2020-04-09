@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,10 +16,10 @@ package org.eclipse.persistence.testing.models.jpa.delimited;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.InheritanceType.*;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;

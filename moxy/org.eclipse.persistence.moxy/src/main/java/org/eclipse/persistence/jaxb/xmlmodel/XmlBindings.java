@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,11 +18,11 @@ package org.eclipse.persistence.jaxb.xmlmodel;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -90,7 +90,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  *
  */
-@XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
+@XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
 
 })
@@ -510,7 +510,7 @@ public class XmlBindings {
      *
      *
      */
-    @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
+    @XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "javaType"
     })
@@ -570,7 +570,7 @@ public class XmlBindings {
      *
      *
      */
-    @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
+    @XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "xmlEnum"
     })
@@ -630,7 +630,7 @@ public class XmlBindings {
      *
      *
      */
-    @XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)
+    @XmlAccessorType(jakarta.xml.bind.annotation.XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
         "xmlRegistry"
     })

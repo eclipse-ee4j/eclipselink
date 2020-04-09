@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,15 +12,15 @@
 
 package org.eclipse.persistence.testing.models.jpa22.attributeconverter;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.persistence.Converter;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import jakarta.persistence.Converter;
 
 import org.eclipse.persistence.testing.models.jpa22.sessionbean.InjectedBean;
 
 @Converter
-public class AttributeConverter implements javax.persistence.AttributeConverter<String,String> {
+public class AttributeConverter implements jakarta.persistence.AttributeConverter<String,String> {
 
     public static boolean INJECTED_RETURN_VALUE = false;
     public static int CONVERT_TO_DB_CALLS = 0;

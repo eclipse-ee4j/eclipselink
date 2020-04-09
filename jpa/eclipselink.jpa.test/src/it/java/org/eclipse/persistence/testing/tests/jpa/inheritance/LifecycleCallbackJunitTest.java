@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@
 package org.eclipse.persistence.testing.tests.jpa.inheritance;
 
 import java.util.List;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -168,7 +168,7 @@ public class LifecycleCallbackJunitTest extends JUnitTestCase {
             em.refresh(bus);
             defaultListenerPostLoadCountIntermidiate = DefaultListener.POST_LOAD_COUNT;
 
-            javax.persistence.Query q = em.createQuery("select distinct b from Bus b where b.id = " + bus.getId());
+            jakarta.persistence.Query q = em.createQuery("select distinct b from Bus b where b.id = " + bus.getId());
             // This should not fire a postLoad event ...
             q.getResultList();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,7 +18,7 @@
 //       - 465063 : Changed VendorNameToPlatformMapping file. Updating tests.
 package org.eclipse.persistence.jpa.test.ddl;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.internal.helper.DBPlatformHelper;
 import org.eclipse.persistence.jpa.test.basic.model.Employee;

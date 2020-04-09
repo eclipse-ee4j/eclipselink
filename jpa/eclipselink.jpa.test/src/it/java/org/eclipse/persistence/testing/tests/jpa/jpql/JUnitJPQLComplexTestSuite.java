@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  * 
  *
@@ -33,8 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 import org.eclipse.persistence.config.PessimisticLock;
@@ -4497,7 +4497,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                             Employee emp = (Employee) query2.getSingleResult(); // might wait for lock to be released
                             emp.setFirstName("Robert");
                             commitTransaction(em2); // might wait for lock to be released
-                        } catch (javax.persistence.RollbackException ex) {
+                        } catch (jakarta.persistence.RollbackException ex) {
                             if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1) {
                                 ex.printStackTrace();
                                 fail("it's not the right exception:" + ex);

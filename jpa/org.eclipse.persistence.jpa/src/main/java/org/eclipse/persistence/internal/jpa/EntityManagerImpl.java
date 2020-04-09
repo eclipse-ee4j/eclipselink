@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -56,28 +56,28 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
-import javax.persistence.CacheStoreMode;
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.LockTimeoutException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.persistence.PessimisticLockException;
-import javax.persistence.Query;
-import javax.persistence.StoredProcedureQuery;
-import javax.persistence.SynchronizationType;
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.Query;
+import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.metamodel.Metamodel;
 import javax.sql.DataSource;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
@@ -147,7 +147,7 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * <b>Responsibilities</b>: It is responsible for tracking transaction state and
  * the objects within that transaction.
  *
- * @see javax.persistence.EntityManager
+ * @see jakarta.persistence.EntityManager
  * @see org.eclipse.persistence.jpa.JpaEntityManager
  *
  * @author gyorke
@@ -647,7 +647,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         try {
             merged = context.mergeCloneWithReferences(entity, MergeManager.CASCADE_BY_MAPPING, true);
         } catch (org.eclipse.persistence.exceptions.OptimisticLockException ole) {
-            throw new javax.persistence.OptimisticLockException(ole);
+            throw new jakarta.persistence.OptimisticLockException(ole);
         }
         return merged;
     }
@@ -947,7 +947,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         // Apply any EclipseLink defaults if they haven't been set through
         // the properties.
         if (properties == null || ( !properties.containsKey(QueryHints.CACHE_USAGE) && !properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE) && !properties.containsKey(QueryHints.CACHE_STORE_MODE)
-                && !properties.containsKey("javax.persistence.cacheRetrieveMode") && !properties.containsKey("javax.persistence.cacheStoreMode"))) {
+                && !properties.containsKey("jakarta.persistence.cacheRetrieveMode") && !properties.containsKey("jakarta.persistence.cacheStoreMode"))) {
             query.conformResultsInUnitOfWork();
         }
 
@@ -1206,12 +1206,12 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     @Override
-    public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass) {
+    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass) {
         return createDescriptorNamedQuery(queryName, descriptorClass, null);
     }
 
     @Override
-    public javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes) {
+    public jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes) {
         try {
             verifyOpen();
             ClassDescriptor descriptor = this.databaseSession.getDescriptor(descriptorClass);
@@ -1437,7 +1437,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             if invoked on a JTA EntityManager.
      */
     @Override
-    public javax.persistence.EntityTransaction getTransaction() {
+    public jakarta.persistence.EntityTransaction getTransaction() {
         try {
             return ((TransactionWrapper) transaction).getTransaction();
         } catch (RuntimeException e) {
@@ -1527,7 +1527,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (reference == null) {
                 Object[] args = { primaryKey };
                 String message = ExceptionLocalization.buildMessage("no_entities_retrieved_for_get_reference", args);
-                throw new javax.persistence.EntityNotFoundException(message);
+                throw new jakarta.persistence.EntityNotFoundException(message);
             }
             return (T) reference;
         } catch (RuntimeException exception) {
@@ -1645,7 +1645,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * the return type.
      */
     @Override
-    public javax.persistence.Query createQuery(Expression expression, Class resultType) {
+    public jakarta.persistence.Query createQuery(Expression expression, Class resultType) {
         try {
             verifyOpen();
             DatabaseQuery query = createQueryInternal(expression, resultType);
@@ -1660,7 +1660,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink DatabaseQuery.
      */
     @Override
-    public javax.persistence.Query createQuery(DatabaseQuery databaseQuery) {
+    public jakarta.persistence.Query createQuery(DatabaseQuery databaseQuery) {
         try {
             verifyOpen();
             return new EJBQueryImpl(databaseQuery, this);
@@ -1672,7 +1672,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
 
     /**
-     * @see EntityManager#createQuery(javax.persistence.criteria.CriteriaQuery)
+     * @see EntityManager#createQuery(jakarta.persistence.criteria.CriteriaQuery)
      * @since Java Persistence 2.0
      */
     @Override
@@ -1690,7 +1690,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink by example.
      */
     @Override
-    public javax.persistence.Query createQueryByExample(Object exampleObject) {
+    public jakarta.persistence.Query createQueryByExample(Object exampleObject) {
         try {
             verifyOpen();
             ReadAllQuery query = new ReadAllQuery(exampleObject.getClass());
@@ -1706,7 +1706,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink Call.
      */
     @Override
-    public javax.persistence.Query createQuery(Call call) {
+    public jakarta.persistence.Query createQuery(Call call) {
         try {
             verifyOpen();
             DataReadQuery query = new DataReadQuery(call);
@@ -1721,7 +1721,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * This method is used to create a query using a EclipseLink Call.
      */
     @Override
-    public javax.persistence.Query createQuery(Call call, Class entityClass) {
+    public jakarta.persistence.Query createQuery(Call call, Class entityClass) {
         try {
             verifyOpen();
             ReadAllQuery query = new ReadAllQuery(entityClass, call);
@@ -1980,7 +1980,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             if an unsupported lock call is made
      * @throws IllegalArgumentException
      *             if the instance is not an entity or is a detached entity
-     * @throws javax.persistence.TransactionRequiredException
+     * @throws jakarta.persistence.TransactionRequiredException
      *             if there is no transaction
      */
     @Override
@@ -1998,7 +1998,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      *             if an unsupported lock call is made
      * @throws IllegalArgumentException
      *             if the instance is not an entity or is a detached entity
-     * @throws javax.persistence.TransactionRequiredException
+     * @throws jakarta.persistence.TransactionRequiredException
      *             if there is no transaction
      */
     @Override
@@ -2223,7 +2223,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * was created outside the scope of the active transaction to associate it
      * with the current JTA transaction.
      *
-     * @throws javax.persistence.TransactionRequiredException
+     * @throws jakarta.persistence.TransactionRequiredException
      *             if there is no transaction.
      */
     @Override
@@ -2711,7 +2711,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return CriteriaBuilder instance
      * @throws IllegalStateException if the entity manager has
      * been closed.
-     * @see javax.persistence.EntityManager#getCriteriaBuilder()
+     * @see jakarta.persistence.EntityManager#getCriteriaBuilder()
      * @since Java Persistence 2.0
      */
     @Override
@@ -2751,32 +2751,32 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
                 if (descriptor != null && ! descriptor.isIsolated()) {
                     if (operation != OperationType.LOCK) {
-                        // For a find operation, apply the javax.persistence.cache.retrieveMode
+                        // For a find operation, apply the jakarta.persistence.cache.retrieveMode
                         if (operation == OperationType.FIND) {
                             if (properties.containsKey(QueryHints.CACHE_RETRIEVE_MODE)) {
                                 queryHints.put(QueryHints.CACHE_RETRIEVE_MODE, properties.get(QueryHints.CACHE_RETRIEVE_MODE));
-                            } else if (properties.containsKey("javax.persistence.cacheRetrieveMode")) { // support legacy property
+                            } else if (properties.containsKey("jakarta.persistence.cacheRetrieveMode")) { // support legacy property
                                 Session activeSession = getActiveSession();
                                 if (activeSession != null) {
                                     // log deprecation info
-                                    String[] properties = new String[] { QueryHints.CACHE_RETRIEVE_MODE, "javax.persistence.cacheRetrieveMode" };
+                                    String[] properties = new String[] { QueryHints.CACHE_RETRIEVE_MODE, "jakarta.persistence.cacheRetrieveMode" };
                                     ((AbstractSession)activeSession).log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", properties);
                                 }
-                                queryHints.put(QueryHints.CACHE_RETRIEVE_MODE, properties.get("javax.persistence.cacheRetrieveMode"));
+                                queryHints.put(QueryHints.CACHE_RETRIEVE_MODE, properties.get("jakarta.persistence.cacheRetrieveMode"));
                             }
                         }
 
-                        // For both find and refresh operations, apply javax.persistence.cache.storeMode
+                        // For both find and refresh operations, apply jakarta.persistence.cache.storeMode
                         if (properties.containsKey(QueryHints.CACHE_STORE_MODE)) {
                             queryHints.put(QueryHints.CACHE_STORE_MODE, properties.get(QueryHints.CACHE_STORE_MODE));
-                        } else if (properties.containsKey("javax.persistence.cacheStoreMode")) { // support legacy property
+                        } else if (properties.containsKey("jakarta.persistence.cacheStoreMode")) { // support legacy property
                             Session activeSession = getActiveSession();
                             if (activeSession != null) {
                                 // log deprecation info
-                                String[] properties = new String[] { QueryHints.CACHE_STORE_MODE, "javax.persistence.cacheStoreMode" };
+                                String[] properties = new String[] { QueryHints.CACHE_STORE_MODE, "jakarta.persistence.cacheStoreMode" };
                                 ((AbstractSession)activeSession).log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", properties);
                             }
-                            queryHints.put(QueryHints.CACHE_STORE_MODE, properties.get("javax.persistence.cacheStoreMode"));
+                            queryHints.put(QueryHints.CACHE_STORE_MODE, properties.get("jakarta.persistence.cacheStoreMode"));
                         }
                     }
                 }
@@ -2792,7 +2792,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      * @return Metamodel instance
      * @throws IllegalStateException if the entity manager has
      * been closed.
-     * @see javax.persistence.EntityManager#getMetamodel()
+     * @see jakarta.persistence.EntityManager#getMetamodel()
      * @since Java Persistence 2.0
      */
     @Override
@@ -2823,7 +2823,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     }
 
     /**
-     * @see javax.persistence.EntityManager#getLockMode(java.lang.Object)
+     * @see jakarta.persistence.EntityManager#getLockMode(java.lang.Object)
      * @since Java Persistence API 2.0
      */
     @Override
@@ -2964,7 +2964,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                     return (T) accessor.getConnection();
                 }
                 return null;
-            } else if (cls.getName().equals("javax.resource.cci.Connection")) {
+            } else if (cls.getName().equals("jakarta.resource.cci.Connection")) {
                 UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
                 if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
                     return (T) unitOfWork.getAccessor().getConnection();
@@ -3021,7 +3021,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public static void processUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
         String errorMsg = entity._persistence_getFetchGroup().onUnfetchedAttribute(entity, attributeName);
         if(errorMsg != null) {
-            throw new javax.persistence.EntityNotFoundException(errorMsg);
+            throw new jakarta.persistence.EntityNotFoundException(errorMsg);
         }
     }
 
@@ -3032,7 +3032,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     public static void processUnfetchedAttributeForSet(FetchGroupTracker entity, String attributeName) {
         String errorMsg = entity._persistence_getFetchGroup().onUnfetchedAttributeForSet(entity, attributeName);
         if(errorMsg != null) {
-            throw new javax.persistence.EntityNotFoundException(errorMsg);
+            throw new jakarta.persistence.EntityNotFoundException(errorMsg);
         }
     }
 

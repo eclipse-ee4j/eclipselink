@@ -14,9 +14,9 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.eis.adapters.jms;
 
-import javax.jms.*;
+import jakarta.jms.*;
 import javax.naming.InitialContext;
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.eis.EISException;
 
 /**
@@ -46,7 +46,7 @@ public class CciJMSInteraction implements Interaction {
      * @throws EISException
      */
     @Override
-    public javax.resource.cci.Record execute(InteractionSpec spec, javax.resource.cci.Record input) throws EISException {
+    public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record input) throws EISException {
         CciJMSRecord record = new CciJMSRecord();
         execute(spec, input, record);
         return record;
@@ -63,7 +63,7 @@ public class CciJMSInteraction implements Interaction {
      * @throws EISException
      */
     @Override
-    public boolean execute(InteractionSpec spec, javax.resource.cci.Record input, javax.resource.cci.Record output) throws EISException {
+    public boolean execute(InteractionSpec spec, jakarta.resource.cci.Record input, jakarta.resource.cci.Record output) throws EISException {
         if (!(spec instanceof CciJMSInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }
@@ -299,7 +299,7 @@ public class CciJMSInteraction implements Interaction {
      * @return the cci connection
      */
     @Override
-    public javax.resource.cci.Connection getConnection() {
+    public jakarta.resource.cci.Connection getConnection() {
         return connection;
     }
 

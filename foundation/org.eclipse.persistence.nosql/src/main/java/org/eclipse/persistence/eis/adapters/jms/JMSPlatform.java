@@ -16,9 +16,9 @@ package org.eclipse.persistence.eis.adapters.jms;
 
 
 // JDK imports
-import javax.jms.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.jms.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 
 // TopLink imports
 import org.eclipse.persistence.eis.*;
@@ -195,7 +195,7 @@ public class JMSPlatform extends EISPlatform {
      * Creates an indexed record (mapped records are not supported).
      */
     @Override
-    public javax.resource.cci.Record createDOMRecord(String recordName, EISAccessor accessor) {
+    public jakarta.resource.cci.Record createDOMRecord(String recordName, EISAccessor accessor) {
         try {
             return accessor.getRecordFactory().createIndexedRecord(recordName);
         } catch (ResourceException exception) {
@@ -208,7 +208,7 @@ public class JMSPlatform extends EISPlatform {
      * Convert the DOM to text and add to the indexed record.
      */
     @Override
-    public void setDOMInRecord(Element dom, javax.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
+    public void setDOMInRecord(Element dom, jakarta.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         IndexedRecord indexedRecord = (IndexedRecord)record;
         indexedRecord.add(new org.eclipse.persistence.oxm.record.DOMRecord(dom).transformToXML());
     }
@@ -218,7 +218,7 @@ public class JMSPlatform extends EISPlatform {
      * Translate the indexed record text into a DOM record.
      */
     @Override
-    public AbstractRecord createDatabaseRowFromDOMRecord(javax.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
+    public AbstractRecord createDatabaseRowFromDOMRecord(jakarta.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         IndexedRecord indexedRecord = (IndexedRecord)record;
         if (indexedRecord.size() == 0) {
             return null;

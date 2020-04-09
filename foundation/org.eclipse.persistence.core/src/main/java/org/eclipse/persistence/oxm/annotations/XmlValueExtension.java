@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * <p>When using xml bindings with XmlValue property, it has same behavior as when XmlValueExtension is used.
  * It means that there is no need to specify XmlValueExtension in xml, because the behavior is provided by default.
  * </p>
- * @see javax.xml.bind.annotation.XmlValue
+ * @see jakarta.xml.bind.annotation.XmlValue
  */
 @Target({METHOD, FIELD})
 @Retention(RUNTIME)

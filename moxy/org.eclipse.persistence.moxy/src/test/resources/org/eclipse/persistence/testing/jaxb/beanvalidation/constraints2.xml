@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,13 +14,13 @@
 
 <constraint-mappings
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://jboss.org/xml/ns/javax/validation/mapping validation-mapping-1.1.xsd"
-        xmlns="http://jboss.org/xml/ns/javax/validation/mapping" version="1.1">
+        xsi:schemaLocation="http://jboss.org/xml/ns/jakarta.validation/mapping validation-mapping-1.1.xsd"
+        xmlns="http://jboss.org/xml/ns/jakarta.validation/mapping" version="1.1">
 
     <default-package>org.eclipse.persistence.testing.jaxb.beanvalidation.special</default-package>
     <bean class="ExternallyConstrainedEmployee2" ignore-annotations="false">
         <field name="age">
-            <constraint annotation="javax.validation.constraints.Min">
+            <constraint annotation="jakarta.validation.constraints.Min">
                 <element name="value">18</element>
             </constraint>
         </field>

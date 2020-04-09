@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,13 +18,13 @@
 //       - 248293: JPA 2.0 Element Collections (part 2)
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.persistence.FetchType.*;
-import static javax.persistence.CascadeType.PERSIST;
+import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @Embeddable
 public class TeamVitals implements Serializable {

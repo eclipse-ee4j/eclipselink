@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -112,7 +112,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
 
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();
 
-    private static final String DATA_HANDLER = "javax.activation.DataHandler";
+    private static final String DATA_HANDLER = "jakarta.activation.DataHandler";
     private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
     private static final String IMAGE = "java.awt.Image";
 

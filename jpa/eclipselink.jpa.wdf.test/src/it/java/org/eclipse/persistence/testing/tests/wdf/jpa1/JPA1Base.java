@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,7 +16,7 @@
 
 package org.eclipse.persistence.testing.tests.wdf.jpa1;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 
 import org.eclipse.persistence.testing.framework.wdf.AbstractBaseTest;
 
@@ -46,12 +46,12 @@ public abstract class JPA1Base extends AbstractBaseTest {
     }
 
     /**
-     * Checks whether the given throwable is of type javax.persistence.PersistenceException, or otherwise if the throwable
-     * contains a javax.persistence.PersistenceException somewhere in the cause stack.
+     * Checks whether the given throwable is of type jakarta.persistence.PersistenceException, or otherwise if the throwable
+     * contains a jakarta.persistence.PersistenceException somewhere in the cause stack.
      *
      * @param e
      *            The throwable to check
-     * @return <code>true</code> if the throwable is instance of or caused by javax.persistence.PersistenceException
+     * @return <code>true</code> if the throwable is instance of or caused by jakarta.persistence.PersistenceException
      */
     protected final boolean checkForPersistenceException(Throwable e) {
         boolean contained = false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2019 SAP. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
@@ -22,10 +22,10 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.PessimisticLockScope;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PessimisticLockScope;
+import jakarta.persistence.Query;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -397,7 +397,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                             beginTransaction(em2);
                             actor.modify(em2);
                             commitTransaction(em2); // might wait for lock to be released
-                        } catch (javax.persistence.RollbackException ex) {
+                        } catch (jakarta.persistence.RollbackException ex) {
                             if (ex.getMessage().indexOf("org.eclipse.persistence.exceptions.DatabaseException") == -1) {
                                 ex.printStackTrace();
                                 fail("it's not the right exception");
@@ -472,7 +472,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                     c = em2.find(EntyC.class, c.getId());
                     c.setEntyA(null);
                     commitTransaction(em2);
-                } catch(javax.persistence.RollbackException ex){
+                } catch(jakarta.persistence.RollbackException ex){
                     fail("it should not throw the exception!!!");
                 }finally{
                     if (isTransactionActive(em2)){
@@ -537,7 +537,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                     emp = em1.find(Employee.class, emp.getId());
                     emp.setDealers(null);
                     commitTransaction(em2);
-                } catch (javax.persistence.RollbackException ex){
+                } catch (jakarta.persistence.RollbackException ex){
                     fail("it should not throw the exception!!!");
                 } finally {
                     if (isTransactionActive(em2)) {
@@ -609,7 +609,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.entities.EntyE;
                     emp = em1.find(Employee.class, emp.getId());
                     emp.setProjects(null);
                     commitTransaction(em2);
-                }catch(javax.persistence.RollbackException ex){
+                }catch(jakarta.persistence.RollbackException ex){
                     fail("it should not throw the exception!!!");
                 }finally{
                     if (isTransactionActive(em2)){

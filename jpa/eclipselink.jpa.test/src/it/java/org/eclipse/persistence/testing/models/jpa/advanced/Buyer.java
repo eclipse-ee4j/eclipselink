@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,11 +21,11 @@ package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.GenerationType.*;
-import static javax.persistence.InheritanceType.*;
-import static javax.persistence.FetchType.*;
+import static jakarta.persistence.GenerationType.*;
+import static jakarta.persistence.InheritanceType.*;
+import static jakarta.persistence.FetchType.*;
 
 import org.eclipse.persistence.annotations.BasicMap;
 import org.eclipse.persistence.annotations.CacheIndex;

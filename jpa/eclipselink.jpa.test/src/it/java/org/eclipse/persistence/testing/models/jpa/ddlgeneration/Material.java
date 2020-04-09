@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2015 Adrian Goerler. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,12 +16,12 @@
 //       - 312244: can't map optional one-to-one relationship using @PrimaryKeyJoinColumn
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="DDL_MATERIAL")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,13 +31,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.LockTimeoutException;
-import javax.persistence.Parameter;
-import javax.persistence.PersistenceException;
-import javax.persistence.TemporalType;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.TypedQuery;
 
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.Expression;
@@ -394,9 +394,9 @@ public class EJBQueryImpl<X> extends QueryImpl implements JpaQuery<X> {
      * Execute a query that returns a single result.
      *
      * @return the result
-     * @throws javax.persistence.EntityNotFoundException
+     * @throws jakarta.persistence.EntityNotFoundException
      *             if there is no result
-     * @throws javax.persistence.NonUniqueResultException
+     * @throws jakarta.persistence.NonUniqueResultException
      *             if more than one result
      */
     @Override

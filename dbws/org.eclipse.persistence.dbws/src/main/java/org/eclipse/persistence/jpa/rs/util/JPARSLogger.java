@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.logging.Level;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.eclipse.persistence.internal.jpa.rs.weaving.PersistenceWeavedRest;
 import org.eclipse.persistence.internal.sessions.AbstractSession;

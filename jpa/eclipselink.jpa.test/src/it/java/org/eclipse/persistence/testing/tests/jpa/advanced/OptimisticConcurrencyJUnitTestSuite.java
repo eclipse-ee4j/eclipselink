@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,9 +21,9 @@ import org.eclipse.persistence.exceptions.OptimisticLockException;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.PersistenceException;
 
 /**
  * <p>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,26 +34,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.CollectionAttribute;
-import javax.persistence.metamodel.EmbeddableType;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.IdentifiableType;
-import javax.persistence.metamodel.ListAttribute;
-import javax.persistence.metamodel.ManagedType;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.MappedSuperclassType;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SetAttribute;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.PluralAttribute.CollectionType;
-import javax.persistence.metamodel.Type.PersistenceType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.CollectionAttribute;
+import jakarta.persistence.metamodel.EmbeddableType;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.ListAttribute;
+import jakarta.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.MappedSuperclassType;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.SetAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
+import jakarta.persistence.metamodel.PluralAttribute.CollectionType;
+import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -2777,7 +2777,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             //<E> ListAttribute<X, E> getDeclaredList(String name, Class<E> elementType);
             // UC2 - the attribute is on the managedType (but is the wrong type)
             // Also avoid a CCE on a List attribute
-            //java.lang.ClassCastException: org.eclipse.persistence.internal.jpa.metamodel.ListAttributeImpl cannot be cast to javax.persistence.metamodel.CollectionAttribute
+            //java.lang.ClassCastException: org.eclipse.persistence.internal.jpa.metamodel.ListAttributeImpl cannot be cast to jakarta.persistence.metamodel.CollectionAttribute
             CollectionAttribute<Manufacturer, ?> anAttribute =
                 entityManufacturer_.getDeclaredCollection("hardwareDesigners", entityManufacturer_.getJavaType());
         } catch (IllegalArgumentException iae) {
@@ -5445,11 +5445,11 @@ public class MetamodelMetamodelTest extends MetamodelTest {
 
             // 20090707: We are getting a CCE because "all" Collections are defaulting to List
             // when they are lazy instantiated as IndirectList if persisted as a List independent of what the OneToOne mapping is defined as
-//            javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute =
+//            jakarta.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute =
 //            entityManufacturer.getCollection("computers", Computer.class);
-//            javax.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute2 =
+//            jakarta.persistence.metamodel.CollectionAttribute<? super Manufacturer, Computer> computersAttribute2 =
 //            entityManufacturer.getCollection("computers", Computer.class);
-            javax.persistence.metamodel.SetAttribute<? super Manufacturer, Computer> computersAttribute =
+            jakarta.persistence.metamodel.SetAttribute<? super Manufacturer, Computer> computersAttribute =
             entityManufacturer_.getSet("computers", Computer.class);
 
             //version=Attribute[org.eclipse.persistence.mappings.DirectToFieldMapping[version-->CMP3_MM_MANUF.MANUF_VERSION]],

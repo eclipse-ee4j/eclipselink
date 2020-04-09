@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,14 +18,14 @@ import org.eclipse.persistence.exceptions.BeanValidationException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
-import javax.validation.Validation;
-import javax.validation.ValidationException;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
-import javax.validation.groups.Default;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidationException;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.groups.Default;
 import java.security.AccessController;
 import java.security.CodeSource;
 import java.security.PrivilegedAction;
@@ -88,12 +88,12 @@ class JAXBBeanValidator {
     private final JAXBContext context;
 
     /**
-     * Stores the {@link javax.validation.Validator} implementation. Once found, the reference is preserved.
+     * Stores the {@link jakarta.validation.Validator} implementation. Once found, the reference is preserved.
      */
     private Validator validator;
 
     /**
-     * Stores constraint violations returned by last call to {@link javax.validation.Validator#validate(Object, Class[])}.
+     * Stores constraint violations returned by last call to {@link jakarta.validation.Validator#validate(Object, Class[])}.
      * <p>After each {@link #validate(Object, Class[])} call, the reference is replaced.
      */
     private Set<ConstraintViolation<Object>> constraintViolations = Collections.emptySet();
@@ -102,7 +102,7 @@ class JAXBBeanValidator {
      * Computed value saying if the validation can proceed under current conditions, represented by:
      * <blockquote><pre>
      *     - {@link #beanValidationMode}
-     *     - {@link javax.validation.Validator} implementation present on classpath
+     *     - {@link jakarta.validation.Validator} implementation present on classpath
      * </pre></blockquote>
      * <p>
      * Value is recomputed only on {@link #changeInternalState()} call.
@@ -117,11 +117,11 @@ class JAXBBeanValidator {
 
     /**
      * This field will usually be {@code null}. However, user may pass his own instance of
-     * {@link javax.validation.ValidatorFactory} to
+     * {@link jakarta.validation.ValidatorFactory} to
      * {@link #shouldValidate}() method, and it will be assigned to this field.
      * <p>
      * If not null, {@link #validator} field will be assigned only by calling method
-     * {@link javax.validation.ValidatorFactory#getValidator()} the instance assigned to this field.
+     * {@link jakarta.validation.ValidatorFactory#getValidator()} the instance assigned to this field.
      */
     private ValidatorFactory validatorFactory;
 

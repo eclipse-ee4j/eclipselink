@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -43,8 +43,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
 
-import javax.persistence.CacheRetrieveMode;
-import javax.persistence.CacheStoreMode;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.DescriptorException;
@@ -581,13 +581,13 @@ public class QueryHintsHandler {
 
     protected static class CacheRetrieveModeLegacyHint extends CacheRetrieveModeHint {
         CacheRetrieveModeLegacyHint() {
-            super("javax.persistence.cacheRetrieveMode", CacheRetrieveMode.USE.name());
+            super("jakarta.persistence.cacheRetrieveMode", CacheRetrieveMode.USE.name());
         }
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (activeSession != null) {
-                String[] properties = new String[] { QueryHints.CACHE_RETRIEVE_MODE, "javax.persistence.cacheRetrieveMode" };
+                String[] properties = new String[] { QueryHints.CACHE_RETRIEVE_MODE, "jakarta.persistence.cacheRetrieveMode" };
                 activeSession.log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", properties);
             }
             return super.applyToDatabaseQuery(valueToApply, query, loader, activeSession);
@@ -623,13 +623,13 @@ public class QueryHintsHandler {
 
     protected static class CacheStoreModeLegacyHint extends CacheStoreModeHint {
         CacheStoreModeLegacyHint() {
-            super("javax.persistence.cacheStoreMode", CacheStoreMode.USE.name());
+            super("jakarta.persistence.cacheStoreMode", CacheStoreMode.USE.name());
         }
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (activeSession != null) {
-                String[] properties = new String[] { QueryHints.CACHE_STORE_MODE, "javax.persistence.cacheStoreMode" };
+                String[] properties = new String[] { QueryHints.CACHE_STORE_MODE, "jakarta.persistence.cacheStoreMode" };
                 activeSession.log(SessionLog.INFO, SessionLog.TRANSACTION, "deprecated_property", properties);
             }
             return super.applyToDatabaseQuery(valueToApply, query, loader, activeSession);
@@ -795,17 +795,17 @@ public class QueryHintsHandler {
 
     protected static class PessimisticLockScope extends Hint {
         PessimisticLockScope() {
-            super(QueryHints.PESSIMISTIC_LOCK_SCOPE, javax.persistence.PessimisticLockScope.NORMAL.name());
+            super(QueryHints.PESSIMISTIC_LOCK_SCOPE, jakarta.persistence.PessimisticLockScope.NORMAL.name());
             valueArray = new Object[] {
-                javax.persistence.PessimisticLockScope.NORMAL.name(),
-                javax.persistence.PessimisticLockScope.EXTENDED.name()
+                jakarta.persistence.PessimisticLockScope.NORMAL.name(),
+                jakarta.persistence.PessimisticLockScope.EXTENDED.name()
             };
         }
 
         @Override
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
-                boolean shouldExtend = valueToApply.equals(javax.persistence.PessimisticLockScope.EXTENDED.name());
+                boolean shouldExtend = valueToApply.equals(jakarta.persistence.PessimisticLockScope.EXTENDED.name());
                 ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)query;
                 olrQuery.setShouldExtendPessimisticLockScope(shouldExtend);
                 if(shouldExtend) {
@@ -1979,7 +1979,7 @@ public class QueryHintsHandler {
         }
     }
 
-    //Bug #456067: Added support for query hint "javax.persistence.query.timeout" defined in the spec
+    //Bug #456067: Added support for query hint "jakarta.persistence.query.timeout" defined in the spec
     protected static class QueryTimeoutHint extends Hint {
         QueryTimeoutHint() {
             super(QueryHints.QUERY_TIMEOUT, "");

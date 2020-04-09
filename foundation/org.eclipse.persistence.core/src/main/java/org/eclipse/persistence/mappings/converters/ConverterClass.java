@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
@@ -44,8 +44,8 @@ import org.eclipse.persistence.mappings.DirectMapMapping;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.sessions.Session;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.AttributeConverter;
+import jakarta.persistence.PersistenceException;
 
 /**
  * A JPA attribute converter class wrapped with an EclipseLink converter. This

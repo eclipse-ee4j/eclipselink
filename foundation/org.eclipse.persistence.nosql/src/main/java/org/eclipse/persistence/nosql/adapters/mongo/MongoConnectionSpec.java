@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,8 +16,8 @@ package org.eclipse.persistence.nosql.adapters.mongo;
 
 import java.util.Properties;
 
-import javax.resource.cci.Connection;
-import javax.resource.cci.ConnectionFactory;
+import jakarta.resource.cci.Connection;
+import jakarta.resource.cci.ConnectionFactory;
 
 import org.eclipse.persistence.eis.EISAccessor;
 import org.eclipse.persistence.eis.EISConnectionSpec;

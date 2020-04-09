@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -92,8 +92,8 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     public static final String CLONEABLE_SHORT_SIGNATURE = "java/lang/Cloneable";
 
     // Transient
-    public static final String JPA_TRANSIENT_DESCRIPTION = "Ljavax/persistence/Transient;";
-    public static final String XML_TRANSIENT_DESCRIPTION = "Ljavax/xml/bind/annotation/XmlTransient;";
+    public static final String JPA_TRANSIENT_DESCRIPTION = "Ljakarta/persistence/Transient;";
+    public static final String XML_TRANSIENT_DESCRIPTION = "Ljakarta/xml/bind/annotation/XmlTransient;";
 
     public static final String PERSISTENCE_SET = Helper.PERSISTENCE_SET;
     public static final String PERSISTENCE_GET = Helper.PERSISTENCE_GET;
@@ -205,7 +205,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     public static boolean isJAXBOnPath() {
         if (isJAXBOnPath == null) {
             try {
-                Class.forName("javax.xml.bind.annotation.XmlTransient");
+                Class.forName("jakarta.xml.bind.annotation.XmlTransient");
                 isJAXBOnPath = true;
             } catch (Exception notThere) {
                 isJAXBOnPath = false;
@@ -1076,7 +1076,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
      */
     public void addFetchGroupVariables() {
         FieldVisitor fv = cv.visitField(ACC_PROTECTED, "_persistence_fetchGroup", FETCHGROUP_SIGNATURE, null, null);
-        // Only add javax.persistence.Transient annotation if attribute access
+        // Only add jakarta.persistence.Transient annotation if attribute access
         // is being used
         if (classDetails.usesAttributeAccess()) {
             fv.visitAnnotation(JPA_TRANSIENT_DESCRIPTION, true).visitEnd();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2008, 2015 Nathan Beyer (Cerner). All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -17,7 +17,7 @@
 //                 field with the same name as the primary key field's name
 package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class ThreadInfo {

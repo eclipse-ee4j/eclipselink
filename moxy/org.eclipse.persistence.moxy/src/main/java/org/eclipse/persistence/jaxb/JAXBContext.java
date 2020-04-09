@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,13 +42,13 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.ValidationEvent;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
@@ -117,7 +117,7 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  * <li>Create Validator instances</li>
  * <li>Generate Schema Files</li>
  * </ul>
- * <p>This is the EclipseLink JAXB 2.0 implementation of javax.xml.bind.JAXBContext. This class
+ * <p>This is the EclipseLink JAXB 2.0 implementation of jakarta.xml.bind.JAXBContext. This class
  * is created by the JAXBContextFactory and is used to create Marshallers, Unmarshallers, Validators,
  * Binders and Introspectors. A JAXBContext can also be used to create Schema Files.
  * <p><b>Bootstrapping:</b>
@@ -148,7 +148,7 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  * file that do not contain the package name will have that package name prepended to it.  Also note that a
  * List or Map can be used for a single externalized metadata file.
  * <p>
- * @see javax.xml.bind.JAXBContext
+ * @see jakarta.xml.bind.JAXBContext
  * @see org.eclipse.persistence.jaxb.JAXBMarshaller
  * @see org.eclipse.persistence.jaxb.JAXBUnmarshaller
  * @see org.eclipse.persistence.jaxb.JAXBBinder
@@ -158,7 +158,7 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  * @author mmacivor
  */
 
-public class JAXBContext extends javax.xml.bind.JAXBContext {
+public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
     private static final Map<String, Boolean> PARSER_FEATURES = new HashMap<>(2);
     static {
@@ -201,7 +201,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         initBeanValidation();
     }
 
-    protected JAXBContext(JAXBContextInput contextInput) throws javax.xml.bind.JAXBException {
+    protected JAXBContext(JAXBContextInput contextInput) throws jakarta.xml.bind.JAXBException {
         this.contextInput = contextInput;
         this.contextState = contextInput.createContextState();
         initBeanValidation();
@@ -235,7 +235,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
     }
 
     /**
-     * Initializes bean validation if javax.validation.api bundle is on the class path.
+     * Initializes bean validation if jakarta.validation.api bundle is on the class path.
      */
     private void initBeanValidation() {
         if (beanValidationPresent == null) {
@@ -298,9 +298,9 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * not affect instances of Binder.  To get the new metadata you must create
      * a new instance of Binder after the refresh metadata call has been made.</li>
      * </ul>
-     * @throws javax.xml.bind.JAXBException
+     * @throws jakarta.xml.bind.JAXBException
      */
-    public void refreshMetadata() throws javax.xml.bind.JAXBException {
+    public void refreshMetadata() throws jakarta.xml.bind.JAXBException {
         JAXBContextState newState = newContextState();
         if (newState != null) {
             contextState = newState;
@@ -311,7 +311,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * INTERNAL:
      * Build a new JAXBContextState from the current JAXBContextInput.
      */
-    private JAXBContextState newContextState() throws javax.xml.bind.JAXBException {
+    private JAXBContextState newContextState() throws jakarta.xml.bind.JAXBException {
         if (null == contextInput) {
             return null;
         }
@@ -379,7 +379,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
     }
 
-    private Marshaller getJsonSchemaMarshaller() throws javax.xml.bind.JAXBException {
+    private Marshaller getJsonSchemaMarshaller() throws jakarta.xml.bind.JAXBException {
         if (this.jsonSchemaMarshaller == null) {
             JAXBContext ctx = (JAXBContext) JAXBContextFactory.createContext(new Class[] { JsonSchema.class }, null);
             this.jsonSchemaMarshaller = ctx.createMarshaller();
@@ -425,7 +425,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * to XML.
      */
     @Override
-    public JAXBMarshaller createMarshaller() throws javax.xml.bind.JAXBException {
+    public JAXBMarshaller createMarshaller() throws jakarta.xml.bind.JAXBException {
         return contextState.createMarshaller(this);
     }
 
@@ -434,7 +434,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
      * Java objects.
      */
     @Override
-    public JAXBUnmarshaller createUnmarshaller() throws javax.xml.bind.JAXBException {
+    public JAXBUnmarshaller createUnmarshaller() throws jakarta.xml.bind.JAXBException {
         return contextState.createUnmarshaller(this);
     }
 
@@ -821,7 +821,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             }
         }
 
-        protected abstract JAXBContextState createContextState() throws javax.xml.bind.JAXBException;
+        protected abstract JAXBContextState createContextState() throws jakarta.xml.bind.JAXBException;
 
         protected Collection<SessionEventListener> sessionEventListeners() {
             Object eventListenerFromProperties = null;
@@ -863,7 +863,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         @Override
-        protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
+        protected JAXBContextState createContextState() throws jakarta.xml.bind.JAXBException {
             boolean foundMetadata = false;
             List<Class> classes = new ArrayList<Class>();
 
@@ -934,7 +934,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             if (sessionLoadingException != null) {
                 jaxbException.setInternalException(sessionLoadingException);
             }
-            throw new javax.xml.bind.JAXBException(jaxbException);
+            throw new jakarta.xml.bind.JAXBException(jaxbException);
         }
 
         /**
@@ -942,7 +942,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
          * based on method parameters.  This method is useful when JAXB is used as
          * the binding layer for a Web Service provider.
          */
-        private JAXBContextState createContextState(Class[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws javax.xml.bind.JAXBException {
+        private JAXBContextState createContextState(Class[] classesToBeBound, Map<String, XmlBindings> xmlBindings) throws jakarta.xml.bind.JAXBException {
             JaxbClassLoader loader = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
                     ? AccessController.doPrivileged(new PrivilegedAction<JaxbClassLoader>() {
                         @Override
@@ -995,7 +995,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 Generator generator = new Generator(inputImpl, xmlBindings, loader, defaultTargetNamespace, enableXmlAccessorFactory);
                 return createContextState(generator, loader, classesToBeBound, properties);
             } catch (Exception ex) {
-                throw new javax.xml.bind.JAXBException(ex.getMessage(), ex);
+                throw new jakarta.xml.bind.JAXBException(ex.getMessage(), ex);
             }
         }
 
@@ -1064,7 +1064,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
 
         private boolean isJAXB2ObjectFactory(Class objectFactoryClass, ClassLoader classLoader) {
             try {
-                Class xmlRegistry = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlRegistry", false, classLoader);
+                Class xmlRegistry = PrivilegedAccessHelper.getClassForName("jakarta.xml.bind.annotation.XmlRegistry", false, classLoader);
                 if (objectFactoryClass.isAnnotationPresent(xmlRegistry)) {
                     return true;
                 }
@@ -1112,7 +1112,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         }
 
         @Override
-        protected JAXBContextState createContextState() throws javax.xml.bind.JAXBException {
+        protected JAXBContextState createContextState() throws jakarta.xml.bind.JAXBException {
             // Check properties map for eclipselink-oxm.xml entries
             Map<String, XmlBindings> xmlBindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
             String defaultTargetNamespace = null;
@@ -1179,7 +1179,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 JAXBContextState contextState = createContextState(generator, loader, typesToBeBound, properties);
                 return contextState;
             } catch (Exception ex) {
-                throw new javax.xml.bind.JAXBException(ex.getMessage(), ex);
+                throw new jakarta.xml.bind.JAXBException(ex.getMessage(), ex);
             }
         }
 
@@ -1487,7 +1487,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
                 if (name == null) {
                     Class theClass = (Class) type;
                     //Change default for byte[] to Base64 (JAXB 2.0 default)
-                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("javax.activation.DataHandler")) {
+                    if (type == CoreClassConstants.ABYTE || type == CoreClassConstants.APBYTE || type == Image.class || type == Source.class || theClass.getCanonicalName().equals("jakarta.activation.DataHandler")) {
                         name = Constants.BASE_64_BINARY_QNAME;
                     } else if (type == CoreClassConstants.OBJECT) {
                         name = Constants.ANY_TYPE_QNAME;
@@ -1595,7 +1595,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             this.xmlContext = xmlContext;
         }
 
-        public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
+        public JAXBMarshaller createMarshaller(JAXBContext jaxbContext) throws jakarta.xml.bind.JAXBException {
             // create a JAXBIntrospector and set it on the marshaller
             JAXBMarshaller marshaller = new JAXBMarshaller(xmlContext.createMarshaller(), jaxbContext);
             if (generator != null && generator.hasMarshalCallbacks()) {
@@ -1630,7 +1630,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
             return marshaller;
         }
 
-        public JAXBUnmarshaller createUnmarshaller(JAXBContext jaxbContext) throws javax.xml.bind.JAXBException {
+        public JAXBUnmarshaller createUnmarshaller(JAXBContext jaxbContext) throws jakarta.xml.bind.JAXBException {
 
             JAXBUnmarshaller unmarshaller = new JAXBUnmarshaller(xmlContext.createUnmarshaller(PARSER_FEATURES), jaxbContext);
             if (generator != null && generator.hasUnmarshalCallbacks()) {
@@ -1671,7 +1671,7 @@ public class JAXBContext extends javax.xml.bind.JAXBContext {
         try {
             marshaller = createMarshaller(context).getXMLMarshaller();
             unmarshaller = createUnmarshaller(context).getXMLUnmarshaller();
-        } catch (javax.xml.bind.JAXBException e) {
+        } catch (jakarta.xml.bind.JAXBException e) {
             // log something
             marshaller = context.getXMLContext().createMarshaller();
             unmarshaller = context.getXMLContext().createUnmarshaller();

@@ -14,7 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import javax.resource.cci.*;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -31,7 +30,7 @@ import org.w3c.dom.Node;
  * @author James
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
-public interface DOMRecord extends javax.resource.cci.Record {
+public interface DOMRecord extends jakarta.resource.cci.Record {
     Node getDOM();
 
     void setDOM(Element dom);

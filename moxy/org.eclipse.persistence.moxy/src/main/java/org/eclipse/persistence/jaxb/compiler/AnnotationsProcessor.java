@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,49 +33,49 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessorOrder;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAnyAttribute;
-import javax.xml.bind.annotation.XmlAnyElement;
-import javax.xml.bind.annotation.XmlAttachmentRef;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlIDREF;
-import javax.xml.bind.annotation.XmlInlineBinaryData;
-import javax.xml.bind.annotation.XmlList;
-import javax.xml.bind.annotation.XmlMimeType;
-import javax.xml.bind.annotation.XmlMixed;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlRegistry;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSchema;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlSchemaTypes;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlType.DEFAULT;
-import javax.xml.bind.annotation.XmlValue;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlAccessorOrder;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAnyAttribute;
+import jakarta.xml.bind.annotation.XmlAnyElement;
+import jakarta.xml.bind.annotation.XmlAttachmentRef;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlElementRefs;
+import jakarta.xml.bind.annotation.XmlElementWrapper;
+import jakarta.xml.bind.annotation.XmlElements;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlID;
+import jakarta.xml.bind.annotation.XmlIDREF;
+import jakarta.xml.bind.annotation.XmlInlineBinaryData;
+import jakarta.xml.bind.annotation.XmlList;
+import jakarta.xml.bind.annotation.XmlMimeType;
+import jakarta.xml.bind.annotation.XmlMixed;
+import jakarta.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlNsForm;
+import jakarta.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlSchema;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlSchemaTypes;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlType.DEFAULT;
+import jakarta.xml.bind.annotation.XmlValue;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapters;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 
@@ -195,10 +195,10 @@ import org.eclipse.persistence.oxm.annotations.XmlWriteTransformers;
 public final class AnnotationsProcessor {
 
     static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
-    static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
+    static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
     static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
-    private static final String JAVAX_XML_BIND_JAXBELEMENT = "javax.xml.bind.JAXBElement";
-    private static final String JAVAX_XML_BIND_ANNOTATION = "javax.xml.bind.annotation";
+    private static final String JAVAX_XML_BIND_JAXBELEMENT = "jakarta.xml.bind.JAXBElement";
+    private static final String JAVAX_XML_BIND_ANNOTATION = "jakarta.xml.bind.annotation";
     private static final String OXM_ANNOTATIONS = "org.eclipse.persistence.oxm.annotations";
     private static final String TYPE_METHOD_NAME = "type";
     private static final String VALUE_METHOD_NAME = "value";
@@ -207,7 +207,7 @@ public final class AnnotationsProcessor {
     private static final String JAXB_DEV = "jaxb.dev.java.net";
     private static final String ORG_W3C_DOM = "org.w3c.dom";
     private static final String CREATE = "create";
-    private static final String ELEMENT_DECL_GLOBAL = "javax.xml.bind.annotation.XmlElementDecl.GLOBAL";
+    private static final String ELEMENT_DECL_GLOBAL = "jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL";
     private static final String ELEMENT_DECL_DEFAULT = "\u0000";
     private static final String EMPTY_STRING = "";
     private static final String JAVA_UTIL_LIST = "java.util.List";
@@ -361,7 +361,7 @@ public final class AnnotationsProcessor {
                         } else {
                             qname = getUserDefinedSchemaTypes().get(nextClassName);
                             if (qname == null) {
-                                if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("javax.activation.DataHandler")) {
+                                if (nextClassName.equals(ClassConstants.APBYTE.getName()) || nextClassName.equals(Image.class.getName()) || nextClassName.equals(Source.class.getName()) || nextClassName.equals("jakarta.activation.DataHandler")) {
                                     if (xmlAttachmentRef) {
                                         qname = Constants.SWA_REF_QNAME;
                                     } else {
@@ -450,7 +450,7 @@ public final class AnnotationsProcessor {
             // method name/return value entries
             Map<String, Object> components = null;
             // handle @XmlElement: set 'type' method
-            if (!(xElt.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT"))) {
+            if (!(xElt.getType().equals("jakarta.xml.bind.annotation.XmlElement.DEFAULT"))) {
                 components = new HashMap<String, Object>();
                 components.put(TYPE_METHOD_NAME, xElt.getType());
                 annotations.add(AnnotationProxy.getProxy(components, XmlElement.class, loader, cMgr));
@@ -1350,7 +1350,7 @@ public final class AnnotationsProcessor {
         Class xmlSeeAlsoClass = null;
         Method valueMethod = null;
         try {
-            xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("javax.xml.bind.annotation.XmlSeeAlso", false, helper.getClassLoader());
+            xmlSeeAlsoClass = PrivilegedAccessHelper.getClassForName("jakarta.xml.bind.annotation.XmlSeeAlso", false, helper.getClassLoader());
             valueMethod = PrivilegedAccessHelper.getDeclaredMethod(xmlSeeAlsoClass, "value", new Class[] {});
         } catch (ClassNotFoundException ex) {
             // Ignore this exception. If SeeAlso isn't available, don't try to
@@ -1442,7 +1442,7 @@ public final class AnnotationsProcessor {
             XmlJavaTypeAdapter adapter = (XmlJavaTypeAdapter) helper.getAnnotation(javaClass, XmlJavaTypeAdapter.class);
             String boundType = adapter.type().getName();
 
-            if (boundType == null || boundType.equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
+            if (boundType == null || boundType.equals("jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
                 boundType = javaClass.getRawName();
             }
             org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
@@ -1517,7 +1517,7 @@ public final class AnnotationsProcessor {
     private void preProcessXmlType(JavaClass javaClass, TypeInfo info, NamespaceInfo packageNamespace) {
         org.eclipse.persistence.jaxb.xmlmodel.XmlType xmlType = new org.eclipse.persistence.jaxb.xmlmodel.XmlType(); // 14 xmlType=XmlType - default settings: name=null, namespace=null, factoryClass=null, factoryMethod=null, propOrder=null.
         if (helper.isAnnotationPresent(javaClass, XmlType.class)) {
-            XmlType typeAnnotation = (XmlType) helper.getAnnotation(javaClass, XmlType.class); // 15 typeAnnotation=com.sun.proxy.$Proxy6"@javax.xml.bind.annotation.XmlType(factoryMethod=, name=OneClass, propOrder=[car], factoryClass=class javax.xml.bind.annotation.XmlType$DEFAULT, namespace=##default)"
+            XmlType typeAnnotation = (XmlType) helper.getAnnotation(javaClass, XmlType.class); // 15 typeAnnotation=com.sun.proxy.$Proxy6"@jakarta.xml.bind.annotation.XmlType(factoryMethod=, name=OneClass, propOrder=[car], factoryClass=class jakarta.xml.bind.annotation.XmlType$DEFAULT, namespace=##default)"
             // set name
             xmlType.setName(typeAnnotation.name()); // 16 XmlType - name="OneClass
             // set namespace
@@ -1532,9 +1532,9 @@ public final class AnnotationsProcessor {
                 xmlType.getPropOrder().add(prop); // 20 - puts "car" into xmlType.propOrder
             }
             // set factoryClass
-            Class factoryClass = typeAnnotation.factoryClass(); // 21 factoryClass=java.lang.Class"class javax.xml.bind.annotation.XmlType$DEFAULT"
+            Class factoryClass = typeAnnotation.factoryClass(); // 21 factoryClass=java.lang.Class"class jakarta.xml.bind.annotation.XmlType$DEFAULT"
             if (factoryClass == DEFAULT.class) {
-                xmlType.setFactoryClass("javax.xml.bind.annotation.XmlType.DEFAULT"); // 22
+                xmlType.setFactoryClass("jakarta.xml.bind.annotation.XmlType.DEFAULT"); // 22
             } else {
                 xmlType.setFactoryClass(factoryClass.getCanonicalName());
             }
@@ -1564,7 +1564,7 @@ public final class AnnotationsProcessor {
         String factoryClassName = xmlType.getFactoryClass();
         String factoryMethodName = xmlType.getFactoryMethod();
 
-        if (factoryClassName.equals("javax.xml.bind.annotation.XmlType.DEFAULT")) {
+        if (factoryClassName.equals("jakarta.xml.bind.annotation.XmlType.DEFAULT")) {
             if (factoryMethodName != null && !factoryMethodName.equals(EMPTY_STRING)) {
                 // factory method applies to the current class - verify method
                 // exists
@@ -1853,7 +1853,7 @@ public final class AnnotationsProcessor {
                     org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter xja = new org.eclipse.persistence.jaxb.xmlmodel.XmlJavaTypeAdapter();
                     xja.setValue(adapter.value().getName());
                     /*String boundType = adapter.type().getName();
-                    if (boundType == null || boundType.equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
+                    if (boundType == null || boundType.equals("jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
                         boundType = ptype.getRawName();
                     } value from boundType is not used - fix if you know what it should do. */
                     xja.setType(adapter.type().getName());
@@ -2451,7 +2451,7 @@ public final class AnnotationsProcessor {
             // XML the value will
             // be "XmlElement.DEFAULT", and from annotations the value will be
             // "XmlElement$DEFAULT"
-            if (next.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT") || next.getType().equals("javax.xml.bind.annotation.XmlElement$DEFAULT")) {
+            if (next.getType().equals("jakarta.xml.bind.annotation.XmlElement.DEFAULT") || next.getType().equals("jakarta.xml.bind.annotation.XmlElement$DEFAULT")) {
                 choiceProp.setType(propertyType);
             } else {
                 choiceProp.setType(helper.getJavaClass(next.getType()));
@@ -2586,7 +2586,7 @@ public final class AnnotationsProcessor {
                 }
             }
 
-            if (!(nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
+            if (!(nextRef.getType().equals("jakarta.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("jakarta.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
                 typeName = nextRef.getType();
                 type = helper.getJavaClass(typeName);
             }
@@ -2653,7 +2653,7 @@ public final class AnnotationsProcessor {
             // for DEFAULT, if from XML the type will be
             // "XmlElementRef.DEFAULT",
             // and from annotations the value will be "XmlElementref$DEFAULT"
-            if (!(nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("javax.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
+            if (!(nextRef.getType().equals("jakarta.xml.bind.annotation.XmlElementRef.DEFAULT") || nextRef.getType().equals("jakarta.xml.bind.annotation.XmlElementRef$DEFAULT"))) {
                 typeName = nextRef.getType();
                 type = helper.getJavaClass(typeName);
             }
@@ -3877,7 +3877,7 @@ public final class AnnotationsProcessor {
             String url;
             String localName;
             String defaultValue = null;
-            Class scopeClass = javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+            Class scopeClass = jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
 
             if (xmlEltDecl != null) {
                 url = xmlEltDecl.getNamespace();
@@ -3888,7 +3888,7 @@ public final class AnnotationsProcessor {
                     if (jScopeClass != null) {
                         scopeClass = helper.getClassForJavaClass(jScopeClass);
                         if (scopeClass == null) {
-                            scopeClass = javax.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
+                            scopeClass = jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL.class;
                         }
                     }
                 }
@@ -4331,7 +4331,7 @@ public final class AnnotationsProcessor {
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "setItem", "(L" + mapType.getInternalName() + ";)V", methodSig, null);
         // TODO: Verify that we really want to put @XmlTranient on setItem
         // method
-        mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlTransient;", true);
+        mv.visitAnnotation("Ljakarta/xml/bind/annotation/XmlTransient;", true);
         Label l0 = new Label();
         mv.visitLabel(l0);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
@@ -4351,7 +4351,7 @@ public final class AnnotationsProcessor {
         // Write @XmlTransient public ??? getItem()
         methodSig = "()L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
         mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "getItem", "()L" + mapType.getInternalName() + SEMI_COLON, methodSig, null);
-        mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlTransient;", true);
+        mv.visitAnnotation("Ljakarta/xml/bind/annotation/XmlTransient;", true);
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitFieldInsn(Opcodes.GETFIELD, qualifiedInternalClassName, "entry", L + mapType.getInternalName() + SEMI_COLON);
         mv.visitInsn(Opcodes.ARETURN);
@@ -4375,7 +4375,7 @@ public final class AnnotationsProcessor {
         mv.visitEnd();
 
         // Write @XmlType(namespace)
-        av = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
+        av = cw.visitAnnotation("Ljakarta/xml/bind/annotation/XmlType;", true);
         av.visit("namespace", namespace);
 
         cw.visitEnd();
@@ -4602,7 +4602,7 @@ public final class AnnotationsProcessor {
         }
 
         // Write @XmlType(namespace)
-        AnnotationVisitor av = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
+        AnnotationVisitor av = cw.visitAnnotation("Ljakarta/xml/bind/annotation/XmlType;", true);
         if(null != namespace) {
             av.visit("namespace", namespace);
         }
@@ -4724,12 +4724,12 @@ public final class AnnotationsProcessor {
         }
         if(hasXmlList) {
             // @XmlValue
-            av = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlValue;", true);
+            av = mv.visitAnnotation("Ljakarta/xml/bind/annotation/XmlValue;", true);
             av = mv.visitAnnotation("Lorg/eclipse/persistence/oxm/annotations/XmlValueExtension;", true);
             av.visitEnd();
         } else {
             // @XmlElement(name="item", nillable=true)
-            av = mv.visitAnnotation("Ljavax/xml/bind/annotation/XmlElement;", true);
+            av = mv.visitAnnotation("Ljakarta/xml/bind/annotation/XmlElement;", true);
             av.visit("name", ITEM);
             av.visit("nillable", true);
             av.visitEnd();

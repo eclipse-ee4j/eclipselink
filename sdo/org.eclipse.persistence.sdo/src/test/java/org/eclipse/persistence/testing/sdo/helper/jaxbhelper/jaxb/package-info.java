@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,5 +12,5 @@
 
 // Contributors:
 //     bdoughan - Jan 27/2009 - 1.1 - Initial implementation
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:jaxb")
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "urn:jaxb")
 package org.eclipse.persistence.testing.sdo.helper.jaxbhelper.jaxb;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,10 +17,10 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements;
 import java.util.List;
 
 public class Foo {
-    //@javax.xml.bind.annotation.XmlElementWrapper(name="items")
-    //@javax.xml.bind.annotation.XmlElements({
-    //    @javax.xml.bind.annotation.XmlElement(name="A", type=Integer.class),
-    //    @javax.xml.bind.annotation.XmlElement(name="B", type=Float.class)
+    //@jakarta.xml.bind.annotation.XmlElementWrapper(name="items")
+    //@jakarta.xml.bind.annotation.XmlElements({
+    //    @jakarta.xml.bind.annotation.XmlElement(name="A", type=Integer.class),
+    //    @jakarta.xml.bind.annotation.XmlElement(name="B", type=Float.class)
     //})
     public List items;
 

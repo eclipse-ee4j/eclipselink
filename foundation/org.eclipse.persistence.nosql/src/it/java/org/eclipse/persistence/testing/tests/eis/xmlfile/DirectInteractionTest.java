@@ -15,7 +15,7 @@
 package org.eclipse.persistence.testing.tests.eis.xmlfile;
 
 import java.io.*;
-import javax.resource.cci.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.eis.*;
 import org.eclipse.persistence.internal.eis.adapters.xmlfile.*;
 import org.eclipse.persistence.testing.framework.*;
@@ -66,7 +66,7 @@ public class DirectInteractionTest extends DirectConnectTest {
         spec.setInteractionType(XMLFileInteractionSpec.READ);
         spec.setFileName("xml-file-insert-test.xml");
 
-        javax.resource.cci.Record output = interaction.execute(spec, null);
+        jakarta.resource.cci.Record output = interaction.execute(spec, null);
 
         getSession().logMessage("output: " + output);
         interaction.close();
@@ -94,7 +94,7 @@ public class DirectInteractionTest extends DirectConnectTest {
         spec.setInteractionType(XMLFileInteractionSpec.DELETE);
         spec.setFileName("xml-file-insert-test.xml");
 
-        javax.resource.cci.Record output = interaction.execute(spec, null);
+        jakarta.resource.cci.Record output = interaction.execute(spec, null);
 
         interaction.close();
 

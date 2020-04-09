@@ -16,8 +16,8 @@ package org.eclipse.persistence.eis.interactions;
 
 import java.io.*;
 import java.util.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -346,28 +346,28 @@ public abstract class EISInteraction extends DatasourceCall {
      * Create the appropriate input record for this interaction.
      * Populate the data into the record from this interaction's arguments.
      */
-    public abstract javax.resource.cci.Record createInputRecord(EISAccessor accessor);
+    public abstract jakarta.resource.cci.Record createInputRecord(EISAccessor accessor);
 
     /**
      * INTERNAL:
      * Build a database row from the record returned from the interaction.
      */
-    public abstract AbstractRecord buildRow(javax.resource.cci.Record record, EISAccessor accessor);
+    public abstract AbstractRecord buildRow(jakarta.resource.cci.Record record, EISAccessor accessor);
 
     /**
      * Build a collection of database rows from the Record returned from the interaction.
      * This handles IndexedRecords used as sets of result records,
      * and a single MappedRecord with a list of result records.
      */
-    public Vector buildRows(javax.resource.cci.Record record, EISAccessor accessor) {
+    public Vector buildRows(jakarta.resource.cci.Record record, EISAccessor accessor) {
         Vector rows = null;
         if (record instanceof IndexedRecord) {
             IndexedRecord indexedRecord = (IndexedRecord)record;
             rows = new Vector(indexedRecord.size());
             for (int index = 0; index < indexedRecord.size(); index++) {
                 Object element = indexedRecord.get(index);
-                if (element instanceof javax.resource.cci.Record) {
-                    rows.addElement(buildRow((javax.resource.cci.Record)element, accessor));
+                if (element instanceof jakarta.resource.cci.Record) {
+                    rows.addElement(buildRow((jakarta.resource.cci.Record)element, accessor));
                 } else {
                     // It is a single row record.
                     rows.add(buildRow(record, accessor));
@@ -391,8 +391,8 @@ public abstract class EISInteraction extends DatasourceCall {
                     rows = new Vector(elements.size());
                     for (int index = 0; index < elements.size(); index++) {
                         Object elementValue = elements.get(index);
-                        if (elementValue instanceof javax.resource.cci.Record) {
-                            rows.addElement(buildRow((javax.resource.cci.Record)elementValue, accessor));
+                        if (elementValue instanceof jakarta.resource.cci.Record) {
+                            rows.addElement(buildRow((jakarta.resource.cci.Record)elementValue, accessor));
                         } else {
                             rows.add(elementValue);
                         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,7 +107,7 @@ public class SDOProperty implements Property, Serializable {
     static {
         isActivationAvailable = false;
         try {
-            PrivilegedAccessHelper.getClassForName("javax.activation.DataHandler");
+            PrivilegedAccessHelper.getClassForName("jakarta.activation.DataHandler");
             PrivilegedAccessHelper.getClassForName("javax.mail.internet.MimeMultipart");
             isActivationAvailable = true;
         } catch(ClassNotFoundException ex) {
@@ -560,11 +560,11 @@ public class SDOProperty implements Property, Serializable {
 
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
                     if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) ||
-                            ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
+                            ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("jakarta.activation.DataHandler")) ||
                             (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME))))) {
                         xmlMapping = buildXMLBinaryDataCollectionMapping(mappingUri, mimeTypePolicy);
                     } else {
-                        if(!isActivationAvailable && ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler"))) {
+                        if(!isActivationAvailable && ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("jakarta.activation.DataHandler"))) {
                             throw SDOException.unableToMapDataHandlerDueToMissingDependency(this.propertyName, this.getContainingType().getQName().toString());
                         }
                         if(isSubstitutable()) {
@@ -578,11 +578,11 @@ public class SDOProperty implements Property, Serializable {
 
                     //Removed check for XSD type since XSD type can't be set via typeHelper.define
                     if (isActivationAvailable && (!aHelperContext.getXSDHelper().isAttribute(this) && ((mimeTypePolicy != null) ||
-                            ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler")) ||
+                            ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("jakarta.activation.DataHandler")) ||
                             (getXsdType() != null && getXsdType().equals(XMLConstants.BASE_64_BINARY_QNAME))))) {
                          xmlMapping = buildXMLBinaryDataMapping(mappingUri, mimeTypePolicy);
                     } else {
-                        if(!isActivationAvailable && ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("javax.activation.DataHandler"))) {
+                        if(!isActivationAvailable && ((getType().getInstanceClass() != null) && getType().getInstanceClass().getName().equals("jakarta.activation.DataHandler"))) {
                             //throw exception
                             throw SDOException.unableToMapDataHandlerDueToMissingDependency(this.propertyName, this.getContainingType().getQName().toString());
                         }
@@ -705,7 +705,7 @@ public class SDOProperty implements Property, Serializable {
         mapping.setAttributeName(getName());
         String xpath = getQualifiedXPath(mappingUri, false);
 
-        if (!getType().getInstanceClassName().equals("javax.activation.DataHandler")) {
+        if (!getType().getInstanceClassName().equals("jakarta.activation.DataHandler")) {
             mapping.setAttributeElementClass(getType().getInstanceClass());
         }
         mapping.setMimeTypePolicy(mimeTypePolicy);
@@ -968,7 +968,7 @@ public class SDOProperty implements Property, Serializable {
         if (getType().isDataType() && (value != null)) {
             Class instanceClass = getType().getInstanceClass();
             String instanceClassName = getType().getInstanceClassName();
-            if (((instanceClassName != null) && instanceClassName.equals("javax.activation.DataHandler")) ||//
+            if (((instanceClassName != null) && instanceClassName.equals("jakarta.activation.DataHandler")) ||//
                     (instanceClass == ClassConstants.ABYTE) ||//
                     (instanceClass == ClassConstants.APBYTE) ||//
                     (instanceClass == ClassConstants.BYTE) ||//

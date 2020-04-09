@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010, 2015 Karsten Wutzke. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,9 +18,9 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 
 import java.io.Serializable;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "PostAddresses")

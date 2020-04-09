@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -213,15 +213,15 @@ public final class BasicRefactoringToolTest1_0 extends AbstractBasicRefactoringT
     @Test
     public void test_RenameEnumConstant_1() throws Exception {
 
-        String jpqlQuery = "UPDATE Employee SET name = javax.persistence.AccessType.FIELD";
+        String jpqlQuery = "UPDATE Employee SET name = jakarta.persistence.AccessType.FIELD";
         BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 
         int offset = "UPDATE Employee SET name = ".length();
-        String oldValue = "javax.persistence.AccessType.FIELD";
-        String newValue = "javax.persistence.AccessType.PROPERTY";
+        String oldValue = "jakarta.persistence.AccessType.FIELD";
+        String newValue = "jakarta.persistence.AccessType.PROPERTY";
         refactoringTool.renameEnumConstant(oldValue, newValue);
 
-        String expected = "UPDATE Employee SET name = javax.persistence.AccessType.PROPERTY";
+        String expected = "UPDATE Employee SET name = jakarta.persistence.AccessType.PROPERTY";
         testChange(refactoringTool, jpqlQuery, expected, offset, oldValue, newValue);
     }
 
@@ -231,8 +231,8 @@ public final class BasicRefactoringToolTest1_0 extends AbstractBasicRefactoringT
         String jpqlQuery = "UPDATE Employee e SET e.name = e.lName";
         BasicRefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
 
-        String oldValue = "javax.persistence.AccessType.FIELD";
-        String newValue = "javax.persistence.AccessType.PROPERTY";
+        String oldValue = "jakarta.persistence.AccessType.FIELD";
+        String newValue = "jakarta.persistence.AccessType.PROPERTY";
         refactoringTool.renameEnumConstant(oldValue, newValue);
 
         testHasNoChanges(refactoringTool);

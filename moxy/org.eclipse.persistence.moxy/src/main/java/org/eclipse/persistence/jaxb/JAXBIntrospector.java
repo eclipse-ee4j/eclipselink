@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -33,13 +33,13 @@ import org.eclipse.persistence.oxm.XMLContext;
  * by a JAXBContext and allows the user to access certain pieces of meta-data about an instance
  * of a JAXB bound class.
  *
- * @see javax.xml.bind.JAXBIntrospector
+ * @see jakarta.xml.bind.JAXBIntrospector
  * @see org.eclipse.persistence.jaxb.JAXBContext
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
  */
 
-public class JAXBIntrospector extends javax.xml.bind.JAXBIntrospector {
+public class JAXBIntrospector extends jakarta.xml.bind.JAXBIntrospector {
     private XMLContext context;
     public JAXBIntrospector(XMLContext context) {
         this.context = context;

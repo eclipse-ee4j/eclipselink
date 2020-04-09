@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -371,8 +371,8 @@ public class PrivilegedAccessHelper {
      */
     private static boolean isIllegalProperty(final String key) {
         return key == null || !(legalPropertiesSet.contains(key) || key.startsWith("eclipselink.")
-                || key.startsWith("javax.persistence.") || key.startsWith("org.eclipse.persistence.")
-                || key.startsWith("persistence.") || key.startsWith("javax.xml."));
+                || key.startsWith("jakarta.persistence.") || key.startsWith("org.eclipse.persistence.")
+                || key.startsWith("persistence.") || key.startsWith("javax.xml.") || key.startsWith("jakarta.xml."));
     }
 
     /**

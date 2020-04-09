@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,14 +14,14 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb;
 
-import javax.xml.bind.Binder;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.MarshalException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.Binder;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.MarshalException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.UnmarshalException;
+import jakarta.xml.bind.ValidationEventHandler;
 import javax.xml.namespace.QName;
 import javax.xml.validation.Schema;
 
@@ -37,7 +37,7 @@ import org.w3c.dom.Node;
 
 /**
  * INTERNAL
- * <p><b>Purpose:</b> Provide a TopLink implementation of the javax.xml.bind.Binder interface</p>
+ * <p><b>Purpose:</b> Provide a TopLink implementation of the jakarta.xml.bind.Binder interface</p>
  * <p><b>Responsibilities:</b>
  * <ul>
  * <li>Provide an implementation of Binder</li>
@@ -46,7 +46,7 @@ import org.w3c.dom.Node;
  *
  * @author      mmacivor
  * @since       Oracle TopLink 11.1.1.0.0
- * @see         javax.xml.bind.Binder
+ * @see         jakarta.xml.bind.Binder
  */
 public class JAXBBinder extends Binder {
 

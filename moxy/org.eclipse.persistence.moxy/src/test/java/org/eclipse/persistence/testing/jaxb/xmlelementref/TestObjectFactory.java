@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 // mmacivor - June 05/2008 - 1.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.xmlelementref;
 
-import javax.xml.bind.annotation.*;
-import javax.xml.bind.*;
+import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
 @XmlRegistry
 public class TestObjectFactory {

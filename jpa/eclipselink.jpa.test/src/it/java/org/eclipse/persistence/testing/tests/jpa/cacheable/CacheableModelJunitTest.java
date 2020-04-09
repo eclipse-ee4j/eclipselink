@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -21,7 +21,7 @@
 //     06/19/2014-2.6: - Tomas Kraus (Oracle)
 //       - 437578: Tests to verify @Cacheable inheritance in JPA 2.1
 //     12/03/2015-2.6 Dalia Abo Sheasha
-//       - 483582: Add the javax.persistence.sharedCache.mode property
+//       - 483582: Add the jakarta.persistence.sharedCache.mode property
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
 import java.util.ArrayList;
@@ -29,14 +29,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Cache;
-import javax.persistence.CacheRetrieveMode;
-import javax.persistence.CacheStoreMode;
-import javax.persistence.Cacheable;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
-import javax.persistence.Query;
+import jakarta.persistence.Cache;
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.Cacheable;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.Query;
 
 import junit.framework.*;
 
@@ -473,10 +473,10 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             closeEM(em2);
 
             // This setting should be ignored on a refresh operation ...
-            em.setProperty("javax.persistence.cacheRetrieveMode", CacheRetrieveMode.USE); // legacy property
+            em.setProperty("jakarta.persistence.cacheRetrieveMode", CacheRetrieveMode.USE); // legacy property
 
             // Set the refresh property.
-            em.setProperty("javax.persistence.cacheStoreMode", CacheStoreMode.REFRESH); // legacy property
+            em.setProperty("jakarta.persistence.cacheStoreMode", CacheStoreMode.REFRESH); // legacy property
 
             // Re-issue the find on the original EM.
             CacheableTrueEntity entity = em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id);
@@ -546,11 +546,11 @@ public class CacheableModelJunitTest extends JUnitTestCase {
             closeEM(em2);
 
             // This setting should be ignored on a refresh operation ...
-            em.setProperty("javax.persistence.cacheRetrieveMode", CacheRetrieveMode.USE);
+            em.setProperty("jakarta.persistence.cacheRetrieveMode", CacheRetrieveMode.USE);
 
             // Set the refresh property.
             HashMap properties = new HashMap();
-            properties.put("javax.persistence.cacheStoreMode", CacheStoreMode.REFRESH);
+            properties.put("jakarta.persistence.cacheStoreMode", CacheStoreMode.REFRESH);
 
             // Re-issue the find on the original EM.
             CacheableTrueEntity entity = (CacheableTrueEntity) em.find(CacheableTrueEntity.class, m_cacheableTrueEntity1Id, properties);
@@ -890,7 +890,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to ALL using javax.persistence.sharedCache.mode property.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ALL using jakarta.persistence.sharedCache.mode property.
      */
     public void testCachingOnALLProperty() {
         assertCachingOnALL(getPUServerSession("ALL-Property"));
@@ -938,14 +938,14 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to NONE using javax.persistence.sharedCache.mode property.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to NONE using jakarta.persistence.sharedCache.mode property.
      */
     public void testCachingOnNONEProperty() {
         assertCachingOnNONE(getPUServerSession("NONE-Property"));
     }
     
     /**
-     * Verifies the cacheable settings when passing the javax.persistence.sharedCache.mode property
+     * Verifies the cacheable settings when passing the jakarta.persistence.sharedCache.mode property
      * as NONE when creating an EntityManagerFactory.
      */
     public void testCachingOnNONEPropertyEMF() {
@@ -956,9 +956,9 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies that when the <shared-cache-mode> and javax.persistence.sharedCache.mode property
-     * are set, the javax.persistence.sharedCache.mode property will win. In the persistence.xml,
-     * javax.persistence.sharedCache.mode property is set to NONE while <shared-cache-mode> is set to
+     * Verifies that when the <shared-cache-mode> and jakarta.persistence.sharedCache.mode property
+     * are set, the jakarta.persistence.sharedCache.mode property will win. In the persistence.xml,
+     * jakarta.persistence.sharedCache.mode property is set to NONE while <shared-cache-mode> is set to
      * ALL.
      */
     public void testCachingOnNONEPropertyConflict() {
@@ -1007,7 +1007,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to ENABLE_SELECTIVE using javax.persistence.sharedCache.mode property.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to ENABLE_SELECTIVE using jakarta.persistence.sharedCache.mode property.
      */
     public void testCachingOnENABLE_SELECTIVEProperty() {
         assertCachingOnENABLE_SELECTIVE(getPUServerSession("ENABLE_SELECTIVE-Property"));
@@ -1052,7 +1052,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to DISABLE_SELECTIVE using javax.persistence.sharedCache.mode property.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to DISABLE_SELECTIVE using jakarta.persistence.sharedCache.mode property.
      */
     public void testCachingOnDISABLE_SELECTIVEProperty() {
         assertCachingOnDISABLE_SELECTIVE(getPUServerSession("DISABLE_SELECTIVE-Property"));
@@ -1097,7 +1097,7 @@ public class CacheableModelJunitTest extends JUnitTestCase {
     }
     
     /**
-     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED using javax.persistence.sharedCache.mode property.
+     * Verifies the cacheable settings when caching (from persistence.xml) is set to UNSPECIFIED using jakarta.persistence.sharedCache.mode property.
      */
     public void testCachingOnUNSPECIFIEDProperty() {
         assertCachingOnUNSPECIFIED(getPUServerSession("UNSPECIFIED-Property"));

@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@
         <class>org.eclipse.persistence.jpars.test.model.multitenant.Account</class>
         <exclude-unlisted-classes/>
         <properties>
-            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="jakarta.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
@@ -43,10 +43,10 @@
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
-            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
-            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
-            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
-            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+            <property name="jakarta.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="jakarta.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="jakarta.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="jakarta.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
 
@@ -60,10 +60,10 @@
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="static"/>
             <property name="eclipselink.metadata-source.xml.file" value="META-INF/auction-orm.xml"/>
-            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
-            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
-            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
-            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+            <property name="jakarta.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="jakarta.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="jakarta.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="jakarta.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
 
@@ -75,10 +75,10 @@
             <property name="eclipselink.metadata-source" value="XML"/>
             <property name="eclipselink.weaving" value="static"/>
             <property name="eclipselink.metadata-source.xml.file" value="META-INF/phonebook-orm.xml"/>
-            <property name="javax.persistence.jdbc.url" value="@DB_URL@"/>
-            <property name="javax.persistence.jdbc.password" value="@DB_PWD@"/>
-            <property name="javax.persistence.jdbc.driver" value="@DB_DRIVER@"/>
-            <property name="javax.persistence.jdbc.user" value="@DB_USER@"/>
+            <property name="jakarta.persistence.jdbc.url" value="@DB_URL@"/>
+            <property name="jakarta.persistence.jdbc.password" value="@DB_PWD@"/>
+            <property name="jakarta.persistence.jdbc.driver" value="@DB_DRIVER@"/>
+            <property name="jakarta.persistence.jdbc.user" value="@DB_USER@"/>
         </properties>
     </persistence-unit>
 
@@ -96,7 +96,7 @@
         <class>org.eclipse.persistence.jpars.test.model.employee.Certification</class>
         <exclude-unlisted-classes/>
         <properties>
-            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="jakarta.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
@@ -110,7 +110,7 @@
         <class>org.eclipse.persistence.jpars.test.model.basket.BasketItem</class>
         <exclude-unlisted-classes/>
         <properties>
-            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="jakarta.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
@@ -123,7 +123,7 @@
         <class>org.eclipse.persistence.jpars.test.model.traveler.Reservation</class>
         <exclude-unlisted-classes/>
         <properties>
-            <property name="javax.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
+            <property name="jakarta.persistence.nonJtaDataSource" value="jdbc/ELNonJTADS"/>
             <property name="eclipselink.logging.level" value="INFO"/>
             <property name="eclipselink.logging.level.jpars" value="FINEST"/>
             <property name="eclipselink.logging.parameters" value="true"/>
@@ -146,8 +146,8 @@
             <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.db" value="place_db"/>
             <property name="eclipselink.logging.level" value="SEVERE"/>
-            <property name="javax.persistence.jdbc.user" value="test"/>
-            <property name="javax.persistence.jdbc.password" value="test"/>
+            <property name="jakarta.persistence.jdbc.user" value="test"/>
+            <property name="jakarta.persistence.jdbc.password" value="test"/>
         </properties>
     </persistence-unit>
 
@@ -165,8 +165,8 @@
             <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.db" value="place_db"/>
             <property name="eclipselink.logging.level" value="SEVERE"/>
-            <property name="javax.persistence.jdbc.user" value="test"/>
-            <property name="javax.persistence.jdbc.password" value="test"/>
+            <property name="jakarta.persistence.jdbc.user" value="test"/>
+            <property name="jakarta.persistence.jdbc.password" value="test"/>
         </properties>
     </persistence-unit>
 
@@ -184,8 +184,8 @@
             <property name="eclipselink.nosql.property.mongo.host" value="localhost"/>
             <property name="eclipselink.nosql.property.mongo.db" value="person_db"/>
             <property name="eclipselink.logging.level" value="SEVERE"/>
-            <property name="javax.persistence.jdbc.user" value="test"/>
-            <property name="javax.persistence.jdbc.password" value="test"/>
+            <property name="jakarta.persistence.jdbc.user" value="test"/>
+            <property name="jakarta.persistence.jdbc.password" value="test"/>
         </properties>
     </persistence-unit-->
 </persistence>

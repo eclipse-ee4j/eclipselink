@@ -15,8 +15,8 @@
 package org.eclipse.persistence.eis.interactions;
 
 import java.util.*;
-import javax.resource.*;
-import javax.resource.cci.*;
+import jakarta.resource.*;
+import jakarta.resource.cci.*;
 
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -125,7 +125,7 @@ public class MappedInteraction extends EISInteraction {
      * Populate the data into the record from this interaction's arguments.
      */
     @Override
-    public javax.resource.cci.Record createInputRecord(EISAccessor accessor) {
+    public jakarta.resource.cci.Record createInputRecord(EISAccessor accessor) {
         try {
             MappedRecord record = null;
 
@@ -166,7 +166,7 @@ public class MappedInteraction extends EISInteraction {
      * Create a mapped input record for this interaction.
      * Populate the data into the record from this interaction's translation row.
      */
-    public javax.resource.cci.Record createTranslationRecord(AbstractRecord transaltionRow, EISAccessor accessor) {
+    public jakarta.resource.cci.Record createTranslationRecord(AbstractRecord transaltionRow, EISAccessor accessor) {
         return (MappedRecord)createRecordElement(getInputRecordName(), transaltionRow, accessor);
     }
 
@@ -174,7 +174,7 @@ public class MappedInteraction extends EISInteraction {
      * Build a database row from the record returned from the interaction.
      */
     @Override
-    public AbstractRecord buildRow(javax.resource.cci.Record record, EISAccessor accessor) {
+    public AbstractRecord buildRow(jakarta.resource.cci.Record record, EISAccessor accessor) {
         if (record == null) {
             return  null;
         }
@@ -185,8 +185,8 @@ public class MappedInteraction extends EISInteraction {
             if (indexedRecord.isEmpty()) {
                 return null;
             }
-            if (indexedRecord.get(0) instanceof javax.resource.cci.Record) {
-                return buildRow((javax.resource.cci.Record)indexedRecord.get(0), accessor);
+            if (indexedRecord.get(0) instanceof jakarta.resource.cci.Record) {
+                return buildRow((jakarta.resource.cci.Record)indexedRecord.get(0), accessor);
             }
         }
         // If not a mapped record then just put it as a result value in the row.

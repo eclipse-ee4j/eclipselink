@@ -18,9 +18,9 @@ package org.eclipse.persistence.jpa.compositeid.model;
 
 import java.util.Set;
 
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class CompA {

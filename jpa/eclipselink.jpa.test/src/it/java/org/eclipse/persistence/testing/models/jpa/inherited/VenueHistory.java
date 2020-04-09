@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,11 @@
 //       - 248293: JPA 2.0 Element Collections (part 2)
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Access;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
-import static javax.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.AccessType.PROPERTY;
 
 @Embeddable
 @Access(PROPERTY)

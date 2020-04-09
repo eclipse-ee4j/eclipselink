@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,8 +16,8 @@
 //       - 500145 : Nested Embeddables Test
 package org.eclipse.persistence.jpa.embeddable.model;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 @Embeddable
 public class OrderPK {

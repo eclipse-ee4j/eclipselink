@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -357,7 +357,7 @@ public class ValidationExceptionResource extends ListResourceBundle {
                                            { "7348", "The embedded mapping [{1}] from [{0}] does not specify an attribute name to which the convert is to be applied. You must specify an attribute name on the Embeddable."},
                                            { "7350", "The convert attribute name [{3}] from the mapping [{1}] from the class [{0}] was not found on the embeddable class [{2}]. Please ensure the attribute exists and is correctly named." },
                                            { "7351", "The converter class [{2}] specified on the mapping attribute [{1}] from the class [{0}] was not found. Please ensure the converter class name is correct and exists with the persistence unit definition." },
-                                           { "7352", "The converter class [{0}] must implement the JPA javax.persistence.AttributeConverter<X, Y> interface to be a valid converter class." },
+                                           { "7352", "The converter class [{0}] must implement the JPA jakarta.persistence.AttributeConverter<X, Y> interface to be a valid converter class." },
                                            { "7353", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert specification." },
                                            { "7354", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a map key convert specification." },
                                            { "7355", "The mapping attribute [{1}] from the class [{0}] is not a valid mapping type for a convert using an attribute name specification. An attribute name should only be specified to traverse an Embedded mapping type." },

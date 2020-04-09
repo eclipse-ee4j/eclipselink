@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.spi.PersistenceProvider;
 
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.testing.framework.TestProblemException;
@@ -45,7 +45,7 @@ public class HibernateJPAConcurrencyComparisonModel extends JPAConcurrencyCompar
         Map properties = new HashMap();
 
         // For DataSource testing.
-        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
+        //properties.put("jakarta.persistence.nonJtaDataSource", "datasource");
 
         // For JSE testing.
         properties.put("hibernate.connection.driver_class", getSession().getLogin().getDriverClassName());

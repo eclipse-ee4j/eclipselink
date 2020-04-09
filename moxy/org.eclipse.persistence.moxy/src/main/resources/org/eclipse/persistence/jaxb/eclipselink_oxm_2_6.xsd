@@ -72,7 +72,7 @@ Contributors:
                         <xs:attribute name="name" type="xs:string" use="required" />
                         <xs:attribute name="defaultValue" type="xs:string" default="\u0000" />
                         <xs:attribute name="namespace" type="xs:string" default="##default" />
-                        <xs:attribute name="scope" type="xs:string" default="javax.xml.bind.annotation.XmlElementDecl.GLOBAL" />
+                        <xs:attribute name="scope" type="xs:string" default="jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL" />
                         <xs:attribute name="substitutionHeadName" type="xs:string" default="" />
                         <xs:attribute name="substitutionHeadNamespace" type="xs:string" default="##default" />
                         <xs:attribute name="type" type="xs:string" default="##default" />
@@ -223,7 +223,7 @@ Contributors:
         <xs:complexType>
             <xs:attribute name="name" type="xs:string" use="required" />
             <xs:attribute name="namespace" type="xs:string" default="http://www.w3.org/2001/XMLSchema" />
-            <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.XmlSchemaType.DEFAULT" />
+            <xs:attribute name="type" type="xs:string" default="jakarta.xml.bind.annotation.XmlSchemaType.DEFAULT" />
         </xs:complexType>
     </xs:element>
 
@@ -233,8 +233,8 @@ Contributors:
             <xs:complexContent>
                 <xs:extension base="java-attribute">
                     <xs:attribute name="value" type="xs:string" use="required" />
-                    <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
-                    <xs:attribute name="value-type" type="xs:string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
+                    <xs:attribute name="type" type="xs:string" default="jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
+                    <xs:attribute name="value-type" type="xs:string" default="jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" />
                 </xs:extension>
             </xs:complexContent>
         </xs:complexType>
@@ -265,7 +265,7 @@ Contributors:
         <xs:complexType>
             <xs:attribute name="name" type="xs:string" default="##default" />
             <xs:attribute name="namespace" type="xs:string" default="##default" />
-            <xs:attribute name="factory-class" type="xs:string" default="javax.xml.bind.annotation.XmlType.DEFAULT" />
+            <xs:attribute name="factory-class" type="xs:string" default="jakarta.xml.bind.annotation.XmlType.DEFAULT" />
             <xs:attribute name="factory-method" type="xs:string" />
             <xs:attribute name="prop-order">
                 <xs:simpleType>
@@ -369,7 +369,7 @@ Contributors:
                     </xs:all>
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="lax" type="xs:boolean" default="false" />
-                    <xs:attribute name="dom-handler" type="xs:string" default="javax.xml.bind.annotation.W3CDomHandler" />
+                    <xs:attribute name="dom-handler" type="xs:string" default="jakarta.xml.bind.annotation.W3CDomHandler" />
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-path" type="xs:string" />
@@ -425,7 +425,7 @@ Contributors:
                     <xs:attribute name="nillable" type="xs:boolean" default="false" />
                     <xs:attribute name="required" type="xs:boolean" default="false" />
                     <xs:attribute name="container-type" type="xs:string" default="##default" />
-                    <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.XmlElement.DEFAULT" />
+                    <xs:attribute name="type" type="xs:string" default="jakarta.xml.bind.annotation.XmlElement.DEFAULT" />
                     <xs:attribute name="xml-id" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-idref" type="xs:boolean" default="false" />
                     <xs:attribute name="xml-key" type="xs:boolean" default="false" />
@@ -476,7 +476,7 @@ Contributors:
                     <xs:attribute name="name" type="xs:string" default="##default" />
                     <xs:attribute name="namespace" type="xs:string" />
                     <xs:attribute name="container-type" type="xs:string" default="##default" />
-                    <xs:attribute name="type" type="xs:string" default="javax.xml.bind.annotation.XmlElementRef.DEFAULT" />
+                    <xs:attribute name="type" type="xs:string" default="jakarta.xml.bind.annotation.XmlElementRef.DEFAULT" />
                     <xs:attribute name="xml-mixed" type="xs:boolean" default="false" />
                     <xs:attribute name="read-only" type="xs:boolean" default="false" />
                     <xs:attribute name="write-only" type="xs:boolean" default="false" />

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,7 +42,7 @@ public class JAXBHelper {
      * @return
      * @throws IllegalArgumentException
      */
-    public static JAXBContext getJAXBContext(javax.xml.bind.JAXBContext jaxbContext) throws IllegalArgumentException {
+    public static JAXBContext getJAXBContext(jakarta.xml.bind.JAXBContext jaxbContext) throws IllegalArgumentException {
         try {
             return (JAXBContext) jaxbContext;
         } catch (ClassCastException e) {
@@ -60,7 +60,7 @@ public class JAXBHelper {
      * @return
      * @throws IllegalArgumentException
      */
-    public static JAXBUnmarshaller getUnmarshaller(javax.xml.bind.Unmarshaller jaxbUnmarshaller) throws IllegalArgumentException {
+    public static JAXBUnmarshaller getUnmarshaller(jakarta.xml.bind.Unmarshaller jaxbUnmarshaller) throws IllegalArgumentException {
         try {
             return (JAXBUnmarshaller) jaxbUnmarshaller;
         } catch (ClassCastException e) {
@@ -78,7 +78,7 @@ public class JAXBHelper {
      * @return
      * @throws IllegalArgumentException
      */
-    public static JAXBMarshaller getMarshaller(javax.xml.bind.Marshaller jaxbMarshaller) throws IllegalArgumentException {
+    public static JAXBMarshaller getMarshaller(jakarta.xml.bind.Marshaller jaxbMarshaller) throws IllegalArgumentException {
         try {
             return (JAXBMarshaller) jaxbMarshaller;
         } catch (ClassCastException e) {
@@ -96,7 +96,7 @@ public class JAXBHelper {
      * @return
      * @throws IllegalArgumentException
      */
-    public static JAXBBinder getBinder(javax.xml.bind.Binder jaxbBinder) throws IllegalArgumentException {
+    public static JAXBBinder getBinder(jakarta.xml.bind.Binder jaxbBinder) throws IllegalArgumentException {
         try {
             return (JAXBBinder) jaxbBinder;
         } catch (ClassCastException e) {
@@ -119,7 +119,7 @@ public class JAXBHelper {
      * @see org.eclipse.persistence.oxm.XMLContext
      * @throws IllegalArgumentException
      */
-    public static <T> T unwrap(javax.xml.bind.JAXBContext jaxbContext, Class<T> clazz) throws IllegalArgumentException {
+    public static <T> T unwrap(jakarta.xml.bind.JAXBContext jaxbContext, Class<T> clazz) throws IllegalArgumentException {
         try {
             JAXBContext jaxbContextImpl = (JAXBContext) jaxbContext;
             if (clazz == org.eclipse.persistence.jaxb.JAXBContext.class) {
@@ -150,7 +150,7 @@ public class JAXBHelper {
      * @see org.eclipse.persistence.oxm.XMLUnmarshaller
      * @throws IllegalArgumentException
      */
-    public static <T> T unwrap(javax.xml.bind.Unmarshaller jaxbUnmarshaller, Class<T> clazz) throws IllegalArgumentException {
+    public static <T> T unwrap(jakarta.xml.bind.Unmarshaller jaxbUnmarshaller, Class<T> clazz) throws IllegalArgumentException {
         try {
             JAXBUnmarshaller jaxbUnmarshallerImpl = (JAXBUnmarshaller) jaxbUnmarshaller;
             if (clazz == org.eclipse.persistence.jaxb.JAXBUnmarshaller.class) {
@@ -181,7 +181,7 @@ public class JAXBHelper {
      * @see org.eclipse.persistence.oxm.XMLMarshaller
      * @throws IllegalArgumentException
      */
-    public static <T> T unwrap(javax.xml.bind.Marshaller jaxbMarshaller, Class<T> clazz) throws IllegalArgumentException {
+    public static <T> T unwrap(jakarta.xml.bind.Marshaller jaxbMarshaller, Class<T> clazz) throws IllegalArgumentException {
         try {
             JAXBMarshaller jaxbMarshallerImpl = (JAXBMarshaller) jaxbMarshaller;
             if (clazz == org.eclipse.persistence.jaxb.JAXBMarshaller.class) {
@@ -212,7 +212,7 @@ public class JAXBHelper {
      * @see org.eclipse.persistence.oxm.XMLBinder
      * @throws IllegalArgumentException
      */
-    public static <T> T unwrap(javax.xml.bind.Binder jaxbBinder, Class<T> clazz) throws IllegalArgumentException {
+    public static <T> T unwrap(jakarta.xml.bind.Binder jaxbBinder, Class<T> clazz) throws IllegalArgumentException {
         try {
             JAXBBinder jaxbBinderImpl = (JAXBBinder) jaxbBinder;
             if (clazz == org.eclipse.persistence.jaxb.JAXBBinder.class) {

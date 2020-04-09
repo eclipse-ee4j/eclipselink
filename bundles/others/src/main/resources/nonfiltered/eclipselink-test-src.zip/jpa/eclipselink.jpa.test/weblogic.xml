@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -138,7 +138,7 @@
         <copy todir="${wls.oracle.home}/oracle_common/modules/oracle.toplink-bak">
             <fileset dir="${server.module.toplink}"/>
         </copy>
-        <move file="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar" tofile="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar.bak"/>
+        <move file="${wls.oracle.home}/oracle_common/modules/jakarta.persistence.jar" tofile="${wls.oracle.home}/oracle_common/modules/jakarta.persistence.jar.bak"/>
     </target>
 
     <!-- This creates the server domain. -->
@@ -150,7 +150,7 @@
         </delete>
         
         <copy file="${eclipselink.lib}" todir="${server.module.toplink}" overwrite="true" verbose="true" flatten="true"/>
-        <copy file="${eclipselink.lib.jpa}" tofile="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar" overwrite="true" verbose="true"/>
+        <copy file="${eclipselink.lib.jpa}" tofile="${wls.oracle.home}/oracle_common/modules/jakarta.persistence.jar" overwrite="true" verbose="true"/>
         <copy todir="${server.module.toplink}" overwrite="true" verbose="true">
             <path refid="eclipselink.lib.extras"/>
             <mapper type="regexp" from="^(.+?)_[0-9]+.*\.jar$" to="\1.jar"/>
@@ -214,7 +214,7 @@
         </wlst>
         <delete file="${server.module.toplink}" failonerror="false"/>
         <move file="${wls.oracle.home}/oracle_common/modules/oracle.toplink-bak" tofile="${server.module.toplink}" failonerror="false" verbose="true" overwrite="true"/>
-        <move file="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar.bak" tofile="${wls.oracle.home}/oracle_common/modules/javax.persistence.jar" failonerror="false" verbose="true" overwrite="true"/>
+        <move file="${wls.oracle.home}/oracle_common/modules/jakarta.persistence.jar.bak" tofile="${wls.oracle.home}/oracle_common/modules/jakarta.persistence.jar" failonerror="false" verbose="true" overwrite="true"/>
     </target>
 
     <target name="weblogic-start" description="Start the server.">

@@ -14,8 +14,6 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
-import javax.resource.cci.*;
-
 /**
  * <p>The <code>RecordConverter</code> interface allows conversion of an adapter
  * specific record.  This can be used with the <code>EISPlatform</code> to allow
@@ -27,7 +25,7 @@ import javax.resource.cci.*;
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */
 public interface RecordConverter {
-    javax.resource.cci.Record converterFromAdapterRecord(javax.resource.cci.Record record);
+    jakarta.resource.cci.Record converterFromAdapterRecord(jakarta.resource.cci.Record record);
 
-    javax.resource.cci.Record converterToAdapterRecord(javax.resource.cci.Record record);
+    jakarta.resource.cci.Record converterToAdapterRecord(jakarta.resource.cci.Record record);
 }

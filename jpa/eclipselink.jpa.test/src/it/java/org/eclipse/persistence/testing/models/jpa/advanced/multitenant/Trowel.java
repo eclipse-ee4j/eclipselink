@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,17 +15,17 @@
 //       - 376603: Provide for table per tenant support for multitenant applications
 package org.eclipse.persistence.testing.models.jpa.advanced.multitenant;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import org.eclipse.persistence.annotations.Multitenant;
 
-import static javax.persistence.TemporalType.DATE;
+import static jakarta.persistence.TemporalType.DATE;
 import static org.eclipse.persistence.annotations.MultitenantType.TABLE_PER_TENANT;
 
 @Entity

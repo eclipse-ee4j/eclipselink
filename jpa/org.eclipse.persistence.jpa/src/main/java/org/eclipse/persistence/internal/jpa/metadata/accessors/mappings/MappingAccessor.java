@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2057,7 +2057,7 @@ public abstract class MappingAccessor extends MetadataAccessor {
             // mapping. Since the temporal type was not specified, per the JPA spec we *should* throw an
             // exception.. but lets be a little nice to our users and default to timestamp.
             MetadataAnnotation annotation = new MetadataAnnotation();
-            annotation.setName("javax.persistence.Temporal");
+            annotation.setName("jakarta.persistence.Temporal");
             annotation.addAttribute("value", "TIMESTAMP");
             temporal = new TemporalMetadata(annotation, this);
 

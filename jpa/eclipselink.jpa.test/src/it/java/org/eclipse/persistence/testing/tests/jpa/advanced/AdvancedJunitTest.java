@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.Query;
 
 import junit.framework.*;
 
@@ -163,7 +163,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             Employee empClone2 = em.merge(empFromDB);
             assertTrue("The id field on a existing merged employee object was modified on a subsequent merge.", empFromDB.getId().equals(empClone2.getId()));
             commitTransaction(em);
-        } catch (javax.persistence.OptimisticLockException e) {
+        } catch (jakarta.persistence.OptimisticLockException e) {
             fail("An optimistic locking exception was caught on the merge of a new object. An insert should of occurred instead.");
         }
 
@@ -509,7 +509,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             // current batch is cleared.  This should not cause a duplicate execution of insert.
             commitTransaction(em);
 
-        } catch (javax.persistence.RollbackException r) {
+        } catch (jakarta.persistence.RollbackException r) {
             fail("RollbackException exception occurred : " + r.getMessage());
         } finally {
             //Cleanup and revert back to original conditions

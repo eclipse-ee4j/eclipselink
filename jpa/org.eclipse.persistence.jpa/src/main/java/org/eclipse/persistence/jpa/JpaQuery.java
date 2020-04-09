@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,10 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 /**
  * PUBLIC:
  * EclipseLInk specific JPA query interface.  Provides the functionality defined in
- * javax.persistence.Query and adds access to the underlying database query for EclipseLink specific
+ * jakarta.persistence.Query and adds access to the underlying database query for EclipseLink specific
  * functionality.
  */
-public interface JpaQuery<X> extends javax.persistence.TypedQuery<X> {
+public interface JpaQuery<X> extends jakarta.persistence.TypedQuery<X> {
 
     /**
      * PUBLIC:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,8 +16,8 @@
 //       - 440594: Tolerate invalid NamedQuery at EntityManager creation.
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

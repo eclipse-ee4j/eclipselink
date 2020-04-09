@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,12 +15,12 @@
 //       - 350469: JPA 2.1 Criteria Query framework Bulk Update/Delete support
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -34,7 +34,7 @@ import org.eclipse.persistence.queries.DatabaseQuery;
  * define a Delete Query.
  * <p>
  *
- * @see javax.persistence.criteria CriteriaDelete
+ * @see jakarta.persistence.criteria CriteriaDelete
  *
  * @author Chris Delahunt
  * @since EclipseLink 2.5

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,7 +72,7 @@ public class AnnotationProxy implements InvocationHandler {
      * The method takes a <code>ClassLoader</code> (which is used to load the
      * target <code>Annotation</code>), a <code>Class</code> (which indicates
      * the target <code>Annotation</code>, i.e.
-     * <code>javax.xml.bind.annotation.XmlElement.class)</code>, and a
+     * <code>jakarta.xml.bind.annotation.XmlElement.class)</code>, and a
      * <code>Map</code> of method name to value pairs, which represent the
      * method names on the <code>Annotation</code> and the values that are to be
      * returned from each method call. For example, if this proxy is to be used
@@ -90,7 +90,7 @@ public class AnnotationProxy implements InvocationHandler {
      * <li>"defaultValue", "##default"</li> <li>"name", "employee"</li> <li>
      * "namespace", "www.example.org"</li> <li>"nillable", false</li> <li>
      * "required", false</li> <li>"type",
-     * javax.xml.bind.annotation.XmlElement.DEFAULT.class</li>
+     * jakarta.xml.bind.annotation.XmlElement.DEFAULT.class</li>
      * </ul>
      *
      * @param components

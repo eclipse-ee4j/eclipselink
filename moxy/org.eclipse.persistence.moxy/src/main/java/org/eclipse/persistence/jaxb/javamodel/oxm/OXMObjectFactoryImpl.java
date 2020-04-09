@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,7 +85,7 @@ public class OXMObjectFactoryImpl implements JavaClass {
             components.put(SUBSTITUTION_HEAD_NAME, xmlElementDecl.getSubstitutionHeadName());
             components.put(SUBSTITUTION_HEAD_NAMESPACE, xmlElementDecl.getSubstitutionHeadNamespace());
 
-            Annotation anno = AnnotationProxy.getProxy(components, javax.xml.bind.annotation.XmlElementDecl.class,
+            Annotation anno = AnnotationProxy.getProxy(components, jakarta.xml.bind.annotation.XmlElementDecl.class,
                     this.javaModel.getClassLoader(), XMLConversionManager.getDefaultManager());
             annotations.add(new JavaAnnotationImpl(anno));
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,8 +20,8 @@ import java.lang.reflect.Member;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.ManagedType;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 
@@ -76,7 +76,7 @@ public class AttributeProxyImpl<X, T> implements Attribute<X, T>, Serializable {
     }
 
     @Override
-    public javax.persistence.metamodel.Attribute.PersistentAttributeType getPersistentAttributeType() {
+    public jakarta.persistence.metamodel.Attribute.PersistentAttributeType getPersistentAttributeType() {
         return getAttribute().getPersistentAttributeType();
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Denise Smith - 2.6 - initial implementation
 package org.eclipse.persistence.oxm.json;
 
-import javax.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonGenerator;
 
 import org.eclipse.persistence.internal.oxm.record.ExtendedResult;
 import org.eclipse.persistence.oxm.record.JsonGeneratorRecord;

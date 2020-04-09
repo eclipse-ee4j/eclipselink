@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,9 +31,9 @@ package org.eclipse.persistence.config;
  * @see QueryHints
  *
  * <B>Note:</B> As of JPA 2.0 there is a standard way to configure pessimistic locking.
- * @see javax.persistence.LockModeType
- * @see javax.persistence.EntityManager (find(), refresh(), lock())
- * @see javax.persistence.Query (setLockMode())
+ * @see jakarta.persistence.LockModeType
+ * @see jakarta.persistence.EntityManager (find(), refresh(), lock())
+ * @see jakarta.persistence.Query (setLockMode())
  */
 public class PessimisticLock {
     public static final String  NoLock = "NoLock";

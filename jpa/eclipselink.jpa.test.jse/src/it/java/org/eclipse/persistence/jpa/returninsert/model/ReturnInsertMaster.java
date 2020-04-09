@@ -18,7 +18,7 @@ import org.eclipse.persistence.annotations.ReturnInsert;
 
 import java.io.Serializable;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * The persistent class for the TEST_RETURNINSERT_MASTER database table.

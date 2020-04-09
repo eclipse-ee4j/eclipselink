@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -235,7 +235,7 @@ public class LoadAndSavePurchaseOrderWithAnnotations extends LoadAndSaveTestCase
         List baseTypes = new ArrayList();
         baseTypes.add(SDOConstants.SDO_BYTES);
         myBinaryTypeType.set("baseType", baseTypes);
-        myBinaryTypeType.set(SDOConstants.JAVA_CLASS_PROPERTY, "javax.activation.DataHandler");
+        myBinaryTypeType.set(SDOConstants.JAVA_CLASS_PROPERTY, "jakarta.activation.DataHandler");
         Type theType = typeHelper.define(myBinaryTypeType);
 
         return theType;

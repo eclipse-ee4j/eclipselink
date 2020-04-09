@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,12 +18,12 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlschematype;
 import org.eclipse.persistence.oxm.annotations.XmlIDExtension;
 
 public class EmployeeWithAnnotation {
-    @javax.xml.bind.annotation.XmlAttribute
-    @javax.xml.bind.annotation.XmlID
+    @jakarta.xml.bind.annotation.XmlAttribute
+    @jakarta.xml.bind.annotation.XmlID
     @XmlIDExtension
-    @javax.xml.bind.annotation.XmlSchemaType(name="string")
+    @jakarta.xml.bind.annotation.XmlSchemaType(name="string")
     public int id;
-    @javax.xml.bind.annotation.XmlElement
-    @javax.xml.bind.annotation.XmlSchemaType(name="date")
+    @jakarta.xml.bind.annotation.XmlElement
+    @jakarta.xml.bind.annotation.XmlSchemaType(name="date")
     public java.util.GregorianCalendar hireDate;
 }

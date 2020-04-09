@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2015, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -22,7 +22,7 @@ import java.io.FileReader;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
@@ -55,13 +55,13 @@ public class TestDDLGenLineTerminator implements PUPropertiesProvider {
 
     @Emf(name = "terminated", createTables = DDLGen.NONE, classes = { Person.class, Dog.class },
             properties = {
-                    @Property(name = "javax.persistence.schema-generation.scripts.action", value = "create"),
+                    @Property(name = "jakarta.persistence.schema-generation.scripts.action", value = "create"),
                     @Property(name = PersistenceUnitProperties.SCHEMA_GENERATION_SCRIPT_TERMINATE_STATEMENTS,
                             value = "true"), })
     private EntityManagerFactory terminatedEmf;
 
     @Emf(name = "unterminated", createTables = DDLGen.NONE, classes = { Person.class, Dog.class },
-            properties = { @Property(name = "javax.persistence.schema-generation.scripts.action", value = "create") })
+            properties = { @Property(name = "jakarta.persistence.schema-generation.scripts.action", value = "create") })
     private EntityManagerFactory unterminatedEmf;
 
     @Override

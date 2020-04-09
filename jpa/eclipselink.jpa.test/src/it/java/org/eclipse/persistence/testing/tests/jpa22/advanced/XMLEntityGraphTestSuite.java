@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,8 @@
 //       - 397772: JPA 2.1 Entity Graph Support (XML support)
 package org.eclipse.persistence.testing.tests.jpa22.advanced;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceUnitUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceUnitUtil;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;

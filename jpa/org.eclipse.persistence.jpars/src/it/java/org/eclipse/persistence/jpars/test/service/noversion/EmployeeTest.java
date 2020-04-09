@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,9 +26,9 @@ import org.eclipse.persistence.jpars.test.util.RestUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.persistence.EntityManager;
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXBException;
+import jakarta.persistence.EntityManager;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.xml.bind.JAXBException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Calendar;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2011, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,21 +25,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.criteria.AbstractQuery;
-import javax.persistence.criteria.CollectionJoin;
-import javax.persistence.criteria.CommonAbstractCriteria;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.ListJoin;
-import javax.persistence.criteria.MapJoin;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.criteria.SetJoin;
-import javax.persistence.criteria.Subquery;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.Type.PersistenceType;
+import jakarta.persistence.criteria.AbstractQuery;
+import jakarta.persistence.criteria.CollectionJoin;
+import jakarta.persistence.criteria.CommonAbstractCriteria;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.ListJoin;
+import jakarta.persistence.criteria.MapJoin;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.criteria.SetJoin;
+import jakarta.persistence.criteria.Subquery;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.Type.PersistenceType;
 
 import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.expressions.ConstantExpression;
@@ -61,8 +61,8 @@ import org.eclipse.persistence.queries.ReportQuery;
  * be used in a sub select expression.
  * <p>
  *
- * @see javax.persistence.criteria CriteriaQuery
- * @see javax.persistence.criteria SubQuery
+ * @see jakarta.persistence.criteria CriteriaQuery
+ * @see jakarta.persistence.criteria SubQuery
  *
  * @author gyorke
  * @since EclipseLink 2.0

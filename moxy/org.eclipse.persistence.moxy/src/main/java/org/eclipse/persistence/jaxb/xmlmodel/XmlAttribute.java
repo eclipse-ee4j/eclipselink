@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 // dmccann - June 29/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.jaxb.xmlmodel;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -82,35 +82,35 @@ public class XmlAttribute
     protected XmlProperties xmlProperties;
     @XmlElement(name = "xml-schema-type")
     protected XmlSchemaType xmlSchemaType;
-    @javax.xml.bind.annotation.XmlAttribute(name = "name")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "name")
     protected String name;
-    @javax.xml.bind.annotation.XmlAttribute(name = "namespace")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "namespace")
     protected String namespace;
-    @javax.xml.bind.annotation.XmlAttribute(name = "required")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "required")
     protected Boolean required;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-id")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-id")
     protected Boolean xmlId;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-idref")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-idref")
     protected Boolean xmlIdref;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-key")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-key")
     protected Boolean xmlKey;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-list")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-list")
     protected Boolean xmlList;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-inline-binary-data")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-inline-binary-data")
     protected Boolean xmlInlineBinaryData;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-attachment-ref")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-attachment-ref")
     protected Boolean xmlAttachmentRef;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-mime-type")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-mime-type")
     protected String xmlMimeType;
-    @javax.xml.bind.annotation.XmlAttribute(name = "read-only")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "read-only")
     protected Boolean readOnly;
-    @javax.xml.bind.annotation.XmlAttribute(name = "write-only")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "write-only")
     protected Boolean writeOnly;
-    @javax.xml.bind.annotation.XmlAttribute(name = "container-type")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "container-type")
     protected String containerType;
-    @javax.xml.bind.annotation.XmlAttribute(name = "type")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "type")
     protected String type;
-    @javax.xml.bind.annotation.XmlAttribute(name = "xml-path")
+    @jakarta.xml.bind.annotation.XmlAttribute(name = "xml-path")
     protected String xmlPath;
 
     /**

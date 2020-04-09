@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,8 @@ import java.io.*;
 import java.util.Collection;
 import java.util.Vector;
 
-import javax.persistence.*;
-import static javax.persistence.EnumType.STRING;
+import jakarta.persistence.*;
+import static jakarta.persistence.EnumType.STRING;
 
 import org.eclipse.persistence.annotations.BasicCollection;
 import org.eclipse.persistence.annotations.CollectionTable;

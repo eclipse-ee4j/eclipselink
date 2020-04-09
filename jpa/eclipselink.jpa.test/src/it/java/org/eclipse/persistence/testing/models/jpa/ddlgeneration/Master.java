@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2008, 2015 Daryl Davis. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,10 +19,10 @@ package org.eclipse.persistence.testing.models.jpa.ddlgeneration;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name="JPAMASTER")

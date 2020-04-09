@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2005, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2005, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,10 +16,10 @@
 
 package org.eclipse.persistence.testing.models.wdf.jpa2.embedded;
 
-import static javax.persistence.AccessType.PROPERTY;
+import static jakarta.persistence.AccessType.PROPERTY;
 
-import javax.persistence.Access;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.Embeddable;
 
 @Embeddable
 @Access(PROPERTY)

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,9 +25,9 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
 
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Marshal/unmarshal tests in OSGi container without installed bean validation implementation bundles.
- * The purpose of these tests is to make sure that javax.validation import is optional.
+ * The purpose of these tests is to make sure that jakarta.validation import is optional.
  *
  * @author Dmitry Kornilov
  * @since 2.7.0

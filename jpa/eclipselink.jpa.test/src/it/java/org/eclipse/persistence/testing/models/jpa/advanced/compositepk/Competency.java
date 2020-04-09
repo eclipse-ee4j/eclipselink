@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,11 +15,11 @@
 //       - 314941: multiple joinColumns without referenced column names defined, no error
 package org.eclipse.persistence.testing.models.jpa.advanced.compositepk;
 
-import javax.persistence.Access;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
-import static javax.persistence.AccessType.FIELD;
+import static jakarta.persistence.AccessType.FIELD;
 
 @Embeddable
 @Access(FIELD)

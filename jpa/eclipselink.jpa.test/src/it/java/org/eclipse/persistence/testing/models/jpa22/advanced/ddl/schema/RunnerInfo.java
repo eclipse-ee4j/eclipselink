@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,9 +15,9 @@
 //       - 389090: JPA 2.1 DDL Generation Support
 package org.eclipse.persistence.testing.models.jpa22.advanced.ddl.schema;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 
 import org.eclipse.persistence.testing.models.jpa22.advanced.enums.Health;
 import org.eclipse.persistence.testing.models.jpa22.advanced.enums.Level;

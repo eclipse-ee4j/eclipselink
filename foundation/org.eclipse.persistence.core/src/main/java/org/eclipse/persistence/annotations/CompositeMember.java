@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +29,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * composite member persistence unit other than the source composite member persistence unit.
  * That allows the source and target to be mapped to different databases.
  *
- * @see javax.persistence.ElementCollection
- * @see javax.persistence.CollectionTable
+ * @see jakarta.persistence.ElementCollection
+ * @see jakarta.persistence.CollectionTable
  * @see org.eclipse.persistence.config.PersistenceUnitProperties#COMPOSITE_UNIT
  *
  * A CompositeMember can be specified on within an Entity, MappedSuperclass

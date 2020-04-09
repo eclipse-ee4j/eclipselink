@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
-import javax.mail.internet.ContentType;
-import javax.mail.internet.MimeMultipart;
+import jakarta.mail.internet.ContentType;
+import jakarta.mail.internet.MimeMultipart;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamResult;
@@ -70,10 +70,10 @@ public class XMLBinaryDataHelper {
 
     public void initializeDataTypes() {
         //initialize types in this method to avoid loading them when the class is loaded
-        DATA_HANDLER = javax.activation.DataHandler.class;
+        DATA_HANDLER = jakarta.activation.DataHandler.class;
         IMAGE = java.awt.Image.class;
         SOURCE = javax.xml.transform.Source.class;
-        MULTIPART = javax.mail.internet.MimeMultipart.class;
+        MULTIPART = jakarta.mail.internet.MimeMultipart.class;
     }
 
     public Object convertObject(Object obj, Class classification, CoreAbstractSession session, CoreContainerPolicy cp) {

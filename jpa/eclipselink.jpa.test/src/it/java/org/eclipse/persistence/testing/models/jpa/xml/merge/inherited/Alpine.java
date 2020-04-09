@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,11 @@
 package org.eclipse.persistence.testing.models.jpa.xml.merge.inherited;
 
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.PrePersist;
-import javax.persistence.Transient;
-import static javax.persistence.TemporalType.DATE;
+import jakarta.persistence.Column;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Transient;
+import static jakarta.persistence.TemporalType.DATE;
 
 /**
  * This class is mapped in:

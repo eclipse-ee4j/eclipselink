@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.util.Arrays;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 
@@ -128,7 +128,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
             Employee empClone2 = em.merge(empFromDB);
             assertTrue("The id field on a existing merged employee object was modified on a subsequent merge.", empFromDB.getId().equals(empClone2.getId()));
             commitTransaction(em);
-        } catch (javax.persistence.OptimisticLockException e) {
+        } catch (jakarta.persistence.OptimisticLockException e) {
             fail("An optimistic locking exception was caught on the merge of a new object. An insert should of occurred instead.");
         }
 

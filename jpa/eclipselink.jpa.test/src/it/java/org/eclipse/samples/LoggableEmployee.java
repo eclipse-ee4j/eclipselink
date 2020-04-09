@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //              ljungmann - initial implementation
 package org.eclipse.samples;
 
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 
 import org.eclipse.persistence.testing.tests.jpa22.metadata.LogListener;
 

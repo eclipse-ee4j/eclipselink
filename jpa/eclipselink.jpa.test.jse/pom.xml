@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -140,10 +140,10 @@
                         <java.naming.provider.url>rmi://localhost:1099</java.naming.provider.url>
                         <java.naming.factory.initial>com.sun.jndi.rmi.registry.RegistryContextFactory</java.naming.factory.initial>
                         <!--<dummy2>dummy</dummy2>-->
-                        <javax.persistence.jdbc.url>${db.url}</javax.persistence.jdbc.url>
-                        <javax.persistence.jdbc.driver>${db.driver}</javax.persistence.jdbc.driver>
-                        <javax.persistence.jdbc.user>${db.user}</javax.persistence.jdbc.user>
-                        <javax.persistence.jdbc.password>${db.pwd}</javax.persistence.jdbc.password>
+                        <jakarta.persistence.jdbc.url>${db.url}</jakarta.persistence.jdbc.url>
+                        <jakarta.persistence.jdbc.driver>${db.driver}</jakarta.persistence.jdbc.driver>
+                        <jakarta.persistence.jdbc.user>${db.user}</jakarta.persistence.jdbc.user>
+                        <jakarta.persistence.jdbc.password>${db.pwd}</jakarta.persistence.jdbc.password>
                         <run.dir>${project.build.directory}/test-run</run.dir>
                     </systemPropertyVariables>
                 </configuration>

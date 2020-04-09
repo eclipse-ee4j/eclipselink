@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,9 +17,9 @@ package org.eclipse.persistence.testing.jaxb.events;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import junit.framework.TestCase;
 
@@ -45,7 +45,7 @@ public class ClassLoaderTestCases extends TestCase {
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, CLASS_NAME, null, ClassLoaderRoot.class.getName().replace('.', '/'), null);
-        AnnotationVisitor xmlTypeAV = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlRootElement;", true);
+        AnnotationVisitor xmlTypeAV = cw.visitAnnotation("Ljakarta/xml/bind/annotation/XmlRootElement;", true);
         xmlTypeAV.visit("name", "root");
         xmlTypeAV.visitEnd();
 

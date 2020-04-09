@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 // dmccann - June 29/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.jaxb.xmlmodel;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -30,8 +30,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;extension base="{http://www.eclipse.org/eclipselink/xsds/persistence/oxm}java-attribute"&gt;
  *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" /&gt;
- *       &lt;attribute name="value-type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" /&gt;
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" /&gt;
+ *       &lt;attribute name="value-type" type="{http://www.w3.org/2001/XMLSchema}string" default="jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT" /&gt;
  *     &lt;/extension&gt;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
@@ -86,7 +86,7 @@ public class XmlJavaTypeAdapter
      */
     public String getType() {
         if (type == null) {
-            return "javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT";
+            return "jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT";
         } else {
             return type;
         }
@@ -114,7 +114,7 @@ public class XmlJavaTypeAdapter
      */
     public String getValueType() {
         if (valueType == null) {
-            return "javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT";
+            return "jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT";
         } else {
             return valueType;
         }

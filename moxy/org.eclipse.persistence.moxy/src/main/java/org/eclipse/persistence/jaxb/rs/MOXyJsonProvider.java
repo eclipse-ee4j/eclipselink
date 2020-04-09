@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,29 +42,29 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import javax.activation.DataSource;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.StreamingOutput;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
-import javax.ws.rs.ext.Providers;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.JAXBIntrospector;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.Unmarshaller;
+import jakarta.activation.DataSource;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.MessageBodyReader;
+import jakarta.ws.rs.ext.MessageBodyWriter;
+import jakarta.ws.rs.ext.Provider;
+import jakarta.ws.rs.ext.Providers;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBIntrospector;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.UnmarshalException;
+import jakarta.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
@@ -102,7 +102,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * package org.example;
 
  * import java.util.*;
- * import javax.ws.rs.core.Application;
+ * import jakarta.ws.rs.core.Application;
  * import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
  *
  * public class ExampleApplication  extends Application {
@@ -125,7 +125,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * package org.example;
  *
  * import java.util.*;
- * import javax.ws.rs.core.Application;
+ * import jakarta.ws.rs.core.Application;
  * import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
  *
  * public class CustomerApplication  extends Application {
@@ -159,10 +159,10 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  * import java.lang.annotation.Annotation;
  * import java.lang.reflect.Type;
  *
- * import javax.ws.rs.*;
- * import javax.ws.rs.core.*;
- * import javax.ws.rs.ext.Provider;
- * import javax.xml.bind.*;
+ * import jakarta.ws.rs.*;
+ * import jakarta.ws.rs.core.*;
+ * import jakarta.ws.rs.ext.Provider;
+ * import jakarta.xml.bind.*;
  *
  * import org.eclipse.persistence.jaxb.MarshallerProperties;
  * import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
@@ -383,7 +383,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
     /*
      * @return -1 since the size of the JSON message is not known.
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
+     * @see jakarta.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], jakarta.ws.rs.core.MediaType)
      */
     @Override
     public long getSize(Object t, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType) {
@@ -438,7 +438,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * <li>java.io.Reader</li>
      * <li>java.lang.Object</li>
      * <li>java.lang.String</li>
-     * <li>javax.activation.DataSource</li>
+     * <li>jakarta.activation.DataSource</li>
      * </ul>
      */
     @Override
@@ -540,8 +540,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
      * <li>java.io.File</li>
      * <li>java.lang.Object</li>
      * <li>java.lang.String</li>
-     * <li>javax.activation.DataSource</li>
-     * <li>javax.ws.rs.core.StreamingOutput</li>
+     * <li>jakarta.activation.DataSource</li>
+     * <li>jakarta.ws.rs.core.StreamingOutput</li>
      * </ul>
      */
     @Override
@@ -650,7 +650,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /*
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+     * @see jakarta.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], jakarta.ws.rs.core.MediaType, jakarta.ws.rs.core.MultivaluedMap, java.io.InputStream)
      */
     @Override
     public Object readFrom(Class<Object> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, String> httpHeaders, InputStream entityStream) throws IOException, WebApplicationException {
@@ -763,7 +763,10 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
         boolean isStringPresent = false;
 
         for (Class<?> clazz : domainClasses) {
-            if (!clazz.getName().startsWith("java.") && !clazz.getName().startsWith("javax.") && !java.util.List.class.isAssignableFrom(clazz)) {
+            if (!clazz.getName().startsWith("java.")
+                    && !clazz.getName().startsWith("javax.")
+                    && !clazz.getName().startsWith("jakarta.")
+                    && !java.util.List.class.isAssignableFrom(clazz)) {
                 return clazz;
             } else if (clazz == String.class) {
                 isStringPresent = true;
@@ -943,7 +946,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     * @see jakarta.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], jakarta.ws.rs.core.MediaType, jakarta.ws.rs.core.MultivaluedMap, java.io.OutputStream)
      */
     @Override
     public void writeTo(Object object, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream entityStream) throws IOException, WebApplicationException {

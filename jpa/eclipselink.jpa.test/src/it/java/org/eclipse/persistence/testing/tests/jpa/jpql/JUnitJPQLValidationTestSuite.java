@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,14 +18,14 @@ package org.eclipse.persistence.testing.tests.jpa.jpql;
 import java.io.EOFException;
 import java.util.List;
 
-import javax.persistence.NoResultException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceException;
-import javax.persistence.RollbackException;
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.Query;
-import javax.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.RollbackException;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.persistence.Query;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -858,7 +858,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 throw ex;
             }
             secondEm.flush();
-            fail("javax.persistence.OptimisticLockException must be thrown during flush");
+            fail("jakarta.persistence.OptimisticLockException must be thrown during flush");
         } catch (PersistenceException e) {
             if (secondEm.getTransaction().isActive()){
                 secondEm.getTransaction().rollback();
@@ -871,7 +871,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
                 //temporary logging
                 AbstractSessionLog.getLog().log(SessionLog.WARNING, "[TEMPORARY LOGGING]", new Object[] {}, false);
                 AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, e);
-                Assert.assertTrue("Got Exception type: " + e, e instanceof javax.persistence.OptimisticLockException);
+                Assert.assertTrue("Got Exception type: " + e, e instanceof jakarta.persistence.OptimisticLockException);
             }
         }
     }
@@ -919,11 +919,11 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             if (isKnownMySQLIssue(e.getCause())) {
                 warning("EOFException found on MySQL db.  This is a known problem with the MySQL Database");
             } else {
-                Assert.assertTrue("Exception not instance of opt Lock exception: " + e.getCause(), e.getCause() instanceof javax.persistence.OptimisticLockException);
+                Assert.assertTrue("Exception not instance of opt Lock exception: " + e.getCause(), e.getCause() instanceof jakarta.persistence.OptimisticLockException);
             }
             return;
         }
-        fail("javax.persistence.OptimisticLockException must be thrown during commit");
+        fail("jakarta.persistence.OptimisticLockException must be thrown during commit");
     }
 
     public void JTAOptimisticLockExceptionTest()
@@ -977,7 +977,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
             return false;
         }
 
-        if (!(exception instanceof javax.persistence.OptimisticLockException) &&
+        if (!(exception instanceof jakarta.persistence.OptimisticLockException) &&
                 JUnitTestCase.getServerSession().getPlatform().isMySQL()) {
             while(e1 != null) {
                 if (e1 instanceof EOFException) {

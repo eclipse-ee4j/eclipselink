@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -18,7 +18,7 @@ package org.eclipse.persistence.testing.models.jpa.composite.advanced.member_2;
 import java.sql.Time;
 import java.util.*;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.Cache;
 import org.eclipse.persistence.annotations.ChangeTracking;
@@ -52,9 +52,9 @@ import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.Hu
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.PhoneNumber;
 import org.eclipse.persistence.testing.models.jpa.composite.advanced.member_3.Project;
 
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.FetchType.*;
+import static jakarta.persistence.GenerationType.*;
 
 import static org.eclipse.persistence.annotations.CacheCoordinationType.INVALIDATE_CHANGED_OBJECTS;
 import static org.eclipse.persistence.annotations.CacheType.SOFT_WEAK;

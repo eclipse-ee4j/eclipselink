@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,34 +12,34 @@
 
 package org.eclipse.persistence.testing.tests.jpa22.advanced;
 
-import javax.persistence.AssociationOverride;
-import javax.persistence.AssociationOverrides;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
-import javax.persistence.Convert;
-import javax.persistence.Converts;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.MapKeyJoinColumn;
-import javax.persistence.MapKeyJoinColumns;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.NamedStoredProcedureQueries;
-import javax.persistence.NamedStoredProcedureQuery;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceContexts;
-import javax.persistence.PersistenceUnit;
-import javax.persistence.PersistenceUnits;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.PrimaryKeyJoinColumns;
-import javax.persistence.SecondaryTable;
-import javax.persistence.SecondaryTables;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
+import jakarta.persistence.AssociationOverride;
+import jakarta.persistence.AssociationOverrides;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Converts;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
+import jakarta.persistence.MapKeyJoinColumn;
+import jakarta.persistence.MapKeyJoinColumns;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedEntityGraphs;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.NamedQueries;
+import jakarta.persistence.NamedQuery;
+import jakarta.persistence.NamedStoredProcedureQueries;
+import jakarta.persistence.NamedStoredProcedureQuery;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceContexts;
+import jakarta.persistence.PersistenceUnit;
+import jakarta.persistence.PersistenceUnits;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+import jakarta.persistence.PrimaryKeyJoinColumns;
+import jakarta.persistence.SecondaryTable;
+import jakarta.persistence.SecondaryTables;
+import jakarta.persistence.SqlResultSetMapping;
+import jakarta.persistence.SqlResultSetMappings;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -103,73 +103,73 @@ public class AnnotationsTestSuite extends JUnitTestCase {
         // @AssociationOverride
         verifyContainerAnnotation(Employee.class, PROPERTY, "getPeriod", AssociationOverrides.class, 2);
         verifyAnnotation(Employee.class, PROPERTY, "getPeriod", AssociationOverride.class, 2);
-        verifyMetadata(Employee.class, PROPERTY, "period", "javax.persistence.AssociationOverrides", 2);
+        verifyMetadata(Employee.class, PROPERTY, "period", "jakarta.persistence.AssociationOverrides", 2);
 
 
         // @AttributeOverride
         verifyContainerAnnotation(Employee.class, PROPERTY, "getPeriod", AttributeOverrides.class, 2);
         verifyAnnotation(Employee.class, PROPERTY, "getPeriod", AttributeOverride.class, 2);
-        verifyMetadata(Employee.class, PROPERTY, "period", "javax.persistence.AttributeOverrides", 2);
+        verifyMetadata(Employee.class, PROPERTY, "period", "jakarta.persistence.AttributeOverrides", 2);
 
         // @Convert
         verifyContainerAnnotation(Race.class, FIELD, "organizers", Converts.class, 2);
         verifyAnnotation(Race.class, FIELD, "organizers", Convert.class, 2);
-        verifyMetadata(Race.class, FIELD, "organizers", "javax.persistence.Converts", 2);
+        verifyMetadata(Race.class, FIELD, "organizers", "jakarta.persistence.Converts", 2);
 
         // @JoinColumn
         verifyContainerAnnotation(Employee.class, PROPERTY, "getPhoneNumbers", JoinColumns.class, 2);
         verifyAnnotation(Employee.class, PROPERTY, "getPhoneNumbers", JoinColumn.class, 2);
-        verifyMetadata(Employee.class, PROPERTY, "phoneNumbers", "javax.persistence.JoinColumns", 2);
+        verifyMetadata(Employee.class, PROPERTY, "phoneNumbers", "jakarta.persistence.JoinColumns", 2);
 
         // @MapKeyJoinColumn
         verifyContainerAnnotation(Department.class, PROPERTY, "getEmployeesByPhoneNumber", MapKeyJoinColumns.class, 2);
         verifyAnnotation(Department.class, PROPERTY, "getEmployeesByPhoneNumber", MapKeyJoinColumn.class, 2);
-        verifyMetadata(Department.class, PROPERTY, "employeesByPhoneNumber", "javax.persistence.MapKeyJoinColumns", 2);
+        verifyMetadata(Department.class, PROPERTY, "employeesByPhoneNumber", "jakarta.persistence.MapKeyJoinColumns", 2);
 
         // @NamedEntityGraph
         verifyContainerAnnotation(Employee.class, NamedEntityGraphs.class, 2);
         verifyAnnotation(Employee.class, NamedEntityGraph.class, 2);
-        verifyMetadata(Employee.class, "javax.persistence.NamedEntityGraphs", 2);
+        verifyMetadata(Employee.class, "jakarta.persistence.NamedEntityGraphs", 2);
 
         // @NamedNativeQuery
         verifyContainerAnnotation(Runner.class, NamedNativeQueries.class, 2);
         verifyAnnotation(Runner.class, NamedNativeQuery.class, 2);
-        verifyMetadata(Runner.class, "javax.persistence.NamedNativeQueries", 2);
+        verifyMetadata(Runner.class, "jakarta.persistence.NamedNativeQueries", 2);
 
         // @NamedQuery
         verifyContainerAnnotation(Employee.class, NamedQueries.class, 2);
         verifyAnnotation(Employee.class, NamedQuery.class, 2);
-        verifyMetadata(Employee.class, "javax.persistence.NamedQueries", 2);
+        verifyMetadata(Employee.class, "jakarta.persistence.NamedQueries", 2);
 
         // @NamedStoredProcedureQuery
         verifyContainerAnnotation(Employee.class, NamedStoredProcedureQueries.class, 5);
         verifyAnnotation(Employee.class, NamedStoredProcedureQuery.class, 5);
-        verifyMetadata(Employee.class, "javax.persistence.NamedStoredProcedureQueries", 5);
+        verifyMetadata(Employee.class, "jakarta.persistence.NamedStoredProcedureQueries", 5);
 
         // @PersistenceContext
         verifyContainerAnnotation(AnnotationsTestSuite.class, PersistenceContexts.class, 3);
         verifyAnnotation(AnnotationsTestSuite.class, PersistenceContext.class, 3);
-        verifyMetadata(AnnotationsTestSuite.class, "javax.persistence.PersistenceContexts", 3);
+        verifyMetadata(AnnotationsTestSuite.class, "jakarta.persistence.PersistenceContexts", 3);
 
         // @PersistenceUnit
         verifyContainerAnnotation(AnnotationsTestSuite.class, PersistenceUnits.class, 2);
         verifyAnnotation(AnnotationsTestSuite.class, PersistenceUnit.class, 2);
-        verifyMetadata(AnnotationsTestSuite.class, "javax.persistence.PersistenceUnits", 2);
+        verifyMetadata(AnnotationsTestSuite.class, "jakarta.persistence.PersistenceUnits", 2);
 
         // @PrimaryKeyJoinColumn
         verifyContainerAnnotation(PhoneNumber.class, PROPERTY, "getPhoneNumberDetails", PrimaryKeyJoinColumns.class, 2);
         verifyAnnotation(PhoneNumber.class, PROPERTY, "getPhoneNumberDetails", PrimaryKeyJoinColumn.class, 2);
-        verifyMetadata(PhoneNumber.class, PROPERTY, "phoneNumberDetails", "javax.persistence.PrimaryKeyJoinColumns", 2);
+        verifyMetadata(PhoneNumber.class, PROPERTY, "phoneNumberDetails", "jakarta.persistence.PrimaryKeyJoinColumns", 2);
 
         // @SecondaryTable
         verifyContainerAnnotation(Employee.class, SecondaryTables.class, 2);
         verifyAnnotation(Employee.class, SecondaryTable.class, 2);
-        verifyMetadata(Employee.class, "javax.persistence.SecondaryTables", 2);
+        verifyMetadata(Employee.class, "jakarta.persistence.SecondaryTables", 2);
 
         // @SqlResultSetMapping
         verifyContainerAnnotation(Employee.class, SqlResultSetMappings.class, 2);
         verifyAnnotation(Employee.class, SqlResultSetMapping.class, 2);
-        verifyMetadata(Employee.class, "javax.persistence.SqlResultSetMappings", 2);
+        verifyMetadata(Employee.class, "jakarta.persistence.SqlResultSetMappings", 2);
     }
 
     private <T, A extends Annotation> void verifyContainerAnnotation(Class<T> classToCheck, Access accessType, String elementName, Class<A> annotationClass, int occurrences) throws Exception {

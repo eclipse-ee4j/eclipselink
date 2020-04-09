@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,18 +36,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.FlushModeType;
-import javax.persistence.LockModeType;
-import javax.persistence.LockTimeoutException;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.Parameter;
-import javax.persistence.PersistenceException;
-import javax.persistence.PessimisticLockException;
-import javax.persistence.Query;
-import javax.persistence.QueryTimeoutException;
-import javax.persistence.TemporalType;
-import javax.persistence.TransactionRequiredException;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockTimeoutException;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.NonUniqueResultException;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PessimisticLockException;
+import jakarta.persistence.Query;
+import jakarta.persistence.QueryTimeoutException;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.TransactionRequiredException;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.QueryException;
@@ -621,7 +621,7 @@ public class QueryImpl {
     }
 
     /**
-     * @see javax.persistence.Query#getFirstResult()
+     * @see jakarta.persistence.Query#getFirstResult()
      * @since Java Persistence API 2.0
      */
     public int getFirstResult() {
@@ -853,7 +853,7 @@ public class QueryImpl {
     }
 
     /**
-     * @see javax.persistence.Query#getMaxResults()
+     * @see jakarta.persistence.Query#getMaxResults()
      * @since Java Persistence API 2.0
      */
     public int getMaxResults() {
@@ -865,7 +865,7 @@ public class QueryImpl {
     }
 
     /**
-     * @see javax.persistence.Query#getMaxResults()
+     * @see jakarta.persistence.Query#getMaxResults()
      * @since Java Persistence API 2.0
      */
     public int getMaxResultsInternal() {

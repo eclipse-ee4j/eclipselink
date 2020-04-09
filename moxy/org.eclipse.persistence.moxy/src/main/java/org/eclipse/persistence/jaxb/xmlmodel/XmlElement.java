@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,12 +14,12 @@
 // dmccann - June 29/2009 - 2.0 - Initial implementation
 package org.eclipse.persistence.jaxb.xmlmodel;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElementRef;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -55,7 +55,7 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;attribute name="nillable" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="required" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="container-type" type="{http://www.w3.org/2001/XMLSchema}string" default="##default" /&gt;
- *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="javax.xml.bind.annotation.XmlElement.DEFAULT" /&gt;
+ *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="jakarta.xml.bind.annotation.XmlElement.DEFAULT" /&gt;
  *       &lt;attribute name="xml-id" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="xml-idref" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
  *       &lt;attribute name="xml-key" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
@@ -92,19 +92,19 @@ public class XmlElement
 
     @XmlElementRef(name = "xml-abstract-null-policy", namespace = "http://www.eclipse.org/eclipselink/xsds/persistence/oxm", type = JAXBElement.class)
     protected JAXBElement<? extends XmlAbstractNullPolicy> xmlAbstractNullPolicy;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-access-methods")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-access-methods")
     protected XmlAccessMethods xmlAccessMethods;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-element-wrapper")
     protected XmlElementWrapper xmlElementWrapper;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-inverse-reference")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-inverse-reference")
     protected XmlElement.XmlInverseReference xmlInverseReference;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-java-type-adapter")
     protected XmlJavaTypeAdapter xmlJavaTypeAdapter;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-map")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-map")
     protected XmlMap xmlMap;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-properties")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-properties")
     protected XmlProperties xmlProperties;
-    @javax.xml.bind.annotation.XmlElement(name = "xml-schema-type")
+    @jakarta.xml.bind.annotation.XmlElement(name = "xml-schema-type")
     protected XmlSchemaType xmlSchemaType;
     @XmlAttribute(name = "name")
     protected String name;
@@ -518,7 +518,7 @@ public class XmlElement
      */
     public String getType() {
         if (type == null) {
-            return "javax.xml.bind.annotation.XmlElement.DEFAULT";
+            return "jakarta.xml.bind.annotation.XmlElement.DEFAULT";
         } else {
             return type;
         }

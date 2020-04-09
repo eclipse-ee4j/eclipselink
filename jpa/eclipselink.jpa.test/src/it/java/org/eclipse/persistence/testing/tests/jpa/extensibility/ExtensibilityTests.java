@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,9 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -612,9 +612,9 @@ public class ExtensibilityTests extends JUnitTestCase {
             fail("PersistenceException was expected");
         } catch (PersistenceException ex) {
             // exception expected because extension.properties contains bogus settings:
-            //   javax.persistence.transactionType=JTA
-            //   javax.persistence.jtaDataSource=MyJtaDataSource
-            //   javax.persistence.nonJtaDataSource=MyNonJtaDataSource
+            //   jakarta.persistence.transactionType=JTA
+            //   jakarta.persistence.jtaDataSource=MyJtaDataSource
+            //   jakarta.persistence.nonJtaDataSource=MyNonJtaDataSource
             // Examine the session to see whether these settings were applied
             // Note that because session login has failed the session is not accessible from emf, only directly from emSetupImpls.
             String errorMsg = "";

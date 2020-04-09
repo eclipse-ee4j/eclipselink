@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,7 +34,7 @@ import org.eclipse.persistence.jpa.ArchiveFactory;
 
 /**
  * This class is written to deal with various URLs that can be returned by
- * {@link javax.persistence.spi.PersistenceUnitInfo#getPersistenceUnitRootUrl()}
+ * {@link jakarta.persistence.spi.PersistenceUnitInfo#getPersistenceUnitRootUrl()}
  *
  * @author Sanjeeb.Sahoo@Sun.COM
  */

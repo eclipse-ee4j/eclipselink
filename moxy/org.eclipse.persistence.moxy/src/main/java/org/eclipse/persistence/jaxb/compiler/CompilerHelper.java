@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,12 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlList;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlList;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.eclipse.persistence.internal.jaxb.AccessorFactoryWrapper;
 import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
@@ -306,7 +306,7 @@ public class CompilerHelper {
             Unmarshaller unmarshaller = CompilerHelper.getXmlBindingsModelContext().createUnmarshaller();
             JAXBElement<org.eclipse.persistence.jaxb.xmlmodel.XmlElement> jelt = unmarshaller.unmarshal(xmlElementNode, org.eclipse.persistence.jaxb.xmlmodel.XmlElement.class);
             return jelt.getValue();
-        } catch (javax.xml.bind.JAXBException jaxbEx) {
+        } catch (jakarta.xml.bind.JAXBException jaxbEx) {
             throw org.eclipse.persistence.exceptions.JAXBException.couldNotUnmarshalMetadata(jaxbEx);
         }
     }
@@ -396,14 +396,14 @@ public class CompilerHelper {
                         if (nextAnnotation != null) {
                             if (nextAnnotation instanceof XmlJavaTypeAdapter) {
                                 Class typeClass = ((XmlJavaTypeAdapter) nextAnnotation).type();
-                                if (typeClass.getName().equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter$DEFAULT")) {
+                                if (typeClass.getName().equals("jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter$DEFAULT")) {
                                     Class adapterClass = ((XmlJavaTypeAdapter) nextAnnotation).value();
                                     return getTypeFromAdapterClass(adapterClass);
                                 }
                                 return typeClass;
                             } else if (nextAnnotation instanceof XmlElement) {
                                 Class typeClass = ((XmlElement) nextAnnotation).type();
-                                if (!typeClass.getName().equals("javax.xml.bind.annotation.XmlElement.DEFAULT")) {
+                                if (!typeClass.getName().equals("jakarta.xml.bind.annotation.XmlElement.DEFAULT")) {
                                     final Type tmiType = tmi.getType();
                                     if (isCollectionType(tmiType)) {
                                         final Class itemType = typeClass;
@@ -442,7 +442,7 @@ public class CompilerHelper {
                 // Check for an adapater, then check for XMLElement.type
                 if (element.getXmlJavaTypeAdapter() != null) {
                     String actualType = element.getXmlJavaTypeAdapter().getType();
-                    if (actualType != null && !actualType.equals("javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
+                    if (actualType != null && !actualType.equals("jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter.DEFAULT")) {
                         return PrivilegedAccessHelper.getClassForName(actualType);
                     } else {
                         String adapterClassName = element.getXmlJavaTypeAdapter().getValue();
@@ -451,7 +451,7 @@ public class CompilerHelper {
                     }
                 }
 
-                if (!(element.getType().equals("javax.xml.bind.annotation.XmlElement.DEFAULT"))) {
+                if (!(element.getType().equals("jakarta.xml.bind.annotation.XmlElement.DEFAULT"))) {
                     String actualType = element.getType();
 
                     final Type tmiType = tmi.getType();

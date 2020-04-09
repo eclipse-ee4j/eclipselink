@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -730,7 +730,7 @@ public class SDODataHelper implements DataHelper {
             } else if (sdoType.equals(SDOConstants.SDO_YEARMONTHDAY)) {
                 return toYearMonthDay((Date) value);
             }
-        } else if (value.getClass().getName().equals("javax.activation.DataHandler")) {
+        } else if (value.getClass().getName().equals("jakarta.activation.DataHandler")) {
             // convert a DataHandler to a string, by getting the bytes and then
             // calling into conversion manager
             try {

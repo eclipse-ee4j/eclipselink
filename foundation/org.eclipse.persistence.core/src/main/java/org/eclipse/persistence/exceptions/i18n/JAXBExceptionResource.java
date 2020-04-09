@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -90,7 +90,7 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50061", "An exception occurred while attempting to load XmlAdapterClass [{0}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
         {"50062", "An exception occurred while attempting to access the declared methods of XmlAdapterClass [{0}]. Possible causes are that the SecurityManager has denied access to the declared methods within the adapter class, or the SecuritManager has denied access to the package of the adapter class."},
         {"50063", "An exception occurred while attempting to instantiate XmlAdapterClass [{0}]. A possible cause is that the adapter class has no zero argument constructor."},
-        {"50064", "XmlAdapterClass [{0}] does not extend \"javax.xml.bind.annotation.adapters.XmlAdapter\" as expected.  It is required that the adapter class extend \"javax.xml.bind.annotation.adapters.XmlAdapter\", and declare methods \"public abstract BoundType unmarshal(ValueType v)\" and \"public abstract ValueType marshal(BoundType v)\"."},
+        {"50064", "XmlAdapterClass [{0}] does not extend \"jakarta.xml.bind.annotation.adapters.XmlAdapter\" as expected.  It is required that the adapter class extend \"jakarta.xml.bind.annotation.adapters.XmlAdapter\", and declare methods \"public abstract BoundType unmarshal(ValueType v)\" and \"public abstract ValueType marshal(BoundType v)\"."},
         {"50065", "An invalid XmlJavaTypeAdapter [{0}] was specified for package [{1}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
         {"50066", "An invalid XmlJavaTypeAdapter [{0}] was specified for class [{1}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},
         {"50067", "An invalid XmlJavaTypeAdapter [{0}] was specified for field/property [{1}] on class [{2}]. Possible causes are an incorrect adapter class name or the wrong loader has been set."},

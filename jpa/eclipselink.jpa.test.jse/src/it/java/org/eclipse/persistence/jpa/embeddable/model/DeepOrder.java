@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2016 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -16,10 +16,10 @@
 //       - 506168 : Nested Embeddables AttributeOverride Test
 package org.eclipse.persistence.jpa.embeddable.model;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
 
 @Entity
 public class DeepOrder {

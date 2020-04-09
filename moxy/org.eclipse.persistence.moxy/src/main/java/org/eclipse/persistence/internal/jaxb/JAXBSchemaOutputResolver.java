@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,14 +16,14 @@ package org.eclipse.persistence.internal.jaxb;
 
 import java.io.IOException;
 
-import javax.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.SchemaOutputResolver;
 import javax.xml.transform.Result;
 
 import org.eclipse.persistence.internal.oxm.schema.SchemaModelOutputResolver;
 
 /**
  * Implementation of a SchemaModelOutputResolver that wraps a
- * javax.xml.bind.SchemaOutputResolver instance.
+ * jakarta.xml.bind.SchemaOutputResolver instance.
  *
  */
 public class JAXBSchemaOutputResolver implements SchemaModelOutputResolver {

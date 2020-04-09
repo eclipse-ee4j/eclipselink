@@ -15,11 +15,10 @@
 package org.eclipse.persistence.jpa.returninsert.model;
 
 import org.eclipse.persistence.annotations.ReturnInsert;
-import org.eclipse.persistence.annotations.ReturnUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
 import java.io.Serializable;
 
 /**

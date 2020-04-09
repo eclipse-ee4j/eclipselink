@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.attachment;
 
-import javax.activation.DataHandler;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.activation.DataHandler;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 
 /**
  * INTERNAL:
@@ -29,7 +29,7 @@ import javax.xml.bind.attachment.AttachmentUnmarshaller;
  * 2.0 Listener without adding a dependancy on JAXB 2.0 into core TopLink. The Adapter class
  * wraps a javax.xml.bin.attachment.AttachmentUnmarshaller and passes on the events as they're raised
  *
- * @see javax.xml.bind.attachment.AttachmentUnmarshaller
+ * @see jakarta.xml.bind.attachment.AttachmentUnmarshaller
  * @see org.eclipse.persistence.oxm.attachment.XMLAttachmentUnmarshaller
  * @since Oracle TopLink 11.1.1.0.0
  * @author mmacivor

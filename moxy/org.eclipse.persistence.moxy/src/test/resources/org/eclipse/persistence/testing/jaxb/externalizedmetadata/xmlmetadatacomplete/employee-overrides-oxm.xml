@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,8 +31,8 @@
                 <xml-element java-attribute="name" xml-path="contact-info/name/text()" />
                 <xml-any-element java-attribute="things" xml-path="nsx:my-things/text()"/>
                 <xml-element-refs java-attribute="fooOrBar">
-                    <xml-element-ref name="foo" type="javax.xml.bind.JAXBElement" />
-                    <xml-element-ref name="bar" type="javax.xml.bind.JAXBElement" />
+                    <xml-element-ref name="foo" type="jakarta.xml.bind.JAXBElement" />
+                    <xml-element-ref name="bar" type="jakarta.xml.bind.JAXBElement" />
                 </xml-element-refs>
             </java-attributes>
         </java-type>

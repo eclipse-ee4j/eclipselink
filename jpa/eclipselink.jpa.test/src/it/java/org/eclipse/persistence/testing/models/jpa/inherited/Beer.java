@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,19 +22,19 @@
 //       - 373092: Exceptions using generics, embedded key and entity inheritance
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.PostPersist;
-import javax.persistence.Version;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.JoinColumn;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.Version;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.MappedSuperclass;
 
 import org.eclipse.persistence.annotations.ExistenceChecking;
 
-import static javax.persistence.FetchType.LAZY;
+import static jakarta.persistence.FetchType.LAZY;
 import static org.eclipse.persistence.annotations.ExistenceType.CHECK_CACHE;
 
 import java.sql.Timestamp;

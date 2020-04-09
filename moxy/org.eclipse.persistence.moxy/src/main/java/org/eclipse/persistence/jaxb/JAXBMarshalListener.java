@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Map;
 
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.Marshaller;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.oxm.Root;
@@ -38,17 +38,17 @@ import org.eclipse.persistence.oxm.XMLMarshalListener;
  * <li>Perform JAXB 2.0 Class-Based marshal event callbacks</li>
  * </ul>
  *
- * @see javax.xml.bind.Marshaller.Listener
+ * @see jakarta.xml.bind.Marshaller.Listener
  * @see org.eclipse.persistence.oxm.XMLMarshalListener
  */
 
 public class JAXBMarshalListener implements XMLMarshalListener {
     private Marshaller.Listener listener;
     private Map classBasedMarshalEvents;
-    private javax.xml.bind.Marshaller marshaller;
+    private jakarta.xml.bind.Marshaller marshaller;
     private JAXBContext jaxbContext;
 
-    public JAXBMarshalListener(JAXBContext context, javax.xml.bind.Marshaller marshaller) {
+    public JAXBMarshalListener(JAXBContext context, jakarta.xml.bind.Marshaller marshaller) {
         jaxbContext = context;
         this.marshaller = marshaller;
     }

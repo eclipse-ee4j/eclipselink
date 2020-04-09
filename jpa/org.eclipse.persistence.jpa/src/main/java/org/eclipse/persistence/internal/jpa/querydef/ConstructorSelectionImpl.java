@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.internal.jpa.querydef;
 
 import java.lang.reflect.Constructor;
 
-import javax.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Selection;
 
 import org.eclipse.persistence.internal.queries.ReportItem;
 import org.eclipse.persistence.queries.ConstructorReportItem;
@@ -30,7 +30,7 @@ import org.eclipse.persistence.queries.ConstructorReportItem;
  * <b>Description</b>: The Selection is the expression describing what should be returned by the query.
  * <p>
  *
- * @see javax.persistence.criteria Join
+ * @see jakarta.persistence.criteria Join
  *
  * @author gyorke
  * @since EclipseLink 1.2

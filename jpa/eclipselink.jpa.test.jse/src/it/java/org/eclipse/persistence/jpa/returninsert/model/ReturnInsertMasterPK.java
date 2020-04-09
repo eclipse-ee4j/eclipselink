@@ -17,7 +17,7 @@ package org.eclipse.persistence.jpa.returninsert.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.eclipse.persistence.annotations.ReturnInsert;
 

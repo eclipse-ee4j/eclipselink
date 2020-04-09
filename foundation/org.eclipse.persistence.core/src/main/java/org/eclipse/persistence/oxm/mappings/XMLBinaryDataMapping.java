@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.oxm.mappings;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -59,7 +59,7 @@ import org.eclipse.persistence.sessions.Session;
  *  <p>The following typed are allowable to be mapped using an XMLBinaryDataMapping:<ul>
  *  <li>java.awt.Image</li>
  *  <li>byte[]</li>
- *  <li>javax.activation.DataHandler</li>
+ *  <li>jakarta.activation.DataHandler</li>
  *  <li>javax.xml.transform.Source</li>
  *  <li>javax.mail.internet.MimeMultipart</li>
  *  </ul>

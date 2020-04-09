@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2009, 2018 Fujitsu Limited. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -206,7 +206,7 @@ public class SymfowarePlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.lang.Byte[].class, new FieldTypeDefinition(
                 "BLOB", 1024));
         // Symfoware's range for a VARCHAR is 1-32000, but the default value of
-        // @javax.persistence.Column#length is 255
+        // @jakarta.persistence.Column#length is 255
         fieldTypeMapping.put(char[].class, new FieldTypeDefinition("VARCHAR",
                 255));
         fieldTypeMapping.put(java.lang.Character[].class,

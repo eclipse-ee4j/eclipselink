@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,10 +19,10 @@ import org.eclipse.persistence.internal.oxm.record.ExtendedSource;
 import org.eclipse.persistence.internal.oxm.record.XMLReader;
 import org.eclipse.persistence.internal.oxm.record.json.JsonParserReader;
 
-import javax.json.stream.JsonParser;
+import jakarta.json.stream.JsonParser;
 
 /**
- *   Object to be used with Unmarshaller to unmarshal {@link javax.json.stream.JsonParser} objects
+ *   Object to be used with Unmarshaller to unmarshal {@link jakarta.json.stream.JsonParser} objects
  *
  *   Usage:
  *      JsonParserSource source = new JsonParserSource(jsonParser);

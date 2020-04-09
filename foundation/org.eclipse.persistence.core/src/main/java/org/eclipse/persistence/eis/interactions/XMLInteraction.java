@@ -16,7 +16,6 @@ package org.eclipse.persistence.eis.interactions;
 
 import java.io.*;
 import java.util.*;
-import javax.resource.cci.*;
 import org.eclipse.persistence.internal.oxm.XMLObjectBuilder;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -114,8 +113,8 @@ public class XMLInteraction extends MappedInteraction {
      * Convert the database row or arguments into an XML DOM tree.
      */
     @Override
-    public javax.resource.cci.Record createInputRecord(EISAccessor accessor) {
-        javax.resource.cci.Record record = accessor.getEISPlatform().createDOMRecord(getInputRecordName(), accessor);
+    public jakarta.resource.cci.Record createInputRecord(EISAccessor accessor) {
+        jakarta.resource.cci.Record record = accessor.getEISPlatform().createDOMRecord(getInputRecordName(), accessor);
         Element dom = createInputDOM(accessor);
         accessor.getEISPlatform().setDOMInRecord(dom, record, this, accessor);
         if (record instanceof XMLRecord) {
@@ -176,7 +175,7 @@ public class XMLInteraction extends MappedInteraction {
      * Build a database row from the record returned from the interaction.
      */
     @Override
-    public AbstractRecord buildRow(javax.resource.cci.Record record, EISAccessor accessor) {
+    public AbstractRecord buildRow(jakarta.resource.cci.Record record, EISAccessor accessor) {
         if (record == null) {
             return null;
         }
@@ -201,7 +200,7 @@ public class XMLInteraction extends MappedInteraction {
      * Build a collection of database rows from the Record returned from the interaction.
      */
     @Override
-    public Vector buildRows(javax.resource.cci.Record record, EISAccessor accessor) {
+    public Vector buildRows(jakarta.resource.cci.Record record, EISAccessor accessor) {
         Vector rows = null;
         if (record == null) {
             return new Vector(0);

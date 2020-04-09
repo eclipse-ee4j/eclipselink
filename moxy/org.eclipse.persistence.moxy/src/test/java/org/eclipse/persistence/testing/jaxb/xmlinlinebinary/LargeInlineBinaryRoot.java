@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,10 +17,10 @@ package org.eclipse.persistence.testing.jaxb.xmlinlinebinary;
 import java.awt.Image;
 import java.util.List;
 
-import javax.activation.DataHandler;
-import javax.mail.internet.MimeMultipart;
-import javax.xml.bind.annotation.XmlInlineBinaryData;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.activation.DataHandler;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.xml.bind.annotation.XmlInlineBinaryData;
+import jakarta.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.Source;
 
 @XmlRootElement(name="root")

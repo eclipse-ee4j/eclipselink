@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2015 SAP. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -19,9 +19,9 @@ package org.eclipse.persistence.testing.framework.junit;
 import java.util.Hashtable;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
 
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.sessions.server.ServerSession;

@@ -534,7 +534,7 @@ public class PropertiesHandler {
 
     protected static class FlushModeProp extends Prop {
         FlushModeProp() {
-            //XXX - using javax.persistence.FlushModeType.* directly causes
+            //XXX - using jakarta.persistence.FlushModeType.* directly causes
             //runtime dependency of this class on JPA API which is wrong
             //and leads to transitive dependency from MOXy to JPA API
             super(EntityManagerProperties.PERSISTENCE_CONTEXT_FLUSH_MODE,

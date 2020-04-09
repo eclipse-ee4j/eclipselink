@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,17 +16,17 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelementrefs
 
 import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlTransient;
 
-@javax.xml.bind.annotation.XmlAccessorType(XmlAccessType.FIELD)
-//@javax.xml.bind.annotation.XmlRootElement(name="my-foos")
+@jakarta.xml.bind.annotation.XmlAccessorType(XmlAccessType.FIELD)
+//@jakarta.xml.bind.annotation.XmlRootElement(name="my-foos")
 public class Foos {
-    //@javax.xml.bind.annotation.XmlElementWrapper(name="items")
-    //@javax.xml.bind.annotation.XmlElementRefs({
-    //    @javax.xml.bind.annotation.XmlElementRef(name="integer-root", namespace="myns"),
-    //    @javax.xml.bind.annotation.XmlElementRef(name="root")
+    //@jakarta.xml.bind.annotation.XmlElementWrapper(name="items")
+    //@jakarta.xml.bind.annotation.XmlElementRefs({
+    //    @jakarta.xml.bind.annotation.XmlElementRef(name="integer-root", namespace="myns"),
+    //    @jakarta.xml.bind.annotation.XmlElementRef(name="root")
     //})
     public List<Object> items;
     public List<Object> stuff;

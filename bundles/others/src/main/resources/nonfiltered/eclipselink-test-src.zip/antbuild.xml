@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -975,10 +975,10 @@
                 <!-- exclude test-only dependencies -->
                 <exclude name="*hk2*"/>
                 <exclude name="*jersey*"/>
-                <exclude name="javax.inject*"/>
+                <exclude name="jakarta.inject*"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
-            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="javax.persistence*_2.2*.jar" excludes="*preview*.jar"/>
+            <zipfileset dir="${eclipselink.jpa.plugins}/" includes="jakarta.persistence*_2.2*.jar" excludes="*preview*.jar"/>
             <zipfileset dir="${eclipselink.sdo.plugins}/" includes="commonj.sdo*2.1.1*.jar"/>
             <zipfileset dir="${eclipselink.util.plugins}/">
                 <include name="javax.wsdl*.jar"/>
@@ -1043,8 +1043,8 @@
                 <include name="${eclipselink.sdo.test}/**"/>
                 <include name="${eclipselink.sdo.base}/eclipselink.sdo.test.server/**"/>
                 <include name="plugins/eclipselink-jpa-modelgen_*.jar"/>
-                <include name="plugins/javax.validation.api_*.jar"/>
-                <include name="jpa/plugins/javax.persistence_2.*.jar"/>
+                <include name="plugins/jakarta.validation.api_*.jar"/>
+                <include name="jpa/plugins/jakarta.persistence_2.*.jar"/>
                 <include name="sdo/plugins/commonj.sdo_*.jar"/>
                 <exclude name="**/.settings/**"/>
                 <exclude name="**/eclipselink.moxy.test/moxy/**"/>
@@ -1105,10 +1105,10 @@
         </path>
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
-        <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
+        <delete dir="${build.dir}/jakarta.xml.bind" failonerror="false"/>
         <delete dir="${unified.javadocs}" failonerror="false"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence22.src.jar}" dest="${build.dir}/jpa22/src"/>
-        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
+        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/jakarta.xml.bind/src"/>
         <javadoc
             maxmemory="768m"
             Verbose="false"
@@ -1131,9 +1131,9 @@
 
             <!-- *** include Dependent APIs in Javadoc  *** -->
             <fileset dir="${build.dir}/jpa22/src" defaultexcludes="yes">
-                <include name="javax/persistence/**/*.java"/>
+                <include name="jakarta/persistence/**/*.java"/>
             </fileset>
-            <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
+            <fileset dir="${build.dir}/jakarta.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
             </fileset>
             <!-- *** EclipseLink modules *** -->
@@ -1229,10 +1229,10 @@
     <target name="build-main-javadocs" depends="build-sdo-javadocs">
         <!-- the following property needs to be here because the "qualifier" is generated at runtime -->
         <property name="eclipselink.javadoc.title" value="${javadoc.prefixTitle}, ${javadoc.postfixTitle}"/>
-        <delete dir="${build.dir}/javax.xml.bind" failonerror="false"/>
+        <delete dir="${build.dir}/jakarta.xml.bind" failonerror="false"/>
         <delete dir="${eclipselink.javadocs}" failonerror="false"/>
         <unzip src="${eclipselink.jpa.plugins}/${persistence22.src.jar}" dest="${build.dir}/jpa22/src"/>
-        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/javax.xml.bind/src"/>
+        <unzip src="${eclipselink.plugins}/${jaxb-api.src.jar}" dest="${build.dir}/jakarta.xml.bind/src"/>
         <javadoc
             maxmemory="768m"
             Verbose="false"
@@ -1257,7 +1257,7 @@
             <fileset dir="${build.dir}/jpa22/src" defaultexcludes="yes">
                 <include name="javax/persistence/**/*.java"/>
             </fileset>
-            <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
+            <fileset dir="${build.dir}/jakarta.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
                 <exclude name="module-info.java"/>
             </fileset>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,10 +14,10 @@
 //     tware - initial contribution for Bug 366748 - JPA 2.1 Injectable Entity Listeners
 package org.eclipse.persistence.testing.models.jpa22.entitylistener;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 
 public class EntityListener extends AbstractEntityListener<EntityListenerHolder> {
     @Override

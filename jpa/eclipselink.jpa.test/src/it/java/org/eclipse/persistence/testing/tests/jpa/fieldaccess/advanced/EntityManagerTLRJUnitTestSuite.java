@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,18 +29,18 @@ import java.util.Collection;
 import java.util.Vector;
 import java.util.Iterator;
 
-import javax.persistence.EntityExistsException;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.FlushModeType;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
-import javax.persistence.TransactionRequiredException;
-import javax.persistence.LockModeType;
-import javax.persistence.PersistenceException;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.RollbackException;
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
+import jakarta.persistence.TransactionRequiredException;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.RollbackException;
 
 import junit.framework.*;
 
@@ -430,7 +430,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
             em.persist(emp);
             result = (Employee) query.getSingleResult();
             result.toString();
-        } catch (javax.persistence.NoResultException ex) {
+        } catch (jakarta.persistence.NoResultException ex) {
             // failed to flush to database
             flushed = false;
         } finally {
@@ -480,7 +480,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
                 }
                 Employee result = (Employee) readQuery.getSingleResult();
                 result.toString();
-            }catch (javax.persistence.EntityNotFoundException ex){
+            }catch (jakarta.persistence.EntityNotFoundException ex){
                 rollbackTransaction(em);
                 fail("Failed to flush to database");
             }
@@ -552,7 +552,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
             }catch (RollbackException ex){
                 return;
             }catch (RuntimeException ex){
-                if (ex.getCause() instanceof javax.transaction.RollbackException) {
+                if (ex.getCause() instanceof jakarta.transaction.RollbackException) {
                     return;
                 }
                 if (isTransactionActive(em)){
@@ -4303,7 +4303,7 @@ public class EntityManagerTLRJUnitTestSuite extends JUnitTestCase {
 
     // Used by testClearEntityManagerWithoutPersistenceContextSimulateJTA().
     // At first tried to use JTATransactionController class, but that introduced dependencies
-    // on javax.transaction package (and therefore failed in gf entity persistence tests).
+    // on jakarta.transaction package (and therefore failed in gf entity persistence tests).
     static class DummyExternalTransactionController extends org.eclipse.persistence.transaction.AbstractTransactionController {
         public boolean isRolledBack_impl(Object status){return false;}
         protected void registerSynchronization_impl(org.eclipse.persistence.transaction.AbstractSynchronizationListener listener, Object txn) throws Exception{}

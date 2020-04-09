@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -47,20 +47,20 @@ import java.util.Random;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.persistence.CacheStoreMode;
-import javax.persistence.EntityManager;
-import javax.persistence.FlushModeType;
-import javax.persistence.Query;
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.Attribute.PersistentAttributeType;
-import javax.persistence.metamodel.Bindable.BindableType;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.SingularAttribute;
-import javax.persistence.metamodel.Type.PersistenceType;
-import javax.persistence.spi.LoadState;
-import javax.persistence.spi.ProviderUtil;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.Query;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.Attribute.PersistentAttributeType;
+import jakarta.persistence.metamodel.Bindable.BindableType;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.metamodel.Type.PersistenceType;
+import jakarta.persistence.spi.LoadState;
+import jakarta.persistence.spi.ProviderUtil;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -1374,7 +1374,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         }
         if (caughtException == null) {
             fail("Optimistic lock exception was not thrown.");
-        } else if (!(caughtException.getCause() instanceof javax.persistence.OptimisticLockException)) {
+        } else if (!(caughtException.getCause() instanceof jakarta.persistence.OptimisticLockException)) {
             // Re-throw exception to ensure stacktrace appears in test result.
             throw caughtException;
         }
@@ -2076,7 +2076,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         closeEntityManager(em1);
         if (caughtException == null) {
             fail("Optimistic lock exception was not thrown.");
-        } else if (!(caughtException instanceof javax.persistence.OptimisticLockException)) {
+        } else if (!(caughtException instanceof jakarta.persistence.OptimisticLockException)) {
             // Re-throw exception to ensure stacktrace appears in test result.
             throw caughtException;
         }

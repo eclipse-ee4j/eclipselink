@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,8 +36,8 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
-import javax.persistence.metamodel.Attribute;
-import javax.persistence.metamodel.ManagedType;
+import jakarta.persistence.metamodel.Attribute;
+import jakarta.persistence.metamodel.ManagedType;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.descriptors.InstanceVariableAttributeAccessor;
@@ -59,7 +59,7 @@ import org.eclipse.persistence.mappings.ManyToManyMapping;
  * <b>Description</b>:
  * An attribute of a Java type
  *
- * @see javax.persistence.metamodel.Attribute
+ * @see jakarta.persistence.metamodel.Attribute
  *
  * @since EclipseLink 1.2 - JPA 2.0
  * @param <X> The represented type that contains the attribute

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,13 @@ package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlelements;
 
 import java.util.List;
 
-//@javax.xml.bind.annotation.XmlRootElement
+//@jakarta.xml.bind.annotation.XmlRootElement
 public class Bar {
-    //@javax.xml.bind.annotation.XmlIDREF
-    //@javax.xml.bind.annotation.XmlElementWrapper(name="contact")
-    //@javax.xml.bind.annotation.XmlElements({
-    //    @javax.xml.bind.annotation.XmlElement(name="address", type=Address.class),
-    //    @javax.xml.bind.annotation.XmlElement(name="phone", type=Phone.class)
+    //@jakarta.xml.bind.annotation.XmlIDREF
+    //@jakarta.xml.bind.annotation.XmlElementWrapper(name="contact")
+    //@jakarta.xml.bind.annotation.XmlElements({
+    //    @jakarta.xml.bind.annotation.XmlElement(name="address", type=Address.class),
+    //    @jakarta.xml.bind.annotation.XmlElement(name="phone", type=Phone.class)
     //})
     public List items;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     tware - initial implementation
 package org.eclipse.persistence.internal.jpa.metamodel.proxy;
 
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.Type;
+import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.Type;
 
 import org.eclipse.persistence.internal.jpa.metamodel.PluralAttributeImpl;
 
@@ -31,7 +31,7 @@ import org.eclipse.persistence.internal.jpa.metamodel.PluralAttributeImpl;
 public class PluralAttributeProxyImpl<X, C, V> extends AttributeProxyImpl<X, C> implements PluralAttribute<X, C, V>{
 
     @Override
-    public javax.persistence.metamodel.Bindable.BindableType getBindableType() {
+    public jakarta.persistence.metamodel.Bindable.BindableType getBindableType() {
         return ((PluralAttributeImpl)getAttribute()).getBindableType();
     }
 
@@ -41,7 +41,7 @@ public class PluralAttributeProxyImpl<X, C, V> extends AttributeProxyImpl<X, C> 
     }
 
     @Override
-    public javax.persistence.metamodel.PluralAttribute.CollectionType getCollectionType() {
+    public jakarta.persistence.metamodel.PluralAttribute.CollectionType getCollectionType() {
         return ((PluralAttributeImpl)getAttribute()).getCollectionType();
     }
 

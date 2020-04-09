@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,11 +41,11 @@ import org.eclipse.persistence.testing.models.jpa.inheritance.Weapon;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import javax.persistence.LockModeType;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
-import javax.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.Query;
+import jakarta.persistence.EntityManager;
 
 public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
     private static Integer assassinId;
@@ -512,7 +512,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
                     em2.getTransaction().rollback();
                 }
 
-                if (e.getCause() instanceof javax.persistence.OptimisticLockException) {
+                if (e.getCause() instanceof jakarta.persistence.OptimisticLockException) {
                     caughtException = e;
                 } else {
                     throw e;
@@ -654,7 +654,7 @@ public class TablePerClassInheritanceJUnitTest extends JUnitTestCase {
                     em2.getTransaction().rollback();
                 }
 
-                if (e.getCause() instanceof javax.persistence.OptimisticLockException) {
+                if (e.getCause() instanceof jakarta.persistence.OptimisticLockException) {
                     caughtException = e;
                 } else {
                     throw e;

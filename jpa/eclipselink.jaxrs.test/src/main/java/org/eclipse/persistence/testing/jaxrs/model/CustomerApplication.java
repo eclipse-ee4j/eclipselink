@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,11 @@ package org.eclipse.persistence.testing.jaxrs.model;
 
 import org.eclipse.persistence.jaxb.rs.MOXyJsonProvider;
 
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.core.Application;
 import java.util.HashSet;
 import java.util.Set;
 
-@javax.ws.rs.ApplicationPath("rest/*")
+@jakarta.ws.rs.ApplicationPath("rest/*")
 public class CustomerApplication extends Application {
 
     @Override

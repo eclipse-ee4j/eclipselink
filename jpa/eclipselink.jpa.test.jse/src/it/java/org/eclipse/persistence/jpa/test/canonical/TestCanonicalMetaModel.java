@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,8 +21,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import java.util.Arrays;
 import java.util.Properties;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -49,10 +49,10 @@ public class TestCanonicalMetaModel {
                 .getCodeSource().getLocation());
 
         Properties properties = new Properties();
-        readProperty(properties, "javax.persistence.jdbc.driver");
-        readProperty(properties, "javax.persistence.jdbc.url");
-        readProperty(properties, "javax.persistence.jdbc.user");
-        readProperty(properties, "javax.persistence.jdbc.password");
+        readProperty(properties, "jakarta.persistence.jdbc.driver");
+        readProperty(properties, "jakarta.persistence.jdbc.url");
+        readProperty(properties, "jakarta.persistence.jdbc.user");
+        readProperty(properties, "jakarta.persistence.jdbc.password");
 
         // In our actual application we have a generic session customizer that binds a number
         // of delegate session customizers in a 'logical' order - for this example however we

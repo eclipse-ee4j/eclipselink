@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -30,12 +30,12 @@ package org.eclipse.persistence.testing.tests.jpa.advanced.compositepk;
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitUtil;
+import jakarta.persistence.Query;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import junit.framework.*;
 

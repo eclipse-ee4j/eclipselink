@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,7 @@ package org.eclipse.persistence.oxm.mappings;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.activation.DataHandler;
+import jakarta.activation.DataHandler;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -62,7 +62,7 @@ import org.w3c.dom.Node;
  *  <p>The following types are allowable to be mapped using an XMLBinaryDataMapping:<ul>
  *  <li>java.awt.Image</li>
  *  <li>byte[]</li>
- *  <li>javax.activation.DataHandler</li>
+ *  <li>jakarta.activation.DataHandler</li>
  *  <li>javax.xml.transform.Source</li>
  *  <li>javax.mail.internet.MimeMultipart</li>
  *  </ul>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import test.org.eclipse.persistence.testing.models.jpa.spring.Address;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Route;
 import test.org.eclipse.persistence.testing.models.jpa.spring.Truck;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 /**
  * This class is a JPA data access object and implements Spring's jpaTemplate which functions

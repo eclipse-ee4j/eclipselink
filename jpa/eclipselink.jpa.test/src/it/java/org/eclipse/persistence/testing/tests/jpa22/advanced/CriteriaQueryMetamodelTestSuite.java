@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,18 +18,18 @@ package org.eclipse.persistence.testing.tests.jpa22.advanced;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaDelete;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.CriteriaBuilder.Case;
-import javax.persistence.metamodel.EntityType;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaDelete;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaUpdate;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.CriteriaBuilder.Case;
+import jakarta.persistence.metamodel.EntityType;
+import jakarta.persistence.metamodel.Metamodel;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -308,7 +308,7 @@ public class CriteriaQueryMetamodelTestSuite extends JUnitTestCase {
 
         Metamodel metamodel = em.getMetamodel();
         EntityType<Employee> entityEmp_ = metamodel.entity(Employee.class);
-        javax.persistence.metamodel.EmbeddableType<EmploymentPeriod> embedEmpPeriod_ =
+        jakarta.persistence.metamodel.EmbeddableType<EmploymentPeriod> embedEmpPeriod_ =
                 metamodel.embeddable(EmploymentPeriod.class);
 
         Calendar startCalendar = Calendar.getInstance();

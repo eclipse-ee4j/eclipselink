@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,13 +15,13 @@
 //       - 265359: JPA 2.0 Element Collections - Metadata processing portions
 package org.eclipse.persistence.testing.models.jpa.complexaggregate;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @Entity
 @Table(name="CMP3_HOCKEY_COACH")

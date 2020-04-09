@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,8 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.spi.PersistenceProvider;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.spi.PersistenceProvider;
 
 
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -166,7 +166,7 @@ public class JPAPerformanceComparisonModel extends TestModel {
         Map properties = new HashMap();
 
         // For DataSource testing.
-        //properties.put("javax.persistence.nonJtaDataSource", "datasource");
+        //properties.put("jakarta.persistence.nonJtaDataSource", "datasource");
 
         // For JSE testing.
         properties.put("eclipselink.jdbc.driver", getSession().getLogin().getDriverClassName());

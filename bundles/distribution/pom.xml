@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,14 @@
     <dependencies>
         <!--Binary dependencies-->
         <!--Other modules-->
+        <dependency>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
@@ -199,7 +207,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.version}</version>
+            <version>${jaxb.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -458,7 +466,7 @@
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.version}</version>
+            <version>${jaxb.api.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <!--Javadoc dependencies-->
@@ -467,6 +475,12 @@
             <artifactId>eclipselink</artifactId>
             <version>${project.version}</version>
             <classifier>javadoc</classifier>
+        </dependency>
+        <dependency> <!-- TODO: jakartify after PaxExam supports jakarta.* Inject-->
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <version>1.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -668,58 +682,98 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>installer-test</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <environmentVariables>
-                                <ECLIPSELINK_UNZIP_DIR>${eclipselink.unzip.dir}</ECLIPSELINK_UNZIP_DIR>
-                            </environmentVariables>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.jaxb.installer.InstallerTestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>osgi-test</id>
-                        <phase>integration-test</phase>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <!--<skip>true</skip>-->
-                            <systemProperties>
-                                <moxytest.2.common.plugins.dir>${project.build.directory}/${osgi.test.plugins.dir}</moxytest.2.common.plugins.dir>
-                                <build.qualifier>${build.type}</build.qualifier>
-                                <release.version>${release.version}</release.version>
-                                <jaxb-api.jar>jakarta.xml.bind-api.jar</jaxb-api.jar>
-                                <jaxrs.jar>jakarta.ws.rs-api.jar</jaxrs.jar>
-                                <asm.jar>org.eclipse.persistence.asm_${release.version}.${build.type}.jar</asm.jar>
-                                <asm.version>${asm.bundle.version}</asm.version>
-                                <javax.validation.lib>${project.build.directory}/${osgi.test.plugins.dir}/jakarta.validation-api.jar</javax.validation.lib>
-                            </systemProperties>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.osgi.beanvalidation.NoBeanValidationTest</include>
-                                <include>org.eclipse.persistence.testing.osgi.beanvalidation.BeanValidationTest</include>
-                                <include>org.eclipse.persistence.testing.osgi.OSGiBundleTest</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>verify-installer-osgi-tests</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>jdk1.8</id>
+            <activation>
+                <jdk>1.8</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>installer-test</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <environmentVariables>
+                                        <ECLIPSELINK_UNZIP_DIR>${eclipselink.unzip.dir}</ECLIPSELINK_UNZIP_DIR>
+                                    </environmentVariables>
+                                    <includes>
+                                        <include>org.eclipse.persistence.testing.jaxb.installer.InstallerTestSuite
+                                        </include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk11+</id>
+            <!--
+            OSGi tests after jakartification can be run only under JDK 11 or higher due to
+            jakartified dependencies which from now on requires JDK 11 environment
+            -->
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>osgi-test</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <!--<skip>true</skip>-->
+                                    <systemProperties>
+                                        <moxytest.2.common.plugins.dir>
+                                            ${project.build.directory}/${osgi.test.plugins.dir}
+                                        </moxytest.2.common.plugins.dir>
+                                        <build.qualifier>${build.type}</build.qualifier>
+                                        <release.version>${release.version}</release.version>
+                                        <jaxb-api.jar>jakarta.xml.bind-api.jar</jaxb-api.jar>
+                                        <jaxrs.jar>jakarta.ws.rs-api.jar</jaxrs.jar>
+                                        <asm.jar>org.eclipse.persistence.asm_${release.version}.${build.type}.jar
+                                        </asm.jar>
+                                        <asm.version>${asm.bundle.version}</asm.version>
+                                        <jakarta.validation.lib>
+                                            ${project.build.directory}/${osgi.test.plugins.dir}/jakarta.validation-api.jar
+                                        </jakarta.validation.lib>
+                                    </systemProperties>
+                                    <includes>
+                                        <include>
+                                            org.eclipse.persistence.testing.osgi.beanvalidation.NoBeanValidationTest
+                                        </include>
+                                        <!--                                <include>org.eclipse.persistence.testing.osgi.beanvalidation.BeanValidationTest</include>-->
+                                        <include>org.eclipse.persistence.testing.osgi.OSGiBundleTest</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify-installer-osgi-tests</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

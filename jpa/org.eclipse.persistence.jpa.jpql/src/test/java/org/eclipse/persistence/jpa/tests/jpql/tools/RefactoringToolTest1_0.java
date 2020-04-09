@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -137,11 +137,11 @@ public final class RefactoringToolTest1_0 extends AbstractRefactoringToolTest {
     @Test
     public void test_RenameEnumConstant_1() throws Exception {
 
-        String jpqlQuery = "UPDATE Employee SET name = javax.persistence.AccessType.FIELD";
+        String jpqlQuery = "UPDATE Employee SET name = jakarta.persistence.AccessType.FIELD";
         RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
-        refactoringTool.renameEnumConstant("javax.persistence.AccessType.FIELD", "javax.persistence.AccessType.PROPERTY");
+        refactoringTool.renameEnumConstant("jakarta.persistence.AccessType.FIELD", "jakarta.persistence.AccessType.PROPERTY");
 
-        String expected = "UPDATE Employee SET name = javax.persistence.AccessType.PROPERTY";
+        String expected = "UPDATE Employee SET name = jakarta.persistence.AccessType.PROPERTY";
         assertEquals(expected, refactoringTool.toActualText());
     }
 
@@ -150,7 +150,7 @@ public final class RefactoringToolTest1_0 extends AbstractRefactoringToolTest {
 
         String jpqlQuery = "UPDATE Employee e SET e.name = e.lName";
         RefactoringTool refactoringTool = buildRefactoringTool(jpqlQuery);
-        refactoringTool.renameEnumConstant("javax.persistence.AccessType.FIELD", "javax.persistence.AccessType.PROPERTY");
+        refactoringTool.renameEnumConstant("jakarta.persistence.AccessType.FIELD", "jakarta.persistence.AccessType.PROPERTY");
 
         assertEquals(jpqlQuery, refactoringTool.toActualText());
     }

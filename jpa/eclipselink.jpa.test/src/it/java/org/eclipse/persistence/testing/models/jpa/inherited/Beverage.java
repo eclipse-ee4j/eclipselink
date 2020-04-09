@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,15 +20,15 @@
 //       - 373092: Exceptions using generics, embedded key and entity inheritance
 package org.eclipse.persistence.testing.models.jpa.inherited;
 
-import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import javax.persistence.PostPersist;
-import javax.persistence.TableGenerator;
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.TableGenerator;
+import jakarta.persistence.MappedSuperclass;
 
 import org.eclipse.persistence.testing.models.jpa.inheritance.GenericTestInterface2;
 
-import static javax.persistence.GenerationType.*;
+import static jakarta.persistence.GenerationType.*;
 
 @MappedSuperclass
 // The reference to GenericTestInterface2 is added as a test for the fix for bug 411560

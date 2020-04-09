@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -141,8 +141,8 @@ public class ExceptionLocalizationResource extends ListResourceBundle {
                                            { "jpa_helper_invalid_entity_manager_factory", "The JPA EntityManagerFactory {0} is not an EclipseLink EntityManagerFactory and therefore, could not be converted."},
                                            { "jpa_helper_invalid_entity_manager_factory_for_refresh", "The JPA EntityManagerFactory {0} is not an EclipseLink EntityManagerFactory and therefore, could not have its metadata refreshed."},
                                            { "null_not_supported_identityweakhashmap", "The IdentityWeakHashMap does not support \"null\" as a key or value."},
-                                           { "entity_manager_properties_conflict_default_connector_vs_jndi_connector", "EntityManager properties conflict: javax.persistence.driver and/or javax.persistence.url require DefaultConnector, but javax.persistence.jtaDataSource and/or javax.persistence.nonjtaDataSource require JNDIConnector."},
-                                           { "entity_manager_properties_conflict_default_connector_vs_external_transaction_controller", "EntityManager properties conflict: javax.persistence.driver and/or javax.persistence.url require DefaultConnector, but persistence unit uses external transaction controller, therefore JNDIConnector is required."},
+                                           { "entity_manager_properties_conflict_default_connector_vs_jndi_connector", "EntityManager properties conflict: jakarta.persistence.driver and/or jakarta.persistence.url require DefaultConnector, but jakarta.persistence.jtaDataSource and/or jakarta.persistence.nonjtaDataSource require JNDIConnector."},
+                                           { "entity_manager_properties_conflict_default_connector_vs_external_transaction_controller", "EntityManager properties conflict: jakarta.persistence.driver and/or jakarta.persistence.url require DefaultConnector, but persistence unit uses external transaction controller, therefore JNDIConnector is required."},
                                            { "invalid_lock_query", "A lock type can only be used with a select query (which allows the database to be locked where necessary)."},
                                            { "cant_lock_not_managed_object", "Entity must be managed to call lock: {0}, try merging the detached and try the lock again."},
                                            { "metamodel_managed_type_attribute_not_present", "The attribute [{0}] is not present in the managed type [{1}]." },

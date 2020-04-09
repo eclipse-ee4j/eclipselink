@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.Map;
 
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -39,7 +39,7 @@ import org.eclipse.persistence.oxm.XMLUnmarshalListener;
  *
  * @since Oracle TopLink 11.1.1.0.0
  * @author mmacivor
- * @see javax.xml.bind.Marshaller.Listener
+ * @see jakarta.xml.bind.Marshaller.Listener
  * @see org.eclipse.persistence.oxm.XMLMarshalListener
  */
 

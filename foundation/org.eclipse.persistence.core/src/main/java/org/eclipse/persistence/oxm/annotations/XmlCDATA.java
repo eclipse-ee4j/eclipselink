@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * {@code <foo><![CDATA[1 < 2]]></foo>}.<p>
  * <b>Example</b>
  * <pre>
- * import javax.xml.bind.annotation.XmlRootElement;
+ * import jakarta.xml.bind.annotation.XmlRootElement;
  * import org.eclipse.persistence.oxm.annotations.XmlCDATA;
  *
  * &#64;XmlRootElement()

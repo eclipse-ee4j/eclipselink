@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,13 +16,13 @@
 
 package org.eclipse.persistence.internal.jpa.querydef;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Path;
-import javax.persistence.metamodel.Bindable;
-import javax.persistence.metamodel.MapAttribute;
-import javax.persistence.metamodel.Metamodel;
-import javax.persistence.metamodel.PluralAttribute;
-import javax.persistence.metamodel.SingularAttribute;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.metamodel.Bindable;
+import jakarta.persistence.metamodel.MapAttribute;
+import jakarta.persistence.metamodel.Metamodel;
+import jakarta.persistence.metamodel.PluralAttribute;
+import jakarta.persistence.metamodel.SingularAttribute;
 
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 
@@ -34,7 +34,7 @@ import org.eclipse.persistence.internal.localization.ExceptionLocalization;
  * <b>Description</b>: This class represents an abstract path which is a model of the expression through joins.
  * <p>
  *
- * @see javax.persistence.criteria Path
+ * @see jakarta.persistence.criteria Path
  *
  * @author gyorke
  * @since EclipseLink 1.2

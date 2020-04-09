@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 package org.eclipse.persistence.jpa.rs.util.xmladapters;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -56,7 +56,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
      * (non-Javadoc)
      *
      * @see
-     * javax.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
+     * jakarta.xml.bind.annotation.adapters.XmlAdapter#marshal(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -85,7 +85,7 @@ public class ReferenceAdapter<T extends PersistenceWeavedRest> extends XmlAdapte
      * (non-Javadoc)
      *
      * @see
-     * javax.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
+     * jakarta.xml.bind.annotation.adapters.XmlAdapter#unmarshal(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@ package org.eclipse.persistence.testing.models.jpa22.entitylistener;
 
 import org.eclipse.persistence.testing.models.jpa22.sessionbean.InjectedBean;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.inject.Inject;
-import javax.persistence.PostPersist;
-import javax.persistence.PrePersist;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import jakarta.inject.Inject;
+import jakarta.persistence.PostPersist;
+import jakarta.persistence.PrePersist;
 
 /* Trigger Bug #495587 */
 public class AbstractEntityListener<E extends EntityListenerHolderInterface> {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import java.util.Map;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -90,7 +90,7 @@ public class ValidationTestSuite extends JUnitTestCase {
 
     /**
      * This tests fix for gf bug 2492, specifically testing
-     * javax.persistence.jtaDataSource property.  There is no easy way outside a container
+     * jakarta.persistence.jtaDataSource property.  There is no easy way outside a container
      * to ensure the look up fails, but this test ensures that the datasource passed in
      * is used to acquire a connection on login.
      */
@@ -120,7 +120,7 @@ public class ValidationTestSuite extends JUnitTestCase {
 
     /**
      * This tests fix for gf bug 2492, specifically testing
-     * javax.persistence.jtaDataSource property.  There is no easy way outside a container
+     * jakarta.persistence.jtaDataSource property.  There is no easy way outside a container
      * to ensure the look up fails, but this test ensures that the datasource passed in
      * is used to acquire a connection on login.
      */
@@ -158,15 +158,15 @@ public class ValidationTestSuite extends JUnitTestCase {
     }
 
     /**
-     * Bug 367007 - map values of javax.persistence.validation.mode are incorrectly throwing exception
-     * Create an EntityManager with valid parameter values for javax.persistence.validation.mode
+     * Bug 367007 - map values of jakarta.persistence.validation.mode are incorrectly throwing exception
+     * Create an EntityManager with valid parameter values for jakarta.persistence.validation.mode
      */
     public void testValidValidationModes() {
         // test only applicable to JPA 2.0 and above
         if (isJPA10()) {
             return;
         }
-        String property = "javax.persistence.validation.mode";
+        String property = "jakarta.persistence.validation.mode";
         String[] validationModes = {
                 "none", "NONE", "NoNe", ValidationMode.NONE.name(),
                 "auto", "AUTO", "AuTo", ValidationMode.AUTO.name(),

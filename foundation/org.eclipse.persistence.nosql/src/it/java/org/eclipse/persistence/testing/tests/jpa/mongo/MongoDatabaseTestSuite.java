@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,11 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.OptimisticLockException;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
@@ -111,7 +111,7 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         try {
             beginTransaction(em);
-            MongoDatabaseConnection con = ((MongoDatabaseConnection)em.unwrap(javax.resource.cci.Connection.class));
+            MongoDatabaseConnection con = ((MongoDatabaseConnection)em.unwrap(jakarta.resource.cci.Connection.class));
             String version = con.getMetaData().getEISProductVersion();
             return version.compareTo("2.6") > 0;
         } catch (Throwable e) {
@@ -277,7 +277,7 @@ public class MongoDatabaseTestSuite extends JUnitTestCase {
         EntityManager em = createEntityManager();
         // First clear old database.
         beginTransaction(em);
-        MongoDatabase db = ((MongoDatabaseConnection)em.unwrap(javax.resource.cci.Connection.class)).getDB();
+        MongoDatabase db = ((MongoDatabaseConnection)em.unwrap(jakarta.resource.cci.Connection.class)).getDB();
         db.drop();
         commitTransaction(em);
         beginTransaction(em);

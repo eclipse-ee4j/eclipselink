@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -183,7 +183,7 @@ public class JPAEntityListenerHolder implements SerializableDescriptorEventHolde
                     Method method = serializedMethod.convertToMethod(loader);
                     newMethodList.add(method);
                 } catch (Exception e) {
-                    throw new javax.persistence.PersistenceException(e);
+                    throw new jakarta.persistence.PersistenceException(e);
                 }
             }
             table.put(event, newMethodList);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,7 +63,7 @@ public class JavaClassImpl implements JavaClass {
     protected boolean isMetadataComplete;
     protected JavaClass superClassOverride;
 
-    protected static final String XML_REGISTRY_CLASS_NAME = "javax.xml.bind.annotation.XmlRegistry";
+    protected static final String XML_REGISTRY_CLASS_NAME = "jakarta.xml.bind.annotation.XmlRegistry";
 
     public JavaClassImpl(Class javaClass, JavaModelImpl javaModelImpl) {
         this.jClass = javaClass;
@@ -382,7 +382,9 @@ public class JavaClassImpl implements JavaClass {
                 } else {
                     Class parent = null;
                     for(Class next:superInterfaces) {
-                        if(!(next.getName().startsWith("java.") || next.getName().startsWith("javax."))) {
+                        if(!(next.getName().startsWith("java.")
+                                || next.getName().startsWith("javax.")
+                                || next.getName().startsWith("jakarta."))) {
                             if(parent == null) {
                                 parent = next;
                             } else {

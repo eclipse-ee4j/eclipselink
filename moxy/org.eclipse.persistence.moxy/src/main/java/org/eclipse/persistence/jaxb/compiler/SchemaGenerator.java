@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,9 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.SchemaOutputResolver;
-import javax.xml.bind.annotation.XmlElementDecl.GLOBAL;
-import javax.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.SchemaOutputResolver;
+import jakarta.xml.bind.annotation.XmlElementDecl.GLOBAL;
+import jakarta.xml.bind.annotation.XmlSchemaType;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -112,7 +112,7 @@ public class SchemaGenerator {
     private Map<String, QName> userDefinedSchemaTypes;
     private Map<String, Class> arrayClassesToGeneratedClasses;
 
-    private static final String JAVAX_ACTIVATION_DATAHANDLER = "javax.activation.DataHandler";
+    private static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
     private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
     private static final String SWA_REF_IMPORT = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
 

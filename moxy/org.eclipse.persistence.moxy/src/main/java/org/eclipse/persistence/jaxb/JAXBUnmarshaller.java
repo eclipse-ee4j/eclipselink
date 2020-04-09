@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,15 +31,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.UnmarshallerHandler;
-import javax.xml.bind.ValidationEventHandler;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-import javax.xml.bind.attachment.AttachmentUnmarshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.PropertyException;
+import jakarta.xml.bind.UnmarshalException;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.UnmarshallerHandler;
+import jakarta.xml.bind.ValidationEventHandler;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.attachment.AttachmentUnmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLStreamReader;
@@ -96,7 +96,7 @@ import org.xml.sax.helpers.DefaultHandler;
  *
  * @author mmacivor
  * @since Oracle TopLink 11.1.1.0.0
- * @see javax.xml.bind.Unmarshaller
+ * @see jakarta.xml.bind.Unmarshaller
  * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
  * @see org.eclipse.persistence.oxm.XMLUnmarshaller
  */
@@ -106,7 +106,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     private BeanValidationMode beanValidationMode;
 
-    // The actual type is ValidatorFactory. It's done due to optional nature of javax.validation.
+    // The actual type is ValidatorFactory. It's done due to optional nature of jakarta.validation.
     private Object prefValidatorFactory;
     private boolean bvNoOptimisation = false;
     private Class<?>[] beanValidationGroups;
@@ -807,7 +807,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     /**
      * Set a property on the JAXBUnmarshaller. Attempting to set any unsupported
-     * property will result in a javax.xml.bind.PropertyException.
+     * property will result in a jakarta.xml.bind.PropertyException.
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
      */
     @Override
@@ -937,7 +937,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
 
     /**
      * Get a property from the JAXBMarshaller. Attempting to get any unsupported
-     * property will result in a javax.xml.bind.PropertyException
+     * property will result in a jakarta.xml.bind.PropertyException
      * See <a href="#supportedProps">Supported Properties</a>.
      * @see org.eclipse.persistence.jaxb.UnmarshallerProperties
      */
@@ -1198,7 +1198,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
             if(xsiNil) {
                 value = null;
             } else if(null == xsiType) {
-                if (clazz == CoreClassConstants.ABYTE || clazz == CoreClassConstants.APBYTE || clazz.getCanonicalName().equals("javax.activation.DataHandler")) {
+                if (clazz == CoreClassConstants.ABYTE || clazz == CoreClassConstants.APBYTE || clazz.getCanonicalName().equals("jakarta.activation.DataHandler")) {
                     value = (T) xcm.convertObject(stringBuilder.toString(), clazz, Constants.BASE_64_BINARY_QNAME);
                 } else {
                     value = (T) xcm.convertObject(stringBuilder.toString(), clazz);

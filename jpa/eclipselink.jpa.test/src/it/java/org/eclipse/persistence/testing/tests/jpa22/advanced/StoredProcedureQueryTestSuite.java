@@ -19,10 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.ParameterMode;
-import javax.persistence.StoredProcedureQuery;
-import javax.persistence.TransactionRequiredException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.StoredProcedureQuery;
+import jakarta.persistence.TransactionRequiredException;
 
 import junit.framework.TestSuite;
 import junit.framework.Test;
@@ -1172,11 +1172,11 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
     public void testStoredProcedureQueryExceptionWrapping1() {
         EntityManager em = createEntityManager();
         try {
-            javax.persistence.Query query = em.createNativeQuery("DoesNotExist", Employee.class);
+            jakarta.persistence.Query query = em.createNativeQuery("DoesNotExist", Employee.class);
 
             Object execute = query.getResultList();
             fail("Executing a bad native SQL query did not throw a PersistenceException and instead returned: "+execute);
-        } catch (javax.persistence.PersistenceException pe) {
+        } catch (jakarta.persistence.PersistenceException pe) {
             //expected.
         } catch (RuntimeException re) {
             fail("Executing a bad native SQL query did not throw a PersistenceException and instead threw: "+re);
@@ -1195,7 +1195,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
 
             boolean execute = query.execute();
             fail("Executing a non-existent stored procedure did not throw a PersistenceException and instead returned: "+execute);
-        } catch (javax.persistence.PersistenceException pe) {
+        } catch (jakarta.persistence.PersistenceException pe) {
             //expected.
         } catch (RuntimeException re) {
             fail("Executing a non-existent stored procedure did not throw a PersistenceException and instead threw: "+re);

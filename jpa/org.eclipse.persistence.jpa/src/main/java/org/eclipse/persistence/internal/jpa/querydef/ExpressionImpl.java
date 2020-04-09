@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
@@ -36,7 +36,7 @@ import org.eclipse.persistence.sessions.Project;
  * and may or not be the result of a Path expression.
  * <p>
  *
- * @see javax.persistence.criteria Expression
+ * @see jakarta.persistence.criteria Expression
  *
  * @author gyorke
  * @since EclipseLink 1.2

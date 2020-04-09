@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,13 +30,13 @@ import org.eclipse.persistence.sessions.server.ServerSession;
  * <p>
  * <b>Purpose</b>: Defines the Interface for EclipseLink extensions to the EntityManager
  * </p>
- * @see javax.persistence.EntityManager
+ * @see jakarta.persistence.EntityManager
  */
 /*
  * @author Gordon Yorke
  */
 
-public interface JpaEntityManager extends javax.persistence.EntityManager {
+public interface JpaEntityManager extends jakarta.persistence.EntityManager {
 
     /**
      * This method returns the current session to the requester.  The current session
@@ -107,37 +107,37 @@ public interface JpaEntityManager extends javax.persistence.EntityManager {
     /**
      * This method is used to create a query using a EclipseLink Expression for the entity class.
      */
-    javax.persistence.Query createQuery(Expression expression, Class entityClass);
+    jakarta.persistence.Query createQuery(Expression expression, Class entityClass);
 
     /**
      * This method is used to create a query using a EclipseLink DatabaseQuery.
      */
-    javax.persistence.Query createQuery(DatabaseQuery query);
+    jakarta.persistence.Query createQuery(DatabaseQuery query);
 
     /**
      * This method is used to create a query using a EclipseLink Call.
      */
-    javax.persistence.Query createQuery(Call call);
+    jakarta.persistence.Query createQuery(Call call);
 
     /**
      * This method is used to create a query using a EclipseLink Call for the entity class.
      */
-    javax.persistence.Query createQuery(Call call, Class entityClass);
+    jakarta.persistence.Query createQuery(Call call, Class entityClass);
 
     /**
      * This method is used to create a query using query by example.
      */
-    javax.persistence.Query createQueryByExample(Object exampleObject);
+    jakarta.persistence.Query createQueryByExample(Object exampleObject);
 
     /**
      * This method will create a query object that wraps a EclipseLink Named Query.
      */
-    javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass);
+    jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass);
 
     /**
      * This method will create a query object that wraps a EclipseLink Named Query.
      */
-    javax.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes);
+    jakarta.persistence.Query createDescriptorNamedQuery(String queryName, Class descriptorClass, List argumentTypes);
 
     /**
      * This method will load the passed entity or collection of entities using the passed AttributeGroup.

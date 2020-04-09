@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.jaxbcontext.multielemref;
 
 import java.io.ByteArrayOutputStream;
 
-import javax.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBContext;
 
 import junit.framework.TestCase;
 
@@ -45,7 +45,7 @@ public class MultipleXmlElementRefTestCases extends TestCase {
             root.things.add(c3);
 
             ctx.createMarshaller().marshal(root, new ByteArrayOutputStream());
-        } catch (javax.xml.bind.JAXBException e) {
+        } catch (jakarta.xml.bind.JAXBException e) {
             caughtException = e;
             Throwable nested = e.getLinkedException();
             if (nested instanceof JAXBException) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,8 +14,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshallerHandler;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshallerHandler;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.xml.sax.SAXException;
 import org.w3c.dom.Document;
@@ -23,7 +23,7 @@ import org.w3c.dom.Document;
 /**
  *  <p>Implementation of UnmarshallerHandler to be used by JAXBUnmarshaller. </p>
  *  @see org.eclipse.persistence.jaxb.JAXBUnmarshaller
- *  @see javax.xml.bind.UnmarshallerHandler
+ *  @see jakarta.xml.bind.UnmarshallerHandler
  */
 public class JAXBUnmarshallerHandler extends SAXDocumentBuilder implements UnmarshallerHandler {
     private JAXBUnmarshaller jaxbUnmarshaller;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,11 +14,11 @@
 // dmccann - January 12/2010 - 2.0 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.externalizedmetadata.xmlenum;
 
-@javax.xml.bind.annotation.XmlType(name="coin-enum")
-@javax.xml.bind.annotation.XmlEnum(String.class)
+@jakarta.xml.bind.annotation.XmlType(name="coin-enum")
+@jakarta.xml.bind.annotation.XmlEnum(String.class)
 public enum Coin {
-    @javax.xml.bind.annotation.XmlEnumValue("1") PENNY,
-    @javax.xml.bind.annotation.XmlEnumValue("5") NICKEL,
-    @javax.xml.bind.annotation.XmlEnumValue("10") DIME,
-    @javax.xml.bind.annotation.XmlEnumValue("24") QUARTER
+    @jakarta.xml.bind.annotation.XmlEnumValue("1") PENNY,
+    @jakarta.xml.bind.annotation.XmlEnumValue("5") NICKEL,
+    @jakarta.xml.bind.annotation.XmlEnumValue("10") DIME,
+    @jakarta.xml.bind.annotation.XmlEnumValue("24") QUARTER
 }

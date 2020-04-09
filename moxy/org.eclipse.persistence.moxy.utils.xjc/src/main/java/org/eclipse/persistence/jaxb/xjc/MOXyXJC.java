@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -69,7 +69,7 @@ public class MOXyXJC {
             if(listener.getGeneratedPackagePath() != null) {
                 File jaxbPropsFile = new File(destDir + File.separator + listener.getGeneratedPackagePath(), "jaxb.properties");
                 FileWriter writer = new FileWriter(jaxbPropsFile);
-                writer.write("javax.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory");
+                writer.write("jakarta.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory");
                 listener.generatedFile(listener.getGeneratedPackagePath() + File.separator + "jaxb.properties", 0, 0);
                 writer.close();
             }

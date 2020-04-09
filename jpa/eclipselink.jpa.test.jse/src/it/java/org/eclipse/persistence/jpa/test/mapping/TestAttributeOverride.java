@@ -16,8 +16,8 @@
 //       - 347987: Fix Attribute Override for Complex Embeddables
 package org.eclipse.persistence.jpa.test.mapping;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,11 +49,11 @@
 
         <!-- Bean validation API -->
         <dependency>
-            <groupId>javax.validation</groupId>
+            <groupId>jakarta.validation</groupId>
             <artifactId>validation</artifactId>
             <version>2.0.1</version>
             <scope>system</scope>
-            <systemPath>${javax.validation.lib}</systemPath>
+            <systemPath>${jakarta.validation.lib}</systemPath>
         </dependency>
 
         <!-- Hibernate validator and it's dependencies -->
@@ -70,10 +70,10 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- javax.inject -->
+        <!-- jakarta.inject -->
         <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject</artifactId>
             <version>1</version>
         </dependency>
 

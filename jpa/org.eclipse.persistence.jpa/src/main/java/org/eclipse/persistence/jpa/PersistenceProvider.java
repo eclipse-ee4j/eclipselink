@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -34,12 +34,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-import javax.persistence.spi.ClassTransformer;
-import javax.persistence.spi.LoadState;
-import javax.persistence.spi.PersistenceUnitInfo;
-import javax.persistence.spi.ProviderUtil;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.spi.ClassTransformer;
+import jakarta.persistence.spi.LoadState;
+import jakarta.persistence.spi.PersistenceUnitInfo;
+import jakarta.persistence.spi.ProviderUtil;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
@@ -58,7 +58,7 @@ import org.eclipse.persistence.internal.weaving.PersistenceWeaved;
  *
  * This provider should be used by JavaEE and JavaSE users.
  */
-public class PersistenceProvider implements javax.persistence.spi.PersistenceProvider, ProviderUtil {
+public class PersistenceProvider implements jakarta.persistence.spi.PersistenceProvider, ProviderUtil {
 
     public PersistenceProvider(){
     }
@@ -282,7 +282,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * Need to check that the provider property is null or set for EclipseLink
      */
     public boolean checkForProviderProperty(Map properties){
-        Object provider = properties.get("javax.persistence.provider");
+        Object provider = properties.get("jakarta.persistence.provider");
         if (provider != null){
             //user has specified a provider make sure it is us or abort.
             if (provider instanceof Class){

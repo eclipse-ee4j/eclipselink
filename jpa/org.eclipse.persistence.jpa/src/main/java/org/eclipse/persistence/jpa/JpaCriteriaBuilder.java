@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,15 +15,15 @@
 package org.eclipse.persistence.jpa;
 
 
-import javax.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Expression;
 
 /**
  * PUBLIC:
  * EclipseLInk specific JPA Criteria interface.  Provides the functionality defined in
- * javax.persistence.criteria.CriteriaBuilder and adds EclipseLink specific
+ * jakarta.persistence.criteria.CriteriaBuilder and adds EclipseLink specific
  * functionality.
  */
-public interface JpaCriteriaBuilder extends javax.persistence.criteria.CriteriaBuilder {
+public interface JpaCriteriaBuilder extends jakarta.persistence.criteria.CriteriaBuilder {
 
     /**
      * ADVANCED:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,17 +27,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityGraph;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.FlushModeType;
-import javax.persistence.PersistenceException;
-import javax.persistence.PersistenceUnitUtil;
-import javax.persistence.Query;
-import javax.persistence.SynchronizationType;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.metamodel.Metamodel;
+import jakarta.persistence.Cache;
+import jakarta.persistence.EntityGraph;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.FlushModeType;
+import jakarta.persistence.PersistenceException;
+import jakarta.persistence.PersistenceUnitUtil;
+import jakarta.persistence.Query;
+import jakarta.persistence.SynchronizationType;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.metamodel.Metamodel;
 
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -520,7 +520,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * factory (the "second level cache").
      * @return instance of the <code>Cache</code> interface
      * @throws IllegalStateException if the entity manager factory has been closed
-     * @see javax.persistence.EntityManagerFactory#getCache()
+     * @see jakarta.persistence.EntityManagerFactory#getCache()
      * @since Java Persistence 2.0
      */
     @Override
@@ -529,7 +529,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
     }
 
     /**
-     * @see javax.persistence.EntityManagerFactory#getProperties()
+     * @see jakarta.persistence.EntityManagerFactory#getProperties()
      * @since Java Persistence API 2.0
      */
     @Override
@@ -542,7 +542,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
         return delegate.getDatabaseSession();
     }
     /**
-     * @see javax.persistence.EntityManagerFactory#getCriteriaBuilder()
+     * @see jakarta.persistence.EntityManagerFactory#getCriteriaBuilder()
      * @since Java Persistence 2.0
      */
     @Override
@@ -557,7 +557,7 @@ public class EntityManagerFactoryImpl implements EntityManagerFactory, Persisten
      * @return Metamodel instance
      * @throws IllegalStateException
      *             if the entity manager factory has been closed.
-     * @see javax.persistence.EntityManagerFactory#getMetamodel()
+     * @see jakarta.persistence.EntityManagerFactory#getMetamodel()
      * @since Java Persistence 2.0
      */
     @Override
