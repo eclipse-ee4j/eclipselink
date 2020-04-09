@@ -197,7 +197,7 @@
 
         <module>jpa/org.eclipse.persistence.jpa</module>
         <module>jpa/org.eclipse.persistence.jpa.modelgen</module>
-<!--        <module>jpa/org.eclipse.persistence.jpars</module>--> <!-- TODO: revert after Jersey jakartification -->
+        <module>jpa/org.eclipse.persistence.jpars</module>
         <module>jpa/org.eclipse.persistence.jpa.test.framework</module>
 
         <module>foundation/org.eclipse.persistence.corba</module>
@@ -1293,12 +1293,6 @@
             <properties>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
-        </profile>
-        <profile>
-            <id>excluded_due_to_jakartification</id>
-            <modules>
-                <module>jpa/org.eclipse.persistence.jpars</module>
-            </modules>
         </profile>
     </profiles>
 </project>

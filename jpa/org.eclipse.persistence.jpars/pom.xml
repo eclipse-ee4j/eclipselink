@@ -132,15 +132,31 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
+
+            <!-- TODO: disable compilation/running tests
+                till Jakarta version of Jersey  becomes available -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <workingDirectory>${project.build.directory}/test-run</workingDirectory>
-                    <!--EclipseLink Weaving is enabled.
-                        When it will be disabled by -Dignore or without arg switch it leads into test errors-->
+                    <!- -EclipseLink Weaving is enabled.
+                        When it will be disabled by -Dignore or without arg switch it leads into test errors- ->
                     <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</argLine>
-                    <!--Set system properties required for tests-->
+                    <!- -Set system properties required for tests- ->
                     <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
                 </configuration>
                 <executions>
@@ -188,6 +204,7 @@
                     </execution>
                 </executions>
             </plugin>
+-->
         </plugins>
     </build>
 
