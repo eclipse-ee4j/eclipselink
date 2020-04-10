@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -882,6 +882,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         //bug 535088: this test fails randomly on public infra
         //TODO: investigate why; hardly reproducible locally
         test.addUnsupportedPlatform(MySQLPlatform.class);
+        test.addUnsupportedPlatform(DerbyPlatform.class);
         addTest(test);
     }
 
