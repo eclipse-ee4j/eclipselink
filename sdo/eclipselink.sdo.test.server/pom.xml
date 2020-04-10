@@ -317,19 +317,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>java11-dependencies</id>
-            <activation>
-                <jdk>[11,)</jdk>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>jakarta.annotation</groupId>
-                    <artifactId>jakarta.annotation-api</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-        </profile>
         <!--SDO related profiles-->
         <profile>
             <id>server-test-sdo</id>

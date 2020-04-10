@@ -281,11 +281,6 @@
                     <artifactId>glassfish-corba-omgapi</artifactId>
                     <optional>true</optional>
                 </dependency>
-                <dependency>
-                    <groupId>jakarta.transaction</groupId>
-                    <artifactId>jakarta.transaction-api</artifactId>
-                    <optional>true</optional>
-                </dependency>
             </dependencies>
         </profile>
         <profile>

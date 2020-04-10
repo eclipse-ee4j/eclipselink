@@ -204,19 +204,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>java11-dependencies</id>
-            <activation>
-                <jdk>[11,)</jdk>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
-        </profile>
         <!--SDO related profiles-->
         <profile>
             <id>test-sdo-srg</id>
