@@ -243,11 +243,6 @@
             <dependencies>
                 <!--API dependecies-->
                 <dependency>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                    <optional>true</optional>
-                </dependency>
-                <dependency>
                     <groupId>org.eclipse.persistence</groupId>
                     <artifactId>${persistence.artifactId}</artifactId>
                     <optional>true</optional>

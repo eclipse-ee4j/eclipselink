@@ -171,19 +171,6 @@
 
     <profiles>
         <profile>
-            <id>java11-dependencies</id>
-            <activation>
-                <jdk>[11,)</jdk>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>mongodb</id>
             <properties>
                 <test-skip-nosql>false</test-skip-nosql>
