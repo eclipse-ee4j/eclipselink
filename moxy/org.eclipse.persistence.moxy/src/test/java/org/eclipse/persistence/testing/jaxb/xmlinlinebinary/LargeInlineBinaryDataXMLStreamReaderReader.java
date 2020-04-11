@@ -29,7 +29,7 @@ import org.xml.sax.SAXException;
 public class LargeInlineBinaryDataXMLStreamReaderReader extends XMLStreamReaderReader {
 
     static Image IMAGE = new BufferedImage(1,1,BufferedImage.TYPE_INT_RGB);
-    static DataHandler DATA_HANDLER = new DataHandler(IMAGE, "iamge/jpg");
+    static DataHandler DATA_HANDLER = new DataHandler(IMAGE, "image/jpg");
     static Source SOURCE  = new StreamSource(System.in);
     static MimeMultipart MIME_MULTIPART = new MimeMultipart();
     static LargeInlineBinaryCharSequence CHAR_SEQUENCE = new LargeInlineBinaryCharSequence();

@@ -64,7 +64,7 @@ import org.w3c.dom.Node;
  *  <li>byte[]</li>
  *  <li>jakarta.activation.DataHandler</li>
  *  <li>javax.xml.transform.Source</li>
- *  <li>javax.mail.internet.MimeMultipart</li>
+ *  <li>jakarta.mail.internet.MimeMultipart</li>
  *  </ul>
  *  <p><b>Setting the XPath</b>: TopLink XML mappings make use of XPath statements to find the relevant
  * data in an XML document.  The XPath statement is relative to the context node specified in the descriptor.
