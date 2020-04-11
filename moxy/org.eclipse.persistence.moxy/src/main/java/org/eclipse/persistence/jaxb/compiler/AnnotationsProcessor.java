@@ -196,7 +196,7 @@ public final class AnnotationsProcessor {
 
     static final String ARRAY_PACKAGE_NAME = "jaxb.dev.java.net.array";
     static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
-    static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
+    static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "jakarta.mail.internet.MimeMultipart";
     private static final String JAVAX_XML_BIND_JAXBELEMENT = "jakarta.xml.bind.JAXBElement";
     private static final String JAVAX_XML_BIND_ANNOTATION = "jakarta.xml.bind.annotation";
     private static final String OXM_ANNOTATIONS = "org.eclipse.persistence.oxm.annotations";

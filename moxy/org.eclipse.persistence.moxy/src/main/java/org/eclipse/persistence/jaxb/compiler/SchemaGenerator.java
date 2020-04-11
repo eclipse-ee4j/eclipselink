@@ -113,7 +113,7 @@ public class SchemaGenerator {
     private Map<String, Class> arrayClassesToGeneratedClasses;
 
     private static final String JAVAX_ACTIVATION_DATAHANDLER = "jakarta.activation.DataHandler";
-    private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "javax.mail.internet.MimeMultipart";
+    private static final String JAVAX_MAIL_INTERNET_MIMEMULTIPART = "jakarta.mail.internet.MimeMultipart";
     private static final String SWA_REF_IMPORT = "http://ws-i.org/profiles/basic/1.1/swaref.xsd";
 
     private static final String COLON = ":";

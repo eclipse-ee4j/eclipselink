@@ -113,7 +113,7 @@ public class XMLChoiceObjectMapping extends DatabaseMapping implements ChoiceObj
     private static final AttributeAccessor temporaryAccessor = new InstanceVariableAttributeAccessor();
 
     private static final String DATA_HANDLER = "jakarta.activation.DataHandler";
-    private static final String MIME_MULTIPART = "javax.mail.MimeMultipart";
+    private static final String MIME_MULTIPART = "jakarta.mail.internet.MimeMultipart";
     private static final String IMAGE = "java.awt.Image";
 
     public XMLChoiceObjectMapping() {

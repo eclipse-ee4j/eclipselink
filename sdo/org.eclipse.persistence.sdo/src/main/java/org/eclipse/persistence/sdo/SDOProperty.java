@@ -108,7 +108,7 @@ public class SDOProperty implements Property, Serializable {
         isActivationAvailable = false;
         try {
             PrivilegedAccessHelper.getClassForName("jakarta.activation.DataHandler");
-            PrivilegedAccessHelper.getClassForName("javax.mail.internet.MimeMultipart");
+            PrivilegedAccessHelper.getClassForName("jakarta.mail.internet.MimeMultipart");
             isActivationAvailable = true;
         } catch(ClassNotFoundException ex) {
             //ignore this exception and let the boolean remain false;
