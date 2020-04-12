@@ -17,11 +17,11 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
-            <property name="javax.persistence.jdbc.driver" value="@driverClass@"/>
-            <property name="javax.persistence.jdbc.url" value="@dbURL@"/>
-            <property name="javax.persistence.jdbc.user" value="@dbUser@"/>
-            <property name="javax.persistence.jdbc.password" value="@dbPassword@"/>
-            <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+            <property name="jakarta.persistence.jdbc.driver" value="@driverClass@"/>
+            <property name="jakarta.persistence.jdbc.url" value="@dbURL@"/>
+            <property name="jakarta.persistence.jdbc.user" value="@dbUser@"/>
+            <property name="jakarta.persistence.jdbc.password" value="@dbPassword@"/>
+            <property name="jakarta.persistence.schema-generation.database.action" value="drop-and-create"/>
             <!--property name="eclipselink.logging.level.sql" value="FINE"/-->
         </properties>
         <class>org.eclipse.persistence.testing.models.jpa22.identity.Person</class>
