@@ -795,6 +795,20 @@
                         </dependency>
                     </dependencies>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.1.1</version>
+                    <configuration>
+                        <checkstyleRules>
+                            <module name="Checker">
+                                <module name="FileTabCharacter">
+                                    <property name="eachLine" value="true" />
+                                </module>
+                            </module>
+                        </checkstyleRules>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -1086,6 +1100,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -1294,6 +1321,52 @@
             <properties>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
+        </profile>
+        <profile>
+            <id>coding-standards</id>
+            <properties>
+                <copyright.exclude>etc/copyright-exclude</copyright.exclude>
+                <copyright.ignoreyear>false</copyright.ignoreyear>
+                <copyright.scmonly>true</copyright.scmonly>
+                <copyright.template>etc/copyright.txt</copyright.template>
+                <copyright.update>false</copyright.update>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.glassfish.copyright</groupId>
+                            <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                            <version>2.3</version>
+                            <configuration>
+                                <templateFile>${copyright.template}</templateFile>
+                                <excludeFile>${copyright.exclude}</excludeFile>
+                                <!-- skip files not under SCM-->
+                                <scmOnly>${copyright.scmonly}</scmOnly>
+                                <!-- for use with repair -->
+                                <update>${copyright.update}</update>
+                                <!-- check that year is correct -->
+                                <ignoreYear>${copyright.ignoreyear}</ignoreYear>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.glassfish.copyright</groupId>
+                        <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>cp-check</id>
+                                <goals>
+                                    <!-- Note: this takes ~2 hours -->
+                                    <goal>copyright</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

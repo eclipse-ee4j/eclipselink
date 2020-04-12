@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2008 Markus KARG(markus-karg@users.sourceforge.net).
  *
  * This program and the accompanying materials are made available under the

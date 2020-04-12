@@ -1879,27 +1879,27 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     }
 
     private boolean isFieldInUpdate(Expression writeLock, HashMap updateClauses) {
-    	if (!(writeLock instanceof FieldExpression)) {
-    		return false;
-    	}
-    	
-    	final FieldExpression fe = (FieldExpression) writeLock;
-    	final DatabaseField targetField = fe.getField();
-    	
-    	final Set keys = updateClauses.keySet();
-    	for (Object key : keys) {
-    		if (!(key instanceof QueryKeyExpression)) {
-    			continue;
-    		}
-    		
-    		QueryKeyExpression qke = (QueryKeyExpression) key;   		
-    		DatabaseField qkField = getDescriptor().getObjectBuilder().getFieldForQueryKeyName(qke.getName());
-    		if (qkField == targetField) {
-    			return true;
-    		}
-    	}
-    	
-    	return false;
+        if (!(writeLock instanceof FieldExpression)) {
+            return false;
+        }
+
+        final FieldExpression fe = (FieldExpression) writeLock;
+        final DatabaseField targetField = fe.getField();
+
+        final Set keys = updateClauses.keySet();
+        for (Object key : keys) {
+            if (!(key instanceof QueryKeyExpression)) {
+                continue;
+            }
+
+            QueryKeyExpression qke = (QueryKeyExpression) key;
+            DatabaseField qkField = getDescriptor().getObjectBuilder().getFieldForQueryKeyName(qke.getName());
+            if (qkField == targetField) {
+                return true;
+            }
+        }
+
+        return false;
     }
     
     /**
@@ -1921,7 +1921,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                 // of updateClauses's entrySet.  So we need to check the updateClause to see if the database fields in the writeLock expression are
                 // already targeted for update.
                 if (!isFieldInUpdate(writeLock, updateClauses)) {
-                	Expression writeLockUpdateExpression = policy.getWriteLockUpdateExpression(builder, getQuery().getSession());
+                    Expression writeLockUpdateExpression = policy.getWriteLockUpdateExpression(builder, getQuery().getSession());
                     if (writeLockUpdateExpression != null) {
                          // clone it to keep user's original data intact
                         updateClauses = (HashMap)updateClauses.clone();
