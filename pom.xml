@@ -795,6 +795,20 @@
                         </dependency>
                     </dependencies>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.1.1</version>
+                    <configuration>
+                        <checkstyleRules>
+                            <module name="Checker">
+                                <module name="FileTabCharacter">
+                                    <property name="eachLine" value="true" />
+                                </module>
+                            </module>
+                        </checkstyleRules>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -1083,6 +1097,19 @@
                             <outputName>${project.build.testReports.summaryFile}</outputName>
                             <title>${project.name} - Test Summary (more details on ${env.BUILD_URL} )</title>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>checkstyle</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
