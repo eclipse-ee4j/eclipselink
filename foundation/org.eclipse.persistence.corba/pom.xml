@@ -116,6 +116,13 @@
             <version>${db.driver.version}</version>
             <scope>test</scope>
         </dependency>
+        <!-- need javax.tranasaction packages to start corba on Java SE 11 -->
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <version>1.3.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -141,6 +148,7 @@
                         <configuration>
                             <skip>${test-skip-corba}</skip>
                             <executable>java</executable>
+                            <classpathScope>test</classpathScope>
                             <arguments>
                                 <argument>-classpath</argument>
                                 <!-- automatically creates the classpath using all project dependencies,
