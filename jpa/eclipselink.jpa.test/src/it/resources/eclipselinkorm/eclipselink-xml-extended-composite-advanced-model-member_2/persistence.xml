@@ -21,10 +21,10 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="eclipselink.composite-unit.member" value="true"/>
-            <property name="javax.persistence.jdbc.driver" value="com.ibm.db2.jcc.DB2Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:db2://ottvm046.ca.oracle.com:50000/TOPLINK2"/>
-            <property name="javax.persistence.jdbc.user" value="dev1"/>
-            <property name="javax.persistence.jdbc.password" value="password"/>
+            <property name="jakarta.persistence.jdbc.driver" value="com.ibm.db2.jcc.DB2Driver"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:db2://ottvm046.ca.oracle.com:50000/TOPLINK2"/>
+            <property name="jakarta.persistence.jdbc.user" value="dev1"/>
+            <property name="jakarta.persistence.jdbc.password" value="password"/>
         </properties>
     </persistence-unit>
 </persistence>
