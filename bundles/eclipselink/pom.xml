@@ -124,12 +124,6 @@
             <artifactId>glassfish-corba-orb</artifactId>
             <version>${org.glassfish.corba.version}</version>
         </dependency>
-        <!--Other org.eclipse.persistence dependencies-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
-            <version>${persistence22.version}</version>
-        </dependency>
         <!--Other modules-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -193,12 +187,6 @@
         </dependency>
         <!--Source dependencies-->
         <!--Sources API dependencies-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
-            <version>${persistence22.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
