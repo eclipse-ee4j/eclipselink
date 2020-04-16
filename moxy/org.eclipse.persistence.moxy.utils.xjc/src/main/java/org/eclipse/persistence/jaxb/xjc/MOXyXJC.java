@@ -69,7 +69,7 @@ public class MOXyXJC {
             if(listener.getGeneratedPackagePath() != null) {
                 File jaxbPropsFile = new File(destDir + File.separator + listener.getGeneratedPackagePath(), "jaxb.properties");
                 FileWriter writer = new FileWriter(jaxbPropsFile);
-                writer.write("jakarta.xml.bind.context.factory=org.eclipse.persistence.jaxb.JAXBContextFactory");
+                writer.write("jakarta.xml.bind.JAXBContextFactory=org.eclipse.persistence.jaxb.JAXBContextFactory");
                 listener.generatedFile(listener.getGeneratedPackagePath() + File.separator + "jaxb.properties", 0, 0);
                 writer.close();
             }

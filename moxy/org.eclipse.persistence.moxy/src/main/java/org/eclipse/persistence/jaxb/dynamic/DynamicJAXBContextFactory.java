@@ -82,7 +82,7 @@ public class DynamicJAXBContextFactory {
      * Create a <code>DynamicJAXBContext</code>, using either an XML Schema, EclipseLink OXM file,
      * or EclipseLink <code>sessions.xml</code> as the metadata source.  This creation method will be
      * called if the user calls the <code>newInstance()</code> method on <code>jakarta.xml.bind.JAXBContext</code>,
-     * and has specified <code>jakarta.xml.bind.context.factory=org.eclipse.persistence.jaxb.DynamicJAXBContextFactory</code> in their
+     * and has specified <code>jakarta.xml.bind.JAXBContextFactory=org.eclipse.persistence.jaxb.DynamicJAXBContextFactory</code> in their
      * <code>jaxb.properties</code> file.<p>
      *
      * <b>-- Context Creation From XML Schema --</b><p>

@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.xml.sax.SAXException;
 
 public class XmlSchemaTestCases {
-    private static final String JAXB_FACTORY_KEY = "jakarta.xml.bind.context.factory";
+    private static final String JAXB_FACTORY_KEY = "jakarta.xml.bind.JAXBContextFactory";
     private static final String MOXY_JAXB_FACTORY = "org.eclipse.persistence.jaxb.JAXBContextFactory";
     private static String jaxbFactoryBackup;
 
