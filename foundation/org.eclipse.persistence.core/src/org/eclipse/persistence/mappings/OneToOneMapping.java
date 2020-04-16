@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -441,56 +442,59 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
             clone.setForeignKeyFields(org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getForeignKeyFields().size()));
             clone.setSourceToTargetKeyFields(new HashMap(getSourceToTargetKeyFields().size()));
             clone.setTargetToSourceKeyFields(new HashMap(getTargetToSourceKeyFields().size()));
-            Hashtable setOfFields = new Hashtable(getTargetToSourceKeyFields().size());
 
-            //clone foreign keys and save the clones in a set
-            for (Enumeration enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
-                DatabaseField field = (DatabaseField)enumtr.nextElement();
+            // DatabaseField overrides equals, so we need to use an IdentifyHashMap for this implementation
+            // to make sure we are using the object references to lookup clone references
+            AbstractMap<DatabaseField, DatabaseField> fieldToCloneMap = new IdentityHashMap<DatabaseField, DatabaseField>(getTargetToSourceKeyFields().size());
+
+            //clone foreign keys and save the clones in a lookup table
+            for (Enumeration<DatabaseField> enumtr = getForeignKeyFields().elements(); enumtr.hasMoreElements();) {
+                DatabaseField field = enumtr.nextElement();
                 DatabaseField fieldClone = field.clone();
-                setOfFields.put(field, fieldClone);
+                fieldToCloneMap.put(field, fieldClone);
                 clone.getForeignKeyFields().addElement(fieldClone);
             }
 
-            //get clones from set for source hashtable.  If they do not exist, create a new one.
-            for (Iterator sourceEnum = getSourceToTargetKeyFields().keySet().iterator();
+            // lookup references in the map to get the associated clone reference. If it doesn't exist, create a new one.
+            for (Iterator<DatabaseField> sourceEnum = getSourceToTargetKeyFields().keySet().iterator();
                      sourceEnum.hasNext();) {
-                DatabaseField sourceField = (DatabaseField)sourceEnum.next();
+                DatabaseField sourceField = sourceEnum.next();
                 DatabaseField targetField = getSourceToTargetKeyFields().get(sourceField);
 
                 DatabaseField targetClone;
                 DatabaseField sourceClone;
 
-                targetClone = (DatabaseField)setOfFields.get(targetField);
+                targetClone = fieldToCloneMap.get(targetField);
                 if (targetClone == null) {
                     targetClone = targetField.clone();
-                    setOfFields.put(targetField, targetClone);
+                    fieldToCloneMap.put(targetField, targetClone);
                 }
-                sourceClone = (DatabaseField)setOfFields.get(sourceField);
+                sourceClone = fieldToCloneMap.get(sourceField);
                 if (sourceClone == null) {
                     sourceClone = sourceField.clone();
-                    setOfFields.put(sourceField, sourceClone);
+                    fieldToCloneMap.put(sourceField, sourceClone);
                 }
                 clone.getSourceToTargetKeyFields().put(sourceClone, targetClone);
             }
 
-            //get clones from set for target hashtable.  If they do not exist, create a new one.
-            for (Iterator targetEnum = getTargetToSourceKeyFields().keySet().iterator();
+            // lookup references in the map to get the associated clone reference. If it doesn't exist, create a new one.
+            for (Iterator<DatabaseField> targetEnum = getTargetToSourceKeyFields().keySet().iterator();
                      targetEnum.hasNext();) {
-                DatabaseField targetField = (DatabaseField)targetEnum.next();
+                DatabaseField targetField = targetEnum.next();
                 DatabaseField sourceField = getTargetToSourceKeyFields().get(targetField);
 
                 DatabaseField targetClone;
                 DatabaseField sourceClone;
 
-                targetClone = (DatabaseField)setOfFields.get(targetField);
+                targetClone = fieldToCloneMap.get(targetField);
                 if (targetClone == null) {
                     targetClone = targetField.clone();
-                    setOfFields.put(targetField, targetClone);
+                    fieldToCloneMap.put(targetField, targetClone);
                 }
-                sourceClone = (DatabaseField)setOfFields.get(sourceField);
+                sourceClone = fieldToCloneMap.get(sourceField);
                 if (sourceClone == null) {
                     sourceClone = sourceField.clone();
-                    setOfFields.put(sourceField, sourceClone);
+                    fieldToCloneMap.put(sourceField, sourceClone);
                 }
                 clone.getTargetToSourceKeyFields().put(targetClone, sourceClone);
             }
