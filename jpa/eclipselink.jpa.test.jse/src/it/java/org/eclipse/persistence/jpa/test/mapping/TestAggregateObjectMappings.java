@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,9 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
+import org.eclipse.persistence.jpa.test.mapping.model.BaseChild;
+import org.eclipse.persistence.jpa.test.mapping.model.BaseEmbeddable;
+import org.eclipse.persistence.jpa.test.mapping.model.BaseParent;
 import org.eclipse.persistence.jpa.test.mapping.model.SimpleMappingEmbeddable;
 import org.eclipse.persistence.jpa.test.mapping.model.SimpleMappingEntity;
 import org.eclipse.persistence.queries.Cursor;
@@ -34,9 +37,13 @@ import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
 public class TestAggregateObjectMappings {
-    @Emf(createTables = DDLGen.DROP_CREATE,
+    @Emf(name = "cursorEMF" , createTables = DDLGen.DROP_CREATE,
             classes = { SimpleMappingEntity.class, SimpleMappingEmbeddable.class } )
     private EntityManagerFactory emf;
+
+    @Emf(name = "joinEMF" , createTables = DDLGen.DROP_CREATE,
+            classes = { BaseParent.class, BaseChild.class, BaseEmbeddable.class } )
+    private EntityManagerFactory emfTwo;
 
     @Test
     public void testCursorWithAggregateObjectMapping() {
@@ -66,6 +73,26 @@ public class TestAggregateObjectMappings {
             em.getTransaction().begin();
             em.remove(ent);
             em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /**
+     * Test with @JoinColumn that uses a column name that matches the referenced column name
+     */
+    @Test
+    public void testJoinColumnWithSameDuplicateName() {
+
+        EntityManager em = emfTwo.createEntityManager();
+        try {
+            Query query = em.createQuery("SELECT c.parentRef FROM BaseChild c");
+            query.getResultList();
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
