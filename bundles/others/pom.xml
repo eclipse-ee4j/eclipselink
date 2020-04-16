@@ -157,11 +157,6 @@
             <artifactId>commonj.sdo</artifactId>
             <version>${commonj.sdo.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
-            <version>${persistence22.version}</version>
-        </dependency>
         <!--Other APIs/libraries-->
         <dependency>
             <groupId>com.sun.activation</groupId>
@@ -212,11 +207,6 @@
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
             <version>${ant.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <version>${persistence21.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
@@ -432,12 +422,6 @@
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>jakarta.persistence</artifactId>
-            <version>${persistence22.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
-        <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>${jaxb.api.version}</version>
@@ -610,18 +594,10 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.parent.groupId}</groupId>
-                                    <artifactId>javax.persistence</artifactId>
-                                    <version>${persistence21.version}</version>
+                                    <groupId>jakarta.persistence</groupId>
+                                    <artifactId>jakarta.persistence-api</artifactId>
+                                    <version>${jpa.api.version}</version>
                                     <outputDirectory>${project.build.directory}/${archive.tmp.dir}/eclipselink-test-src.zip/jpa/plugins/</outputDirectory>
-                                    <destFileName>javax.persistence_2.1.1.v201509150925.jar</destFileName>
-                                </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.parent.groupId}</groupId>
-                                    <artifactId>jakarta.persistence</artifactId>
-                                    <version>${persistence22.version}</version>
-                                    <outputDirectory>${project.build.directory}/${archive.tmp.dir}/eclipselink-test-src.zip/jpa/plugins/</outputDirectory>
-                                    <destFileName>jakarta.persistence_2.2.2.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>${project.parent.groupId}</groupId>

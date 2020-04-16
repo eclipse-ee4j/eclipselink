@@ -105,7 +105,6 @@
         <jee.client.type>pom</jee.client.type>
 
         <skip.glassfish.configuration>true</skip.glassfish.configuration>
-        <persistence.artifactId>jakarta.persistence</persistence.artifactId>
 
         <!--These properties are used in MOXy and SDO tests only-->
         <test.xml.platform>org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform</test.xml.platform>
@@ -129,9 +128,6 @@
         <mail.version>2.0.0-RC4</mail.version>
         <oracle.ddlparser.version>2.7.6</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.1</org.glassfish.corba.version>
-        <persistence21.version>2.1.1</persistence21.version>
-        <persistence22.version>2.2.3</persistence22.version>
-        <persistence.version>2.2.3</persistence.version>
         <resource.version>2.0.0-RC1</resource.version>
         <servlet.version>5.0.0-M1</servlet.version>
         <transaction.version>2.0.0-RC1</transaction.version>
@@ -377,11 +373,6 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.framework</artifactId>
                 <version>${apache.felix.framework.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.persistence</groupId>
-                <artifactId>${persistence.artifactId}</artifactId>
-                <version>${persistence.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
@@ -1133,24 +1124,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <!--JPA API change-->
-        <profile>
-            <id>jpa22</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <persistence.artifactId>jakarta.persistence</persistence.artifactId>
-                <persistence.version>${persistence22.version}</persistence.version>
-            </properties>
-        </profile>
-        <profile>
-            <id>jpa21</id>
-            <properties>
-                <persistence.artifactId>jakarta.persistence</persistence.artifactId>
-                <persistence.version>${persistence21.version}</persistence.version>
-            </properties>
         </profile>
         <!--Testing database profiles-->
         <!--TODO simplify properties part db.driver.XXXX to load it from file-->

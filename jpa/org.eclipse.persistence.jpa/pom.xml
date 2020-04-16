@@ -48,10 +48,6 @@
         </dependency>
         <!--API dependecies-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>${persistence.artifactId}</artifactId>
-        </dependency>
-        <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
         </dependency>
