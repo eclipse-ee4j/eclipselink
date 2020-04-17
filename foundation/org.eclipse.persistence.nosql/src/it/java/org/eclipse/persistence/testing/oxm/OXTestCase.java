@@ -26,10 +26,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Constructor;
-import java.util.Collection;
-import java.util.Iterator;
-
-import jakarta.xml.bind.JAXBElement;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLInputFactory;
@@ -339,57 +335,6 @@ public abstract class OXTestCase extends XMLTestCase {
             writer.flush();
         } catch (IOException exception) {
             throw ValidationException.fileError(exception);
-        }
-    }
-
-    public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj) {
-        compareJAXBElementObjects(controlObj, testObj, true);
-    }
-    public void compareJAXBElementObjects(JAXBElement controlObj, JAXBElement testObj, boolean namespaceAware) {
-        assertEquals(controlObj.getName().getLocalPart(), testObj.getName().getLocalPart());
-        if(namespaceAware){
-            assertEquals(controlObj.getName().getNamespaceURI(), testObj.getName().getNamespaceURI());
-        }
-        assertEquals(controlObj.getDeclaredType(), testObj.getDeclaredType());
-
-        Object controlValue = controlObj.getValue();
-        Object testValue = testObj.getValue();
-
-        if(controlValue == null) {
-            if(testValue == null){
-                return;
-            }
-            fail("Test value should have been null");
-        }else{
-            if(testValue == null){
-                fail("Test value should not have been null");
-            }
-        }
-
-        if(controlValue.getClass().isArray()){
-            compareArrays(controlValue, testValue);
-        }
-        else if (controlValue instanceof Collection){
-            Collection controlCollection = (Collection)controlValue;
-            Collection testCollection = (Collection)testValue;
-            Iterator<Object> controlIter = controlCollection.iterator();
-            Iterator<Object> testIter = testCollection.iterator();
-            assertEquals(controlCollection.size(), testCollection.size());
-            while(controlIter.hasNext()){
-                Object nextControl = controlIter.next();
-                Object nextTest = testIter.next();
-                compareValues(nextControl, nextTest);
-            }
-        }else{
-            compareValues(controlValue, testValue);
-        }
-    }
-
-    protected void compareValues(Object controlValue, Object testValue){
-        if(controlValue instanceof JAXBElement && testValue instanceof JAXBElement){
-            compareJAXBElementObjects((JAXBElement)controlValue, (JAXBElement)testValue);
-        }else{
-            super.compareValues(controlValue, testValue);
         }
     }
 

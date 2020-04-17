@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,16 +45,18 @@
         </dependencySet>
         <dependencySet>
             <outputDirectory>eclipselink/jlib/extension/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <includes>
                 <include>${project.parent.groupId}:org.eclipse.persistence.extension</include>
             </includes>
         </dependencySet>
         <dependencySet>
             <outputDirectory>eclipselink/jlib/jpa/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <includes>
                 <include>${project.parent.groupId}:org.eclipse.persistence.jpa.modelgen.processor</include>
                 <include>${project.parent.groupId}:org.eclipse.persistence.jpars</include>
-                <include>${project.parent.groupId}:jakarta.persistence</include>
+                <include>jakarta.persistence:jakarta.persistence-api</include>
             </includes>
         </dependencySet>
         <dependencySet>
@@ -72,7 +74,8 @@
                 <include>org.glassfish:jakarta.json</include>
                 <include>com.sun.mail:jakarta.mail</include>
                 <include>jakarta.validation:jakarta.validation-api</include>
-                <include>com.sun.xml.bind:jaxb-osgi</include>
+                <include>com.sun.xml.bind:jaxb-impl</include>
+                <include>com.sun.xml.bind:jaxb-xjc</include>
             </includes>
         </dependencySet>
         <dependencySet>
@@ -90,6 +93,7 @@
         </dependencySet>
         <dependencySet>
             <outputDirectory>eclipselink/utils/dbws/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <includes>
                 <include>${project.parent.groupId}:org.eclipse.persistence.oracleddlparser</include>
                 <include>${project.parent.groupId}:org.eclipse.persistence.dbws.builder</include>

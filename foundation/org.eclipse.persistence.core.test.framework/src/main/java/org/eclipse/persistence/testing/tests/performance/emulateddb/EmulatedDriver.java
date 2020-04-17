@@ -128,7 +128,7 @@ public class EmulatedDriver implements Driver {
 
     /**
      * Reports whether this driver is a genuine JDBC
-     * Compliant<sup><font size=-2>TM</font></sup> driver.
+     * Compliant (TM) driver.
      * A driver may only report <code>true</code> here if it passes the JDBC
      * compliance tests; otherwise it is required to return <code>false</code>.
      * <P>
