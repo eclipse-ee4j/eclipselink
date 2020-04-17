@@ -127,11 +127,6 @@
         <!--Other modules-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.antlr</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -194,12 +189,6 @@
             <classifier>sources</classifier>
         </dependency>
         <!--Sources main dependencies-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.antlr</artifactId>
-            <version>${project.version}</version>
-            <classifier>sources</classifier>
-        </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
