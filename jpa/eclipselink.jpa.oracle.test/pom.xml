@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -86,37 +86,31 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink Core test framework-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink JPA test framework-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink Oracle Extension Tests (model, test classes)-->
@@ -124,14 +118,12 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle</artifactId>
             <type>test-jar</type>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle.spatial</artifactId>
             <type>test-jar</type>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--API dependecies-->
@@ -158,7 +150,7 @@
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-osgi</artifactId>
+            <artifactId>jaxb-xjc</artifactId>
             <scope>test</scope>
         </dependency>
         <!--JDBC driver (test dependency)-->

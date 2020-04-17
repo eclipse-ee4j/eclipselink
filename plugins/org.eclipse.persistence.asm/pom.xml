@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,11 +64,8 @@
     <build>
         <resources>
             <resource>
-                <directory>${project.basedir}</directory>
-                <includes>
-                    <include>about.html</include>
-                    <include>readme.html</include>
-                </includes>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
             </resource>
         </resources>
 
@@ -86,11 +83,11 @@
                         </goals>
                         <configuration>
                             <includeGroupIds>org.ow2.asm</includeGroupIds>
-                            <includeArtifactIds>asm,asm-commons,asm-tree</includeArtifactIds>
+                            <includeScope>provided</includeScope>
                             <classifier>sources</classifier>
-                            <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
                             <outputDirectory>${project.build.directory}/unpacked-sources/asm-src</outputDirectory>
-                            <excludes>META-INF/**</excludes>
+                            <!-- original html doc excluded to avoid javadoc build error on JDK 11/ASM 7.3.1-->
+                            <excludes>META-INF/MANIFEST.MF,**/*.html</excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -121,47 +118,20 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Version>${bundle.version}</Bundle-Version>
-                        <Automatic-Module-Name>eclipselink.asm</Automatic-Module-Name>
-                        <Export-Package>org.eclipse.persistence.internal.libraries.asm.*</Export-Package>
-                        <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
-                    </instructions>
-                </configuration>
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
                         <goals>
                             <goal>manifest</goal>
                         </goals>
+                        <configuration>
+                            <instructions>
+                                <Export-Package>*</Export-Package>
+                            </instructions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>javadoc-plugin-properties</id>
-            <activation>
-                <jdk>(1.8,</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <configuration>
-                            <!--<source>8</source>-->
-                            <additionalJOptions>
-                                <additionalJOption>-Xdoclint:-html</additionalJOption>
-                            </additionalJOptions>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 </project>

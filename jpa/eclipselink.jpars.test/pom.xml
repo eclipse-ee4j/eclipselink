@@ -48,22 +48,14 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpars</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!--API dependencies-->
         <dependency>
@@ -90,14 +82,12 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink JPA test framework-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--JDBC driver (test dependency)-->

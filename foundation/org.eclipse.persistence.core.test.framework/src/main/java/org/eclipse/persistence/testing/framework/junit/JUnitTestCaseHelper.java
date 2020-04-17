@@ -84,7 +84,7 @@ public class JUnitTestCaseHelper {
 
     /**
      * Get common properties (including database properties) from System, for unavailable ones, read from test.properties file.
-     * The location of properties file can be given by system property <tt>test.properties</tt>.
+     * The location of properties file can be given by system property <code>test.properties</code>.
      * The default location is "test.properties" file in current directory.
      */
     public static Map<String, String> getDatabaseProperties() {

@@ -14,7 +14,7 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.dbchangenotification;
 
-import jakarta.jms.*;
+import javax.jms.*;
 
 import org.eclipse.persistence.sessions.Session;
 

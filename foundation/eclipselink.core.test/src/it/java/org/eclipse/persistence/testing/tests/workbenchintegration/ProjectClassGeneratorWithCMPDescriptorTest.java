@@ -15,7 +15,6 @@
 package org.eclipse.persistence.testing.tests.workbenchintegration;
 
 import java.io.File;
-import java.lang.reflect.Method;
 
 import org.eclipse.persistence.descriptors.CMPPolicy;
 import org.eclipse.persistence.descriptors.PessimisticLockingPolicy;
@@ -81,15 +80,8 @@ public class ProjectClassGeneratorWithCMPDescriptorTest extends AutoVerifyTestCa
         }
 
         try {
-            Object[] params = new Object[1];
-            String[] source = { fileName };
-            params[0] = source;
-            Class mainClass = Class.forName("com.sun.tools.javac.Main");
-            Class[] parameterTypes = new Class[1];
-            parameterTypes[0] = String[].class;
-            Method method = mainClass.getMethod("compile", parameterTypes);
-            int result = ((Integer)method.invoke(null, params)).intValue();
-            if (result != 0) {
+           boolean result = Compiler.compile(fileName);
+           if (!result) {
                 throw new TestErrorException("Failed to compiled the generated project file " + fileName + ". This could either be a legitimate compile " +
                          "failure, or could result if you do not have the tools.jar from your JDK on the classpath.");
             }

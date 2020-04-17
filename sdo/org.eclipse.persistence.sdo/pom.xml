@@ -37,22 +37,35 @@
     </properties>
 
     <dependencies>
-        <!--Other modules-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <!--Other libraries dependencies-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>commonj.sdo</artifactId>
         </dependency>
+        <!--Other modules-->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.mail</groupId>
+            <artifactId>jakarta.mail-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!--Test dependencies-->
         <!--Test framework-->
         <dependency>
@@ -78,18 +91,21 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Import-Package>commonj.sdo.impl</Import-Package>
-                    </instructions>
-                </configuration>
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
                         <goals>
                             <goal>manifest</goal>
                         </goals>
+                        <configuration>
+                            <instructions>
+                                <Import-Package>
+                                    jakarta.activation;resolution:=optional,
+                                    jakarta.mail.internet;resolution:=optional,
+                                    *
+                                </Import-Package>
+                            </instructions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

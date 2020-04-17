@@ -39,12 +39,14 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
-            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
         </dependency>
         <!--API dependecies-->
         <dependency>
@@ -75,21 +77,21 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <!--Break to the new line due 72 bytes line size limit in MANIFEST.MF file.-->
-                        <Premain-Class>org.eclipse.persistence.internal.jpa.deployment.JavaSEC
-                            MPInitializerAgent
-                        </Premain-Class>
-                    </instructions>
-                </configuration>
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
                         <goals>
                             <goal>manifest</goal>
                         </goals>
+                        <configuration>
+                            <instructions>
+                                <Premain-Class>org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent</Premain-Class>
+                                <Import-Package>
+                                    jakarta.xml.bind.annotation;resolution:=optional,
+                                    *
+                                </Import-Package>
+                            </instructions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

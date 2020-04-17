@@ -45,12 +45,10 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!--API dependencies-->
         <dependency>
@@ -68,25 +66,16 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <!--Other modules-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         <!--EclipseLink Core test framework-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink JPA test framework-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.test.framework</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink Core test-->
@@ -94,7 +83,6 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test</artifactId>
             <type>test-jar</type>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink JPA test-->
@@ -102,7 +90,6 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.test</artifactId>
             <type>test-jar</type>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--JDBC driver (test dependency)-->

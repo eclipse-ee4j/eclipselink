@@ -36,185 +36,150 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.corba</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.extension</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpars</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.dbws</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.nosql</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.sdo</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.utils.rename</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <!--Other dependencies API/other libraries-->
         <!--Other org.eclipse.persistence dependencies-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
-            <version>${oracle.ddlparser.version}</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>commonj.sdo</artifactId>
-            <version>${commonj.sdo.version}</version>
         </dependency>
         <!--Other APIs/libraries-->
         <dependency>
             <groupId>com.sun.activation</groupId>
             <artifactId>jakarta.activation</artifactId>
-            <version>${activation.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <version>${mail.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-osgi</artifactId>
-            <version>${jaxb.version}</version>
+            <artifactId>jaxb-xjc</artifactId>
         </dependency>
         <dependency>
             <groupId>jakarta.jms</groupId>
             <artifactId>jakarta.jms-api</artifactId>
-            <version>${jms.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.resource</groupId>
             <artifactId>jakarta.resource-api</artifactId>
-            <version>${resource.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>${servlet.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <version>${validation.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>${ws-rs.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>${ant.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
-            <version>${json.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-omgapi</artifactId>
-            <version>${org.glassfish.corba.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.corba</groupId>
             <artifactId>glassfish-corba-orb</artifactId>
-            <version>${org.glassfish.corba.version}</version>
         </dependency>
         <!--NoSQL DBs-->
         <!--Mongo DB-->
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongo-java-driver</artifactId>
-            <version>${mongodb.version}</version>
         </dependency>
         <!--Oracle NoSQL DB-->
         <dependency>
             <groupId>com.oracle.kv</groupId>
             <artifactId>oracle-nosql-client</artifactId>
-            <version>${oracle.nosql.version}</version>
         </dependency>
         <!--Test dependencies (used for assembly of eclipselink test classes and framework).-->
         <!--EclipseLink Core test framework-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test.framework</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink Core test classes-->
@@ -222,7 +187,6 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core.test</artifactId>
             <type>test-jar</type>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink JPA test classes (test framework) additional classes-->
@@ -230,14 +194,12 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.test</artifactId>
             <type>test-jar</type>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--Test dependency used by unit test-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <!--API dependecies-->
@@ -302,115 +264,96 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.corba</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.extension</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpars</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.dbws</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.nosql</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.sdo</artifactId>
-            <version>${project.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
-            <version>${oracle.ddlparser.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>commonj.sdo</artifactId>
-            <version>${commonj.sdo.version}</version>
             <classifier>sources</classifier>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>${jaxb.api.version}</version>
             <classifier>sources</classifier>
         </dependency>
     </dependencies>

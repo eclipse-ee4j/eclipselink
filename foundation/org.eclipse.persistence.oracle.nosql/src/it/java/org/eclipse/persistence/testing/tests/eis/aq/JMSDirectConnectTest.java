@@ -16,14 +16,14 @@
 //       - 490677: Database connection properties made configurable in test.properties
 package org.eclipse.persistence.testing.tests.eis.aq;
 
-import jakarta.jms.JMSException;
-import jakarta.jms.QueueConnection;
-import jakarta.jms.QueueConnectionFactory;
-import jakarta.jms.QueueSession;
-import jakarta.jms.Session;
-import jakarta.jms.TopicConnection;
-import jakarta.jms.TopicConnectionFactory;
-import jakarta.jms.TopicSession;
+import javax.jms.JMSException;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+import javax.jms.TopicConnection;
+import javax.jms.TopicConnectionFactory;
+import javax.jms.TopicSession;
 
 import org.eclipse.persistence.testing.framework.junit.LogTestExecution;
 import org.eclipse.persistence.testing.tests.nosql.NoSQLProperties;

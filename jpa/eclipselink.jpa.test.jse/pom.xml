@@ -42,25 +42,16 @@
             <scope>test</scope>
         </dependency>
         <!--Other modules-->
-        <!--EclipseLink JPA/JPQL Parser-->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
         <!--EclipseLink JPA-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink EclipseLink JPA Model Generator-->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--EclipseLink JPA (test framework)-->
@@ -68,7 +59,6 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.test</artifactId>
             <type>test-jar</type>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <!--JDBC driver (test dependency)-->
@@ -107,11 +97,6 @@
                     </execution>
                 </executions>
                 <dependencies>
-                    <dependency>
-                        <groupId>org.eclipse.persistence</groupId>
-                        <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-                        <version>${project.version}</version>
-                    </dependency>
                     <dependency>
                         <groupId>org.eclipse.persistence</groupId>
                         <artifactId>org.eclipse.persistence.jpa</artifactId>

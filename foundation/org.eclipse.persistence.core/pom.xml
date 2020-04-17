@@ -39,48 +39,69 @@
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${project.version}</version>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-            <version>${project.version}</version>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <!--API dependecies-->
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.jms</groupId>
             <artifactId>jakarta.jms-api</artifactId>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.json</groupId>
             <artifactId>jakarta.json-api</artifactId>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.mail</groupId>
             <artifactId>jakarta.mail-api</artifactId>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.resource</groupId>
             <artifactId>jakarta.resource-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.transaction</groupId>
+            <artifactId>jakarta.transaction-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>
             <artifactId>jakarta.xml.bind-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
@@ -133,25 +154,101 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <!-- Java packages specified there comes from "Class.forName(...),  maven-bundle-plugin >= 4.2.0 index them as mandatory -->
-                        <Import-Package>
-                            org.eclipse.persistence.eis.adapters.xmlfile.*;resolution:=optional,
-                            org.eclipse.persistence.sessions.coordination.corba.sun.*;resolution:=optional,
-                            org.eclipse.persistence.internal.sessions.coordination.rmi.iiop.*;resolution:=optional,
-                            weblogic.*;resolution:=optional,
-                            *
-                        </Import-Package>
-                    </instructions>
-                </configuration>
                 <executions>
                     <execution>
                         <id>bundle-manifest</id>
                         <goals>
                             <goal>manifest</goal>
                         </goals>
+                        <configuration>
+                            <instructions>
+                                <!-- Java packages specified there comes from "Class.forName(...),  maven-bundle-plugin >= 4.2.0 index them as mandatory -->
+                                <Export-Package>
+                                    org.eclipse.persistence.internal.cache,
+                                    org.eclipse.persistence.internal.codegen,
+                                    org.eclipse.persistence.internal.core.databaseaccess,
+                                    org.eclipse.persistence.internal.core.descriptors,
+                                    org.eclipse.persistence.internal.core.helper,
+                                    org.eclipse.persistence.internal.core.queries,
+                                    org.eclipse.persistence.internal.core.sessions,
+                                    org.eclipse.persistence.internal.databaseaccess,
+                                    org.eclipse.persistence.internal.descriptors,
+                                    org.eclipse.persistence.internal.descriptors.changetracking,
+                                    org.eclipse.persistence.internal.dynamic,
+                                    org.eclipse.persistence.internal.expressions,
+                                    org.eclipse.persistence.internal.helper,
+                                    org.eclipse.persistence.internal.helper.linkedlist,
+                                    org.eclipse.persistence.internal.history,
+                                    org.eclipse.persistence.internal.identitymaps,
+                                    org.eclipse.persistence.internal.indirection,
+                                    org.eclipse.persistence.internal.indirection.jdk8,
+                                    org.eclipse.persistence.internal.jpa.jpql,
+                                    org.eclipse.persistence.internal.jpa.parsing,
+                                    org.eclipse.persistence.internal.jpa.parsing.jpql,
+                                    org.eclipse.persistence.internal.jpa.parsing.jpql.antlr,
+                                    org.eclipse.persistence.internal.jpa.rs.metadata.model,
+                                    org.eclipse.persistence.internal.jpa.rs.metadata.model.v2,
+                                    org.eclipse.persistence.internal.localization,
+                                    org.eclipse.persistence.internal.localization.i18n,
+                                    org.eclipse.persistence.internal.mappings.converters,
+                                    org.eclipse.persistence.internal.oxm,
+                                    org.eclipse.persistence.internal.oxm.accessor,
+                                    org.eclipse.persistence.internal.oxm.conversion,
+                                    org.eclipse.persistence.internal.oxm.documentpreservation,
+                                    org.eclipse.persistence.internal.oxm.mappings,
+                                    org.eclipse.persistence.internal.oxm.record,
+                                    org.eclipse.persistence.internal.oxm.record.deferred,
+                                    org.eclipse.persistence.internal.oxm.record.json,
+                                    org.eclipse.persistence.internal.oxm.record.namespaces,
+                                    org.eclipse.persistence.internal.oxm.schema,
+                                    org.eclipse.persistence.internal.oxm.schema.model,
+                                    org.eclipse.persistence.internal.oxm.unmapped,
+                                    org.eclipse.persistence.internal.platform.database,
+                                    org.eclipse.persistence.internal.queries,
+                                    org.eclipse.persistence.internal.security,
+                                    org.eclipse.persistence.internal.sequencing,
+                                    org.eclipse.persistence.internal.sessions,
+                                    org.eclipse.persistence.internal.sessions.cdi,
+                                    org.eclipse.persistence.internal.sessions.coordination,
+                                    org.eclipse.persistence.internal.sessions.coordination.broadcast,
+                                    org.eclipse.persistence.internal.sessions.coordination.corba,
+                                    org.eclipse.persistence.internal.sessions.coordination.corba.sun,
+                                    org.eclipse.persistence.internal.sessions.coordination.jms,
+                                    org.eclipse.persistence.internal.sessions.coordination.rmi,
+                                    org.eclipse.persistence.internal.sessions.factories,
+                                    org.eclipse.persistence.internal.sessions.factories.model,
+                                    org.eclipse.persistence.internal.sessions.factories.model.event,
+                                    org.eclipse.persistence.internal.sessions.factories.model.log,
+                                    org.eclipse.persistence.internal.sessions.factories.model.login,
+                                    org.eclipse.persistence.internal.sessions.factories.model.platform,
+                                    org.eclipse.persistence.internal.sessions.factories.model.pool,
+                                    org.eclipse.persistence.internal.sessions.factories.model.project,
+                                    org.eclipse.persistence.internal.sessions.factories.model.property,
+                                    org.eclipse.persistence.internal.sessions.factories.model.rcm,
+                                    org.eclipse.persistence.internal.sessions.factories.model.rcm.command,
+                                    org.eclipse.persistence.internal.sessions.factories.model.sequencing,
+                                    org.eclipse.persistence.internal.sessions.factories.model.session,
+                                    org.eclipse.persistence.internal.sessions.factories.model.transport,
+                                    org.eclipse.persistence.internal.sessions.factories.model.transport.discovery,
+                                    org.eclipse.persistence.internal.sessions.factories.model.transport.naming,
+                                    org.eclipse.persistence.internal.sessions.remote,
+                                    org.eclipse.persistence.internal.weaving,
+                                    *
+                                </Export-Package>
+                                <Import-Package>
+                                    javax.rmi;version=!;resolution:=optional,
+                                    javax.rmi.CORBA;version=!;resolution:=optional,
+                                    org.omg.CORBA;version=!;resolution:=optional,
+                                    org.omg.CORBA.portable;version=!;resolution:=optional,
+                                    org.omg.CORBA_2_3.portable;version=!;resolution:=optional,
+                                    org.eclipse.persistence.eis.adapters.xmlfile;resolution:=optional,
+                                    org.eclipse.persistence.internal.sessions.coordination.rmi.iiop;resolution:=optional,
+                                    org.eclipse.persistence.sessions.coordination.corba.sun;resolution:=optional,
+                                    weblogic.*;resolution:=optional,
+                                    *
+                                </Import-Package>
+                            </instructions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -159,13 +256,13 @@
     </build>
 
     <profiles>
-        <profile>
+<!--        <profile>
             <id>tools-dependency</id>
             <activation>
                 <jdk>1.8</jdk>
             </activation>
             <dependencies>
-                <!--Required for LRG tests-->
+                Required for LRG tests
                 <dependency>
                     <groupId>com.sun</groupId>
                     <artifactId>tools</artifactId>
@@ -174,7 +271,7 @@
                     <systemPath>${java.home}/../lib/tools.jar</systemPath>
                 </dependency>
             </dependencies>
-        </profile>
+        </profile>-->
         <profile>
             <id>java11-dependencies</id>
             <activation>
