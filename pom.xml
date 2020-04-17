@@ -141,7 +141,6 @@
         <apache.felix.framework.version>6.0.3</apache.felix.framework.version>
         <!-- CQ #21133 -->
         <ant.version>1.10.7</ant.version>
-        <antlr.version>3.5.2</antlr.version>
         <!-- CQ #21851 -->
         <asm.version>7.3.1</asm.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
@@ -184,7 +183,6 @@
         <!--Helper parent pom for server side test modules-->
         <module>pom_test_server.xml</module>
 
-        <module>plugins/org.eclipse.persistence.antlr</module>
         <module>plugins/org.eclipse.persistence.asm</module>
         <module>jpa/org.eclipse.persistence.jpa.jpql</module>
 
@@ -244,12 +242,6 @@
     <dependencyManagement>
         <dependencies>
             <!--Source dependencies used for repackaging-->
-            <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>antlr-runtime</artifactId>
-                <version>${antlr.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
             <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
