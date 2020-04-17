@@ -34,11 +34,11 @@ import org.junit.runner.RunWith;
 
 @RunWith(EmfRunner.class)
 public class TestAggregateObjectMappings {
-    @Emf(createTables = DDLGen.DROP_CREATE,
+    @Emf(name = "cursorEMF" , createTables = DDLGen.DROP_CREATE,
             classes = { SimpleMappingEntity.class, SimpleMappingEmbeddable.class } )
     private EntityManagerFactory emf;
 
-    @Emf(createTables = DDLGen.DROP_CREATE,
+    @Emf(name = "joinEMF" , createTables = DDLGen.DROP_CREATE,
             classes = { BaseParent.class, BaseChild.class, BaseEmbeddable.class } )
     private EntityManagerFactory emfTwo;
 
