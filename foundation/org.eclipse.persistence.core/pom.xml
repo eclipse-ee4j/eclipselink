@@ -162,7 +162,6 @@
                         </goals>
                         <configuration>
                             <instructions>
-                                <!-- Java packages specified there comes from "Class.forName(...),  maven-bundle-plugin >= 4.2.0 index them as mandatory -->
                                 <Export-Package>
                                     org.eclipse.persistence.internal.cache,
                                     org.eclipse.persistence.internal.codegen,
@@ -256,22 +255,6 @@
     </build>
 
     <profiles>
-<!--        <profile>
-            <id>tools-dependency</id>
-            <activation>
-                <jdk>1.8</jdk>
-            </activation>
-            <dependencies>
-                Required for LRG tests
-                <dependency>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                    <version>1.8.0</version>
-                    <scope>system</scope>
-                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                </dependency>
-            </dependencies>
-        </profile>-->
         <profile>
             <id>java11-dependencies</id>
             <activation>
