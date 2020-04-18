@@ -26,10 +26,6 @@
 
 /features/common/
 
-antlr/about.html
-antlr/license.html
-antlr/readme.html
-
 internal/jpa/weaving/ComputeClassWriter.java
 
 /utils/eclipselink.utils.rename/readme.html
