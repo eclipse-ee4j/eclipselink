@@ -290,8 +290,6 @@
         <property name="sun-misc.prefix" value="org.eclipse.persistence.sun-misc"/>
         <property name="sun-misc.criteria" value="[3.0,4.0)"/>
         <!-- For EclipseLink bundles -->
-        <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
-        <property name="antlr.criteria" value="[3.0,9.0)"/>
         <property name="asm.prefix" value="org.eclipse.persistence.asm"/>
         <property name="asm.criteria" value="[3.0,9.0)"/>
         <property name="hermes.prefix" value="org.eclipse.persistence.jpa.jpql"/>
@@ -420,9 +418,6 @@
         <selectbundle basename="${sun-misc.prefix}"  directory="${compdeps.2.common.plugins.dir}"
                      criterion="${sun-misc.criteria}" property="sun-misc.version" versiononly="true"
         />
-        <selectbundle basename="${antlr.prefix}" directory="${feature.2.common.plugins.dir}"
-                     criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
-        />
         <selectbundle basename="${asm.prefix}" directory="${feature.2.common.plugins.dir}"
                      criterion="${asm.criteria}" property="asm.version" versiononly="true"
         />
@@ -502,8 +497,6 @@
         <say  message="   '${jaxrs.prefix}_${jaxrs.criteria}.jar' not found! Generated features will be invalid."             unless="jaxrs.version"/>
         <say  message="   sun-misc.version         = '${sun-misc.version}'"                                                  if="sun-misc.version"/>
         <say  message="   '${sun-misc.prefix}_${sun-misc.criteria}.jar' not found! Generated features will be invalid."         unless="sun-misc.version"/>
-        <say  message="   antlr.version       = '${antlr.version}'"                                                           if="antlr.version"/>
-        <say  message="   '${antlr.prefix}_${antlr.criteria}.jar' not found! Generated features will be invalid."             unless="antlr.version"/>
         <say  message="   asm.version         = '${asm.version}'"                                                             if="asm.version"/>
         <say  message="   '${asm.prefix}_${asm.criteria}.jar' not found! Generated features will be invalid."                 unless="asm.version"/>
         <say  message="   hermes.version      = '${hermes.version}'"                                                          if="hermes.version"/>
@@ -553,7 +546,6 @@
         <!--          Filter for jdk.unsupported module export bundle in feature.xml files. -->
         <filter token="SUN_MISC_VERSION"     value="${sun-misc.version}"/>
         <!--          Filters for product bundles in feature.xml files -->
-        <filter token="ANTLR_VERSION"       value="${antlr.version}"/>
         <filter token="ASM_VERSION"         value="${asm.version}"/>
         <filter token="HERMES_VERSION"      value="${hermes.version}"/>
         <filter token="ORACLEDDL_VERSION"   value="${oracleddl.version}"/>
