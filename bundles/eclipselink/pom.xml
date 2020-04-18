@@ -31,7 +31,6 @@
     </parent>
 
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
         <archive.tmp.dir>archive-tmp</archive.tmp.dir>
         <test.jars.tmp.dir>eclipselink-test-jars</test.jars.tmp.dir>
 

@@ -31,7 +31,6 @@
     </parent>
 
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
         <test-skip-moxy-jaxb-srg>${skipTests}</test-skip-moxy-jaxb-srg>
         <test-skip-moxy-jaxb>true</test-skip-moxy-jaxb>
         <test-skip-moxy-oxm-srg>${skipTests}</test-skip-moxy-oxm-srg>

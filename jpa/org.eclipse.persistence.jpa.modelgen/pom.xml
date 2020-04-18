@@ -31,7 +31,6 @@
     </parent>
 
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
         <test-skip-jpa-modelgen>${skipTests}</test-skip-jpa-modelgen>
     </properties>
 

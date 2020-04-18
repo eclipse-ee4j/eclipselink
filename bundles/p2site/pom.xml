@@ -30,6 +30,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <skipNexusStagingDeployMojo>false</skipNexusStagingDeployMojo>
+    </properties>
+
     <dependencies>
         <!--Binary dependencies-->
         <!--Other modules-->
