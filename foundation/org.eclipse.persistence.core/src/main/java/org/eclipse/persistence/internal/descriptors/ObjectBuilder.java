@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,8 @@
 //       - 499335: Multiple embeddable fields can't reference same object
 //     02/20/2018-2.7 Will Dazey
 //       - 529602: Added support for CLOBs in DELETE statements for Oracle
+//     04/19/2020-3.0 Alexandre Jacob
+//       - 544202: Fixed refresh of foreign key values when cacheKey was invalidated
 package org.eclipse.persistence.internal.descriptors;
 
 import java.io.Serializable;
@@ -1041,6 +1043,15 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
 
             FetchGroup fetchGroup = query.getExecutionFetchGroup(concreteDescriptor);
 
+            // 544202: cachedForeignKeys should be refreshed when cacheKey was invalidated
+            if (domainWasMissing || shouldRetrieveBypassCache
+                || cacheKey.getInvalidationState() == CacheKey.CACHE_KEY_INVALID) {
+
+                if (isProtected && (cacheKey != null)) {
+                    cacheForeignKeyValues(databaseRow, cacheKey, session);
+                }
+            }
+
             if (domainWasMissing || shouldRetrieveBypassCache) {
                 cacheHit = false;
                 if (domainObject == null || shouldStoreBypassCache) {
@@ -1069,9 +1080,6 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                     cacheKey.setObject(domainObject);
                 }
                 concreteObjectBuilder.buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, false, session);
-                if (isProtected && (cacheKey != null)) {
-                    cacheForeignKeyValues(databaseRow, cacheKey, session);
-                }
                 if (shouldMaintainCache && !shouldStoreBypassCache) {
                     // Set the fetch group to the domain object, after built.
                     if ((fetchGroup != null) && concreteDescriptor.hasFetchGroupManager()) {
