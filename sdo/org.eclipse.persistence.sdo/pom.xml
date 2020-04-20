@@ -31,7 +31,6 @@
     </parent>
 
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
         <test-skip-sdo-srg>${skipTests}</test-skip-sdo-srg>
         <test-skip-sdo>true</test-skip-sdo>
     </properties>

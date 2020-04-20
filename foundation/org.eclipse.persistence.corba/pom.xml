@@ -31,7 +31,6 @@
     </parent>
 
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
         <!--Properties used for test resources filtering/replacement-->
         <!--DB connection properties-->
         <dbPlatform>${db.platform}</dbPlatform>

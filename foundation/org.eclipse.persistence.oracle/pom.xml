@@ -31,7 +31,6 @@
     </parent>
 
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
         <!--Distribution directory-->
         <distribution.directory>${project.root.location}/bundles/org.eclipse.persistence.oracle/src/main/dependencies</distribution.directory>
     </properties>

@@ -31,7 +31,6 @@
     </parent>
 
     <properties>
-        <maven.deploy.skip>false</maven.deploy.skip>
         <!--Distribution directory-->
         <distribution.directory>${project.root.location}/bundles/org.eclipse.persistence.oracle.nosql/src/main/dependencies</distribution.directory>
         <test-skip-oracle-nosql>${skipTests}</test-skip-oracle-nosql>

@@ -32,9 +32,6 @@
 
     <modules>
         <module>eclipselink</module>
-        <module>others</module>
-        <module>distribution</module>
-        <module>p2site</module>
     </modules>
 
     <profiles>
@@ -42,6 +39,19 @@
             <id>test-lrg</id>
             <modules>
                 <module>nightly</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>no-deploy</id>
+            <activation>
+                <property>
+                    <name>!deploy</name>
+                </property>
+            </activation>
+            <modules>
+                <module>others</module>
+                <module>distribution</module>
+                <module>p2site</module>
             </modules>
         </profile>
     </profiles>
