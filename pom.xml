@@ -203,6 +203,7 @@
 
         <!--Utility modules-->
         <module>utils/org.eclipse.persistence.dbws.builder</module>
+        <module>utils/eclipselink.utils.rename</module>
 
         <!--Oracle Extensions-->
         <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle</module>
@@ -1633,7 +1634,6 @@
                 <module>jpa/eclipselink.jpars.test</module>
                 -->
 
-                <module>utils/eclipselink.utils.rename</module>
                 <module>utils/eclipselink.utils.sigcompare</module>
             </modules>
         </profile>
