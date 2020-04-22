@@ -313,10 +313,14 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
         try {
             this.cycleRecoverableClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE);
             this.cycleRecoverableContextClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_CONTEXT);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             //try old one
-            this.cycleRecoverableClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_OLD);
-            this.cycleRecoverableContextClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_CONTEXT_OLD);
+            try {
+                this.cycleRecoverableClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_OLD);
+                this.cycleRecoverableContextClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_CONTEXT_OLD);
+            } catch (Throwable e) {
+                //ignore
+            }
         }
     }
 
