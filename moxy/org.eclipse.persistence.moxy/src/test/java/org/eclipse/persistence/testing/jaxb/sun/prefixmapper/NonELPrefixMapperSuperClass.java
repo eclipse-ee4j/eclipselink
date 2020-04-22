@@ -14,20 +14,22 @@
 // Matt MacIvor - 2.4
 package org.eclipse.persistence.testing.jaxb.sun.prefixmapper;
 
-import org.eclipse.persistence.oxm.XMLConstants;
+public abstract class NonELPrefixMapperSuperClass extends org.glassfish.jaxb.runtime.marshaller.NamespacePrefixMapper{
 
-public abstract class NonELPrefixMapperSuperClass extends com.sun.xml.bind.marshaller.NamespacePrefixMapper{
-
+    @Override
     public abstract String getPreferredPrefix(String arg0, String arg1, boolean arg2);
 
+    @Override
     public java.lang.String[] getPreDeclaredNamespaceUris() {
         return null;
     }
 
+    @Override
     public java.lang.String[] getPreDeclaredNamespaceUris2() {
         return null;
     }
 
+    @Override
     public java.lang.String[] getContextualNamespaceDecls() {
         return null;
     }

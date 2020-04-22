@@ -16,7 +16,7 @@ package org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory;
 
 import jakarta.xml.bind.annotation.XmlRootElement;
 
-import com.sun.xml.bind.XmlAccessorFactory;
+import org.glassfish.jaxb.runtime.XmlAccessorFactory;
 
 @XmlRootElement(name="customer")
 @XmlAccessorFactory(ClassLevelAccessorFactory.class)

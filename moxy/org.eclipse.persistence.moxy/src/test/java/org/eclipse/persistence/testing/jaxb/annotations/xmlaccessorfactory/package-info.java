@@ -15,5 +15,4 @@
 @XmlAccessorFactory(MyCustomAccessorFactory.class)
 package org.eclipse.persistence.testing.jaxb.annotations.xmlaccessorfactory;
 
-import com.sun.xml.bind.AccessorFactory;
-import com.sun.xml.bind.XmlAccessorFactory;
+import org.glassfish.jaxb.runtime.XmlAccessorFactory;
