@@ -31,7 +31,7 @@
     </parent>
 
     <properties>
-        <test-skip-dbws-builder>true</test-skip-dbws-builder> <!--TODO: revert after jaxws-rt is jakartified -->
+        <test-skip-dbws-builder>${skipTests}</test-skip-dbws-builder>
     </properties>
 
     <dependencies>
