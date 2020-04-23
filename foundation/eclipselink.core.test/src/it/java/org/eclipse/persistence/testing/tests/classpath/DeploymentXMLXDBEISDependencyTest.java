@@ -27,7 +27,7 @@ public class DeploymentXMLXDBEISDependencyTest extends AutoVerifyTestCase {
     protected void setup() throws Exception {
         boolean jarsOnPath = true;
         try {
-            Class.forName("javax.resource.ResourceException");
+            Class.forName("jakarta.resource.ResourceException");
         } catch (Exception exception) {
             jarsOnPath = false;
         }
