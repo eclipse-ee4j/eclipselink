@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ package org.eclipse.persistence.descriptors;
 import java.io.Serializable;
 import java.security.AccessController;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
@@ -401,24 +402,45 @@ public class CMPPolicy implements java.io.Serializable, Cloneable {
             }
         } else {
             keyInstance = getPKClassInstance();
-
+            ObjectBuilder objectBuilder = getDescriptor().getObjectBuilder();
             //get clone of Key so we can remove values.
             for (int index = 0; index < pkElementArray.length; index++) {
                 KeyElementAccessor accessor = pkElementArray[index];
                 DatabaseMapping mapping = getDescriptor().getObjectBuilder().getMappingForAttributeName(accessor.getAttributeName());
                 if (mapping == null) {
-                    mapping = getDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                    mapping = objectBuilder.getMappingForField(accessor.getDatabaseField());
+                    if (! mapping.isAggregateObjectMapping() && ! mapping.isAbstractDirectMapping()) {
+                        // Found a mapping for the database field but it's not an aggregate (embedded ID) or a direct mapping so maybe the mappings
+                        // have been mapped multiple times.  Check read-only mappings for dtf or aggregate
+                        List<DatabaseMapping> readOnlyMappings = objectBuilder.getReadOnlyMappingsForField(accessor.getDatabaseField());
+                        for (DatabaseMapping readOnlyMapping : readOnlyMappings) {
+                            if (readOnlyMapping.isAggregateObjectMapping() || readOnlyMapping.isDirectToFieldMapping()) {
+                                mapping = readOnlyMapping;
+                                break;
+                            }
+                        }
+                    }
                 }
-
                 if (accessor.isNestedAccessor()) {
                     // Need to recursively build all the nested objects.
                     setFieldValue(accessor, keyInstance, mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField()), session, elementIndex, keyElements);
                 } else {
                     // Not nested but may be a single layer aggregate so check.
                     if (mapping.isAggregateMapping()) {
-                        mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                        DatabaseMapping nestedMapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForField(accessor.getDatabaseField());
+                        if (nestedMapping == null) {
+                            //must be a read only mapping
+                            List<DatabaseMapping> readOnlyMappings = mapping.getReferenceDescriptor().getObjectBuilder().getReadOnlyMappingsForField(accessor.getDatabaseField());
+                            for (DatabaseMapping readOnlyMapping : readOnlyMappings) {
+                                if (readOnlyMapping.isAbstractDirectMapping()) {
+                                    mapping = readOnlyMapping;
+                                    break;
+                                }
+                            }
+                        } else {
+                            mapping = nestedMapping;
+                        }
                     }
-
                     setFieldValue(accessor, keyInstance, mapping, session, elementIndex, keyElements);
                 }
             }

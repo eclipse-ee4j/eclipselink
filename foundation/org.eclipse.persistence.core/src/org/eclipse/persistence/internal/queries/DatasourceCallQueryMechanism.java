@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,8 +37,10 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
 import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.DatabaseQuery;
@@ -371,8 +373,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             shouldAcquireValueAfterInsert = descriptor.getSequence().shouldAcquireValueAfterInsert();
         }
         Collection returnFields = null;
-        if (descriptor.hasReturningPolicy()) {
-            returnFields = descriptor.getReturningPolicy().getFieldsToMergeInsert();
+        if (descriptor.getReturnFieldsToMergeInsert() != null) {
+            returnFields = descriptor.getReturnFieldsToMergeInsert();
         }
 
         // Check to see if sequence number should be retrieved after insert
@@ -811,10 +813,10 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @return the row count.
      */
     public Integer updateObject() throws DatabaseException {
-        Collection returnFields = null;
         ClassDescriptor descriptor = getDescriptor();
-        if (descriptor.hasReturningPolicy()) {
-            returnFields = descriptor.getReturningPolicy().getFieldsToMergeUpdate();
+        Collection returnFields = null;
+        if (descriptor.getReturnFieldsToMergeUpdate() != null) {
+            returnFields = descriptor.getReturnFieldsToMergeUpdate();
         }
         Integer returnedRowCount = null;
         if (hasMultipleCalls()) {
