@@ -3686,7 +3686,16 @@ public final class AnnotationsProcessor {
                 } catch (Exception ex) {
                     throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
                 }
-            }else if (CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS != null && helper.isAnnotationPresent(pack, CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS)) {
+            } else if (CompilerHelper.OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS != null && helper.isAnnotationPresent(pack, CompilerHelper.OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS)) {
+                Annotation xmlAccessorFactory = helper.getAnnotation(pack, CompilerHelper.OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS);
+                Class xmlAccessorFactoryClass = null;
+                try {
+                    xmlAccessorFactoryClass = (Class)PrivilegedAccessHelper.invokeMethod(CompilerHelper.OLD_ACCESSOR_FACTORY_VALUE_METHOD, xmlAccessorFactory, new Object[]{});
+                    packageInfo.setAccessorFactory(new AccessorFactoryWrapper(PrivilegedAccessHelper.newInstanceFromClass(xmlAccessorFactoryClass)));
+                } catch (Exception ex) {
+                    throw JAXBException.errorInstantiatingAccessorFactory(xmlAccessorFactoryClass, ex);
+                }
+            } else if (CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS != null && helper.isAnnotationPresent(pack, CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS)) {
                 Annotation xmlAccessorFactory = helper.getAnnotation(pack, CompilerHelper.INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS);
                 Class xmlAccessorFactoryClass = null;
                 try {

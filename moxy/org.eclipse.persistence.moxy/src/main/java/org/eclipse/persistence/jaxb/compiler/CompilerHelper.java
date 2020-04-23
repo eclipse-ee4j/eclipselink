@@ -55,12 +55,15 @@ public class CompilerHelper {
     public static final String XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.bind.annotation.XmlLocation";
     public static final String INTERNAL_XML_LOCATION_ANNOTATION_NAME = "com.sun.xml.internal.bind.annotation.XmlLocation";
 
-    private static final String XML_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.bind.XmlAccessorFactory";
+    private static final String XML_ACCESSOR_FACTORY_ANNOTATION_NAME = "org.glassfish.jaxb.runtime.XmlAccessorFactory";
+    private static final String OLD_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.bind.XmlAccessorFactory";
     private static final String INTERNAL_ACCESSOR_FACTORY_ANNOTATION_NAME = "com.sun.xml.internal.bind.XmlAccessorFactory";
     private static final String METADATA_MODEL_PACKAGE = "org.eclipse.persistence.jaxb.xmlmodel";
 
     public static Class ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
     public static Method ACCESSOR_FACTORY_VALUE_METHOD = null;
+    public static Class OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
+    public static Method OLD_ACCESSOR_FACTORY_VALUE_METHOD = null;
     public static Class INTERNAL_ACCESSOR_FACTORY_ANNOTATION_CLASS = null;
     public static Method INTERNAL_ACCESSOR_FACTORY_VALUE_METHOD = null;
     public static Class XML_LOCATION_ANNOTATION_CLASS = null;
@@ -77,6 +80,12 @@ public class CompilerHelper {
 
         try {
             XML_LOCATION_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(XML_LOCATION_ANNOTATION_NAME, true, CompilerHelper.class.getClassLoader());
+        } catch (Exception ex) {
+        }
+
+        try{
+            OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS = PrivilegedAccessHelper.getClassForName(OLD_ACCESSOR_FACTORY_ANNOTATION_NAME);
+            OLD_ACCESSOR_FACTORY_VALUE_METHOD = PrivilegedAccessHelper.getDeclaredMethod(OLD_ACCESSOR_FACTORY_ANNOTATION_CLASS, "value", new Class[]{});
         } catch (Exception ex) {
         }
 

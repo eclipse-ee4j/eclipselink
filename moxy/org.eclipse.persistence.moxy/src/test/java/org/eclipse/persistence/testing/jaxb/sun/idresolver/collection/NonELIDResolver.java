@@ -14,7 +14,6 @@
 //  - rbarkhouse - 29 January 2013 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.sun.idresolver.collection;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -24,7 +23,7 @@ import jakarta.xml.bind.ValidationEventHandler;
 import org.eclipse.persistence.testing.jaxb.idresolver.collection.TestObject;
 import org.xml.sax.SAXException;
 
-public class NonELIDResolver extends com.sun.xml.bind.IDResolver {
+public class NonELIDResolver extends org.glassfish.jaxb.runtime.IDResolver {
 
     public boolean hitStartDocument = false;
     public boolean hitEndDocument = false;

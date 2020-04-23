@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,8 +70,10 @@ import org.eclipse.persistence.oxm.sequenced.SequencedObject;
 
 public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, CoreAbstractSession, CoreField, CoreMapping> implements ObjectBuilder {
 
-    public static final String CYCLE_RECOVERABLE = "com.sun.xml.bind.CycleRecoverable";
-    public static final String CYCLE_RECOVERABLE_CONTEXT = "com.sun.xml.bind.CycleRecoverable$Context";
+    public static final String CYCLE_RECOVERABLE = "org.glassfish.jaxb.runtime.CycleRecoverable";
+    public static final String CYCLE_RECOVERABLE_CONTEXT = "org.glassfish.jaxb.runtime.CycleRecoverable$Context";
+    private static final String CYCLE_RECOVERABLE_OLD = "com.sun.xml.bind.CycleRecoverable";
+    private static final String CYCLE_RECOVERABLE_CONTEXT_OLD = "com.sun.xml.bind.CycleRecoverable$Context";
     public static final String ON_CYCLE_DETECTED = "onCycleDetected";
 
     private List<ContainerValue> containerValues;
@@ -311,7 +313,14 @@ public class XPathObjectBuilder extends CoreObjectBuilder<CoreAbstractRecord, Co
         try {
             this.cycleRecoverableClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE);
             this.cycleRecoverableContextClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_CONTEXT);
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            //try old one
+            try {
+                this.cycleRecoverableClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_OLD);
+                this.cycleRecoverableContextClass = PrivilegedAccessHelper.getClassForName(CYCLE_RECOVERABLE_CONTEXT_OLD);
+            } catch (Throwable e2) {
+                //ignore
+            }
         }
     }
 

@@ -19,7 +19,7 @@ import java.util.List;
 
 import jakarta.xml.bind.annotation.XmlAttribute;
 
-import com.sun.xml.bind.CycleRecoverable;
+import org.glassfish.jaxb.runtime.CycleRecoverable;
 
 public class Employee implements CycleRecoverable {
 

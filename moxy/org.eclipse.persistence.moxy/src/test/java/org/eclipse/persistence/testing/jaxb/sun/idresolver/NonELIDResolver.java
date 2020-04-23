@@ -22,7 +22,7 @@ import jakarta.xml.bind.ValidationEventHandler;
 
 import org.xml.sax.SAXException;
 
-public class NonELIDResolver extends com.sun.xml.bind.IDResolver{
+public class NonELIDResolver extends org.glassfish.jaxb.runtime.IDResolver{
     Map<String, Melon> melons = new HashMap<String, Melon>();
 
     public boolean hitStartDocument = false;
