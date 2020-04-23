@@ -98,7 +98,7 @@
         <property name="javax.validation.lib"       value="${moxy.2.base.dir}/jpa/plugins/${javax.validation.jar}"/>
         <property name="jaxb-api.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-api.jar}"/>
         <property name="jaxb-xjc.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
-        <property name="jaxb-core.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-core.jar}"/>
+        <property name="jaxb-impl.lib"       value="${moxy.2.common.plugins.dir}/${jaxb-impl.jar}"/>
 
         <!-- dependency tests -->
         <available file="${javax.validation.lib}"                               property="javax.validation.bundle.exist"/>
@@ -113,7 +113,7 @@
             <pathelement path="${javax.validation.lib}"/>
             <pathelement path="${jaxb-api.lib}"/>
             <pathelement path="${jaxb-xjc.lib}"/>
-            <pathelement path="${jaxb-core.lib}"/>
+            <pathelement path="${jaxb-impl.lib}"/>
             <fileset
                     dir="${moxy.2.common.plugins.dir}"
                     includes="${eclipselink.global.depend}"/>
@@ -160,7 +160,7 @@
                 <include name="${jaxb-xjc.lib}"/>
             </fileset>
             <fileset dir="${moxy.2.common.plugins.dir}">
-                <include name="${jaxb-core.lib}"/>
+                <include name="${jaxb-impl.lib}"/>
             </fileset>
         </jar>
     </target>

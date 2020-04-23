@@ -36,6 +36,12 @@
             <layout>p2</layout>
             <url>file:/${basedir}/../org.eclipse.persistence.compdeps.internal/target/repository</url>
         </repository>
+        <!--TODO to be removed when JAXB 2.3.3 will be available in Maven central-->
+        <repository>
+            <id>jakarta.sonatype.org</id>
+            <name>OSS Jakarta Staging</name>
+            <url>https://jakarta.oss.sonatype.org/content/groups/staging</url>
+        </repository>
         <repository>
             <id>oss.sonatype.org</id>
             <name>OSS Sonatype Staging</name>
@@ -59,8 +65,7 @@
         <!-- DEPENDENCY Versions -->
         <!-- CQ #21139, 21140 -->
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
-        <com.sun.istack.version>3.0.8</com.sun.istack.version>
-        <com.sun.xml.bind.version>2.3.2</com.sun.xml.bind.version>
+        <com.sun.xml.bind.version>2.3.3</com.sun.xml.bind.version>
         <com.sun.xml.messaging.version>1.5.1</com.sun.xml.messaging.version>
         <com.sun.xml.streambuffer.version>1.5.7</com.sun.xml.streambuffer.version>
         <com.sun.xml.ws.policy.version>2.7.6</com.sun.xml.ws.policy.version>
@@ -247,18 +252,18 @@
             <version>${jakarta.activation.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun.istack</groupId>
-            <artifactId>istack-commons-runtime</artifactId>
-            <version>${com.sun.istack.version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
             <version>${jakarta.mail.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-osgi</artifactId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>${com.sun.xml.bind.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
             <version>${com.sun.xml.bind.version}</version>
         </dependency>
         <dependency>

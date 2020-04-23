@@ -50,7 +50,7 @@ plugins/gmbal*.jar
 plugins/hk2*.jar
 plugins/jakarta*.jar
 plugins/jersey*.jar
-plugins/jaxb-osgi*.jar
+plugins/jaxb*.jar
 plugins/logback*.jar
 plugins/management*.jar
 plugins/mimepull*.jar

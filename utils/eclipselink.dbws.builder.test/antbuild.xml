@@ -152,7 +152,7 @@
         <echo message="javax.xml.binding.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.binding.jar}"/>
         <echo message="javax.xml.soap.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.soap.jar}"/>
         <echo message="javax.xml.ws.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.ws.jar}"/>
-        <echo message="jaxb-core.lib =${dbwsbldrtest.2.common.plugins.dir}/${jaxb-core.jar}"/>
+        <echo message="jaxb-impl.lib =${dbwsbldrtest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
         <echo message="jws-api.lib =${dbwsbldrtest.2.common.plugins.dir}/${jws-api.jar}"/>
         <echo message="istack.commons-rt.lib =${dbwsbldrtest.2.common.plugins.dir}/${istack.commons-rt.jar}"/>
         <echo message="saaj-impl.lib =${dbwsbldrtest.2.common.plugins.dir}/${saaj-impl.jar}"/>
@@ -173,7 +173,7 @@
         <property name="javax.xml.binding.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.binding.jar}"/>
         <property name="javax.xml.soap.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.soap.jar}"/>
         <property name="javax.xml.ws.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.ws.jar}"/>
-        <property name="jaxb-core.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${jaxb-core.jar}"/>
+        <property name="jaxb-impl.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
         <property name="jws-api.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${jws-api.jar}"/>
         <property name="istack.commons-rt.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${istack.commons-rt.jar}"/>
         <property name="mimepull.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${mimepull.jar}"/>
@@ -199,7 +199,7 @@
         <available file="${javax.xml.binding.lib}" property="javax.xml.binding.lib.exist"/>
         <available file="${javax.xml.ws.lib}" property="javax.xml.ws.lib.exist"/>
         <available file="${javax.xml.soap.lib}" property="javax.xml.soap.lib.exist"/>
-        <available file="${jaxb-core.lib}" property="jaxb-core.lib.exist"/>
+        <available file="${jaxb-impl.lib}" property="jaxb-impl.lib.exist"/>
         <available file="${jws-api.lib}" property="jws-api.lib.exist"/>
         <available file="${istack.commons-rt.lib}" property="istack.commons-rt.lib.exist"/>
         <available file="${mimepull.lib}" property="mimepull.lib.exist"/>
@@ -223,7 +223,7 @@
         <fail message="Cannot find: '${javax.xml.binding.lib}'"    unless="javax.xml.binding.lib.exist"/>
         <fail message="Cannot find: '${javax.xml.ws.lib}'"    unless="javax.xml.ws.lib.exist"/>
         <fail message="Cannot find: '${javax.xml.soap.lib}'"    unless="javax.xml.soap.lib.exist"/>
-        <fail message="Cannot find: '${jaxb-core.lib}'"    unless="jaxb-core.lib.exist"/>
+        <fail message="Cannot find: '${jaxb-impl.lib}'"    unless="jaxb-impl.lib.exist"/>
         <fail message="Cannot find: '${jws-api.lib}'"    unless="jws-api.lib.exist"/>
         <fail message="Cannot find: '${istack.commons-rt.lib}'"    unless="istack.commons-rt.lib.exist"/>
         <fail message="Cannot find: '${mimepull.lib}'"    unless="mimepull.lib.exist"/>
@@ -273,7 +273,7 @@
             <pathelement path="./${dbwsbldrtest.jar}"/>
             <pathelement path="${mail.lib}"/>
             <pathelement path="${javax.validation.lib}"/>
-            <pathelement path="${jaxb-core.lib}"/>
+            <pathelement path="${jaxb-impl.lib}"/>
             <pathelement path="${jws-api.lib}"/>
             <pathelement path="${mimepull.lib}"/>
             <pathelement path="${istack.commons-rt.lib}"/>

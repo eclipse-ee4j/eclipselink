@@ -190,7 +190,8 @@
         <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${eclipselink.plugins}/${glassfish-corba-omgapi.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-impl.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
         <pathelement path="${eclipselink.plugins}/${resource-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${json.jar}"/>
@@ -625,7 +626,8 @@
         <copy-plugin from="ch.qos.logback.classic*.jar" to="${logback-classic.jar}"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="${logback-core.jar}"/>
         <copy-plugin from="com.sun.istack.commons-runtime*.jar" to="${istack.commons-rt.jar}"/>
-        <copy-plugin from="com.sun.xml.bind.jaxb-osgi*.jar" to="${jaxb-core.jar}"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="${jaxb-impl.jar}"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="${jaxb-xjc.jar}"/>
         <copy-plugin from="com.sun.xml.messaging.saaj.impl*.jar" to="${saaj-impl.jar}"/>
         <copy-plugin from="com.sun.xml.stream.buffer.streambuffer*.jar" to="${streambuffer.jar}"/>
         <copy-plugin from="com.sun.xml.ws.policy*.jar" to="${ws-policy.jar}"/>
@@ -1605,7 +1607,8 @@
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${mail.jar}"/>
-                <include name="${jaxb-core.jar}"/>
+                <include name="${jaxb-impl.jar}"/>
+                <include name="${jaxb-xjc.jar}"/>
                 <include name="${activation.jar}"/>
                 <include name="${validation-api.jar}"/>
                 <include name="${json.jar}"/>
