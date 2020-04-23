@@ -154,7 +154,6 @@
         <echo message="javax.xml.ws.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.ws.jar}"/>
         <echo message="jaxb-impl.lib =${dbwsbldrtest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
         <echo message="jws-api.lib =${dbwsbldrtest.2.common.plugins.dir}/${jws-api.jar}"/>
-        <echo message="istack.commons-rt.lib =${dbwsbldrtest.2.common.plugins.dir}/${istack.commons-rt.jar}"/>
         <echo message="saaj-impl.lib =${dbwsbldrtest.2.common.plugins.dir}/${saaj-impl.jar}"/>
         <echo message="stax-ex.lib =${dbwsbldrtest.2.common.plugins.dir}/${stax-ex.jar}"/>
         <echo message="streambuffer.lib =${dbwsbldrtest.2.common.plugins.dir}/${streambuffer.jar}"/>
@@ -175,7 +174,6 @@
         <property name="javax.xml.ws.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.ws.jar}"/>
         <property name="jaxb-impl.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
         <property name="jws-api.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${jws-api.jar}"/>
-        <property name="istack.commons-rt.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${istack.commons-rt.jar}"/>
         <property name="mimepull.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${mimepull.jar}"/>
         <property name="saaj-impl.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${saaj-impl.jar}"/>
         <property name="stax2-api.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${stax2-api.jar}"/>
@@ -201,7 +199,6 @@
         <available file="${javax.xml.soap.lib}" property="javax.xml.soap.lib.exist"/>
         <available file="${jaxb-impl.lib}" property="jaxb-impl.lib.exist"/>
         <available file="${jws-api.lib}" property="jws-api.lib.exist"/>
-        <available file="${istack.commons-rt.lib}" property="istack.commons-rt.lib.exist"/>
         <available file="${mimepull.lib}" property="mimepull.lib.exist"/>
         <available file="${saaj-impl.lib}" property="saaj-impl.lib.exist"/>
         <available file="${stax2-api.lib}" property="stax2-api.lib.exist"/>
@@ -225,7 +222,6 @@
         <fail message="Cannot find: '${javax.xml.soap.lib}'"    unless="javax.xml.soap.lib.exist"/>
         <fail message="Cannot find: '${jaxb-impl.lib}'"    unless="jaxb-impl.lib.exist"/>
         <fail message="Cannot find: '${jws-api.lib}'"    unless="jws-api.lib.exist"/>
-        <fail message="Cannot find: '${istack.commons-rt.lib}'"    unless="istack.commons-rt.lib.exist"/>
         <fail message="Cannot find: '${mimepull.lib}'"    unless="mimepull.lib.exist"/>
         <fail message="Cannot find: '${saaj-impl.lib}'"    unless="saaj-impl.lib.exist"/>
         <fail message="Cannot find: '${stax2-api.lib}'"    unless="stax2-api.lib.exist"/>
@@ -276,7 +272,6 @@
             <pathelement path="${jaxb-impl.lib}"/>
             <pathelement path="${jws-api.lib}"/>
             <pathelement path="${mimepull.lib}"/>
-            <pathelement path="${istack.commons-rt.lib}"/>
             <pathelement path="${saaj-impl.lib}"/>
             <pathelement path="${stax2-api.lib}"/>
             <pathelement path="${stax-ex.lib}"/>
