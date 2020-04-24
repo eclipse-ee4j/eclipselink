@@ -20,7 +20,8 @@ JVM_ARGS="-Xmx256m"
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../jlib/moxy/jaxb-osgi.jar:\
+CLASSPATH=`dirname $0`/../jlib/moxy/jaxb-impl.jar:\
+`dirname $0`/../jlib/moxy/jaxb-xjc.jar:\
 `dirname $0`/../jlib/moxy/jakarta.activation.jar:\
 `dirname $0`/../jlib/moxy/jakarta.json.jar:\
 `dirname $0`/../jlib/moxy/jakarta.validation-api.jar:\

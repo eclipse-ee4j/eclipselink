@@ -72,7 +72,7 @@
          unpack="false"/>
 
    <plugin
-         id="com.sun.xml.bind.jaxb-osgi"
+         id="com.sun.xml.bind.jaxb-impl"
          download-size="0"
          install-size="0"
          version="@JAXB_CORE_VERSION@"
