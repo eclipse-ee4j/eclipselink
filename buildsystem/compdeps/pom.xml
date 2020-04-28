@@ -36,12 +36,6 @@
             <layout>p2</layout>
             <url>file:/${basedir}/../org.eclipse.persistence.compdeps.internal/target/repository</url>
         </repository>
-        <!--TODO to be removed when JAXB 2.3.3 will be available in Maven central-->
-        <repository>
-            <id>jakarta.sonatype.org</id>
-            <name>OSS Jakarta Staging</name>
-            <url>https://jakarta.oss.sonatype.org/content/groups/staging</url>
-        </repository>
         <repository>
             <id>oss.sonatype.org</id>
             <name>OSS Sonatype Staging</name>
