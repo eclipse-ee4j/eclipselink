@@ -68,11 +68,11 @@
     <property name="version.string" value="${release.version}.qualifier"/>
     <property name="release.designation"  value="EclipseLink DeveloperBuild"/>
 
-    <property name="jaxb-core.lib" value="${jaxbutil.2.common.plugins.dir}/${jaxb-core.jar}"/>
+    <property name="jaxb-xjc.lib" value="${jaxbutil.2.common.plugins.dir}/${jaxb-xjc.jar}"/>
 
     <!-- Set Compile Path-->
     <path id="jaxbutil.compile.path">
-        <pathelement path="${jaxb-core.lib}"/>
+        <pathelement path="${jaxb-xjc.lib}"/>
     </path>
 
     <!-- all -->

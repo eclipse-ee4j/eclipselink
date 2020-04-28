@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,7 +71,7 @@ public class DataReadQueryTest1 extends AutoVerifyTestCase {
 
         stack = (Stack)getSession().executeQuery(query);
         // if we get here, we must not have generated a ClassCastException
-        Record row = (Record)stack.peek();
+        org.eclipse.persistence.sessions.Record row = (org.eclipse.persistence.sessions.Record)stack.peek();
         if (row.get("F_NAME") == null) {
             throw new TestErrorException("missing data");
         }

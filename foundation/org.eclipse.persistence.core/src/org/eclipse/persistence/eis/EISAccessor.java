@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -161,8 +161,8 @@ public class EISAccessor extends DatasourceAccessor {
             }
             incrementCallCount(session);
             session.startOperationProfile(SessionProfiler.SqlPrepare, eisCall.getQuery(), SessionProfiler.ALL);
-            Record input = null;
-            Record output = null;
+            javax.resource.cci.Record input = null;
+            javax.resource.cci.Record output = null;
             try {
                 interaction = getCCIConnection().createInteraction();
                 input = getEISPlatform().createInputRecord(eisCall, this);

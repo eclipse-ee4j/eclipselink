@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -118,11 +118,6 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
-    <!-- JVM specific settings -->
-    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern="[1-8]\..*" string="${java.version}"/>
-    </condition>
-
     <!-- Clean all build generated content. -->
     <target name="clean" description="Clean the build">
         <delete includeEmptyDirs="true" failonerror="false">
@@ -179,6 +174,7 @@
         <property name="javax.ejb.lib" value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${ejb.jar}"/>
         <property name="javax.servlet.lib" value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${servlet.jar}"/>
         <property name="validation.lib" value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${javax.validation.jar}"/>
+        <property name="javax.xml.ws.lib"  value="${jparstest.build.location}/${jparstest.2.common.plugins.dir}/${javax.xml.ws.jar}"/>
 
         <available file="${jaxb-api.lib}"           property="jaxb-api.lib.exist"/>
         <available file="${persistence20.lib}"      property="persistence20.lib.exist"/>
@@ -191,6 +187,7 @@
         <available file="${javax.annotation.lib}"   property="javax.annotation.lib.exist"/>
         <available file="${javax.ws.rs.lib}"        property="javax.ws.rs.lib.exist"/>
         <available file="${validation.lib}"         property="validation.lib.exist"/>
+        <available file="${javax.xml.ws.lib}"       property="javax.xml.ws.lib.exist"/>
         <available file="${json-api.lib}"           property="json-api.lib.exists"/>
         <echo message="jaxb-api.lib          ='${jaxb-api.lib}'"/>
         <echo message="persistence20.lib     ='${persistence20.lib}'"/>
@@ -204,6 +201,7 @@
         <echo message="javax.annotation.lib  ='${javax.annotation.lib}'"/>
         <echo message="javax.ws.rs.lib       ='${javax.ws.rs.lib}'"/>
         <echo message="validation.lib        ='${validation.lib}'"/>
+        <echo message="javax.xml.ws.lib      ='${javax.xml.ws.lib}'"/>
         <echo message="json-api.lib          ='${json-api.lib}'"/>
 
         <!-- Test for Eclipselink dependencies -->
@@ -272,6 +270,7 @@
             <pathelement path="${hk2.utils.lib}"/>
             <pathelement path="${javax.inject.lib}"/>
             <pathelement path="${javax.annotation.lib}"/>
+            <pathelement path="${javax.xml.ws.lib}"/>
             <pathelement path="${jersey.guava.lib}"/>
             <pathelement path="${jersey.common.lib}"/>
             <pathelement path="${jersey.client.lib}"/>
@@ -468,7 +467,6 @@
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" failureproperty="junit.failed" logfailedtests="true"
                    fork="yes" dir="${classes.dir}" maxmemory="512m" showoutput="yes">
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg value="-Ddb.driver=${db.driver}"/>
                 <jvmarg value="-Ddb.url=${db.url}"/>
                 <jvmarg value="-Ddb.user=${db.user}"/>

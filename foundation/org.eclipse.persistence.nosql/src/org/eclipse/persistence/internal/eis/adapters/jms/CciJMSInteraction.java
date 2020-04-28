@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,7 +45,7 @@ public class CciJMSInteraction implements Interaction {
      * @param input - the input record
      * @throws EISException
      */
-    public Record execute(InteractionSpec spec, Record input) throws EISException {
+    public javax.resource.cci.Record execute(InteractionSpec spec, javax.resource.cci.Record input) throws EISException {
         CciJMSRecord record = new CciJMSRecord();
         execute(spec, input, record);
         return record;
@@ -61,7 +61,7 @@ public class CciJMSInteraction implements Interaction {
      * @param output - the output record
      * @throws EISException
      */
-    public boolean execute(InteractionSpec spec, Record input, Record output) throws EISException {
+    public boolean execute(InteractionSpec spec, javax.resource.cci.Record input, javax.resource.cci.Record output) throws EISException {
         if (!(spec instanceof CciJMSInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }

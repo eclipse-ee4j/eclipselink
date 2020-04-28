@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -491,7 +491,7 @@ public class Employee implements Serializable {
         return rank;
     }
 
-    public String getRankFromRow(Record row, Session aSession) {
+    public String getRankFromRow(org.eclipse.persistence.sessions.Record row, Session aSession) {
         if (row.get("RANK") == null) {
             return null;
         }
@@ -557,7 +557,7 @@ public class Employee implements Serializable {
         this.computer = computer;
     }
 
-    public java.util.Date setDateAndTime(Record row, org.eclipse.persistence.sessions.Session session) {
+    public java.util.Date setDateAndTime(org.eclipse.persistence.sessions.Record row, org.eclipse.persistence.sessions.Session session) {
         java.sql.Date sqlDateOfBirth = (java.sql.Date)ConversionManager.getDefaultManager().convertObject(row.get("BDAY"), java.sql.Date.class);
         java.sql.Time timeOfBirth = (java.sql.Time)session.getLogin().getPlatform().convertObject(row.get("BTIME"), java.sql.Time.class);
         if ((timeOfBirth == null) || (sqlDateOfBirth == null)) {

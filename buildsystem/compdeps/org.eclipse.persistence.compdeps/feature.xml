@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,7 +54,14 @@
             unpack="false"/>
 
     <plugin
-            id="com.sun.xml.bind.jaxb-osgi"
+            id="com.sun.xml.bind.jaxb-impl"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="com.sun.xml.bind.jaxb-xjc"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -110,6 +117,13 @@
             unpack="false"/>
 
     <plugin
+            id="jakarta.jws-api"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
             id="com.sun.activation.jakarta.activation"
             download-size="0"
             install-size="0"
@@ -118,6 +132,27 @@
 
     <plugin
             id="com.sun.mail.jakarta.mail"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="com.sun.xml.messaging.saaj.impl"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="com.sun.xml.ws.policy"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="com.sun.xml.stream.buffer.streambuffer"
             download-size="0"
             install-size="0"
             version="0.0.0"
@@ -336,6 +371,13 @@
             unpack="false"/>
 
     <plugin
+            id="org.glassfish.main.bean-validator"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
             id="org.glassfish.pfl.pfl-asm"
             download-size="0"
             install-size="0"
@@ -420,6 +462,20 @@
             unpack="false"/>
 
     <plugin
+            id="org.jvnet.staxex.stax-ex"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="org.jvnet.mimepull"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
             id="osgi.core"
             download-size="0"
             install-size="0"
@@ -428,6 +484,13 @@
 
     <plugin
             id="osgi.cmpn"
+            download-size="0"
+            install-size="0"
+            version="0.0.0"
+            unpack="false"/>
+
+    <plugin
+            id="stax2-api"
             download-size="0"
             install-size="0"
             version="0.0.0"

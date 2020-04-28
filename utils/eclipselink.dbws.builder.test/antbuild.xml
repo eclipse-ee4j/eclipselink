@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -91,11 +91,6 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
-    <!-- JVM specific settings -->
-    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern="[1-8]\..*" string="${java.version}"/>
-    </condition>
-
     <!-- Primary Targets: "jar" separate for dev use -->
     <target name="build" depends="clean, compile, package" description="build dbwsbldrtests jar"/>
     <target name="test"  depends="build, run-tests"        description="run tests after building"/>
@@ -151,6 +146,19 @@
         <echo message="ddlparser.jar='${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}'"/>
         <echo message="wsdl.jar     ='${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}'"/>
         <echo message="persistence.jar ='${dbwsbldrtest.2.common.plugins.dir}/${persistence.jar}'"/>
+        <echo message="javax.activation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.activation.jar}"/>
+        <echo message="javax.annotation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.annotation.jar}"/>
+        <echo message="javax.validation.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.validation.jar}"/>
+        <echo message="javax.xml.binding.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.binding.jar}"/>
+        <echo message="javax.xml.soap.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.soap.jar}"/>
+        <echo message="javax.xml.ws.lib =${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.ws.jar}"/>
+        <echo message="jaxb-impl.lib =${dbwsbldrtest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+        <echo message="jws-api.lib =${dbwsbldrtest.2.common.plugins.dir}/${jws-api.jar}"/>
+        <echo message="saaj-impl.lib =${dbwsbldrtest.2.common.plugins.dir}/${saaj-impl.jar}"/>
+        <echo message="stax-ex.lib =${dbwsbldrtest.2.common.plugins.dir}/${stax-ex.jar}"/>
+        <echo message="streambuffer.lib =${dbwsbldrtest.2.common.plugins.dir}/${streambuffer.jar}"/>
+        <echo message="ws-policy.lib =${dbwsbldrtest.2.common.plugins.dir}/${ws-policy.jar}"/>
+        <echo message="ws-rt.lib =${dbwsbldrtest.2.common.plugins.dir}/${ws-rt.jar}"/>
         <property name="eclipselink.lib"  value="${dbwsbldrtest.2.base.dir}/${eclipselink.jar}"/>
         <property name="asm.lib"          value="${dbwsbldrtest.2.common.plugins.dir}/${asm.jar}"/>
         <property name="servlet.lib"      value="${dbwsbldrtest.2.common.plugins.dir}/${servlet-api.jar}"/>
@@ -158,7 +166,21 @@
         <property name="ddlparser.lib"    value="${dbwsbldrtest.2.plugins.dir}/${ddlparser.jar}"/>
         <property name="wsdl.lib"         value="${dbwsbldrtest.2.plugins.dir}/${wsdl.jar}"/>
         <property name="persistence.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${persistence.jar}"/>
+        <property name="javax.activation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.activation.jar}"/>
+        <property name="javax.annotation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.annotation.jar}"/>
         <property name="javax.validation.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.validation.jar}"/>
+        <property name="javax.xml.binding.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.binding.jar}"/>
+        <property name="javax.xml.soap.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.soap.jar}"/>
+        <property name="javax.xml.ws.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${javax.xml.ws.jar}"/>
+        <property name="jaxb-impl.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${jaxb-impl.jar}"/>
+        <property name="jws-api.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${jws-api.jar}"/>
+        <property name="mimepull.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${mimepull.jar}"/>
+        <property name="saaj-impl.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${saaj-impl.jar}"/>
+        <property name="stax2-api.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${stax2-api.jar}"/>
+        <property name="stax-ex.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${stax-ex.jar}"/>
+        <property name="streambuffer.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${streambuffer.jar}"/>
+        <property name="ws-policy.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${ws-policy.jar}"/>
+        <property name="ws-rt.lib"  value="${dbwsbldrtest.2.common.plugins.dir}/${ws-rt.jar}"/>
 
         <!-- dependency tests -->
         <available file="${junit.lib}"            property="junit.lib.exist"/>
@@ -169,7 +191,21 @@
         <available file="${wsdl.lib}"             property="wsdl.lib.exist"/>
         <available file="${ddlparser.lib}"        property="ddlparser.lib.exist"/>
         <available file="${dbwsbldr.lib}"         property="dbwsbldr.lib.exist"/>
+        <available file="${javax.activation.lib}" property="javax.activation.lib.exist"/>
+        <available file="${javax.annotation.lib}" property="javax.annotation.lib.exist"/>
         <available file="${javax.validation.lib}" property="javax.validation.lib.exist"/>
+        <available file="${javax.xml.binding.lib}" property="javax.xml.binding.lib.exist"/>
+        <available file="${javax.xml.ws.lib}" property="javax.xml.ws.lib.exist"/>
+        <available file="${javax.xml.soap.lib}" property="javax.xml.soap.lib.exist"/>
+        <available file="${jaxb-impl.lib}" property="jaxb-impl.lib.exist"/>
+        <available file="${jws-api.lib}" property="jws-api.lib.exist"/>
+        <available file="${mimepull.lib}" property="mimepull.lib.exist"/>
+        <available file="${saaj-impl.lib}" property="saaj-impl.lib.exist"/>
+        <available file="${stax2-api.lib}" property="stax2-api.lib.exist"/>
+        <available file="${stax-ex.lib}" property="stax-ex.lib.exist"/>
+        <available file="${streambuffer.lib}" property="streambuffer.lib.exist"/>
+        <available file="${ws-policy.lib}" property="ws-policy.lib.exist"/>
+        <available file="${ws-rt.lib}" property="ws-rt.lib.exist"/>
         <!--fail message="Cannot find: '${junit.lib}'"       unless="junit.lib.exist"/-->
         <fail message="Cannot find: '${eclipselink.lib}'" unless="eclipselink.exist"/>
         <fail message="Cannot find: '${persistence.lib}'" unless="persistence.exist"/>
@@ -178,11 +214,30 @@
         <fail message="Cannot find: '${wsdl.lib}'"        unless="wsdl.lib.exist"/>
         <fail message="Cannot find: '${ddlparser.lib}'"   unless="ddlparser.lib.exist"/>
         <fail message="Cannot find: '${dbwsbldr.lib}'"    unless="dbwsbldr.lib.exist"/>
+        <fail message="Cannot find: '${javax.activation.lib}'"    unless="javax.activation.lib.exist"/>
+        <fail message="Cannot find: '${javax.annotation.lib}'"    unless="javax.annotation.lib.exist"/>
         <fail message="Cannot find: '${javax.validation.lib}'"    unless="javax.validation.lib.exist"/>
+        <fail message="Cannot find: '${javax.xml.binding.lib}'"    unless="javax.xml.binding.lib.exist"/>
+        <fail message="Cannot find: '${javax.xml.ws.lib}'"    unless="javax.xml.ws.lib.exist"/>
+        <fail message="Cannot find: '${javax.xml.soap.lib}'"    unless="javax.xml.soap.lib.exist"/>
+        <fail message="Cannot find: '${jaxb-impl.lib}'"    unless="jaxb-impl.lib.exist"/>
+        <fail message="Cannot find: '${jws-api.lib}'"    unless="jws-api.lib.exist"/>
+        <fail message="Cannot find: '${mimepull.lib}'"    unless="mimepull.lib.exist"/>
+        <fail message="Cannot find: '${saaj-impl.lib}'"    unless="saaj-impl.lib.exist"/>
+        <fail message="Cannot find: '${stax2-api.lib}'"    unless="stax2-api.lib.exist"/>
+        <fail message="Cannot find: '${stax-ex.lib}'"    unless="stax-ex.lib.exist"/>
+        <fail message="Cannot find: '${streambuffer.lib}'"    unless="streambuffer.lib.exist"/>
+        <fail message="Cannot find: '${ws-policy.lib}'"    unless="ws-policy.lib.exist"/>
+        <fail message="Cannot find: '${ws-rt.lib}'"    unless="ws-rt.lib.exist"/>
 
         <!-- Set Compile Path -->
         <path id="dbwsbldrtest.compile.path">
             <pathelement path="${junit.lib}"/>
+            <pathelement path="${javax.activation.lib}"/>
+            <pathelement path="${javax.annotation.lib}"/>
+            <pathelement path="${javax.xml.binding.lib}"/>
+            <pathelement path="${javax.xml.soap.lib}"/>
+            <pathelement path="${javax.xml.ws.lib}"/>
             <pathelement path="${eclipselink.lib}"/>
             <pathelement path="${persistence.lib}"/>
             <pathelement path="${asm.lib}"/>
@@ -214,6 +269,15 @@
             <pathelement path="./${dbwsbldrtest.jar}"/>
             <pathelement path="${mail.lib}"/>
             <pathelement path="${javax.validation.lib}"/>
+            <pathelement path="${jaxb-impl.lib}"/>
+            <pathelement path="${jws-api.lib}"/>
+            <pathelement path="${mimepull.lib}"/>
+            <pathelement path="${saaj-impl.lib}"/>
+            <pathelement path="${stax2-api.lib}"/>
+            <pathelement path="${stax-ex.lib}"/>
+            <pathelement path="${streambuffer.lib}"/>
+            <pathelement path="${ws-policy.lib}"/>
+            <pathelement path="${ws-rt.lib}"/>
         </path>
 
         <!-- Set Run Condition -->
@@ -298,7 +362,6 @@
                 <path refid="dbwsbldrtest.run.path" />
                 <pathelement path="./${dbwsbldrtest.jar}" />
             </classpath>
-            <jvmarg line="${test.junit.jvm.modules.prop}"/>
             <jvmarg line="${additional.jvmargs}"/>
             <sysproperty key="eclipselink.logging.level" value="${logging.level}" />
             <sysproperty key="db.driver" value="${db.driver}" />

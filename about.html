@@ -89,13 +89,12 @@
             <li>Utilities
                 <ul>
                     <li><a href="#JCA">Java Connector</a></li>
-                    <li><a href="#XERCES">Xerces</a></li>
                     <li><a href="#WSDL4J">WSDL4J 1.6.2 </a></li>
                 </ul>
             </li>
         </ul>
         <hr />
-        <h4><a name="ASM" id="ASM"></a>ASM v7.0.0</h4>
+        <h4><a name="ASM" id="ASM"></a>ASM v7.3.1</h4>
         <blockquote>
             <p>The EclipseLink Project includes ASM for the purpose of
                 byte code weaving. The AMS library is re-packaged within the source of the
@@ -142,35 +141,41 @@
                 are distributed within the eclipselink.jar and in the org.eclipse.persistence.antlr_3.5.2.v*.jar
                 bundle.</p>
         </blockquote>
-        <h4><a name="JSON" id="JSON"></a>JSON Processing v1.1.5</h4>
+        <h4><a name="JAXB" id="JAXB"></a>Java Architecture for XML Binding (JAXB) v2.3.2</h4>
         <blockquote>
-            <p>The <a href="https://github.com/eclipse-ee4j/jsonp">JSON Processing</a> (<a href="https://github.com/eclipse-ee4j/jsonp/blob/1.1.5-RELEASE/LICENSE.md">license</a>)
-                is included within EclipseLink Project to enable parsing of JSON files.</p>
-            <p>The source is available with the project's git repository.</p>
-        </blockquote>
-        <h4><a name="JAXB" id="JAXB"></a>Java Architecture for XML Binding (JAXB) v2.2</h4>
-        <blockquote>
-            <p>The <a href="http://jaxb.java.net">JAXB libraries</a> distributed
-                under <a href="http://glassfish.dev.java.net/public/CDDLv1.0.html">CDDL v1.0</a>
-                are included within the EclipseLink Project to enable the MOXy component's
-                implementation of JAXB.</p>
+            <p>The <a href="https://github.com/eclipse-ee4j/jaxb-api">JAXB libraries</a> are distributed under
+                <a href="https://www.eclipse.org/org/documents/edl-v10.php">Eclipse Distribution License (EDL) v1.0.</a>
+                and <a href="https://www.eclipse.org/legal/epl-2.0/">Eclipse Public License (EPL) v2.0</a>
+                and <a href="https://www.gnu.org/software/classpath/license.html">GNU Classpath</a>.</p>
+                <p>These components are used within the EclipseLink Project to enable the MOXy component's implementation of JAXB.</p>
             <p>JAXB Libraries: </p>
             <ul>
                 <li>jakarta.xml.bind-api.jar</li>
-                <li>jaxb-osgi.jar</li>
+                <li>jaxb-impl.jar</li>
+                <li>jaxb-xjc.jar</li>
             </ul>
         </blockquote>
         <h4><a name="JPA22" id="JPA2"></a>Java Persistence (JPA) 2.2</h4>
         <blockquote>
+            <p>The JPA 2.2 specification API is included in EclipseLink under
+                <a href="https://www.eclipse.org/org/documents/edl-v10.php">Eclipse Distribution License (EDL) v1.0.</a>
+                and <a href="https://www.eclipse.org/legal/epl-2.0/">Eclipse Public License (EPL) v2.0</a></p>
             <p>EclipseLink is the Java Persistence (JPA) 2.2 Reference Implementation
-                (<a href="http://jcp.org/en/jsr/detail?id=338">JSR 338</a>).  The JPA 2.2
-                specification API is included in EclipseLink under the <a href="https://www.eclipse.org/legal/epl-v20.html">EPL</a> and <a href="http://www.eclipse.org/org/documents/edl-v10.php">EDL</a> licenses.</p>
+                (<a href="http://jcp.org/en/jsr/detail?id=338">JSR 338</a>).</p>
         </blockquote>
-        <h4><a name="MAIL" id="MAIL"></a>Java Mail v1.4.0</h4>
+        <h4><a name="JSON" id="JSON"></a>JSON Processing v1.1.6</h4>
         <blockquote>
-            <p>The Java Mail library (mail.jar) can be downloaded from <a href="http://java.sun.com/products/javamail/javamail-1_4.html">java.sun.com</a>
-                under <a href="http://glassfish.dev.java.net/public/CDDLv1.0.html">CDDL
-                    v1.0</a> and is included within the EclipseLink Project distribution
+            <p>The <a href="https://github.com/eclipse-ee4j/jsonp">JSON Processing</a> is distributed under
+                and <a href="https://www.eclipse.org/legal/epl-2.0/">Eclipse Public License (EPL) v2.0</a>
+                and <a href="https://www.gnu.org/software/classpath/license.html">GNU Classpath</a>.</p>
+                <p>This is used within EclipseLink Project to enable parsing of JSON files.</p>
+        </blockquote>
+        <h4><a name="MAIL" id="MAIL"></a>Java Mail v1.6.4</h4>
+        <blockquote>
+            <p>The Java Mail library (mail.jar) can be downloaded from <a href="https://github.com/eclipse-ee4j/mail/releases">eclipse-ee4j/mail</a> under
+                <a href="http://www.eclipse.org/legal/epl-2.0">Eclipse Public License (EPL) v2.0</a>
+                and <a href="https://www.gnu.org/software/classpath/license.html">GNU Classpath</a></p>
+            <p>This jar is included within the EclipseLink Project distribution
                 to support Web Services attachment handling in the MOXy component. It is only
                 required when using Java SE 5 (Java Mail is included in Java SE 6).</p>
         </blockquote>
@@ -180,31 +185,26 @@
                     Data Objects (SDO) API</a> is distributed under a <a href="http://glassfish.dev.java.net/public/CDDLv1.0.html"> CDDLv1.0 </a> and  <a href="http://jcp.org/aboutJava/communityprocess/pr/jsr235/index.html">custom
                     license</a>. It provides the standard API implemented by the EclipseLink Project's SDO component.</p>
         </blockquote>
-        <h4><a name="JCA" id="JCA"></a>Java Connector v1.6</h4>
+        <h4><a name="JCA" id="JCA"></a>Java Connector v1.7</h4>
         <blockquote>
-            <p>The JCA 1.6 API is distributed under <a href="http://glassfish.dev.java.net/public/CDDLv1.0.html">
-                    CDDLv1.0 </a>. </p>
+            <p>The JCA 1.7 API is distributed under a
+                <a href="http://www.eclipse.org/legal/epl-2.0">Eclipse Public License (EPL) v2.0</a>
+                and <a href="https://www.gnu.org/software/classpath/license.html">GNU Classpath</a></p>
             <p>This jar is being shipped and required by the Workbench only. When using
                 EclipseLink in a container where JCA integration is required that container
                 will provide the necessary API libraries.</p>
         </blockquote>
-        <h4><a name="XERCES" id="XERCES"></a>Xerces v2.9.0</h4>
+        <h4><a name="SERVLET" id="SERVLET"></a>Java Servlet 4.0</h4>
         <blockquote>
-            <p>Xerces 2.9.0 is available from <a href="http://xerces.apache.org/xerces-j/">
-                    the Xerces home page</a>. It is distributed under <a href="http://ant.apache.org/license.html">
-                    Apache 2.0</a>.</p>
-            <p>This jar is shipped for the Workbench's use only in the reading and writing
-                of XML configuration files.</p>
-        </blockquote>
-        <h4><a name="SERVLET" id="SERVLET"></a>Java Servlet 2.4</h4>
-        <blockquote>
-            <p>The <a href="http://jcp.org/aboutJava/communityprocess/final/jsr154/index.html">Java Servlet 2.4 specification</a>
-                is distributed under the  <a href="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0 license</a>. The source code is part of the <a href="http://svn.apache.org/repos/asf/tomcat/trunk/java/javax/servlet/">Apache Tomcat project</a>
+            <p>The <a href="https://jcp.org/aboutJava/communityprocess/final/jsr369/index.html">Java Servlet 4.0 specification</a>
+                is distributed under the
+                <a href="http://www.eclipse.org/legal/epl-2.0">Eclipse Public License (EPL) v2.0</a>
+                and <a href="https://www.gnu.org/software/classpath/license.html">GNU Classpath</a></p>
                 <p>This jar is only required at design time for the DBWS Builder utility.</p>
         </blockquote>
-        <h4><a name="WSDL4J" id="WSDL4J"></a>WSDL4j v1.6.2</h4>
+        <h4><a name="WSDL4J" id="WSDL4J"></a>WSDL4j v1.6.3</h4>
         <blockquote>
-            <p>WSDL4J 1.6.2 is available for download from the <a href="http://sourceforge.net/projects/wsdl4j">wsdl4j
+            <p>WSDL4J 1.6.3 is available for download from the <a href="http://sourceforge.net/projects/wsdl4j">wsdl4j
                     project</a>. It distributed under <a href="http://opensource.org/licenses/cpl1.0.php">
                     CPLv1.0 </a>. </p>
             <p>This jar is only required at design time for the DBWS Builder utility.</p>
