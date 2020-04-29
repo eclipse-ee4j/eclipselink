@@ -134,6 +134,15 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <!-- required for BeanValidationRuntimeTestCase to pass
+                        TODO: fix the test so this can go away -->
+                    <includeEmptyDirs>true</includeEmptyDirs>
+                </configuration>
+            </plugin>
             <!--Add licence files (about.html, license.html, readme.html) to the build output directory-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
