@@ -25,7 +25,7 @@ set JVM_ARGS=-Xmx256m
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\sdo\commonj.sdo_2.1.1.v201112051852.jar
+set CLASSPATH=%THIS%..\jlib\sdo\commonj.sdo-2.1.1.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
 set JAVA_ARGS=%*
 

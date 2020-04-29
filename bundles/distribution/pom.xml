@@ -144,7 +144,7 @@
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
+            <artifactId>jaxb-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
@@ -396,6 +396,12 @@
             <version>${project.version}</version>
             <classifier>javadoc</classifier>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars</artifactId>
+            <version>${project.version}</version>
+            <classifier>javadoc</classifier>
+        </dependency>
         <dependency> <!-- TODO: jakartify after PaxExam supports jakarta.* Inject-->
             <groupId>jakarta.inject</groupId>
             <artifactId>jakarta.inject-api</artifactId>
@@ -406,56 +412,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <additionalJOption>-Xdoclint:none</additionalJOption>
-                    <detectOfflineLinks>false</detectOfflineLinks>
-                    <use>false</use>
-                    <quiet>true</quiet>
-                    <tags>
-                        <tag>
-                            <name>author</name>
-                            <head>Author:</head>
-                        </tag>
-                        <tag>
-                            <name>since</name>
-                            <placement>a</placement>
-                            <head>Since:</head>
-                        </tag>
-                        <tag>
-                            <name>SBGen</name>
-                            <placement>a</placement>
-                            <head>SBGen:</head>
-                        </tag>
-                        <tag>
-                            <name>bug</name>
-                            <head>Related Bugs:</head>
-                        </tag>
-                    </tags>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>eclipselink-jpars-javadoc.jar</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/apidocs/eclipselink-jpars-javadoc.jar/</outputDirectory>
-                            <includeDependencySources>true</includeDependencySources>
-                            <doctitle><![CDATA[${javadoc.jpars.prefixTitle}]]></doctitle>
-                            <header><![CDATA[${javadoc.jpars.prefixTitle}]]></header>
-                            <windowtitle>${javadoc.jpars.prefixTitle}</windowtitle>
-                            <dependencySourceIncludes>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpars</dependencySourceInclude>
-                            </dependencySourceIncludes>
-                            <finalName>eclipselink-jpars</finalName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -552,26 +508,6 @@
                 <configuration>
                     <skipTests>true</skipTests>
                 </configuration>
-            </plugin>
-            <!--There is no any simple way how to unzip eclipselink.zip and set execution rigths.-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unzip-eclipselink.zip</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <unzip src="${project.build.directory}/eclipselink.zip" dest="${eclipselink.unzip.dir}"/>
-                                <chmod dir="${eclipselink.unzip.dir}/eclipselink/bin" perm="+x" includes="**/*"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>

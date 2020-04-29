@@ -31,8 +31,7 @@ set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-impl.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.activation.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.validation-api.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
-set JAXB_API=%THIS%..\jlib\moxy\api\jakarta.xml.bind-api.jar
-set ENDORSED_DIR=..\jlib\moxy\api
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.xml.bind-api.jar
 set MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC
 set JAVA_ARGS=%*
 
@@ -54,13 +53,13 @@ echo Java major version: %JAVA_VERSION%
 
 if %JAVA_VERSION% GEQ 9 goto JDK9_OR_GREATER
 rem Java 8
-%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH% -Djava.endorsed.dirs=%ENDORSED_DIR% %MAIN_CLASS% %JAVA_ARGS%
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH% %MAIN_CLASS% %JAVA_ARGS%
 @endlocal
 goto :EOF
 
 :JDK9_OR_GREATER
 rem Java
-%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH%;%JAXB_API% %MAIN_CLASS% %JAVA_ARGS%
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH% %MAIN_CLASS% %JAVA_ARGS%
 @endlocal
 goto :EOF
 
