@@ -21,13 +21,12 @@ JVM_ARGS="-Xmx256m"
 
 # Please do not change any of the following lines:
 CLASSPATH=`dirname $0`/../jlib/moxy/jaxb-xjc.jar:\
-CLASSPATH=`dirname $0`/../jlib/moxy/jaxb-impl.jar:\
+`dirname $0`/../jlib/moxy/jaxb-core.jar:\
 `dirname $0`/../jlib/moxy/jakarta.activation.jar:\
 `dirname $0`/../jlib/moxy/jakarta.json.jar:\
 `dirname $0`/../jlib/moxy/jakarta.validation-api.jar:\
 `dirname $0`/../jlib/eclipselink.jar:\
-`dirname $0`/../jlib/moxy/api/jakarta.xml.bind-api.jar
-ENDORSED_DIR=../jlib/moxy/api
+`dirname $0`/../jlib/moxy/jakarta.xml.bind-api.jar
 MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC
 JAVA_ARGS="$@"
 
@@ -38,7 +37,7 @@ echo "Java major version: ${JAVA_VERSION}"
 if [ ${JAVA_VERSION} -lt 9 ];
 then
     #Java 8
-    ${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} -Djava.endorsed.dirs=${ENDORSED_DIR} ${MAIN_CLASS} ${JAVA_ARGS}
+    ${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} ${MAIN_CLASS} ${JAVA_ARGS}
 else
     #Java >8
     ${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} ${MAIN_CLASS} ${JAVA_ARGS}

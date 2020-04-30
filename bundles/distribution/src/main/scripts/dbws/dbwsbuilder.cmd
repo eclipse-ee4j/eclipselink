@@ -1,5 +1,5 @@
 @REM
-@REM Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+@REM Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
 @REM
 @REM This program and the accompanying materials are made available under the
 @REM terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,9 +24,9 @@ set THIS=%_FIXPATH:~1%
 
 set CLASSPATH=%THIS%\jakarta.servlet-api.jar
 set CLASSPATH=%CLASSPATH%;%THIS%\javax.wsdl_1.6.2.v201012040545.jar
-set CLASSPATH=%CLASSPATH%;%THIS%\org.eclipse.persistence.oracleddlparser_1.0.0.v201807030954.jar
+set CLASSPATH=%CLASSPATH%;%THIS%\org.eclipse.persistence.oracleddlparser.jar
 set CLASSPATH=%CLASSPATH%;%THIS%..\..\jlib\eclipselink.jar
-set CLASSPATH=%CLASSPATH%;%THIS%\eclipselink-dbwsutils.jar
+set CLASSPATH=%CLASSPATH%;%THIS%\org.eclipse.persistence.dbws.builder.jar
 set CLASSPATH=%CLASSPATH%;%DRIVER_CLASSPATH%
 set CLASSPATH=%CLASSPATH%;%JAVA_HOME%\lib\tools.jar
 

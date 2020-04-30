@@ -35,7 +35,7 @@ public class JaxbCompilerTestCase extends junit.framework.TestCase {
      */
     public void testJaxbCompiler() throws Exception {
 
-        String eclipselinkUnzipDir = "target/eclipselink.zip-tmp";//System.getenv("ECLIPSELINK_UNZIP_DIR");
+        String eclipselinkUnzipDir = System.getenv("ECLIPSELINK_UNZIP_DIR");
 
         String jaxbCompiler = "jaxb-compiler";
 
