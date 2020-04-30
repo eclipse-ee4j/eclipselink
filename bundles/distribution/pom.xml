@@ -467,7 +467,7 @@
                     </execution>
                     <execution>
                         <id>stage</id>
-                        <phase>package</phase>
+                        <phase>pre-integration-test</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
