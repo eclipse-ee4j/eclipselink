@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -479,22 +480,22 @@ public class PersistenceUnitProcessor {
     }
 
     public static Set<String> getClassNamesFromURL(URL url, ClassLoader loader, Map properties) {
-        Set<String> classNames = new HashSet<String>();
+        Set<String> classNames = new HashSet<>();
         Archive archive = null;
         try {
             archive = PersistenceUnitProcessor.getArchiveFactory(loader, properties).createArchive(url, properties);
 
+            List<String> pathsToScan = pathsToScan(properties != null ? (String) properties.get(PersistenceUnitProperties.PACKAGES_TO_SCAN) : null);
+
             if (archive != null) {
                 for (Iterator<String> entries = archive.getEntries(); entries.hasNext();) {
                     String entry = entries.next();
-                    if (entry.endsWith(".class")){ // NOI18N
+                    if (entry.endsWith(".class") && isEligibleToScan(pathsToScan, entry)) { // NOI18N
                         classNames.add(buildClassNameFromEntryString(entry));
                     }
                 }
             }
-        } catch (URISyntaxException e) {
-            throw new RuntimeException("url = [" + url + "]", e);  // NOI18N
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new RuntimeException("url = [" + url + "]", e);  // NOI18N
         } finally {
             if (archive != null) {
@@ -502,6 +503,55 @@ public class PersistenceUnitProcessor {
             }
         }
         return classNames;
+    }
+
+    /**
+     * Returns true if a class entry is eligible to scan.
+     * A class entry is eligible if:
+     * - pathsToScan is empty (not configured)
+     * - it resides in one of {@code pathsToScan} list
+     *
+     * @param pathsToScan list of paths where the class entry must be. Can be empty
+     * @param classEntry path of the class we want to check in the form : foo/bar/MyClass.class
+     * @return true is the class entry is eligible
+     */
+    public static boolean isEligibleToScan(List<String> pathsToScan, String classEntry) {
+        if (pathsToScan.isEmpty()) {
+            return true;
+        }
+
+        for (String pathToScan : pathsToScan) {
+            if (classEntry.startsWith(pathToScan)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Takes a comma separated list of packages to scan and returns a list of
+     * paths.
+     *
+     * @param packagesToScanProperty list of packages to scan (comma-separated)
+     * @return list of paths to scans
+     */
+    public static List<String> pathsToScan(String packagesToScanProperty) {
+        if (packagesToScanProperty == null || packagesToScanProperty.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> packagesToScan = new ArrayList<>();
+
+        for (String packageToScan : packagesToScanProperty.split(",")) {
+            String trimmedPackageToScan = packageToScan.trim();
+
+            if (!trimmedPackageToScan.isEmpty()) {
+                packagesToScan.add(trimmedPackageToScan.replace('.', '/') + "/");
+            }
+        }
+
+        return packagesToScan;
     }
 
     /**

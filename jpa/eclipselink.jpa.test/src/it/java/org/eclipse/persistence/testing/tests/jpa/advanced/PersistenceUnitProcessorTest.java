@@ -20,6 +20,7 @@ package org.eclipse.persistence.testing.tests.jpa.advanced;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.jpa.deployment.ArchiveFactoryImpl;
@@ -32,8 +33,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import jakarta.persistence.EntityManagerFactory;
 
@@ -222,4 +222,35 @@ public class PersistenceUnitProcessorTest extends JUnitTestCase {
     public static class AF1 extends ArchiveFactoryImpl {}
     public static class AF2 extends ArchiveFactoryImpl {}
 
+    public void testIsEligibleToScan() {
+        Assert.assertTrue(PersistenceUnitProcessor.isEligibleToScan(Collections.emptyList(), "foo/bar/MyClass.class"));
+
+        List<String> pathsToScan = new ArrayList<>();
+        pathsToScan.add("foo/bar/");
+        pathsToScan.add("com/test/");
+
+        Assert.assertTrue(PersistenceUnitProcessor.isEligibleToScan(pathsToScan, "foo/bar/MyClass.class"));
+        Assert.assertTrue(PersistenceUnitProcessor.isEligibleToScan(pathsToScan, "foo/bar/inner/MyClass.class"));
+        Assert.assertFalse(PersistenceUnitProcessor.isEligibleToScan(pathsToScan, "foo/MyClass.class"));
+        Assert.assertFalse(PersistenceUnitProcessor.isEligibleToScan(pathsToScan, "foo/barMyClass.class"));
+
+        Assert.assertTrue(PersistenceUnitProcessor.isEligibleToScan(pathsToScan, "com/test/MyClass.class"));
+
+        Assert.assertFalse(PersistenceUnitProcessor.isEligibleToScan(pathsToScan, "org/apache/SomeClass.class"));
+    }
+
+    public void testPathsToScan() {
+        Assert.assertTrue(PersistenceUnitProcessor.pathsToScan(null).isEmpty());
+        Assert.assertTrue(PersistenceUnitProcessor.pathsToScan("").isEmpty());
+        Assert.assertTrue(PersistenceUnitProcessor.pathsToScan(" ").isEmpty());
+
+        List<String> pathsToScan = PersistenceUnitProcessor.pathsToScan("foo.bar,com.test");
+        Assert.assertEquals(2, pathsToScan.size());
+        Assert.assertTrue(pathsToScan.contains("foo/bar/"));
+        Assert.assertTrue(pathsToScan.contains("com/test/"));
+
+        List<String> pathsToScan2 = PersistenceUnitProcessor.pathsToScan("foo.bar, ");
+        Assert.assertEquals(1, pathsToScan2.size());
+        Assert.assertTrue(pathsToScan2.contains("foo/bar/"));
+    }
 }
