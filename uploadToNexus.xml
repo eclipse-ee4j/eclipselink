@@ -79,7 +79,6 @@
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="ossrh"/>
-<!--    <property name="stagingURL"  value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>-->
     <property name="stagingURL"  value="https://jakarta.oss.sonatype.org:443/service/local/staging/deploy/maven2"/>
     <property name="snapshotId"  value="sonatype-nexus-snapshots"/>
     <property name="snapshotURL" value="https://oss.sonatype.org/content/repositories/snapshots"/>
