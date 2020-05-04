@@ -395,6 +395,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${hermes.prefix}_${hermes.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${hermes.prefix}.source_${hermes.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${hermes.prefix}.javadocs_${hermes.version}.jar"/>
             <param name="artifactName"    value="${hermes.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -404,6 +405,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${antlr.prefix}_${antlr.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${antlr.prefix}.source_${antlr.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${antlr.prefix}.javadocs_${antlr.version}.jar"/>
             <param name="artifactName"    value="${antlr.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -413,6 +415,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${asm.prefix}_${asm.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${asm.prefix}.source_${asm.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${asm.prefix}.javadocs_${asm.version}.jar"/>
             <param name="artifactName"    value="${asm.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -422,6 +425,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink Core"/>
             <param name="dependencies"    value="${core.dependencies}"/>
         </antcall>
@@ -431,10 +435,11 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}_${oraclebndl.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}.source_${oraclebndl.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}.javadocs_${oraclebndl.version}.jar"/>
             <param name="artifactName"    value="${oraclebndl.name}"/>
             <param name="dependencies"    value="${oracle.dependencies}"/>
         </antcall>
-        <antcall target="upload-artifact">
+        <antcall target="upload-artifact-with-javadoc">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${oraclenosql.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
@@ -460,6 +465,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink JPA"/>
             <param name="dependencies"    value="${jpa.dependencies}"/>
         </antcall>
@@ -479,6 +485,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink JPA Modelgen (non-OSGi)"/>
             <param name="dependencies"    value="${modelgen.dependencies}"/>
         </antcall>
@@ -488,6 +495,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.moxy.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.moxy.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink Moxy"/>
             <param name="dependencies"    value="${moxy.dependencies}"/>
         </antcall>
@@ -497,6 +505,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.sdo.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.sdo.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink SDO"/>
             <param name="dependencies"    value="${sdo.dependencies}"/>
         </antcall>
@@ -506,6 +515,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink DBWS"/>
             <param name="dependencies"    value="${dbws.dependencies}"/>
         </antcall>
@@ -515,6 +525,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.util.plugins.dir}/${oracleddl.prefix}_${oracleddl.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.util.plugins.dir}/${oracleddl.prefix}.source_${oracleddl.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.util.plugins.dir}/${oracleddl.prefix}.javadocs_${oracleddl.version}.jar"/>
             <param name="artifactName"    value="${oracleddl.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -524,6 +535,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink DBWS Builder"/>
             <param name="dependencies"    value="${builder.dependencies}"/>
         </antcall>
@@ -533,6 +545,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink Extensions"/>
             <param name="dependencies"    value="${extension.dependencies}"/>
         </antcall>
@@ -553,13 +566,30 @@
         </copy>
     </target>
 
+    <!-- Generates missing Javadoc. jakarta.oss.sonatype.org requires it (repository closing rules)-->
+    <target name="prepare-javadoc">
+        <property name="src.tmp" value="prepare-javadoc.src.tmp"/>
+        <property name="doc.tmp" value="prepare-javadoc.doc.tmp"/>
+
+        <delete dir="${src.tmp}" failonerror="false"/>
+        <delete dir="${doc.tmp}" failonerror="false"/>
+        <unjar src="${artifactSrc}" dest="${src.tmp}"/>
+        <javadoc sourcepath="${src.tmp}" destdir="${doc.tmp}" version="true" additionalparam="-Xdoclint:none" packagenames="org.eclipse.persistence.*" noindex="true">
+        </javadoc>
+        <zip destfile="${artifactJavadoc}">
+            <!-- miscellaneous files -->
+            <zipfileset dir="${doc.tmp}/"/>
+        </zip>
+        <echo message="java doc has been generated!"/>
+    </target>
+
     <!-- Uploads a single artifact & source to maven repository only if one doesn't already exist -->
     <!-- Removed "upload-release-artifact" because it depended upon filesystem access. Need a mechanism -->
     <!-- to verify an artifact is already uploaded to Nexus server. For now, am hoping nexus is smart enough -->
     <!-- to refuse redeployment. (Not hopeful though, seems too restrictive). -->
 
     <!-- Uploads a single artifact & source to maven repository -->
-    <target name="upload-artifact" depends="prepare-pom, ua-snapshot, ua-staging, us-staging">
+    <target name="upload-artifact" depends="prepare-pom, prepare-javadoc, uawj-snapshot, ua-staging, us-staging, uj-staging">
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
@@ -570,7 +600,8 @@
         <artifact:deploy file="${artifact}">
           <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}" />
           <artifact:pom id="maven.project" file="pom.xml" />
-          <artifact:attach file="${artifactSrc}" classifier="sources"/>
+          <artifact:attach file="${artifactSrc}"     type="jar" classifier="sources"/>
+          <artifact:attach file="${artifactJavadoc}" type="jar" classifier="javadoc"/>
         </artifact:deploy>
     </target>
 
