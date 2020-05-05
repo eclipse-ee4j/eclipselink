@@ -122,6 +122,7 @@ public class RepeatableWriteUnitOfWork extends UnitOfWorkImpl {
     public void clear(boolean shouldClearCache) {
         super.clear(shouldClearCache);
         if (this.cumulativeUOWChangeSet != null) {
+            this.newObjectsCloneToMergeOriginal = null;
             if (this.flushClearCache == FlushClearCache.Drop) {
                 this.cumulativeUOWChangeSet = null;
                 this.unregisteredDeletedObjectsCloneToBackupAndOriginal = null;
