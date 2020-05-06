@@ -29,7 +29,6 @@ mkdir persistence-tck/JTreport
 
 # Download and extract EclipseLink bundle
 echo '-[ Downloading EclipseLink ]-----------------------------------------------------'
-mkdir libs
 mkdir download
 echo '<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -44,20 +43,16 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
   <groupId>download</groupId>
   <artifactId>ri</artifactId>
   <version>1.0.0</version>
-  <dependencies>
-    <dependency>
-      <groupId>org.eclipse.persistence</groupId>
-      <artifactId>eclipselink</artifactId>
-      <version>'${ECLIPSELINK_VERSION}'</version>
-    </dependency>
-  </dependencies>
 </project>
 ' > 'download/pom.xml'
 
 mvn -U -C -B -f download/pom.xml \
     -Pstaging -Psnapshots \
-    -DoutputDirectory="${WORKSPACE}/libs" \
-    org.apache.maven.plugins:maven-dependency-plugin:3.1.2:copy-dependencies
+    -Dartifact=org.eclipse.persistence:org.eclipse.persistence.distribution:${ECLIPSELINK_VERSION}:zip \
+    -DoutputDirectory="${WORKSPACE}/download" \
+    org.apache.maven.plugins:maven-dependency-plugin:3.1.2:copy
+
+(cd "${WORKSPACE}/download" && unzip ${WORKSPACE}/download/org.eclipse.persistence.distribution*.zip)
 
 # Download and extract MySQL JDBC driver
 echo '-[ Downloading and extracting MySQL JDBC driver ]--------------------------------'
@@ -65,14 +60,18 @@ wget -q ${JDBC_BUNDLE_URL} -O - | tar xfz -
 JDBC_JAR="${WORKSPACE}/`ls mysql-connector-*/mysql-connector*[0-9].jar`"
 
 ls -la
-ls -la libs
 
 TS_HOME="${WORKSPACE}/persistence-tck"
 TS_JTE="${TS_HOME}/bin/ts.jte"
 
-EL_CLASS=`ls ${WORKSPACE}/libs/eclipselink-*.jar`
-JPA_CLASS=`ls ${WORKSPACE}/libs/jakarta.persistence-api-*.jar`
-JTA_CLASS=`ls ${WORKSPACE}/libs/jakarta.transaction-api-*.jar`
+EL_CLASS=`find ${WORKSPACE}/download/eclipselink -name '*.jar'`
+EL_CLASSPATH=''
+for cp in ${EL_CLASS}; do
+  if [ ! -z "${EL_CLASSPATH}" ]; then
+    EL_CLASSPATH="${EL_CLASSPATH}:"
+  fi
+  EL_CLASSPATH="${EL_CLASSPATH}${cp}"
+done
 
 #Configure TCK test
 echo '-[ Configuribg TCK test ]--------------------------------------------------------'
@@ -86,7 +85,7 @@ mysql.port=3306
 i\
 mysql.dbName=ecltests
     }' \
-    -e "s/^jpa.classes=.*/jpa.classes=${EL_CLASS//\//\\\/}:${JPA_CLASS//\//\\\/}:${JTA_CLASS//\//\\\/}/" \
+    -e "s/^jpa.classes=.*/jpa.classes=${EL_CLASSPATH//\//\\\/}/" \
     -e "s/^jdbc.driver.classes=.*/jdbc.driver.classes=${JDBC_JAR//\//\\\/}/" \
     -e 's/^jdbc.db=.*/jdbc.db=mysql/' \
     -e 's/^jakarta.persistence.provider=.*/jakarta.persistence.provider=org.eclipse.persistence.jpa.PersistenceProvider/' \
