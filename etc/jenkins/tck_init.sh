@@ -40,6 +40,13 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
     <artifactId>project</artifactId>
     <version>1.0.6</version>
   </parent>
+  <dependencies>
+    <dependency>
+      <groupId>jakarta.transaction</groupId>
+      <artifactId>jakarta.transaction-api</artifactId>
+      <version>2.0.0-RC1</version>
+    </dependency>
+  </dependencies>
   <groupId>download</groupId>
   <artifactId>ri</artifactId>
   <version>1.0.0</version>
@@ -50,7 +57,8 @@ mvn -U -C -B -f download/pom.xml \
     -Pstaging -Psnapshots \
     -Dartifact=org.eclipse.persistence:org.eclipse.persistence.distribution:${ECLIPSELINK_VERSION}:zip \
     -DoutputDirectory="${WORKSPACE}/download" \
-    org.apache.maven.plugins:maven-dependency-plugin:3.1.2:copy
+    org.apache.maven.plugins:maven-dependency-plugin:3.1.2:copy \
+    org.apache.maven.plugins:maven-dependency-plugin:3.1.2:copy-dependencies
 
 (cd "${WORKSPACE}/download" && unzip ${WORKSPACE}/download/org.eclipse.persistence.distribution*.zip)
 
@@ -64,13 +72,11 @@ ls -la
 TS_HOME="${WORKSPACE}/persistence-tck"
 TS_JTE="${TS_HOME}/bin/ts.jte"
 
+JTA_CLASS=`ls ${WORKSPACE}/download/jakarta.transaction-api*.jar`
 EL_CLASS=`find ${WORKSPACE}/download/eclipselink -name '*.jar'`
-EL_CLASSPATH=''
+EL_CLASSPATH="${JTA_CLASS}"
 for cp in ${EL_CLASS}; do
-  if [ ! -z "${EL_CLASSPATH}" ]; then
-    EL_CLASSPATH="${EL_CLASSPATH}:"
-  fi
-  EL_CLASSPATH="${EL_CLASSPATH}${cp}"
+  EL_CLASSPATH="${EL_CLASSPATH}:${cp}"
 done
 
 #Configure TCK test
