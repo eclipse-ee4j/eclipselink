@@ -23,7 +23,6 @@
     <version>2.7.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-
     <scm>
         <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
         <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
