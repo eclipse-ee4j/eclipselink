@@ -237,14 +237,14 @@
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>
-                                        ../distribution/target/eclipselink.zip-tmp/eclipselink/jlib/eclipselink.jar
+                                        ../distribution/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink.jar
                                     </sourceFile>
                                     <destinationFile>${project.build.directory}${nightlyDir}/eclipselink.jar
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>
-                                        ../distribution/target/eclipselink.zip-tmp/eclipselink/jlib/eclipselink-src.jar
+                                        ../distribution/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink-sources.jar
                                     </sourceFile>
                                     <destinationFile>
                                         ${project.build.directory}${nightlyDir}/eclipselink-src${nightlyVersion}.zip

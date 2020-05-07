@@ -33,7 +33,7 @@
     <properties>
         <!--Test properties-->
         <archive.tmp.dir>archive-tmp</archive.tmp.dir>
-        <eclipselink.unzip.dir>${project.build.directory}/stage</eclipselink.unzip.dir>
+        <eclipselink.unzip.dir>${project.build.directory}/${eclipselink.unzip.subdir}</eclipselink.unzip.dir>
         <osgi.test.plugins.dir>osgi-test-plugins/</osgi.test.plugins.dir>
 
         <!--Javadoc properties-->
