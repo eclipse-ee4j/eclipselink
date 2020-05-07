@@ -30,6 +30,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <eclipselink.unzip.subdir>stage</eclipselink.unzip.subdir>
+    </properties>
+
     <modules>
         <module>eclipselink</module>
         <module>distribution</module>
