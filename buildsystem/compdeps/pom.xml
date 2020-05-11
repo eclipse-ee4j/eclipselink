@@ -51,7 +51,7 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>1.3.0</tycho.version>
+        <tycho.version>1.5.0</tycho.version>
 
         <!-- BUILD Properties -->
         <eclipse.drop>2018-12</eclipse.drop>
