@@ -20,9 +20,8 @@
     <name>EclipseLink Parent</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.parent</artifactId>
-    <version>2.7.7-SNAPSHOT</version>
+    <version>2.7.8-SNAPSHOT</version>
     <packaging>pom</packaging>
-
 
     <scm>
         <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
@@ -41,7 +40,7 @@
         <junit4-version>4.12</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
-        <release.version>2.7.7</release.version>
+        <release.version>2.7.8</release.version>
         <!-- build.qualifier>v${maven.build.timestamp}</build.qualifier -->
         <!-- forceContextQualifier>${build.qualifier}</forceContextQualifier -->
         <build.type>SNAPSHOT</build.type>
