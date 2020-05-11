@@ -141,8 +141,8 @@
         <apache.felix.framework.version>6.0.3</apache.felix.framework.version>
         <!-- CQ #21133 -->
         <ant.version>1.10.7</ant.version>
-        <!-- CQ #21851 -->
-        <asm.version>7.3.1</asm.version>
+        <!-- CQ #22146 -->
+        <asm.version>8.0.1</asm.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.14.2.0</derby.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
