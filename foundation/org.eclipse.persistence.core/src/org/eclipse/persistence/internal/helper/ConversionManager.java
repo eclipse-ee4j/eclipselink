@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,8 @@
 //     Oracle - initial API and implementation from Oracle TopLink
 //     09/30/2014-2.6.0 Dalia Abo Sheasha
 //       - 445546: NullPointerException thrown when an Array of Bytes contains null values
+//     05/11/2020-2.7.0 Jody Grassel
+//       - 538296: Wrong month is returned if OffsetDateTime is used in JPA 2.2 code
 package org.eclipse.persistence.internal.helper;
 
 import java.math.*;
@@ -24,6 +26,8 @@ import java.io.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.sql.*;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
@@ -44,6 +48,42 @@ import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader
  */
 public class ConversionManager extends CoreConversionManager implements Serializable, Cloneable {
     protected Map defaultNullValues;
+    private static final ZoneId defaultZoneOffset;
+    
+    static {
+        ZoneId tzoneid = null;
+        try {
+            String tzone = PrivilegedAccessHelper.getSystemProperty("org.eclipse.persistence.conversion.useTimeZone");
+            if (tzone != null) {
+                
+                try {
+                    tzoneid = java.time.ZoneId.of(tzone);
+                } catch (Throwable t) {
+                    // If an invalid time zone id is supplied, then fall back to checking for checking for using
+                    // either UTC or the system's default time zone.
+                }
+            } 
+        } catch (Exception e) {
+            // Error occurred attempting to access this system property.  Fall back to the next property.
+        }
+        
+        try {
+            if (tzoneid == null) {
+                String propVal = PrivilegedAccessHelper.getSystemProperty("org.eclipse.persistence.conversion.useDefaultTimeZoneForJavaTime", "false");
+                if (Boolean.parseBoolean(propVal)) {
+                    tzoneid = java.time.ZoneId.systemDefault();
+                } else {
+                    tzoneid = ZoneOffset.UTC;
+                }
+            }
+        } catch (Exception e) {
+            // Error occurred attempting to access this system property.  Fall back to UTC.
+            tzoneid = ZoneOffset.UTC;
+        }
+        
+        
+        defaultZoneOffset = tzoneid;
+    }
 
     /**
      * This flag is here if the Conversion Manager should use the class loader on the
@@ -794,10 +834,10 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } else if (sourceObject instanceof java.util.Date) {
             // handles sql.Time
             java.util.Date date = (java.util.Date) sourceObject;
-            localDate = java.time.LocalDate.ofEpochDay(date.toInstant().getEpochSecond());
+            localDate = java.time.LocalDate.ofEpochDay(date.toInstant().getEpochSecond() / (60 * 60 * 24)); // Conv sec to day
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
-            localDate = java.time.LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH));
+            localDate = java.time.LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
         } else if (sourceObject instanceof Long) {
             localDate = java.time.LocalDate.ofEpochDay((Long) sourceObject);
         } else {
@@ -872,17 +912,17 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             Calendar cal = Helper.allocateCalendar();
             cal.setTime((java.util.Date) sourceObject);
             localDateTime = java.time.LocalDateTime.of(
-                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
                     cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
             Helper.releaseCalendar(cal);
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
             localDateTime = java.time.LocalDateTime.of(
-                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
                     cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
         } else if (sourceObject instanceof Long) {
             localDateTime = java.time.LocalDateTime.ofInstant(
-                    java.time.Instant.ofEpochSecond((Long) sourceObject), java.time.ZoneId.systemDefault());
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), defaultZoneOffset);
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_LDATETIME);
         }
@@ -913,19 +953,19 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             Calendar cal = Helper.allocateCalendar();
             cal.setTime((java.util.Date) sourceObject);
             offsetDateTime = java.time.OffsetDateTime.of(
-                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
                     cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND) * 1000000,
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
             Helper.releaseCalendar(cal);
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
             offsetDateTime = java.time.OffsetDateTime.of(
-                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH), cal.get(Calendar.DAY_OF_MONTH),
-                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND  * 1000000),
+                    cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH),
+                    cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND)  * 1000000,
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
         } else if (sourceObject instanceof Long) {
             offsetDateTime = java.time.OffsetDateTime.ofInstant(
-                    java.time.Instant.ofEpochSecond((Long) sourceObject), java.time.ZoneId.systemDefault());
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), defaultZoneOffset);
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_ODATETIME);
         }
@@ -970,7 +1010,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
         } else if (sourceObject instanceof Long) {
             offsetTime = java.time.OffsetTime.ofInstant(
-                    java.time.Instant.ofEpochSecond((Long) sourceObject), java.time.ZoneId.systemDefault());
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), defaultZoneOffset);
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_OTIME);
         }
