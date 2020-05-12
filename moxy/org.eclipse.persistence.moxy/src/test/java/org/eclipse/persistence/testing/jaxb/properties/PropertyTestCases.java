@@ -103,7 +103,7 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerNamespacePrefixMapper() throws Exception {
-        String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+        String SUN_NAMESPACE_PREFIX_MAPPER = "org.glassfish.jaxb.namespacePrefixMapper";
         String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
 
         NamespacePrefixMapper mapper = new MyPrefixMapper();
@@ -119,7 +119,7 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerIndentString() throws Exception {
-        String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
+        String SUN_INDENT_STRING = "org.glassfish.jaxb.indentString";
         String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
 
         String myTab = "\t";
@@ -138,7 +138,7 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerCharacterEscapeHandler() throws Exception {
-        String SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "com.sun.xml.bind.marshaller.CharacterEscapeHandler";
+        String SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "org.glassfish.jaxb.marshaller.CharacterEscapeHandler";
         String SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
 
         CharacterEscapeHandler handler = new CustomCharacterEscapeHandler();
@@ -159,7 +159,7 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerCharacterEscapeHandler2() throws Exception {
-        String SUN_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.bind.characterEscapeHandler";
+        String SUN_CHARACTER_ESCAPE_HANDLER = "org.glassfish.jaxb.characterEscapeHandler";
         String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.characterEscapeHandler";
 
         CharacterEscapeHandler handler = new CustomCharacterEscapeHandler();
@@ -180,7 +180,7 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerXmlDeclaration() throws Exception {
-        String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
+        String XML_DECLARATION = "org.glassfish.jaxb.xmlDeclaration";
 
         m.setProperty(XML_DECLARATION, true);
         assertTrue((Boolean) m.getProperty(XML_DECLARATION));
@@ -196,7 +196,7 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerXmlHeaders() throws Exception {
-        String XML_HEADERS = "com.sun.xml.bind.xmlHeaders";
+        String XML_HEADERS = "org.glassfish.jaxb.xmlHeaders";
         String HEADER_STRING = "ABC";
 
         m.setProperty(XML_HEADERS, HEADER_STRING);
@@ -207,7 +207,7 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testMarshallerObjectIdentity() throws Exception {
-        String prop = "com.sun.xml.bind.objectIdentitityCycleDetection";
+        String prop = "org.glassfish.jaxb.objectIdentitityCycleDetection";
 
         m.setProperty(prop, false);
         assertFalse((Boolean) m.getProperty(prop));
@@ -394,7 +394,7 @@ public class PropertyTestCases extends TestCase {
     }
 
     public void testUnmarshallerIdResolver() throws Exception {
-        String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
+        String SUN_ID_RESOLVER = "org.glassfish.jaxb.IDResolver";
         String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
 
         IDResolver resolver = new MyIDResolver();

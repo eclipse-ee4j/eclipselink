@@ -57,7 +57,7 @@ public class XmlAccessorFactorySupportTestCases extends TestCase {
 
     public void testXmlAccessorFactorySupportRI() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
-        properties.put("com.sun.xml.bind.XmlAccessorFactory", true);
+        properties.put("org.glassfish.jaxb.XmlAccessorFactory", true);
 
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { CustomerClassOverride.class }, properties);
 
@@ -71,7 +71,7 @@ public class XmlAccessorFactorySupportTestCases extends TestCase {
 
     public void testXmlAccessorFactorySupportNotSet() throws Exception {
         Map<String, Object> properties = new HashMap<String, Object>();
-        // properties.put("com.sun.xml.bind.XmlAccessorFactory", true);
+        // properties.put("org.glassfish.jaxb.XmlAccessorFactory", true);
         // properties.put(JAXBContextProperties.XML_ACCESSOR_FACTORY_SUPPORT, true);
 
         JAXBContext ctx = JAXBContextFactory.createContext(new Class[] { CustomerClassOverride.class }, properties);

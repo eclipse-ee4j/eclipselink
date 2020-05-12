@@ -118,7 +118,7 @@
         <el.version>4.0.0-RC1</el.version>
         <glassfish.version>5.1.0</glassfish.version>
         <jaxwsrt.version>3.0.0-M1</jaxwsrt.version>
-        <jaxb.version>3.0.0-M2</jaxb.version>
+        <jaxb.version>3.0.0-SNAPSHOT</jaxb.version>
         <jaxb.api.version>3.0.0-RC3</jaxb.api.version>
         <soap.api.version>2.0.0-RC3</soap.api.version>
         <jersey.version>3.0.0-M1</jersey.version>

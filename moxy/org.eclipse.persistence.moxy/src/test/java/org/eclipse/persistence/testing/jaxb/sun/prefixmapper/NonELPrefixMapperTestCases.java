@@ -26,7 +26,7 @@ public class NonELPrefixMapperTestCases extends JAXBWithJSONTestCases {
     public NonELPrefixMapperTestCases(String name) throws Exception {
         super(name);
         setClasses(new Class[]{Employee.class, Person.class});
-        jaxbMarshaller.setProperty("com.sun.xml.bind.namespacePrefixMapper", new NonELPrefixMapperImpl());
+        jaxbMarshaller.setProperty("org.glassfish.jaxb.namespacePrefixMapper", new NonELPrefixMapperImpl());
         jaxbUnmarshaller.setProperty(UnmarshallerProperties.JSON_NAMESPACE_PREFIX_MAPPER, new NamespacePrefixMapperWrapper(new NonELPrefixMapperImpl()));
         setControlDocument(XML_RESOURCE);
         setControlJSON(JSON_RESOURCE);

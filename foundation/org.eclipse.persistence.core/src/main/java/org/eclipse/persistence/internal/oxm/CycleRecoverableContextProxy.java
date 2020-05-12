@@ -20,7 +20,7 @@ import java.lang.reflect.Proxy;
 
 /**
  * Allows for the reflective creation of an implementation of Sun's
- * com.sun.xml.bind.CycleRecoverable$Context interface.
+ * org.glassfish.jaxb.runtime.CycleRecoverable$Context interface.
  */
 public class CycleRecoverableContextProxy implements InvocationHandler {
 

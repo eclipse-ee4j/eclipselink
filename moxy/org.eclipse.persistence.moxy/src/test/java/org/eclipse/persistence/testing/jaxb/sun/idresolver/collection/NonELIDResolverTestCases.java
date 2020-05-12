@@ -39,7 +39,7 @@ public class NonELIDResolverTestCases extends JAXBTestCases {
     public void setUp() throws Exception {
         super.setUp();
 
-        getJAXBUnmarshaller().setProperty("com.sun.xml.bind.IDResolver", idResolver);
+        getJAXBUnmarshaller().setProperty("org.glassfish.jaxb.IDResolver", idResolver);
     }
 
     public void testHitMethods() throws Exception {

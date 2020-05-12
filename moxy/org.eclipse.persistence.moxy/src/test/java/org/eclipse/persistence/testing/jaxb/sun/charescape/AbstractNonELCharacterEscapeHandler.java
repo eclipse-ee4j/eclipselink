@@ -17,7 +17,7 @@ package org.eclipse.persistence.testing.jaxb.sun.charescape;
 import java.io.IOException;
 import java.io.Writer;
 
-public abstract class AbstractNonELCharacterEscapeHandler implements com.sun.xml.bind.marshaller.CharacterEscapeHandler {
+public abstract class AbstractNonELCharacterEscapeHandler implements org.glassfish.jaxb.core.marshaller.CharacterEscapeHandler {
 
     public void escape(char[] buf, int start, int len, boolean isAttValue, Writer out) throws IOException {
         return;

@@ -169,7 +169,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
     }
 
-    private static final String RI_XML_ACCESSOR_FACTORY_SUPPORT = "com.sun.xml.bind.XmlAccessorFactory";
+    private static final String RI_XML_ACCESSOR_FACTORY_SUPPORT = "org.glassfish.jaxb.XmlAccessorFactory";
 
     /**
       * For JAXB 2 there is no explicitly defined default validation handler

@@ -2799,7 +2799,10 @@ public final class AnnotationsProcessor {
 
         // Handle XmlLocation
         JavaHasAnnotations elem = propertyElement;
-        if (helper.isAnnotationPresent(elem, XmlLocation.class) || helper.isAnnotationPresent(elem, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS) || helper.isAnnotationPresent(elem, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS)) {
+        if (helper.isAnnotationPresent(elem, XmlLocation.class)
+                || helper.isAnnotationPresent(elem, CompilerHelper.XML_LOCATION_ANNOTATION_CLASS)
+                || helper.isAnnotationPresent(elem, CompilerHelper.OLD_XML_LOCATION_ANNOTATION_CLASS)
+                || helper.isAnnotationPresent(elem, CompilerHelper.INTERNAL_XML_LOCATION_ANNOTATION_CLASS)) {
             if (!helper.getJavaClass(Constants.LOCATOR_CLASS).isAssignableFrom(property.getType())) {
                 throw JAXBException.invalidXmlLocation(property.getPropertyName(), property.getType().getName());
             }

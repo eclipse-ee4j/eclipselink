@@ -24,7 +24,7 @@ public class NonELCharacterEscapeHandlerTestCases extends CharacterEscapeHandler
 
     public void setUp() throws Exception {
         super.setUp();
-        jaxbMarshaller.setProperty("com.sun.xml.bind.marshaller.CharacterEscapeHandler", new NonELCharacterEscapeHandler());
+        jaxbMarshaller.setProperty("org.glassfish.jaxb.marshaller.CharacterEscapeHandler", new NonELCharacterEscapeHandler());
     }
 
 }

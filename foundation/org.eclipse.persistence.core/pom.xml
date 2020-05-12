@@ -232,6 +232,8 @@
                                     org.eclipse.persistence.eis.adapters.xmlfile;resolution:=optional,
                                     org.eclipse.persistence.internal.sessions.coordination.rmi.iiop;resolution:=optional,
                                     org.eclipse.persistence.sessions.coordination.corba.sun;resolution:=optional,
+                                    com.sun.xml.bind;version=!;resolution:=optional,
+                                    org.glassfish.jaxb.runtime;version=!;resolution:=optional,
                                     weblogic.*;resolution:=optional,
                                     *
                                 </Import-Package>

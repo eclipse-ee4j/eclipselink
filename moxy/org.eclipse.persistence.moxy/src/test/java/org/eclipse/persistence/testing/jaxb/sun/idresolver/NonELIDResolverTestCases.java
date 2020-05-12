@@ -14,15 +14,6 @@
 //  - rbarkhouse - 27 February - 2.3.3 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.sun.idresolver;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import jakarta.xml.bind.Marshaller;
-import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 
 public class NonELIDResolverTestCases extends JAXBTestCases {
@@ -41,7 +32,7 @@ public class NonELIDResolverTestCases extends JAXBTestCases {
     public void setUp() throws Exception {
         super.setUp();
 
-        getJAXBUnmarshaller().setProperty("com.sun.xml.bind.IDResolver", idResolver);
+        getJAXBUnmarshaller().setProperty("org.glassfish.jaxb.IDResolver", idResolver);
     }
 
     public void testHitMethods() throws Exception {
