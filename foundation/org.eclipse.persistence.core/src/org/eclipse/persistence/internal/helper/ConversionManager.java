@@ -29,6 +29,7 @@ import java.sql.*;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
+import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -53,7 +54,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
     static {
         ZoneId tzoneid = null;
         try {
-            String tzone = PrivilegedAccessHelper.getSystemProperty("org.eclipse.persistence.conversion.useTimeZone");
+            String tzone = PrivilegedAccessHelper.getSystemProperty(SystemProperties.CONVERSION_USE_TIMEZONE);
             if (tzone != null) {
                 
                 try {
@@ -69,7 +70,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         
         try {
             if (tzoneid == null) {
-                String propVal = PrivilegedAccessHelper.getSystemProperty("org.eclipse.persistence.conversion.useDefaultTimeZoneForJavaTime", "false");
+                String propVal = PrivilegedAccessHelper.getSystemProperty(SystemProperties.CONVERSION_USE_DEFAULT_TIMEZONE, "false");
                 if (Boolean.parseBoolean(propVal)) {
                     tzoneid = java.time.ZoneId.systemDefault();
                 } else {
