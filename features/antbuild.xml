@@ -300,6 +300,11 @@
     <!-- clean -->
     <target name="clean" depends="init" description="Clean all generated content">
         <delete dir="${classes.dir}" includeEmptyDirs="true" failonerror="false"/>
+        <delete dir="${basedir}/p2site" includeEmptyDirs="true" failonerror="false"/>
+        <delete includeEmptyDirs="true" failonerror="false">
+            <fileset dir="${basedir}" includes="eclipselink-P2*.zip"/>
+        </delete>
+
     </target>
 
     <!-- build feature jars -->
