@@ -39,10 +39,10 @@ env:
     - MAVEN_TEST=sdo-lrg
     - MAVEN_TEST=nosql-lrg
     - MAVEN_TEST="jpa-modelgen jpa-jse ext jpql wdf jpars dbws dbws-builder distribution"
-    - MAVEN_TEST=jpa-lrg-server1-mysql
-    - MAVEN_TEST=jpa-lrg-server2-mysql
     - MAVEN_TEST=javadoc
     - MAVEN_TEST=corba
+#    - MAVEN_TEST=jpa-lrg-server1-mysql
+#    - MAVEN_TEST=jpa-lrg-server2-mysql
 
 jobs:
   allow_failures:
