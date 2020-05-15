@@ -155,7 +155,7 @@ public class MethodNode extends MethodVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public MethodNode() {
-    this(/* latest api = */ Opcodes.ASM7);
+    this(/* latest api = */ Opcodes.ASM8);
     if (getClass() != MethodNode.class) {
       throw new IllegalStateException();
     }
@@ -165,7 +165,8 @@ public class MethodNode extends MethodVisitor {
    * Constructs an uninitialized {@link MethodNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}.
    */
   public MethodNode(final int api) {
     super(api);
@@ -191,7 +192,7 @@ public class MethodNode extends MethodVisitor {
       final String descriptor,
       final String signature,
       final String[] exceptions) {
-    this(/* latest api = */ Opcodes.ASM7, access, name, descriptor, signature, exceptions);
+    this(/* latest api = */ Opcodes.ASM8, access, name, descriptor, signature, exceptions);
     if (getClass() != MethodNode.class) {
       throw new IllegalStateException();
     }
@@ -201,7 +202,8 @@ public class MethodNode extends MethodVisitor {
    * Constructs a new {@link MethodNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}.
    * @param access the method's access flags (see {@link Opcodes}). This parameter also indicates if
    *     the method is synthetic and/or deprecated.
    * @param name the method's name.
@@ -566,7 +568,7 @@ public class MethodNode extends MethodVisitor {
    * in more recent versions of the ASM API than the given version.
    *
    * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5},
-   *     {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link Opcodes#ASM8}.
    */
   public void check(final int api) {
     if (api == Opcodes.ASM4) {

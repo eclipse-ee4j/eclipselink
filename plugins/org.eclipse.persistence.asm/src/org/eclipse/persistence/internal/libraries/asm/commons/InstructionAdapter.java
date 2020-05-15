@@ -53,7 +53,7 @@ public class InstructionAdapter extends MethodVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public InstructionAdapter(final MethodVisitor methodVisitor) {
-    this(/* latest api = */ Opcodes.ASM7, methodVisitor);
+    this(/* latest api = */ Opcodes.ASM8, methodVisitor);
     if (getClass() != InstructionAdapter.class) {
       throw new IllegalStateException();
     }
@@ -63,7 +63,8 @@ public class InstructionAdapter extends MethodVisitor {
    * Constructs a new {@link InstructionAdapter}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}.
    * @param methodVisitor the method visitor to which this adapter delegates calls.
    */
   protected InstructionAdapter(final int api, final MethodVisitor methodVisitor) {

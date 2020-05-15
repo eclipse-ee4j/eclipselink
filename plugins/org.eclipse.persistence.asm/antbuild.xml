@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -72,10 +72,10 @@
 
         <!-- Properties usually defined in build.properties, set here to avoid easy redefinition. -->
         <!-- Version properties -->
-        <property name="release.version"             value="7.3.1"/>
+        <property name="release.version"             value="8.0.1"/>
 
         <property name="javac.debuglevel"            value="lines,vars,source"/>
-        <property name="javac.version"               value="1.7"/>
+        <property name="javac.version"               value="1.8"/>
         <property name="javac.optimize"              value="false"/>
         <property name="javac.deprecation"           value="false"/>
         <property name="src.dir"                     value="src"/>

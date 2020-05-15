@@ -39,92 +39,44 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
  * A node that represents a record component.
  *
  * @author Remi Forax
- * @deprecated this API is experimental.
  */
-@Deprecated
 public class RecordComponentNode extends RecordComponentVisitor {
 
-  /**
-   * The record component access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). The only valid value
-   * is {@link Opcodes#ACC_DEPRECATED}.
-   *
-   * @deprecated this API is experimental.
-   */
-  public int accessExperimental;
+  /** The record component name. */
+  public String name;
 
-  /**
-   * The record component name.
-   *
-   * @deprecated this API is experimental.
-   */
-  public String nameExperimental;
+  /** The record component descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}). */
+  public String descriptor;
 
-  /**
-   * The record component descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
-   *
-   * @deprecated this API is experimental.
-   */
-  public String descriptorExperimental;
+  /** The record component signature. May be {@literal null}. */
+  public String signature;
 
-  /**
-   * The record component signature. May be {@literal null}.
-   *
-   * @deprecated this API is experimental.
-   */
-  public String signatureExperimental;
+  /** The runtime visible annotations of this record component. May be {@literal null}. */
+  public List<AnnotationNode> visibleAnnotations;
 
-  /**
-   * The runtime visible annotations of this record component. May be {@literal null}.
-   *
-   * @deprecated this API is experimental.
-   */
-  public List<AnnotationNode> visibleAnnotationsExperimental;
+  /** The runtime invisible annotations of this record component. May be {@literal null}. */
+  public List<AnnotationNode> invisibleAnnotations;
 
-  /**
-   * The runtime invisible annotations of this record component. May be {@literal null}.
-   *
-   * @deprecated this API is experimental.
-   */
-  public List<AnnotationNode> invisibleAnnotationsExperimental;
+  /** The runtime visible type annotations of this record component. May be {@literal null}. */
+  public List<TypeAnnotationNode> visibleTypeAnnotations;
 
-  /**
-   * The runtime visible type annotations of this record component. May be {@literal null}.
-   *
-   * @deprecated this API is experimental.
-   */
-  public List<TypeAnnotationNode> visibleTypeAnnotationsExperimental;
+  /** The runtime invisible type annotations of this record component. May be {@literal null}. */
+  public List<TypeAnnotationNode> invisibleTypeAnnotations;
 
-  /**
-   * The runtime invisible type annotations of this record component. May be {@literal null}.
-   *
-   * @deprecated this API is experimental.
-   */
-  public List<TypeAnnotationNode> invisibleTypeAnnotationsExperimental;
-
-  /**
-   * The non standard attributes of this record component. * May be {@literal null}.
-   *
-   * @deprecated this API is experimental.
-   */
-  public List<Attribute> attrsExperimental;
+  /** The non standard attributes of this record component. * May be {@literal null}. */
+  public List<Attribute> attrs;
 
   /**
    * Constructs a new {@link RecordComponentNode}. <i>Subclasses must not use this constructor</i>.
-   * Instead, they must use the {@link #RecordComponentNode(int, int, String, String, String)}
-   * version.
+   * Instead, they must use the {@link #RecordComponentNode(int, String, String, String)} version.
    *
-   * @param access the record component access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). The
-   *     only valid value is {@link Opcodes#ACC_DEPRECATED}.
    * @param name the record component name.
    * @param descriptor the record component descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
    * @param signature the record component signature.
    * @throws IllegalStateException If a subclass calls this constructor.
-   * @deprecated this API is experimental.
    */
-  @Deprecated
-  public RecordComponentNode(
-      final int access, final String name, final String descriptor, final String signature) {
-    this(/* latest api = */ Opcodes.ASM7, access, name, descriptor, signature);
+  public RecordComponentNode(final String name, final String descriptor, final String signature) {
+    this(/* latest api = */ Opcodes.ASM8, name, descriptor, signature);
     if (getClass() != RecordComponentNode.class) {
       throw new IllegalStateException();
     }
@@ -133,27 +85,17 @@ public class RecordComponentNode extends RecordComponentVisitor {
   /**
    * Constructs a new {@link RecordComponentNode}.
    *
-   * @param api the ASM API version implemented by this visitor. Must be {@link
-   *     Opcodes#ASM8_EXPERIMENTAL}.
-   * @param access the record component access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). The
-   *     only valid value is {@link Opcodes#ACC_DEPRECATED}.
+   * @param api the ASM API version implemented by this visitor. Must be {@link Opcodes#ASM8}.
    * @param name the record component name.
    * @param descriptor the record component descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
    * @param signature the record component signature.
-   * @deprecated this API is experimental.
    */
-  @Deprecated
   public RecordComponentNode(
-      final int api,
-      final int access,
-      final String name,
-      final String descriptor,
-      final String signature) {
+      final int api, final String name, final String descriptor, final String signature) {
     super(api);
-    this.accessExperimental = access;
-    this.nameExperimental = name;
-    this.descriptorExperimental = descriptor;
-    this.signatureExperimental = signature;
+    this.name = name;
+    this.descriptor = descriptor;
+    this.signature = signature;
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -161,38 +103,35 @@ public class RecordComponentNode extends RecordComponentVisitor {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public AnnotationVisitor visitAnnotationExperimental(
-      final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
-      visibleAnnotationsExperimental = Util.add(visibleAnnotationsExperimental, annotation);
+      visibleAnnotations = Util.add(visibleAnnotations, annotation);
     } else {
-      invisibleAnnotationsExperimental = Util.add(invisibleAnnotationsExperimental, annotation);
+      invisibleAnnotations = Util.add(invisibleAnnotations, annotation);
     }
     return annotation;
   }
 
   @Override
-  public AnnotationVisitor visitTypeAnnotationExperimental(
+  public AnnotationVisitor visitTypeAnnotation(
       final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
-      visibleTypeAnnotationsExperimental =
-          Util.add(visibleTypeAnnotationsExperimental, typeAnnotation);
+      visibleTypeAnnotations = Util.add(visibleTypeAnnotations, typeAnnotation);
     } else {
-      invisibleTypeAnnotationsExperimental =
-          Util.add(invisibleTypeAnnotationsExperimental, typeAnnotation);
+      invisibleTypeAnnotations = Util.add(invisibleTypeAnnotations, typeAnnotation);
     }
     return typeAnnotation;
   }
 
   @Override
-  public void visitAttributeExperimental(final Attribute attribute) {
-    attrsExperimental = Util.add(attrsExperimental, attribute);
+  public void visitAttribute(final Attribute attribute) {
+    attrs = Util.add(attrs, attribute);
   }
 
   @Override
-  public void visitEndExperimental() {
+  public void visitEnd() {
     // Nothing to do.
   }
 
@@ -205,11 +144,10 @@ public class RecordComponentNode extends RecordComponentVisitor {
    * method checks that this node, and all its children recursively, do not contain elements that
    * were introduced in more recent versions of the ASM API than the given version.
    *
-   * @param api an ASM API version. Must be {@link Opcodes#ASM8_EXPERIMENTAL}.
-   * @deprecated this API is experimental.
+   * @param api an ASM API version. Must be {@link Opcodes#ASM8}.
    */
-  public void checkExperimental(final int api) {
-    if (api != Opcodes.ASM8_EXPERIMENTAL) {
+  public void check(final int api) {
+    if (api < Opcodes.ASM8) {
       throw new UnsupportedClassVersionException();
     }
   }
@@ -218,52 +156,48 @@ public class RecordComponentNode extends RecordComponentVisitor {
    * Makes the given class visitor visit this record component.
    *
    * @param classVisitor a class visitor.
-   * @deprecated this API is experimental.
    */
-  public void acceptExperimental(final ClassVisitor classVisitor) {
+  public void accept(final ClassVisitor classVisitor) {
     RecordComponentVisitor recordComponentVisitor =
-        classVisitor.visitRecordComponentExperimental(
-            accessExperimental, nameExperimental, descriptorExperimental, signatureExperimental);
+        classVisitor.visitRecordComponent(name, descriptor, signature);
     if (recordComponentVisitor == null) {
       return;
     }
     // Visit the annotations.
-    if (visibleAnnotationsExperimental != null) {
-      for (int i = 0, n = visibleAnnotationsExperimental.size(); i < n; ++i) {
-        AnnotationNode annotation = visibleAnnotationsExperimental.get(i);
-        annotation.accept(
-            recordComponentVisitor.visitAnnotationExperimental(annotation.desc, true));
+    if (visibleAnnotations != null) {
+      for (int i = 0, n = visibleAnnotations.size(); i < n; ++i) {
+        AnnotationNode annotation = visibleAnnotations.get(i);
+        annotation.accept(recordComponentVisitor.visitAnnotation(annotation.desc, true));
       }
     }
-    if (invisibleAnnotationsExperimental != null) {
-      for (int i = 0, n = invisibleAnnotationsExperimental.size(); i < n; ++i) {
-        AnnotationNode annotation = invisibleAnnotationsExperimental.get(i);
-        annotation.accept(
-            recordComponentVisitor.visitAnnotationExperimental(annotation.desc, false));
+    if (invisibleAnnotations != null) {
+      for (int i = 0, n = invisibleAnnotations.size(); i < n; ++i) {
+        AnnotationNode annotation = invisibleAnnotations.get(i);
+        annotation.accept(recordComponentVisitor.visitAnnotation(annotation.desc, false));
       }
     }
-    if (visibleTypeAnnotationsExperimental != null) {
-      for (int i = 0, n = visibleTypeAnnotationsExperimental.size(); i < n; ++i) {
-        TypeAnnotationNode typeAnnotation = visibleTypeAnnotationsExperimental.get(i);
+    if (visibleTypeAnnotations != null) {
+      for (int i = 0, n = visibleTypeAnnotations.size(); i < n; ++i) {
+        TypeAnnotationNode typeAnnotation = visibleTypeAnnotations.get(i);
         typeAnnotation.accept(
-            recordComponentVisitor.visitTypeAnnotationExperimental(
+            recordComponentVisitor.visitTypeAnnotation(
                 typeAnnotation.typeRef, typeAnnotation.typePath, typeAnnotation.desc, true));
       }
     }
-    if (invisibleTypeAnnotationsExperimental != null) {
-      for (int i = 0, n = invisibleTypeAnnotationsExperimental.size(); i < n; ++i) {
-        TypeAnnotationNode typeAnnotation = invisibleTypeAnnotationsExperimental.get(i);
+    if (invisibleTypeAnnotations != null) {
+      for (int i = 0, n = invisibleTypeAnnotations.size(); i < n; ++i) {
+        TypeAnnotationNode typeAnnotation = invisibleTypeAnnotations.get(i);
         typeAnnotation.accept(
-            recordComponentVisitor.visitTypeAnnotationExperimental(
+            recordComponentVisitor.visitTypeAnnotation(
                 typeAnnotation.typeRef, typeAnnotation.typePath, typeAnnotation.desc, false));
       }
     }
     // Visit the non standard attributes.
-    if (attrsExperimental != null) {
-      for (int i = 0, n = attrsExperimental.size(); i < n; ++i) {
-        recordComponentVisitor.visitAttributeExperimental(attrsExperimental.get(i));
+    if (attrs != null) {
+      for (int i = 0, n = attrs.size(); i < n; ++i) {
+        recordComponentVisitor.visitAttribute(attrs.get(i));
       }
     }
-    recordComponentVisitor.visitEndExperimental();
+    recordComponentVisitor.visitEnd();
   }
 }

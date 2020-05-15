@@ -61,7 +61,7 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
    * version.
    */
   public BasicInterpreter() {
-    super(ASM7);
+    super(/* latest api = */ ASM8);
     if (getClass() != BasicInterpreter.class) {
       throw new IllegalStateException();
     }
@@ -72,7 +72,8 @@ public class BasicInterpreter extends Interpreter<BasicValue> implements Opcodes
    *
    * @param api the ASM API version supported by this interpreter. Must be one of {@link
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7} or {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}.
    */
   protected BasicInterpreter(final int api) {
     super(api);

@@ -30,6 +30,7 @@ package org.eclipse.persistence.internal.libraries.asm.util;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -366,7 +367,7 @@ public class CheckMethodAdapter extends MethodVisitor {
    */
   public CheckMethodAdapter(
       final MethodVisitor methodVisitor, final Map<Label, Integer> labelInsnIndices) {
-    this(/* latest api = */ Opcodes.ASM7, methodVisitor, labelInsnIndices);
+    this(/* latest api = */ Opcodes.ASM8, methodVisitor, labelInsnIndices);
     if (getClass() != CheckMethodAdapter.class) {
       throw new IllegalStateException();
     }
@@ -377,7 +378,8 @@ public class CheckMethodAdapter extends MethodVisitor {
    * data flow check (see {@link #CheckMethodAdapter(int,String,String,MethodVisitor,Map)}).
    *
    * @param api the ASM API version implemented by this CheckMethodAdapter. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}.
    * @param methodVisitor the method visitor to which this adapter must delegate calls.
    * @param labelInsnIndices the index of the instruction designated by each visited label so far
    *     (in other methods). This map is updated with the labels from the visited method.
@@ -413,7 +415,7 @@ public class CheckMethodAdapter extends MethodVisitor {
       final MethodVisitor methodVisitor,
       final Map<Label, Integer> labelInsnIndices) {
     this(
-        /* latest api = */ Opcodes.ASM7, access, name, descriptor, methodVisitor, labelInsnIndices);
+        /* latest api = */ Opcodes.ASM8, access, name, descriptor, methodVisitor, labelInsnIndices);
     if (getClass() != CheckMethodAdapter.class) {
       throw new IllegalStateException();
     }
@@ -425,7 +427,8 @@ public class CheckMethodAdapter extends MethodVisitor {
    * instruction IRETURN, or the invalid sequence IADD L2I will be detected.
    *
    * @param api the ASM API version implemented by this CheckMethodAdapter. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}.
    * @param access the method's access flags.
    * @param name the method's name.
    * @param descriptor the method's descriptor (see {@link Type}).
@@ -823,9 +826,7 @@ public class CheckMethodAdapter extends MethodVisitor {
       checkLabel(labels[i], false, "label at index " + i);
     }
     super.visitTableSwitchInsn(min, max, dflt, labels);
-    for (Label label : labels) {
-      referencedLabels.add(label);
-    }
+    Collections.addAll(referencedLabels, labels);
     ++insnCount;
   }
 
@@ -842,9 +843,7 @@ public class CheckMethodAdapter extends MethodVisitor {
     }
     super.visitLookupSwitchInsn(dflt, keys, labels);
     referencedLabels.add(dflt);
-    for (Label label : labels) {
-      referencedLabels.add(label);
-    }
+    Collections.addAll(referencedLabels, labels);
     ++insnCount;
   }
 
@@ -1077,7 +1076,8 @@ public class CheckMethodAdapter extends MethodVisitor {
         || value == Opcodes.NULL
         || value == Opcodes.UNINITIALIZED_THIS) {
       return;
-    } else if (value instanceof String) {
+    }
+    if (value instanceof String) {
       checkInternalName(version, (String) value, "Invalid stack frame value");
     } else if (value instanceof Label) {
       referencedLabels.add((Label) value);

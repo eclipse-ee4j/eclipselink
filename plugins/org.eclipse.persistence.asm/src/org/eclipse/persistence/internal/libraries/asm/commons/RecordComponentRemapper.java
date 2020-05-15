@@ -53,14 +53,14 @@ public class RecordComponentRemapper extends RecordComponentVisitor {
    */
   public RecordComponentRemapper(
       final RecordComponentVisitor recordComponentVisitor, final Remapper remapper) {
-    this(/* latest api = */ Opcodes.ASM7, recordComponentVisitor, remapper);
+    this(/* latest api = */ Opcodes.ASM8, recordComponentVisitor, remapper);
   }
 
   /**
    * Constructs a new {@link RecordComponentRemapper}.
    *
    * @param api the ASM API version supported by this remapper. Must be {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8_EXPERIMENTAL}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}.
    * @param recordComponentVisitor the record component visitor this remapper must delegate to.
    * @param remapper the remapper to use to remap the types in the visited record component.
    */
@@ -71,19 +71,17 @@ public class RecordComponentRemapper extends RecordComponentVisitor {
   }
 
   @Override
-  public AnnotationVisitor visitAnnotationExperimental(
-      final String descriptor, final boolean visible) {
+  public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
-        super.visitAnnotationExperimental(remapper.mapDesc(descriptor), visible);
+        super.visitAnnotation(remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null ? null : createAnnotationRemapper(annotationVisitor);
   }
 
   @Override
-  public AnnotationVisitor visitTypeAnnotationExperimental(
+  public AnnotationVisitor visitTypeAnnotation(
       final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
-        super.visitTypeAnnotationExperimental(
-            typeRef, typePath, remapper.mapDesc(descriptor), visible);
+        super.visitTypeAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
     return annotationVisitor == null ? null : createAnnotationRemapper(annotationVisitor);
   }
 

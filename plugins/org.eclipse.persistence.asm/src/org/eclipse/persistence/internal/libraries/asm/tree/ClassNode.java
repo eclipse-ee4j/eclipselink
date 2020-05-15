@@ -54,7 +54,7 @@ public class ClassNode extends ClassVisitor {
 
   /**
    * The class's access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). This field also indicates if
-   * the class is deprecated.
+   * the class is deprecated {@link Opcodes#ACC_DEPRECATED} or a record {@link Opcodes#ACC_RECORD}.
    */
   public int access;
 
@@ -136,12 +136,8 @@ public class ClassNode extends ClassVisitor {
    */
   @Deprecated public List<String> permittedSubtypesExperimental;
 
-  /**
-   * The record components of this class. May be {@literal null}.
-   *
-   * @deprecated this API is experimental.
-   */
-  @Deprecated public List<RecordComponentNode> recordComponentsExperimental;
+  /** The record components of this class. May be {@literal null}. */
+  public List<RecordComponentNode> recordComponents;
 
   /** The fields of this class. */
   public List<FieldNode> fields;
@@ -156,7 +152,7 @@ public class ClassNode extends ClassVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public ClassNode() {
-    this(Opcodes.ASM7);
+    this(Opcodes.ASM8);
     if (getClass() != ClassNode.class) {
       throw new IllegalStateException();
     }
@@ -166,7 +162,8 @@ public class ClassNode extends ClassVisitor {
    * Constructs a new {@link ClassNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}.
    */
   public ClassNode(final int api) {
     super(api);
@@ -253,7 +250,14 @@ public class ClassNode extends ClassVisitor {
     nestMembers = Util.add(nestMembers, nestMember);
   }
 
+  /**
+   * <b>Experimental, use at your own risk.</b>.
+   *
+   * @param permittedSubtype the internal name of a permitted subtype.
+   * @deprecated this API is experimental.
+   */
   @Override
+  @Deprecated
   public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
     permittedSubtypesExperimental = Util.add(permittedSubtypesExperimental, permittedSubtype);
   }
@@ -266,11 +270,10 @@ public class ClassNode extends ClassVisitor {
   }
 
   @Override
-  public RecordComponentVisitor visitRecordComponentExperimental(
-      final int access, final String name, final String descriptor, final String signature) {
-    RecordComponentNode recordComponent =
-        new RecordComponentNode(access, name, descriptor, signature);
-    recordComponentsExperimental = Util.add(recordComponentsExperimental, recordComponent);
+  public RecordComponentVisitor visitRecordComponent(
+      final String name, final String descriptor, final String signature) {
+    RecordComponentNode recordComponent = new RecordComponentNode(name, descriptor, signature);
+    recordComponents = Util.add(recordComponents, recordComponent);
     return recordComponent;
   }
 
@@ -313,13 +316,13 @@ public class ClassNode extends ClassVisitor {
    * in more recent versions of the ASM API than the given version.
    *
    * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5},
-   *     {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     {@link Opcodes#ASM6}, {@link Opcodes#ASM7}. or {@link Opcodes#ASM8}.
    */
   public void check(final int api) {
-    if (api != Opcodes.ASM8_EXPERIMENTAL && permittedSubtypesExperimental != null) {
+    if (api != Opcodes.ASM9_EXPERIMENTAL && permittedSubtypesExperimental != null) {
       throw new UnsupportedClassVersionException();
     }
-    if (api != Opcodes.ASM8_EXPERIMENTAL && recordComponentsExperimental != null) {
+    if (api < Opcodes.ASM8 && ((access & Opcodes.ACC_RECORD) != 0 || recordComponents != null)) {
       throw new UnsupportedClassVersionException();
     }
     if (api < Opcodes.ASM7 && (nestHostClass != null || nestMembers != null)) {
@@ -357,9 +360,9 @@ public class ClassNode extends ClassVisitor {
         invisibleTypeAnnotations.get(i).check(api);
       }
     }
-    if (recordComponentsExperimental != null) {
-      for (int i = recordComponentsExperimental.size() - 1; i >= 0; --i) {
-        recordComponentsExperimental.get(i).checkExperimental(api);
+    if (recordComponents != null) {
+      for (int i = recordComponents.size() - 1; i >= 0; --i) {
+        recordComponents.get(i).check(api);
       }
     }
     for (int i = fields.size() - 1; i >= 0; --i) {
@@ -448,9 +451,9 @@ public class ClassNode extends ClassVisitor {
       innerClasses.get(i).accept(classVisitor);
     }
     // Visit the record components.
-    if (recordComponentsExperimental != null) {
-      for (int i = 0, n = recordComponentsExperimental.size(); i < n; ++i) {
-        recordComponentsExperimental.get(i).acceptExperimental(classVisitor);
+    if (recordComponents != null) {
+      for (int i = 0, n = recordComponents.size(); i < n; ++i) {
+        recordComponents.get(i).accept(classVisitor);
       }
     }
     // Visit the fields.
