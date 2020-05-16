@@ -22,8 +22,11 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.returninsert.model.*;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.Test;
 
@@ -60,26 +63,6 @@ public class TestReturnInsert {
         testCreate();
         testFindUpdate();
         testQuery();
-        emf.close();
-    }
-
-    @Test
-    public void testInheritanceTypeJoined() {
-        boolean supported = true;
-        emf = Persistence.createEntityManagerFactory("returninsert-pu");
-        try {
-            EntityManager em = emf.createEntityManager();
-        } catch (Exception e) {
-            supported = false;
-            System.out.println("Non supported platform. This test can be executed on OraclePlatform only!");
-        }
-        if (em != null) {
-            em.close();
-        }
-        if(!supported) {
-            return;
-        }
-        setup();
         testCreateJoined();
         emf.close();
     }
@@ -313,5 +296,4 @@ public class TestReturnInsert {
         returnInsertDetailPK.setCol2("abc");
         return returnInsertDetailPK;
     }
-
 }
