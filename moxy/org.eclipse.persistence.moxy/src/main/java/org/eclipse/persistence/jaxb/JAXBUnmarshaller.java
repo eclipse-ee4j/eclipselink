@@ -54,7 +54,6 @@ import org.eclipse.persistence.internal.jaxb.IDResolverWrapper;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
-import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
@@ -118,7 +117,7 @@ public class JAXBUnmarshaller implements Unmarshaller {
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
     public static final String STAX_SOURCE_CLASS_NAME = "javax.xml.transform.stax.StAXSource";
 
-    private static final String SUN_ID_RESOLVER = "com.sun.xml.bind.IDResolver";
+    private static final String SUN_ID_RESOLVER = "org.glassfish.jaxb.IDResolver";
     private static final String SUN_JSE_ID_RESOLVER = "com.sun.xml.internal.bind.IDResolver";
 
     public JAXBUnmarshaller(XMLUnmarshaller newXMLUnmarshaller, JAXBContext jaxbContext) {

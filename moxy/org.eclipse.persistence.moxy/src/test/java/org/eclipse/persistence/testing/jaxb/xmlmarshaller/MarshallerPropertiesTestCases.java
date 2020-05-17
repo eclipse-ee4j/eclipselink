@@ -120,7 +120,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         marshaller.marshal(emp, sw);
         assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
 
-        marshaller.setProperty("com.sun.xml.bind.indentString", customIndentString);
+        marshaller.setProperty("org.glassfish.jaxb.indentString", customIndentString);
         marshaller.marshal(emp, sw);
         assertTrue("Custom indent string not found in marshalled document or was not escaped.", sw.toString().contains(escapedIndentString));
 
@@ -136,7 +136,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
 
         // Marshal to Stream
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", header);
+        marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", header);
         marshaller.marshal(emp, stream);
         assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
 
@@ -151,7 +151,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         marshaller.marshal(emp, result);
         assertTrue("Custom header not written when marshalling to Result.", writer2.toString().contains(header));
 
-        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", null);
+        marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", null);
     }
 
     public void testXmlHeadersWithValidation() throws Exception {
@@ -161,7 +161,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
 
         // Marshal to Stream
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", header);
+        marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", header);
         marshaller.setSchema(FakeSchema.INSTANCE);
         marshaller.marshal(emp, stream);
         assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
@@ -177,7 +177,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         marshaller.marshal(emp, result);
         assertTrue("Custom header not written when marshalling to Result.", writer2.toString().contains(header));
 
-        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", null);
+        marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", null);
         marshaller.setSchema(null);
     }
 
@@ -188,7 +188,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
 
         // Marshal to Stream
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", header);
+        marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", header);
         marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
         marshaller.marshal(emp, stream);
         assertTrue("Custom header not written when marshalling to Stream.", new String(stream.toByteArray()).contains(header));
@@ -204,7 +204,7 @@ public class MarshallerPropertiesTestCases extends OXTestCase {
         marshaller.marshal(emp, result);
         assertTrue("Custom header not written when marshalling to Result.", writer2.toString().contains(header));
 
-        marshaller.setProperty("com.sun.xml.bind.xmlHeaders", null);
+        marshaller.setProperty("org.glassfish.jaxb.xmlHeaders", null);
     }
 
     public void testSetNullPropertyException() {

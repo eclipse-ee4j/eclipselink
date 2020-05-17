@@ -114,24 +114,24 @@ public class JAXBMarshaller implements jakarta.xml.bind.Marshaller {
 
     public static final String XML_JAVATYPE_ADAPTERS = "xml-javatype-adapters";
 
-    private static final String SUN_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.bind.namespacePrefixMapper";
+    private static final String SUN_NAMESPACE_PREFIX_MAPPER = "org.glassfish.jaxb.namespacePrefixMapper";
     private static final String SUN_JSE_NAMESPACE_PREFIX_MAPPER = "com.sun.xml.internal.bind.namespacePrefixMapper";
 
-    private static final String SUN_INDENT_STRING = "com.sun.xml.bind.indentString";
+    private static final String SUN_INDENT_STRING = "org.glassfish.jaxb.indentString";
     private static final String SUN_JSE_INDENT_STRING = "com.sun.xml.internal.bind.indentString";
 
-    private static final String SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "com.sun.xml.bind.marshaller.CharacterEscapeHandler";
+    private static final String SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "org.glassfish.jaxb.marshaller.CharacterEscapeHandler";
     private static final String SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
 
-    private static final String SUN_CHARACTER_ESCAPE_HANDLER= "com.sun.xml.bind.characterEscapeHandler";
+    private static final String SUN_CHARACTER_ESCAPE_HANDLER= "org.glassfish.jaxb.characterEscapeHandler";
     private static final String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.characterEscapeHandler";
 
     // XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true.
-    private static final String XML_DECLARATION = "com.sun.xml.bind.xmlDeclaration";
+    private static final String XML_DECLARATION = "org.glassfish.jaxb.xmlDeclaration";
 
-    private static final String XML_HEADERS = "com.sun.xml.bind.xmlHeaders";
+    private static final String XML_HEADERS = "org.glassfish.jaxb.xmlHeaders";
 
-    private static final String OBJECT_IDENTITY_CYCLE_DETECTION = "com.sun.xml.bind.objectIdentitityCycleDetection";
+    private static final String OBJECT_IDENTITY_CYCLE_DETECTION = "org.glassfish.jaxb.objectIdentitityCycleDetection";
 
     /**
      * This constructor initializes various settings on the XML marshaller.

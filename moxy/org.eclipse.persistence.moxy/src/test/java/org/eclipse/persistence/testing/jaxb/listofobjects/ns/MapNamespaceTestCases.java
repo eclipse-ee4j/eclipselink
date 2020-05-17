@@ -19,16 +19,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import jakarta.xml.bind.Marshaller;
-
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLRoot;
 import org.eclipse.persistence.testing.jaxb.JAXBTestCases;
 import org.w3c.dom.Document;
 
-import com.sun.xml.bind.marshaller.CharacterEscapeHandler;
-import com.sun.xml.bind.marshaller.DataWriter;
+import org.glassfish.jaxb.core.marshaller.CharacterEscapeHandler;
+import org.glassfish.jaxb.core.marshaller.DataWriter;
 
 public class MapNamespaceTestCases extends JAXBTestCases {
 
@@ -62,7 +60,7 @@ public class MapNamespaceTestCases extends JAXBTestCases {
 
         int sizeBefore = getNamespaceResolverSize(desc);
         jaxbMarshaller.setProperty(MarshallerProperties.MEDIA_TYPE, "application/xml");
-        jaxbMarshaller.setProperty("com.sun.xml.bind.xmlDeclaration", Boolean.FALSE);
+        jaxbMarshaller.setProperty("org.glassfish.jaxb.xmlDeclaration", Boolean.FALSE);
 
         try {
             jaxbMarshaller.marshal(objectToWrite, dataWriter);

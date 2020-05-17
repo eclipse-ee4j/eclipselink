@@ -38,7 +38,7 @@ public class XMLDeclarationTestCases extends MarshallerFragmentTestCases{
             marshaller = jaxbContext.createMarshaller();
 
             originalSetting = true;
-            marshaller.setProperty("com.sun.xml.bind.xmlDeclaration", Boolean.FALSE);
+            marshaller.setProperty("org.glassfish.jaxb.xmlDeclaration", Boolean.FALSE);
 
             //set up controlObject
             controlObject = new Employee();

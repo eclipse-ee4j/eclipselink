@@ -45,7 +45,7 @@ public class CycleRecoverableTestCases extends JAXBWithJSONTestCases {
         // Use equals() method for object comparison.
         // Email's equals() always returns false, so Cycle cannot be detected.
         // Expecting StackOverflowError.
-        m.setProperty("com.sun.xml.bind.objectIdentitityCycleDetection", false);
+        m.setProperty("org.glassfish.jaxb.objectIdentitityCycleDetection", false);
 
         Email em1 = new Email(); em1.user = "me"; em1.domain = "here.com";
         Email em2 = new Email(); em2.user = "myself"; em2.domain = "overthere.co.uk";
@@ -61,7 +61,7 @@ public class CycleRecoverableTestCases extends JAXBWithJSONTestCases {
         assertNotNull("No exception caught as expected.", expectedException);
         assertEquals("Incorrect exception caught.", StackOverflowError.class, expectedException.getClass());
 
-        m.setProperty("com.sun.xml.bind.objectIdentitityCycleDetection", true);
+        m.setProperty("org.glassfish.jaxb.objectIdentitityCycleDetection", true);
     }
 
     public void testUnhandledCycle() throws Exception {

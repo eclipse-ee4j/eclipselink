@@ -14,16 +14,14 @@
 //  - rbarkhouse - 08 September 2011 - 2.4 - Initial implementation
 package org.eclipse.persistence.testing.jaxb.sun.xmllocation;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
-import jakarta.xml.bind.annotation.XmlTransient;
 
-import com.sun.xml.bind.annotation.XmlLocation;
+import org.glassfish.jaxb.core.annotation.XmlLocation;
 import org.xml.sax.Locator;
 
 @XmlRootElement(name = "data")
