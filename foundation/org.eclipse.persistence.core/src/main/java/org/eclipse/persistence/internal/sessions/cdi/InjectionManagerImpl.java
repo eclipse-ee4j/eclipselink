@@ -48,10 +48,10 @@ public class InjectionManagerImpl<T> implements InjectionManager<T> {
         if (beanManagerInstance == null) {
             Context context = new InitialContext();
             try {
-				beanManagerInstance = context.lookup("java:comp/BeanManager");
-			} catch(Exception e) {
-				beanManagerInstance = context.lookup("java:comp/env/BeanManager");
-			}
+                beanManagerInstance = context.lookup("java:comp/BeanManager");
+            } catch(NamingException e) {
+                beanManagerInstance = context.lookup("java:comp/env/BeanManager");
+            }
         }
         beanManager = (BeanManager) beanManagerInstance;
     }
