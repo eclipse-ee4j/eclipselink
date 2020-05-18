@@ -271,9 +271,9 @@
                                 import javax.xml.xpath.XPathFactory
                                 import javax.xml.parsers.DocumentBuilderFactory
 
-                                final NO_OF_TESTS_XPATH = "/html/body/div[@id='bodyColumn']/div/div[2]/table/tr[2]/td[1]/text()"
-                                final NO_OF_ERRORS_XPATH = "/html/body/div[@id='bodyColumn']/div/div[2]/table/tr[2]/td[2]/text()"
-                                final NO_OF_FAILURES_XPATH = "/html/body/div[@id='bodyColumn']/div/div[2]/table/tr[2]/td[3]/text()"
+                                final NO_OF_TESTS_XPATH = "/html/body/div[@id='bodyColumn']/div/section[2]/table/tr[2]/td[1]/text()"
+                                final NO_OF_ERRORS_XPATH = "/html/body/div[@id='bodyColumn']/div/section[2]/table/tr[2]/td[2]/text()"
+                                final NO_OF_FAILURES_XPATH = "/html/body/div[@id='bodyColumn']/div/section[2]/table/tr[2]/td[3]/text()"
                                 final OUTPUT_FILE = "ResultSummary.dat"
 
                                 def resultSummaryFile = new File(properties["nightlyTestReportsDir"] + "/" + OUTPUT_FILE)
