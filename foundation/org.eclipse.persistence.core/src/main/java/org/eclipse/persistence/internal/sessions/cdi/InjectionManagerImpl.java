@@ -49,7 +49,7 @@ public class InjectionManagerImpl<T> implements InjectionManager<T> {
             Context context = new InitialContext();
             try {
                 beanManagerInstance = context.lookup("java:comp/BeanManager");
-            } catch(Exception e) {
+            } catch(NamingException e) {
                 beanManagerInstance = context.lookup("java:comp/env/BeanManager");
             }
         }
