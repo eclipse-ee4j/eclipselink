@@ -37,7 +37,10 @@ env:
     - TEST_TARGET=test-jpa
     - TEST_TARGET=test-moxy
     - TEST_TARGET=test-sdo
-    - TEST_TARGET="test-wdf test-jpars test-dbws test-dbws-builder"
+    - TEST_TARGET="test-wdf
+    - TEST_TARGET="test-jpars"
+    - TEST_TARGET="test-dbws"
+    - TEST_TARGET="test-dbws-builder"
     - TEST_TARGET=build-distribution
 
 jdk:
