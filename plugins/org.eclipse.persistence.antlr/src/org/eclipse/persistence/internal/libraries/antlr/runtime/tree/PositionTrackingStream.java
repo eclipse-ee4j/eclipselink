@@ -1,6 +1,7 @@
 /*
  [The "BSD license"]
- Copyright (c) 2005-2009 Terence Parr
+ Copyright (c) 2012 Terence Parr
+ Copyright (c) 2012 Sam Harwell
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -25,31 +26,32 @@
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.eclipse.persistence.internal.libraries.antlr.runtime;
+package org.eclipse.persistence.internal.libraries.antlr.runtime.tree;
 
-/** A semantic predicate failed during validation.  Validation of predicates
- *  occurs when normally parsing the alternative just like matching a token.
- *  Disambiguating predicate evaluation occurs when we hoist a predicate into
- *  a prediction decision.
+/**
+ *
+ * @author Sam Harwell
  */
-public class FailedPredicateException extends RecognitionException {
-    public String ruleName;
-    public String predicateText;
+public interface PositionTrackingStream<T> {
 
-    /** Used for remote debugger deserialization */
-    public FailedPredicateException() {;}
+    /**
+     * Returns an element containing concrete information about the current
+     * position in the stream.
+     *
+     * @param allowApproximateLocation if {@code false}, this method returns
+     * {@code null} if an element containing exact information about the current
+     * position is not available
+     */
+    T getKnownPositionElement(boolean allowApproximateLocation);
 
-    public FailedPredicateException(IntStream input,
-                                    String ruleName,
-                                    String predicateText)
-    {
-        super(input);
-        this.ruleName = ruleName;
-        this.predicateText = predicateText;
-    }
+    /**
+     * Determines if the specified {@code element} contains concrete position
+     * information.
+     *
+     * @param element the element to check
+     * @return {@code true} if {@code element} contains concrete position
+     * information, otherwise {@code false}
+     */
+    boolean hasPositionInformation(T element);
 
-    @Override
-    public String toString() {
-        return "FailedPredicateException("+ruleName+",{"+predicateText+"}?)";
-    }
 }
