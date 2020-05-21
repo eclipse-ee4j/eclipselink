@@ -186,7 +186,7 @@
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <!-- Fix for 290177 below removed temporarily to avoid out-of-memeory issues with LRG run -->
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
-            <junit printsummary="withOutAndErr" fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+            <junit failureproperty="junit.failed" printsummary="withOutAndErr" fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
@@ -215,6 +215,14 @@
                 </batchtest>
                 <classpath refid="@{runpathref}"/>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
             <!-- Create JUnit report -->
             <mkdir dir="${report.dir}/@{customcontext}"/>
             <junitreport todir="${report.dir}/@{customcontext}">
@@ -237,7 +245,7 @@
             <mkdir dir="${report.dir}/srg/@{customcontext}"/>
             <echo message="customContext=@{customcontext}"/>
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
-            <junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
+            <junit failureproperty="junit.failed" printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
                 <jvmarg value="-XX:MaxPermSize=256m"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
@@ -258,6 +266,14 @@
                 </batchtest>
                 <classpath refid="@{runpathref}"/>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed"/>
+                        <istrue value="${test.fail.fast}"/>
+                    </and>
+                </condition>
+            </fail>
             <!-- Create JUnit report -->
             <junitreport todir="${report.dir}/srg/@{customcontext}">
                 <fileset dir="${report.dir}/srg/@{customcontext}">
