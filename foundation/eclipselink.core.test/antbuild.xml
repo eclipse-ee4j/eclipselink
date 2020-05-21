@@ -533,6 +533,14 @@
             <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="junit.failed"/>
+                    <istrue value="${fail.on.error}"/>
+                </and>
+            </condition>
+        </fail>
     </target>
 
     <target name="generate-report">

@@ -2182,7 +2182,7 @@
         <!--<property name="additional.jvmargs" value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8787"/>-->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit printsummary="yes" haltonfailure="${test.haltonfailure}" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
+        <junit printsummary="yes" failureproperty="junit.failed" haltonfailure="${test.haltonfailure}" fork="yes" forkmode="once" showoutput="true" maxmemory="${max.heap.memory}" dir="${run.dir}">
             <sysproperty key="proxy.user.name" value="PAS_PROXY"/>
             <sysproperty key="pa.connection.user" value="${db.user}"/>
             <sysproperty key="pa.connection.password" value="${db.pwd}"/>
@@ -2206,6 +2206,14 @@
             <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="junit.failed"/>
+                    <istrue value="${fail.on.error}"/>
+                </and>
+            </condition>
+        </fail>
     </target>
 
     <!-- Generic target for running spring tests. -->
@@ -2223,7 +2231,7 @@
         <!-- Can be set e.g. in test.properties to add VM options for a particular platform/driver  -->
         <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
 
-        <junit printsummary="yes" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
+        <junit printsummary="yes" failureproperty="junit.failed" haltonfailure="yes" fork="yes" forkmode="once" showoutput="true" maxmemory="512m" dir="${run.dir}">
             <sysproperty key="TEST_SERVER_PLATFORM" value="org.eclipse.persistence.testing.framework.server.SpringPlatform"/>
             <sysproperty key="proxy.user.name" value="${oracle.proxy.user}"/>
             <sysproperty key="run.metadata.cache.test.suite" value="${run.metadata.cache.test.suite}"/>
@@ -2245,6 +2253,14 @@
             <test name="${TEST_CLASS}" haltonfailure="no" outfile="${report.dir}/${TEST_CLASS}-test-results">
             </test>
         </junit>
+        <fail message="TESTS FAILED !">
+            <condition>
+                <and>
+                    <isset property="junit.failed"/>
+                    <istrue value="${fail.on.error}"/>
+                </and>
+            </condition>
+        </fail>
     </target>
 
     <target name="generate-report">
@@ -3568,6 +3584,14 @@
                 <formatter type="xml"/>
                 <test name="@{suite}" haltonfailure="no" outfile="@{dir.report}/@{suite}-test-results"/>
             </junit>
+            <fail message="TESTS FAILED !">
+                <condition>
+                    <and>
+                        <isset property="junit.failed"/>
+                        <istrue value="${fail.on.error}"/>
+                    </and>
+                </condition>
+            </fail>
         </sequential>
     </macrodef>
 
