@@ -367,6 +367,7 @@
         <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${classes.dir}"/>
             <fileset dir="." includes="${dbws_util.jar}"/>
+            <fileset file="${dbws_test.build.location}/${eclipselink.dbws.test.common.jar}"/>
         </delete>
     </target>
 

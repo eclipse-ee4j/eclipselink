@@ -470,7 +470,11 @@
     </target>
 
     <!-- Cleans all build generated files. -->
-    <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
+    <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build">
+        <antcall target="clean-plugins"/>
+        <antcall target="clean-local-compdeps"/>
+        <antcall target="clean-internal-compdeps"/>
+    </target>
 
     <target name="clean-runtime" depends="generate-local-compdeps, clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
     <!--   This allows testing to call a specific target that won't remove the default
@@ -490,6 +494,8 @@
         <delete failonerror="false">
             <fileset dir="${eclipselink.util.rename}" includes="${package-rename.jar}*"/>
         </delete>
+        <delete failonerror="false" dir="${build.dir}"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.features.base}" target="clean"/>
     </target>
 
     <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core">
@@ -502,6 +508,7 @@
         <delete failonerror="false">
             <fileset dir="." includes="*${eclipselink.zip.suffix}"/>
         </delete>
+        <ant antfile="antbuild.xml" dir="${eclipselink.oraclelibs}"             target="clean"/>
     </target>
     <target name="clean-core" depends="check-maven" description="Clean the maven built runtime projects">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
@@ -530,11 +537,19 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}"      target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"            target="clean"/>
+        <!-- Clean JPA JSE Test. Ant project can't be called without class org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask on the classpath (custom Ant task) -->
+        <delete dir="${eclipselink.jpa.test.jse}/${classes.dir}" />
+        <delete dir="${eclipselink.jpa.test.jse}/${run.dir}" />
+        <delete dir="${eclipselink.jpa.test.jse}/${report.dir}" />
+
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"        target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"          target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"           target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}"   target="clean"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
@@ -547,6 +562,10 @@
                 <exclude name="**/readme.for.distribution**"/>
                 <exclude name="**/org.eclipse.persistence.oracle*.jar"/>
                 <exclude name="**/javax.persistence_unsigned_for_testing_1.0.0.jar"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa.plugins}">
+                <include name="${persistence22.jar}"/>
+                <include name="${persistence22.src.jar}"/>
             </fileset>
         </delete>
     </target>
@@ -569,6 +588,21 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="clean"/>
     </target>
 
+    <!-- Clean internal compilation dependencies (ASM, ANTLR). -->
+    <target name="clean-internal-compdeps" description="Clean local p2 repository of internal compiler dependencies">
+        <java dir="${eclipselink.compdeps.internal}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
+            <arg line="-B clean"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
     <!-- Prepare/copy internal compilation dependencies (ASM, ANTLR) into local Tycho repository. -->
     <target name="generate-internal-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of internal compiler dependencies">
         <echo message="Generating local internal 'Compile Dependency P2 Repository' using Tycho."/>
@@ -582,6 +616,20 @@
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
             <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
             <arg line="-B clean verify"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="clean-local-compdeps" description="Clean local compiler dependencies">
+        <java dir="${eclipselink.compdeps}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
+            <arg line="-B clean"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
                     <include name="plexus-classworlds-*.jar"/>
