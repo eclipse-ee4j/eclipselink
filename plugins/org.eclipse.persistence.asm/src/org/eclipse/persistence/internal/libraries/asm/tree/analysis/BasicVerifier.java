@@ -47,7 +47,7 @@ public class BasicVerifier extends BasicInterpreter {
    * use this constructor</i>. Instead, they must use the {@link #BasicVerifier(int)} version.
    */
   public BasicVerifier() {
-    super(ASM7);
+    super(/* latest api = */ ASM8);
     if (getClass() != BasicVerifier.class) {
       throw new IllegalStateException();
     }
@@ -58,7 +58,8 @@ public class BasicVerifier extends BasicInterpreter {
    *
    * @param api the ASM API version supported by this interpreter. Must be one of {@link
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7} or {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}.
    */
   protected BasicVerifier(final int api) {
     super(api);

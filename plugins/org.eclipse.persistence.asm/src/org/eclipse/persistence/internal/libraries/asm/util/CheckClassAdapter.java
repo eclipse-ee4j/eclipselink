@@ -174,7 +174,7 @@ public class CheckClassAdapter extends ClassVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public CheckClassAdapter(final ClassVisitor classVisitor, final boolean checkDataFlow) {
-    this(/* latest api = */ Opcodes.ASM7, classVisitor, checkDataFlow);
+    this(/* latest api = */ Opcodes.ASM8, classVisitor, checkDataFlow);
     if (getClass() != CheckClassAdapter.class) {
       throw new IllegalStateException();
     }
@@ -184,7 +184,8 @@ public class CheckClassAdapter extends ClassVisitor {
    * Constructs a new {@link CheckClassAdapter}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}.
    * @param classVisitor the class visitor to which this adapter must delegate calls.
    * @param checkDataFlow {@literal true} to perform basic data flow checks, or {@literal false} to
    *     not perform any data flow check (see {@link CheckMethodAdapter}). This option requires
@@ -225,6 +226,7 @@ public class CheckClassAdapter extends ClassVisitor {
             | Opcodes.ACC_ANNOTATION
             | Opcodes.ACC_ENUM
             | Opcodes.ACC_DEPRECATED
+            | Opcodes.ACC_RECORD
             | Opcodes.ACC_MODULE);
     if (name == null) {
       throw new IllegalArgumentException("Illegal class name (null)");
@@ -320,7 +322,14 @@ public class CheckClassAdapter extends ClassVisitor {
     super.visitNestMember(nestMember);
   }
 
+  /**
+   * <b>Experimental, use at your own risk.</b>.
+   *
+   * @param permittedSubtype the internal name of a permitted subtype.
+   * @deprecated this API is experimental.
+   */
   @Override
+  @Deprecated
   public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
     checkState();
     CheckMethodAdapter.checkInternalName(version, permittedSubtype, "permittedSubtype");
@@ -376,17 +385,16 @@ public class CheckClassAdapter extends ClassVisitor {
   }
 
   @Override
-  public RecordComponentVisitor visitRecordComponentExperimental(
-      final int access, final String name, final String descriptor, final String signature) {
+  public RecordComponentVisitor visitRecordComponent(
+      final String name, final String descriptor, final String signature) {
     checkState();
-    checkAccess(access, Opcodes.ACC_DEPRECATED);
     CheckMethodAdapter.checkUnqualifiedName(version, name, "record component name");
     CheckMethodAdapter.checkDescriptor(version, descriptor, /* canBeVoid = */ false);
     if (signature != null) {
       checkFieldSignature(signature);
     }
     return new CheckRecordComponentAdapter(
-        api, super.visitRecordComponentExperimental(access, name, descriptor, signature));
+        api, super.visitRecordComponent(name, descriptor, signature));
   }
 
   @Override
@@ -1033,7 +1041,7 @@ public class CheckClassAdapter extends ClassVisitor {
       final PrintWriter printWriter) {
     ClassNode classNode = new ClassNode();
     classReader.accept(
-        new CheckClassAdapter(Opcodes.ASM8_EXPERIMENTAL, classNode, false) {},
+        new CheckClassAdapter(Opcodes.ASM9_EXPERIMENTAL, classNode, false) {},
         ClassReader.SKIP_DEBUG);
 
     Type syperType = classNode.superName == null ? null : Type.getObjectType(classNode.superName);
