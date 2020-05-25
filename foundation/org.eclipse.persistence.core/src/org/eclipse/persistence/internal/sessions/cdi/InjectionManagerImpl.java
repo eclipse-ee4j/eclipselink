@@ -47,7 +47,11 @@ public class InjectionManagerImpl<T> implements InjectionManager<T> {
     public InjectionManagerImpl(Object beanManagerInstance) throws NamingException {
         if (beanManagerInstance == null) {
             Context context = new InitialContext();
-            beanManagerInstance = context.lookup("java:comp/BeanManager");
+            try {
+                beanManagerInstance = context.lookup("java:comp/BeanManager");
+            } catch(NamingException e) {
+                beanManagerInstance = context.lookup("java:comp/env/BeanManager");
+            }
         }
         beanManager = (BeanManager) beanManagerInstance;
     }
