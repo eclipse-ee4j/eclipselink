@@ -5874,6 +5874,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         this.optimisticReadLockObjects = null;
         this.batchQueries = null;
         this.privateOwnedObjects = null;
+        this.newObjectsCloneToMergeOriginal = null;
         if(shouldClearCache) {
             clearIdentityMapCache();
         }
