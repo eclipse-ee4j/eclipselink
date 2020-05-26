@@ -1137,10 +1137,15 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
                        //This means empty tag
                        if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
-                            Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
-                            if(mapping.isAbstractDirectMapping() && !isNil() && ((DirectMapping)mapping).getNullPolicy().isNullRepresentedByXsiNil()){
-                                removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
-                            }
+                           Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
+                           if(mapping.isAbstractDirectMapping() && isNil()) {
+                               Object nullValue = ((DirectMapping) mapping).getNullValue();
+                               if (!(Constants.EMPTY_STRING.equals(nullValue))) {
+                                   setAttributeValue(null, mapping);
+                               }
+                           }
+                           if(mapping.isAbstractDirectMapping() && !isNil() && ((DirectMapping)mapping).getNullPolicy().isNullRepresentedByXsiNil()){
+                               removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);                            }
                         }
 
                     }
