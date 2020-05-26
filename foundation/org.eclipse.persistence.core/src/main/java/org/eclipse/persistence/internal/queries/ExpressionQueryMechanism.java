@@ -580,7 +580,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     returnFieldsForTable.add(item);
                 }
             }
-            if (returnFieldsForTable.size() > 0) {
+            if (!returnFieldsForTable.isEmpty()) {
                 insertStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateInsert());
             }
         }
