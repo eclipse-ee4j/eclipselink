@@ -77,6 +77,7 @@
         - test-core : runs core tests
         - test-core-srg : runs core SRG
         - test-jpa : runs JPA tests
+        - test-jpa-jse : runs JPA JSE tests
         - test-moxy : runs MOXY tests
         - test-moxy-srg : runs MOXY SRG
         - test-jaxb : runs MOXY jaxb tests
@@ -1579,7 +1580,7 @@
             depends="clear-db, test-core-srg, test-jpa21-srg, test-jpars, test-moxy-srg, test-sdo-srg, test-dbws-srg, test-dbws-builder-srg"
             />
     <target name="test-lrg" description="run all the LRG test suites"
-            depends="clear-db, test-core, test-jpa21, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
+            depends="clear-db, test-core, test-jpa21, test-jpa-jse, test-wdf, test-jpars, test-moxy, test-sdo, test-dbws, test-dbws-builder"
             />
 
     <!-- Run clear-db -->
@@ -1680,6 +1681,10 @@
     </target>
     <target name="test-perf" description="run the performance tests">
         <ant antfile="antbuild.xml" dir="${eclipselink.perf.test}" target="test"/>
+    </target>
+    <!-- run JSE tests -->
+    <target name="test-jpa-jse" description="run the JPA JSE tests">
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test.jse}" target="test"/>
     </target>
 
     <target name="init-coverage">
