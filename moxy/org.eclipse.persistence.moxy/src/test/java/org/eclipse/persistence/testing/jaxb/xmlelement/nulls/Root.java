@@ -49,7 +49,7 @@ public class Root {
     private List<Object> refComplexList3;//nillable=false
     private List<Object> refComplexList4;//nillable=true
 
-    private int setString1CallCount = 0;
+    private boolean isSetString1MethodCalled = false;
 
     @XmlElement(nillable=false)
     public List<Child> getChildList3() {
@@ -72,7 +72,7 @@ public class Root {
     }
     public void setString1(String string1) {
         this.string1 = string1;
-        setString1CallCount++;
+        isSetString1MethodCalled = true;
     }
     @XmlElement(nillable=true)
     public String getString2() {
@@ -240,8 +240,8 @@ public class Root {
         this.refComplexList4 = refComplexList4;
     }
     @XmlTransient
-    public int getSetString1CallCount() {
-        return setString1CallCount;
+    public boolean isSetString1MethodCalled() {
+        return isSetString1MethodCalled;
     }
     public boolean equals(Object obj){
         if(!(obj instanceof Root)){
@@ -334,7 +334,7 @@ public class Root {
         if((refComplexList4 == null && compareObject.refComplexList4 !=null)   || (refComplexList4 != null && !refComplexList4.equals(refComplexList4))){
             return false;
         }
-        if(setString1CallCount != compareObject.getSetString1CallCount()){
+        if(isSetString1MethodCalled != compareObject.isSetString1MethodCalled()){
             return false;
         }
         return true;

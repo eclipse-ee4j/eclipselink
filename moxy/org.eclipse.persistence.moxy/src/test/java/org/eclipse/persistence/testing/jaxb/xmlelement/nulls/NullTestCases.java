@@ -14,14 +14,12 @@
 //     Denise Smith - 2.4 - January 2013
 package org.eclipse.persistence.testing.jaxb.xmlelement.nulls;
 
-import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
-
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class NullTestCases extends JAXBWithJSONTestCases{
@@ -179,9 +177,11 @@ public class NullTestCases extends JAXBWithJSONTestCases{
         return root;
     }
 
-
-    public void testRoundTrip(){
-        //not applicable
+    //Test for a bug 561757
+    public void testRoundTrip() throws Exception {
+        jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+        File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());
+        Root testObject = (Root)jaxbUnmarshaller.unmarshal(file);
+        assertTrue("Setter method for string1 setString1() wasn't called!", testObject.isSetString1MethodCalled());
     }
-
 }
