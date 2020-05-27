@@ -22,8 +22,11 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.returninsert.model.*;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.Test;
 
@@ -60,6 +63,7 @@ public class TestReturnInsert {
         testCreate();
         testFindUpdate();
         testQuery();
+        testCreateJoined();
         emf.close();
     }
 
@@ -73,6 +77,14 @@ public class TestReturnInsert {
             }
             try {
                 session.executeNonSelectingSQL("DROP TABLE JPA22_RETURNINSERT_MASTER");
+            } catch (Exception ignore) {
+            }
+            try {
+                session.executeNonSelectingSQL("DROP TABLE JPA22_RETURNINSERT_DETAIL_JOINED");
+            } catch (Exception ignore) {
+            }
+            try {
+                session.executeNonSelectingSQL("DROP TABLE JPA22_RETURNINSERT_MASTER_JOINED");
             } catch (Exception ignore) {
             }
             try {
@@ -97,6 +109,12 @@ public class TestReturnInsert {
                         "    COL5_VIRTUAL VARCHAR (100) AS ( COL5 || '_col5' ) VIRTUAL)");
                 session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT PKJPA22_RETURNINSERT_DETAIL PRIMARY KEY ( ID_VIRTUAL, ID, COL1, COL2 )");
                 session.executeNonSelectingSQL("ALTER TABLE JPA22_RETURNINSERT_DETAIL ADD CONSTRAINT FKJPA22_RETURNINSERT_MASTER_DETAIL FOREIGN KEY ( ID_VIRTUAL, ID, COL1 ) REFERENCES JPA22_RETURNINSERT_MASTER ( ID_VIRTUAL, ID, COL1 ) NOT DEFERRABLE");
+                session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_MASTER_JOINED  (" +
+                        "    ID     NUMBER(15) PRIMARY KEY ," +
+                        "    TYPE   VARCHAR2(50) NOT NULL)");
+                session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_DETAIL_JOINED  (" +
+                        "    ID          NUMBER(15) PRIMARY KEY ," +
+                        "    DETAIL_NR   NUMBER(15) AS ( ID * 10 ) VIRTUAL)");
             } catch (Exception ignore) {
             }
         } finally {
@@ -139,6 +157,29 @@ public class TestReturnInsert {
         assertEquals("abc_col2", returnInsertDetail.getReturnInsertDetailEmbedded().getCol2Virtual());
         assertEquals("opq_col4", returnInsertDetail.getCol4Virtual());
         assertEquals("lmn_col5", returnInsertDetail.getReturnInsertDetailEmbedded().getReturnInsertDetailEmbeddedEmbedded().getCol5Virtual());
+    }
+
+    private void testCreateJoined() {
+        ReturnInsertDetailJoined returnInsertDetailJoined = null;
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            returnInsertDetailJoined = new ReturnInsertDetailJoined(1L, "TYPE_A");
+            returnInsertDetailJoined = em.merge(returnInsertDetailJoined);
+
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+        assertEquals(Long.valueOf(1L), returnInsertDetailJoined.getId());
+        assertEquals("TYPE_A", returnInsertDetailJoined.getType());
+        assertEquals(Long.valueOf(10L), returnInsertDetailJoined.getDetailNumber());
     }
 
     private void testFindUpdate() {
@@ -254,5 +295,4 @@ public class TestReturnInsert {
         returnInsertDetailPK.setCol2("abc");
         return returnInsertDetailPK;
     }
-
 }
