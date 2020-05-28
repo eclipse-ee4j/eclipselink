@@ -3907,6 +3907,15 @@ public class PersistenceUnitProperties {
     public static final String NAMING_INTO_INDEXED = "eclipselink.jpa.naming_into_indexed";
 
     /**
+     * The "<code>eclipselink.packages-to-scan</code>" property
+     * allows you to specify a comma separated list of packages you allow to be scanned.
+     * This could help reducing startup time.
+     * <p>
+     * By default, no restriction will be applied and classes from every packages will be considered.
+     */
+    public static final String PACKAGES_TO_SCAN = "eclipselink.packages-to-scan";
+
+    /**
      * INTERNAL: The following properties will not be displayed through logging
      * but instead have an alternate value shown in the log.
      */
