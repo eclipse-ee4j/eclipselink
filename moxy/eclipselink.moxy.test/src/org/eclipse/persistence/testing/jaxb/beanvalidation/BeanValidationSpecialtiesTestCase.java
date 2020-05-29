@@ -292,7 +292,15 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
 
         @Override
         public void close() {
+        }
 
+        @Override
+        public ClockProvider getClockProvider() {
+            return new ClockProvider() {
+                public Clock getClock() {
+                    return Clock.systemUTC();
+                }
+            };
         }
     }
 }
