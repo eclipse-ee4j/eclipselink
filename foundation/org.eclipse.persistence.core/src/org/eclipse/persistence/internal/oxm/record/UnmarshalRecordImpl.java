@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1090,12 +1090,17 @@ public class UnmarshalRecordImpl<TRANSFORMATION_RECORD extends TransformationRec
 
                        //This means empty tag
                        if(textNodeUnmarshalNodeValue.isMappingNodeValue()) {
-                            Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
-                            if(mapping.isAbstractDirectMapping() && !isNil() && ((DirectMapping)mapping).getNullPolicy().isNullRepresentedByXsiNil()){
-                                removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
-                            }
-                        }
-
+                           Mapping mapping = ((MappingNodeValue)textNodeUnmarshalNodeValue).getMapping();
+                           if(mapping.isAbstractDirectMapping() && isNil()) {
+                               Object nullValue = ((DirectMapping) mapping).getNullValue();
+                               if (!(Constants.EMPTY_STRING.equals(nullValue))) {
+                                   setAttributeValue(null, mapping);
+                               }
+                           }
+                           if(mapping.isAbstractDirectMapping() && !isNil() && ((DirectMapping)mapping).getNullPolicy().isNullRepresentedByXsiNil()){
+                               removeNullCapableValue((NullCapableValue)textNodeUnmarshalNodeValue);
+                           }
+                       }
                     }
                 }
             }
