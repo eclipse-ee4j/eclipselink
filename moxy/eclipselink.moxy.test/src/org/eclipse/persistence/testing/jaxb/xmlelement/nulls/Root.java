@@ -69,10 +69,10 @@ public class Root {
     @XmlElement(nillable=false)
     public String getString1() {
         return string1;
-        isSetString1MethodCalled = true;
     }
     public void setString1(String string1) {
         this.string1 = string1;
+        isSetString1MethodCalled = true;
     }
     @XmlElement(nillable=true)
     public String getString2() {
