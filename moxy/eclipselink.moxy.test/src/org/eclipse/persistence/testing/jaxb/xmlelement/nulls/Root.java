@@ -71,6 +71,7 @@ public class Root {
 	}
 	public void setString1(String string1) {
 		this.string1 = string1;
+		isSetString1MethodCalled = true;
 	}
 	@XmlElement(nillable=true)
 	public String getString2() {
