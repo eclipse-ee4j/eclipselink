@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -12,14 +12,12 @@
  ******************************************************************************/
 package org.eclipse.persistence.testing.jaxb.xmlelement.nulls;
 
-import java.io.InputStream;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-
+import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.testing.jaxb.JAXBWithJSONTestCases;
 
 public class NullTestCases extends JAXBWithJSONTestCases{
@@ -176,10 +174,12 @@ public class NullTestCases extends JAXBWithJSONTestCases{
 		root.setRefComplexList4(refComplexList);
 		return root;
 	}
-	
-	
-	public void testRoundTrip(){
-		//not applicable
+
+	//Test for a bug 561757
+	public void testRoundTrip() throws Exception {
+		jaxbUnmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
+		File file = new File(ClassLoader.getSystemResource(JSON_RESOURCE).getFile());
+		Root testObject = (Root)jaxbUnmarshaller.unmarshal(file);
+		assertTrue("Setter method for string1 setString1() wasn't called!", testObject.isSetString1MethodCalled());
 	}
-		
 }
