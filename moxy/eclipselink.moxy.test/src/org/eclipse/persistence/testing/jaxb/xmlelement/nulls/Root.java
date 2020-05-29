@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,8 +19,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.eclipse.persistence.testing.jaxb.xmlelement.model.Address;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
 public class Root {
@@ -50,6 +49,8 @@ public class Root {
     private List<Object> refComplexList3;//nillable=false
     private List<Object> refComplexList4;//nillable=true
 
+    private boolean isSetString1MethodCalled = false;
+
     @XmlElement(nillable=false)
     public List<Child> getChildList3() {
         return childList3;
@@ -71,6 +72,7 @@ public class Root {
     }
     public void setString1(String string1) {
         this.string1 = string1;
+        isSetString1MethodCalled = true;
     }
     @XmlElement(nillable=true)
     public String getString2() {
@@ -237,6 +239,10 @@ public class Root {
     public void setRefComplexList4(List<Object> refComplexList4) {
         this.refComplexList4 = refComplexList4;
     }
+    @XmlTransient
+    public boolean isSetString1MethodCalled() {
+        return isSetString1MethodCalled;
+    }
     public boolean equals(Object obj){
         if(!(obj instanceof Root)){
             return false;
@@ -326,6 +332,9 @@ public class Root {
             return false;
         }
         if((refComplexList4 == null && compareObject.refComplexList4 !=null)   || (refComplexList4 != null && !refComplexList4.equals(refComplexList4))){
+            return false;
+        }
+        if(isSetString1MethodCalled != compareObject.isSetString1MethodCalled()){
             return false;
         }
         return true;
