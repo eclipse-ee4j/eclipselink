@@ -81,7 +81,7 @@ before_script:
   - echo 'db.user=root' >> $HOME/build.properties
   - echo 'db.pwd=root' >> $HOME/build.properties
   - echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
-  - echo 'eclipse.install.dir=$HOME/extension.lib.external/eclipse' >> $HOME/build.properties
+  - echo "eclipse.install.dir=$HOME/extension.lib.external/eclipse" >> $HOME/build.properties
 
 script:
   - cat $HOME/build.properties
