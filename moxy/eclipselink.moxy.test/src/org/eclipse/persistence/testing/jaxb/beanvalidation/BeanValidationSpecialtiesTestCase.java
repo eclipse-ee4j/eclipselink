@@ -296,7 +296,7 @@ public class BeanValidationSpecialtiesTestCase extends junit.framework.TestCase 
         public void close() {
         }
 
-        @Override
+        //@Override (commented to allow running tests against 1.0.1)
         public ClockProvider getClockProvider() {
             return new ClockProvider() {
                 public Clock getClock() {
