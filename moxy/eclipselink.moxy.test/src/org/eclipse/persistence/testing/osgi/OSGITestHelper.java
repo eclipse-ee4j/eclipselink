@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -34,7 +34,7 @@ public class OSGITestHelper {
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "javax.xml.bind_2.2.12.v201410011542.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "javax.ws.rs_1.1.1.v20101004-1200.jar");
     private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_6.2.0.v201808041654.jar");
-    private static final String BEAN_VALIDATION_LIB = System.getProperty("javax.validation.lib", "javax.validation_1.1.0.v201304101302.jar");
+    private static final String BEAN_VALIDATION_LIB = System.getProperty("javax.validation.lib", "javax.validation_2.0.1.v202005291120.jar");
 
     public static Option[] getDefaultOptions() {
         return options(
