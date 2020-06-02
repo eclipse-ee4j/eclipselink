@@ -55,5 +55,5 @@ echo "db.url=$TEST_DB_URL" >> $HOME/build.properties
 echo "db.user=$TEST_DB_USERNAME" >> $HOME/build.properties
 echo "db.pwd=$TEST_DB_PASSWORD" >> $HOME/build.properties
 echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
-echo 'eclipse.install.dir=$HOME/extension.lib.external/eclipse' >> $HOME/build.properties
+echo "eclipse.install.dir=$HOME/extension.lib.external/eclipse" >> $HOME/build.properties
 echo hudson.workspace=$WORKSPACE
