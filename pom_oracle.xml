@@ -63,8 +63,6 @@
     </pluginRepositories>
 
     <modules>
-        <module>foundation/org.eclipse.persistence.oracle.test</module>
-
         <!--TODO uncomment after sdoapi dependency resolution-->
         <!--<module>foundation/eclipselink.extension.oracle.spatial.test</module>-->
         <!--JPA test module-->
@@ -84,26 +82,6 @@
             <dependency>
                 <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>simplefan</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.ojdbc</groupId>
-                <artifactId>xmlparserv2</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.ojdbc</groupId>
-                <artifactId>ucp</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.ojdbc</groupId>
-                <artifactId>xdb</artifactId>
-                <version>${oracle.jdbc.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.oracle.ojdbc</groupId>
-                <artifactId>dms</artifactId>
                 <version>${oracle.jdbc.version}</version>
             </dependency>
             <dependency>

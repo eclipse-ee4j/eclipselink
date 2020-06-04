@@ -206,7 +206,7 @@
         <module>utils/eclipselink.utils.rename</module>
 
         <!--Oracle Extensions-->
-        <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle</module>
+        <module>foundation/org.eclipse.persistence.oracle</module>
         <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle.nosql</module>
 
         <!--EclipseLink Bundles-->
@@ -716,6 +716,31 @@
                 <groupId>com.oracle.kv</groupId>
                 <artifactId>oracle-nosql-client</artifactId>
                 <version>${oracle.nosql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>ojdbc8</artifactId>
+                <version>${oracle.jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>xmlparserv2</artifactId>
+                <version>${oracle.jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>ucp</artifactId>
+                <version>${oracle.jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>xdb</artifactId>
+                <version>${oracle.jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>dms</artifactId>
+                <version>${oracle.jdbc.version}</version>
             </dependency>
             <!--Test dependencies-->
             <!--Test framework-->
@@ -1440,17 +1465,6 @@
                 <!--Oracle Extensions-->
                 <module>pom_oracle.xml</module>
             </modules>
-            <dependencyManagement>
-                <dependencies>
-                    <!--Oracle proprietary dependencies-->
-                    <!--Oracle JDBC driver could be used for testing in the non Oracle modules core test, jpa,...-->
-                    <dependency>
-                        <groupId>com.oracle.ojdbc</groupId>
-                        <artifactId>ojdbc8</artifactId>
-                        <version>${oracle.jdbc.version}</version>
-                    </dependency>
-                </dependencies>
-            </dependencyManagement>
         </profile>
         <!--TODO simplify properties part jee.client.XXXX to load it from file-->
         <!--Testing JEE server profiles WildFly, GlassFish, Weblogic-->
