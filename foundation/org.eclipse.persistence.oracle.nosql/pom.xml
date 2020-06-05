@@ -25,14 +25,12 @@
 
     <parent>
         <groupId>org.eclipse.persistence</groupId>
-        <artifactId>org.eclipse.persistence.oracle.parent</artifactId>
+        <artifactId>org.eclipse.persistence.parent</artifactId>
         <version>3.0.0-SNAPSHOT</version>
-        <relativePath>../../pom_oracle.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
     <properties>
-        <!--Distribution directory-->
-        <distribution.directory>${project.root.location}/bundles/org.eclipse.persistence.oracle.nosql/src/main/dependencies</distribution.directory>
         <test-skip-oracle-nosql>${skipTests}</test-skip-oracle-nosql>
     </properties>
 
@@ -57,7 +55,7 @@
         </dependency>
         <!--Oracle proprietary dependencies-->
         <dependency>
-            <groupId>com.oracle.javavm.jrf</groupId>
+            <groupId>com.oracle.database.messaging</groupId>
             <artifactId>aqapi</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
@@ -69,6 +67,12 @@
             <scope>test</scope>
         </dependency>
         <!--API dependecies-->
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>javax.jms-api</artifactId>
@@ -230,63 +234,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-to-distribution-module</id>
-                        <phase>install</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <type>jar</type>
-                            <destFileName>${project.artifactId}.jar</destFileName>
-                        </artifactItem>
-                        <artifactItem>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <type>jar</type>
-                            <classifier>sources</classifier>
-                            <destFileName>${project.artifactId}-sources.jar</destFileName>
-                        </artifactItem>
-                        <artifactItem>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <type>jar</type>
-                            <classifier>javadoc</classifier>
-                            <destFileName>${project.artifactId}-javadoc.jar</destFileName>
-                        </artifactItem>
-                        <artifactItem>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <type>test-jar</type>
-                            <classifier>tests</classifier>
-                            <destFileName>${project.artifactId}-tests.jar</destFileName>
-                        </artifactItem>
-                        <artifactItem>
-                            <groupId>${project.groupId}</groupId>
-                            <artifactId>${project.artifactId}</artifactId>
-                            <version>${project.version}</version>
-                            <type>test-jar</type>
-                            <classifier>test-sources</classifier>
-                            <destFileName>${project.artifactId}-test-sources.jar</destFileName>
-                        </artifactItem>
-                    </artifactItems>
-                    <outputDirectory>${distribution.directory}</outputDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>

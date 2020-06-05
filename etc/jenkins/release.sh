@@ -44,10 +44,6 @@ fi
 
 echo '-[ mvn version set ]--------------------------------------'
 mvn --no-transfer-progress -DnewVersion=${RELEASE_VERSION} -DgenerateBackupPoms=false -Doracle.modules.subdirectory=bundles clean org.codehaus.mojo:versions-maven-plugin:2.7:set
-echo '-[ mvn version update-parent oracle.nosql]--------------------------------------'
-#Command mvn -N -DgenerateBackupPoms=false -Doracle.modules.subdirectory=bundles clean org.codehaus.mojo:versions-maven-plugin:2.7:update-parent -f bundles/org.eclipse.persistence.oracle.nosql/pom.xml
-#doesn't work there because there is path to the module based on property e.g. ${oracle.modules.subdirectory}/org.eclipse.persistence.oracle.nosql
-sed -i 's/'${CURRENT_VERSION}'/'${RELEASE_VERSION}'/g' bundles/org.eclipse.persistence.oracle.nosql/pom.xml
 echo '-[ mvn version update-parent ALL]--------------------------------------'
 mvn -DparentVersion=${RELEASE_VERSION} -DgenerateBackupPoms=false -Doracle.modules.subdirectory=bundles clean org.codehaus.mojo:versions-maven-plugin:2.7:update-parent
 

@@ -38,7 +38,10 @@ public class OracleTestModel extends TestModel {
         List tests = new ArrayList();
 
         tests.add("org.eclipse.persistence.testing.tests.conversion.ConversionManagerOracleTestModel");
-        tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");
+        // disabled due to javax.jms vs jakarta.jms conflict:
+        // java.lang.ClassCastException: oracle.jms.AQjmsTopicConnectionFactory cannot be cast to jakarta.jms.TopicConnectionFactory
+        // at org.eclipse.persistence.sessions.coordination.jms.JMSPublishingTransportManager.getTopicConnectionFactory(JMSPublishingTransportManager.java:191)
+//        tests.add("org.eclipse.persistence.testing.tests.distributedservers.rcm.jms.JMSRCMDistributedServersModel");
         tests.add("org.eclipse.persistence.testing.tests.dbchangenotification.DbChangeNotificationTestModel");
         tests.add("org.eclipse.persistence.testing.tests.lob.LOBTestModel");
         tests.add("org.eclipse.persistence.testing.tests.lob.LOBSessionBrokerTestModel");
