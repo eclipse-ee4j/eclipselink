@@ -297,7 +297,7 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
             MismatchedTokenException mismatched = (MismatchedTokenException)ex;
             Token token = mismatched.token;
             if (token != null) {
-                if (token.equals(Token.EOF_TOKEN)) {
+                if (token.equals(Token.EOF)) {
                     result = JPQLException.unexpectedEOF(getQueryInfo(), 
                         mismatched.line, mismatched.charPositionInLine, ex);
                 }
@@ -312,7 +312,7 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
             NoViableAltException noviable = (NoViableAltException)ex;
             Token token = noviable.token;
             if (token != null) {
-                if (token.equals(Token.EOF_TOKEN)) {
+                if (token.equals(Token.EOF)) {
                     result = JPQLException.unexpectedEOF(getQueryInfo(),
                         noviable.line, noviable.charPositionInLine, ex);
                 }
@@ -326,7 +326,7 @@ public abstract class JPQLParser extends org.eclipse.persistence.internal.librar
         	InvalidIdentifierException invalid = (InvalidIdentifierException)ex;
             Token token = invalid.getToken();
             if (token != null) {
-                if (token.equals(Token.EOF_TOKEN)) {
+                if (token.equals(Token.EOF)) {
                     result = JPQLException.unexpectedEOF(getQueryInfo(),
                     		token.getLine(), token.getCharPositionInLine(), ex);
                 }

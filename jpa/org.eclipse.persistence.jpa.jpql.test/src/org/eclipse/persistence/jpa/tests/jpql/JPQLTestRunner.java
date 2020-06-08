@@ -537,7 +537,7 @@ public class JPQLTestRunner extends ParentRunner<Runner> {
 
 		@Override
 		protected List<FrameworkMethod> getChildren() {
-			List<FrameworkMethod> methods = super.getChildren();
+			List<FrameworkMethod> methods = new ArrayList<FrameworkMethod>(super.getChildren());
 			Collections.sort(methods, buildMethodComparator());
 			return methods;
 		}

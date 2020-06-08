@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,7 +24,7 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime.debug;
 
 import org.eclipse.persistence.internal.libraries.antlr.runtime.IntStream;
@@ -35,31 +35,31 @@ import org.eclipse.persistence.internal.libraries.antlr.runtime.TokenStream;
  *  that you cannot debug and trace at the same time.
  */
 public class Tracer extends BlankDebugEventListener {
-	public IntStream input;
-	protected int level = 0;
+    public IntStream input;
+    protected int level = 0;
 
-	public Tracer(IntStream input) {
-		this.input = input;
-	}
+    public Tracer(IntStream input) {
+        this.input = input;
+    }
 
-	public void enterRule(String ruleName) {
-		for (int i=1; i<=level; i++) {System.out.print(" ");}
-		System.out.println("> "+ruleName+" lookahead(1)="+getInputSymbol(1));
-		level++;
-	}
+    public void enterRule(String ruleName) {
+        for (int i=1; i<=level; i++) {System.out.print(" ");}
+        System.out.println("> "+ruleName+" lookahead(1)="+getInputSymbol(1));
+        level++;
+    }
 
-	public void exitRule(String ruleName) {
-		level--;
-		for (int i=1; i<=level; i++) {System.out.print(" ");}
-		System.out.println("< "+ruleName+" lookahead(1)="+getInputSymbol(1));
-	}
+    public void exitRule(String ruleName) {
+        level--;
+        for (int i=1; i<=level; i++) {System.out.print(" ");}
+        System.out.println("< "+ruleName+" lookahead(1)="+getInputSymbol(1));
+    }
 
-	public Object getInputSymbol(int k) {
-		if ( input instanceof TokenStream ) {
-			return ((TokenStream)input).LT(k);
-		}
-		return new Character((char)input.LA(k));
-	}
+    public Object getInputSymbol(int k) {
+        if ( input instanceof TokenStream ) {
+            return ((TokenStream)input).LT(k);
+        }
+        return (char) input.LA(k);
+    }
 }
 
 

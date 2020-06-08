@@ -1,18 +1,18 @@
 /*
- [The "BSD licence"]
- Copyright (c) 2005-2008 Terence Parr
+ [The "BSD license"]
+ Copyright (c) 2005-2009 Terence Parr
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions
  are met:
  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
+     notice, this list of conditions and the following disclaimer.
  2. Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in the
-    documentation and/or other materials provided with the distribution.
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
  3. The name of the author may not be used to endorse or promote products
-    derived from this software without specific prior written permission.
+     derived from this software without specific prior written permission.
 
  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
@@ -24,68 +24,67 @@
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+ */
 package org.eclipse.persistence.internal.libraries.antlr.runtime;
 
 public interface Token {
-	public static final int EOR_TOKEN_TYPE = 1;
+    public static final int EOR_TOKEN_TYPE = 1;
 
-	/** imaginary tree navigation type; traverse "get child" link */
-	public static final int DOWN = 2;
-	/** imaginary tree navigation type; finish with a child list */
-	public static final int UP = 3;
+    /** imaginary tree navigation type; traverse "get child" link */
+    public static final int DOWN = 2;
+    /** imaginary tree navigation type; finish with a child list */
+    public static final int UP = 3;
 
-	public static final int MIN_TOKEN_TYPE = UP+1;
+    public static final int MIN_TOKEN_TYPE = UP+1;
 
     public static final int EOF = CharStream.EOF;
-	public static final Token EOF_TOKEN = new CommonToken(EOF);
-	
-	public static final int INVALID_TOKEN_TYPE = 0;
-	public static final Token INVALID_TOKEN = new CommonToken(INVALID_TOKEN_TYPE);
 
-	/** In an action, a lexer rule can set token to this SKIP_TOKEN and ANTLR
-	 *  will avoid creating a token for this symbol and try to fetch another.
-	 */
-	public static final Token SKIP_TOKEN = new CommonToken(INVALID_TOKEN_TYPE);
+    public static final int INVALID_TOKEN_TYPE = 0;
+    public static final Token INVALID_TOKEN = new CommonToken(INVALID_TOKEN_TYPE);
 
-	/** All tokens go to the parser (unless skip() is called in that rule)
-	 *  on a particular "channel".  The parser tunes to a particular channel
-	 *  so that whitespace etc... can go to the parser on a "hidden" channel.
-	 */
-	public static final int DEFAULT_CHANNEL = 0;
-	
-	/** Anything on different channel than DEFAULT_CHANNEL is not parsed
-	 *  by parser.
-	 */
-	public static final int HIDDEN_CHANNEL = 99;
+    /** In an action, a lexer rule can set token to this SKIP_TOKEN and ANTLR
+     *  will avoid creating a token for this symbol and try to fetch another.
+     */
+    public static final Token SKIP_TOKEN = new CommonToken(INVALID_TOKEN_TYPE);
 
-	/** Get the text of the token */
-	public String getText();
-	public void setText(String text);
+    /** All tokens go to the parser (unless skip() is called in that rule)
+     *  on a particular "channel".  The parser tunes to a particular channel
+     *  so that whitespace etc... can go to the parser on a "hidden" channel.
+     */
+    public static final int DEFAULT_CHANNEL = 0;
 
-	public int getType();
-	public void setType(int ttype);
-	/**  The line number on which this token was matched; line=1..n */
-	public int getLine();
+    /** Anything on different channel than DEFAULT_CHANNEL is not parsed
+     *  by parser.
+     */
+    public static final int HIDDEN_CHANNEL = 99;
+
+    /** Get the text of the token */
+    public String getText();
+    public void setText(String text);
+
+    public int getType();
+    public void setType(int ttype);
+    /**  The line number on which this token was matched; line=1..n */
+    public int getLine();
     public void setLine(int line);
 
-	/** The index of the first character relative to the beginning of the line 0..n-1 */
-	public int getCharPositionInLine();
-	public void setCharPositionInLine(int pos);
+    /** The index of the first character relative to the beginning of the line 0..n-1 */
+    public int getCharPositionInLine();
+    public void setCharPositionInLine(int pos);
 
-	public int getChannel();
-	public void setChannel(int channel);
+    public int getChannel();
+    public void setChannel(int channel);
 
-	/** An index from 0..n-1 of the token object in the input stream.
-	 *  This must be valid in order to use the ANTLRWorks debugger.
-	 */
-	public int getTokenIndex();
-	public void setTokenIndex(int index);
+    /** An index from 0..n-1 of the token object in the input stream.
+     *  This must be valid in order to use the ANTLRWorks debugger.
+     */
+    public int getTokenIndex();
+    public void setTokenIndex(int index);
 
-	/** From what character stream was this token created?  You don't have to
-	 *  implement but it's nice to know where a Token comes from if you have
-	 *  include files etc... on the input.
-	 */
-	public CharStream getInputStream();
-	public void setInputStream(CharStream input);
+    /** From what character stream was this token created?  You don't have to
+     *  implement but it's nice to know where a Token comes from if you have
+     *  include files etc... on the input.
+     */
+    public CharStream getInputStream();
+    public void setInputStream(CharStream input);
 }
