@@ -170,7 +170,7 @@
         <property name="validation.prefix"    value="validation-api"/>
         <property name="validation.criteria"  value="[1.1.0,2.2.0)"/>
         <property name="validation.name"      value="Javax Validation"/>
-        <property name="validation.version"   value="2.0.1.Final"/>
+        <property name="validation.version"   value="1.1.0.Final"/>
         <property name="json.prefix"          value="javax.json"/>
         <property name="json.criteria"        value="[1.0.4,5.0.0)"/>
         <property name="json.name"            value="Javax JSON"/>
