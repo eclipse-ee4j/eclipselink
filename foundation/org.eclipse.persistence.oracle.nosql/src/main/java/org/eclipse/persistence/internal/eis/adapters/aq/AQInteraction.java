@@ -51,7 +51,7 @@ public class AQInteraction implements Interaction {
      * The spec is either an enqueue or dequeue interaction.
      */
     @Override
-    public jakarta.​resource.​cci.Record execute(InteractionSpec spec, jakarta.​resource.​cci.Record input) throws ResourceException {
+    public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record input) throws ResourceException {
         AQRecord record = new AQRecord();
         execute(spec, input, record);
         return record;
@@ -63,7 +63,7 @@ public class AQInteraction implements Interaction {
      * Only raw messages are supported.
      */
     @Override
-    public boolean execute(InteractionSpec spec, jakarta.​resource.​cci.Record input, jakarta.​resource.​cci.Record output) throws ResourceException {
+    public boolean execute(InteractionSpec spec, jakarta.resource.cci.Record input, jakarta.resource.cci.Record output) throws ResourceException {
         if (!(spec instanceof AQInteractionSpec)) {
             throw EISException.invalidAQInteractionSpecType();
         }

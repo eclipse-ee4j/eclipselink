@@ -184,7 +184,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Allow the platform to handle record to row conversion.
      */
     @Override
-    public AbstractRecord buildRow(jakarta.​resource.​cci.Record record, EISInteraction interaction, EISAccessor accessor) {
+    public AbstractRecord buildRow(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         if (record == null) {
             return null;
         }
@@ -197,7 +197,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 output = (OracleNoSQLRecord)value;
             }
         }
-        jakarta.​resource.​cci.Record result = output;
+        jakarta.resource.cci.Record result = output;
         if (getRecordConverter() != null) {
             result = getRecordConverter().converterFromAdapterRecord(output);
         }
@@ -208,7 +208,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Allow the platform to handle record to row conversion.
      */
     @Override
-    public Vector buildRows(jakarta.​resource.​cci.Record record, EISInteraction interaction, EISAccessor accessor) {
+    public Vector buildRows(jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         if (record == null) {
             return new Vector(0);
         }
@@ -270,7 +270,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Convert the nested local mapped record to a flat global keyed record.
      */
     @Override
-    public jakarta.​resource.​cci.Record createInputRecord(EISInteraction interaction, EISAccessor accessor) {
+    public jakarta.resource.cci.Record createInputRecord(EISInteraction interaction, EISAccessor accessor) {
         if (interaction instanceof XMLInteraction) {
             return super.createInputRecord(interaction, accessor);
         } if (interaction instanceof MappedInteraction) {
@@ -300,7 +300,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * XML is stored in Oracle NoSQL but storing the XML text, keyed on the object's {@literal "&lt;dataTypeName&gt;/&lt;id&gt;"}.
      */
     @Override
-    public void setDOMInRecord(Element dom, jakarta.​resource.​cci.Record record, EISInteraction interaction, EISAccessor accessor) {
+    public void setDOMInRecord(Element dom, jakarta.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         OracleNoSQLRecord noSqlRecord = (OracleNoSQLRecord)record;
         org.eclipse.persistence.oxm.record.DOMRecord domRecord = new org.eclipse.persistence.oxm.record.DOMRecord(dom);
         domRecord.setSession(interaction.getQuery().getSession());
@@ -345,7 +345,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Creates a DOM record from the XML data stored as a value in the OracleNoSQLRecord.
      */
     @Override
-    public AbstractRecord createDatabaseRowFromDOMRecord(jakarta.​resource.​cci.Record record, EISInteraction call, EISAccessor accessor) {
+    public AbstractRecord createDatabaseRowFromDOMRecord(jakarta.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         if (record == null) {
             return null;
         }
