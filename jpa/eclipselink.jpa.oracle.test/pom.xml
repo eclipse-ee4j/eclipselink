@@ -177,6 +177,7 @@
         <dependency>
             <groupId>com.oracle.ojdbc</groupId>
             <artifactId>ons</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.oracle.ojdbc</groupId>

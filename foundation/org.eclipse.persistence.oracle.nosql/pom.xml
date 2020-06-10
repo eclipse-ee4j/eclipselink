@@ -83,7 +83,7 @@
         <dependency>
             <groupId>com.oracle.ojdbc</groupId>
             <artifactId>ojdbc8</artifactId>
-            <optional>true</optional>
+            <scope>test</scope>
         </dependency>
         <!--Other modules-->
         <dependency>
