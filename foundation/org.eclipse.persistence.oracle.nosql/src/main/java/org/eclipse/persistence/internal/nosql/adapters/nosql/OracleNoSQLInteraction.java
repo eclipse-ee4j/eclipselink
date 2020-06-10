@@ -27,7 +27,6 @@ import jakarta.resource.ResourceException;
 import jakarta.resource.cci.Connection;
 import jakarta.resource.cci.Interaction;
 import jakarta.resource.cci.InteractionSpec;
-import jakarta.resource.cci.Record;
 import jakarta.resource.cci.ResourceWarning;
 
 import org.eclipse.persistence.eis.EISException;
@@ -71,8 +70,8 @@ public class OracleNoSQLInteraction implements Interaction {
      * Output records are not supported/required.
      */
     @Override
-    public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
-        throw ValidationException.operationNotSupported("execute(InteractionSpec, Record, Record)");
+    public boolean execute(InteractionSpec spec, jakarta.resource.cci.Record input, jakarta.resource.cci.Record output) throws ResourceException {
+        throw ValidationException.operationNotSupported("execute(InteractionSpec, jakarta.resource.cci.Record, jakarta.resource.cci.Record)");
     }
 
     /**
@@ -80,7 +79,7 @@ public class OracleNoSQLInteraction implements Interaction {
      * The spec is either GET, PUT or DELETE interaction.
      */
     @Override
-    public Record execute(InteractionSpec spec, Record record) throws ResourceException {
+    public jakarta.resource.cci.Record execute(InteractionSpec spec, jakarta.resource.cci.Record record) throws ResourceException {
         if (!(spec instanceof OracleNoSQLInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }

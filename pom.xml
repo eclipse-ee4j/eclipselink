@@ -56,7 +56,6 @@
 
         <!--Common properties-->
         <common.licenceFiles>about.html, license.html, readme.html</common.licenceFiles>
-        <oracle.modules.subdirectory>bundles</oracle.modules.subdirectory>
         <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
         !!!Can't start with / character!!!-->
         <integration.test.directory>src/it/</integration.test.directory>
@@ -164,6 +163,8 @@
         <!-- CQ #21139, 21140 -->
         <logback.version>1.3.0-alpha5</logback.version>
         <oracle.jdbc.version>19.3.0.0</oracle.jdbc.version>
+        <!-- CQ #2437 -->
+        <oracle.aqapi.version>19.3.0.0</oracle.aqapi.version>
         <oracle.fmw.version>12.2.1-2-0</oracle.fmw.version>
         <!-- CQ #21141 -->
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
@@ -207,7 +208,7 @@
 
         <!--Oracle Extensions-->
         <module>foundation/org.eclipse.persistence.oracle</module>
-        <module>${oracle.modules.subdirectory}/org.eclipse.persistence.oracle.nosql</module>
+        <module>foundation/org.eclipse.persistence.oracle.nosql</module>
 
         <!--EclipseLink Bundles-->
         <module>bundles</module>
@@ -711,12 +712,14 @@
                 <artifactId>mongo-java-driver</artifactId>
                 <version>${mongodb.version}</version>
             </dependency>
+            <!--Oracle proprietary dependencies-->
             <!--Oracle NoSQL DB-->
             <dependency>
                 <groupId>com.oracle.kv</groupId>
                 <artifactId>oracle-nosql-client</artifactId>
                 <version>${oracle.nosql.version}</version>
             </dependency>
+            <!-- All files as a Oracle JDBC driver CQ #21154 -->
             <dependency>
                 <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>ojdbc8</artifactId>
@@ -741,6 +744,33 @@
                 <groupId>com.oracle.ojdbc</groupId>
                 <artifactId>dms</artifactId>
                 <version>${oracle.jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>simplefan</artifactId>
+                <version>${oracle.jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>ons</artifactId>
+                <version>${oracle.jdbc.version}</version>
+            </dependency>
+            <!--TODO resolve dependency later
+                                <dependency>
+                                    <groupId>com.oracle.spatial</groupId>
+                                    <artifactId>sdoapi</artifactId>
+                                    <version>${oracle.version}</version>
+                                </dependency>
+            -->
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>orai18n</artifactId>
+                <version>${oracle.jdbc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle.database.messaging</groupId>
+                <artifactId>aqapi</artifactId>
+                <version>${oracle.aqapi.version}</version>
             </dependency>
             <!--Test dependencies-->
             <!--Test framework-->
@@ -1452,7 +1482,6 @@
         <profile>
             <id>oracle</id>
             <properties>
-                <oracle.modules.subdirectory>foundation</oracle.modules.subdirectory>
                 <test.properties.file>${user.home}/${test.oracle.properties.file}</test.properties.file>
                 <test.properties.fileName>${test.oracle.properties.file}</test.properties.fileName>
                 <!--Used by sql-maven-plugin-->
@@ -1461,10 +1490,6 @@
                 <db.driver.version>${oracle.jdbc.version}</db.driver.version>
                 <test.skip.in-memory.db>true</test.skip.in-memory.db>
             </properties>
-            <modules>
-                <!--Oracle Extensions-->
-                <module>pom_oracle.xml</module>
-            </modules>
         </profile>
         <!--TODO simplify properties part jee.client.XXXX to load it from file-->
         <!--Testing JEE server profiles WildFly, GlassFish, Weblogic-->
@@ -1670,6 +1695,19 @@
                 <!--TODO FIXIT Doesn't work well. Temporary disabled.
                 <module>jpa/eclipselink.jpars.test</module>
                 -->
+
+                <!-- Oracle DB specific tests -->
+                <module>foundation/org.eclipse.persistence.oracle.test</module>
+                <!--TODO uncomment after sdoapi dependency resolution-->
+                <!--<module>foundation/eclipselink.extension.oracle.spatial.test</module>-->
+                <!--JPA test module-->
+                <!--TODO uncomment after sdoapi dependency resolution-->
+                <!--<module>jpa/eclipselink.jpa.oracle.test</module>-->
+                <!--DBWS Oracle Test module module-->
+                <module>dbws/eclipselink.dbws.test.oracle</module>
+                <!--DBWS Builder Oracle Test modules-->
+                <module>utils/eclipselink.dbws.builder.test.oracle</module>
+                <module>utils/eclipselink.dbws.builder.test.oracle.server</module>
 
                 <module>utils/eclipselink.utils.sigcompare</module>
             </modules>
