@@ -90,7 +90,7 @@ public class AQPlatform extends EISPlatform {
      * Create an indexed record (mapped are not supported).
      */
     @Override
-    public Record createDOMRecord(String recordName, EISAccessor accessor) {
+    public jakarta.​resource.​cci.Record createDOMRecord(String recordName, EISAccessor accessor) {
         try {
             return accessor.getRecordFactory().createIndexedRecord(recordName);
         } catch (ResourceException exception) {
@@ -103,7 +103,7 @@ public class AQPlatform extends EISPlatform {
      * Convert the DOM to a RAW and add to the indexed record.
      */
     @Override
-    public void setDOMInRecord(Element dom, Record record, EISInteraction call, EISAccessor accessor) {
+    public void setDOMInRecord(Element dom, jakarta.​resource.​cci.Record record, EISInteraction call, EISAccessor accessor) {
         IndexedRecord indexedRecord = (IndexedRecord)record;
         indexedRecord.add(new org.eclipse.persistence.oxm.record.DOMRecord(dom).transformToXML());
     }
@@ -113,7 +113,7 @@ public class AQPlatform extends EISPlatform {
      * Translate the indexed record RAW bytes into a DOM record.
      */
     @Override
-    public AbstractRecord createDatabaseRowFromDOMRecord(Record record, EISInteraction call, EISAccessor accessor) {
+    public AbstractRecord createDatabaseRowFromDOMRecord(jakarta.​resource.​cci.Record record, EISInteraction call, EISAccessor accessor) {
         EISDOMRecord domRecord = new EISDOMRecord();
         IndexedRecord indexedRecord = (IndexedRecord)record;
         if (indexedRecord.size() == 0) {
