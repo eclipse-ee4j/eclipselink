@@ -87,78 +87,85 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <!--Set system properties required for tests-->
-                    <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
-                    <systemPropertyVariables>
-                        <db.ddl.create>true</db.ddl.create>
-                        <db.ddl.drop>true</db.ddl.drop>
-                        <db.ddl.debug>false</db.ddl.debug>
-                    </systemPropertyVariables>
-                    <workingDirectory>${project.build.directory}/test-run</workingDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>test-dbws-builder-oracle-server_builder</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <!--<skipTests>true</skipTests>-->
-                            <skipTests>${test-skip-dbws-builder-oracle-server}</skipTests>
-                            <reportNameSuffix>test-dbws-builder-oracle-server_builder</reportNameSuffix>
-                            <includes>
-                                <include>dbws.testing.attachedbinary.AttachedBinaryBuilderTestSuite</include>
-                                <include>dbws.testing.inlinebinary.InlineBinaryBuilderTestSuite</include>
-                                <include>dbws.testing.mtom.MTOMBuilderTestSuite</include>
-                                <include>dbws.testing.simpleplsql.SimplePLSQLBuilderTestSuite</include>
-                                <include>dbws.testing.simplesp.SimpleSPBuilderTestSuite</include>
-                                <include>dbws.testing.simplesql.SimpleSQLBuilderTestSuite</include>
-                                <include>dbws.testing.simpletable.SimpleTableBuilderTestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-dbws-builder-oracle-server_service</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <!--TODO applications must be deployed to WLS before test-->
-                            <skipTests>true</skipTests>
-                            <!--<skipTests>${test-skip-dbws-builder-oracle}</skipTests>-->
-                            <reportNameSuffix>test-dbws-builder-oracle-server_service</reportNameSuffix>
-                            <includes>
-                                <include>dbws.testing.attachedbinary.AttachedBinaryServiceTestSuite</include>
-                                <include>dbws.testing.inlinebinary.InlineBinaryServiceTestSuite</include>
-                                <include>dbws.testing.legacysimpletable.LegacySimpleTableServiceTestSuite</include>
-                                <include>dbws.testing.mtom.MTOMServiceTestSuite</include>
-                                <include>dbws.testing.simpleplsql.SimplePLSQLServiceTestSuite</include>
-                                <include>dbws.testing.simplesp.SimpleSPServiceTestSuite</include>
-                                <include>dbws.testing.simplesql.SimpleSQLServiceTestSuite</include>
-                                <include>dbws.testing.simpletable.SimpleTableServiceTestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>verify-integration-tests</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${integration.test.skip.verify}</skip>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <!--DBWS Builder Test Oracle related profiles-->
+        <profile>
+            <id>oracle</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <!--Set system properties required for tests-->
+                            <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
+                            <systemPropertyVariables>
+                                <db.ddl.create>true</db.ddl.create>
+                                <db.ddl.drop>true</db.ddl.drop>
+                                <db.ddl.debug>false</db.ddl.debug>
+                            </systemPropertyVariables>
+                            <workingDirectory>${project.build.directory}/test-run</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>test-dbws-builder-oracle-server_builder</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <!--<skipTests>true</skipTests>-->
+                                    <skipTests>${test-skip-dbws-builder-oracle-server}</skipTests>
+                                    <reportNameSuffix>test-dbws-builder-oracle-server_builder</reportNameSuffix>
+                                    <includes>
+                                        <include>dbws.testing.attachedbinary.AttachedBinaryBuilderTestSuite</include>
+                                        <include>dbws.testing.inlinebinary.InlineBinaryBuilderTestSuite</include>
+                                        <include>dbws.testing.mtom.MTOMBuilderTestSuite</include>
+                                        <include>dbws.testing.simpleplsql.SimplePLSQLBuilderTestSuite</include>
+                                        <include>dbws.testing.simplesp.SimpleSPBuilderTestSuite</include>
+                                        <include>dbws.testing.simplesql.SimpleSQLBuilderTestSuite</include>
+                                        <include>dbws.testing.simpletable.SimpleTableBuilderTestSuite</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>test-dbws-builder-oracle-server_service</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <!--TODO applications must be deployed to WLS before test-->
+                                    <skipTests>true</skipTests>
+                                    <!--<skipTests>${test-skip-dbws-builder-oracle}</skipTests>-->
+                                    <reportNameSuffix>test-dbws-builder-oracle-server_service</reportNameSuffix>
+                                    <includes>
+                                        <include>dbws.testing.attachedbinary.AttachedBinaryServiceTestSuite</include>
+                                        <include>dbws.testing.inlinebinary.InlineBinaryServiceTestSuite</include>
+                                        <include>dbws.testing.legacysimpletable.LegacySimpleTableServiceTestSuite</include>
+                                        <include>dbws.testing.mtom.MTOMServiceTestSuite</include>
+                                        <include>dbws.testing.simpleplsql.SimplePLSQLServiceTestSuite</include>
+                                        <include>dbws.testing.simplesp.SimpleSPServiceTestSuite</include>
+                                        <include>dbws.testing.simplesql.SimpleSQLServiceTestSuite</include>
+                                        <include>dbws.testing.simpletable.SimpleTableServiceTestSuite</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify-integration-tests</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${integration.test.skip.verify}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>test-dbws-builder-oracle-server</id>
             <properties>

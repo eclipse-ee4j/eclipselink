@@ -149,54 +149,6 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <!--Run specified tests/test suite-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <!--Set system properties required for tests-->
-                    <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
-                    <workingDirectory>${project.build.directory}/test-run</workingDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>test-oracle-nosql</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-oracle-nosql}</skipTests>
-                            <reportNameSuffix>test-oracle-nosql</reportNameSuffix>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestSuite</include>
-                                <include>org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLJPATestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-oracle-aq</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-oracle-nosql}</skipTests>
-                            <reportNameSuffix>test-oracle-aq</reportNameSuffix>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.tests.eis.aq.AQTestSuite</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>verify-integration-tests</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${integration.test.skip.verify}</skip>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -240,6 +192,61 @@
 
     <profiles>
         <!--Oracle Extension related profiles-->
+        <profile>
+            <id>oracle</id>
+            <build>
+                <plugins>
+                    <!--Run specified tests/test suite-->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <!--Set system properties required for tests-->
+                            <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
+                            <workingDirectory>${project.build.directory}/test-run</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>test-oracle-nosql</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${test-skip-oracle-nosql}</skipTests>
+                                    <reportNameSuffix>test-oracle-nosql</reportNameSuffix>
+                                    <includes>
+                                        <include>org.eclipse.persistence.testing.tests.eis.nosql.NoSQLTestSuite</include>
+                                        <include>org.eclipse.persistence.testing.tests.jpa.nosql.NoSQLJPATestSuite</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>test-oracle-aq</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${test-skip-oracle-nosql}</skipTests>
+                                    <reportNameSuffix>test-oracle-aq</reportNameSuffix>
+                                    <includes>
+                                        <include>org.eclipse.persistence.testing.tests.eis.aq.AQTestSuite</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify-integration-tests</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${integration.test.skip.verify}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>test-oracle-nosql</id>
             <properties>

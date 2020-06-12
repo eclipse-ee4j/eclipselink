@@ -86,91 +86,98 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <!--Set system properties required for tests-->
-                    <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
-                    <workingDirectory>${project.build.directory}/test-run</workingDirectory>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>test-dbws-oracle</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-dbws-oracle}</skipTests>
-                            <reportNameSuffix>test-dbws-oracle</reportNameSuffix>
-                            <includes>
-                                <include>dbws.testing.AllTests</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>verify-integration-tests</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${integration.test.skip.verify}</skip>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <!--This plugin sql-maven-plugin must be after maven-surefire-plugin to call dbteardown*.sql scripts after tests-->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>sql-maven-plugin</artifactId>
-                <configuration>
-                    <!--all executions are ignored if -DskipTests-->
-                    <skip>${test-skip-dbws-oracle}</skip>
-                </configuration>
-                <executions>
-                    <!-- create db tables after test -->
-                    <execution>
-                        <id>create-tables-before-test</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <autocommit>true</autocommit>
-                            <delimiter>|</delimiter>
-                            <onError>continue</onError>
-                            <srcFiles>
-                                <srcFile>${integration.test.resources.directory}/sql/dbsetup_oracleobjecttype.sql</srcFile>
-                                <srcFile>${integration.test.resources.directory}/sql/dbsetup_plsqlcollection.sql</srcFile>
-                                <srcFile>${integration.test.resources.directory}/sql/dbsetup_veearray.sql</srcFile>
-                            </srcFiles>
-                        </configuration>
-                    </execution>
-                    <!-- drop db tables after test -->
-                    <execution>
-                        <id>drop-tables-after-test</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>execute</goal>
-                        </goals>
-                        <configuration>
-                            <autocommit>true</autocommit>
-                            <delimiter>|</delimiter>
-                            <onError>continue</onError>
-                            <srcFiles>
-                                <srcFile>${integration.test.resources.directory}/sql/dbteardown_oracleobjecttype.sql</srcFile>
-                                <srcFile>${integration.test.resources.directory}/sql/dbteardown_plsqlcollection.sql</srcFile>
-                                <srcFile>${integration.test.resources.directory}/sql/dbteardown_veearray.sql</srcFile>
-                            </srcFiles>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <!--DBWS Test Oracle related profiles-->
+        <profile>
+            <id>oracle</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <!--Set system properties required for tests-->
+                            <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
+                            <workingDirectory>${project.build.directory}/test-run</workingDirectory>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>test-dbws-oracle</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${test-skip-dbws-oracle}</skipTests>
+                                    <reportNameSuffix>test-dbws-oracle</reportNameSuffix>
+                                    <includes>
+                                        <include>dbws.testing.AllTests</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify-integration-tests</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${integration.test.skip.verify}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <!--This plugin sql-maven-plugin must be after maven-surefire-plugin to call dbteardown*.sql scripts after tests-->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>sql-maven-plugin</artifactId>
+                        <configuration>
+                            <!--all executions are ignored if -DskipTests-->
+                            <skip>${test-skip-dbws-oracle}</skip>
+                        </configuration>
+                        <executions>
+                            <!-- create db tables after test -->
+                            <execution>
+                                <id>create-tables-before-test</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <delimiter>|</delimiter>
+                                    <onError>continue</onError>
+                                    <srcFiles>
+                                        <srcFile>${integration.test.resources.directory}/sql/dbsetup_oracleobjecttype.sql</srcFile>
+                                        <srcFile>${integration.test.resources.directory}/sql/dbsetup_plsqlcollection.sql</srcFile>
+                                        <srcFile>${integration.test.resources.directory}/sql/dbsetup_veearray.sql</srcFile>
+                                    </srcFiles>
+                                </configuration>
+                            </execution>
+                            <!-- drop db tables after test -->
+                            <execution>
+                                <id>drop-tables-after-test</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <autocommit>true</autocommit>
+                                    <delimiter>|</delimiter>
+                                    <onError>continue</onError>
+                                    <srcFiles>
+                                        <srcFile>${integration.test.resources.directory}/sql/dbteardown_oracleobjecttype.sql</srcFile>
+                                        <srcFile>${integration.test.resources.directory}/sql/dbteardown_plsqlcollection.sql</srcFile>
+                                        <srcFile>${integration.test.resources.directory}/sql/dbteardown_veearray.sql</srcFile>
+                                    </srcFiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>test-dbws-oracle</id>
             <properties>
