@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -43,7 +43,8 @@ public class ConcurrencyManager implements Serializable {
     protected volatile transient Thread activeThread;
     public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
     protected boolean lockedByMergeManager;
-    
+    private long maxAllowedSleepTime = Long.parseLong(System.getProperty(SystemProperties.CONCURRENCY_MANAGER_SLEEP_TIME, "0"));
+
     protected static boolean shouldTrackStack = System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null;
     protected Exception stack;
 
@@ -563,5 +564,133 @@ public class ConcurrencyManager implements Serializable {
     public static void setShouldTrackStack(boolean shouldTrackStack) {
         ConcurrencyManager.shouldTrackStack = shouldTrackStack;
     }
-    
+
+    public long getMaxAllowedSleepTime() {
+        return maxAllowedSleepTime;
+    }
+
+    /**
+     * It control how long thread will wait for the another thread. If value is greater than zero thread will
+     * continue after specified amount of miliseconds.
+     */
+    public void setMaxAllowedSleepTime(long maxAllowedSleepTime) {
+        this.maxAllowedSleepTime = maxAllowedSleepTime;
+    }
+
+
+
+
+    /**********************************CUSTOMER CODE***********************/
+    /**
+     * For the thread to release all of its locks.
+     * @param lockManager
+     *      the deferred lock manager
+     */
+    // FIX - BUG-559307 - Put in one place the code that frees up the locks acuired by the current thread
+    protected void releaseAllLocksAquiredByThread(DeferredLockManager lockManager) {
+        Thread currentThread = Thread.currentThread();
+        // (a) Log some information in the LOG
+        String cacheKeyToString = createToStringExplainingOwnedCacheKey(this);
+        String errMsg = "releaseAllLocksAquiredByThread has been invoked. On  " + cacheKeyToString;
+        AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, errMsg, currentThread.getName());
+
+        // (b) When this method is invoked during an aquire lock sometimes there is no lock manager
+        if(lockManager == null) {
+            AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, "Lock manager is null. "
+                    + "This might be an aquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). "
+                    + " Cache Key" + cacheKeyToString, currentThread.getName());
+            return;
+        }
+
+        // (c) Release the active locks on the thread
+        lockManager.releaseActiveLocksOnThread();
+        removeDeferredLockManager(currentThread);
+
+        // Question:
+        // Would it be safe to send a NOTIFY ALL?
+        // probably not. But there might be threads waiting for the release of the lock
+        // Normally the Notifyall is necessary when locks are released. But in this case we are even dealing with not one but ALL
+        // of hte locks owned by thread so there would be multiple objects notify - we probably cannot do this
+    }
+
+
+    /**
+     * Create a print of the ACTIVE locks associated to the DeferredLockManager
+     */
+    public String createStringWithSummaryOfActiveLocksOnThread(DeferredLockManager lockManager) {
+        // (a) Make sure the lock manager being passed is not null
+        if(lockManager == null) {
+            return "DeferredLockManager - Listing of all Deferred Locks. Not currently created for current thread and cache key";
+        }
+
+        // (b) Try to build a string that lists all of the acitve locks on the thread
+        StringBuilder sb = new StringBuilder();
+        sb.append("DeferredLockManager - Listing of all Deferred Locks.");
+        sb.append("\n\n");
+        sb.append("Thread Name: ").append(Thread.currentThread().getName());
+        sb.append("\n\n");
+
+        // Loop over al of the active locks and print them
+        long activeLock = 0;
+        Vector activeLocks = lockManager.getActiveLocks();
+        if (!activeLocks.isEmpty()) {
+            for (Enumeration activeLocksEnum = activeLocks.elements();
+                 activeLocksEnum.hasMoreElements();) {
+                activeLock++;
+                ConcurrencyManager manager = (ConcurrencyManager)activeLocksEnum.nextElement();
+                String concurrencyManagerActiveLock = createToStringExplainingOwnedCacheKey(manager);
+                sb.append("ACTIVE LOCK NR: ").append("" + activeLock).append("ConcurrencyManager: ").append(concurrencyManagerActiveLock);
+                sb.append("\n\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     *
+     * @return A to string of the owned cache key
+     */
+    public String createToStringExplainingOwnedCacheKey(ConcurrencyManager concurrencyManager) {
+        if(concurrencyManager instanceof CacheKey) {
+            CacheKey cacheKey = (CacheKey) concurrencyManager;
+            Object cacheKeykey = cacheKey.getKey();
+            Object cacheKeyObject = cacheKey.getObject();
+            String canonicalName = cacheKeyObject != null? cacheKeyObject.getClass().getCanonicalName():null;
+            return String.format("ConcurrencyManager-CacheKey: %1$s ownerCacheKey (key,object, canonicalName) = (%2$s, %3$s, %4$s).", this, cacheKeykey, cacheKeyObject, canonicalName);
+        } else {
+            return String.format("ConcurrencyManager: %1$s. .", this);
+        }
+
+    }
+
+    /**
+     * Throw an interrupted exception if appears that eclipse link code is taking too long to release a deferred lock.
+     * @param whileStartDate
+     *      the start date of the while tru loop for releasing a deferred lock
+     * @throws InterruptedException
+     *  we fire an interupted exception to ensure that the code  blows up and releases all of the locks it had.
+     */
+    public void determineIfReleaseDeferredLockAppearsToBeDeadLocked(ConcurrencyManager concurrencyManager, final Date whileStartDate, DeferredLockManager lockManager) throws InterruptedException {
+        // Determine if we believe to be dealing with a dead lock
+        Thread currentThread = Thread.currentThread();
+        final long maxAllowedSleepTime40ThousandMs = maxAllowedSleepTime;
+        Date whileCurrentDate = new Date();
+        long elpasedTime = whileCurrentDate.getTime() - whileStartDate.getTime();
+        if (elpasedTime > maxAllowedSleepTime40ThousandMs) {
+            // We believe this is a dead lock so now we will log some information
+            String ownedCacheKey = createToStringExplainingOwnedCacheKey(concurrencyManager);
+
+            String errorMessageBase = String.format(
+                    "RELEASE DEFERRED LOCK PROBLEM:  The release deffered log process has not managed to finish in: %1$s ms.%n"
+                            + " (ownerCacheKey) = (%2$s). Current thread: %3$s. %n",
+                    elpasedTime, ownedCacheKey, currentThread.getName());
+            String errorMessageExplainingActiveLocksOnThread = createStringWithSummaryOfActiveLocksOnThread(lockManager);
+            String errorMessage = errorMessageBase +  errorMessageExplainingActiveLocksOnThread;
+
+            AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, errorMessage,
+                    currentThread.getName());
+
+            throw new InterruptedException(errorMessage);
+        }
+    }
 }

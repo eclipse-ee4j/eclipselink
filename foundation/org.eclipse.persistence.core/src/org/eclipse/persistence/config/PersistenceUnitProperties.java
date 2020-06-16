@@ -3740,6 +3740,17 @@ public class PersistenceUnitProperties {
      */
     public static final Map<String, String> PROPERTY_LOG_OVERRIDES = new HashMap<String, String>(1);
 
+    /**
+     * The "<code>eclipselink.concurrency.manager.sleeptime</code>" in milliseconds can control thread management in
+     * org.eclipse.persistence.internal.helper.ConcurrencyManager.
+     * It control how long thread will wait for the another thread. If value is greater than zero thread will
+     * continue after specified amount of miliseconds.
+     * Default value is 0ms (wait until another thread is done). Allowed values are: long
+     * This property should be specified as system property or property in persistence.xml file (higher priority).
+     */
+    public static final String CONCURRENCY_MANAGER_SLEEP_TIME  = "eclipselink.concurrency.manager.sleeptime";
+
+
     static {
         PROPERTY_LOG_OVERRIDES.put(JDBC_PASSWORD, "xxxxxx");
     }

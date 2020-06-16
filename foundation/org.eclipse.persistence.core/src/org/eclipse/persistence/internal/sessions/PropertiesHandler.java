@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -223,6 +223,7 @@ public class PropertiesHandler {
             //Enhancement
             addProp(new QueryTimeoutUnitProp());
             addProp(new BooleanProp(PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, "false"));
+            addProp(new ConcurrencyManagerSleepTimeProp());
         }
         
         Prop(String name) {
@@ -685,6 +686,12 @@ public class PropertiesHandler {
                 TimeUnit.SECONDS.toString(),
                 TimeUnit.MINUTES.toString()
             };
+        }
+    }
+
+    protected static class ConcurrencyManagerSleepTimeProp extends Prop {
+        ConcurrencyManagerSleepTimeProp() {
+            super(PersistenceUnitProperties.CONCURRENCY_MANAGER_SLEEP_TIME, Integer.toString(0));
         }
     }
 }

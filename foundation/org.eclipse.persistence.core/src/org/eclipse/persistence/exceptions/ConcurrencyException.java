@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,6 +28,7 @@ public class ConcurrencyException extends EclipseLinkException {
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_MERGE = 2008;
     public final static int MAX_TRIES_EXCEDED_FOR_LOCK_ON_BUILD_OBJECT = 2009;
     public final static int ACTIVE_LOCK_ALREADY_TRANSITIONED = 2010;
+    public final static int WAIT_TIME_EXCEEDED = 2011;
 
     /**
      * INTERNAL:
@@ -123,6 +124,14 @@ public class ConcurrencyException extends EclipseLinkException {
 
         ConcurrencyException concurrencyException = new ConcurrencyException(ExceptionMessageGenerator.buildMessage(ConcurrencyException.class, SEQUENCING_MULTITHREAD_THRU_CONNECTION, args));
         concurrencyException.setErrorCode(SEQUENCING_MULTITHREAD_THRU_CONNECTION);
+        return concurrencyException;
+    }
+
+    public static ConcurrencyException waitTimeExceeded(long sleepTime, InterruptedException exception) {
+        Object[] args = {sleepTime, exception.getMessage()};
+
+        ConcurrencyException concurrencyException = new ConcurrencyException(ExceptionMessageGenerator.buildMessage(ConcurrencyException.class, WAIT_TIME_EXCEEDED, args));
+        concurrencyException.setErrorCode(WAIT_TIME_EXCEEDED);
         return concurrencyException;
     }
 }

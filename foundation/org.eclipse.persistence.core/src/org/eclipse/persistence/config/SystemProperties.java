@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -96,5 +96,13 @@ public class SystemProperties {
      */
     @Deprecated
     public static final String JAVASE7_INDIRECT_COLLECTIONS = "eclipselink.indirection.javase7-indirect-collections";
-    
+
+    /**
+     * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
+     * It control how long thread will wait for the another thread. If value is greater than zero thread will
+     * continue after specified amount of miliseconds.
+     * Default value is 0ms (wait until another thread is done). Allowed values are: long
+     * This property should be specified as system property or property in persistence.xml file (higher priority).
+     */
+    public static final String CONCURRENCY_MANAGER_SLEEP_TIME  = "eclipselink.concurrency.manager.sleeptime";
 }

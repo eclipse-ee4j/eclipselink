@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -2817,6 +2817,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateQueryTimeout(m);
             updateQueryTimeoutUnit(m);
             updateLockingTimestampDefault(m);
+            updateConcurrencyManagerSleepTime(m);
             if (!session.hasBroker()) {
                 updateCacheCoordination(m, loader);
             }
@@ -3577,6 +3578,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(local, PersistenceUnitProperties.USE_LOCAL_TIMESTAMP, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerSleepTime(Map persistenceProperties) {
+        String sleepTimeProp = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_SLEEP_TIME, persistenceProperties, session);
+        if (sleepTimeProp != null) {
+            long sleepTime = Long.parseLong(sleepTimeProp);
+            this.session.getTransactionMutex().setMaxAllowedSleepTime(sleepTime);
         }
     }
 
