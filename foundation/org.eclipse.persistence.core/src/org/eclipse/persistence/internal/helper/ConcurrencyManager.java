@@ -74,24 +74,61 @@ public class ConcurrencyManager implements Serializable {
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public synchronized void acquire(boolean forMerge) throws ConcurrencyException {
-        while (((this.activeThread != null) || (this.numberOfReaders > 0)) && (this.activeThread != Thread.currentThread())) {
-            // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
-            try {
-                this.numberOfWritersWaiting++;
-                wait();
-                this.numberOfWritersWaiting--;
-            } catch (InterruptedException exception) {
-                throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
+        if (maxAllowedSleepTime == 0L) {
+            while (((this.activeThread != null) || (this.numberOfReaders > 0)) && (this.activeThread != Thread.currentThread())) {
+                // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
+                try {
+                    this.numberOfWritersWaiting++;
+                    wait();
+                    this.numberOfWritersWaiting--;
+                } catch (InterruptedException exception) {
+                    throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
+                }
             }
-        }
-        if (this.activeThread == null) {
-            this.activeThread = Thread.currentThread();
-            if (shouldTrackStack){
-                this.stack = new Exception();
+            if (this.activeThread == null) {
+                this.activeThread = Thread.currentThread();
+                if (shouldTrackStack) {
+                    this.stack = new Exception();
+                }
             }
+            this.lockedByMergeManager = forMerge;
+            this.depth++;
+        } else {
+            //FIX - BUG-559307 - Flag the time when we start the while loop
+            final Date whileStartDate = new Date();
+            Thread currentThread = Thread.currentThread();
+            DeferredLockManager lockManager = getDeferredLockManager(currentThread);
+
+            while (((this.activeThread != null) || (this.numberOfReaders > 0)) && (this.activeThread != Thread.currentThread())) {
+                // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
+                try {
+                    this.numberOfWritersWaiting++;
+                    // FIX - BUG-559307 - Do not wait forever - max allowed time to wait is 10 second and then check conditions again
+                    wait(maxAllowedSleepTime);
+                    // FIX - BUG-559307 -
+                    // Run a method that will fire up an exception if we  having been sleeping for too long
+                    determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
+                } catch (InterruptedException exception) {
+                    // FIX - BUG-559307 - If the thread is interrupted we want to make sure we release all of the locks the thread was owning
+                    releaseAllLocksAquiredByThread(lockManager);
+                    throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
+                } finally {
+                    // FIX - BUG-559307 -
+                    // Since above we incremente the number of writers
+                    // whether or not the thread is exploded by an interrupt
+                    // we need to make sure we decrement the number of writer to not allow the code to be corrupted
+                    this.numberOfWritersWaiting--;
+                }
+            }
+            if (this.activeThread == null) {
+                this.activeThread = Thread.currentThread();
+                if (shouldTrackStack){
+                    this.stack = new Exception();
+                }
+            }
+            this.lockedByMergeManager = forMerge;
+            this.depth++;
         }
-        this.lockedByMergeManager = forMerge;
-        this.depth++;
     }
 
     /**
@@ -126,21 +163,40 @@ public class ConcurrencyManager implements Serializable {
      * called with true from the merge process, if true then the refresh will not refresh the object
      */
     public synchronized boolean acquireWithWait(boolean forMerge, int wait) throws ConcurrencyException {
-        if ((this.activeThread == null && this.numberOfReaders == 0) || (this.activeThread == Thread.currentThread())) {
-            //if I own the lock increment depth
-            acquire(forMerge);
-            return true;
-        } else {
-            try {
-                wait(wait);
-            } catch (InterruptedException e) {
-                return false;
-            }
-            if ((this.activeThread == null && this.numberOfReaders == 0) || (this.activeThread == Thread.currentThread())){
+        if (maxAllowedSleepTime == 0L) {
+            if ((this.activeThread == null && this.numberOfReaders == 0) || (this.activeThread == Thread.currentThread())) {
+                //if I own the lock increment depth
                 acquire(forMerge);
                 return true;
+            } else {
+                try {
+                    wait(wait);
+                } catch (InterruptedException e) {
+                    return false;
+                }
+                if ((this.activeThread == null && this.numberOfReaders == 0) || (this.activeThread == Thread.currentThread())) {
+                    acquire(forMerge);
+                    return true;
+                }
+                return false;
             }
-            return false;
+        } else {
+            if ((this.activeThread == null && this.numberOfReaders == 0) || (this.activeThread == Thread.currentThread())) {
+                //if I own the lock increment depth
+                acquire(forMerge);
+                return true;
+            } else {
+                try {
+                    wait(maxAllowedSleepTime);
+                } catch (InterruptedException e) {
+                    return false;
+                }
+                if ((this.activeThread == null && this.numberOfReaders == 0) || (this.activeThread == Thread.currentThread())){
+                    acquire(forMerge);
+                    return true;
+                }
+                return false;
+            }
         }
     }
 
@@ -165,36 +221,96 @@ public class ConcurrencyManager implements Serializable {
      * Add deferred lock into a hashtable to avoid deadlock
      */
     public void acquireDeferredLock() throws ConcurrencyException {
-        Thread currentThread = Thread.currentThread();
-        DeferredLockManager lockManager = getDeferredLockManager(currentThread);
-        if (lockManager == null) {
-            lockManager = new DeferredLockManager();
-            putDeferredLock(currentThread, lockManager);
-        }
-        lockManager.incrementDepth();
-        synchronized (this) {
-            while (this.numberOfReaders != 0) {
-                // There are readers of this object, wait until they are done before determining if
-                //there are any other writers.  If not we will wait on the readers for acquire.  If another
-                //thread is also waiting on the acquire then a deadlock could occur.  See bug 3049635
-                //We could release all active locks before releasing deferred but the object may not be finished building
-                //we could make the readers get a hard lock, but then we would just build a deferred lock even though
-                //the object is not being built.
-                try {
-                    this.numberOfWritersWaiting++;
-                    wait();
-                    this.numberOfWritersWaiting--;
-                } catch (InterruptedException exception) {
-                    throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
+        if (maxAllowedSleepTime == 0L) {
+            Thread currentThread = Thread.currentThread();
+            DeferredLockManager lockManager = getDeferredLockManager(currentThread);
+            if (lockManager == null) {
+                lockManager = new DeferredLockManager();
+                putDeferredLock(currentThread, lockManager);
+            }
+            lockManager.incrementDepth();
+            synchronized (this) {
+                while (this.numberOfReaders != 0) {
+                    // There are readers of this object, wait until they are done before determining if
+                    //there are any other writers.  If not we will wait on the readers for acquire.  If another
+                    //thread is also waiting on the acquire then a deadlock could occur.  See bug 3049635
+                    //We could release all active locks before releasing deferred but the object may not be finished building
+                    //we could make the readers get a hard lock, but then we would just build a deferred lock even though
+                    //the object is not being built.
+                    try {
+                        this.numberOfWritersWaiting++;
+                        wait();
+                        this.numberOfWritersWaiting--;
+                    } catch (InterruptedException exception) {
+                        throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
+                    }
+                }
+                if ((this.activeThread == currentThread) || (!isAcquired())) {
+                    lockManager.addActiveLock(this);
+                    acquire();
+                } else {
+                    lockManager.addDeferredLock(this);
+                    if (AbstractSessionLog.getLog().shouldLog(SessionLog.FINER) && this instanceof CacheKey) {
+                        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "acquiring_deferred_lock", ((CacheKey) this).getObject(), currentThread.getName());
+                    }
                 }
             }
-            if ((this.activeThread == currentThread) || (!isAcquired())) {
-                lockManager.addActiveLock(this);
-                acquire();
-            } else {
-                lockManager.addDeferredLock(this);
-                if (AbstractSessionLog.getLog().shouldLog(SessionLog.FINER) && this instanceof CacheKey) {
-                    AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "acquiring_deferred_lock", ((CacheKey)this).getObject(), currentThread.getName());
+        } else {
+            Thread currentThread = Thread.currentThread();
+            DeferredLockManager lockManager = getDeferredLockManager(currentThread);
+            if (lockManager == null) {
+                lockManager = new DeferredLockManager();
+                putDeferredLock(currentThread, lockManager);
+            }
+            lockManager.incrementDepth();
+            synchronized (this) {
+
+                // FIX - BUG-559307 - Flag the time when we start the while loop
+                final Date whileStartDate = new Date();
+
+                while (this.numberOfReaders != 0) {
+                    // There are readers of this object, wait until they are done before determining if
+                    //there are any other writers.  If not we will wait on the readers for acquire.  If another
+                    //thread is also waiting on the acquire then a deadlock could occur.  See bug 3049635
+                    //We could release all active locks before releasing deferred but the object may not be finished building
+                    //we could make the readers get a hard lock, but then we would just build a deferred lock even though
+                    //the object is not being built.
+                    try {
+                        this.numberOfWritersWaiting++;
+
+                        // FIX - BUG-559307 - Do not wait forever - max allowed time to wait is 10 second and then check conditions again
+                        // wait();
+                        wait(maxAllowedSleepTime);
+
+                        // FIX - BUG-559307 -  Moved to finally block to ensure it always runs
+                        // this.numberOfWritersWaiting--;
+
+
+                        // FIX - BUG-559307 -
+                        // Run a method that will fire up an exception if we  having been sleeping for too long
+                        determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
+                    } catch (InterruptedException exception) {
+                        // FIX - BUG-559307 - If the thread is interrupted we want to make sure we release all of the locks the thread was owning
+                        releaseAllLocksAquiredByThread(lockManager);
+
+
+                        throw ConcurrencyException.waitWasInterrupted(exception.getMessage());
+                    } finally {
+                        // FIX - BUG-559307 -
+                        // Since above we incremente the number of writers
+                        // whether or not the thread is exploded by an interrupt
+                        // we need to make sure we decrement the number of writer to not allow the code to be corrupeted
+                        this.numberOfWritersWaiting--;
+                    }
+                }
+                if ((this.activeThread == currentThread) || (!isAcquired())) {
+                    lockManager.addActiveLock(this);
+                    acquire();
+                } else {
+                    lockManager.addDeferredLock(this);
+                    if (AbstractSessionLog.getLog().shouldLog(SessionLog.FINER) && this instanceof CacheKey) {
+                        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "acquiring_deferred_lock", ((CacheKey)this).getObject(), currentThread.getName());
+                    }
                 }
             }
         }
@@ -407,55 +523,120 @@ public class ConcurrencyManager implements Serializable {
      * thread know when a deadlock has occurred and can resolve it.
      */
     public void releaseDeferredLock() throws ConcurrencyException {
-        Thread currentThread = Thread.currentThread();
-        DeferredLockManager lockManager = getDeferredLockManager(currentThread);
-        if (lockManager == null) {
-            return;
-        }
-        int depth = lockManager.getThreadDepth();
+        if (maxAllowedSleepTime == 0L) {
+            Thread currentThread = Thread.currentThread();
+            DeferredLockManager lockManager = getDeferredLockManager(currentThread);
+            if (lockManager == null) {
+                return;
+            }
+            int depth = lockManager.getThreadDepth();
 
-        if (depth > 1) {
-            lockManager.decrementDepth();
-            return;
-        }
+            if (depth > 1) {
+                lockManager.decrementDepth();
+                return;
+            }
 
-        // If the set is null or empty, means there is no deferred lock for this thread, return.
-        if (!lockManager.hasDeferredLock()) {
-            lockManager.releaseActiveLocksOnThread();
-            removeDeferredLockManager(currentThread);
-            return;
-        }
-
-        lockManager.setIsThreadComplete(true);
-
-        // Thread have three stages, one where they are doing work (i.e. building objects)
-        // two where they are done their own work but may be waiting on other threads to finish their work,
-        // and a third when they and all the threads they are waiting on are done.
-        // This is essentially a busy wait to determine if all the other threads are done.
-        while (true) {
-            try{
-                // 2612538 - the default size of Map (32) is appropriate
-                Map recursiveSet = new IdentityHashMap();
-                if (isBuildObjectOnThreadComplete(currentThread, recursiveSet)) {// Thread job done.
-                    lockManager.releaseActiveLocksOnThread();
-                    removeDeferredLockManager(currentThread);
-                    AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "deferred_locks_released", currentThread.getName());
-                    return;
-                } else {// Not done yet, wait and check again.
-                    try {
-                        Thread.sleep(1);
-                    } catch (InterruptedException interrupted) {
-                        AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
-                        lockManager.releaseActiveLocksOnThread();
-                        removeDeferredLockManager(currentThread);
-                        throw ConcurrencyException.waitWasInterrupted(interrupted.getMessage());
-                    }
-                }
-            } catch (Error error) {
-                AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, error);
+            // If the set is null or empty, means there is no deferred lock for this thread, return.
+            if (!lockManager.hasDeferredLock()) {
                 lockManager.releaseActiveLocksOnThread();
                 removeDeferredLockManager(currentThread);
-                throw error;
+                return;
+            }
+
+            lockManager.setIsThreadComplete(true);
+
+            // Thread have three stages, one where they are doing work (i.e. building objects)
+            // two where they are done their own work but may be waiting on other threads to finish their work,
+            // and a third when they and all the threads they are waiting on are done.
+            // This is essentially a busy wait to determine if all the other threads are done.
+            while (true) {
+                try {
+                    // 2612538 - the default size of Map (32) is appropriate
+                    Map recursiveSet = new IdentityHashMap();
+                    if (isBuildObjectOnThreadComplete(currentThread, recursiveSet)) {// Thread job done.
+                        lockManager.releaseActiveLocksOnThread();
+                        removeDeferredLockManager(currentThread);
+                        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "deferred_locks_released", currentThread.getName());
+                        return;
+                    } else {// Not done yet, wait and check again.
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException interrupted) {
+                            AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
+                            lockManager.releaseActiveLocksOnThread();
+                            removeDeferredLockManager(currentThread);
+                            throw ConcurrencyException.waitWasInterrupted(interrupted.getMessage());
+                        }
+                    }
+                } catch (Error error) {
+                    AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, error);
+                    lockManager.releaseActiveLocksOnThread();
+                    removeDeferredLockManager(currentThread);
+                    throw error;
+                }
+            }
+        } else {
+            Thread currentThread = Thread.currentThread();
+            DeferredLockManager lockManager = getDeferredLockManager(currentThread);
+            if (lockManager == null) {
+                return;
+            }
+            int depth = lockManager.getThreadDepth();
+
+            if (depth > 1) {
+                lockManager.decrementDepth();
+                return;
+            }
+
+            // If the set is null or empty, means there is no deferred lock for this thread, return.
+            if (!lockManager.hasDeferredLock()) {
+                lockManager.releaseActiveLocksOnThread();
+                removeDeferredLockManager(currentThread);
+                return;
+            }
+
+            lockManager.setIsThreadComplete(true);
+
+            // FIX - BUG-559307 - start a date time
+            // Thread have three stages, one where they are doing work (i.e. building objects)
+            // two where they are done their own work but may be waiting on other threads to finish their work,
+            // and a third when they and all the threads they are waiting on are done.
+            // This is essentially a busy wait to determine if all the other threads are done.
+            final Date whileStartDate = new Date();
+
+            // Thread have three stages, one where they are doing work (i.e. building objects)
+            // two where they are done their own work but may be waiting on other threads to finish their work,
+            // and a third when they and all the threads they are waiting on are done.
+            // This is essentially a busy wait to determine if all the other threads are done.
+            while (true) {
+                try{
+                    // 2612538 - the default size of Map (32) is appropriate
+                    Map recursiveSet = new IdentityHashMap();
+                    if (isBuildObjectOnThreadComplete(currentThread, recursiveSet)) {// Thread job done.
+                        lockManager.releaseActiveLocksOnThread();
+                        removeDeferredLockManager(currentThread);
+                        AbstractSessionLog.getLog().log(SessionLog.FINER, SessionLog.CACHE, "deferred_locks_released", currentThread.getName());
+                        return;
+                    } else {// Not done yet, wait and check again.
+                        try {
+                            Thread.sleep(1);
+
+                            // FIX - BUG-559307 -
+                            // Run a method that will fire up an exception if we  having been sleeping for too long
+                            determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager);
+                        } catch (InterruptedException interrupted) {
+                            AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
+                            lockManager.releaseActiveLocksOnThread();
+                            removeDeferredLockManager(currentThread);
+                            throw ConcurrencyException.waitWasInterrupted(interrupted.getMessage());
+                        }
+                    }
+                } catch (Error error) {
+                    AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, error);
+                    lockManager.releaseActiveLocksOnThread();
+                    removeDeferredLockManager(currentThread);
+                    throw error;
+                }
             }
         }
     }
@@ -578,9 +759,7 @@ public class ConcurrencyManager implements Serializable {
     }
 
 
-
-
-    /**********************************CUSTOMER CODE***********************/
+// FIX - BUG-559307 -
     /**
      * For the thread to release all of its locks.
      * @param lockManager
