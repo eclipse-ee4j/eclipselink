@@ -73,7 +73,7 @@ public class WeakIdentityMap extends FullIdentityMap {
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new WeakCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
+        return new WeakCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated, (this.session == null) ? 0L : this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
     }
 
     /**

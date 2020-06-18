@@ -119,7 +119,7 @@ public class HardCacheWeakIdentityMap extends WeakIdentityMap {
         protected LinkedNode referenceNode;
 
         public ReferenceCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, boolean isIsolated) {
-            super(primaryKey, object, writeLockValue, readTime, isIsolated, session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
+            super(primaryKey, object, writeLockValue, readTime, isIsolated,(session == null) ? 0L : session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
         }
 
         public LinkedNode getReferenceCacheNode() {

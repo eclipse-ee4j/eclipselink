@@ -238,7 +238,7 @@ public abstract class AbstractIdentityMap implements IdentityMap, Serializable, 
      * Create the correct type of CacheKey for this map.
      */
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new CacheKey(primaryKey, object, writeLockValue, readTime, this.isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
+        return new CacheKey(primaryKey, object, writeLockValue, readTime, this.isIsolated, (this.session == null) ? 0L : this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
     }
 
     /**

@@ -36,6 +36,6 @@ public class SoftIdentityMap extends WeakIdentityMap {
     
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new SoftCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated, session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
+        return new SoftCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated, (session == null) ? 0L : session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
     }
 }

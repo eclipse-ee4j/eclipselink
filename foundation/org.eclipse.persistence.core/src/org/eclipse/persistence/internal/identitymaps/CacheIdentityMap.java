@@ -36,15 +36,15 @@ public class CacheIdentityMap extends FullIdentityMap {
 
     public CacheIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         super(size, descriptor, session, isolated);
-        this.first = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
-        this.last = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
+        this.first = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated, (session == null) ? 0L : session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
+        this.last = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated, (session == null) ? 0L : session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
     }
     
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new LinkedCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
+        return new LinkedCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated,  (this.session == null) ? 0L : this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
     }
 
     /**
