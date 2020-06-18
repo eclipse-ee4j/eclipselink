@@ -20,6 +20,7 @@ import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.localization.*;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.*;
 
 /**
@@ -43,7 +44,7 @@ public class ConcurrencyManager implements Serializable {
     protected volatile transient Thread activeThread;
     public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
     protected boolean lockedByMergeManager;
-    protected long maxAllowedSleepTime = Long.parseLong(System.getProperty(SystemProperties.CONCURRENCY_MANAGER_SLEEP_TIME, "0"));
+    protected long maxAllowedSleepTime = Long.parseLong(PrivilegedAccessHelper.getSystemProperty(SystemProperties.CONCURRENCY_MANAGER_SLEEP_TIME, "0"));
 
     protected static boolean shouldTrackStack = System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null;
     protected Exception stack;
@@ -852,24 +853,23 @@ public class ConcurrencyManager implements Serializable {
     public void determineIfReleaseDeferredLockAppearsToBeDeadLocked(ConcurrencyManager concurrencyManager, final Date whileStartDate, DeferredLockManager lockManager) throws InterruptedException {
         // Determine if we believe to be dealing with a dead lock
         Thread currentThread = Thread.currentThread();
-        final long maxAllowedSleepTime40ThousandMs = maxAllowedSleepTime;
         Date whileCurrentDate = new Date();
-        long elpasedTime = whileCurrentDate.getTime() - whileStartDate.getTime();
-        if (elpasedTime > maxAllowedSleepTime40ThousandMs) {
+        long elapasedTime = whileCurrentDate.getTime() - whileStartDate.getTime();
+        if (elapasedTime > maxAllowedSleepTime) {
             // We believe this is a dead lock so now we will log some information
             String ownedCacheKey = createToStringExplainingOwnedCacheKey(concurrencyManager);
 
             String errorMessageBase = String.format(
                     "RELEASE DEFERRED LOCK PROBLEM:  The release deffered log process has not managed to finish in: %1$s ms.%n"
                             + " (ownerCacheKey) = (%2$s). Current thread: %3$s. %n",
-                    elpasedTime, ownedCacheKey, currentThread.getName());
+                    elapasedTime, ownedCacheKey, currentThread.getName());
             String errorMessageExplainingActiveLocksOnThread = createStringWithSummaryOfActiveLocksOnThread(lockManager);
             String errorMessage = errorMessageBase +  errorMessageExplainingActiveLocksOnThread;
 
             AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, errorMessage,
                     currentThread.getName());
 
-            throw new InterruptedException(errorMessage);
+            throw ConcurrencyException.waitTimeExceeded(elapasedTime, errorMessage);
         }
     }
 }

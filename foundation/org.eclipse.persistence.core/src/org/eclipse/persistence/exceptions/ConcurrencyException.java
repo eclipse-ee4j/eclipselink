@@ -127,8 +127,8 @@ public class ConcurrencyException extends EclipseLinkException {
         return concurrencyException;
     }
 
-    public static ConcurrencyException waitTimeExceeded(long sleepTime, InterruptedException exception) {
-        Object[] args = {sleepTime, exception.getMessage()};
+    public static ConcurrencyException waitTimeExceeded(long sleepTime, String message) {
+        Object[] args = {sleepTime, message};
 
         ConcurrencyException concurrencyException = new ConcurrencyException(ExceptionMessageGenerator.buildMessage(ConcurrencyException.class, WAIT_TIME_EXCEEDED, args));
         concurrencyException.setErrorCode(WAIT_TIME_EXCEEDED);
