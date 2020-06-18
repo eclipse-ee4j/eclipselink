@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -35,8 +35,8 @@ public class WeakCacheKey extends CacheKey {
      * @param writeLockValue is the write lock value, null if optimistic locking not being used for this object.
      * @param readTime the time EclipseLInk read the cache key
      */
-    public WeakCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, boolean isIsolated) {
-        super(primaryKey, object, writeLockValue, readTime, isIsolated);
+    public WeakCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime, boolean isIsolated, long maxAllowedSleepTime) {
+        super(primaryKey, object, writeLockValue, readTime, isIsolated, maxAllowedSleepTime);
     }
 
     public Object getObject() {

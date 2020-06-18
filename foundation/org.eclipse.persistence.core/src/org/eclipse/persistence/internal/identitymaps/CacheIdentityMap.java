@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -36,15 +36,15 @@ public class CacheIdentityMap extends FullIdentityMap {
 
     public CacheIdentityMap(int size, ClassDescriptor descriptor, AbstractSession session, boolean isolated) {
         super(size, descriptor, session, isolated);
-        this.first = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated);
-        this.last = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated);
+        this.first = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
+        this.last = new LinkedCacheKey(CacheId.EMPTY, null, null, 0, isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
         this.first.setNext(this.last);
         this.last.setPrevious(this.first);
     }
     
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new LinkedCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
+        return new LinkedCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
     }
 
     /**

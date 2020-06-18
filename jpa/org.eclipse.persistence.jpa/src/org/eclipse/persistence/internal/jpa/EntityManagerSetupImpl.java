@@ -3585,7 +3585,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         String sleepTimeProp = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_SLEEP_TIME, persistenceProperties, session);
         if (sleepTimeProp != null) {
             long sleepTime = Long.parseLong(sleepTimeProp);
+            this.session.getProject().setConcurrencyManagerMaxAllowedSleepTime(sleepTime);
             this.session.getTransactionMutex().setMaxAllowedSleepTime(sleepTime);
+            this.deployLock.setMaxAllowedSleepTime(sleepTime);
+            this.session.getIdentityMapAccessorInstance().getIdentityMapManager().getCacheMutex().setMaxAllowedSleepTime(sleepTime);
         }
     }
 

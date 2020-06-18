@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -73,7 +73,7 @@ public class WeakIdentityMap extends FullIdentityMap {
 
     @Override
     public CacheKey createCacheKey(Object primaryKey, Object object, Object writeLockValue, long readTime) {
-        return new WeakCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated);
+        return new WeakCacheKey(primaryKey, object, writeLockValue, readTime, isIsolated, this.session.getProject().getConcurrencyManagerMaxAllowedSleepTime());
     }
 
     /**

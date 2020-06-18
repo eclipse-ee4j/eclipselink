@@ -43,7 +43,7 @@ public class ConcurrencyManager implements Serializable {
     protected volatile transient Thread activeThread;
     public static Map<Thread, DeferredLockManager> deferredLockManagers = initializeDeferredLockManagers();
     protected boolean lockedByMergeManager;
-    private long maxAllowedSleepTime = Long.parseLong(System.getProperty(SystemProperties.CONCURRENCY_MANAGER_SLEEP_TIME, "0"));
+    protected long maxAllowedSleepTime = Long.parseLong(System.getProperty(SystemProperties.CONCURRENCY_MANAGER_SLEEP_TIME, "0"));
 
     protected static boolean shouldTrackStack = System.getProperty(SystemProperties.RECORD_STACK_ON_LOCK) != null;
     protected Exception stack;

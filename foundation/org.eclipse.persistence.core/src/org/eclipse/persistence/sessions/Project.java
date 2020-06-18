@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -169,6 +169,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** used for Caching JPA projects */
     protected Collection<String> classNamesForWeaving;
     protected Collection<String> structConverters;
+
+    /**
+     * Can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
+     * It control how long thread will wait for the another thread. If value is greater than zero thread will
+     * continue after specified amount of miliseconds.
+     * Default value is 0ms (wait until another thread is done). Allowed values are: long
+     */
+    protected long concurrencyManagerMaxAllowedSleepTime;
 
     /**
      * PUBLIC:
@@ -1486,6 +1494,26 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
             return null;
         }
         return this.partitioningPolicies.get(name);
+    }
+
+    /**
+     * Can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
+     * It control how long thread will wait for the another thread. If value is greater than zero thread will
+     * continue after specified amount of miliseconds.
+     * Default value is 0ms (wait until another thread is done). Allowed values are: long
+     */
+    public long getConcurrencyManagerMaxAllowedSleepTime() {
+        return concurrencyManagerMaxAllowedSleepTime;
+    }
+
+    /**
+     * Can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
+     * It control how long thread will wait for the another thread. If value is greater than zero thread will
+     * continue after specified amount of miliseconds.
+     * Default value is 0ms (wait until another thread is done). Allowed values are: long
+     */
+    public void setConcurrencyManagerMaxAllowedSleepTime(long concurrencyManagerMaxAllowedSleepTime) {
+        this.concurrencyManagerMaxAllowedSleepTime = concurrencyManagerMaxAllowedSleepTime;
     }
 }
 
