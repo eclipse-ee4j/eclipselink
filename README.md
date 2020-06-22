@@ -13,8 +13,7 @@ EclipseLink 3.0.0 [![Master Build Status](https://travis-ci.org/eclipse-ee4j/ecl
 EclipseLink 2.7.x [![2.7.x  Build Status](https://travis-ci.org/eclipse-ee4j/eclipselink.svg?branch=2.7)](https://travis-ci.org/eclipse-ee4j/eclipselink)
 
 
-EclipseLink Project
-========================================
+# EclipseLink
 
 The EclipseLink project's goal is to provide a complete persistence framework that is both
 comprehensive and universal. It will run in any Java environment and read and write objects
@@ -25,4 +24,22 @@ Jakarta Persistence for relational databases, Jakarta XML Binding for XML,
 Jakarta Connectors for EIS and other types of legacy systems, and Service Data Objects (SDO).
 
 
-http://eclipse.org/eclipselink
+This project is part of [the EclipseLink project](https://projects.eclipse.org/projects/ee4j.eclipselink).
+
+
+## License
+
+EclipseLink is dual licensed under an [EPL 2.0](LICENSE.md) and [EDL 1.0](LICENSE.md) license.
+
+
+## Contributing
+
+We use [contribution policy](CONTRIBUTING.md), which means we can only accept contributions under
+the terms of [Eclipse Contributor Agreement](http://www.eclipse.org/legal/ECA.php).
+
+
+## Links
+
+* [Home page](http://eclipse.org/eclipselink)
+* [Javadoc](https://javadoc.io/doc/org.eclipse.persistence/eclipselink/latest/index.html)
+* [Mailing list](https://accounts.eclipse.org/mailing-list/eclipselink-users)
