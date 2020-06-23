@@ -266,4 +266,13 @@ public class H2Platform extends DatabasePlatform {
     public boolean isH2() {
         return true;
     }
+
+    /**
+     * INTERNAL:
+     * Used for stored procedure calls.
+     */
+    @Override
+    public String getProcedureCallHeader() {
+        return "CALL ";
+    }
 }
