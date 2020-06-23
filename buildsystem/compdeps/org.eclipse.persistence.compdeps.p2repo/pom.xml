@@ -78,10 +78,70 @@
                             <outputDirectory>${project.build.directory}/repository/plugins</outputDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>copy-oracle-binaries</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <artifactId>ojdbc8</artifactId>
+                                    <version>${oracle.jdbc.version}</version>
+                                    <destFileName>ojdbc.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <artifactId>orai18n</artifactId>
+                                    <version>${oracle.jdbc.version}</version>
+                                    <destFileName>orai18n.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <artifactId>xdb</artifactId>
+                                    <version>${oracle.jdbc.version}</version>
+                                    <destFileName>xdb.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <artifactId>xmlparserv2</artifactId>
+                                    <version>${oracle.jdbc.version}</version>
+                                    <destFileName>xmlparserv2.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <artifactId>ucp</artifactId>
+                                    <version>${oracle.jdbc.version}</version>
+                                    <destFileName>ucp.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.oracle.ojdbc</groupId>
+                                    <artifactId>dms</artifactId>
+                                    <version>${oracle.jdbc.version}</version>
+                                    <destFileName>dms.jar</destFileName>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.oracle.database.messaging</groupId>
+                                    <artifactId>aqapi</artifactId>
+                                    <version>${oracle.jdbc.version}</version>
+                                    <destFileName>aqapi.jar</destFileName>
+                                </artifactItem>
+                                <!--Oracle NoSQL DB-->
+                                <artifactItem>
+                                    <groupId>com.oracle.kv</groupId>
+                                    <artifactId>oracle-nosql-client</artifactId>
+                                    <version>${oracle.nosql.version}</version>
+                                    <destFileName>kvclient.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}/repository/oracle_plugins</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>
 

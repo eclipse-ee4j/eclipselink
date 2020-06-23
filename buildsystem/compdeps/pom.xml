@@ -105,6 +105,10 @@
         <wsdl4j.version>1.6.3</wsdl4j.version>
         <!-- CQ #21122 -->
         <org.jgroups.version>4.1.8.Final</org.jgroups.version>
+        <!-- CQ #21154 -->
+        <oracle.jdbc.version>19.3.0.0</oracle.jdbc.version>
+        <!-- CQ #21141 -->
+        <oracle.nosql.version>18.3.10</oracle.nosql.version>
     </properties>
 
     <build>
@@ -525,6 +529,49 @@
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>stax2-api</artifactId>
             <version>${stax2-api.version}</version>
+        </dependency>
+        <!--Oracle proprietary dependencies-->
+        <!-- All files as a Oracle JDBC driver CQ #21154 -->
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>${oracle.jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>orai18n</artifactId>
+            <version>${oracle.jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>xdb</artifactId>
+            <version>${oracle.jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>xmlparserv2</artifactId>
+            <version>${oracle.jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>ucp</artifactId>
+            <version>${oracle.jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>dms</artifactId>
+            <version>${oracle.jdbc.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.database.messaging</groupId>
+            <artifactId>aqapi</artifactId>
+            <version>${oracle.jdbc.version}</version>
+        </dependency>
+        <!--Oracle NoSQL DB-->
+        <dependency>
+            <groupId>com.oracle.kv</groupId>
+            <artifactId>oracle-nosql-client</artifactId>
+            <version>${oracle.nosql.version}</version>
         </dependency>
     </dependencies>
 </project>

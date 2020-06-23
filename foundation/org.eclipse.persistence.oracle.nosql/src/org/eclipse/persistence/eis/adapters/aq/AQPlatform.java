@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,7 +88,7 @@ public class AQPlatform extends EISPlatform {
      * Allow the platform to handle the creation of the DOM record.
      * Create an indexed record (mapped are not supported).
      */
-    public Record createDOMRecord(String recordName, EISAccessor accessor) {
+    public javax.resource.cci.Record createDOMRecord(String recordName, EISAccessor accessor) {
         try {
             return accessor.getRecordFactory().createIndexedRecord(recordName);
         } catch (ResourceException exception) {
@@ -100,7 +100,7 @@ public class AQPlatform extends EISPlatform {
      * Stores the XML DOM value into the record.
      * Convert the DOM to a RAW and add to the indexed record.
      */
-    public void setDOMInRecord(Element dom, Record record, EISInteraction call, EISAccessor accessor) {
+    public void setDOMInRecord(Element dom, javax.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         IndexedRecord indexedRecord = (IndexedRecord)record;
         indexedRecord.add(new org.eclipse.persistence.oxm.record.DOMRecord(dom).transformToXML());
     }
@@ -109,7 +109,7 @@ public class AQPlatform extends EISPlatform {
      * Allow the platform to handle the creation of the Record for the DOM record.
      * Translate the indexed record RAW bytes into a DOM record.
      */
-    public AbstractRecord createDatabaseRowFromDOMRecord(Record record, EISInteraction call, EISAccessor accessor) {
+    public AbstractRecord createDatabaseRowFromDOMRecord(javax.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         EISDOMRecord domRecord = new EISDOMRecord();
         IndexedRecord indexedRecord = (IndexedRecord)record;
         if (indexedRecord.size() == 0) {

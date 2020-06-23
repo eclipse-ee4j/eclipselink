@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ public class AQInteraction implements Interaction {
      * Execute the interaction spec.
      * The spec is either an enqueue or dequeue interaction.
      */
-    public Record execute(InteractionSpec spec, Record input) throws ResourceException {
+    public javax.resource.cci.Record execute(InteractionSpec spec, javax.resource.cci.Record input) throws ResourceException {
         AQRecord record = new AQRecord();
         execute(spec, input, record);
         return record;
@@ -59,7 +59,7 @@ public class AQInteraction implements Interaction {
      * The spec is either an enqueue or dequeue interaction.
      * Only raw messages are supported.
      */
-    public boolean execute(InteractionSpec spec, Record input, Record output) throws ResourceException {
+    public boolean execute(InteractionSpec spec, javax.resource.cci.Record input, javax.resource.cci.Record output) throws ResourceException {
         if (!(spec instanceof AQInteractionSpec)) {
             throw EISException.invalidAQInteractionSpecType();
         }
