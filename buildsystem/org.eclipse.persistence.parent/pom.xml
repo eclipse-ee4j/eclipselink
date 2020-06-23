@@ -64,6 +64,11 @@
             <layout>p2</layout>
             <url>file:/${basedir}/../../buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/target/repository</url>
         </repository>
+        <repository>
+            <id>Oracle-local-p2</id>
+            <layout>p2</layout>
+            <url>${oracle.p2.url}</url>
+        </repository>
     </repositories>
 
     <profiles>
@@ -84,6 +89,8 @@
                 <module>../../sdo/org.eclipse.persistence.sdo</module>
                 <module>../../dbws/org.eclipse.persistence.dbws</module>
                 <module>../../utils/org.eclipse.persistence.dbws.builder</module>
+                <module>../../foundation/org.eclipse.persistence.oracle</module>
+                <module>../../foundation/org.eclipse.persistence.oracle.nosql</module>
             </modules>
         </profile>
         <profile>
@@ -99,14 +106,6 @@
                 <module>../../foundation/org.eclipse.persistence.oracle.nosql</module>
                 <module>../../foundation/org.eclipse.persistence.oracle</module>
             </modules>
-            <repositories>
-                <repository>
-                    <id>Oracle-local-p2</id>
-                    <layout>p2</layout>
-                    <url>${oracle.p2.url}</url>
-                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
-                </repository>
-            </repositories>
         </profile>
         <profile>
             <id>oracle-ext</id>
@@ -119,14 +118,6 @@
             <modules>
                 <module>../../foundation/org.eclipse.persistence.oracle</module>
             </modules>
-            <repositories>
-                <repository>
-                    <id>Oracle-local-p2</id>
-                    <layout>p2</layout>
-                    <url>${oracle.p2.url}</url>
-                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
-                </repository>
-            </repositories>
         </profile>
         <profile>
             <id>oracle-nosql</id>
@@ -140,14 +131,6 @@
                 <module>../../foundation/org.eclipse.persistence.nosql</module>
                 <module>../../foundation/org.eclipse.persistence.oracle.nosql</module>
             </modules>
-            <repositories>
-                <repository>
-                    <id>Oracle-local-p2</id>
-                    <layout>p2</layout>
-                    <url>${oracle.p2.url}</url>
-                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
-                </repository>
-            </repositories>
         </profile>
     </profiles>
 

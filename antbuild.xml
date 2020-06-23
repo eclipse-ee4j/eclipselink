@@ -114,7 +114,7 @@
     <property file="${test.properties}"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to static paths -->
     <!-- temporary until all build files reworked -->
-    <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>
+    <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/target/repository/oracle_plugins"/>
     <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
     <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
     <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
@@ -130,6 +130,9 @@
     <echo message="Loading default properties from: '${trunk.build.location}/build.properties'"/>
     <!-- The default for junit.lib is still "junit.jar", even though we now depend upon junit 4.5  -->
     <property file="${trunk.build.location}/antbuild.properties"/>
+    <property name="oracle.p2.dir"       value="${trunk.build.location}/${eclipselink.oraclelibs}/p2repo"/>
+    <property name="oracle.p2.url"       value="file:/${oracle.p2.dir}"/>
+    <echo message="oracle.p2.url = '${oracle.p2.url}'"/>
 
     <!-- Detect compatible version of Ant (>= 1.7.0). -->
     <condition property="compat.ant" value="true">
@@ -516,6 +519,7 @@
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Declipselink.full=true"/>
+             <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
              <arg line="-B clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
@@ -732,7 +736,7 @@
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core" depends="generate-local-compdeps, clean-runtime-checkedin">
+    <target name="build-core" depends="generate-local-compdeps, generate-oracle-p2, clean-runtime-checkedin">
         <echo message="Launching Maven build with the following parameters:"/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
@@ -740,6 +744,7 @@
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
         <echo message="    -Declipselink.full=true"/>
+        <echo message="    -Doracle.p2.url=${oracle.p2.url}"/>
         <echo message="    ${maven.goals}"/>
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
@@ -748,7 +753,8 @@
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
              <jvmarg value="-Declipselink.full=true"/>
-             <arg line="${maven.goals}"/>
+             <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
+            <arg line="${maven.goals}"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
@@ -1704,8 +1710,6 @@
     </target>
 
     <target name="check-oracle-p2" depends="check-maven" description="Setup for use of local oracle p2, and whether to generate">
-        <property name="oracle.p2.dir"       value="${trunk.build.location}/${eclipselink.oraclelibs}/p2repo"/>
-        <property name="oracle.p2.url"       value="file:/${oracle.p2.dir}"/>
         <!-- Test to see if local oracle repo should be generated: if not exist   -->
         <condition property="generate.oracle.p2">
             <not>
@@ -1719,7 +1723,7 @@
         <echo message="        generate.oracle.p2: '${generate.oracle.p2}' (undefined = false)"/>
     </target>
 
-    <target name="generate-oracle-p2" if="generate.oracle.p2" depends="check-oracle-p2" description="Build local p2 repository of local compiler dependencies">
+    <target name="generate-oracle-p2" if="generate.oracle.p2" depends="generate-local-compdeps, check-oracle-p2" description="Build local p2 repository of local compiler dependencies">
         <!-- a bit redundant, but here as a failsafe. -->
         <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
         <fail message="Eclipse installation (${eclipse.install.dir}/plugins) not found. Cannot generate P2 repo. Exiting..." unless="eclipse.dir.exist"/>
