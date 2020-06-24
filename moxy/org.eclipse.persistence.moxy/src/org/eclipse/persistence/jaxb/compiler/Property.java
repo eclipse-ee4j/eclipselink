@@ -218,10 +218,10 @@ public class Property implements Cloneable {
                     setTypeFromAdapterClass(returnType, parameterTypes[0]);
                     return;
                 }
+                // Found a marshal method with an Object return type; add
+                // it to the list in case we need to process it later
+                marshalMethods.add(method);
             }
-            // Found a marshal method with an Object return type; add
-            // it to the list in case we need to process it later
-            marshalMethods.add(method);
         }
         // At this point we didn't find a marshal method with a non-Object return type
         for (JavaMethod method : marshalMethods) {
