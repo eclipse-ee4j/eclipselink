@@ -48,13 +48,6 @@ jobs:
   allow_failures:
     - env: MAVEN_TEST=jpa-lrg-server1-mysql
     - env: MAVEN_TEST=jpa-lrg-server2-mysql
-    - env: MAVEN_TEST=corba
-      jdk: openjdk14
-
-jdk:
-  - openjdk8
-  - openjdk11
-  - openjdk14
 
 cache:
   directories:
@@ -78,9 +71,13 @@ install:
   - sed -i -e 's+${user.home}/.eclipselinktests/wildfly-18.0.0.Final+'$HOME'/wildfly-18.0.0.Final+g' ~/el-testjee.wildfly.properties
 
 before_script:
+  - wget https://github.com/sormuras/bach/raw/master/install-jdk.sh
+  - source ./install-jdk.sh --target "/home/travis/adoptopenjdk11-openj9" --workspace "/home/travis/.cache/install-jdk" --url 'https://api.adoptopenjdk.net/v2/binary/releases/openjdk11?openjdk_impl=openj9&os=linux&arch=x64&release=latest&heap_size=normal&type=jdk'
   - mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean install -pl '!:eclipselink,!:org.eclipse.persistence.bundles.other,!:org.eclipse.persistence.distribution,!:p2site' -DskipTests
 
 script:
+  - echo JAVA_HOME = ${JAVA_HOME}
+  - java -version
   - echo 'RUNNING TESTS, BE PATIENT...'
   - echo 'ENVIRONMENT:'
   - env
