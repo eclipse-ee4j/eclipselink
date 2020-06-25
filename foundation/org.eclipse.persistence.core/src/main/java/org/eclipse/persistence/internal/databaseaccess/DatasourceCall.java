@@ -31,6 +31,7 @@ import java.io.ObjectInputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
