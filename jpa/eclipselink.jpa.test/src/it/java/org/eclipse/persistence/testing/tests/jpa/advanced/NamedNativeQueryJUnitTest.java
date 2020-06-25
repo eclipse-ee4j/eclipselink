@@ -159,7 +159,8 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
 
         boolean shouldCompareResults = true;
         try {
-            query = em.createNativeQuery("select * from CMP3_ADDRESS where CITY=?1", Address.class);
+            query = em.createNativeQuery("--comment ?\n" +
+                    "select * from CMP3_ADDRESS where CITY=?1", Address.class);
             query.setParameter(1, "Ottawa");
 
             results_QuestionMark_Number = query.getResultList();
@@ -168,7 +169,10 @@ public class NamedNativeQueryJUnitTest extends JUnitTestCase {
             shouldCompareResults = false;
         }
         try {
-            query = em.createNativeQuery("select * from CMP3_ADDRESS where CITY=?", Address.class);
+            query = em.createNativeQuery("--comment? \n\r" +
+                    "--comment ?\n" +
+                    "--comment ?\n\r" +
+                    "select * from CMP3_ADDRESS where CITY=?", Address.class);
             query.setParameter(1, "Ottawa");
 
             results_QuestionMark = query.getResultList();

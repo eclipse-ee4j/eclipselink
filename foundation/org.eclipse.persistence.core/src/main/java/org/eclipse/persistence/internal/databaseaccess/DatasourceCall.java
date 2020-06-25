@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -486,12 +486,32 @@ public abstract class DatasourceCall implements Call {
 
     /**
      * INTERNAL:
+     * Remove line comments from query string.
+     * @param queryString
+     * @return Query string without line comments.
+     */
+    private String removeLineComments(String queryString) {
+        StringTokenizer multiLineTokenizer = new StringTokenizer(queryString, "\n");
+        StringBuffer sb = new StringBuffer();
+
+        while (multiLineTokenizer.hasMoreTokens())  {
+            String s = multiLineTokenizer.nextToken();
+            if (!"--".equals(s.trim().substring(0,2)))
+                sb.append(s);
+        }
+        String s = sb.toString();
+        return sb.toString();
+    }
+
+    /**
+     * INTERNAL:
      * Parse the query string for ? markers for custom query based on a query language.
      * This is used by SQLCall and XQuery call, but can be reused by other query languages.
      */
     public void translatePureSQLCustomQuery() {
         int lastIndex = 0;
         String queryString = getQueryString();
+        queryString = removeLineComments(queryString);
         int parameterIndex = 1; // this is the parameter index
         Writer writer = new CharArrayWriter(queryString.length() + 50);
         try {
