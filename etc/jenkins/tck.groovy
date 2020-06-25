@@ -38,15 +38,23 @@ spec:
       name: known-hosts
 
   containers:
-  - name: eclipselink-tck-run
-    image:  tkraus/el-build:1.1.8
+  - name: jnlp
     resources:
       limits:
         memory: "1Gi"
         cpu: "1"
       requests:
         memory: "1Gi"
-        cpu: "1"
+        cpu: "500m"
+  - name: eclipselink-tck-run
+    image:  tkraus/el-build:1.1.8
+    resources:
+      limits:
+        memory: "3Gi"
+        cpu: "3"
+      requests:
+        memory: "3Gi"
+        cpu: "2.5"
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
