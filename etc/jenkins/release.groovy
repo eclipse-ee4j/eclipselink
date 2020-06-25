@@ -52,15 +52,22 @@ spec:
     emptyDir: {}
     
   containers:
-
+  - name: jnlp
+    resources:
+      limits:
+        memory: "1Gi"
+        cpu: "1"
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
   - name: el-build
     resources:
       limits:
         memory: "2Gi"
-        cpu: "1"
+        cpu: "2"
       requests:
         memory: "2Gi"
-        cpu: "1"
+        cpu: "1.5"
     image: tkraus/el-build:1.1.8
     volumeMounts:
     - name: tools
