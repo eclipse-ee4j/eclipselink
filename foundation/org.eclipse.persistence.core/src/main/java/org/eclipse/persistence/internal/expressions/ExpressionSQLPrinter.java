@@ -215,19 +215,23 @@ public class ExpressionSQLPrinter {
     public void printValuelist(Collection values) {
         try {
             getWriter().write("(");
-            Iterator valuesEnum = values.iterator();
-            while (valuesEnum.hasNext()) {
-                Object value = valuesEnum.next();
-                // Support nested arrays for IN.
-                if (value instanceof Collection) {
-                    printValuelist((Collection)value);
-                } else if (value instanceof Expression) {
-                    ((Expression)value).printSQL(this);
-                } else {
-                    session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
-                }
-                if (valuesEnum.hasNext()) {
-                    getWriter().write(", ");
+            if (values.isEmpty()) {
+                getWriter().write("NULL");
+            } else {
+                Iterator valuesEnum = values.iterator();
+                while (valuesEnum.hasNext()) {
+                    Object value = valuesEnum.next();
+                    // Support nested arrays for IN.
+                    if (value instanceof Collection) {
+                        printValuelist((Collection) value);
+                    } else if (value instanceof Expression) {
+                        ((Expression) value).printSQL(this);
+                    } else {
+                        session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
+                    }
+                    if (valuesEnum.hasNext()) {
+                        getWriter().write(", ");
+                    }
                 }
             }
             getWriter().write(")");
@@ -242,16 +246,20 @@ public class ExpressionSQLPrinter {
     public void printList(Collection values) {
         try {
             getWriter().write("(");
-            Iterator valuesEnum = values.iterator();
-            while (valuesEnum.hasNext()) {
-                Object value = valuesEnum.next();
-                if (value instanceof Expression){
-                    ((Expression)value).printSQL(this);
-                }else{
-                    session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
-                }
-                if (valuesEnum.hasNext()) {
-                    getWriter().write(", ");
+            if (values.isEmpty()) {
+                getWriter().write("NULL");
+            } else {
+                Iterator valuesEnum = values.iterator();
+                while (valuesEnum.hasNext()) {
+                    Object value = valuesEnum.next();
+                    if (value instanceof Expression) {
+                        ((Expression) value).printSQL(this);
+                    } else {
+                        session.getPlatform().appendLiteralToCall(getCall(), getWriter(), value);
+                    }
+                    if (valuesEnum.hasNext()) {
+                        getWriter().write(", ");
+                    }
                 }
             }
             getWriter().write(")");
