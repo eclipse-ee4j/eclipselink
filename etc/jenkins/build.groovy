@@ -58,14 +58,23 @@ spec:
     
   containers:
 
+  - name: jnlp
+    resources:
+      limits:
+        memory: "1Gi"
+        cpu: "1"
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
   - name: el-build
     resources:
       limits:
-        memory: "12Gi"
-        cpu: "6"
+        memory: "6Gi"
+        cpu: "4"
       requests:
-        memory: "12Gi"
-        cpu: "6"
+        memory: "6Gi"
+        cpu: "4"
+        cpu: "3.5"
     image: tkraus/el-build:1.1.8
     volumeMounts:
     - name: tools
