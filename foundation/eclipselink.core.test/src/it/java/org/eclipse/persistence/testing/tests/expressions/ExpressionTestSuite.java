@@ -743,28 +743,26 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     private void addInCollectionEmptyTest() {
-        Employee employee = (Employee)getManager().getObject(new Employee().getClass(), "0003");
         // Empty collection without any items
         Set names = new HashSet();
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").in(names);
 
-        ReadObjectExpressionTest test = new ReadObjectExpressionTest(employee, expression);
+        ReadObjectExpressionTest test = new ReadObjectExpressionTest(new Employee().getClass(), expression);
         test.setName("InCollectionEmptyExpressionTest");
         test.setDescription("Test IN expression with empty collection");
         addTest(test);
     }
 
     private void addInCollectionNullTest() {
-        Employee employee = (Employee)getManager().getObject(new Employee().getClass(), "0003");
         // Collection is not initialized
         Set names = null;
 
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression expression = builder.get("lastName").in(names);
 
-        ReadObjectExpressionTest test = new ReadObjectExpressionTest(employee, expression);
+        ReadObjectExpressionTest test = new ReadObjectExpressionTest(new Employee().getClass(), expression);
         test.setName("InCollectionNullExpressionTest");
         test.setDescription("Test IN expression with null collection");
         addTest(test);
