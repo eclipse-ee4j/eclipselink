@@ -57,6 +57,14 @@ spec:
     
   containers:
 
+  - name: jnlp
+    resources:
+      limits:
+        memory: "1Gi"
+        cpu: "1"
+      requests:
+        memory: "1Gi"
+        cpu: "500m"
   - name: el-build
     resources:
       limits:
