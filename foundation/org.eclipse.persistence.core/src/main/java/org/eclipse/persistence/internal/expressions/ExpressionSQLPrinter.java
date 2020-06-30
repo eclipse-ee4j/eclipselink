@@ -38,6 +38,8 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  */
 public class ExpressionSQLPrinter {
 
+    private static final String NULL_STRING = "NULL";
+
     /**
      * Stores the current session. The session accessor
      * is used to print all the primitive types.
@@ -215,8 +217,8 @@ public class ExpressionSQLPrinter {
     public void printValuelist(Collection values) {
         try {
             getWriter().write("(");
-            if (values.isEmpty()) {
-                getWriter().write("NULL");
+            if (values == null || values.isEmpty()) {
+                getWriter().write(NULL_STRING);
             } else {
                 Iterator valuesEnum = values.iterator();
                 while (valuesEnum.hasNext()) {
@@ -246,8 +248,8 @@ public class ExpressionSQLPrinter {
     public void printList(Collection values) {
         try {
             getWriter().write("(");
-            if (values.isEmpty()) {
-                getWriter().write("NULL");
+            if (values == null || values.isEmpty()) {
+                getWriter().write(NULL_STRING);
             } else {
                 Iterator valuesEnum = values.iterator();
                 while (valuesEnum.hasNext()) {
