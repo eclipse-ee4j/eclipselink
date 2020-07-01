@@ -564,7 +564,6 @@
                 <exclude name="**/org.eclipse.persistence.antlr**"/>
                 <exclude name="**/org.eclipse.persistence.asm**"/>
                 <exclude name="**/readme.for.distribution**"/>
-                <exclude name="**/org.eclipse.persistence.oracle*.jar"/>
                 <exclude name="**/javax.persistence_unsigned_for_testing_1.0.0.jar"/>
             </fileset>
             <fileset dir="${eclipselink.jpa.plugins}">
