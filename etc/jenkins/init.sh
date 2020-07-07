@@ -38,13 +38,13 @@ tar -x -z -C $HOME/extension.lib.external -f $HOME/extension.lib.external/apache
 #PREPARE build.properties FILE
 echo "extensions.depend.dir=$HOME/extension.lib.external" >> $HOME/build.properties
 echo "junit.lib=$HOME/extension.lib.external/junit-4.12.jar:$HOME/extension.lib.external/hamcrest-core-1.3.jar" >> $HOME/build.properties
-echo 'jdbc.driver.jar=$HOME/extension.lib.external/mysql-connector-java-5.1.48.jar' >> $HOME/build.properties
+echo "jdbc.driver.jar=$HOME/extension.lib.external/mysql-connector-java-5.1.48.jar" >> $HOME/build.properties
 echo 'db.driver=com.mysql.jdbc.Driver' >> $HOME/build.properties
 echo "db.url=$TEST_DB_URL" >> $HOME/build.properties
 echo "db.user=$TEST_DB_USERNAME" >> $HOME/build.properties
 echo "db.pwd=$TEST_DB_PASSWORD" >> $HOME/build.properties
 echo 'db.platform=org.eclipse.persistence.platform.database.MySQLPlatform' >> $HOME/build.properties
-echo 'eclipse.install.dir=$HOME/extension.lib.external/eclipse' >> $HOME/build.properties
+echo "eclipse.install.dir=$HOME/extension.lib.external/eclipse" >> $HOME/build.properties
 echo 'server.name=wildfly' >> $HOME/build.properties
 echo "wildfly.home=$HOME/extension.lib.external/wildfly-15.0.1.Final" >> $HOME/build.properties
 echo 'wildfly.config=standalone-full.xml' >> $HOME/build.properties
