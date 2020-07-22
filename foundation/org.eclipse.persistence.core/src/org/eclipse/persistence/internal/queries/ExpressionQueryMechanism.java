@@ -1774,7 +1774,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         boolean useCache = (row == null || !(getQuery().shouldValidateUpdateCallCacheUse() && row.hasNullValueInFields()));
 
         // PERF: Check the descriptor update SQL call cache for a matching update with the same fields.
-        Vector updateCalls = getDescriptor().getQueryManager().getCachedUpdateCalls(getModifyRow().getFields());
+        final Vector<DatabaseField> updateCallsKey = org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(getModifyRow().getFields());
+        Vector updateCalls = getDescriptor().getQueryManager().getCachedUpdateCalls(updateCallsKey);
         // If the calls were cached then don't need to prepare.
         if (updateCalls != null && useCache == true) {
             int updateCallsSize = updateCalls.size();
@@ -1819,7 +1820,7 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                     updateCalls.add(getCall());
                 }
             }
-            getDescriptor().getQueryManager().putCachedUpdateCalls(getModifyRow().getFields(), updateCalls);
+            getDescriptor().getQueryManager().putCachedUpdateCalls(updateCallsKey, updateCalls);
         }
     }
 
