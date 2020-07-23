@@ -209,10 +209,13 @@ public class Oracle9Platform extends Oracle8Platform {
             return resultSet.getString(columnNumber);
         } else if (type == Types.SQLXML) {
             SQLXML sqlXml = resultSet.getSQLXML(columnNumber);
-            String str = sqlXml.getString();
-            sqlXml.free();
+            String str = null;
+            if (sqlXml != null) {
+                str = sqlXml.getString();
+                sqlXml.free();
+            }
             // Oracle 12c appends a \n character to the xml string
-            return str.endsWith("\n") ? str.substring(0, str.length() - 1) : str;
+            return (str != null && str.endsWith("\n")) ? str.substring(0, str.length() - 1) : str; 
         } else if (type == OracleTypes.OPAQUE) {
             try {
                 Object result = resultSet.getObject(columnNumber);
