@@ -1,22 +1,25 @@
-/*******************************************************************************
- * Copyright (c) 2015 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 IBM Corporation and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     02/24/2015-2.6.0 Rick Curtis
- *       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
- *     03/13/2015-2.6.0 Will Dazey
- *       - 458301: Added tests for force increment on scalar results
- *     03/18/2015-2.6.0 Joe Grassel
- *       - 462498: Missing isolation level expression in SQL for Derby platform
- *     08/14/2015-2.7.0 Tomas Kraus
- *       - 453208: Tests disabled for Oracle platform
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     02/24/2015-2.6.0 Rick Curtis
+//       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
+//     03/13/2015-2.6.0 Will Dazey
+//       - 458301: Added tests for force increment on scalar results
+//     03/18/2015-2.6.0 Joe Grassel
+//       - 462498: Missing isolation level expression in SQL for Derby platform
+//     08/14/2015-2.7.0 Tomas Kraus
+//       - 453208: Tests disabled for Oracle platform
 package org.eclipse.persistence.jpa.test.locking;
 
 import java.util.ArrayList;
@@ -41,6 +44,7 @@ import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.locking.model.LockingDog;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -132,10 +136,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testFirstResultPessimisticRead() throws Exception {
-        // Not supported on Oracle DB
-        if (getPlatform().isOracle()) {
-            return;
-        }
+        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        // Pessimistic locking with query row limits is not supported on Oracle
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
+
         EntityManager em = emf.createEntityManager();
         final EntityManager em2 = emf.createEntityManager();
         try {
@@ -170,10 +174,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testMaxResultPessimisticRead() {
-        // Not supported on Oracle DB
-        if (getPlatform().isOracle()) {
-            return;
-        }
+        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        // Pessimistic locking with query row limits is not supported on Oracle
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
+
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -193,10 +197,10 @@ public class TestPessimisticLocking {
 
     @Test
     public void testFirstResultMaxResultPessimisticRead() {
-        // Not supported on Oracle DB
-        if (getPlatform().isOracle()) {
-            return;
-        }
+        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        // Pessimistic locking with query row limits is not supported on Oracle
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isOracle());
+
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
@@ -220,10 +224,10 @@ public class TestPessimisticLocking {
      */
     @Test
     public void testAggregateResultPessimisticForceIncrement() {
-        // Not supported on Oracle DB
-        if (getPlatform().isOracle()) {
-            return;
-        }
+        Platform platform = ((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform();
+        // ORA-01786: FOR UPDATE of this query expression is not allowed
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", platform.isDerby() || platform.isOracle());
+
         if (((EntityManagerFactoryImpl) emf).getServerSession().getDatasourcePlatform().isDerby()) {
             return;
         }

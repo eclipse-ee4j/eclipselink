@@ -1,48 +1,50 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     05/16/2008-1.0M8 Guy Pelletier
- *       - 218084: Implement metadata merging functionality between mapping files
- *     12/12/2008-1.1 Guy Pelletier
- *       - 249860: Implement table per class inheritance support.
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     03/08/2010-2.1 Guy Pelletier
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     04/27/2010-2.1 Guy Pelletier
- *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     05/14/2010-2.1 Guy Pelletier
- *       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
- *     08/04/2010-2.1.1 Guy Pelletier
- *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
- *     01/25/2011-2.3 Guy Pelletier
- *       - 333913: @OrderBy and <order-by/> without arguments should order by primary
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/05/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 3)
- *     07/03/2011-2.3.1 Guy Pelletier
- *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
- *     07/06/2011-2.3.1 Guy Pelletier
- *       - 349906: NPE while using eclipselink in the application
- *      *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     06/20/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     10/09/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     11/19/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/28/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     05/16/2008-1.0M8 Guy Pelletier
+//       - 218084: Implement metadata merging functionality between mapping files
+//     12/12/2008-1.1 Guy Pelletier
+//       - 249860: Implement table per class inheritance support.
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     03/08/2010-2.1 Guy Pelletier
+//       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+//     04/27/2010-2.1 Guy Pelletier
+//       - 309856: MappedSuperclasses from XML are not being initialized properly
+//     05/14/2010-2.1 Guy Pelletier
+//       - 253083: Add support for dynamic persistence using ORM.xml/eclipselink-orm.xml
+//     08/04/2010-2.1.1 Guy Pelletier
+//       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
+//     01/25/2011-2.3 Guy Pelletier
+//       - 333913: @OrderBy and <order-by/> without arguments should order by primary
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     04/05/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 3)
+//     07/03/2011-2.3.1 Guy Pelletier
+//       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+//     07/06/2011-2.3.1 Guy Pelletier
+//       - 349906: NPE while using eclipselink in the application
+//      //     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     06/20/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     10/09/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     11/19/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     11/28/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.util.ArrayList;

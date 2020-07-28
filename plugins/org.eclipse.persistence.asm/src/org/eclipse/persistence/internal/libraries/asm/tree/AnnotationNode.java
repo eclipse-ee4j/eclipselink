@@ -29,7 +29,6 @@ package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 
@@ -49,7 +48,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * Boolean}, {@link Character}, {@link Short}, {@link Integer}, {@link Long}, {@link Float},
    * {@link Double}, {@link String} or {@link org.eclipse.persistence.internal.libraries.asm.Type}, or a two elements String
    * array (for enumeration values), an {@link AnnotationNode}, or a {@link List} of values of one
-   * of the preceding types. The list may be <tt>null</tt> if there is no name value pair.
+   * of the preceding types. The list may be {@literal null} if there is no name value pair.
    */
   public List<Object> values;
 
@@ -61,7 +60,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public AnnotationNode(final String descriptor) {
-    this(Opcodes.ASM6, descriptor);
+    this(/* latest api = */ Opcodes.ASM8, descriptor);
     if (getClass() != AnnotationNode.class) {
       throw new IllegalStateException();
     }
@@ -71,7 +70,8 @@ public class AnnotationNode extends AnnotationVisitor {
    * Constructs a new {@link AnnotationNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}
    * @param descriptor the class descriptor of the annotation class.
    */
   public AnnotationNode(final int api, final String descriptor) {
@@ -85,7 +85,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * @param values where the visited values must be stored.
    */
   AnnotationNode(final List<Object> values) {
-    super(Opcodes.ASM6);
+    super(/* latest api = */ Opcodes.ASM8);
     this.values = values;
   }
 
@@ -96,7 +96,7 @@ public class AnnotationNode extends AnnotationVisitor {
   @Override
   public void visit(final String name, final Object value) {
     if (values == null) {
-      values = new ArrayList<Object>(this.desc != null ? 2 : 1);
+      values = new ArrayList<>(this.desc != null ? 2 : 1);
     }
     if (this.desc != null) {
       values.add(name);
@@ -125,7 +125,7 @@ public class AnnotationNode extends AnnotationVisitor {
   @Override
   public void visitEnum(final String name, final String descriptor, final String value) {
     if (values == null) {
-      values = new ArrayList<Object>(this.desc != null ? 2 : 1);
+      values = new ArrayList<>(this.desc != null ? 2 : 1);
     }
     if (this.desc != null) {
       values.add(name);
@@ -136,7 +136,7 @@ public class AnnotationNode extends AnnotationVisitor {
   @Override
   public AnnotationVisitor visitAnnotation(final String name, final String descriptor) {
     if (values == null) {
-      values = new ArrayList<Object>(this.desc != null ? 2 : 1);
+      values = new ArrayList<>(this.desc != null ? 2 : 1);
     }
     if (this.desc != null) {
       values.add(name);
@@ -149,12 +149,12 @@ public class AnnotationNode extends AnnotationVisitor {
   @Override
   public AnnotationVisitor visitArray(final String name) {
     if (values == null) {
-      values = new ArrayList<Object>(this.desc != null ? 2 : 1);
+      values = new ArrayList<>(this.desc != null ? 2 : 1);
     }
     if (this.desc != null) {
       values.add(name);
     }
-    List<Object> array = new ArrayList<Object>();
+    List<Object> array = new ArrayList<>();
     values.add(array);
     return new AnnotationNode(array);
   }
@@ -173,8 +173,8 @@ public class AnnotationNode extends AnnotationVisitor {
    * checks that this node, and all its children recursively, do not contain elements that were
    * introduced in more recent versions of the ASM API than the given version.
    *
-   * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or
-   *     {@link Opcodes#ASM6}.
+   * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5},
+   *     {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link Opcodes#ASM8}.
    */
   public void check(final int api) {
     // nothing to do
@@ -183,7 +183,7 @@ public class AnnotationNode extends AnnotationVisitor {
   /**
    * Makes the given visitor visit this annotation.
    *
-   * @param annotationVisitor an annotation visitor. Maybe <tt>null</tt>.
+   * @param annotationVisitor an annotation visitor. Maybe {@literal null}.
    */
   public void accept(final AnnotationVisitor annotationVisitor) {
     if (annotationVisitor != null) {
@@ -201,7 +201,7 @@ public class AnnotationNode extends AnnotationVisitor {
   /**
    * Makes the given visitor visit a given annotation value.
    *
-   * @param annotationVisitor an annotation visitor. Maybe <tt>null</tt>.
+   * @param annotationVisitor an annotation visitor. Maybe {@literal null}.
    * @param name the value name.
    * @param value the actual value.
    */

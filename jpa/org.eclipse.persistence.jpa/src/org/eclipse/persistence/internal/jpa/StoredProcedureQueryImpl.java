@@ -1,34 +1,37 @@
-/*******************************************************************************
- * Copyright (c) 2012, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Zoltan NAGY & tware - updated support for MaxRows
- *     11/01/2010-2.2 Guy Pelletier
- *       - 322916: getParameter on Query throws NPE
- *     11/09/2010-2.1 Michael O'Brien
- *       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
- *     02/08/2012-2.4 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/13/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/27/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Zoltan NAGY & tware - updated support for MaxRows
+//     11/01/2010-2.2 Guy Pelletier
+//       - 322916: getParameter on Query throws NPE
+//     11/09/2010-2.1 Michael O'Brien
+//       - 329089: PERF: EJBQueryImpl.setParamenterInternal() move indexOf check inside non-native block
+//     02/08/2012-2.4 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     06/20/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     07/13/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     08/24/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/13/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/27/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     11/05/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.internal.jpa;
 
 import java.sql.CallableStatement;
@@ -434,12 +437,13 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
                 if (parameterType == getCall().INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
-                } else if (parameterType == getCall().IN || parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
+                } else if (parameterType == getCall().IN) {
                     field = (DatabaseField) parameter;
-                } else if (parameterType == getCall().LITERAL) {
+                } else if (parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
                     if (parameter instanceof OutputParameterForCallableStatement) {
-                        // Case: Oracle OUT_CURSOR after execution.
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();
+                    } else {
+                        field = (DatabaseField) parameter;
                     }
                 }
 
@@ -476,7 +480,7 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         if (isValidCallableStatement()) {
             try {
-                Object obj = ((CallableStatement) executeStatement).getObject(position);
+                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, position - 1, entityManager.getAbstractSession());
 
                 if (obj instanceof ResultSet) {
                     // If a result set is returned we have to build the objects.
@@ -509,19 +513,28 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
         if (isValidCallableStatement()) {
             try {
-                Integer position = getCall().getCursorOrdinalPosition(parameterName);
+                Object obj = executeCall.getOutputParameterValue((CallableStatement) executeStatement, parameterName, entityManager.getAbstractSession());
 
-                if (position == null) {
-                    return ((CallableStatement) executeStatement).getObject(parameterName);
-                } else {
-                    return getOutputParameterValue(position);
+                if (obj instanceof ResultSet) {
+                    // If a result set is returned we have to build the objects.
+                    return getResultSetMappingQuery().buildObjectsFromRecords(buildResultRecords((ResultSet) obj), ++executeResultSetIndex);
                 }
+                return obj;
             } catch (Exception exception) {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("jpa21_invalid_parameter_name", new Object[] { parameterName, exception.getMessage() }), exception);
             }
         }
 
         return null;
+    }
+
+    private boolean hasPositionalParameters() {
+        for (Parameter parameter: this.getParameters()) {
+            if (parameter.getName() != null) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -554,7 +567,12 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
                 if (hasMoreResults()) {
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
-                        List results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        List results = null;
+                        if (hasPositionalParameters()) {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                        } else {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        }
 
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
@@ -633,7 +651,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
                     if (isOutputCursorResultSet) {
                         // Return result set list for the current outputCursorIndex.
-                        results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        if (hasPositionalParameters()) {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getIndex() + 1);
+                        } else {
+                            results = (List) getOutputParameterValue(getCall().getOutputCursors().get(outputCursorIndex++).getName());
+                        }
 
                         // Update the hasMoreResults flag.
                         hasMoreResults = (outputCursorIndex < getCall().getOutputCursors().size());
@@ -811,10 +833,8 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             call.addNamedArgument(parameterName, parameterName, type);
         } else if (mode.equals(ParameterMode.OUT)) {
             call.addNamedOutputArgument(parameterName, parameterName, type);
-            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
         } else if (mode.equals(ParameterMode.INOUT)) {
             call.addNamedInOutputArgument(parameterName, parameterName, parameterName, type);
-            call.setCursorOrdinalPosition(parameterName, call.getParameters().size());
         } else if (mode.equals(ParameterMode.REF_CURSOR)) {
             call.useNamedCursorOutputAsResultSet(parameterName);
         }

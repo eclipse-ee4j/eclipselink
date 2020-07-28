@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     tware - added to allow pluggage archive factory
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     tware - added to allow pluggage archive factory
 package org.eclipse.persistence.config;
 
 /**
@@ -66,6 +68,15 @@ public class SystemProperties {
      * release they will be processed into the expression.
      */
     public static final String DO_NOT_PROCESS_XTOMANY_FOR_QBE = "eclipselink.query.query-by-example.ignore-xtomany";
+
+    /**
+     * This property can be set to <code>false</code> to enable UPDATE call to set
+     * foreign key value in the target row in unidirectional 1-Many mapping
+     * with not nullable FK. In previous versions of EclipseLink this was
+     * the default behaviour.
+     * Allowed values are: true/false.
+     */
+    public static final String ONETOMANY_DEFER_INSERTS = "eclipselink.mapping.onetomany.defer-inserts";
 
     /**
      * This system property can be set to override target server platform set by the Java EE container

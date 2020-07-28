@@ -1,46 +1,31 @@
-<!--/*******************************************************************************
-* Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
-*   Ant naming conventions:
-*   - regardless of the actual OS platform,'/' is the directory separator
-*     (Ant will convert as appropriate).
-*   - multi-word properties use periods '.'
-*     - properties ending in .jar define jarfile names only (no path)
-*     - properties ending in .lib are fully qualified jars (path and filename)
-*     - properties ending in .dir are directory paths
-*     - properties ending in .path are path refid names (classpath fragments)
-*   - multi-word targets use hyphens '-'
-*     - targets beginning with test- are reserved for high level test targets,
-*       and are used in test results parsing
-*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
-*   - multi-word macros use underscores '_'
-*   - multi-word macro attributes are concatenated
-*     e.g. 'runpathref'
-*   - multi-word tasks (taskdef) names are concatenated
-*     e.g. 'validateconnection'
-*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
-*     e.g. ${env.XXX}.
-*   - Ant properties are lower case.
-*
-* Contributors:
-*     tware  - initial API and implementation
-*     pkrogh - javadocs
-*     egwin  - rework to follow ant conventions.
-*     dtwelves - Add SDO, MOXy SRG targets
-*     egwin  - rework to incorporate new versioning standards and revision info.
-*     egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
+<!--
+
+    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      tware  - initial API and implementation
+      pkrogh - javadocs
+      egwin  - rework to follow ant conventions.
+      dtwelves - Add SDO, MOXy SRG targets
+      egwin  - rework to incorporate new versioning standards and revision info.
+      egwin  - add jpa 2.0 jar creation, and JPA 1.1/2.0 concurrent development
                strategy. Also includes fixes to eclipselink.jar creation.
-*     egwin  - rework to standardize antcall conventions and fix multiple target builds.
-*     tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
-*     mvalovy - OSGi tests
-*     Rick Curtis - Add jse bucket to lrg-test
-#******************************************************************************/-->
+      egwin  - rework to standardize antcall conventions and fix multiple target builds.
+      tkraus - additional JDK, Ant and JDBC driver check, conditional Oracle extensions tests build
+      mvalovy - OSGi tests
+      Rick Curtis - Add jse bucket to lrg-test
+-->
 <!-- =============================================================================
 *  General Comments
 *  This buildfile contains:
@@ -89,6 +74,28 @@
 
         It may require some configuration of the build.properties to run.
     -->
+<!--
+*   Ant naming conventions:
+*   - regardless of the actual OS platform,'/' is the directory separator
+*     (Ant will convert as appropriate).
+*   - multi-word properties use periods '.'
+*     - properties ending in .jar define jarfile names only (no path)
+*     - properties ending in .lib are fully qualified jars (path and filename)
+*     - properties ending in .dir are directory paths
+*     - properties ending in .path are path refid names (classpath fragments)
+*   - multi-word targets use hyphens '-'
+*     - targets beginning with test- are reserved for high level test targets,
+*       and are used in test results parsing
+*     - targets typically use the form <action>-<object>-<type> (ie. package-bundle-zip)
+*   - multi-word macros use underscores '_'
+*   - multi-word macro attributes are concatenated
+*     e.g. 'runpathref'
+*   - multi-word tasks (taskdef) names are concatenated
+*     e.g. 'validateconnection'
+*   - OS environment variables are in ALLCAPS and have 'env' as a prefix
+*     e.g. ${env.XXX}.
+*   - Ant properties are lower case.
+-->
 <project name="trunk" default="build" basedir="." xmlns:jacoco="antlib:org.jacoco.ant" xmlns:sonar="antlib:org.sonar.ant">
     <dirname  property="trunk.build.location_temp" file="${ant.file.trunk}"/>
     <pathconvert targetos="unix" property="trunk.build.location">
@@ -107,7 +114,7 @@
     <property file="${test.properties}"/>
     <!-- Sets default junit.lib and all extensions.depend dir locations to static paths -->
     <!-- temporary until all build files reworked -->
-    <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/../extension.oracle.lib.external"/>
+    <property name="oracle.extensions.depend.dir" value="${trunk.build.location}/buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/target/repository/oracle_plugins"/>
     <echo message="oracle.extensions.depend.dir = '${oracle.extensions.depend.dir}'"/>
     <!-- This HAS to be defined after allowing user redefinitions (which will cause the condition not to set anything) -->
     <!-- This tests to make sure the extensions dir exists, if not sets to a existant dummy location -->
@@ -123,6 +130,9 @@
     <echo message="Loading default properties from: '${trunk.build.location}/build.properties'"/>
     <!-- The default for junit.lib is still "junit.jar", even though we now depend upon junit 4.5  -->
     <property file="${trunk.build.location}/antbuild.properties"/>
+    <property name="oracle.p2.dir"       value="${trunk.build.location}/${eclipselink.oraclelibs}/p2repo"/>
+    <property name="oracle.p2.url"       value="file:/${oracle.p2.dir}"/>
+    <echo message="oracle.p2.url = '${oracle.p2.url}'"/>
 
     <!-- Detect compatible version of Ant (>= 1.7.0). -->
     <condition property="compat.ant" value="true">
@@ -133,10 +143,24 @@
 
     <!-- Detect compatible version of JDK (>= 1.8). -->
     <condition property="compat.jdk" value="true">
-        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*"/>
+        <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*|1(?:[0-5]).*"/>
     </condition>
     <echo message="JDK version detected: '${java.version}'"/>
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
+
+    <!-- Add some modules required for javadoc JDK (>10.*). -->
+    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none -classpath ${eclipselink.plugins}/${activation.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
+        <matches string="${java.version}" pattern="1(?:[0-5])\..*"/>
+    </condition>
+    <!-- Add some modules required for javadoc JDK (=9|10.*). -->
+    <!-- TODO temporary disabled some check checks for problems in Javadoc comments by -Xdoclint:none -->
+    <condition property="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none --add-modules java.activation,java.corba,java.xml.ws.annotation --upgrade-module-path ${eclipselink.plugins}/${transaction-api.jar}" else="${javadoc.additionParamsCommon} -Xdoclint:none">
+        <matches string="${java.version}" pattern="9\..*|10.*"/>
+    </condition>
+    <condition property="is.new.jdk" value="true" else="false">
+        <not><matches pattern='"[1-8]\..*"' string="${java.version}"/></not>
+    </condition>
+    <echo message="javadoc additional params: '${javadoc.additionParams}'"/>
 
     <!-- JDBC driver settings info -->
     <condition property="msg.jdbc.driver.jar.configured" value="JDBC driver JAR: '${jdbc.driver.jar}'" else="JDBC driver JAR: jdbc.driver.jar property missing">
@@ -145,7 +169,7 @@
     <echo message="${msg.jdbc.driver.jar.configured}"/>
 
     <!-- controls which goals to invoke with maven (default is 'verify') -->
-    <property name="maven.goals" value="verify"/>
+    <property name="maven.goals" value="-B verify"/>
 
     <!-- versioning -->
     <!-- These variables  are set in autobuild.xml. A manual build gets defaults -->
@@ -164,21 +188,23 @@
     <path id="javadoc.path">
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${eclipselink.sdo.plugins}/${commonj.sdo.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
         <pathelement path="${eclipselink.plugins}/${asm}"/>
+        <pathelement path="${eclipselink.plugins}/${glassfish-corba-omgapi.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jaxb-impl.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-xjc.jar}"/>
         <pathelement path="${eclipselink.jpa.plugins}/${persistence22.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${resource.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${resource-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${json.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${javax.validation.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${ejb.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${jms.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${transaction.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${validation-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${jms-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${transaction-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${mail.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${wsrs.jar}"/>
-        <pathelement path="${eclipselink.plugins}/${slf4j.api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${wsrs-api.jar}"/>
+        <pathelement path="${eclipselink.plugins}/${slf4j-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.nosql_${version.string}.jar"/>
         <pathelement path="${eclipselink.plugins}/org.eclipse.persistence.extension_${version.string}.jar"/>
         <pathelement path="${extensions.depend.dir}/${jgroups.jar}"/>
@@ -190,11 +216,13 @@
             dir="${eclipselink.plugins}"
             includes="*nosql*"
             excludes="*source*"/>
+        <pathelement path="${eclipselink.plugins}/${mongo-java-driver.jar}"/>
     </path>
     <path id="jpars.javadoc.path">
         <path refid="javadoc.path"/>
+        <pathelement path="${eclipselink.plugins}/${annotation-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/com.sun.jersey_1.8.0.201204181614.jar"/>
-        <pathelement path="${eclipselink.plugins}/javax.ejb_3.1.0.v201205171433.jar"/>
+        <pathelement path="${eclipselink.plugins}/${ejb-api.jar}"/>
     </path>
 
 <!-- ================================================================================= -->
@@ -420,21 +448,21 @@
     </target>
 
     <target name="set-compdeps" depends="check-maven" description="Setup for use of local compdeps rather than hosted, and whether to generate">
-        <!-- Determine whether the build could generate/use a local compdeps repo -->
-        <!--     To setup generation of local compdeps:                           -->
-        <!--        Set "eclipse.install.dir" to a valid Eclipse installation     -->
-        <!--           (Indigo or higher has been tested) by using a -D on        -->
-        <!--           the commandline, or adding it in a user properties file    -->
-        <!-- Test to see if local repo can be generated: tools exist                -->
-        <condition property="local.compdeps" value="true" else="false">
-            <and>
-                <isset property="eclipse.install.dir"/>
-                <available file="${eclipse.install.dir}/plugins" type="dir"/>
-            </and>
-        </condition>
+        <!-- Determine whether the build could generate/use a local compdeps repo. -->
+        <!-- It'll generate local compdeps repo only once.                         -->
+        <!-- Allways use local p2 repo. -->
+        <property name="local.compdeps" value="true"/>
         <!-- Test to see if local repo should be generated: if local set and if can -->
-        <condition property="generate.compdeps">
-                <equals arg1="${local.compdeps}" arg2="true"/>
+        <condition property="generate.compdeps" value="true" else="false">
+            <and>
+                <!--<equals arg1="${local.compdeps}" arg2="true"/>-->
+                <available file="${eclipselink.compdeps.p2repo}" type="dir"/>
+                <resourcecount when="less" count="40">
+                    <fileset dir="${plugins.dir}">
+                        <include name="*.jar"/>
+                    </fileset>
+                </resourcecount>
+            </and>
         </condition>
         <echo message="Compdeps Settings:"/>
         <echo message="    Whether to use a local compdeps p2 repo:"/>
@@ -445,9 +473,13 @@
     </target>
 
     <!-- Cleans all build generated files. -->
-    <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
+    <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build">
+        <antcall target="clean-plugins"/>
+        <antcall target="clean-local-compdeps"/>
+        <antcall target="clean-internal-compdeps"/>
+    </target>
 
-    <target name="clean-runtime" depends="generate-local-compdeps, clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
+    <target name="clean-runtime" depends="generate-local-compdeps, generate-oracle-p2, clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
     <!--   This allows testing to call a specific target that won't remove the default
            (or dropped-in copy of) eclipselink and the persistence jar, while still
            allowing unchanged operation by developers and users to clean all built artifacts. -->
@@ -465,6 +497,8 @@
         <delete failonerror="false">
             <fileset dir="${eclipselink.util.rename}" includes="${package-rename.jar}*"/>
         </delete>
+        <delete failonerror="false" dir="${build.dir}"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.features.base}" target="clean"/>
     </target>
 
     <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core">
@@ -474,16 +508,19 @@
         <!-- ant antfile="antbuild.xml" dir="${eclipselink.util.rename}"            target="clean"/ -->
         <ant antfile="antbuild.xml" dir="${eclipselink.util.sigcompare}"        target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench}"         target="clean"/>
-        <delete file="*${eclipselink.zip.suffix}" failonerror="false"/>
+        <delete failonerror="false">
+            <fileset dir="." includes="*${eclipselink.zip.suffix}"/>
+        </delete>
+        <ant antfile="antbuild.xml" dir="${eclipselink.oraclelibs}"             target="clean"/>
     </target>
     <target name="clean-core" depends="check-maven" description="Clean the maven built runtime projects">
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
-             <arg value="clean"/>
+             <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
+             <arg line="-B clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
@@ -504,14 +541,37 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.test}"      target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"            target="clean"/>
+        <!-- Clean JPA JSE Test. Ant project can't be called without class org.eclipse.persistence.tools.weaving.jpa.StaticWeaveAntTask on the classpath (custom Ant task) -->
+        <delete dir="${eclipselink.jpa.test.jse}/${classes.dir}" />
+        <delete dir="${eclipselink.jpa.test.jse}/${run.dir}" />
+        <delete dir="${eclipselink.jpa.test.jse}/${report.dir}" />
+
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"        target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"          target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.hermes.test}"         target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"           target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}"   target="clean"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
 
+    <target name="clean-plugins" description="Clean files from plugins directory except antlr and asm.">
+        <delete>
+            <fileset dir="${plugins.dir}" includes="*.jar">
+                <exclude name="**/org.eclipse.persistence.antlr**"/>
+                <exclude name="**/org.eclipse.persistence.asm**"/>
+                <exclude name="**/readme.for.distribution**"/>
+                <exclude name="**/javax.persistence_unsigned_for_testing_1.0.0.jar"/>
+            </fileset>
+            <fileset dir="${eclipselink.jpa.plugins}">
+                <include name="${persistence22.jar}"/>
+                <include name="${persistence22.src.jar}"/>
+            </fileset>
+        </delete>
+    </target>
     <target name="clean-oracle"      depends="clean-oracle-test"/>
     <target name="clean-oracle-test" depends="clean-oracle-extension-test, clean-oracle-spatial-extension-test, clean-oracle-nosql-extension-test"/>
     <!-- Compiles Oracle components, tests and extensions (excluding utilities) if dependencies are available. -->
@@ -531,24 +591,159 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="clean"/>
     </target>
 
-    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of local compiler dependencies">
-        <!-- a bit redundant, but here as a failsafe. -->
-        <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
-        <fail message="Specified Eclipse installation (${eclipse.install.dir}/plugins) not found. Exiting..." unless="eclipse.dir.exist"/>
-        <echo message="Generating local 'Compile Dependency P2 Repository' using tools found in '${eclipse.install.dir}/plugins'."/>
-        <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"  target="build"/>
+    <!-- Clean internal compilation dependencies (ASM, ANTLR). -->
+    <target name="clean-internal-compdeps" description="Clean local p2 repository of internal compiler dependencies">
+        <java dir="${eclipselink.compdeps.internal}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
+            <arg line="-B clean"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Prepare/copy internal compilation dependencies (ASM, ANTLR) into local Tycho repository. -->
+    <target name="generate-internal-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of internal compiler dependencies">
+        <echo message="Generating local internal 'Compile Dependency P2 Repository' using Tycho."/>
+        <echo message="Launching Maven build with the following parameters:"/>
+        <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+        <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
+        <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    -B clean verify"/>
+        <java dir="${eclipselink.compdeps.internal}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
+            <arg line="-B clean verify"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <target name="clean-local-compdeps" description="Clean local compiler dependencies">
+        <java dir="${eclipselink.compdeps}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
+            <arg line="-B clean"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+    </target>
+
+    <!-- Prepare/copy local Tycho repository from internal dependencies (ASM, ANTLR) and external (javax APIs, various implementations) resolved from Maven central repository. -->
+    <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps, generate-internal-compdeps, clean-plugins" description="Build local p2 repository of local compiler dependencies">
+        <echo message="Generating local 'Compile Dependency P2 Repository' using Tycho."/>
+        <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+        <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
+        <echo message="    -Dmaven.home=${M2_HOME}"/>
+        <echo message="    -B clean verify"/>
+        <java dir="${eclipselink.compdeps}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
+            <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
+            <jvmarg value="-Dmaven.home=${M2_HOME}"/>
+            <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.compdeps}"/>
+            <arg line="-B clean verify"/>
+            <classpath>
+                <fileset dir="${M2_HOME}/boot">
+                    <include name="plexus-classworlds-*.jar"/>
+                </fileset>
+            </classpath>
+        </java>
+
+        <macrodef name="copy-plugin">
+            <attribute name="from"/>
+            <attribute name="to"/>
+            <attribute name="todir" default="${eclipselink.plugins}"/>
+            <sequential>
+                <copy todir="@{todir}" overwrite="true">
+                    <fileset dir="${eclipselink.compdeps.p2repo}"/>
+                    <globmapper from="@{from}" to="@{to}"/>
+                </copy>
+            </sequential>
+        </macrodef>
+
+         <!--Populate plugins directory from local compdeps repository.-->
+        <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="${cdi-api.jar}"/>
+        <copy-plugin from="ch.qos.logback.classic*.jar" to="${logback-classic.jar}"/>
+        <copy-plugin from="ch.qos.logback.core*.jar" to="${logback-core.jar}"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-impl*.jar" to="${jaxb-impl.jar}"/>
+        <copy-plugin from="com.sun.xml.bind.jaxb-xjc*.jar" to="${jaxb-xjc.jar}"/>
+        <copy-plugin from="com.sun.xml.messaging.saaj.impl*.jar" to="${saaj-impl.jar}"/>
+        <copy-plugin from="com.sun.xml.stream.buffer.streambuffer*.jar" to="${streambuffer.jar}"/>
+        <copy-plugin from="com.sun.xml.ws.policy*.jar" to="${ws-policy.jar}"/>
+        <copy-plugin from="jaxws-rt*.jar" to="${ws-rt.jar}"/>
+        <copy-plugin from="com.sun.activation.jakarta.activation*.jar" to="${activation.jar}"/>
+        <copy-plugin from="jakarta.annotation-api*.jar" to="${annotation-api.jar}"/>
+        <copy-plugin from="jakarta.ejb-api*.jar" to="${ejb-api.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="${inject.jar}"/>
+        <copy-plugin from="jakarta.interceptor-api*.jar" to="${interceptor-api.jar}"/>
+        <copy-plugin from="jakarta.jms-api*.jar" to="${jms-api.jar}"/>
+        <copy-plugin from="jakarta.jws-api*.jar" to="${jws-api.jar}"/>
+        <copy-plugin from="org.glassfish.jakarta.json*.jar" to="${json.jar}"/>
+        <copy-plugin from="com.sun.mail.jakarta.mail*.jar" to="${mail.jar}"/>
+        <copy-plugin from="jakarta.persistence_2.2.3*.jar" to="${persistence22.jar}" todir="${eclipselink.jpa.plugins}"/>
+        <copy-plugin from="jakarta.resource-api*.jar" to="${resource-api.jar}"/>
+        <copy-plugin from="jakarta.servlet-api*.jar" to="${servlet-api.jar}"/>
+        <copy-plugin from="jakarta.transaction-api*.jar" to="${transaction-api.jar}"/>
+        <copy-plugin from="jakarta.validation.jakarta.validation-api*.jar" to="${validation-api.jar}"/>
+        <copy-plugin from="jakarta.ws.rs-api*.jar" to="${wsrs-api.jar}"/>
+        <copy-plugin from="jakarta.xml.bind-api_*.jar" to="${jaxb-api.jar}"/>
+        <copy-plugin from="jakarta.xml.soap-api*.jar" to="${soap-api.jar}"/>
+        <copy-plugin from="jakarta.xml.ws-api*.jar" to="${ws-api.jar}"/>
+        <copy-plugin from="org.glassfish.external.management-api*.jar" to="${management-api.jar}"/>
+        <copy-plugin from="org.mongodb.mongo-java-driver*.jar" to="${mongo-java-driver.jar}"/>
+        <copy-plugin from="org.eclipse.persistence.sun-misc*.jar" to="${sun-misc.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-csiv2-idl*.jar" to="${glassfish-corba-csiv2-idl.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-internal-api*.jar" to="${glassfish-corba-internal-api.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-omgapi*.jar" to="${glassfish-corba-omgapi.jar}"/>
+        <copy-plugin from="org.glassfish.corba.glassfish-corba-orb*.jar" to="${glassfish-corba-orb.jar}"/>
+        <copy-plugin from="org.glassfish.gmbal.gmbal*" to="${gmbal.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.api*.jar" to="${hk2-api.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.locator*.jar" to="${hk2-locator.jar}"/>
+        <copy-plugin from="org.glassfish.hk2.utils*.jar" to="${hk2-utils.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-core*.jar*.jar" to="${jersey-core.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-client*.jar" to="${jersey-client.jar}"/>
+        <copy-plugin from="org.glassfish.jersey.core.jersey-common*.jar" to="${jersey-common.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-asm*.jar" to="${pfl-asm.jar}"/>
+        <copy-plugin from="org.glassfish.main.bean-validator*.jar" to="${validation-impl.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-basic*.jar" to="${pfl-basic.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-basic-tools*.jar" to="${pfl-basic-tools.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-dynamic*.jar" to="${pfl-dynamic.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-test*.jar" to="${pfl-test.jar}"/>
+        <copy-plugin from="org.glassfish.pfl.pfl-tf*.jar" to="${pfl-tf.jar}"/>
+        <copy-plugin from="org.jvnet.staxex.stax-ex*.jar" to="${stax-ex.jar}"/>
+        <copy-plugin from="org.jvnet.mimepull*.jar" to="${mimepull.jar}"/>
+        <copy-plugin from="osgi.core*.jar" to="${osgi.core.jar}"/>
+        <copy-plugin from="osgi.cmpn*.jar" to="${osgi.cmpn.jar}"/>
+        <copy-plugin from="slf4j.api*.jar" to="${slf4j-api.jar}"/>
+        <copy-plugin from="slf4j.nop*.jar" to="${slf4j-nop.jar}"/>
+        <copy-plugin from="stax2-api*.jar" to="${stax2-api.jar}"/>
+
+        <!-- Copy source jars -->
+        <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="${jaxb-api.src.jar}"/>
+        <copy-plugin from="jakarta.persistence.source_2.2.3.jar" to="${persistence22.src.jar}" todir="${eclipselink.jpa.plugins}"/>
     </target>
 
     <!-- Compiles all runtime components (excluding Tests, Oracle extensions). -->
-    <target name="build-core" depends="generate-local-compdeps, clean-runtime-checkedin">
+    <target name="build-core" depends="generate-local-compdeps, generate-oracle-p2, clean-runtime-checkedin">
         <echo message="Launching Maven build with the following parameters:"/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
-        <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
         <echo message="    -Declipselink.full=true"/>
+        <echo message="    -Doracle.p2.url=${oracle.p2.url}"/>
         <echo message="    ${maven.goals}"/>
         <java dir="${eclipselink.mvn.parent}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
@@ -556,9 +751,9 @@
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-Declipselink.full=true"/>
-             <arg line="${maven.goals}"/>
+             <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
+            <arg line="${maven.goals}"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
@@ -624,10 +819,9 @@
              <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
              <jvmarg value="-Dmaven.home=${M2_HOME}"/>
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
-             <arg value="clean"/>
+             <arg line="-B clean"/>
              <classpath>
                 <fileset dir="${M2_HOME}/boot">
                    <include name="plexus-classworlds-*.jar"/>
@@ -652,7 +846,6 @@
         <echo message="    -Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -DforceContextQualifier=${version.qualifier}"/>
-        <echo message="    -Dlocal.compdeps=${local.compdeps}"/>
         <echo message="    -D${oracle.target}=true"/>
         <echo message="    -Doracle.p2.url=${oracle.p2.url}"/>
         <echo message="    ${maven.goals}"/>
@@ -662,7 +855,6 @@
              <jvmarg value="-Dmaven.multiModuleProjectDirectory=${eclipselink.mvn.parent}"/>
              <jvmarg value="-Dbuild.qualifier=${version.qualifier}"/>
              <jvmarg value="-DforceContextQualifier=${version.qualifier}"/>
-             <jvmarg value="-Dlocal.compdeps=${local.compdeps}"/>
              <jvmarg value="-D${oracle.target}=true"/>
              <jvmarg value="-Doracle.p2.url=${oracle.p2.url}"/>
              <arg line="${maven.goals}"/>
@@ -986,16 +1178,14 @@
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}">
                 <include name="**.jar"/>
-                <exclude name="javax.persistence*.jar"/>
+                <exclude name="jakarta.persistence*.jar"/>
                 <exclude name="*nosql*"/>
-                <exclude name="osgi.cmpn_4.1.0.jar"/>
-                <exclude name="org.apache.ant_1.7.0.v20080627-1145.zip"/>
-                <exclude name="com.sun*.jar"/>
+                <exclude name="osgi.cmpn*.jar"/>
+                <exclude name="org.apache.ant*.zip"/>
                 <exclude name="*dynamic*.jar"/>
                 <!-- exclude test-only dependencies -->
                 <exclude name="*hk2*"/>
                 <exclude name="*jersey*"/>
-                <exclude name="javax.annotation*"/>
                 <exclude name="javax.inject*"/>
                 <exclude name="*dynamic*.jar"/>
             </zipfileset>
@@ -1280,6 +1470,7 @@
             </fileset>
             <fileset dir="${build.dir}/javax.xml.bind/src" defaultexcludes="yes">
                 <include name="**/*.java"/>
+                <exclude name="module-info.java"/>
             </fileset>
             <!-- *** EclipseLink modules *** -->
             <fileset dir="${eclipselink.core}/${src.dir}" defaultexcludes="yes">
@@ -1348,6 +1539,8 @@
             </fileset>
             <fileset dir="${eclipselink.extension.oracle.nosql}/${src.dir}" defaultexcludes="yes">
                 <include name="org/eclipse/persistence/**/*.java"/>
+                <exclude name="org/eclipse/persistence/**/AQPlatform.java" if="${is.new.jdk}"/>
+                <exclude name="org/eclipse/persistence/**/OracleNoSQLPlatform.java" if="${is.new.jdk}"/>
                 <exclude name="org/eclipse/persistence/internal/**/*.java"/>
             </fileset>
         </javadoc>
@@ -1465,9 +1658,10 @@
             <!-- moxy jar's and zips -->
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy">
                 <include name="${mail.jar}"/>
-                <include name="${jaxb-core.jar}"/>
+                <include name="${jaxb-impl.jar}"/>
                 <include name="${jaxb-xjc.jar}"/>
-                <include name="${javax.validation.jar}"/>
+                <include name="${activation.jar}"/>
+                <include name="${validation-api.jar}"/>
                 <include name="${json.jar}"/>
             </zipfileset>
             <zipfileset dir="${eclipselink.plugins}/" prefix="eclipselink/jlib/moxy/api">
@@ -1479,7 +1673,7 @@
             <zipfileset dir="${build.dir}/"               includes="${dbws-util.jar}"             prefix="eclipselink/utils/dbws"/>
             <zipfileset dir="${eclipselink.dbws.builder}" includes="setenv.*, dbwsbuilder.*"      prefix="eclipselink/utils/dbws" filemode="755"/>
             <zipfileset dir="${eclipselink.util.plugins}" includes="${wsdl.jar}, *oracleddl*.jar" prefix="eclipselink/utils/dbws"/>
-            <zipfileset dir="${eclipselink.plugins}"      includes="${servlet.jar}"               prefix="eclipselink/utils/dbws"/>
+            <zipfileset dir="${eclipselink.plugins}"      includes="${servlet-api.jar}"               prefix="eclipselink/utils/dbws"/>
             <!-- workbench jars -->
 <!--            <zipfileset dir="${eclipselink.util.workbench.lib}/mw/"  includes="elmwcore.jar, eclipselinkmw.jar" prefix="eclipselink/utils/workbench/jlib"/>
             <zipfileset dir="${eclipselink.util.workbench.lib}/compile/" includes="xercesImpl.jar" prefix="eclipselink/utils/workbench/jlib"/>
@@ -1515,8 +1709,6 @@
     </target>
 
     <target name="check-oracle-p2" depends="check-maven" description="Setup for use of local oracle p2, and whether to generate">
-        <property name="oracle.p2.dir"       value="${trunk.build.location}/${eclipselink.oraclelibs}/p2repo"/>
-        <property name="oracle.p2.url"       value="file:/${oracle.p2.dir}"/>
         <!-- Test to see if local oracle repo should be generated: if not exist   -->
         <condition property="generate.oracle.p2">
             <not>
@@ -1530,7 +1722,7 @@
         <echo message="        generate.oracle.p2: '${generate.oracle.p2}' (undefined = false)"/>
     </target>
 
-    <target name="generate-oracle-p2" if="generate.oracle.p2" depends="check-oracle-p2" description="Build local p2 repository of local compiler dependencies">
+    <target name="generate-oracle-p2" if="generate.oracle.p2" depends="generate-local-compdeps, check-oracle-p2" description="Build local p2 repository of local compiler dependencies">
         <!-- a bit redundant, but here as a failsafe. -->
         <available file="${eclipse.install.dir}/plugins" type="dir" property="eclipse.dir.exist"/>
         <fail message="Eclipse installation (${eclipse.install.dir}/plugins) not found. Cannot generate P2 repo. Exiting..." unless="eclipse.dir.exist"/>

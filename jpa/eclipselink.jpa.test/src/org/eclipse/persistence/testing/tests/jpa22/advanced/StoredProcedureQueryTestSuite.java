@@ -1,19 +1,23 @@
-/*******************************************************************************
- * Copyright (c) 2013, 2017  Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     01/23/2013-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     01/23/2013-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.testing.tests.jpa22.advanced;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.ParameterMode;
@@ -23,6 +27,7 @@ import javax.persistence.TransactionRequiredException;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.queries.ResultSetMappingQuery;
 import org.eclipse.persistence.queries.ColumnResult;
 import org.eclipse.persistence.queries.ConstructorResult;
@@ -31,6 +36,7 @@ import org.eclipse.persistence.queries.FieldResult;
 import org.eclipse.persistence.queries.SQLResultSetMapping;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.models.jpa22.advanced.Address;
 import org.eclipse.persistence.testing.models.jpa22.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa22.advanced.EmployeeDetails;
@@ -68,13 +74,15 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryGetResultList"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithMultipleResultsFromCode"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithNamedFieldResult"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithNamedFieldResultTranslationIntoNumbered"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithNumberedFieldResult"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithResultClass"));
         suite.addTest(new StoredProcedureQueryTestSuite("testQueryWithOutParam"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureParameterAPI"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_Named"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_Positional"));
-        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor2"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_ResultList_Named"));
+        suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQuerySysCursor_ResultList_Positional"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping1"));
         suite.addTest(new StoredProcedureQueryTestSuite("testStoredProcedureQueryExceptionWrapping2"));
 
@@ -367,9 +375,16 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 }
 
                 // Check output parameters by position.
-                Integer outputParamValueFromPosition = (Integer) query.getOutputParameterValue(3);
+                Object outputParamValueFromPosition = query.getOutputParameterValue(3);
+
+                // TODO: See previous investigate todo. A Long is returned here instead of an Integer on MySQL.
+                // This test also mixes index and named parameters, so this test my be invalid to begin with.
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
-                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                if (outputParamValueFromName instanceof Long) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(new Long(numberOfEmployes)));
+                } else if (outputParamValueFromName instanceof Integer) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                }
 
                 // Do some negative tests ...
                 try {
@@ -524,9 +539,16 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 }
 
                 // Check output parameters by position.
-                Integer outputParamValueFromPosition = (Integer) query.getOutputParameterValue(3);
+                Object outputParamValueFromPosition = query.getOutputParameterValue(3);
+
+                // TODO: See previous investigate todo. A Long is returned here instead of an Integer on MySQL.
+                // This test also mixes index and named parameters, so this test my be invalid to begin with.
                 assertNotNull("The output parameter was null.", outputParamValueFromPosition);
-                assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                if (outputParamValueFromName instanceof Long) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(new Long(numberOfEmployes)));
+                } else if (outputParamValueFromName instanceof Integer) {
+                    assertTrue("Incorrect value returned, expected " + numberOfEmployes + ", got: " + outputParamValueFromPosition, outputParamValueFromPosition.equals(numberOfEmployes));
+                }
 
                 // Do some negative tests ...
                 try {
@@ -795,6 +817,49 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
     }
 
     /**
+     * Tests a StoredProcedureQuery using a result-set mapping though EM API
+     */
+    public void testQueryWithNamedFieldResultTranslationIntoNumbered() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put(PersistenceUnitProperties.NAMING_INTO_INDEXED, "true");
+            EntityManager em = createEntityManager(properties);
+            QuerySQLTracker querySQLTracker = new QuerySQLTracker(((org.eclipse.persistence.jpa.JpaEntityManager)em).getServerSession());
+
+            try {
+                beginTransaction(em);
+
+                Address address = new Address();
+                address.setCity("Winnipeg");
+                address.setPostalCode("R3B 1B9");
+                address.setProvince("MB");
+                address.setStreet("510 Main Street");
+                address.setCountry("Canada");
+                em.persist(address);
+                em.flush();
+
+                // Clear the cache
+                em.clear();
+                clearCache();
+
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Address_Mapped_Named", "address-column-result-map");
+                query.registerStoredProcedureParameter("address_id_v", Integer.class, ParameterMode.IN);
+
+                Object[] values = (Object[]) query.setParameter("address_id_v", address.getId()).getSingleResult();
+                assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
+                assertNotNull("No results returned from store procedure call", values[1]);
+                assertTrue("Address not found using stored procedure", address.getStreet().equals(values[1]));
+
+                String sqlStatement = querySQLTracker.getSqlStatements().get(0);
+                int count = (sqlStatement.split("=>", -1).length) - 1;
+                assertEquals("Transformation into numbered parameters was not called", 1, count);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
+        }
+    }
+
+    /**
      * Tests a NamedStoredProcedureQuery using a result-set-mapping using
      * positional parameters (and more than the procedure expects).
      */
@@ -1009,7 +1074,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
      * Tests a StoredProcedureQuery using a system cursor. Also tests
      * getParameters call AFTER query execution.
      */
-    public void testStoredProcedureQuerySysCursor2() {
+    public void testStoredProcedureQuerySysCursor_ResultList_Named() {
         if (supportsStoredProcedures() && getPlatform().isOracle() ) {
             EntityManager em = createEntityManager();
 
@@ -1030,7 +1095,7 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Test the getParameters call AFTER query execution.
                 assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
 
-                List<Object[]> employees = (List<Object[]>) query.getOutputParameterValue("p_recordset");
+                List<Employee> employees = (List<Employee>) query.getResultList();
                 assertFalse("No employees were returned", employees.isEmpty());
 
                 commitTransaction(em);
@@ -1038,13 +1103,61 @@ public class StoredProcedureQueryTestSuite extends JUnitTestCase {
                 // Test now with the named stored procedure. //
                 beginTransaction(em);
 
-                StoredProcedureQuery query2 = em.createNamedStoredProcedureQuery("read_using_sys_cursor");
+                StoredProcedureQuery query2 = em.createNamedStoredProcedureQuery("ReadUsingNamedSysCursor");
                 query2.setParameter("f_name_v", "Fred");
                 query2.getParameterValue("f_name_v");
 
                 query2.execute();
 
-                List<Object[]> employees2 = (List<Object[]>) query2.getOutputParameterValue("p_recordset");
+                List<Employee> employees2 = (List<Employee>) query2.getResultList();
+                assertFalse("No employees were returned from name stored procedure query.", employees2.isEmpty());
+
+                commitTransaction(em);
+            } finally {
+                closeEntityManagerAndTransaction(em);
+            }
+        }
+    }
+
+    /**
+     * Tests a StoredProcedureQuery using a system cursor. Also tests
+     * getParameters call AFTER query execution. Parameters are passed via position.
+     */
+    public void testStoredProcedureQuerySysCursor_ResultList_Positional() {
+        if (supportsStoredProcedures() && getPlatform().isOracle() ) {
+            EntityManager em = createEntityManager();
+
+            try {
+                // Test stored procedure query created through API. //
+                beginTransaction(em);
+
+                StoredProcedureQuery query = em.createStoredProcedureQuery("Read_Using_Sys_Cursor");
+                query.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+                query.registerStoredProcedureParameter(2, void.class, ParameterMode.REF_CURSOR);
+
+                query.setParameter(1, "Fred");
+
+                boolean execute = query.execute();
+
+                assertTrue("Execute returned false.", execute);
+
+                // Test the getParameters call AFTER query execution.
+                assertTrue("The number of paramters returned was incorrect, actual: " + query.getParameters().size() + ", expected 2", query.getParameters().size() == 2);
+
+                List<Employee> employees = (List<Employee>) query.getResultList();
+                assertFalse("No employees were returned", employees.isEmpty());
+
+                commitTransaction(em);
+
+                // Test now with the named stored procedure. //
+                beginTransaction(em);
+
+                StoredProcedureQuery query2 = em.createNamedStoredProcedureQuery("ReadUsingUnNamedSysCursor");
+                query2.setParameter(1, "Fred");
+
+                boolean execute2 = query2.execute();
+
+                List<Employee> employees2 = query2.getResultList();
                 assertFalse("No employees were returned from name stored procedure query.", employees2.isEmpty());
 
                 commitTransaction(em);

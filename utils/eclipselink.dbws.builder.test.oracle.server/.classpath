@@ -12,6 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.dbws.builder"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/utils/plugins/javax.wsdl_1.6.2.v201012040545.jar" sourcepath="/ECLIPSELINK_HOME/utils/plugins/wsdl4j-src-1.6.2.zip"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/javax.xml.soap_1.3.0.v200906010428.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.xml.soap-api.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

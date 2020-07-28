@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
 import java.util.Map;
-
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
@@ -67,7 +66,7 @@ public class InvokeDynamicInsnNode extends AbstractInsnNode {
       final String name,
       final String descriptor,
       final Handle bootstrapMethodHandle,
-      final Object... bootstrapMethodArguments) {
+      final Object... bootstrapMethodArguments) { // NOPMD(ArrayIsStoredDirectly): public field.
     super(Opcodes.INVOKEDYNAMIC);
     this.name = name;
     this.desc = descriptor;

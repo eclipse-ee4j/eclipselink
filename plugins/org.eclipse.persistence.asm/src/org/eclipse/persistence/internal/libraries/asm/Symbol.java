@@ -80,6 +80,9 @@ abstract class Symbol {
   /** The tag value of CONSTANT_MethodType_info JVMS structures. */
   static final int CONSTANT_METHOD_TYPE_TAG = 16;
 
+  /** The tag value of CONSTANT_Dynamic_info JVMS structures. */
+  static final int CONSTANT_DYNAMIC_TAG = 17;
+
   /** The tag value of CONSTANT_InvokeDynamic_info JVMS structures. */
   static final int CONSTANT_INVOKE_DYNAMIC_TAG = 18;
 
@@ -132,7 +135,8 @@ abstract class Symbol {
    * The name of the class field or method corresponding to this symbol. Only used for {@link
    * #CONSTANT_FIELDREF_TAG}, {@link #CONSTANT_METHODREF_TAG}, {@link
    * #CONSTANT_INTERFACE_METHODREF_TAG}, {@link #CONSTANT_NAME_AND_TYPE_TAG}, {@link
-   * #CONSTANT_METHOD_HANDLE_TAG} and {@link #CONSTANT_INVOKE_DYNAMIC_TAG} symbols.
+   * #CONSTANT_METHOD_HANDLE_TAG}, {@link #CONSTANT_DYNAMIC_TAG} and {@link
+   * #CONSTANT_INVOKE_DYNAMIC_TAG} symbols.
    */
   final String name;
 
@@ -143,12 +147,13 @@ abstract class Symbol {
    *   <li>a field or method descriptor for {@link #CONSTANT_FIELDREF_TAG}, {@link
    *       #CONSTANT_METHODREF_TAG}, {@link #CONSTANT_INTERFACE_METHODREF_TAG}, {@link
    *       #CONSTANT_NAME_AND_TYPE_TAG}, {@link #CONSTANT_METHOD_HANDLE_TAG}, {@link
-   *       #CONSTANT_METHOD_TYPE_TAG} and {@link #CONSTANT_INVOKE_DYNAMIC_TAG} symbols,
+   *       #CONSTANT_METHOD_TYPE_TAG}, {@link #CONSTANT_DYNAMIC_TAG} and {@link
+   *       #CONSTANT_INVOKE_DYNAMIC_TAG} symbols,
    *   <li>an arbitrary string for {@link #CONSTANT_UTF8_TAG} and {@link #CONSTANT_STRING_TAG}
    *       symbols,
    *   <li>an internal class name for {@link #CONSTANT_CLASS_TAG}, {@link #TYPE_TAG} and {@link
    *       #UNINITIALIZED_TYPE_TAG} symbols,
-   *   <li><tt>null</tt> for the other types of symbol.
+   *   <li>{@literal null} for the other types of symbol.
    * </ul>
    */
   final String value;
@@ -164,7 +169,7 @@ abstract class Symbol {
    *   <li>the CONSTANT_InvokeDynamic_info bootstrap_method_attr_index field value for {@link
    *       #CONSTANT_INVOKE_DYNAMIC_TAG} symbols,
    *   <li>the offset of a bootstrap method in the BootstrapMethods boostrap_methods array, for
-   *       {@link #BOOTSTRAP_METHOD_TAG} symbols,
+   *       {@link #CONSTANT_DYNAMIC_TAG} or {@link #BOOTSTRAP_METHOD_TAG} symbols,
    *   <li>the bytecode offset of the NEW instruction that created an {@link
    *       Frame#ITEM_UNINITIALIZED} type for {@link #UNINITIALIZED_TYPE_TAG} symbols,
    *   <li>the indices (in the class' type table) of two {@link #TYPE_TAG} source types for {@link
@@ -200,9 +205,10 @@ abstract class Symbol {
    * @param index the symbol index in the constant pool, in the BootstrapMethods attribute, or in
    *     the (ASM specific) type table of a class (depending on 'tag').
    * @param tag the symbol type. Must be one of the static tag values defined in this class.
-   * @param owner The internal name of the symbol's owner class. Maybe <tt>null</tt>.
-   * @param name The name of the symbol's corresponding class field or method. Maybe <tt>null</tt>.
-   * @param value The string value of this symbol. Maybe <tt>null</tt>.
+   * @param owner The internal name of the symbol's owner class. Maybe {@literal null}.
+   * @param name The name of the symbol's corresponding class field or method. Maybe {@literal
+   *     null}.
+   * @param value The string value of this symbol. Maybe {@literal null}.
    * @param data The numeric value of this symbol.
    */
   Symbol(
@@ -221,6 +227,8 @@ abstract class Symbol {
   }
 
   /**
+   * Returns the result {@link Type#getArgumentsAndReturnSizes} on {@link #value}.
+   *
    * @return the result {@link Type#getArgumentsAndReturnSizes} on {@link #value} (memoized in
    *     {@link #info} for efficiency). This should only be used for {@link
    *     #CONSTANT_METHODREF_TAG}, {@link #CONSTANT_INTERFACE_METHODREF_TAG} and {@link

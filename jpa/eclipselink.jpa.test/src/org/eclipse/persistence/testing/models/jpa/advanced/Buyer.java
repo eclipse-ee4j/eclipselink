@@ -1,19 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     02/25/2009-2.0 Guy Pelletier
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     02/25/2009-2.0 Guy Pelletier
+//       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
 package org.eclipse.persistence.testing.models.jpa.advanced;
 
 import java.util.*;
@@ -34,6 +37,7 @@ import org.eclipse.persistence.annotations.ObjectTypeConverter;
 import org.eclipse.persistence.annotations.OptimisticLocking;
 import static org.eclipse.persistence.annotations.OptimisticLockingType.SELECTED_COLUMNS;
 import org.eclipse.persistence.annotations.PrivateOwned;
+import org.eclipse.persistence.annotations.TypeConverter;
 
 /**
  * Buyer object.
@@ -51,12 +55,22 @@ import org.eclipse.persistence.annotations.PrivateOwned;
 @Inheritance(strategy=JOINED)
 @NamedQuery(
     name="findBuyerByName",
-    query="SELECT OBJECT(buyer) FROM Buyer buyer WHERE buyer.name = :name"
+    query="SELECT OBJECT(b) FROM Buyer b WHERE b.name = :name"
 )
 @OptimisticLocking(
     type=SELECTED_COLUMNS,
     selectedColumns=@Column(name="VERSION"),
     cascade=false
+)
+@TypeConverter(
+    name="CreditLineLong2String",
+    dataType=String.class,
+    objectType=Long.class
+)
+@TypeConverter(
+    name="CreditCardLong2String",
+    dataType=String.class,
+    objectType=Long.class
 )
 public class Buyer implements Serializable {
     public enum Weekdays { SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY }
@@ -148,12 +162,12 @@ public class Buyer implements Serializable {
     @BasicMap(
         fetch=EAGER,
         keyColumn=@Column(name="CARD"),
-        keyConverter=@Convert("CreditCard"),
+        keyConverter=@Convert("CreditCardString2String"),
         valueColumn=@Column(name="NUMB"),
-        valueConverter=@Convert("Long2String")
+        valueConverter=@Convert("CreditCardLong2String")
     )
     @ObjectTypeConverter(
-        name="CreditCard",
+        name="CreditCardString2String",
         conversionValues={
             @ConversionValue(dataValue="VI", objectValue=VISA),
             @ConversionValue(dataValue="AM", objectValue=AMEX),
@@ -174,7 +188,7 @@ public class Buyer implements Serializable {
         name="BUYER_CREDITLINES",
         joinColumns=@JoinColumn(name="BUYER_ID")
     )
-    @Convert("Long2String")
+    @Convert("CreditLineLong2String")
     @MapKeyConvert("CreditLine")
     @ObjectTypeConverter(
        name="CreditLine",

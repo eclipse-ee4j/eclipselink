@@ -1,16 +1,21 @@
-<!--***************************************************************************
-* Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.       *
-* This program and the accompanying materials are made available under        *
-* the terms of the Eclipse Public License v1.0 and Eclipse Distribution       *
-* License v. 1.0 which accompanies this distribution.                         *
-* The Eclipse Public License is available                                     *
-*     at http://www.eclipse.org/legal/epl-v10.html                            *
-* and the Eclipse Distribution License is available                           *
-*     at http://www.eclipse.org/org/documents/edl-v10.php.                    *
-*                                                                             *
-* Contributors:                                                               *
-*     Tomas Kraus - Initial API and implementation                            *
-****************************************************************************-->
+<!--
+
+    Copyright (c) 2016, 2020 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      Tomas Kraus - Initial API and implementation
+-->
 <!-- This ant project includes the following tasks:
         - build        Compiles and packages all tests
         - clean        Cleans all classes, packages and reports
@@ -114,7 +119,7 @@
             <local name="compat.jdk"/>
             <local name="compat.jdk.msg"/>
             <condition property="compat.jdk" value="true">
-                <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*"/>
+                <matches string="${java.version}" pattern="1.(?:[8-9]|[1-9]\d)(?:.\d+)*.*|9.*|1(?:[0-5]).*"/>
             </condition>
             <condition property="compat.jdk.msg" value=" + JDK: ${java.version}"
                        else=" - JDK: ${java.version}${line.separator}   Build won't run properly unless running at least JDK 1.8.">
@@ -217,10 +222,9 @@
             <fileset dir="${eclipselink.plugins.dir}" includes="org.eclipse.persistence.extension_*.jar"/>
             <pathelement path="${core.test.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.plugins.dir}/${org.slf4j.api.jar}"/>
-            <pathelement path="${eclipselink.plugins.dir}/${org.slf4j.api.jar}"/>
             <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.core.jar}"/>
             <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.classic.jar}"/>
-            <pathelement path="${eclipselink.plugins.dir}/${ch.qos.logback.slf4j.jar}"/>
+            <pathelement path="${eclipselink.plugins.dir}/${org.slf4j.nop.jar}"/>
             <pathelement path="${junit.lib}"/>
         </path>
     </target>

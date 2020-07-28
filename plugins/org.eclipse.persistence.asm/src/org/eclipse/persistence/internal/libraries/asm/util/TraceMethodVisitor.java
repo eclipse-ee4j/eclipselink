@@ -43,6 +43,7 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
 public final class TraceMethodVisitor extends MethodVisitor {
 
   /** The printer to convert the visited method into text. */
+  // DontCheck(MemberName): can't be renamed (for backward binary compatibility).
   public final Printer p;
 
   /**
@@ -57,11 +58,11 @@ public final class TraceMethodVisitor extends MethodVisitor {
   /**
    * Constructs a new {@link TraceMethodVisitor}.
    *
-   * @param methodVisitor the method visitor to which to delegate calls.  May be <tt>null</tt>.
+   * @param methodVisitor the method visitor to which to delegate calls. May be {@literal null}.
    * @param printer the printer to convert the visited method into text.
    */
   public TraceMethodVisitor(final MethodVisitor methodVisitor, final Printer printer) {
-    super(Opcodes.ASM6, methodVisitor);
+    super(/* latest api = */ Opcodes.ASM8, methodVisitor);
     this.p = printer;
   }
 
@@ -121,12 +122,12 @@ public final class TraceMethodVisitor extends MethodVisitor {
   @Override
   public void visitFrame(
       final int type,
-      final int nLocal,
+      final int numLocal,
       final Object[] local,
-      final int nStack,
+      final int numStack,
       final Object[] stack) {
-    p.visitFrame(type, nLocal, local, nStack, stack);
-    super.visitFrame(type, nLocal, local, nStack, stack);
+    p.visitFrame(type, numLocal, local, numStack, stack);
+    super.visitFrame(type, numLocal, local, numStack, stack);
   }
 
   @Override
@@ -160,33 +161,27 @@ public final class TraceMethodVisitor extends MethodVisitor {
     super.visitFieldInsn(opcode, owner, name, descriptor);
   }
 
-  /** @deprecated*/
-  @Deprecated
   @Override
-  public void visitMethodInsn(
-      final int opcode, final String owner, final String name, final String descriptor) {
-    if (api >= Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor);
-      return;
-    }
-    p.visitMethodInsn(opcode, owner, name, descriptor);
-    if (mv != null) {
-      mv.visitMethodInsn(opcode, owner, name, descriptor);
-    }
-  }
-
-  @Override
+  @SuppressWarnings("deprecation")
   public void visitMethodInsn(
       final int opcode,
       final String owner,
       final String name,
       final String descriptor,
       final boolean isInterface) {
-    if (api < Opcodes.ASM5) {
-      super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-      return;
+    // Call the method that p is supposed to implement, depending on its api version.
+    if (p.api < Opcodes.ASM5) {
+      if (isInterface != (opcode == Opcodes.INVOKEINTERFACE)) {
+        throw new IllegalArgumentException("INVOKESPECIAL/STATIC on interfaces require ASM5");
+      }
+      // If p is an ASMifier (resp. Textifier), or a subclass that does not override the old
+      // visitMethodInsn method, the default implementation in Printer will redirect this to the
+      // new method in ASMifier (resp. Textifier). In all other cases, p overrides the old method
+      // and this call executes it.
+      p.visitMethodInsn(opcode, owner, name, descriptor);
+    } else {
+      p.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }
-    p.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     if (mv != null) {
       mv.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
     }

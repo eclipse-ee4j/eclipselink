@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation
 package org.eclipse.persistence.nosql.adapters.nosql;
 
 import java.util.ArrayList;
@@ -183,7 +185,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Allow the platform to handle record to row conversion.
      */
     @Override
-    public AbstractRecord buildRow(Record record, EISInteraction interaction, EISAccessor accessor) {
+    public AbstractRecord buildRow(javax.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         if (record == null) {
             return null;
         }
@@ -196,7 +198,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
                 output = (OracleNoSQLRecord)value;
             }
         }
-        Record result = output;
+        javax.resource.cci.Record result = output;
         if (getRecordConverter() != null) {
             result = getRecordConverter().converterFromAdapterRecord(output);
         }
@@ -207,7 +209,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Allow the platform to handle record to row conversion.
      */
     @Override
-    public Vector buildRows(Record record, EISInteraction interaction, EISAccessor accessor) {
+    public Vector buildRows(javax.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         if (record == null) {
             return new Vector(0);
         }
@@ -269,7 +271,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Convert the nested local mapped record to a flat global keyed record.
      */
     @Override
-    public Record createInputRecord(EISInteraction interaction, EISAccessor accessor) {
+    public javax.resource.cci.Record createInputRecord(EISInteraction interaction, EISAccessor accessor) {
         if (interaction instanceof XMLInteraction) {
             return super.createInputRecord(interaction, accessor);
         } if (interaction instanceof MappedInteraction) {
@@ -299,7 +301,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * XML is stored in Oracle NoSQL but storing the XML text, keyed on the object's {@literal "&lt;dataTypeName&gt;/&lt;id&gt;"}.
      */
     @Override
-    public void setDOMInRecord(Element dom, Record record, EISInteraction interaction, EISAccessor accessor) {
+    public void setDOMInRecord(Element dom, javax.resource.cci.Record record, EISInteraction interaction, EISAccessor accessor) {
         OracleNoSQLRecord noSqlRecord = (OracleNoSQLRecord)record;
         org.eclipse.persistence.oxm.record.DOMRecord domRecord = new org.eclipse.persistence.oxm.record.DOMRecord(dom);
         domRecord.setSession(interaction.getQuery().getSession());
@@ -344,7 +346,7 @@ public class OracleNoSQLPlatform extends EISPlatform {
      * Creates a DOM record from the XML data stored as a value in the OracleNoSQLRecord.
      */
     @Override
-    public AbstractRecord createDatabaseRowFromDOMRecord(Record record, EISInteraction call, EISAccessor accessor) {
+    public AbstractRecord createDatabaseRowFromDOMRecord(javax.resource.cci.Record record, EISInteraction call, EISAccessor accessor) {
         if (record == null) {
             return null;
         }

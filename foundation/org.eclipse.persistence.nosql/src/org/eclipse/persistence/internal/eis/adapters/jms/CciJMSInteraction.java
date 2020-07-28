@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.eis.adapters.jms;
 
 import javax.jms.*;
@@ -43,7 +45,7 @@ public class CciJMSInteraction implements Interaction {
      * @param input - the input record
      * @throws EISException
      */
-    public Record execute(InteractionSpec spec, Record input) throws EISException {
+    public javax.resource.cci.Record execute(InteractionSpec spec, javax.resource.cci.Record input) throws EISException {
         CciJMSRecord record = new CciJMSRecord();
         execute(spec, input, record);
         return record;
@@ -59,7 +61,7 @@ public class CciJMSInteraction implements Interaction {
      * @param output - the output record
      * @throws EISException
      */
-    public boolean execute(InteractionSpec spec, Record input, Record output) throws EISException {
+    public boolean execute(InteractionSpec spec, javax.resource.cci.Record input, javax.resource.cci.Record output) throws EISException {
         if (!(spec instanceof CciJMSInteractionSpec)) {
             throw EISException.invalidInteractionSpecType();
         }

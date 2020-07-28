@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2010, 2015  <Company/individual>. All rights reserved.
+/*
+ * Copyright (c) 2010, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Chris Delahunt  = 2.2 - 331921: deadlock with uow commit and query using joins
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Chris Delahunt  = 2.2 - 331921: deadlock with uow commit and query using joins
 package org.eclipse.persistence.testing.tests.simultaneous;
 
 import java.math.BigDecimal;

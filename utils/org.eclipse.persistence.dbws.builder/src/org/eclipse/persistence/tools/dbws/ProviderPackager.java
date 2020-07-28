@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Mike Norman - Oct 30 2008: some re-work of DBWSPackager hierarchy
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Mike Norman - Oct 30 2008: some re-work of DBWSPackager hierarchy
 package org.eclipse.persistence.tools.dbws;
 
 import static org.eclipse.persistence.internal.xr.Util.DBWS_WSDL;
@@ -30,12 +32,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import javax.servlet.ServletContextListener;
 //java eXtension imports
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaFileObject;
-import javax.xml.ws.Provider;
 
 import org.eclipse.persistence.internal.dbws.ProviderHelper;
 
@@ -45,7 +45,7 @@ import _dbws.ProviderListener;
 /**
  * <p>
  * <b>INTERNAL:</b> ProviderPackager extends {@link XRPackager}. It is responsible for generating<br>
- * the {@link ServletContextListener} and the JAX-WS {@link Provider} and saves the generated WSDL
+ * the {@code javax.servlet.ServletContextListener} and the JAX-WS {@code javax.xml.ws.Provider} and saves the generated WSDL
  * to ${stageDir}
  * <pre>
  * ${PACKAGER_ROOT}

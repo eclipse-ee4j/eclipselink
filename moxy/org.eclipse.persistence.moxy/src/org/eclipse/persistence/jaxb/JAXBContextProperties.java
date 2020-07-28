@@ -1,17 +1,19 @@
-/*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Blaise Doughan - 2.4.0 - initial implementation
- *     Marcel Valovy - 2.6 - added case insensitive unmarshalling property
- *                         - added bean validation properties
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Blaise Doughan - 2.4.0 - initial implementation
+//     Marcel Valovy - 2.6 - added case insensitive unmarshalling property
+//                         - added bean validation properties
 package org.eclipse.persistence.jaxb;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
@@ -245,6 +247,55 @@ public class JAXBContextProperties {
     public static final String JSON_TYPE_COMPATIBILITY = "eclipselink.json.type-compatibility";
 
     /**
+     * Override default type property name for JSON as MOXy type discriminator. Settings from binding file have higher priority.
+     *
+     * <p><b>Example</b></p>
+     * <p>Given the following property</p>
+     * <pre>
+     * conf.put(JAXBContextProperties.JSON_TYPE_ATTRIBUTE_NAME, "mytype");
+     * </pre>
+     * <p>If the property is set the JSON output will be:</p>
+     * <pre>
+     * ...
+     * {
+     *      "mytype": "phone",
+     *      "contactId": 3,
+     *      "number": "987654321"
+     * }
+     * ...
+     * </pre>
+     * <p>for following object model</p>
+     * <pre>
+     * &#64;XmlSeeAlso({Address.class, Phone.class})
+     * public class Contact {
+     *
+     *      public int contactId;
+     *      ...
+     * </pre>
+     * <pre>
+     * public class Phone extends Contact{
+     *
+     *      public String number;
+     *      ...
+     * </pre>
+     * <p>If the property is not set (default value) the JSON output will be:</p>
+     * <pre>
+     * ...
+     * {
+     *      "type": "phone",
+     *      "contactId": 3,
+     *      "number": "987654321"
+     * }
+     * ...
+     * </pre>
+     * Unmarshaller will use it as type discriminator to select right child class.
+     * @since 2.7.4
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#JSON_TYPE_ATTRIBUTE_NAME
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#JSON_TYPE_ATTRIBUTE_NAME
+     */
+    public static final String JSON_TYPE_ATTRIBUTE_NAME = "eclipselink.json.type-attribute-name";
+
+    /**
      * If set to <i>Boolean.TRUE</i>, {@link org.eclipse.persistence.jaxb.JAXBUnmarshaller} will match
      * XML Elements and XML Attributes to Java fields case insensitively.
      *
@@ -341,5 +392,35 @@ public class JAXBContextProperties {
      */
     public static final String BEAN_VALIDATION_NO_OPTIMISATION = PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION;
 
+    /**
+     * Property for MOXy logging level.
+     *
+     * This is to make maintenance easier and to allow MOXy generate more diagnostic log messages.
+     *
+     * Allowed values are specified in {@link org.eclipse.persistence.logging.LogLevel}
+     * Default value is {@link org.eclipse.persistence.logging.LogLevel#INFO}
+     *
+     * @since 3.0
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOGGING_LEVEL
+     * @see org.eclipse.persistence.logging.LogLevel
+     */
+    public static final String MOXY_LOGGING_LEVEL = "eclipselink.logging.level.moxy";
 
+    /**
+     * Property for logging Entities content during marshalling/unmarshalling operation in MOXy.
+     * It calls toString() method from entity.
+     *
+     * This is to make maintenance easier and to allow for debugging to check marshalled/unmarshalled content.
+     * Use it carefully. It can produce high amount of data in the log files.
+     *
+     * Usage: set to {@link Boolean#TRUE} to enable payload logging, set to {@link Boolean#FALSE} to disable it.
+     * It can be set via system property with name "eclipselink.logging.payload.moxy" too.
+     * By default it is disabled.
+     *
+     * @since 3.0
+     * @see org.eclipse.persistence.jaxb.MarshallerProperties#MOXY_LOG_PAYLOAD
+     * @see org.eclipse.persistence.jaxb.UnmarshallerProperties#MOXY_LOG_PAYLOAD
+     */
+    public static final String MOXY_LOG_PAYLOAD = "eclipselink.logging.payload.moxy";
 }

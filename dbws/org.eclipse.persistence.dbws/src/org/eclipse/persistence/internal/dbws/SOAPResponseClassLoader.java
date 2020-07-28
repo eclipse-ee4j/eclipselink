@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 
 package org.eclipse.persistence.internal.dbws;
 
@@ -25,7 +27,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SUPER;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECIAL;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 
 /**
  * <p><b>INTERNAL</b>: A subclass of {@link ClassLoader} that exposes a build method to the hidden
@@ -60,7 +62,7 @@ public class SOAPResponseClassLoader extends ClassLoader {
        *   }
        */
       ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-      cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
+      cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, className, null, SOAP_RESPONSE_CLASSNAME_SLASHES, null);
 
       MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
       mv.visitVarInsn(ALOAD, 0);

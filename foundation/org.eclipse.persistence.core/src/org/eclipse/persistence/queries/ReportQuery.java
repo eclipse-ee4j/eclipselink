@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.queries;
 
 import java.util.*;
@@ -75,7 +77,7 @@ public class ReportQuery extends ReadAllQuery {
     public static final int NO_PRIMARY_KEY = 0;
 
     //GF_ISSUE_395
-    protected static final Boolean RESULT_IGNORED = Boolean.TRUE;
+    private enum ResultStatus { IGNORED };
     //end GF_ISSUE
 
     /** Flag indicating whether the primary key values should also be retrieved for the reference class. */
@@ -442,10 +444,30 @@ public class ReportQuery extends ReadAllQuery {
      * PUBLIC:
      * Add the maximum value of the attribute to be included in the result.
      * Aggregation functions can be used with a group by, or on the entire result set.
+     * EXAMPLE: reportQuery.addMaximum("salary", Integer.class);
+     */
+    public void addMaximum(String itemName, Class resultType) {
+        addMaximum(itemName, getExpressionBuilder().get(itemName), resultType);
+    }
+
+    /**
+     * PUBLIC:
+     * Add the maximum value of the attribute to be included in the result.
+     * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addMaximum("managerSalary", expBuilder.get("manager").get("salary"));
      */
     public void addMaximum(String itemName, Expression attributeExpression) {
         addItem(itemName, attributeExpression.maximum());
+    }
+
+    /**
+     * PUBLIC:
+     * Add the maximum value of the attribute to be included in the result.
+     * Aggregation functions can be used with a group by, or on the entire result set.
+     * EXAMPLE: reportQuery.addMaximum("managerSalary", expBuilder.get("manager").get("salary"), Integer.class);
+     */
+    public void addMaximum(String itemName, Expression attributeExpression, Class resultType) {
+        addItem(itemName, attributeExpression.maximum(), resultType);
     }
 
     /**
@@ -462,10 +484,30 @@ public class ReportQuery extends ReadAllQuery {
      * PUBLIC:
      * Add the minimum value of the attribute to be included in the result.
      * Aggregation functions can be used with a group by, or on the entire result set.
+     * EXAMPLE: reportQuery.addMinimum("salary", Integer.class);
+     */
+    public void addMinimum(String itemName, Class resultType) {
+        addMinimum(itemName, getExpressionBuilder().get(itemName), resultType);
+    }
+
+    /**
+     * PUBLIC:
+     * Add the minimum value of the attribute to be included in the result.
+     * Aggregation functions can be used with a group by, or on the entire result set.
      * EXAMPLE: reportQuery.addMinimum("managerSalary", expBuilder.get("manager").get("salary"));
      */
     public void addMinimum(String itemName, Expression attributeExpression) {
         addItem(itemName, attributeExpression.minimum());
+    }
+
+    /**
+     * PUBLIC:
+     * Add the minimum value of the attribute to be included in the result.
+     * Aggregation functions can be used with a group by, or on the entire result set.
+     * EXAMPLE: reportQuery.addMinimum("managerSalary", expBuilder.get("manager").get("salary"), Integer.class);
+     */
+    public void addMinimum(String itemName, Expression attributeExpression, Class resultType) {
+        addItem(itemName, attributeExpression.minimum(), resultType);
     }
 
     /**
@@ -599,7 +641,7 @@ public class ReportQuery extends ReadAllQuery {
         //GF_ISSUE_395
         if (this.returnedKeys != null){
             if (this.returnedKeys.contains(reportQueryResult.getResultKey())){
-                return RESULT_IGNORED; //distinguish between null values and thrown away duplicates
+                return ResultStatus.IGNORED; //distinguish between null values and thrown away duplicates
             } else {
                 this.returnedKeys.add(reportQueryResult.getResultKey());
             }
@@ -647,7 +689,7 @@ public class ReportQuery extends ReadAllQuery {
         for (int index = 0; index < size; index++) {
             // GF_ISSUE_395
             Object result = buildObject((AbstractRecord)rows.get(index), rows);
-            if (result != RESULT_IGNORED) {
+            if (result != ResultStatus.IGNORED) {
                 containerPolicy.addInto(result, reportResults, this.session);
             }
             //end GF_ISSUE
@@ -1179,11 +1221,11 @@ public class ReportQuery extends ReadAllQuery {
      * If the descriptor has a single pk, it is used, otherwise any pk is used if distinct, otherwise a subselect is used.
      * If the object was obtained through an outer join, then the subselect also will not work, so an error is thrown.
      */
-    private void prepareObjectAttributeCount(List items, Map clonedExpressions) {
+    private void prepareObjectAttributeCount(List<ReportItem> items, Map clonedExpressions) {
         int numOfReportItems = items.size();
         //gf675: need to loop through all items to fix all count(..) instances
         for (int i =0;i<numOfReportItems; i++){
-            ReportItem item = (ReportItem)items.get(i);
+            ReportItem item = items.get(i);
             if (item == null) {
                 continue;
             } else if (item instanceof ConstructorReportItem) {

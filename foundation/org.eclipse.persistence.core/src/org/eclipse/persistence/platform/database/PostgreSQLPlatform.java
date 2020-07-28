@@ -1,30 +1,37 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Phillip Ross - LIMIT/OFFSET syntax support
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Phillip Ross - LIMIT/OFFSET syntax support
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.*;
 
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 import org.eclipse.persistence.queries.StoredProcedureCall;
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
+import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.databaseaccess.FieldTypeDefinition;
 import org.eclipse.persistence.internal.expressions.ExpressionSQLPrinter;
 import org.eclipse.persistence.internal.expressions.RelationExpression;
@@ -330,6 +337,12 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         fieldTypeMapping.put(java.sql.Time.class, new FieldTypeDefinition("TIME", false));
         fieldTypeMapping.put(java.sql.Timestamp.class, new FieldTypeDefinition("TIMESTAMP", false));
 
+        fieldTypeMapping.put(java.time.LocalDate.class, new FieldTypeDefinition("DATE", false));
+        fieldTypeMapping.put(java.time.LocalDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.LocalTime.class, new FieldTypeDefinition("TIME", false));
+        fieldTypeMapping.put(java.time.OffsetDateTime.class, new FieldTypeDefinition("TIMESTAMP", false));
+        fieldTypeMapping.put(java.time.OffsetTime.class, new FieldTypeDefinition("TIME", false));
+
         return fieldTypeMapping;
     }
 
@@ -443,7 +456,7 @@ public class PostgreSQLPlatform extends DatabasePlatform {
              Integer parameterType = call.getParameterTypes().get(index);
              // If the argument is optional and null, ignore it.
              if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
-                  if (!call.isOutputParameterType(parameterType)) {
+                  if (!DatasourceCall.isOutputParameterType(parameterType)) {
                        tailWriter.write(nextBindString);
                        nextBindString = ", ?";
                   } else {
@@ -623,4 +636,23 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         return call;
     }
 
+    @Override
+    protected void setNullFromDatabaseField(DatabaseField databaseField, PreparedStatement statement, int index) throws SQLException {
+        // Substituted null value for the corresponding DatabaseField.
+        // Cannot bind null through set object, so we must compute the type, this is not good.
+        // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the
+        // user defined type to setNull as well.
+        if (databaseField instanceof ObjectRelationalDatabaseField) {
+            ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
+            //Fix for bug 537657: Inserting empty or null varchar arrays doesn't work with PostgreSQL since driver version 42.2.4
+            if (field.getSqlType() == Types.ARRAY) {
+                statement.setNull(index, field.getSqlType());
+            } else {
+                statement.setNull(index, field.getSqlType(), field.getSqlTypeName());
+            }
+        } else {
+            int jdbcType = getJDBCTypeForSetNull(databaseField);
+            statement.setNull(index, jdbcType);
+        }
+    }
 }

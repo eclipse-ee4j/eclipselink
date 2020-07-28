@@ -1,15 +1,18 @@
-/*******************************************************************************
-* Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
-* Contributors:
-*     Blaise Doughan = 2.1 - Initial implementation
-******************************************************************************/
+/*
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Blaise Doughan = 2.1 - Initial implementation
+//     Juan Pablo Gardella = 2.7.4 - Fix for the bug #543063
 package org.eclipse.persistence.internal.oxm.record;
 
 import javax.xml.validation.Schema;
@@ -146,7 +149,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
     /**
      * Convert a ContentHandler to an ExtendedContentHandler
      */
-    private static class ExtendedContentHandlerAdapter implements ExtendedContentHandler {
+    public static class ExtendedContentHandlerAdapter implements ExtendedContentHandler {
 
         private ContentHandler contentHandler;
 
@@ -154,50 +157,66 @@ public abstract class XMLReaderAdapter extends XMLReader {
             this.contentHandler = contentHandler;
         }
 
+        public ContentHandler getContentHandler() {
+            return contentHandler;
+        }
+
+        @Override
         public void setDocumentLocator(Locator locator) {
             contentHandler.setDocumentLocator(locator);
         }
 
+        @Override
         public void startDocument() throws SAXException {
             contentHandler.startDocument();
         }
 
+        @Override
         public void endDocument() throws SAXException {
             contentHandler.endDocument();
         }
 
+        @Override
         public void startPrefixMapping(String prefix, String uri) throws SAXException {
             contentHandler.startPrefixMapping(prefix, uri);
         }
 
+        @Override
         public void endPrefixMapping(String prefix) throws SAXException {
             contentHandler.endPrefixMapping(prefix);
         }
 
+        @Override
         public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
             contentHandler.startElement(uri, localName, qName, atts);
         }
 
+        @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             contentHandler.endElement(uri, localName, qName);
         }
 
+        @Override
         public void characters(char[] ch, int start, int length) throws SAXException {
             contentHandler.characters(ch, start, length);
         }
 
+        @Override
         public void ignorableWhitespace(char[] ch, int start, int length) throws SAXException {
             contentHandler.ignorableWhitespace(ch, start, length);
         }
 
+        @Override
         public void processingInstruction(String target, String data) throws SAXException {
             contentHandler.processingInstruction(target, data);
         }
 
+        @Override
         public void skippedEntity(String name) throws SAXException {
             contentHandler.skippedEntity(name);
         }
 
+        @Override
         public void characters(CharSequence characters) throws SAXException {
             if(null == characters) {
                 return;
@@ -218,6 +237,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
 
         protected abstract Attribute[] attributes();
 
+        @Override
         public int getIndex(String qName) {
             if(null == qName) {
                 return -1;
@@ -232,6 +252,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
             return -1;
         }
 
+        @Override
         public int getIndex(String uri, String localName) {
             if(null == localName) {
                 return -1;
@@ -246,38 +267,47 @@ public abstract class XMLReaderAdapter extends XMLReader {
             return -1;
         }
 
+        @Override
         public int getLength() {
             return attributes().length;
         }
 
+        @Override
         public String getLocalName(int index) {
             return attributes()[index].getLocalName();
         }
 
+        @Override
         public String getQName(int index) {
             return attributes()[index].getName();
         }
 
+        @Override
         public String getType(int index) {
             return Constants.CDATA;
         }
 
+        @Override
         public String getType(String name) {
             return Constants.CDATA;
         }
 
+        @Override
         public String getType(String uri, String localName) {
             return Constants.CDATA;
         }
 
+        @Override
         public String getURI(int index) {
             return attributes()[index].getUri();
         }
 
+        @Override
         public String getValue(int index) {
             return attributes()[index].getValue();
         }
 
+        @Override
         public String getValue(String qName) {
             int index = getIndex(qName);
             if(-1 == index) {
@@ -286,6 +316,7 @@ public abstract class XMLReaderAdapter extends XMLReader {
             return attributes()[index].getValue();
         }
 
+        @Override
         public String getValue(String uri, String localName) {
             int index = getIndex(uri, localName);
             if(-1 == index) {

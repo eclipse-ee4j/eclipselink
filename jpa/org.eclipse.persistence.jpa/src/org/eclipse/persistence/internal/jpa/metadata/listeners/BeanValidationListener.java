@@ -1,23 +1,32 @@
-/*******************************************************************************
- * Copyright (c) 2009, 2016 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     08/20/2014-2.5 Rick Curtis
- *       - 441890: Cache Validator instances.
- *     Marcel Valovy - 2.6 - skip validation of objects that are not constrained.
- *     02/23/2016-2.6 Dalia Abo Sheasha
- *       - 487889: Fix EclipseLink Bean Validation optimization
- *     03/09/2016-2.6 Dalia Abo Sheasha
- *       - 489298: Wrap EclipseLink's Bean Validation calls in doPrivileged blocks when security is enabled
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     08/20/2014-2.5 Rick Curtis
+//       - 441890: Cache Validator instances.
+//     Marcel Valovy - 2.6 - skip validation of objects that are not constrained.
+//     02/23/2016-2.6 Dalia Abo Sheasha
+//       - 487889: Fix EclipseLink Bean Validation optimization
+//     03/09/2016-2.6 Dalia Abo Sheasha
+//       - 489298: Wrap EclipseLink's Bean Validation calls in doPrivileged blocks when security is enabled
 
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
+
+import java.lang.annotation.ElementType;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -28,22 +37,15 @@ import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
-
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.lang.annotation.ElementType;
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -85,7 +87,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     }
 
     @Override
-    public void preUpdate (DescriptorEvent event) {
+    public void aboutToUpdate(DescriptorEvent event) {
         Object source = event.getSource();
         UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl )event.getSession();
         // preUpdate is also generated for deleted objects that were modified in this UOW.
@@ -93,6 +95,11 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         if(!unitOfWork.isObjectDeleted(source)) {
             validateOnCallbackEvent(event, "preUpdate", groupPreUpdate);
         }
+    }
+
+    @Override
+    public void preUpdateWithChanges(DescriptorEvent event) {
+        aboutToUpdate(event);
     }
 
     @Override
@@ -115,7 +122,7 @@ public class BeanValidationListener extends DescriptorEventAdapter {
                 // Throw a ConstrainViolationException as required by the spec.
                 // The transaction would be rolled back automatically
                 throw new ConstraintViolationException(
-                        ExceptionLocalization.buildMessage("bean_validation_constraint_violated", 
+                        ExceptionLocalization.buildMessage("bean_validation_constraint_violated",
                                 new Object[]{callbackEventName, source.getClass().getName()}),
                         (Set<ConstraintViolation<?>>) (Object) constraintViolations); /* Do not remove the explicit
                         cast. This issue is related to capture#a not being instance of capture#b. */

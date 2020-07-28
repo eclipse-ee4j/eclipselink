@@ -28,7 +28,6 @@
 package org.eclipse.persistence.internal.libraries.asm.util;
 
 import java.io.PrintWriter;
-
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
@@ -36,6 +35,7 @@ import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ModuleVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
 
 /**
@@ -43,8 +43,8 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
  * visitor can be used in the middle of a class visitor chain to trace the class that is visited at
  * a given point in this chain. This may be useful for debugging purposes.
  *
- * <p>When used with a {@link Textifier}, the trace printed when visiting the <tt>Hello</tt> class
- * is the following:
+ * <p>When used with a {@link Textifier}, the trace printed when visiting the {@code Hello} class is
+ * the following:
  *
  * <pre>
  * // class version 49.0 (49) // access flags 0x21 public class Hello {
@@ -68,7 +68,7 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
  * }
  * </pre>
  *
- * where <tt>Hello</tt> is defined by:
+ * <p>where {@code Hello} is defined by:
  *
  * <pre>
  * public class Hello {
@@ -84,16 +84,17 @@ import org.eclipse.persistence.internal.libraries.asm.TypePath;
  */
 public final class TraceClassVisitor extends ClassVisitor {
 
-  /** The print writer to be used to print the class. May be <tt>null</tt>. */
+  /** The print writer to be used to print the class. May be {@literal null}. */
   private final PrintWriter printWriter;
 
   /** The printer to convert the visited class into text. */
+  // DontCheck(MemberName): can't be renamed (for backward binary compatibility).
   public final Printer p;
 
   /**
    * Constructs a new {@link TraceClassVisitor}.
    *
-   * @param printWriter the print writer to be used to print the class. May be <tt>null</tt>.
+   * @param printWriter the print writer to be used to print the class. May be {@literal null}.
    */
   public TraceClassVisitor(final PrintWriter printWriter) {
     this(null, printWriter);
@@ -102,8 +103,8 @@ public final class TraceClassVisitor extends ClassVisitor {
   /**
    * Constructs a new {@link TraceClassVisitor}.
    *
-   * @param classVisitor the class visitor to which to delegate calls. May be <tt>null</tt>.
-   * @param printWriter the print writer to be used to print the class. May be <tt>null</tt>.
+   * @param classVisitor the class visitor to which to delegate calls. May be {@literal null}.
+   * @param printWriter the print writer to be used to print the class. May be {@literal null}.
    */
   public TraceClassVisitor(final ClassVisitor classVisitor, final PrintWriter printWriter) {
     this(classVisitor, new Textifier(), printWriter);
@@ -112,13 +113,13 @@ public final class TraceClassVisitor extends ClassVisitor {
   /**
    * Constructs a new {@link TraceClassVisitor}.
    *
-   * @param classVisitor the class visitor to which to delegate calls. May be <tt>null</tt>.
+   * @param classVisitor the class visitor to which to delegate calls. May be {@literal null}.
    * @param printer the printer to convert the visited class into text.
-   * @param printWriter the print writer to be used to print the class. May be <tt>null</tt>.
+   * @param printWriter the print writer to be used to print the class. May be {@literal null}.
    */
   public TraceClassVisitor(
       final ClassVisitor classVisitor, final Printer printer, final PrintWriter printWriter) {
-    super(Opcodes.ASM6, classVisitor);
+    super(/* latest api = */ Opcodes.ASM9_EXPERIMENTAL, classVisitor);
     this.printWriter = printWriter;
     this.p = printer;
   }
@@ -145,6 +146,12 @@ public final class TraceClassVisitor extends ClassVisitor {
   public ModuleVisitor visitModule(final String name, final int flags, final String version) {
     Printer modulePrinter = p.visitModule(name, flags, version);
     return new TraceModuleVisitor(super.visitModule(name, flags, version), modulePrinter);
+  }
+
+  @Override
+  public void visitNestHost(final String nestHost) {
+    p.visitNestHost(nestHost);
+    super.visitNestHost(nestHost);
   }
 
   @Override
@@ -175,10 +182,37 @@ public final class TraceClassVisitor extends ClassVisitor {
   }
 
   @Override
+  public void visitNestMember(final String nestMember) {
+    p.visitNestMember(nestMember);
+    super.visitNestMember(nestMember);
+  }
+
+  /**
+   * <b>Experimental, use at your own risk.</b>.
+   *
+   * @param permittedSubtype the internal name of a permitted subtype.
+   * @deprecated this API is experimental.
+   */
+  @Override
+  @Deprecated
+  public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
+    p.visitPermittedSubtypeExperimental(permittedSubtype);
+    super.visitPermittedSubtypeExperimental(permittedSubtype);
+  }
+
+  @Override
   public void visitInnerClass(
       final String name, final String outerName, final String innerName, final int access) {
     p.visitInnerClass(name, outerName, innerName, access);
     super.visitInnerClass(name, outerName, innerName, access);
+  }
+
+  @Override
+  public RecordComponentVisitor visitRecordComponent(
+      final String name, final String descriptor, final String signature) {
+    Printer recordComponentPrinter = p.visitRecordComponent(name, descriptor, signature);
+    return new TraceRecordComponentVisitor(
+        super.visitRecordComponent(name, descriptor, signature), recordComponentPrinter);
   }
 
   @Override

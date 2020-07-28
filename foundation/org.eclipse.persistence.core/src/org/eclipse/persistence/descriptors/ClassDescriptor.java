@@ -1,40 +1,46 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     stardif - updates for Cascaded locking and inheritance
- *     02/20/2009-1.1 Guy Pelletier
- *       - 259829: TABLE_PER_CLASS with abstract classes does not work
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     04/01/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 2)
- *     04/05/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 3)
- *     04/21/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 5)
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     09 Jan 2013-2.5 Gordon Yorke
- *       - 397772: JPA 2.1 Entity Graph Support
- *     06/25/2014-2.5.2 Rick Curtis
- *       - 438177: Support M2M map with jointable
- *     08/12/2015-2.6 Mythily Parthasarathy
- *       - 474752: Address NPE for Embeddable with 1-M association
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     stardif - updates for Cascaded locking and inheritance
+//     02/20/2009-1.1 Guy Pelletier
+//       - 259829: TABLE_PER_CLASS with abstract classes does not work
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     04/01/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 2)
+//     04/05/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 3)
+//     04/21/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 5)
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     09 Jan 2013-2.5 Gordon Yorke
+//       - 397772: JPA 2.1 Entity Graph Support
+//     06/25/2014-2.5.2 Rick Curtis
+//       - 438177: Support M2M map with jointable
+//     08/12/2015-2.6 Mythily Parthasarathy
+//       - 474752: Address NPE for Embeddable with 1-M association
+//     07/09/2018-2.6 Jody Grassel
+//       - MapsID processing sets up to fail validation
+
 package org.eclipse.persistence.descriptors;
 
 import java.io.Serializable;
@@ -165,6 +171,11 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected transient Vector<DatabaseField> allFields;
     protected transient List<DatabaseField> selectionFields;
     protected transient List<DatabaseField> allSelectionFields;
+    protected transient Vector<DatabaseField> returnFieldsToGenerateInsert;
+    protected transient Vector<DatabaseField> returnFieldsToGenerateUpdate;
+    protected transient List<DatabaseField> returnFieldsToMergeInsert;
+    protected transient List<DatabaseField> returnFieldsToMergeUpdate;
+
     protected Vector<DatabaseMapping> mappings;
 
     //Used to track which other classes reference this class in cases where
@@ -201,6 +212,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     protected WrapperPolicy wrapperPolicy;
     protected ObjectChangePolicy changePolicy;
     protected ReturningPolicy returningPolicy;
+    protected List<ReturningPolicy> returningPolicies;
     protected HistoryPolicy historyPolicy;
     protected String partitioningPolicyName;
     protected PartitioningPolicy partitioningPolicy;
@@ -646,7 +658,12 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * This can be used for advanced field types, such as XML nodes, or to set the field type.
      */
     public void addPrimaryKeyField(DatabaseField field) {
-        getPrimaryKeyFields().add(field);
+        // Check if the pkFields List already contains a DatabaseField that is equal to the
+        // field we want to add, in order to avoid duplicates which will fail validation later.
+        List<DatabaseField> pkFields = getPrimaryKeyFields();
+        if (!pkFields.contains(field)) {
+            pkFields.add(field);
+        }
     }
 
     /**
@@ -929,7 +946,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
             } else {
                 table = getDefaultTable();
             }
-            field.setTable(table);
+            builtField.setTable(table);
             getObjectBuilder().getFieldsMap().put(builtField, builtField);
         }
         return builtField;
@@ -1384,6 +1401,13 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         if (clonedDescriptor.hasReturningPolicy()) {
             clonedDescriptor.setReturningPolicy((ReturningPolicy)getReturningPolicy().clone());
             clonedDescriptor.getReturningPolicy().setDescriptor(clonedDescriptor);
+        }
+        if (clonedDescriptor.hasReturningPolicies()) {
+            clonedDescriptor.returningPolicies = new ArrayList<>();
+            for (ReturningPolicy returningPolicy : this.returningPolicies) {
+                clonedDescriptor.returningPolicies.add((ReturningPolicy)returningPolicy.clone());
+            }
+            clonedDescriptor.prepareReturnFields(clonedDescriptor.returningPolicies);
         }
 
         // The Object builder
@@ -2049,6 +2073,38 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
     }
 
     /**
+     * INTERNAL:
+     * Return fields used to build insert statement.
+     */
+    public Vector<DatabaseField> getReturnFieldsToGenerateInsert() {
+        return this.returnFieldsToGenerateInsert;
+    }
+
+    /**
+     * INTERNAL:
+     * Return fields used to build update statement.
+     */
+    public Vector<DatabaseField> getReturnFieldsToGenerateUpdate() {
+        return this.returnFieldsToGenerateUpdate;
+    }
+
+    /**
+     * INTERNAL:
+     * Return fields used in to map into entity for insert.
+     */
+    public List<DatabaseField> getReturnFieldsToMergeInsert() {
+        return this.returnFieldsToMergeInsert;
+    }
+
+    /**
+     * INTERNAL:
+     * Return fields used in to map into entity for update.
+     */
+    public List<DatabaseField> getReturnFieldsToMergeUpdate() {
+        return this.returnFieldsToMergeUpdate;
+    }
+
+    /**
      * PUBLIC:
      * Return the amendment class.
      * The amendment method will be called on the class before initialization to allow for it to initialize the descriptor.
@@ -2642,9 +2698,6 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      * Must also be added to child descriptors.
      */
     public void addPreDeleteMapping(DatabaseMapping mapping) {
-        if (mapping.getAttributeName() == null) {
-            System.out.println(mapping);
-        }
         getPreDeleteMappings().add(mapping);
     }
 
@@ -2766,6 +2819,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public ReturningPolicy getReturningPolicy() {
         return returningPolicy;
+    }
+
+    /**
+     * PUBLIC:
+     * Return returning policy from current descriptor and from mappings
+     */
+    public List<ReturningPolicy> getReturningPolicies() {
+        return returningPolicies;
     }
 
     /**
@@ -3100,6 +3161,14 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
      */
     public boolean hasReturningPolicy() {
         return (returningPolicy != null);
+    }
+
+    /**
+     * INTERNAL:
+     * Return if this descriptor or descriptors from mappings has Returning policy.
+     */
+    public boolean hasReturningPolicies() {
+        return (returningPolicies != null);
     }
 
     /**
@@ -3983,9 +4052,68 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
 
         getCachePolicy().postInitialize(this, session);
 
+        postInitializeReturningPolicies();
+
         validateAfterInitialization(session);
 
         checkDatabase(session);
+    }
+
+    private void postInitializeReturningPolicies() {
+        //Initialize ReturningPolicies
+        List<ReturningPolicy> returningPolicies = new ArrayList<>();
+        if (this.hasReturningPolicy()) {
+            returningPolicies.add(this.getReturningPolicy());
+        }
+        browseReturningPolicies(returningPolicies, this.getMappings());
+        if (returningPolicies.size() > 0) {
+            this.returningPolicies = returningPolicies;
+            prepareReturnFields(returningPolicies);
+        }
+    }
+
+    private void browseReturningPolicies(List<ReturningPolicy> returningPolicies, Vector<DatabaseMapping> mappings) {
+        for (DatabaseMapping databaseMapping :mappings) {
+            if (databaseMapping instanceof AggregateObjectMapping) {
+                ClassDescriptor referenceDescriptor = databaseMapping.getReferenceDescriptor();
+                if (referenceDescriptor != null) {
+                    browseReturningPolicies(returningPolicies, referenceDescriptor.getMappings());
+                    if (referenceDescriptor.hasReturningPolicy()) {
+                        returningPolicies.add(referenceDescriptor.getReturningPolicy());
+                    }
+                }
+            }
+        }
+    }
+
+    private void prepareReturnFields(List<ReturningPolicy> returningPolicies) {
+        Vector<DatabaseField> returnFieldsInsert = new NonSynchronizedVector();
+        Vector<DatabaseField> returnFieldsUpdate = new NonSynchronizedVector();
+        List<DatabaseField> returnFieldsToMergeInsert = new ArrayList<>();
+        List<DatabaseField> returnFieldsToMergeUpdate = new ArrayList<>();
+        Collection tmpFields;
+        for (ReturningPolicy returningPolicy: returningPolicies) {
+            tmpFields = returningPolicy.getFieldsToGenerateInsert(this.defaultTable);
+            if (tmpFields != null) {
+                returnFieldsInsert.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToGenerateUpdate(this.defaultTable);
+            if (tmpFields != null) {
+                returnFieldsUpdate.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToMergeInsert();
+            if (tmpFields != null) {
+                returnFieldsToMergeInsert.addAll(tmpFields);
+            }
+            tmpFields = returningPolicy.getFieldsToMergeUpdate();
+            if (tmpFields != null) {
+                returnFieldsToMergeUpdate.addAll(tmpFields);
+            }
+        }
+        this.returnFieldsToGenerateInsert = (returnFieldsInsert.isEmpty()) ? null : returnFieldsInsert;
+        this.returnFieldsToGenerateUpdate = (returnFieldsUpdate.isEmpty()) ? null : returnFieldsUpdate;
+        this.returnFieldsToMergeInsert = (returnFieldsToMergeInsert.isEmpty()) ? null : returnFieldsToMergeInsert;
+        this.returnFieldsToMergeUpdate = (returnFieldsToMergeUpdate.isEmpty()) ? null : returnFieldsToMergeUpdate;
     }
 
     /**

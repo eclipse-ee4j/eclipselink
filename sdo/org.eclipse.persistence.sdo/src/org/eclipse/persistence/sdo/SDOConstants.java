@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.sdo;
 
 import javax.xml.namespace.QName;
@@ -18,6 +20,10 @@ import commonj.sdo.impl.*;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.sdo.types.*;
 import org.eclipse.persistence.sdo.helper.SDOTypeHelper;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p><b>Purpose</b>: Maintain constants in one class
@@ -347,6 +353,14 @@ public class SDOConstants {
 
     /** Search string concatenated from default package for type generation and the package separator dot */
     public static final String JAVA_TYPE_GENERATION_DEFAULT_PACKAGE_NAME_SEARCH = JAVA_TYPEGENERATION_DEFAULT_PACKAGE_NAME + JAVA_PACKAGE_NAME_SEPARATOR;
+
+    /** List of the classes allowed to deserialize in SDO*/
+    public static final Set<String> ALLOWED_DESERIALIZATION_CLASS_NAMES = Collections.unmodifiableSet(
+            new HashSet() {{
+                add(org.eclipse.persistence.sdo.SDOExternalizableDelegator.class.getName());
+                add(org.eclipse.persistence.sdo.AbstractExternalizableDelegator.class.getName());
+                add(java.util.ArrayList.class.getName());
+            }});
 
     static {
         if(null != sdoTypeHelper) {

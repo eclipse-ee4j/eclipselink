@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2011, 2019 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     05/19/2010-2.1 ailitchev - Bug 244124 - Add Nested FetchGroup
 package org.eclipse.persistence.testing.tests.jpa.fetchgroups;
 
 import java.io.ByteArrayInputStream;
@@ -45,6 +47,7 @@ import org.eclipse.persistence.queries.FetchGroup;
 import org.eclipse.persistence.sessions.CopyGroup;
 import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.models.jpa.advanced.Address;
+import org.eclipse.persistence.testing.models.jpa.advanced.Department;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmploymentPeriod;
 import org.eclipse.persistence.testing.models.jpa.advanced.PhoneNumber;
@@ -92,6 +95,7 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             suite.addTest(new SimpleSerializeFetchGroupTests("verifyUnfetchedAttributes"));
             suite.addTest(new SimpleSerializeFetchGroupTests("simpleSerializeAndMerge"));
             suite.addTest(new SimpleSerializeFetchGroupTests("partialMerge"));
+            suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupObjectGraph"));
             suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge"));
             suite.addTest(new SimpleSerializeFetchGroupTests("copyGroupMerge2"));
             suite.addTest(new SimpleSerializeFetchGroupTests("copyWithPk"));
@@ -1052,6 +1056,30 @@ public class SimpleSerializeFetchGroupTests extends BaseFetchGroupTests {
             closeEntityManager(em);
         }
     }
+
+    public void copyGroupObjectGraph() {
+        EntityManager em = createEntityManager();
+        try {
+            beginTransaction(em);
+            TypedQuery<Department> query = em.createQuery("SELECT d FROM ADV_DEPT d WHERE d.id IN (SELECT MIN(dd.id) FROM ADV_DEPT dd)", Department.class);
+            Department dept = query.getSingleResult();
+
+            CopyGroup group = new CopyGroup();
+            group.addAttribute("name");
+            group.addAttribute("employees", new CopyGroup());
+            group.getGroup("employees").addAttribute("name");
+            group.getGroup("employees").addAttribute("department", new CopyGroup());
+            group.getGroup("employees").getGroup("department").addAttribute("name");
+            Department deptCopy = (Department) em.unwrap(JpaEntityManager.class).copy(dept, group);
+
+            String reportCG = group.toString();
+            assertNotNull(reportCG);
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
 
     public void copyGroupMerge() {
         // Search for an Employee with an Address and Phone Numbers

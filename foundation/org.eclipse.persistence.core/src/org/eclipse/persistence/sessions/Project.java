@@ -1,41 +1,43 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *
- *     04/30/2009-2.0 Michael O'Brien
- *       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
- *         Add Set<RelationalDescriptor> mappedSuperclassDescriptors
- *         to support the Metamodel API
- *     06/17/2009-2.0 Michael O'Brien
- *       - 266912: change mappedSuperclassDescriptors Set to a Map
- *          keyed on MetadataClass - avoiding the use of a hashCode/equals
- *          override on RelationalDescriptor, but requiring a contains check prior to a put
- *     09/23/2009-2.0 Michael O'Brien
- *       - 266912: Add metamodelIdClassMap to store IdClass types for exclusive
- *         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API
- *     06/30/2011-2.3.1 Guy Pelletier
- *       - 341940: Add disable/enable allowing native queries
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     31/05/2012-2.4 Guy Pelletier
- *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
- *     08/11/2012-2.5 Guy Pelletier
- *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy
- *     04/11/2018 - Will Dazey
- *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//
+//     04/30/2009-2.0 Michael O'Brien
+//       - 266912: JPA 2.0 Metamodel API (part of Criteria API)
+//         Add Set<RelationalDescriptor> mappedSuperclassDescriptors
+//         to support the Metamodel API
+//     06/17/2009-2.0 Michael O'Brien
+//       - 266912: change mappedSuperclassDescriptors Set to a Map
+//          keyed on MetadataClass - avoiding the use of a hashCode/equals
+//          override on RelationalDescriptor, but requiring a contains check prior to a put
+//     09/23/2009-2.0 Michael O'Brien
+//       - 266912: Add metamodelIdClassMap to store IdClass types for exclusive
+//         use by the IdentifiableTypeImpl class in the JPA 2.0 Metamodel API
+//     06/30/2011-2.3.1 Guy Pelletier
+//       - 341940: Add disable/enable allowing native queries
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     31/05/2012-2.4 Guy Pelletier
+//       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+//     08/11/2012-2.5 Guy Pelletier
+//       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy
+//     04/11/2018 - Will Dazey
+//       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.sessions;
 
 import java.io.Serializable;
@@ -153,6 +155,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** Flag that allows call deferral to be disabled */
     protected boolean allowSQLDeferral = true;
 
+    /** Flag that allows transform named stored procedure parameters into positional/index based */
+    protected boolean namingIntoIndexed = false;
+
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
      * without creating a compile time dependency on JPA.
@@ -184,6 +189,8 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** used for Caching JPA projects */
     protected Collection<String> classNamesForWeaving;
     protected Collection<String> structConverters;
+
+    protected boolean allowNullResultMaxMin = true;
 
     /**
      * PUBLIC:
@@ -1300,10 +1307,26 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL:
+     * Return true if Max/Min functions should return Null for this project.
+     */
+    public boolean allowNullResultMaxMin() {
+        return this.allowNullResultMaxMin;
+    }
+
+    /**
+     * INTERNAL:
      * Return true if SQL calls can defer to EOT on this project.
      */
     public boolean allowSQLDeferral() {
         return this.allowSQLDeferral;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true is allowed to transform named stored procedure parameters into positional/index based.
+     */
+    public boolean namingIntoIndexed() {
+        return this.namingIntoIndexed;
     }
 
     /**
@@ -1347,10 +1370,26 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL:
+     * Set whether Max/Min functions should return Null for this project.
+     */
+    public void setAllowNullResultMaxMin(boolean allowNullResultMaxMin) {
+        this.allowNullResultMaxMin = allowNullResultMaxMin;
+    }
+
+    /**
+     * INTERNAL:
      * Set whether sql deferral is allowed on this project
      */
     public void setAllowSQLDeferral(boolean allowSQLDeferral) {
         this.allowSQLDeferral = allowSQLDeferral;
+    }
+
+    /**
+     * INTERNAL:
+     * Set whether named stored procedure parameters is allowed to transform into positional/index based.
+     */
+    public void setNamingIntoIndexed(boolean namingIntoIndexed) {
+        this.namingIntoIndexed = namingIntoIndexed;
     }
 
     /**

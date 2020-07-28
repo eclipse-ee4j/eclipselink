@@ -1,31 +1,35 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     08/10/2009-2.0 Guy Pelletier
- *       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
- *     04/27/2010-2.1 Guy Pelletier
- *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     06/14/2010-2.2 Guy Pelletier
- *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- *     08/12/2010-2.2 Guy Pelletier
- *       - 298118: canonical metamodel generation with untyped Map throws NPE
- *     08/25/2010-2.2 Guy Pelletier
- *       - 309445: CannonicalModelProcessor process all files
- *     10/18/2010-2.2 Guy Pelletier
- *       - 322921: OutOfMemory in annotation processor
- *     11/23/2010-2.2 Guy Pelletier
- *       - 330660: Canonical model generator throws ClassCastException when using package-info.java
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     08/10/2009-2.0 Guy Pelletier
+//       - 267391: JPA 2.0 implement/extend/use an APT tooling library for MetaModel API canonical classes
+//     04/27/2010-2.1 Guy Pelletier
+//       - 309856: MappedSuperclasses from XML are not being initialized properly
+//     06/14/2010-2.2 Guy Pelletier
+//       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+//     08/12/2010-2.2 Guy Pelletier
+//       - 298118: canonical metamodel generation with untyped Map throws NPE
+//     08/25/2010-2.2 Guy Pelletier
+//       - 309445: CannonicalModelProcessor process all files
+//     10/18/2010-2.2 Guy Pelletier
+//       - 322921: OutOfMemory in annotation processor
+//     11/23/2010-2.2 Guy Pelletier
+//       - 330660: Canonical model generator throws ClassCastException when using package-info.java
 package org.eclipse.persistence.internal.jpa.modelgen;
 
 import static org.eclipse.persistence.config.PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS;
+import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT;
 import static org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.CANONICAL_MODEL_GLOBAL_LOG_LEVEL;
@@ -115,6 +119,7 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             String canonicalName = getName(qualifiedCanonicalName);
             String canonicalpackage = getPackage(qualifiedCanonicalName);
 
+            boolean isNewJava = SourceVersion.RELEASE_8.compareTo(processingEnv.getSourceVersion()) < 0;
             JavaFileObject file = processingEnv.getFiler().createSourceFile(qualifiedCanonicalName, element);
             writer = file.openWriter();
 
@@ -127,6 +132,12 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             // to build our attributes and import list.
             ArrayList<String> attributes = new ArrayList<String>();
             HashMap<String, String> imports = new HashMap<String, String>();
+
+            if (isNewJava) {
+                imports.put("Generated", "javax.annotation.processing.Generated");
+            } else {
+                imports.put("Generated", "javax.annotation.Generated");
+            }
 
             // Import the model class if the canonical class is generated elsewhere.
             if (! classPackage.equals(canonicalpackage)) {
@@ -203,11 +214,23 @@ public class CanonicalModelProcessor extends AbstractProcessor {
             String parent = writeImportStatements(imports, accessor, writer, persistenceUnit, canonicalpackage);
 
             // Write out the generation annotations.
-            Date date = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-            writer.append("@Generated(value=\"EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision() + "\"");
+            String elVersion = "EclipseLink-" + Version.getVersion() + ".v" + Version.getBuildDate() + "-r" + Version.getBuildRevision();
+            writer.append("@Generated(value=\"");
+            if (isNewJava) {
+                writer.append(CanonicalModelProcessor.class.getName());
+            } else {
+                writer.append(elVersion);
+            }
+            writer.append("\"");
             if (Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_GENERATE_TIMESTAMP, CANONICAL_MODEL_GENERATE_TIMESTAMP_DEFAULT, processingEnv.getOptions()))) {
+                Date date = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 writer.append(", date=\"" +  sdf.format(date) + "\"");
+            }
+            if (isNewJava && Boolean.valueOf(CanonicalModelProperties.getOption(CANONICAL_MODEL_GENERATE_COMMENTS, CANONICAL_MODEL_GENERATE_COMMENTS_DEFAULT, processingEnv.getOptions()))) {
+                writer.append(", comments=\"");
+                writer.append(elVersion);
+                writer.append("\"");
             }
             writer.append(")\n");
             writer.append("@StaticMetamodel(" + className + ".class)\n");
@@ -487,7 +510,6 @@ public class CanonicalModelProcessor extends AbstractProcessor {
         imps.addAll(typeImports.values());
 
         // Add the standard canonical model generator imports.
-        imps.add("javax.annotation.Generated");
         imps.add("javax.persistence.metamodel.StaticMetamodel");
 
         // Import the parent canonical class if need be.

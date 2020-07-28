@@ -1,34 +1,39 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.descriptors.changetracking;
 
 import java.beans.PropertyChangeListener;
+import java.util.List;
+import java.util.Map;
 
-import java.util.*;
-import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.internal.descriptors.*;
-import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
-import org.eclipse.persistence.internal.sessions.MergeManager;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.mappings.*;
 import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventManager;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.descriptors.changetracking.ObjectChangeListener;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.MergeManager;
+import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+import org.eclipse.persistence.queries.FetchGroup;
+import org.eclipse.persistence.queries.WriteObjectQuery;
 
 /**
  * PUBLIC:
@@ -72,7 +77,6 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
     public ObjectChangeSet calculateChanges(Object clone, Object backUp, boolean isNew, UnitOfWorkChangeSet changeSet, UnitOfWorkImpl unitOfWork, ClassDescriptor descriptor, boolean shouldRaiseEvent) {
         // PERF: Avoid events if no listeners.
         if (descriptor.getEventManager().hasAnyEventListeners() && shouldRaiseEvent) {
-            // The query is built for compatibility to old event mechanism.
             WriteObjectQuery writeQuery = new WriteObjectQuery(clone.getClass());
             writeQuery.setObject(clone);
             writeQuery.setBackupClone(backUp);
@@ -89,16 +93,18 @@ public class DeferredChangeDetectionPolicy implements ObjectChangePolicy, java.i
         }
 
         ObjectChangeSet changes = createObjectChangeSet(clone, backUp, changeSet, isNew, unitOfWork, descriptor);
-        if(changes.hasChanges() && descriptor.hasMappingsPostCalculateChanges() && ! changes.isNew() && ! unitOfWork.getCommitManager().isActive() && !unitOfWork.isNestedUnitOfWork()) {
-            // if we are in the commit because of an event skip this postCalculateChanges step as we have already executed it.
-            int size = descriptor.getMappingsPostCalculateChanges().size();
-            for(int i=0; i < size; i++) {
-                DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i);
-                org.eclipse.persistence.sessions.changesets.ChangeRecord record = changes.getChangesForAttributeNamed(mapping.getAttributeName());
-                if(record != null) {
-                    // Deferred attributes will already have been acted on, therefore we need
-                    // to post calculate changes to ensure orphaned objects are removed.
-                    mapping.postCalculateChanges(record, unitOfWork);
+        if (changes.hasChanges()) {
+            if (descriptor.hasMappingsPostCalculateChanges() && ! changes.isNew() && ! unitOfWork.getCommitManager().isActive() && !unitOfWork.isNestedUnitOfWork()) {
+                // if we are in the commit because of an event skip this postCalculateChanges step as we have already executed it.
+                int size = descriptor.getMappingsPostCalculateChanges().size();
+                for (int i=0; i < size; i++) {
+                    DatabaseMapping mapping = descriptor.getMappingsPostCalculateChanges().get(i);
+                    org.eclipse.persistence.sessions.changesets.ChangeRecord record = changes.getChangesForAttributeNamed(mapping.getAttributeName());
+                    if (record != null) {
+                        // Deferred attributes will already have been acted on, therefore we need
+                        // to post calculate changes to ensure orphaned objects are removed.
+                        mapping.postCalculateChanges(record, unitOfWork);
+                    }
                 }
             }
         }

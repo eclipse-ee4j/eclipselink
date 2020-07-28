@@ -1,17 +1,19 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     19/04/2014-2.6 Lukas Jungmann
- *       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     19/04/2014-2.6 Lukas Jungmann
+//       - 429992: JavaSE 8/ASM 5.0.1 support (EclipseLink silently ignores Entity classes with lambda expressions)
 package org.eclipse.persistence.internal.jpa.weaving;
 
 // J2SE imports
@@ -28,11 +30,14 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.internal.libraries.asm.commons.SerialVersionUIDAdder;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderFromCurrentThread;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
+import org.eclipse.persistence.logging.SessionLogEntry;
 import org.eclipse.persistence.sessions.Session;
 
 /**
@@ -123,7 +128,19 @@ public class PersistenceWeaver implements ClassTransformer {
                 if (shouldLogFinest) {
                     log.log(SessionLog.FINEST, SessionLog.WEAVER, "begin_weaving_class", className);
                 }
-                final ClassReader classReader = new ClassReader(classfileBuffer);
+                ClassReader classReader = null;
+                try {
+                    classReader = new ClassReader(classfileBuffer);
+                } catch (IllegalArgumentException iae) {
+                    // class was probably compiled with some newer than officially supported and tested JDK
+                    // in such case log a warning and try to re-read the class without class version check
+                    if (log.shouldLog(SessionLog.FINE, SessionLog.WEAVER)) {
+                        SessionLogEntry entry = new SessionLogEntry(null, SessionLog.FINE, SessionLog.WEAVER, iae);
+                        entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
+                        log.log(entry);
+                    }
+                    classReader = new EclipseLinkClassReader(classfileBuffer);
+                }
                 final String reflectiveIntrospectionProperty =
                         PrivilegedAccessHelper.getSystemProperty(SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION);
                 final ClassWriter classWriter = reflectiveIntrospectionProperty != null

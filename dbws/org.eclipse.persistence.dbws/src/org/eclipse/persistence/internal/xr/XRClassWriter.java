@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     mnorman - convert DBWS to use new EclipseLink public Dynamic Persistence APIs
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     mnorman - convert DBWS to use new EclipseLink public Dynamic Persistence APIs
 package org.eclipse.persistence.internal.xr;
 
 //javase imports
@@ -31,7 +33,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECI
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 /**
@@ -74,7 +76,7 @@ public class XRClassWriter extends DynamicClassWriter {
 
         // special-case: build sub-class of XRDynamicEntityCollection
         if (className.endsWith(COLLECTION_WRAPPER_SUFFIX)) {
-            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
+            cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
             mv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, INIT, "()V", false);
@@ -83,7 +85,7 @@ public class XRClassWriter extends DynamicClassWriter {
             mv.visitEnd();
         } else {
             // public class Foo extends XRDynamicEntity {
-            cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
+            cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
 
             // public static XRDynamicPropertiesManager DPM = new
             // XRDynamicPropertiesManager();

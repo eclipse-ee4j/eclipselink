@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.jaxb.schemagen;
 
 import org.eclipse.persistence.testing.jaxb.schemagen.date.DateTestCases;
@@ -20,6 +22,7 @@ import org.eclipse.persistence.testing.jaxb.schemagen.imports.SchemaGenImportTes
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.inheritance.InheritanceImportsTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.imports.url.SchemaGenImportURLTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.inheritance.InheritanceWithTransientTestCases;
+import org.eclipse.persistence.testing.jaxb.schemagen.inheritance.InheritanceWithXMLValueTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.inheritance.SchemaGenInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.scope.SchemaGenScopeTestCases;
 import org.eclipse.persistence.testing.jaxb.schemagen.typearray.TypeArraySchemaGenTestCases;
@@ -63,6 +66,7 @@ public class SchemaGenTestSuite extends TestSuite {
         suite.addTestSuite(AnonymousTypeInheritanceTestCases.class);
         suite.addTestSuite(SchemaGenInheritanceTestCases.class);
         suite.addTestSuite(InheritanceWithTransientTestCases.class);
+        suite.addTestSuite(InheritanceWithXMLValueTestCases.class);
         suite.addTestSuite(InheritanceImportsTestCases.class);
         suite.addTestSuite(SchemaGenXmlPathTestCases.class);
         suite.addTestSuite(SchemaGenXmlIDTestCases.class);

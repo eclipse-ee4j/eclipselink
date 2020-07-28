@@ -40,17 +40,16 @@ public class ParameterNode {
   public String name;
 
   /**
-   * The parameter's access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). Valid values are
-   * <tt>ACC_FINAL</tt>, <tt>ACC_SYNTHETIC</tt> and <tt>ACC_MANDATED</tt>.
+   * The parameter's access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). Valid values are {@code
+   * ACC_FINAL}, {@code ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    */
   public int access;
 
   /**
    * Constructs a new {@link ParameterNode}.
    *
-   * @param access The parameter's access flags. Valid values are <tt>ACC_FINAL</tt>,
-   *     <tt>ACC_SYNTHETIC</tt> or/and <tt>ACC_MANDATED</tt> (see {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes}).
+   * @param access The parameter's access flags. Valid values are {@code ACC_FINAL}, {@code
+   *     ACC_SYNTHETIC} or/and {@code ACC_MANDATED} (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}).
    * @param name the parameter's name.
    */
   public ParameterNode(final String name, final int access) {

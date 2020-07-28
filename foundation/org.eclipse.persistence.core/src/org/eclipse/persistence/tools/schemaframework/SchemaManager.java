@@ -1,22 +1,24 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Dies Koper - add support for creating indices on tables
- *     01/11/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/04/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     04/12/2013-2.5 Guy Pelletier
- *       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Dies Koper - add support for creating indices on tables
+//     01/11/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/04/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     04/12/2013-2.5 Guy Pelletier
+//       - 405640: JPA 2.1 schema generation drop operation fails to include dropping defaulted fk constraints.
 package org.eclipse.persistence.tools.schemaframework;
 
 import java.io.Writer;
@@ -35,7 +37,6 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
-import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.sequencing.DefaultSequence;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sequencing.Sequence;
@@ -455,31 +456,28 @@ public class SchemaManager {
     }
 
     /**
-     * Check if the table exists by issuing a select.
+     * Check if the table exists by issuing a query.
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
      */
-    public boolean checkTableExists(TableDefinition table) {
-        String column = null;
-        for (FieldDefinition field : table.getFields()) {
-            if (column == null) {
-                column = field.getName();
-            } else if (field.isPrimaryKey()) {
-                column = field.getName();
-                break;
-            }
-        }
-        String sql = "SELECT " + column + " FROM " + table.getFullName() + " WHERE " + column + " <> " + column;
-        DataReadQuery query = new DataReadQuery(sql);
-        query.setMaxRows(1);
-        boolean loggingOff = session.isLoggingOff();
+    public boolean checkTableExists(TableDefinition table, final boolean suppressLogging) {
+        final boolean loggingOff = session.isLoggingOff();
         try {
-            session.setLoggingOff(true);
-            session.executeQuery(query);
-            return true;
-        } catch (Exception notFound) {
-            return false;
+            return session.getPlatform().checkTableExists(session, table, suppressLogging);
         } finally {
             session.setLoggingOff(loggingOff);
         }
+    }
+
+    /**
+     * Check if the table exists by issuing a query.
+     * Logging is suppressed during query execution.
+     * @param table database table meta-data
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(TableDefinition table) {
+        return checkTableExists(table, true);
     }
 
     protected SequenceDefinition buildSequenceDefinition(Sequence sequence) {

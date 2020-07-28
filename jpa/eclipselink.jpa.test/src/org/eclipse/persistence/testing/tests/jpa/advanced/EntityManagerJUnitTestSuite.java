@@ -1,24 +1,27 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     27/07/2010 - 2.1.1 Sabine Heider
- *          304650: fix left over entity data interfering with testSetRollbackOnly
- *     11/17/2010-2.2 Michael O'Brien
- *       - 325605: Do not track SQL category logs in QuerySQLTracker logged at FINEST
- *         testDeleteEmployee*() will fail on DB2 9.7 Universal because cascade deletes
- *         of an uninstantiated collection of enums must inherently be deleted even if
- *         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
- *     01/15/2015-2.6 Mythily Parthasarathy
- *       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     27/07/2010 - 2.1.1 Sabine Heider
+//          304650: fix left over entity data interfering with testSetRollbackOnly
+//     11/17/2010-2.2 Michael O'Brien
+//       - 325605: Do not track SQL category logs in QuerySQLTracker logged at FINEST
+//         testDeleteEmployee//() will fail on DB2 9.7 Universal because cascade deletes
+//         of an uninstantiated collection of enums must inherently be deleted even if
+//         the actual collection is empty.  DB2 warns of nothing deleted - we convert it to a FINEST log
+//     01/15/2015-2.6 Mythily Parthasarathy
+//       - 457480: NPE in  MethodAttributeAccessor.getAttributeValueFromObject
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.io.ByteArrayInputStream;
@@ -2054,7 +2057,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     beginTransaction(em2);
 
                     HashMap<String, Object> properties = new HashMap<String, Object>();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5000);
                     Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_READ, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
@@ -2107,7 +2110,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
                     beginTransaction(em2);
 
                     HashMap<String, Object> properties = new HashMap<String, Object>();
-                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5);
+                    properties.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, 5000);
                     Employee employee2 = em2.find(Employee.class, employee.getId(), LockModeType.PESSIMISTIC_WRITE, properties);
                     employee2.setFirstName("Invalid Lock Employee");
                     commitTransaction(em2);
@@ -5489,10 +5492,11 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             assertEquals("Does not return unit of work", uow, uow1);
             JpaEntityManager jem1 = em.unwrap(org.eclipse.persistence.jpa.JpaEntityManager.class);
             assertEquals("Does not return underlying entitymanager", jem, jem1);
+
+            Connection conn1 = em.unwrap(java.sql.Connection.class);
+            assertNotNull("Connection returned was null", conn1);
             // TODO: This should be supported.
-            /*Connection conn1;
-            conn1 = em.unwrap(java.sql.Connection.class);
-            Connection conn = uowImpl.getAccessor().getConnection();
+            /*Connection conn = uowImpl.getAccessor().getConnection();
             assertEquals("Does not return underlying connection", conn, conn1);*/
         } finally {
             rollbackTransaction(em);

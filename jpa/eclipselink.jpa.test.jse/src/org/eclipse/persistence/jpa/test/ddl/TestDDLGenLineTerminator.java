@@ -1,16 +1,19 @@
-/*******************************************************************************
- * Copyright (c) 2015 IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 2015, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     01/13/2015 - Rick Curtis
- *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     01/13/2015 - Rick Curtis
+//       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
 package org.eclipse.persistence.jpa.test.ddl;
 
 import java.io.BufferedReader;
@@ -30,7 +33,9 @@ import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -75,10 +80,10 @@ public class TestDDLGenLineTerminator implements PUPropertiesProvider {
 
     @Test
     public void testGeneratedScripts() throws Exception {
-        String terminatorToken = ((EntityManagerFactoryImpl) terminatedEmf).getDatabaseSession().getPlatform().getStoredProcedureTerminationToken();
-        if (terminatorToken == null || terminatorToken.isEmpty()) {
-            return;
-        }
+        DatabasePlatform platform = ((EntityManagerFactoryImpl) terminatedEmf).getDatabaseSession().getPlatform();
+        String terminatorToken = platform.getStoredProcedureTerminationToken();
+        Assume.assumeFalse("Platform " + platform + " is not supported for this test", terminatorToken.isEmpty());
+
         BufferedReader reader = new BufferedReader(new FileReader(terminatedScript));
         String line = reader.readLine();
         while (line != null) {

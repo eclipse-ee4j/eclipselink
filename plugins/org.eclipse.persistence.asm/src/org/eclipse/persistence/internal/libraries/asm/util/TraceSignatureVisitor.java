@@ -27,6 +27,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.eclipse.persistence.internal.libraries.asm.util;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.signature.SignatureVisitor;
 
@@ -42,6 +45,22 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
   private static final String COMMA_SEPARATOR = ", ";
   private static final String EXTENDS_SEPARATOR = " extends ";
   private static final String IMPLEMENTS_SEPARATOR = " implements ";
+
+  private static final Map<Character, String> BASE_TYPES;
+
+  static {
+    HashMap<Character, String> baseTypes = new HashMap<>();
+    baseTypes.put('Z', "boolean");
+    baseTypes.put('B', "byte");
+    baseTypes.put('C', "char");
+    baseTypes.put('S', "short");
+    baseTypes.put('I', "int");
+    baseTypes.put('J', "long");
+    baseTypes.put('F', "float");
+    baseTypes.put('D', "double");
+    baseTypes.put('V', "void");
+    BASE_TYPES = Collections.unmodifiableMap(baseTypes);
+  }
 
   /** Whether the visited signature is a class signature of a Java interface. */
   private final boolean isInterface;
@@ -90,13 +109,13 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
    * @param accessFlags for class type signatures, the access flags of the class.
    */
   public TraceSignatureVisitor(final int accessFlags) {
-    super(Opcodes.ASM6);
+    super(/* latest api = */ Opcodes.ASM8);
     this.isInterface = (accessFlags & Opcodes.ACC_INTERFACE) != 0;
     this.declaration = new StringBuilder();
   }
 
   private TraceSignatureVisitor(final StringBuilder stringBuilder) {
-    super(Opcodes.ASM6);
+    super(/* latest api = */ Opcodes.ASM8);
     this.isInterface = false;
     this.declaration = stringBuilder;
   }
@@ -181,37 +200,11 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
 
   @Override
   public void visitBaseType(final char descriptor) {
-    switch (descriptor) {
-      case 'V':
-        declaration.append("void");
-        break;
-      case 'B':
-        declaration.append("byte");
-        break;
-      case 'J':
-        declaration.append("long");
-        break;
-      case 'Z':
-        declaration.append("boolean");
-        break;
-      case 'I':
-        declaration.append("int");
-        break;
-      case 'S':
-        declaration.append("short");
-        break;
-      case 'C':
-        declaration.append("char");
-        break;
-      case 'F':
-        declaration.append("float");
-        break;
-      case 'D':
-        declaration.append("double");
-        break;
-      default:
-        throw new IllegalArgumentException();
+    String baseType = BASE_TYPES.get(descriptor);
+    if (baseType == null) {
+      throw new IllegalArgumentException();
     }
+    declaration.append(baseType);
     endType();
   }
 
@@ -298,12 +291,18 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
 
   // -----------------------------------------------------------------------------------------------
 
-  /** @return the Java generic type declaration corresponding to the visited signature. */
+  /**
+   * Returns the Java generic type declaration corresponding to the visited signature.
+   *
+   * @return the Java generic type declaration corresponding to the visited signature.
+   */
   public String getDeclaration() {
     return declaration.toString();
   }
 
   /**
+   * Returns the Java generic method return type declaration corresponding to the visited signature.
+   *
    * @return the Java generic method return type declaration corresponding to the visited signature.
    */
   public String getReturnType() {
@@ -311,6 +310,8 @@ public final class TraceSignatureVisitor extends SignatureVisitor {
   }
 
   /**
+   * Returns the Java generic exception types declaration corresponding to the visited signature.
+   *
    * @return the Java generic exception types declaration corresponding to the visited signature.
    */
   public String getExceptions() {

@@ -1,17 +1,20 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     27/07/2010 - 2.1.1 Sabine Heider
- *          304650: fix left over entity data interfering with testSetRollbackOnly
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     27/07/2010 - 2.1.1 Sabine Heider
+//          304650: fix left over entity data interfering with testSetRollbackOnly
 package org.eclipse.persistence.testing.tests.jpa.fieldaccess.advanced;
 
 import java.io.ByteArrayInputStream;
@@ -2596,10 +2599,10 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         ObjectLevelReadQuery olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
 
         //testing for query timeout specified in persistence.xml
-        assertTrue("Timeout overriden or not set in persistence.xml",olrQuery.getQueryTimeout() == 100);
-        query.setHint(QueryHints.JDBC_TIMEOUT, 500);
+        assertTrue("Timeout overriden or not set in persistence.xml", olrQuery.getQueryTimeout() == 100000);
+        query.setHint(QueryHints.JDBC_TIMEOUT, 500000);
         olrQuery = (ObjectLevelReadQuery)((EJBQueryImpl)query).getDatabaseQuery();
-        assertTrue( olrQuery.getQueryTimeout() == 500);
+        assertTrue(olrQuery.getQueryTimeout() == 500000);
 
         closeEntityManager(em);
 

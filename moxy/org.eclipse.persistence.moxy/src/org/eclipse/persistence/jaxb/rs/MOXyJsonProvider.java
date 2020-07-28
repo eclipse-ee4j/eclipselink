@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Blaise Doughan - 2.4 - initial implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Blaise Doughan - 2.4 - initial implementation
 package org.eclipse.persistence.jaxb.rs;
 
 import java.io.File;
@@ -54,6 +56,7 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -65,13 +68,18 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import javax.xml.transform.stream.StreamSource;
 
+import org.eclipse.persistence.exceptions.JSONException;
 import org.eclipse.persistence.internal.core.helper.CoreClassConstants;
+import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.queries.CollectionContainerPolicy;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.jaxb.JAXBContextFactory;
 import org.eclipse.persistence.jaxb.MarshallerProperties;
 import org.eclipse.persistence.jaxb.UnmarshallerProperties;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 
 /**
@@ -198,6 +206,7 @@ import org.eclipse.persistence.oxm.JSONWithPadding;
  */
 @Produces({MediaType.APPLICATION_JSON, MediaType.WILDCARD, "application/x-javascript"})
 @Consumes({MediaType.APPLICATION_JSON, MediaType.WILDCARD})
+@Provider
 public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyWriter<Object>{
 
     private static final String APPLICATION_XJAVASCRIPT = "application/x-javascript";
@@ -345,6 +354,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             return getJAXBContext(domainClasses, annotations, mediaType, null);
         } catch(JAXBException e) {
+            AbstractSessionLog.getLog().logThrowable(SessionLog.WARNING, SessionLog.MOXY, e);
             return null;
         }
     }
@@ -555,6 +565,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             return false;
         } else if(type.isPrimitive()) {
             return false;
+        } else if(type.isArray() && (String.class.equals(type.getComponentType()) || type.getComponentType().isPrimitive() || Helper.isPrimitiveWrapper(type.getComponentType()))) {
+                return true;
         } else if(type.isArray() && (type.getComponentType().isArray() || type.getComponentType().isPrimitive() || type.getComponentType().getPackage().getName().startsWith("java."))) {
             return false;
         } else if(JAXBElement.class.isAssignableFrom(type)) {
@@ -580,7 +592,12 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             }
 
             for (Class<?> domainClass : domainClasses) {
-                String packageName = domainClass.getPackage().getName();
+
+                if (String.class.equals(domainClass) || domainClass.isPrimitive() || Helper.isPrimitiveWrapper(domainClass)) {
+                    return true;
+                }
+
+                    String packageName = domainClass.getPackage().getName();
                 if(null == packageName || !packageName.startsWith("java.")) {
                     if (isWriteable(domainClass, null, annotations, mediaType)) {
                         return true;
@@ -644,6 +661,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             JAXBContext jaxbContext = getJAXBContext(domainClasses, annotations, mediaType, httpHeaders);
+            SessionLog logger = AbstractSessionLog.getLog();
+
+            if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_read_from_moxy_json_provider", new Object[0]);
+            }
             Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             unmarshaller.setProperty(UnmarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
             unmarshaller.setProperty(UnmarshallerProperties.JSON_ATTRIBUTE_PREFIX, attributePrefix);
@@ -721,6 +743,8 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             throw new WebApplicationException(unmarshalException, builder.build());
         } catch(JAXBException jaxbException) {
             throw new WebApplicationException(jaxbException);
+        } catch(NullPointerException nullPointerException) {
+            throw new WebApplicationException(JSONException.errorInvalidDocument(nullPointerException));
         }
     }
 
@@ -930,6 +954,11 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
 
             Set<Class<?>> domainClasses = getDomainClasses(genericType);
             JAXBContext jaxbContext = getJAXBContext(domainClasses, annotations, mediaType, httpHeaders);
+            SessionLog logger = AbstractSessionLog.getLog();
+
+            if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_write_to_moxy_json_provider", new Object[0]);
+            }
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, formattedOutput);
             marshaller.setProperty(MarshallerProperties.MEDIA_TYPE, MediaType.APPLICATION_JSON);
@@ -955,7 +984,7 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             preWriteTo(object, type, genericType, annotations, mediaType, httpHeaders, marshaller);
             if (domainClasses.size() == 1) {
                 Class<?> domainClass = domainClasses.iterator().next();
-                if(domainClass.getPackage().getName().startsWith("java.") && !(List.class.isAssignableFrom(type) ||  type.isArray())) {
+                if(!(List.class.isAssignableFrom(type) ||  type.isArray()) && domainClass.getPackage().getName().startsWith("java.")) {
                     object = new JAXBElement(new QName((String) marshaller.getProperty(MarshallerProperties.JSON_VALUE_WRAPPER)), domainClass, object);
                 }
             }
@@ -965,5 +994,4 @@ public class MOXyJsonProvider implements MessageBodyReader<Object>, MessageBodyW
             throw new WebApplicationException(jaxbException);
         }
     }
-
 }

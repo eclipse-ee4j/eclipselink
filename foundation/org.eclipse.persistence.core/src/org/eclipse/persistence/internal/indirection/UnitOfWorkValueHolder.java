@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.internal.indirection;
 
 import java.rmi.server.ObjID;
@@ -140,10 +142,11 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
      * sometimes triggered directly without triggering the underlying valueholder.
      */
     protected Object instantiateImpl() {
-        if (this.wrappedValueHolder instanceof DatabaseValueHolder) {
-            // Bug 3835202 - Ensure access to valueholders is thread safe.  Several of the methods
-            // called below are not threadsafe alone.
-            synchronized (this.wrappedValueHolder) {
+        Object value;
+        // Bug 3835202 - Ensure access to valueholders is thread safe.  Several of the methods
+        // called below are not threadsafe alone.
+        synchronized (this.wrappedValueHolder) {
+            if (this.wrappedValueHolder instanceof DatabaseValueHolder) {
                 DatabaseValueHolder wrapped = (DatabaseValueHolder)this.wrappedValueHolder;
                 UnitOfWorkImpl unitOfWork = getUnitOfWork();
                 if (!wrapped.isEasilyInstantiated()) {
@@ -160,17 +163,18 @@ public abstract class UnitOfWorkValueHolder extends DatabaseValueHolder implemen
                         return wrapped.instantiateForUnitOfWorkValueHolder(this);
                     }
                 }
-            }
-            if (!((DatabaseValueHolder)this.wrappedValueHolder).isInstantiated()){
-                //if not instantiated then try and load the UOW versions to prevent the whole loading from the cache and cloning
-                //process
-                Object result = ((DatabaseValueHolder)this.wrappedValueHolder).getValue((UnitOfWorkImpl) this.session);
-                if (result != null){
-                    return result;
+                if (!wrapped.isInstantiated()){
+                    //if not instantiated then try and load the UOW versions to prevent the whole loading from the cache and cloning
+                    //process
+                    Object result = wrapped.getValue((UnitOfWorkImpl) this.session);
+                    if (result != null){
+                        return result;
+                    }
                 }
             }
+            value = this.wrappedValueHolder.getValue();
         }
-        return buildCloneFor(this.wrappedValueHolder.getValue());
+        return buildCloneFor(value);
     }
 
     /**

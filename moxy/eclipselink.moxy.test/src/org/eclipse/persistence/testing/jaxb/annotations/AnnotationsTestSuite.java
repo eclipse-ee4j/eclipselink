@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 2011, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Blaise Doughan - 2.3 - initial implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Blaise Doughan - 2.3 - initial implementation
 package org.eclipse.persistence.testing.jaxb.annotations;
 
 import junit.framework.JUnit4TestAdapter;
@@ -24,6 +26,7 @@ import org.eclipse.persistence.testing.jaxb.annotations.xmlelementnillable.XmlEl
 import org.eclipse.persistence.testing.jaxb.annotations.xmlelementnillable.XmlElementNillableTypeLevelTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdRefMissingIdEventHandlerTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdRefMissingIdTestCases;
+import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.inheritance.XmlIdRefInheritanceTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlidref.self.XmlIdRefSelfTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlinlinebinarydata.InlineHexBinaryTestCases;
 import org.eclipse.persistence.testing.jaxb.annotations.xmlinversereference.InverseRefChoiceAdapterTestCases;
@@ -112,6 +115,7 @@ public class AnnotationsTestSuite extends TestSuite {
         suite.addTestSuite(XmlIdRefMissingIdTestCases.class);
         suite.addTestSuite(XmlIdRefMissingIdEventHandlerTestCases.class);
         suite.addTestSuite(XmlIdRefSelfTestCases.class);
+        suite.addTestSuite(XmlIdRefInheritanceTestCases.class);
         suite.addTest(org.eclipse.persistence.testing.jaxb.annotations.xmltransient.XmlTransientTestSuite.suite());
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.qualified.QualfiedTestCases.class);
         suite.addTestSuite(org.eclipse.persistence.testing.jaxb.annotations.xmlelementdecl.noxmlrootelement.NoRootElementTestCases.class);

@@ -1,55 +1,58 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2020 IBM Corporation and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     07/16/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     06/30/2010-2.1.1 Michael O'Brien
- *       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
- *       Move JMX MBean generic registration code up from specific platforms
- *       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/28/2010-2.2 Guy Pelletier
- *       - 3223850: Primary key metadata issues
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     04/05/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 3)
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 8)
- *     07/11/2011-2.4 Guy Pelletier
- *       - 343632: Can't map a compound constraint because of exception:
- *                 The reference column name [y] mapped on the element [field x]
- *                 does not correspond to a valid field on the mapping reference
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     11/28/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     01/24/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/04/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     02/13/2013-2.5 Guy Pelletier
- *       - 397772: JPA 2.1 Entity Graph Support (XML support)
- *     09/24/2014-2.6 Rick Curtis
- *       - 443762 : Misc message cleanup.
- *     12/18/2014-2.6 Rick Curtis
- *       - 454189 : Misc message cleanup.#2
- *     01/05/2015 Rick Curtis
- *       - 455683: Automatically detect target server
- *     11/07/2017 - Dalia Abo Sheasha
- *       - 526957 : Split the logging and trace messages
- *     11/14/2017 - Dalia Abo Sheasha
- *       - 527273 : Minor message improvements
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     07/16/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     06/30/2010-2.1.1 Michael O'Brien
+//       - 316513: Enable JMX MBean functionality for JBoss, Glassfish and WebSphere in addition to WebLogic
+//       Move JMX MBean generic registration code up from specific platforms
+//       see <link>http://wiki.eclipse.org/EclipseLink/DesignDocs/316513</link>
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     10/28/2010-2.2 Guy Pelletier
+//       - 3223850: Primary key metadata issues
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     04/05/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 3)
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 8)
+//     07/11/2011-2.4 Guy Pelletier
+//       - 343632: Can't map a compound constraint because of exception:
+//                 The reference column name [y] mapped on the element [field x]
+//                 does not correspond to a valid field on the mapping reference
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     11/28/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     01/24/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/04/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     02/13/2013-2.5 Guy Pelletier
+//       - 397772: JPA 2.1 Entity Graph Support (XML support)
+//     09/24/2014-2.6 Rick Curtis
+//       - 443762 : Misc message cleanup.
+//     12/18/2014-2.6 Rick Curtis
+//       - 454189 : Misc message cleanup.#2
+//     01/05/2015 Rick Curtis
+//       - 455683: Automatically detect target server
+//     11/07/2017 - Dalia Abo Sheasha
+//       - 526957 : Split the logging and trace messages
+//     11/14/2017 - Dalia Abo Sheasha
+//       - 527273 : Minor message improvements
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -78,15 +81,10 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         // CONFIG, INFO, WARNING and SEVERE level messages.
         { "topLink_version", "EclipseLink, version: {0}" },
         { "application_server_name_and_version", "Server: {0}" },
-        { "login_successful", "{0} login successful" },
-        { "logout_successful", "{0} logout successful" },
 
         { "connected_user_database_driver", "Connected: {0}{6}User: {1}{6}Database: {2}  Version: {3}{6}Driver: {4}  Version: {5}" },
         { "connected_user_database", "Connected: {3}{4}User: {0}{3}{4}Database: {1}  Version: {2}" },
         { "JDBC_driver_does_not_support_meta_data", "Connected: unknown (JDBC Driver does not support meta data.)" },
-        { "connecting", "connecting({0})" },
-        { "disconnect", "disconnect" },
-        { "reconnecting", "reconnecting({0})" },
         { "connected_sdk", "Connected: SDK" },
 
         { "no_session_found", "Could not find the session with the name [{0}] in the session.xml file [{1}]" },
@@ -407,6 +405,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "sdo_missing_schemaLocation", "Referenced schema with uri {0} could not be processed because no schemaLocation attribute was specified."},
         { "sdo_invalid_schemaLocation", "Could not create schemaLocation [{0}] for import with uri [{1}]."},
         { "sdo_error_processing_referenced_schema", "An {0} occurred processing referenced schema with uri {1} with schemaLocation {2}."},
+        { "sdo_error_deserialization", "Unauthorized deserialization attempt with class {0}."},
         { "ox_turn_global_logging_off", " {0} Turning global session logging off."},
         { "ox_lowering_global_logging_from_default_info_to_warning", " {0} Lowering global logging from default INFO to WARNING level."},
         { "ox_turn_session_logging_off", " {0} Turning session logging off."},

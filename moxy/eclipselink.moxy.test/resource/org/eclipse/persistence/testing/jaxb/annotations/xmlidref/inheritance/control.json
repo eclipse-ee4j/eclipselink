@@ -1,0 +1,49 @@
+{
+  "RootNode": {
+    "id": "1",
+    "name": "rootNode1",
+    "refNodes": {
+      "ComplexNodeID": [
+        "10"
+      ],
+      "LeafNodeID": [
+        "20"
+      ]
+    },
+    "ownedNodes": {
+      "ComplexNode": [
+        {
+          "id": "10",
+          "name": "complexNode10",
+          "refNodes": {
+            "ComplexNodeID": [
+              "10"
+            ],
+            "LeafNodeID": [
+              "20"
+            ]
+          },
+          "ownedNodes": {
+            "ComplexNode": []
+          }
+        }
+      ],
+      "LeafNode": [
+        {
+          "id": "20",
+          "name": "leafNode10",
+          "isValid": false,
+          "refNodes": {
+            "ComplexNodeID": [
+              "10"
+            ],
+            "LeafNodeID": [
+              "20"
+            ]
+          },
+          "LNComplexNodeID": "10"
+        }
+      ]
+    }
+  }
+}

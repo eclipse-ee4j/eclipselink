@@ -1,20 +1,25 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle, IBM and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Thomas Spiegl - fix for bug 324406
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     05/10/2018-2.7 Joe Grassel
- *       - Github#93: Bug with bulk update processing involving version field update parameter
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Thomas Spiegl - fix for bug 324406
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     05/10/2018-master Joe Grassel
+//       - Github#93: Bug with bulk update processing involving version field update parameter
+//     10/01/2018: Will Dazey
+//       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.internal.queries;
 
 import java.util.*;
@@ -519,8 +524,17 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         SQLInsertStatement insertStatement = new SQLInsertStatement();
         insertStatement.setTable(table);
         insertStatement.setModifyRow(getModifyRow());
-        if (getDescriptor().hasReturningPolicy()) {
-            insertStatement.setReturnFields(getDescriptor().getReturningPolicy().getFieldsToGenerateInsert(table));
+        if (getDescriptor().hasReturningPolicies() && getDescriptor().getReturnFieldsToGenerateInsert() != null) {
+            // In case of RelationalDescriptor only return fields for current table must be used.
+            Vector<DatabaseField> returnFieldsForTable = new NonSynchronizedVector();
+            for (DatabaseField item: getDescriptor().getReturnFieldsToGenerateInsert()) {
+                if (table.equals(item.getTable())) {
+                    returnFieldsForTable.add(item);
+                }
+            }
+            if (!returnFieldsForTable.isEmpty()) {
+                insertStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateInsert());
+            }
         }
         insertStatement.setHintString(getQuery().getHintString());
         return insertStatement;
@@ -622,20 +636,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         }
         Vector fieldExpressions = reportQuery.getQueryExpressions();
         int itemOffset = fieldExpressions.size();
-        for (Iterator items = reportQuery.getItems().iterator(); items.hasNext();) {
-            ReportItem item = (ReportItem)items.next();
-            if (item.isConstructorItem()) {
-                ConstructorReportItem citem= (ConstructorReportItem)item;
-                List reportItems = citem.getReportItems();
-                int size = reportItems.size();
-                for (int i=0; i<size; i++) {
-                    item = (ReportItem)reportItems.get(i);
-                    extractStatementFromItem(item, clonedExpressions, selectStatement, fieldExpressions);
-                }
-            } else {
-                extractStatementFromItem(item, clonedExpressions, selectStatement, fieldExpressions);
-            }
-        }
+        List<ReportItem> items = reportQuery.getItems();
+        computeFieldExpressions(items, clonedExpressions, selectStatement, fieldExpressions);
 
         selectStatement.setFields(fieldExpressions);
         if (reportQuery.hasNonFetchJoinedAttributeExpressions()) {
@@ -647,85 +649,71 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             selectStatement.normalize(getSession(), getDescriptor(), clonedExpressions);
         }
 
-        //calculate indexes after normalize to insure expressions are set up correctly
-        for (Iterator items = reportQuery.getItems().iterator(); items.hasNext();){
-            ReportItem item = (ReportItem)items.next();
-
-            if (item.isConstructorItem()) {
-                ConstructorReportItem citem = (ConstructorReportItem)item;
-                List reportItems = citem.getReportItems();
-                int size = reportItems.size();
-                for (int i=0; i<size; i++) {
-                    item = (ReportItem)reportItems.get(i);
-                    itemOffset = computeAndSetItemOffset(item, itemOffset);
-                }
-            } else {
-                itemOffset = computeAndSetItemOffset(item, itemOffset);
-            }
-        }
+        items = reportQuery.getItems();
+        computeAndSetItemOffset(reportQuery, items, itemOffset);
 
         return selectStatement;
     }
 
-
-    /**
-     * calculate indexes for an item, given the current Offset
-     */
-    protected int computeAndSetItemOffset(ReportItem item, int itemOffset){
-        item.setResultIndex(itemOffset);
-        if (item.getAttributeExpression() != null) {
-            if (item.hasJoining()){
-                itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
+    private void computeFieldExpressions(List<ReportItem> items, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions) {
+        for (ReportItem item : items) {
+            if (item.isConstructorItem()) {
+                List<ReportItem> reportItems = ((ConstructorReportItem) item).getReportItems();
+                computeFieldExpressions(reportItems, clonedExpressions, selectStatement, fieldExpressions);
             } else {
-                if (item.getDescriptor() != null) {
-                    itemOffset += item.getDescriptor().getAllSelectionFields((ReportQuery)getQuery()).size();
-                } else {
-                    if (item.getMapping() != null && item.getMapping().isAggregateObjectMapping()) {
-                        itemOffset += item.getMapping().getFields().size(); // Aggregate object may consist out of 1..n fields
-                    } else {
-                        ++itemOffset; //only a single attribute can be selected
-                    }
-                }
+                extractStatementFromItem(item, clonedExpressions, selectStatement, fieldExpressions);
             }
         }
-        return itemOffset;
     }
 
-    public void extractStatementFromItem(ReportItem item, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions ){
+    private void extractStatementFromItem(ReportItem item, Map clonedExpressions, SQLSelectStatement selectStatement, Vector fieldExpressions){
         if (item.getAttributeExpression() != null) {
-                // this allows us to modify the item expression without modifying the original in case of re-prepare
-                Expression attributeExpression = item.getAttributeExpression();
-                ExpressionBuilder clonedBuilder = attributeExpression.getBuilder();
-                if (clonedBuilder.wasQueryClassSetInternally() && ((ReportQuery)getQuery()).getExpressionBuilder() != clonedBuilder) {
-                    // no class specified so use statement builder as it is non-parallel
-                    // must have same builder as it will be initialized
-                    clonedBuilder = selectStatement.getBuilder();
-                    attributeExpression = attributeExpression.rebuildOn(clonedBuilder);
-                } else if (clonedExpressions != null && clonedExpressions.get(clonedBuilder) != null) {
-                    Expression cloneExpression = (Expression)clonedExpressions.get(attributeExpression);
-                    if ((cloneExpression != null) && !cloneExpression.isExpressionBuilder()) {
-                        attributeExpression = cloneExpression;
-                    } else {
-                        //The builder has been cloned ensure that the cloned builder is used
-                        //in the items.
-                        clonedBuilder = (ExpressionBuilder)clonedBuilder.copiedVersionFrom(clonedExpressions);
-                        attributeExpression = attributeExpression.copiedVersionFrom(clonedExpressions);
-                    }
+            // this allows us to modify the item expression without modifying the original in case of re-prepare
+            Expression attributeExpression = item.getAttributeExpression();
+            ExpressionBuilder clonedBuilder = attributeExpression.getBuilder();
+            if (clonedBuilder.wasQueryClassSetInternally() && ((ReportQuery)getQuery()).getExpressionBuilder() != clonedBuilder) {
+                // no class specified so use statement builder as it is non-parallel
+                // must have same builder as it will be initialized
+                clonedBuilder = selectStatement.getBuilder();
+                attributeExpression = attributeExpression.rebuildOn(clonedBuilder);
+            } else if (clonedExpressions != null && clonedExpressions.get(clonedBuilder) != null) {
+                Expression cloneExpression = (Expression)clonedExpressions.get(attributeExpression);
+                if ((cloneExpression != null) && !cloneExpression.isExpressionBuilder()) {
+                    attributeExpression = cloneExpression;
+                } else {
+                    //The builder has been cloned ensure that the cloned builder is used
+                    //in the items.
+                    clonedBuilder = (ExpressionBuilder)clonedBuilder.copiedVersionFrom(clonedExpressions);
+                    attributeExpression = attributeExpression.copiedVersionFrom(clonedExpressions);
                 }
-                if (attributeExpression.isExpressionBuilder()
-                        && (item.getDescriptor().getQueryManager().getAdditionalJoinExpression() != null)
-                        && !(clonedBuilder.wasAdditionJoinCriteriaUsed())) {
-                    if (selectStatement.getWhereClause() == null ) {
-                        selectStatement.setWhereClause(item.getDescriptor().getQueryManager().getAdditionalJoinExpression().rebuildOn(clonedBuilder));
-                    } else {
-                        selectStatement.setWhereClause(selectStatement.getWhereClause().and(item.getDescriptor().getQueryManager().getAdditionalJoinExpression().rebuildOn(clonedBuilder)));
-                    }
+            }
+            if (attributeExpression.isExpressionBuilder()
+                    && (item.getDescriptor().getQueryManager().getAdditionalJoinExpression() != null)
+                    && !(clonedBuilder.wasAdditionJoinCriteriaUsed())) {
+
+                //Clone the standard join expression set on the descriptor's QueryManager
+                Expression additionalJoinExpression = item.getDescriptor().getQueryManager().getAdditionalJoinExpression().rebuildOn(clonedBuilder);
+                Expression whereClause = selectStatement.getWhereClause();
+
+                //'shouldUseOuterJoin' should have been set during query parsing; see ObjectExpression.leftJoin()
+                //So we need to alter the additionalJoinExpression to account for NULL on the right side
+                if(((ExpressionBuilder)attributeExpression).shouldUseOuterJoin()) {
+                    additionalJoinExpression = additionalJoinExpression.or(attributeExpression.isNull());
                 }
-                fieldExpressions.add(attributeExpression);
-                if (item.hasJoining()){
-                    fieldExpressions.addAll(item.getJoinedAttributeManager().getJoinedAttributeExpressions());
-                    fieldExpressions.addAll(item.getJoinedAttributeManager().getJoinedMappingExpressions());
+
+                if (whereClause == null ) {
+                    selectStatement.setWhereClause(additionalJoinExpression);
+                } else {
+                    selectStatement.setWhereClause(whereClause.and(additionalJoinExpression));
                 }
+
+                clonedBuilder.setWasAdditionJoinCriteriaUsed(true);
+            }
+            fieldExpressions.add(attributeExpression);
+            if (item.hasJoining()){
+                fieldExpressions.addAll(item.getJoinedAttributeManager().getJoinedAttributeExpressions());
+                fieldExpressions.addAll(item.getJoinedAttributeManager().getJoinedMappingExpressions());
+            }
         }
     }
 
@@ -798,8 +786,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
         updateStatement.setModifyRow(getModifyRow());
         updateStatement.setTranslationRow(getTranslationRow());
-        if (getDescriptor().hasReturningPolicy()) {
-            updateStatement.setReturnFields(getDescriptor().getReturningPolicy().getFieldsToGenerateUpdate(table));
+        if (getDescriptor().hasReturningPolicies() && getDescriptor().getReturnFieldsToGenerateUpdate() != null) {
+            updateStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateUpdate());
         }
         updateStatement.setTable(table);
         updateStatement.setWhereClause(getDescriptor().getObjectBuilder().buildUpdateExpression(table, getTranslationRow(), getModifyRow()));
@@ -2060,6 +2048,11 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
                             setResult(null);
                             return;
                         }
+                    }
+                    // In some cases when expression starts with literal session is not set.
+                    // Like ....CONCAT('abcd', column)....
+                    if (baseExpression != null && (baseExpression instanceof ExpressionBuilder) && baseExpression.getSession() == null) {
+                        ((ExpressionBuilder) baseExpression).setSession(getSession());
                     }
                     DatabaseField field = dataExpression.getField();
                     if(field != null) {

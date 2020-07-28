@@ -1,31 +1,37 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     03/03/2010 - 2.1 Michael O'Brien
- *       - 302316: clear the object cache when testing stored procedure returns on SQLServer
- *         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
- *       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
- *     06/16/2010-2.2 Guy Pelletier
- *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     09/03/2010-2.2 Guy Pelletier
- *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/27/2010-2.2 Guy Pelletier
- *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
- *     11/01/2010-2.2 Guy Pelletier
- *       - 322916: getParameter on Query throws NPE
- *     08/07/2016-2.7 Dalia Abo Sheasha
- *       - 499335: Multiple embeddable fields can't reference same object
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     03/03/2010 - 2.1 Michael O'Brien
+//       - 302316: clear the object cache when testing stored procedure returns on SQLServer
+//         to avoid false positives visible only when debugging in DatabaseCall.buildOutputRow()
+//       - 260263: SQLServer 2005/2008 requires stored procedure creation select clause variable and column name matching
+//     06/16/2010-2.2 Guy Pelletier
+//       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
+//     09/03/2010-2.2 Guy Pelletier
+//       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     10/27/2010-2.2 Guy Pelletier
+//       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+//     11/01/2010-2.2 Guy Pelletier
+//       - 322916: getParameter on Query throws NPE
+//     08/07/2016-2.7 Dalia Abo Sheasha
+//       - 499335: Multiple embeddable fields can't reference same object
+//     09/04/2018-3.0 Ravi Babu Tummuru
+//       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+
 package org.eclipse.persistence.testing.tests.jpa.advanced;
 
 import java.lang.reflect.Array;
@@ -154,9 +160,13 @@ import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Ra
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Sandwich;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.School;
 import org.eclipse.persistence.testing.models.jpa.advanced.additionalcriteria.Student;
+import org.eclipse.persistence.testing.models.jpa.advanced.MyTestEntity;
 import org.eclipse.persistence.tools.schemaframework.SchemaManager;
 import org.eclipse.persistence.tools.schemaframework.StoredFunctionDefinition;
+import org.eclipse.persistence.exceptions.QueryException;
 import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
+
 
 /**
  * This test suite tests EclipseLink JPA annotations extensions.
@@ -251,7 +261,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         suite.addTest(new AdvancedJPAJunitTest("testTransformationMappingWithColumnAnnotation"));
 
         suite.addTest(new AdvancedJPAJunitTest("testCursorStream"));
-
+        suite.addTest(new AdvancedJPAJunitTest("testCursoredNativeQueryDefinedViaAnnotation"));
         suite.addTest(new AdvancedJPAJunitTest("testProperty"));
 
         suite.addTest(new AdvancedJPAJunitTest("testBackpointerOnMerge"));
@@ -357,8 +367,8 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         try {
             query = em.createNamedQuery("StoredFunction_In");
             query.setParameter("P_IN", 1);
-            int result = (Integer)query.getSingleResult();
-            if (result != 1000) {
+            long result = (Long)query.getSingleResult();
+            if (result != 1000L) {
                 fail("Incorrect result returned:" + result);
             }
         } finally {
@@ -1964,7 +1974,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
             Object[] objectdata = (Object[])aQuery.getSingleResult();
 
             assertTrue("Address data not found or returned using stored procedure", ((objectdata!=null)&& (objectdata.length==2)) );
-            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == ((Integer)objectdata[0]).intValue()) );
+            assertTrue("Address Id data returned doesn't match persisted address", (address1.getID() == ((Long)objectdata[0]).longValue()) );
             assertTrue("Address Street data returned doesn't match persisted address", ( address1.getStreet().equals(objectdata[1] )) );
         } catch (RuntimeException e) {
             if (isTransactionActive(em)){
@@ -2363,6 +2373,29 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         if(errorMsg.length() > 0) {
             fail(errorMsg);
+        }
+    }
+    
+    // test case for Bug25872190 ElBug538183
+    public void testCursoredNativeQueryDefinedViaAnnotation() {
+
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            Query q = em.createNamedQuery("allTestEntitiesAnnotated");
+            q.setHint(QueryHints.CURSOR, true);
+            try {
+                CursoredStream stream = (CursoredStream) q.getSingleResult();
+                assertTrue(stream.hasNext());
+            } catch (QueryException qe) {
+               fail("Cursored Native Query via Annotation threw QueryException");
+            }
+            commitTransaction(em);
+        }finally {
+            if (isTransactionActive(em)){
+                rollbackTransaction(em);
+            }
+            closeEntityManager(em);
         }
     }
 

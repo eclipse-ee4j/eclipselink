@@ -29,16 +29,19 @@ package org.eclipse.persistence.internal.libraries.asm.util;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
+import org.eclipse.persistence.internal.libraries.asm.ConstantDynamic;
 import org.eclipse.persistence.internal.libraries.asm.Handle;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
+import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.libraries.asm.TypePath;
+import org.eclipse.persistence.internal.libraries.asm.TypeReference;
 
 /**
  * An abstract converter from visit events to text.
@@ -289,16 +292,9 @@ public abstract class Printer {
 
   /**
    * The ASM API version implemented by this class. The value of this field must be one of {@link
-   * Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   * Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   protected final int api;
-
-  /**
-   * A buffer that can be used to create strings.
-   *
-   * @deprecated
-   */
-  @Deprecated protected final StringBuffer buf;
 
   /** The builder used to build strings in the various visit methods. */
   protected final StringBuilder stringBuilder;
@@ -323,13 +319,12 @@ public abstract class Printer {
    * Constructs a new {@link Printer}.
    *
    * @param api the ASM API version implemented by this printer. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5} or {@link Opcodes#ASM6}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   protected Printer(final int api) {
     this.api = api;
-    this.buf = null;
     this.stringBuilder = new StringBuilder();
-    this.text = new ArrayList<Object>();
+    this.text = new ArrayList<>();
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -345,13 +340,13 @@ public abstract class Printer {
    *     the class is deprecated.
    * @param name the internal name of the class (see {@link
    *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}).
-   * @param signature the signature of this class. May be <tt>null</tt> if the class is not a
+   * @param signature the signature of this class. May be {@literal null} if the class is not a
    *     generic one, and does not extend or implement generic classes or interfaces.
    * @param superName the internal of name of the super class (see {@link
    *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}). For interfaces, the super class is {@link
-   *     Object}. May be <tt>null</tt>, but only for the {@link Object} class.
+   *     Object}. May be {@literal null}, but only for the {@link Object} class.
    * @param interfaces the internal names of the class's interfaces (see {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}). May be <tt>null</tt>.
+   *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}). May be {@literal null}.
    */
   public abstract void visit(
       int version,
@@ -364,10 +359,10 @@ public abstract class Printer {
   /**
    * Class source. See {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitSource}.
    *
-   * @param source the name of the source file from which the class was compiled. May be
-   *     <tt>null</tt>.
+   * @param source the name of the source file from which the class was compiled. May be {@literal
+   *     null}.
    * @param debug additional debug information to compute the correspondence between source and
-   *     compiled elements of the class. May be <tt>null</tt>.
+   *     compiled elements of the class. May be {@literal null}.
    */
   public abstract void visitSource(String source, String debug);
 
@@ -377,7 +372,7 @@ public abstract class Printer {
    * @param name the fully qualified name (using dots) of the module.
    * @param access the module access flags, among {@code ACC_OPEN}, {@code ACC_SYNTHETIC} and {@code
    *     ACC_MANDATED}.
-   * @param version the module version, or <tt>null</tt>.
+   * @param version the module version, or {@literal null}.
    * @return the printer.
    */
   public Printer visitModule(final String name, final int access, final String version) {
@@ -385,13 +380,27 @@ public abstract class Printer {
   }
 
   /**
+   * Visits the nest host class of the class. A nest is a set of classes of the same package that
+   * share access to their private members. One of these classes, called the host, lists the other
+   * members of the nest, which in turn should link to the host of their nest. This method must be
+   * called only once and only if the visited class is a non-host member of a nest. A class is
+   * implicitly its own nest, so it's invalid to call this method with the visited class name as
+   * argument.
+   *
+   * @param nestHost the internal name of the host class of the nest.
+   */
+  public void visitNestHost(final String nestHost) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
    * Class outer class. See {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitOuterClass}.
    *
    * @param owner internal name of the enclosing class of the class.
-   * @param name the name of the method that contains the class, or <tt>null</tt> if the class is
+   * @param name the name of the method that contains the class, or {@literal null} if the class is
    *     not enclosed in a method of its enclosing class.
-   * @param descriptor the descriptor of the method that contains the class, or <tt>null</tt> if the
-   *     class is not enclosed in a method of its enclosing class.
+   * @param descriptor the descriptor of the method that contains the class, or {@literal null} if
+   *     the class is not enclosed in a method of its enclosing class.
    */
   public abstract void visitOuterClass(String owner, String name, String descriptor);
 
@@ -399,7 +408,7 @@ public abstract class Printer {
    * Class annotation. See {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitAnnotation}.
    *
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public abstract Printer visitClassAnnotation(String descriptor, boolean visible);
@@ -413,10 +422,10 @@ public abstract class Printer {
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference#CLASS_EXTENDS}. See {@link
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference}.
    * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
-   *     static inner type within 'typeRef'. May be <tt>null</tt> if the annotation targets
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
    *     'typeRef' as a whole.
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public Printer visitClassTypeAnnotation(
@@ -432,18 +441,63 @@ public abstract class Printer {
   public abstract void visitClassAttribute(Attribute attribute);
 
   /**
+   * Visits a member of the nest. A nest is a set of classes of the same package that share access
+   * to their private members. One of these classes, called the host, lists the other members of the
+   * nest, which in turn should link to the host of their nest. This method must be called only if
+   * the visited class is the host of a nest. A nest host is implicitly a member of its own nest, so
+   * it's invalid to call this method with the visited class name as argument.
+   *
+   * @param nestMember the internal name of a nest member.
+   */
+  public void visitNestMember(final String nestMember) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
+   * <b>Experimental, use at your own risk. This method will be renamed when it becomes stable, this
+   * will break existing code using it</b>.
+   *
+   * <p>Visits a permitted subtypes. A permitted subtypes is one of the allowed subtypes of the
+   * current class. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitPermittedSubtypeExperimental(String)}.
+   *
+   * @param permittedSubtype the internal name of a permitted subtype.
+   * @deprecated this API is experimental.
+   */
+  @Deprecated
+  public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
    * Class inner name. See {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitInnerClass}.
    *
    * @param name the internal name of an inner class (see {@link
    *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}).
    * @param outerName the internal name of the class to which the inner class belongs (see {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}). May be <tt>null</tt> for not member classes.
+   *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}). May be {@literal null} for not member classes.
    * @param innerName the (simple) name of the inner class inside its enclosing class. May be
-   *     <tt>null</tt> for anonymous inner classes.
+   *     {@literal null} for anonymous inner classes.
    * @param access the access flags of the inner class as originally declared in the enclosing
    *     class.
    */
   public abstract void visitInnerClass(String name, String outerName, String innerName, int access);
+
+  /**
+   * Visits a record component of the class. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitRecordComponent(String, String, String)}.
+   *
+   * @param name the field's name.
+   * @param descriptor the record component descriptor (see {@link Type}).
+   * @param signature the record component signature. May be {@literal null} if the record component
+   *     type does not use generic types.
+   * @return a visitor to visit this record component annotations and attributes, or {@literal null}
+   *     if this class visitor is not interested in visiting these annotations and attributes.
+   */
+  public Printer visitRecordComponent(
+      final String name, final String descriptor, final String signature) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
 
   /**
    * Class field. See {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitField}.
@@ -452,14 +506,14 @@ public abstract class Printer {
    *     the field is synthetic and/or deprecated.
    * @param name the field's name.
    * @param descriptor the field's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
-   * @param signature the field's signature. May be <tt>null</tt> if the field's type does not use
+   * @param signature the field's signature. May be {@literal null} if the field's type does not use
    *     generic types.
-   * @param value the field's initial value. This parameter, which may be <tt>null</tt> if the field
-   *     does not have an initial value, must be an {@link Integer}, a {@link Float}, a {@link
-   *     Long}, a {@link Double} or a {@link String} (for <tt>int</tt>, <tt>float</tt>,
-   *     <tt>long</tt> or <tt>String</tt> fields respectively). <i>This parameter is only used for
-   *     static fields</i>. Its value is ignored for non static fields, which must be initialized
-   *     through bytecode instructions in constructors or methods.
+   * @param value the field's initial value. This parameter, which may be {@literal null} if the
+   *     field does not have an initial value, must be an {@link Integer}, a {@link Float}, a {@link
+   *     Long}, a {@link Double} or a {@link String} (for {@code int}, {@code float}, {@code long}
+   *     or {@code String} fields respectively). <i>This parameter is only used for static
+   *     fields</i>. Its value is ignored for non static fields, which must be initialized through
+   *     bytecode instructions in constructors or methods.
    * @return the printer.
    */
   public abstract Printer visitField(
@@ -472,10 +526,10 @@ public abstract class Printer {
    *     the method is synthetic and/or deprecated.
    * @param name the method's name.
    * @param descriptor the method's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
-   * @param signature the method's signature. May be <tt>null</tt> if the method parameters, return
-   *     type and exceptions do not use generic types.
+   * @param signature the method's signature. May be {@literal null} if the method parameters,
+   *     return type and exceptions do not use generic types.
    * @param exceptions the internal names of the method's exception classes (see {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}). May be <tt>null</tt>.
+   *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}). May be {@literal null}.
    * @return the printer.
    */
   public abstract Printer visitMethod(
@@ -512,7 +566,7 @@ public abstract class Printer {
    * @param module the fully qualified name (using dots) of the dependence.
    * @param access the access flag of the dependence among {@code ACC_TRANSITIVE}, {@code
    *     ACC_STATIC_PHASE}, {@code ACC_SYNTHETIC} and {@code ACC_MANDATED}.
-   * @param version the module version at compile time, or <tt>null</tt>.
+   * @param version the module version at compile time, or {@literal null}.
    */
   public void visitRequire(final String module, final int access, final String version) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
@@ -525,7 +579,7 @@ public abstract class Printer {
    * @param access the access flag of the exported package, valid values are among {@code
    *     ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    * @param modules the fully qualified names (using dots) of the modules that can access the public
-   *     classes of the exported package, or <tt>null</tt>.
+   *     classes of the exported package, or {@literal null}.
    */
   public void visitExport(final String packaze, final int access, final String... modules) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
@@ -538,7 +592,7 @@ public abstract class Printer {
    * @param access the access flag of the opened package, valid values are among {@code
    *     ACC_SYNTHETIC} and {@code ACC_MANDATED}.
    * @param modules the fully qualified names (using dots) of the modules that can use deep
-   *     reflection to the classes of the open package, or <tt>null</tt>.
+   *     reflection to the classes of the open package, or {@literal null}.
    */
   public void visitOpen(final String packaze, final int access, final String... modules) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
@@ -584,6 +638,7 @@ public abstract class Printer {
    *     boolean, short, char, int, long, float or double values (this is equivalent to using {@link
    *     #visitArray} and visiting each array element in turn, but is more convenient).
    */
+  // DontCheck(OverloadMethodsDeclarationOrder): overloads are semantically different.
   public abstract void visit(String name, Object value);
 
   /**
@@ -616,6 +671,63 @@ public abstract class Printer {
   public abstract void visitAnnotationEnd();
 
   // -----------------------------------------------------------------------------------------------
+  // Record components
+  // -----------------------------------------------------------------------------------------------
+
+  /**
+   * Visits an annotation of the record component. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor#visitAnnotation}.
+   *
+   * @param descriptor the class descriptor of the annotation class.
+   * @param visible {@literal true} if the annotation is visible at runtime.
+   * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not
+   *     interested in visiting this annotation.
+   */
+  public Printer visitRecordComponentAnnotation(final String descriptor, final boolean visible) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
+   * Visits an annotation on a type in the record component signature. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor#visitTypeAnnotation}.
+   *
+   * @param typeRef a reference to the annotated type. The sort of this type reference must be
+   *     {@link TypeReference#CLASS_TYPE_PARAMETER}, {@link
+   *     TypeReference#CLASS_TYPE_PARAMETER_BOUND} or {@link TypeReference#CLASS_EXTENDS}. See
+   *     {@link TypeReference}.
+   * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
+   *     'typeRef' as a whole.
+   * @param descriptor the class descriptor of the annotation class.
+   * @param visible {@literal true} if the annotation is visible at runtime.
+   * @return a visitor to visit the annotation values, or {@literal null} if this visitor is not
+   *     interested in visiting this annotation.
+   */
+  public Printer visitRecordComponentTypeAnnotation(
+      final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
+   * Visits a non standard attribute of the record component. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor#visitAttribute}.
+   *
+   * @param attribute an attribute.
+   */
+  public void visitRecordComponentAttribute(final Attribute attribute) {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  /**
+   * Visits the end of the record component. See {@link
+   * org.eclipse.persistence.internal.libraries.asm.RecordComponentVisitor#visitEnd}. This method, which is the last one to be
+   * called, is used to inform the visitor that everything have been visited.
+   */
+  public void visitRecordComponentEnd() {
+    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+  }
+
+  // -----------------------------------------------------------------------------------------------
   // Fields
   // -----------------------------------------------------------------------------------------------
 
@@ -623,7 +735,7 @@ public abstract class Printer {
    * Field annotation. See {@link org.eclipse.persistence.internal.libraries.asm.FieldVisitor#visitAnnotation}.
    *
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public abstract Printer visitFieldAnnotation(String descriptor, boolean visible);
@@ -634,10 +746,10 @@ public abstract class Printer {
    * @param typeRef a reference to the annotated type. The sort of this type reference must be
    *     {@link org.eclipse.persistence.internal.libraries.asm.TypeReference#FIELD}. See {@link org.eclipse.persistence.internal.libraries.asm.TypeReference}.
    * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
-   *     static inner type within 'typeRef'. May be <tt>null</tt> if the annotation targets
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
    *     'typeRef' as a whole.
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public Printer visitFieldTypeAnnotation(
@@ -662,9 +774,9 @@ public abstract class Printer {
   /**
    * Method parameter. See {@link org.eclipse.persistence.internal.libraries.asm.MethodVisitor#visitParameter(String, int)}.
    *
-   * @param name parameter name or null if none is provided.
-   * @param access the parameter's access flags, only <tt>ACC_FINAL</tt>, <tt>ACC_SYNTHETIC</tt>
-   *     or/and <tt>ACC_MANDATED</tt> are allowed (see {@link Opcodes}).
+   * @param name parameter name or {@literal null} if none is provided.
+   * @param access the parameter's access flags, only {@code ACC_FINAL}, {@code ACC_SYNTHETIC}
+   *     or/and {@code ACC_MANDATED} are allowed (see {@link Opcodes}).
    */
   public void visitParameter(final String name, final int access) {
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
@@ -681,7 +793,7 @@ public abstract class Printer {
    * Method annotation. See {@link org.eclipse.persistence.internal.libraries.asm.MethodVisitor#visitAnnotation}.
    *
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public abstract Printer visitMethodAnnotation(String descriptor, boolean visible);
@@ -697,10 +809,10 @@ public abstract class Printer {
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference#METHOD_FORMAL_PARAMETER} or {@link
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference#THROWS}. See {@link org.eclipse.persistence.internal.libraries.asm.TypeReference}.
    * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
-   *     static inner type within 'typeRef'. May be <tt>null</tt> if the annotation targets
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
    *     'typeRef' as a whole.
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public Printer visitMethodTypeAnnotation(
@@ -717,8 +829,8 @@ public abstract class Printer {
    *     be strictly less when a method has synthetic parameters and when these parameters are
    *     ignored when computing parameter indices for the purpose of parameter annotations (see
    *     https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.18).
-   * @param visible <tt>true</tt> to define the number of method parameters that can have
-   *     annotations visible at runtime, <tt>false</tt> to define the number of method parameters
+   * @param visible {@literal true} to define the number of method parameters that can have
+   *     annotations visible at runtime, {@literal false} to define the number of method parameters
    *     that can have annotations invisible at runtime.
    * @return the printer.
    */
@@ -737,7 +849,7 @@ public abstract class Printer {
    *     descriptor</i>, in particular in case of synthetic parameters (see
    *     https://docs.oracle.com/javase/specs/jvms/se9/html/jvms-4.html#jvms-4.7.18).
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public abstract Printer visitParameterAnnotation(
@@ -759,7 +871,7 @@ public abstract class Printer {
    * @param type the type of this stack map frame. Must be {@link Opcodes#F_NEW} for expanded
    *     frames, or {@link Opcodes#F_FULL}, {@link Opcodes#F_APPEND}, {@link Opcodes#F_CHOP}, {@link
    *     Opcodes#F_SAME} or {@link Opcodes#F_APPEND}, {@link Opcodes#F_SAME1} for compressed frames.
-   * @param nLocal the number of local variables in the visited frame.
+   * @param numLocal the number of local variables in the visited frame.
    * @param local the local variable types in this frame. This array must not be modified. Primitive
    *     types are represented by {@link Opcodes#TOP}, {@link Opcodes#INTEGER}, {@link
    *     Opcodes#FLOAT}, {@link Opcodes#LONG}, {@link Opcodes#DOUBLE}, {@link Opcodes#NULL} or
@@ -767,11 +879,12 @@ public abstract class Printer {
    *     Reference types are represented by String objects (representing internal names), and
    *     uninitialized types by Label objects (this label designates the NEW instruction that
    *     created this uninitialized value).
-   * @param nStack the number of operand stack elements in the visited frame.
+   * @param numStack the number of operand stack elements in the visited frame.
    * @param stack the operand stack types in this frame. This array must not be modified. Its
    *     content has the same format as the "local" array.
    */
-  public abstract void visitFrame(int type, int nLocal, Object[] local, int nStack, Object[] stack);
+  public abstract void visitFrame(
+      int type, int numLocal, Object[] local, int numStack, Object[] stack);
 
   /**
    * Method instruction. See {@link org.eclipse.persistence.internal.libraries.asm.MethodVisitor#visitInsn}
@@ -846,17 +959,15 @@ public abstract class Printer {
    *     org.eclipse.persistence.internal.libraries.asm.Type#getInternalName()}).
    * @param name the method's name.
    * @param descriptor the method's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
-   * @deprecated
+   * @deprecated use {@link #visitMethodInsn(int, String, String, String, boolean)} instead.
    */
   @Deprecated
   public void visitMethodInsn(
       final int opcode, final String owner, final String name, final String descriptor) {
-    if (api >= Opcodes.ASM5) {
-      boolean isInterface = opcode == Opcodes.INVOKEINTERFACE;
-      visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-      return;
-    }
-    throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
+    // This method was abstract before ASM5, and was therefore always overridden (without any
+    // call to 'super'). Thus, at this point we necessarily have api >= ASM5, and we must then
+    // redirect the method call to the ASM5 visitMethodInsn() method.
+    visitMethodInsn(opcode, owner, name, descriptor, opcode == Opcodes.INVOKEINTERFACE);
   }
 
   /**
@@ -876,13 +987,6 @@ public abstract class Printer {
       final String name,
       final String descriptor,
       final boolean isInterface) {
-    if (api < Opcodes.ASM5) {
-      if (isInterface != (opcode == Opcodes.INVOKEINTERFACE)) {
-        throw new IllegalArgumentException("INVOKESPECIAL/STATIC on interfaces require ASM 5");
-      }
-      visitMethodInsn(opcode, owner, name, descriptor);
-      return;
-    }
     throw new UnsupportedOperationException(UNSUPPORTED_OPERATION);
   }
 
@@ -926,9 +1030,10 @@ public abstract class Printer {
    *
    * @param value the constant to be loaded on the stack. This parameter must be a non null {@link
    *     Integer}, a {@link Float}, a {@link Long}, a {@link Double}, a {@link String}, a {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Type} of OBJECT or ARRAY sort for <tt>.class</tt> constants, for classes
-   *     whose version is 49.0, a {@link org.eclipse.persistence.internal.libraries.asm.Type} of METHOD sort or a {@link Handle}
-   *     for MethodType and MethodHandle constants, for classes whose version is 51.0.
+   *     Type} of OBJECT or ARRAY sort for {@code .class} constants, for classes whose version is
+   *     49, a {@link Type} of METHOD sort for MethodType, a {@link Handle} for MethodHandle
+   *     constants, for classes whose version is 51 or a {@link ConstantDynamic} for a constant
+   *     dynamic for classes whose version is 55.
    */
   public abstract void visitLdcInsn(Object value);
 
@@ -946,8 +1051,8 @@ public abstract class Printer {
    * @param min the minimum key value.
    * @param max the maximum key value.
    * @param dflt beginning of the default handler block.
-   * @param labels beginnings of the handler blocks. <tt>labels[i]</tt> is the beginning of the
-   *     handler block for the <tt>min + i</tt> key.
+   * @param labels beginnings of the handler blocks. {@code labels[i]} is the beginning of the
+   *     handler block for the {@code min + i} key.
    */
   public abstract void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels);
 
@@ -956,8 +1061,8 @@ public abstract class Printer {
    *
    * @param dflt beginning of the default handler block.
    * @param keys the values of the keys.
-   * @param labels beginnings of the handler blocks. <tt>labels[i]</tt> is the beginning of the
-   *     handler block for the <tt>keys[i]</tt> key.
+   * @param labels beginnings of the handler blocks. {@code labels[i]} is the beginning of the
+   *     handler block for the {@code keys[i]} key.
    */
   public abstract void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels);
 
@@ -984,10 +1089,10 @@ public abstract class Printer {
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference#METHOD_REFERENCE_TYPE_ARGUMENT}. See {@link
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference}.
    * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
-   *     static inner type within 'typeRef'. May be <tt>null</tt> if the annotation targets
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
    *     'typeRef' as a whole.
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public Printer visitInsnAnnotation(
@@ -1001,8 +1106,8 @@ public abstract class Printer {
    * @param start the beginning of the exception handler's scope (inclusive).
    * @param end the end of the exception handler's scope (exclusive).
    * @param handler the beginning of the exception handler's code.
-   * @param type the internal name of the type of exceptions handled by the handler, or
-   *     <tt>null</tt> to catch any exceptions (for "finally" blocks).
+   * @param type the internal name of the type of exceptions handled by the handler, or {@literal
+   *     null} to catch any exceptions (for "finally" blocks).
    */
   public abstract void visitTryCatchBlock(Label start, Label end, Label handler, String type);
 
@@ -1014,10 +1119,10 @@ public abstract class Printer {
    *     {@link org.eclipse.persistence.internal.libraries.asm.TypeReference#EXCEPTION_PARAMETER}. See {@link
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference}.
    * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
-   *     static inner type within 'typeRef'. May be <tt>null</tt> if the annotation targets
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
    *     'typeRef' as a whole.
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public Printer visitTryCatchAnnotation(
@@ -1030,7 +1135,7 @@ public abstract class Printer {
    *
    * @param name the name of a local variable.
    * @param descriptor the type descriptor of this local variable.
-   * @param signature the type signature of this local variable. May be <tt>null</tt> if the local
+   * @param signature the type signature of this local variable. May be {@literal null} if the local
    *     variable type does not use generic types.
    * @param start the first instruction corresponding to the scope of this local variable
    *     (inclusive).
@@ -1049,7 +1154,7 @@ public abstract class Printer {
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference#RESOURCE_VARIABLE}. See {@link
    *     org.eclipse.persistence.internal.libraries.asm.TypeReference}.
    * @param typePath the path to the annotated type argument, wildcard bound, array element type, or
-   *     static inner type within 'typeRef'. May be <tt>null</tt> if the annotation targets
+   *     static inner type within 'typeRef'. May be {@literal null} if the annotation targets
    *     'typeRef' as a whole.
    * @param start the fist instructions corresponding to the continuous ranges that make the scope
    *     of this local variable (inclusive).
@@ -1058,7 +1163,7 @@ public abstract class Printer {
    * @param index the local variable's index in each range. This array must have the same size as
    *     the 'start' array.
    * @param descriptor the class descriptor of the annotation class.
-   * @param visible <tt>true</tt> if the annotation is visible at runtime.
+   * @param visible {@literal true} if the annotation is visible at runtime.
    * @return the printer.
    */
   public Printer visitLocalVariableAnnotation(
@@ -1132,20 +1237,6 @@ public abstract class Printer {
   }
 
   /**
-   * Appends a quoted string to the given string buffer.
-   *
-   * @param stringBuffer the buffer where the string must be added.
-   * @param string the string to be added.
-   * @deprecated
-   */
-  @Deprecated
-  public static void appendString(final StringBuffer stringBuffer, final String string) {
-    StringBuilder stringBuilder = new StringBuilder();
-    appendString(stringBuilder, string);
-    stringBuffer.append(stringBuilder.toString());
-  }
-
-  /**
    * Appends a quoted string to the given string builder.
    *
    * @param stringBuilder the buffer where the string must be added.
@@ -1181,24 +1272,30 @@ public abstract class Printer {
   }
 
   /**
-   * Prints a the given class to the standard output.
+   * Prints a the given class to the given output.
    *
    * <p>Command line arguments: [-debug] &lt;binary class name or class file name &gt;
    *
+   * @param args the command line arguments.
    * @param usage the help message to show when command line arguments are incorrect.
    * @param printer the printer to convert the class into text.
-   * @param args the command line arguments.
+   * @param output where to print the result.
+   * @param logger where to log errors.
    * @throws IOException if the class cannot be found, or if an IOException occurs.
    */
-  static void main(final String usage, final Printer printer, final String[] args)
+  static void main(
+      final String[] args,
+      final String usage,
+      final Printer printer,
+      final PrintWriter output,
+      final PrintWriter logger)
       throws IOException {
     if (args.length < 1 || args.length > 2 || (args[0].equals("-debug") && args.length != 2)) {
-      System.err.println(usage);
+      logger.println(usage);
       return;
     }
 
-    TraceClassVisitor traceClassVisitor =
-        new TraceClassVisitor(null, printer, new PrintWriter(System.out));
+    TraceClassVisitor traceClassVisitor = new TraceClassVisitor(null, printer, output);
 
     String className;
     int parsingOptions;
@@ -1213,7 +1310,9 @@ public abstract class Printer {
     if (className.endsWith(".class")
         || className.indexOf('\\') != -1
         || className.indexOf('/') != -1) {
-      new ClassReader(new FileInputStream(className)).accept(traceClassVisitor, parsingOptions);
+      InputStream inputStream =
+          new FileInputStream(className); // NOPMD(AvoidFileStream): can't fix for 1.5 compatibility
+      new ClassReader(inputStream).accept(traceClassVisitor, parsingOptions);
     } else {
       new ClassReader(className).accept(traceClassVisitor, parsingOptions);
     }

@@ -1,27 +1,32 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- *     02/24/2016-2.6.0 Rick Curtis
- *       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
- *     03/13/2015 - Jody Grassel
- *       - 462103 : SQL for Stored Procedure named parameter with DB2 generated with incorrect marker
- *     04/15/2016 - Dalia Abo Sheasha
- *       - 491824: Setting lock timeout to 0 issues a NOWAIT causing an error in DB2
- *     08/22/2017 - Will Dazey
- *       - 521037: DB2 default schema is doubled for sequence queries
- *****************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
+//     02/24/2016-2.6.0 Rick Curtis
+//       - 460740: Fix pessimistic locking with setFirst/Max results on DB2
+//     03/13/2015 - Jody Grassel
+//       - 462103 : SQL for Stored Procedure named parameter with DB2 generated with incorrect marker
+//     04/15/2016 - Dalia Abo Sheasha
+//       - 491824: Setting lock timeout to 0 issues a NOWAIT causing an error in DB2
+//     08/22/2017 - Will Dazey
+//       - 521037: DB2 default schema is doubled for sequence queries
+//     12/06/2018 - Will Dazey
+//       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
@@ -64,6 +69,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
 
     public DB2Platform() {
         super();
+        //com.ibm.db2.jcc.DB2Types.CURSOR
+        this.cursorCode = -100008;
+        this.shouldBindLiterals = false;
         this.pingSQL = "VALUES(1)";
     }
 
@@ -417,10 +425,14 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
     }
 
     /**
-     * Used for sp calls.
+     * Obtain the platform specific argument string
      */
-    public String getProcedureArgumentSetter() {
-        return " => ";
+    @Override
+    public String getProcedureArgument(String name, Object parameter, Integer parameterType, StoredProcedureCall call, AbstractSession session) {
+        if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
+            return getProcedureArgumentString() + name + " => " + "?";
+        }
+        return "?";
     }
 
     /**
@@ -738,6 +750,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
      */
     @Override
     public boolean isDynamicSQLRequiredForFunctions() {
+        if(shouldForceBindAllParameters()) {
+            return false;
+        }
         return !isCastRequired();
     }
 

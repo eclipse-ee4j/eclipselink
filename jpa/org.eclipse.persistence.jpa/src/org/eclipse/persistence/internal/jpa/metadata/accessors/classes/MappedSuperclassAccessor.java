@@ -1,82 +1,84 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     05/16/2008-1.0M8 Guy Pelletier
- *       - 218084: Implement metadata merging functionality between mapping files
- *     05/23/2008-1.0M8 Guy Pelletier
- *       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     12/12/2008-1.1 Guy Pelletier
- *       - 249860: Implement table per class inheritance support.
- *     01/28/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/06/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 2)
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/24/2009-2.0 Guy Pelletier
- *       - 270011: JPA 2.0 MappedById support
- *     06/16/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     06/25/2009-2.0 Michael O'Brien
- *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
- *          in support of the custom descriptors holding mappings required by the Metamodel
- *     09/24//2009-2.0 Michael O'Brien
- *       - 266912: In initIdClass() store IdClass names for use by the Metamodel API
- *     10/21/2009-2.0 Guy Pelletier
- *       - 290567: mappedbyid support incomplete
- *     12/2/2009-2.1 Guy Pelletier
- *       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema
- *     01/19/2010-2.1 Guy Pelletier
- *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
- *     05/04/2010-2.1 Guy Pelletier
- *       - 309373: Add parent class attribute to EclipseLink-ORM
- *     06/01/2010-2.1 Guy Pelletier
- *       - 315195: Add new property to avoid reading XML during the canonical model generation
- *     06/09/2010-2.0.3 Guy Pelletier
- *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
- *     06/14/2010-2.2 Guy Pelletier
- *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- *     06/22/2010-2.2 Guy Pelletier
- *       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
- *     07/05/2010-2.1.1 Guy Pelletier
- *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
- *     08/04/2010-2.1.1 Guy Pelletier
- *       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- *     10/28/2010-2.2 Guy Pelletier
- *       - 3223850: Primary key metadata issues
- *     12/01/2010-2.2 Guy Pelletier
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
- *     03/08/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 8)
- *     07/03/2011-2.3.1 Guy Pelletier
- *       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
- *     02/08/2012-2.4 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/19/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/29/2012-2.5 Guy Pelletier
- *       - 395406: Fix nightly static weave test errors
- *     06/12/2017-2.7 Lukas Jungmann
- *       - 518155: [jpa22] add support for repeatable annotations
- *     02/26/2018-2.7.2 Lukas Jungmann
- *       - 531528: IdentifiableType.hasSingleIdAttribute() returns true when IdClass references an inner class
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     05/16/2008-1.0M8 Guy Pelletier
+//       - 218084: Implement metadata merging functionality between mapping files
+//     05/23/2008-1.0M8 Guy Pelletier
+//       - 211330: Add attributes-complete support to the EclipseLink-ORM.XML Schema
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     12/12/2008-1.1 Guy Pelletier
+//       - 249860: Implement table per class inheritance support.
+//     01/28/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 1)
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/24/2009-2.0 Guy Pelletier
+//       - 270011: JPA 2.0 MappedById support
+//     06/16/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     06/25/2009-2.0 Michael O'Brien
+//       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+//          in support of the custom descriptors holding mappings required by the Metamodel
+//     09/24//2009-2.0 Michael O'Brien
+//       - 266912: In initIdClass() store IdClass names for use by the Metamodel API
+//     10/21/2009-2.0 Guy Pelletier
+//       - 290567: mappedbyid support incomplete
+//     12/2/2009-2.1 Guy Pelletier
+//       - 296289: Add current annotation metadata support on mapped superclasses to EclipseLink-ORM.XML Schema
+//     01/19/2010-2.1 Guy Pelletier
+//       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+//     05/04/2010-2.1 Guy Pelletier
+//       - 309373: Add parent class attribute to EclipseLink-ORM
+//     06/01/2010-2.1 Guy Pelletier
+//       - 315195: Add new property to avoid reading XML during the canonical model generation
+//     06/09/2010-2.0.3 Guy Pelletier
+//       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
+//     06/14/2010-2.2 Guy Pelletier
+//       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+//     06/22/2010-2.2 Guy Pelletier
+//       - 308729: Persistent Unit deployment exception when mappedsuperclass has no annotations but has lifecycle callbacks
+//     07/05/2010-2.1.1 Guy Pelletier
+//       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+//     08/04/2010-2.1.1 Guy Pelletier
+//       - 315782: JPA2 derived identity metadata processing validation doesn't account for autoboxing
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
+//     10/28/2010-2.2 Guy Pelletier
+//       - 3223850: Primary key metadata issues
+//     12/01/2010-2.2 Guy Pelletier
+//       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+//     03/08/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 8)
+//     07/03/2011-2.3.1 Guy Pelletier
+//       - 348756: m_cascadeOnDelete boolean should be changed to Boolean
+//     02/08/2012-2.4 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     11/19/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     11/29/2012-2.5 Guy Pelletier
+//       - 395406: Fix nightly static weave test errors
+//     06/12/2017-2.7 Lukas Jungmann
+//       - 518155: [jpa22] add support for repeatable annotations
+//     02/26/2018-2.7.2 Lukas Jungmann
+//       - 531528: IdentifiableType.hasSingleIdAttribute() returns true when IdClass references an inner class
 package org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
 
 import java.util.ArrayList;

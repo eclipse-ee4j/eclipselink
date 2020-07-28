@@ -1,17 +1,19 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property,
- *                             added Bean Validation support.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property,
+//                             added Bean Validation support.
 package org.eclipse.persistence.jaxb;
 
 import java.io.File;
@@ -52,6 +54,7 @@ import org.eclipse.persistence.internal.jaxb.IDResolverWrapper;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.StrBuffer;
@@ -65,6 +68,9 @@ import org.eclipse.persistence.internal.oxm.record.XMLStreamReaderReader;
 import org.eclipse.persistence.internal.oxm.record.namespaces.PrefixMapperNamespaceResolver;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentUnmarshallerAdapter;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.IDResolver;
 import org.eclipse.persistence.oxm.MediaType;
 import org.eclipse.persistence.oxm.NamespacePrefixMapper;
@@ -809,6 +815,13 @@ public class JAXBUnmarshaller implements Unmarshaller {
         if (key == null) {
             throw new IllegalArgumentException();
         }
+        SessionLog logger = AbstractSessionLog.getLog();
+        if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+            logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_unmarshaller_property", new Object[] {key, value});
+        }
+        if (MOXySystemProperties.moxyLogPayload != null && xmlUnmarshaller.isLogPayload() == null) {
+            xmlUnmarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
+        }
         if (key.equals(UnmarshallerProperties.MEDIA_TYPE)) {
             MediaType mType = null;
             if(value instanceof MediaType) {
@@ -863,6 +876,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             xmlUnmarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean)value);
         } else if (UnmarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
             xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean)value);
+        } else if (UnmarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
+            xmlUnmarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String)value);
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             setIDResolver((IDResolver) value);
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
@@ -907,6 +922,14 @@ public class JAXBUnmarshaller implements Unmarshaller {
                     ? Boolean.parseBoolean((String) value)
                     : (boolean) value;
             xmlUnmarshaller.setDisableSecureProcessing(disabled);
+        } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+            xmlUnmarshaller.setLogPayload(((boolean) value));
+        } else if (UnmarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
+            if (value instanceof String) {
+                AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
+            } else {
+                AbstractSessionLog.getLog().setLevel(((LogLevel) value).getId(), SessionLog.MOXY);
+            }
         } else {
             throw new PropertyException(key, value);
         }
@@ -959,6 +982,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return xmlUnmarshaller.getJsonTypeConfiguration().isUseXsdTypesWithPrefix();
         } else if (UnmarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
             return xmlUnmarshaller.getJsonTypeConfiguration().isJsonTypeCompatibility();
+        } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
+            return xmlUnmarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName();
         } else if (UnmarshallerProperties.ID_RESOLVER.equals(key)) {
             return xmlUnmarshaller.getIDResolver();
         } else if (SUN_ID_RESOLVER.equals(key) || SUN_JSE_ID_RESOLVER.equals(key)) {
@@ -985,6 +1010,8 @@ public class JAXBUnmarshaller implements Unmarshaller {
             return this.bvNoOptimisation;
         } else if (UnmarshallerProperties.DISABLE_SECURE_PROCESSING.equals(key)) {
             return xmlUnmarshaller.isSecureProcessingDisabled();
+        } else if (UnmarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+            return xmlUnmarshaller.isLogPayload();
         }
         throw new PropertyException(key);
     }
@@ -1351,7 +1378,5 @@ public class JAXBUnmarshaller implements Unmarshaller {
             }
             return jaxbElement;
         }
-
     }
-
 }

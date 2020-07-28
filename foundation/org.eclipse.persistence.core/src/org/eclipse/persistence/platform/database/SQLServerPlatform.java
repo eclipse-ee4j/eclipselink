@@ -1,27 +1,34 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     09/14/2011-2.3.1 Guy Pelletier
- *       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- *     02/23/2015-2.6 Dalia Abo Sheasha
- *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
- *****************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     09/14/2011-2.3.1 Guy Pelletier
+//       - 357533: Allow DDL queries to execute even when Multitenant entities are part of the PU
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
+//     02/23/2015-2.6 Dalia Abo Sheasha
+//       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
 package org.eclipse.persistence.platform.database;
 
 import java.io.*;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import org.eclipse.persistence.exceptions.*;
@@ -42,8 +49,16 @@ import org.eclipse.persistence.queries.*;
  * @since TOPLink/Java 1.0
  */
 public class SQLServerPlatform extends org.eclipse.persistence.platform.database.DatabasePlatform {
-    /** Support for sequence objects added in SQL Server 2012 */
-    private boolean supportsSequenceObjects;
+    
+    /** MSSQL-specific JDBC type constants */
+    private static final int DATETIMEOFFSET_TYPE = -155;
+    
+    /** Support for sequence objects and OFFSET FETCH NEXT added in SQL Server 2012 */
+    private boolean isVersion11OrHigher;
+    
+    /** The official MS JDBC driver fully supports ODT since version 7.1.4 */
+    private Boolean driverSupportsOffsetDateTime;
+    
     private boolean isConnectionDataInitialized;
 
     public SQLServerPlatform(){
@@ -57,11 +72,26 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         if (isConnectionDataInitialized) {
             return;
         }
+        
         DatabaseMetaData dmd = connection.getMetaData();
+        // could be using a non-MS driver (e.g. jTDS)
+        boolean isMicrosoftDriver = dmd.getDriverName().startsWith("Microsoft JDBC Driver");
         int databaseVersion = dmd.getDatabaseMajorVersion();
-        supportsSequenceObjects = databaseVersion >= 11;
+        String driverVersion = dmd.getDriverVersion();
+        isVersion11OrHigher = databaseVersion >= 11;
+        if (driverSupportsOffsetDateTime == null) {
+            driverSupportsOffsetDateTime = isMicrosoftDriver && Helper.compareVersions(driverVersion, "7.1.4") >= 0;
+        }
+        driverSupportsNationalCharacterVarying = isMicrosoftDriver && Helper.compareVersions(driverVersion, "4.0.0") >= 0;
+        
         isConnectionDataInitialized = true;
-        this.driverSupportsNationalCharacterVarying = Helper.compareVersions(dmd.getDriverVersion(), "4.0.0") >= 0;
+    }
+
+    /**
+     * Allow user to turn off ODT support, in case they rely on the old behavior.
+     */
+    public void setDriverSupportsOffsetDateTime(boolean driverSupportsOffsetDateTime) {
+        this.driverSupportsOffsetDateTime = driverSupportsOffsetDateTime;
     }
 
     /**
@@ -687,7 +717,7 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
      */
     @Override
     public boolean supportsSequenceObjects() {
-        return supportsSequenceObjects;
+        return isVersion11OrHigher;
     }
 
     /**
@@ -728,5 +758,83 @@ public class SQLServerPlatform extends org.eclipse.persistence.platform.database
         writer.write(", ");
         writer.write(tempTableName);
         writeAutoJoinWhereClause(writer, tableName, tempTableName, pkFields, this);
+    }
+
+    @Override
+    public void printSQLSelectStatement(DatabaseCall call, ExpressionSQLPrinter printer, SQLSelectStatement statement) {
+        ReadQuery query = statement.getQuery();
+        if (query == null || !isVersion11OrHigher || !shouldUseRownumFiltering()) {
+            super.printSQLSelectStatement(call, printer, statement);
+            return;
+        }
+        
+        int max = Math.max(0, query.getMaxRows());
+        int first = Math.max(0, query.getFirstResult());
+        
+        if (max == 0 && first == 0) {
+            super.printSQLSelectStatement(call, printer, statement);
+            return;
+        }
+        
+        // OFFSET + FETCH NEXT requires ORDER BY, so add an ordering if there are none
+        // this SQL will satisfy the query parser without actually changing the ordering of the rows
+        List<Expression> orderBy = statement.getOrderByExpressions();
+        if (orderBy.isEmpty()) {
+            orderBy.add(statement.getBuilder().literal("ROW_NUMBER() OVER (ORDER BY (SELECT null))"));
+        }
+        
+        // decide exact syntax to use, depending on whether a limit is specified (could just have an offset)
+        String offsetFetchSql;
+        List<?> offsetFetchArgs;
+        if (max == 0) {
+            offsetFetchSql = "? OFFSET ? ROWS";
+            offsetFetchArgs = Arrays.asList(first);
+        } else {
+            offsetFetchSql = "? OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+            offsetFetchArgs = Arrays.asList(first, max - first);
+        }
+        
+        // append to the last ORDER BY clause
+        orderBy.add(orderBy.remove(orderBy.size() - 1).sql(offsetFetchSql, offsetFetchArgs));
+        
+        super.printSQLSelectStatement(call, printer, statement);
+        
+        call.setIgnoreFirstRowSetting(true);
+        call.setIgnoreMaxResultsSetting(true);
+    }
+
+    @Override
+    public Object getObjectFromResultSet(ResultSet resultSet, int columnNumber, int type, AbstractSession session)
+            throws SQLException {
+        if (driverSupportsOffsetDateTime && type == DATETIMEOFFSET_TYPE) {
+            // avoid default logic, which would return a microsoft.sql.DateTimeOffset
+            return resultSet.getObject(columnNumber, OffsetDateTime.class);
+        }
+        
+        return super.getObjectFromResultSet(resultSet, columnNumber, type, session);
+    }
+
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter, PreparedStatement statement, int index,
+            AbstractSession session) throws SQLException {
+        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
+            // avoid default logic, which loses offset when converting to java.sql.Timestamp
+            statement.setObject(index, parameter);
+            return;
+        }
+
+        super.setParameterValueInDatabaseCall(parameter, statement, index, session);
+    }
+
+    @Override
+    public void setParameterValueInDatabaseCall(Object parameter, CallableStatement statement, String name,
+            AbstractSession session) throws SQLException {
+        if (driverSupportsOffsetDateTime && parameter instanceof OffsetDateTime) {
+            // avoid default logic, which loses offset when converting to java.sql.Timestamp
+            statement.setObject(name, parameter);
+            return;
+        }
+
+        super.setParameterValueInDatabaseCall(parameter, statement, name, session);
     }
 }

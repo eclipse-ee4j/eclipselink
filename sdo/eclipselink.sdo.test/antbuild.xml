@@ -1,12 +1,25 @@
 <?xml version="1.0"?>
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
+<!--
+
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      bdoughan - initial API and implementation
+      dtwelves - Sept 2008 Include SDO SRG testing
+      egwin    - Nov 08, remove compile of SDO (add dep check instead)
+-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -27,12 +40,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     bdoughan - initial API and implementation
-*     dtwelves - Sept 2008 Include SDO SRG testing
-*     egwin    - Nov 08, remove compile of SDO (add dep check instead)
-#******************************************************************************/-->
+-->
 <project name="eclipselink.sdo.test" default="test" basedir=".">
     <available file="../${ant.project.name}" type="dir" property="sdotest.is.local"/>
     <!-- Test to make sure that the calling script doesn't inherit the variable -->
@@ -73,11 +81,6 @@
     <property name="test.junit.jvm" value="${env.JAVA_HOME}"/>
     <property name="test.junit.jvm.exec" value="${test.junit.jvm}/bin/java"/>
 
-    <!-- JVM specific settings -->
-    <condition property="test.junit.jvm.modules.prop" value="-Dignore.modules=true" else="${test.junit.jvm.modules}">
-        <matches pattern="[1-8]\..*" string="${java.version}"/>
-    </condition>
-
     <!-- path to OSGi Bundle compile dependencies -->
     <path id="sdotest.bundle.compile.path">
         <fileset
@@ -99,6 +102,7 @@
         <pathelement path="${junit.lib}"/>
         <pathelement path="${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
         <pathelement path="${jaxb-api.lib}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
     <!-- Run path without product components -->
     <path id="sdotest.thirdparty.run.path">
@@ -106,7 +110,8 @@
         <pathelement path="${resource.dir}"/>
         <pathelement path="${classes.dir}"/>
         <pathelement path="${jacocoagent.lib}"/>
-        <pathelement path="${sdotest.2.common.plugins.dir}/${asm}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${asm.jar}"/>
+        <pathelement path="${sdotest.2.common.plugins.dir}/${activation.jar}"/>
     </path>
 
     <!-- Set Compile/Run Paths using product OSGi bundles -->
@@ -136,7 +141,8 @@
         <pathelement path="../${sdotest.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
         <pathelement path="../${classes.dir}"/>
         <pathelement path="../${sdotest.plugins.dir}/${commonj.sdo.jar}"/>
-        <pathelement path="../${sdotest.2.common.plugins.dir}/javax.mail_1.4.0.jar"/>
+        <pathelement path="../${sdotest.2.common.plugins.dir}/${activation.jar}"/>
+        <pathelement path="../${sdotest.2.common.plugins.dir}/jakarta.mail.jar"/>
     </path>
 
     <available file="${sdotest.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar" property="core.bundle.exist"/>
@@ -196,7 +202,6 @@
             <!-- junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes" -->
             <junit jvm="${test.junit.jvm.exec}" printsummary="withOutAndErr" failureproperty="junit.failed" logfailedtests="true"
                    fork="yes" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <env key="JAVA_HOME" value="${test.junit.jvm}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
@@ -256,7 +261,6 @@
             <echo message="customContext=@{customcontext}"/>
             <property name="additional.jvmargs" value="-Ddummy2=dummy"/>
             <junit printsummary="withOutAndErr" fork="yes" forkmode="once" dir="${resource.dir}" maxmemory="512m" showoutput="yes">
-                <jvmarg line="${test.junit.jvm.modules.prop}"/>
                 <jvmarg line="${additional.jvmargs}"/>
                 <sysproperty key="loggingLevelFinest" value="false"/>
                 <sysproperty key="customContext" value="@{customcontext}"/>

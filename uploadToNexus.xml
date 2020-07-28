@@ -1,10 +1,45 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
+<!--
+
+    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      mmeswani - initial API and implementation (checked in by tware)
+      egwin    - updated variables as they have changed in the rest of the system
+                 updated svnversion to not break build, and default if exec fails
+      egwin    - updated for publishing to Maven Central, split nexus handling to
+                 new script
+      egwin    - converted svn.revision to git.hash (was missed in original
+                 migration to Git)
+-->
+<!-- Variables Needed:
+*         release.version - need three tokens: Major.Minor.Service
+*         build.date      - in format YYYYMMDD
+*         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
+*         git.hash        - for stamping pom, to link build with source repo
+*    Optional variables:
+*         bundle.dir      - if location of bundles to publish isn't a git "view"
+*
+*********************************************************************************-->
+<!-- Build Assumptions:
+*         running from a "view"
+*            Needs:
+*               ${mavenant.dir}/maven-ant-tasks-2.0.8.jar (assumes: ${build.deps.dir}/mavenant)
+*               build.properties
+*               ./buildsystem/ant_customizations.jar
+*
+*********************************************************************************-->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -25,33 +60,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     mmeswani - initial API and implementation (checked in by tware)
-*     egwin    - updated variables as they have changed in the rest of the system
-*                updated svnversion to not break build, and default if exec fails
-*     egwin    - updated for publishing to Maven Central, split nexus handling to
-*                new script
-*     egwin    - converted svn.revision to git.hash (was missed in original
-*                migration to Git)
-#******************************************************************************/-->
-<!-- Variables Needed:
-*         release.version - need three tokens: Major.Minor.Service
-*         build.date      - in format YYYYMMDD
-*         build.type      - should be set to "SNAPSHOT, "M##", or "RELEASE"
-*         git.hash        - for stamping pom, to link build with source repo
-*    Optional variables:
-*         bundle.dir      - if location of bundles to publish isn't a git "view"
-*
-*********************************************************************************-->
-<!-- Build Assumptions:
-*         running from a "view"
-*            Needs:
-*               ${mavenant.dir}/maven-ant-tasks-2.0.8.jar (assumes: ${build.deps.dir}/mavenant)
-*               build.properties
-*               ./buildsystem/ant_customizations.jar
-*
-*********************************************************************************-->
+-->
 <project name="Upload2Maven"  basedir="." xmlns:artifact="urn:maven-artifact-ant" default="upload-maven-all">
     <property file="${user.home}/build.properties"/>
     <property file="build.properties"/>
@@ -64,13 +73,13 @@
              classpathref="maven-ant-tasks.classpath" />
 
     <!-- Tool version definitions -->
-    <property name="gpg.plugin.version"   value="1.4"/>
-    <property name="wagon.http.version"   value="2.4"/>
+    <property name="gpg.plugin.version"   value="1.6"/>
+    <property name="wagon.http.version"   value="3.3.3"/>
 
     <!-- The repository info of where maven artifacts will be uploaded -->
     <!--    Override value to change defaults                          -->
-    <property name="stagingId"   value="sonatype-nexus-staging"/>
-    <property name="stagingURL"  value="https://oss.sonatype.org/service/local/staging/deploy/maven2"/>
+    <property name="stagingId"   value="ossrh"/>
+    <property name="stagingURL"  value="https://jakarta.oss.sonatype.org/service/local/staging/deploy/maven2"/>
     <property name="snapshotId"  value="sonatype-nexus-snapshots"/>
     <property name="snapshotURL" value="https://oss.sonatype.org/content/repositories/snapshots"/>
 
@@ -160,20 +169,10 @@
     </target>
 
     <target name="discover-static-built-info" depends="init">
-        <property name="jpaapi.prefix"        value="javax.persistence"/>
-        <property name="jpaapi.criteria"      value="[2.0.100, 3.0.0)"/>
-        <property name="jpaapi.name"          value="Javax Persistence"/>
+        <property name="jpaapi.prefix"        value="jakarta.persistence"/>
         <property name="sdoapi.prefix"        value="commonj.sdo"/>
         <property name="sdoapi.criteria"      value="[2.1.1,2.2.0)"/>
         <property name="sdoapi.name"          value="SDO API"/>
-        <property name="validation.prefix"    value="validation-api"/>
-        <property name="validation.criteria"  value="[1.1.0,2.2.0)"/>
-        <property name="validation.name"      value="Javax Validation"/>
-        <property name="validation.version"   value="1.1.0.Final"/>
-        <property name="json.prefix"          value="javax.json"/>
-        <property name="json.criteria"        value="[1.0.4,5.0.0)"/>
-        <property name="json.name"            value="Javax JSON"/>
-        <property name="json.version"         value="1.0.4"/>
         <property name="antlr.prefix"         value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria"       value="[3.0.0,4.0.0)"/>
         <property name="antlr.name"           value="EclipseLink ANTLR"/>
@@ -185,7 +184,7 @@
         <property name="oracleddl.name"       value="EclipseLink OracleDDL Parser"/>
         <property name="oraclebndl.prefix"    value="org.eclipse.persistence.oracle"/>
         <property name="oraclebndl.criteria"  value="[1.0.0,9.0.0)"/>
-        <property name="oraclebndl.name"       value="EclipseLink Oracle Extensions"/>
+        <property name="oraclebndl.name"      value="EclipseLink Oracle Extensions"/>
         <property name="oraclenosql.prefix"   value="org.eclipse.persistence.oracle.nosql"/>
         <property name="oraclenosql.criteria" value="[1.0.0,9.0.0)"/>
         <property name="oraclenosql.name"     value="EclipseLink Oracle NoSQL database Extensions"/>
@@ -196,17 +195,8 @@
         <property name="extension.criteria"   value="[1.0.0,9.0.0)"/>
         <property name="extension.name"       value="EclipseLink Extensions"/>
 
-        <selectbundle basename="${jpaapi.prefix}"  directory="${maven.2.jpa.plugins.dir}"
-                      criterion="${jpaapi.criteria}" property="jpaapi.version" versiononly="true"
-                />
         <selectbundle basename="${sdoapi.prefix}"  directory="${maven.2.sdo.plugins.dir}"
                       criterion="${sdoapi.criteria}" property="sdoapi.version" versiononly="true"
-                />
-        <selectbundle basename="${validation.prefix}"  directory="${maven.2.common.plugins.dir}"
-                      criterion="${validation.criteria}" property="validation.version" versiononly="true"
-                />
-        <selectbundle basename="${json.prefix}"  directory="${maven.2.common.plugins.dir}"
-                      criterion="${json.criteria}" property="json.version" versiononly="true"
                 />
         <selectbundle basename="${antlr.prefix}"  directory="${maven.2.common.plugins.dir}"
                       criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
@@ -230,10 +220,7 @@
                       criterion="${extension.criteria}" property="extension.version" versiononly="true"
         />
 
-        <echo message="jpaapi.version     = ${jpaapi.version}"/>
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
-        <echo message="validation.version = ${validation.version}"/>
-        <echo message="json.version       = ${json.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
         <echo message="asm.version        = ${asm.version}"/>
         <echo message="oracleddl.version  = ${oracleddl.version}"/>
@@ -245,7 +232,6 @@
         <!-- Maven standards state we should publish with a stripped down 3-part version rather -->
         <!-- than the 4-part OSGi version. So we need to generate "(bundle).mvn.version" from   -->
         <!-- the discovered "(bundle).version" (after release) -->
-        <stripQualifier input="${jpaapi.version}"      property="jpaapi.mvn.version"/>
         <!-- However, if the bundle versioning is such that only the qualifier will change on   -->
         <!-- a rebuild (convenient for publishing OSGi-ified jars but against OSGi spec) then   -->
         <!-- we will either violate Maven's "once published, never changes" rule, or newer      -->
@@ -265,6 +251,21 @@
         <!--      publishing they will be published under the EclipseLink build version        -->
         <!--   In addition, in all these listed cases, the artifacts are EclipseLink specific, -->
         <!--   and won't be available separately anyway.                                       -->
+
+        <!-- since JPA API is treated as 3rd party dependency, we have to look up it's version -->
+        <!-- in the dependency management section of appropriate pom                           -->
+        <loadfile
+            encoding="UTF-8"
+            property="jpaapi.mvn.version"
+            srcFile="${maven.2.buildsys.dir}/compdeps/pom.xml" >
+                <filterchain>
+                    <tokenfilter>
+                        <containsregex
+                            pattern="&lt;jakarta.persistence.version&gt;(.*)&lt;/jakarta.persistence.version&gt;$"
+                            replace="\1" />
+                    </tokenfilter>
+                </filterchain>
+        </loadfile>
 
         <say  message="jpaapi.mvn.version = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
         <say  message="sdoapi.mvn.version = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
@@ -290,16 +291,14 @@
         <!-- These use above, in order, to define a single library for an artifact dependency -->
         <!-- Public APIs we depend upon that can be found on Maven Central -->
         <!-- Add as nosql dependency -->
-        <property name="dep.resource"      value="${dep.grp}javax.resource${dep.art}connector-api${dep.ver}1.5${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.servlet"       value="${dep.grp}javax.servlet${dep.art}servlet-api${dep.ver}2.4${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.resource"      value="${dep.grp}jakarta.resource${dep.art}jakarta.resource-api${dep.ver}1.7.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.servlet"       value="${dep.grp}jakarta.servlet${dep.art}jakarta.servlet-api${dep.ver}4.0.2${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.wsdl"          value="${dep.grp}wsdl4j${dep.art}wsdl4j${dep.ver}1.6.3${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.jgroups"       value="${dep.grp}org.jgroups${dep.art}jgroups${dep.ver}4.1.0.Final${dep.type}jar${dep.scope}compile${dep.opt}true${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- APIs that are not EclipseLink's maintained public API bundles but are to be included in EclipseLink pom.xml.  -->
-        <property name="dep.validation"
-                  value="${dep.grp}javax.validation${dep.art}${validation.prefix}${dep.ver}${validation.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.json"          value="${dep.grp}org.glassfish${dep.art}${json.prefix}${dep.ver}${json.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}${asm.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
@@ -319,20 +318,20 @@
         <!--   canonical modelgen processor during compilation. It has no real dependencies, nor is anything really       -->
         <!--   dependant upon it, but it is needed for this compiler functionality to work. (think of it as a compiler    -->
         <!--   add-on). It will need to be downloaded independently for this feature (modelgen) to work.                  -->
-        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${dep.validation}${dep.json}${deps.foot}"/>
+        <property name="eclipselink.dependencies" value="${deps.head}${dep.persistence}${dep.sdoapi}${deps.foot}"/>
         <!-- would need the modelgen.jar for modelgen but cannot include dep -->
         <property name="jpql.dependencies"        value="${deps.head}${dep.hermes}${deps.foot}"/>
-        <property name="core.dependencies"        value="${deps.head}${dep.asm}${dep.json}${deps.foot}"/>
+        <property name="core.dependencies"        value="${deps.head}${dep.asm}${deps.foot}"/>
         <property name="oracle.dependencies"      value="${deps.head}${dep.persistence}${dep.asm}${dep.core}${deps.foot}"/>
-        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.json}${dep.hermes}${dep.core}${deps.foot}"/>
+        <property name="jpa.dependencies"         value="${deps.head}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="nosql.dependencies"       value="${deps.head}${dep.resource}${dep.persistence}${dep.asm}${dep.antlr}${dep.hermes}${dep.core}${deps.foot}"/>
         <property name="ora.nosql.dependencies"   value="${deps.head}${dep.nosql}${deps.foot}"/>
         <property name="modelgen.dependencies"    value="${deps.head}${dep.core}${dep.jpa}${deps.foot}"/>
         <property name="dbws.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="builder.dependencies"     value="${deps.head}${dep.core}${dep.dbws}${dep.moxy}${dep.jpa}${dep.nosql}${dep.oracle}${dep.servlet}${dep.wsdl}${dep.oracleddl}${deps.foot}"/>
-        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${dep.validation}${dep.json}${deps.foot}"/>
+        <property name="moxy.dependencies"        value="${deps.head}${dep.core}${deps.foot}"/>
         <property name="sdo.dependencies"         value="${deps.head}${dep.sdoapi}${dep.moxy}${dep.core}${deps.foot}"/>
-        <property name="extension.dependencies"   value="${deps.head}${dep.core}${deps.foot}"/>
+        <property name="extension.dependencies"   value="${deps.head}${dep.core}${dep.jgroups}${deps.foot}"/>
     </target>
 
     <!-- Nexus typicaly is configured to disallow uploads of already published versions (non-snapshot)   -->
@@ -396,6 +395,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${hermes.prefix}_${hermes.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${hermes.prefix}.source_${hermes.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${hermes.prefix}.javadocs_${hermes.version}.jar"/>
             <param name="artifactName"    value="${hermes.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -405,6 +405,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${antlr.prefix}_${antlr.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${antlr.prefix}.source_${antlr.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${antlr.prefix}.javadocs_${antlr.version}.jar"/>
             <param name="artifactName"    value="${antlr.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -414,6 +415,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${asm.prefix}_${asm.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${asm.prefix}.source_${asm.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${asm.prefix}.javadocs_${asm.version}.jar"/>
             <param name="artifactName"    value="${asm.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -423,6 +425,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink Core"/>
             <param name="dependencies"    value="${core.dependencies}"/>
         </antcall>
@@ -432,10 +435,11 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}_${oraclebndl.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}.source_${oraclebndl.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${oraclebndl.prefix}.javadocs_${oraclebndl.version}.jar"/>
             <param name="artifactName"    value="${oraclebndl.name}"/>
             <param name="dependencies"    value="${oracle.dependencies}"/>
         </antcall>
-        <antcall target="upload-artifact">
+        <antcall target="upload-artifact-with-javadoc">
             <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="${oraclenosql.prefix}"/>
             <param name="artifactVersion" value="${maven.version}"/>
@@ -461,6 +465,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink JPA"/>
             <param name="dependencies"    value="${jpa.dependencies}"/>
         </antcall>
@@ -480,6 +485,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.jpa.modelgen.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink JPA Modelgen (non-OSGi)"/>
             <param name="dependencies"    value="${modelgen.dependencies}"/>
         </antcall>
@@ -489,6 +495,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.moxy_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.moxy.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.moxy.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink Moxy"/>
             <param name="dependencies"    value="${moxy.dependencies}"/>
         </antcall>
@@ -498,6 +505,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.sdo_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.sdo.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.sdo.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink SDO"/>
             <param name="dependencies"    value="${sdo.dependencies}"/>
         </antcall>
@@ -507,6 +515,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink DBWS"/>
             <param name="dependencies"    value="${dbws.dependencies}"/>
         </antcall>
@@ -516,6 +525,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.util.plugins.dir}/${oracleddl.prefix}_${oracleddl.version}.jar"/>
             <param name="artifactSrc"     value="${maven.2.util.plugins.dir}/${oracleddl.prefix}.source_${oracleddl.version}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.util.plugins.dir}/${oracleddl.prefix}.javadocs_${oracleddl.version}.jar"/>
             <param name="artifactName"    value="${oracleddl.name}"/>
             <param name="dependencies"    value=""/>
         </antcall>
@@ -525,6 +535,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.dbws.builder.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink DBWS Builder"/>
             <param name="dependencies"    value="${builder.dependencies}"/>
         </antcall>
@@ -534,6 +545,7 @@
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension_${version.string}.jar"/>
             <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension.source_${version.string}.jar"/>
+            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/org.eclipse.persistence.extension.javadocs_${version.string}.jar"/>
             <param name="artifactName"    value="EclipseLink Extensions"/>
             <param name="dependencies"    value="${extension.dependencies}"/>
         </antcall>
@@ -554,13 +566,30 @@
         </copy>
     </target>
 
+    <!-- Generates missing Javadoc. jakarta.oss.sonatype.org requires it (repository closing rules)-->
+    <target name="prepare-javadoc">
+        <property name="src.tmp" value="prepare-javadoc.src.tmp"/>
+        <property name="doc.tmp" value="prepare-javadoc.doc.tmp"/>
+
+        <delete dir="${src.tmp}" failonerror="false"/>
+        <delete dir="${doc.tmp}" failonerror="false"/>
+        <unjar src="${artifactSrc}" dest="${src.tmp}"/>
+        <javadoc sourcepath="${src.tmp}" destdir="${doc.tmp}" version="true" additionalparam="-Xdoclint:none" packagenames="org.eclipse.persistence.*" noindex="true">
+        </javadoc>
+        <zip destfile="${artifactJavadoc}">
+            <!-- miscellaneous files -->
+            <zipfileset dir="${doc.tmp}/"/>
+        </zip>
+        <echo message="java doc has been generated!"/>
+    </target>
+
     <!-- Uploads a single artifact & source to maven repository only if one doesn't already exist -->
     <!-- Removed "upload-release-artifact" because it depended upon filesystem access. Need a mechanism -->
     <!-- to verify an artifact is already uploaded to Nexus server. For now, am hoping nexus is smart enough -->
     <!-- to refuse redeployment. (Not hopeful though, seems too restrictive). -->
 
     <!-- Uploads a single artifact & source to maven repository -->
-    <target name="upload-artifact" depends="prepare-pom, ua-snapshot, ua-staging, us-staging">
+    <target name="upload-artifact" depends="prepare-pom, prepare-javadoc, uawj-snapshot, ua-staging, us-staging, uj-staging">
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
@@ -571,7 +600,8 @@
         <artifact:deploy file="${artifact}">
           <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}" />
           <artifact:pom id="maven.project" file="pom.xml" />
-          <artifact:attach file="${artifactSrc}" classifier="sources"/>
+          <artifact:attach file="${artifactSrc}"     type="jar" classifier="sources"/>
+          <artifact:attach file="${artifactJavadoc}" type="jar" classifier="javadoc"/>
         </artifact:deploy>
     </target>
 
@@ -594,39 +624,21 @@
 
     <!-- Staging targets -->
     <target name="ua-staging" if="sign">
-        <!-- sign and deploy the main artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifact}"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifact} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Poss-release'" />
+        </exec>
     </target>
     <target name="us-staging" if="sign">
         <!-- sign and deploy the sources artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifactSrc}"/>
-            <arg value="-Dclassifier=sources"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifactSrc} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Dclassifier=sources -Poss-release'" />
+        </exec>
     </target>
     <target name="uj-staging" if="sign">
         <!-- sign and deploy the javadoc artifact -->
-        <artifact:mvn>
-            <arg value="org.apache.maven.plugins:maven-gpg-plugin:${gpg.plugin.version}:sign-and-deploy-file"/>
-            <arg value="-Durl=${stagingURL}"/>
-            <arg value="-DrepositoryId=${stagingId}"/>
-            <arg value="-DpomFile=${maven.build.location}/pom.xml"/>
-            <arg value="-Dfile=${artifactJavadoc}"/>
-            <arg value="-Dclassifier=javadoc"/>
-            <arg value="-Pgpg"/>
-        </artifact:mvn>
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean gpg:sign-and-deploy-file -Dfile=${artifactJavadoc} -DpomFile=${maven.build.location}/pom.xml -Durl=${stagingURL} -DrepositoryId=${stagingId} -Dclassifier=javadoc -Poss-release'" />
+        </exec>
     </target>
 
     <!-- ************************************* NOT USED **************************************** -->

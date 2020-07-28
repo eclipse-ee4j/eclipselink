@@ -1,15 +1,18 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.testing.tests.jpa.jpql;
 
 import java.io.EOFException;
@@ -24,7 +27,6 @@ import javax.persistence.TransactionRequiredException;
 import javax.persistence.Query;
 import javax.persistence.EntityManager;
 
-import junit.framework.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -32,17 +34,18 @@ import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DirectToFieldMapping;
+import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
 import org.eclipse.persistence.testing.models.jpa.advanced.Employee;
 import org.eclipse.persistence.testing.models.jpa.advanced.EmployeePopulator;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 
-import org.eclipse.persistence.sessions.DatabaseSession;
-import org.eclipse.persistence.internal.sessions.AbstractSession;
-import org.eclipse.persistence.logging.AbstractSessionLog;
-import org.eclipse.persistence.logging.SessionLog;
-import org.eclipse.persistence.testing.models.jpa.advanced.AdvancedTableCreator;
+import org.junit.Assert;
 
 /**
  * <p>
@@ -579,7 +582,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         try
         {
-            ejbqlString = "SELECT o FROM Order o, Customer o";
+            ejbqlString = "SELECT o FROM Employee o, Customer o";
             result = createEntityManager().createQuery(ejbqlString).getResultList();
             fail("Multiple declaration of identification variable must be thrown");
         }
@@ -590,7 +593,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
 
         if (isHermesParser()) {
             // This should be valid now.
-            ejbqlString = "SELECT c FROM Customer c Join c.orders o WHERE NOT EXISTS (SELECT o FROM c.orders o)";
+            ejbqlString = "SELECT e FROM Employee e JOIN e.projects p WHERE NOT EXISTS (SELECT p FROM e.projects p)";
             result = createEntityManager().createQuery(ejbqlString).getResultList();
         }
     }

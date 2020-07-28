@@ -1,99 +1,102 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     05/16/2008-1.0M8 Guy Pelletier
- *       - 218084: Implement metadata merging functionality between mapping files
- *     06/20/2008-1.0 Guy Pelletier
- *       - 232975: Failure when attribute type is generic
- *     08/27/2008-1.1 Guy Pelletier
- *       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
- *     09/23/2008-1.1 Guy Pelletier
- *       - 241651: JPA 2.0 Access Type support
- *     01/28/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/06/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 2)
- *     02/25/2009-2.0 Guy Pelletier
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     03/27/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/03/2009-2.0 Guy Pelletier
- *       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
- *     04/24/2009-2.0 Guy Pelletier
- *       - 270011: JPA 2.0 MappedById support
- *     06/02/2009-2.0 Guy Pelletier
- *       - 278768: JPA 2.0 Association Override Join Table
- *     06/25/2009-2.0 Michael O'Brien
- *       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
- *          in support of the custom descriptors holding mappings required by the Metamodel.
- *          We handle undefined parameterized generic types for a MappedSuperclass defined
- *          Map field by returning Void in this case.
- *     09/29/2009-2.0 Guy Pelletier
- *       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
- *     10/21/2009-2.0 Guy Pelletier
- *       - 290567: mappedbyid support incomplete
- *     11/06/2009-2.0 Guy Pelletier
- *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- *     01/22/2010-2.0.1 Guy Pelletier
- *       - 294361: incorrect generated table for element collection attribute overrides
- *     01/26/2010-2.0.1 Guy Pelletier
- *       - 299893: @MapKeyClass does not work with ElementCollection
- *     03/08/2010-2.1 Guy Pelletier
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     03/29/2010-2.1 Guy Pelletier
- *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     04/09/2010-2.1 Guy Pelletier
- *       - 307050: Add defaults for access methods of a VIRTUAL access type
- *     04/27/2010-2.1 Guy Pelletier
- *       - 309856: MappedSuperclasses from XML are not being initialized properly
- *     05/19/2010-2.1 Guy Pelletier
- *       - 313574: Lower case primary key column association does not work when upper casing flag is set to true
- *     06/14/2010-2.2 Guy Pelletier
- *       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
- *     07/05/2010-2.1.1 Guy Pelletier
- *       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
- *     08/20/2010-2.2 Guy Pelletier
- *       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
- *     09/03/2010-2.2 Guy Pelletier
- *       - 317286: DB column lenght not in sync between @Column and @JoinColumn
- *     10/27/2010-2.2 Guy Pelletier
- *       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
- *     12/01/2010-2.2 Guy Pelletier
- *       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
- *     03/24/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 1)
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- *      *     30/05/2012-2.4 Guy Pelletier
- *       - 354678: Temp classloader is still being used during metadata processing
- *     10/09/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     10/30/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     11/19/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     11/28/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     12/07/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     02/20/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
- *     07/16/2013-2.5.1 Guy Pelletier
- *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
- *     06/20/2014-2.5.2 Rick Curtis
- *       - 437760: AttributeOverride with no column name defined doesn't work.
- *     07/01/2014-2.5.3 Rick Curtis
- *       - 375101: Date and Calendar should not require @Temporal.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     05/16/2008-1.0M8 Guy Pelletier
+//       - 218084: Implement metadata merging functionality between mapping files
+//     06/20/2008-1.0 Guy Pelletier
+//       - 232975: Failure when attribute type is generic
+//     08/27/2008-1.1 Guy Pelletier
+//       - 211329: Add sequencing on non-id attribute(s) support to the EclipseLink-ORM.XML Schema
+//     09/23/2008-1.1 Guy Pelletier
+//       - 241651: JPA 2.0 Access Type support
+//     01/28/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 1)
+//     02/06/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 2)
+//     02/25/2009-2.0 Guy Pelletier
+//       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+//     03/27/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/03/2009-2.0 Guy Pelletier
+//       - 241413: JPA 2.0 Add EclipseLink support for Map type attributes
+//     04/24/2009-2.0 Guy Pelletier
+//       - 270011: JPA 2.0 MappedById support
+//     06/02/2009-2.0 Guy Pelletier
+//       - 278768: JPA 2.0 Association Override Join Table
+//     06/25/2009-2.0 Michael O'Brien
+//       - 266912: change MappedSuperclass handling in stage2 to pre process accessors
+//          in support of the custom descriptors holding mappings required by the Metamodel.
+//          We handle undefined parameterized generic types for a MappedSuperclass defined
+//          Map field by returning Void in this case.
+//     09/29/2009-2.0 Guy Pelletier
+//       - 282553: JPA 2.0 JoinTable support for OneToOne and ManyToOne
+//     10/21/2009-2.0 Guy Pelletier
+//       - 290567: mappedbyid support incomplete
+//     11/06/2009-2.0 Guy Pelletier
+//       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+//     01/22/2010-2.0.1 Guy Pelletier
+//       - 294361: incorrect generated table for element collection attribute overrides
+//     01/26/2010-2.0.1 Guy Pelletier
+//       - 299893: @MapKeyClass does not work with ElementCollection
+//     03/08/2010-2.1 Guy Pelletier
+//       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+//     03/29/2010-2.1 Guy Pelletier
+//       - 267217: Add Named Access Type to EclipseLink-ORM
+//     04/09/2010-2.1 Guy Pelletier
+//       - 307050: Add defaults for access methods of a VIRTUAL access type
+//     04/27/2010-2.1 Guy Pelletier
+//       - 309856: MappedSuperclasses from XML are not being initialized properly
+//     05/19/2010-2.1 Guy Pelletier
+//       - 313574: Lower case primary key column association does not work when upper casing flag is set to true
+//     06/14/2010-2.2 Guy Pelletier
+//       - 264417: Table generation is incorrect for JoinTables in AssociationOverrides
+//     07/05/2010-2.1.1 Guy Pelletier
+//       - 317708: Exception thrown when using LAZY fetch on VIRTUAL mapping
+//     08/20/2010-2.2 Guy Pelletier
+//       - 323252: Canonical model generator throws NPE on virtual 1-1 or M-1 mapping
+//     09/03/2010-2.2 Guy Pelletier
+//       - 317286: DB column lenght not in sync between @Column and @JoinColumn
+//     10/27/2010-2.2 Guy Pelletier
+//       - 328114: @AttributeOverride does not work with nested embeddables having attributes of the same name
+//     12/01/2010-2.2 Guy Pelletier
+//       - 331234: xml-mapping-metadata-complete overriden by metadata-complete specification
+//     03/24/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 1)
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//      //     30/05/2012-2.4 Guy Pelletier
+//       - 354678: Temp classloader is still being used during metadata processing
+//     10/09/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     10/25/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     10/30/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     11/19/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     11/28/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     12/07/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     02/20/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support (foreign key metadata support)
+//     07/16/2013-2.5.1 Guy Pelletier
+//       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
+//     06/20/2014-2.5.2 Rick Curtis
+//       - 437760: AttributeOverride with no column name defined doesn't work.
+//     07/01/2014-2.5.3 Rick Curtis
+//       - 375101: Date and Calendar should not require @Temporal.
 package org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
 
 import static org.eclipse.persistence.internal.jpa.metadata.MetadataConstants.EL_ACCESS_VIRTUAL;

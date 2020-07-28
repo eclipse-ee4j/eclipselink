@@ -1,23 +1,26 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     07/16/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     10/29/2010-2.2 Michael O'Brien
- *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
- *     06/30/2011-2.3.1 Guy Pelletier
- *       - 341940: Add disable/enable allowing native queries
- *     09/03/2015 - Will Dazey
- *       - 456067 : Added support for defining query timeout units
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     07/16/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     10/29/2010-2.2 Michael O'Brien
+//       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+//     06/30/2011-2.3.1 Guy Pelletier
+//       - 341940: Add disable/enable allowing native queries
+//     09/03/2015 - Will Dazey
+//       - 456067 : Added support for defining query timeout units
 package org.eclipse.persistence.config;
 
 import org.eclipse.persistence.annotations.BatchFetch;
@@ -243,6 +246,19 @@ public class QueryHints {
     public static final String PESSIMISTIC_LOCK_TIMEOUT = "javax.persistence.lock.timeout";
 
     /**
+     * "eclipselink.pessimistic.lock.timeout.unit"
+     * <p>Configures the pessimistic lock timeout unit value. Allows users more refinement.
+     * <b>Valid Values:</b>
+     * <ul>
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
+     * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
+     * </ul>
+     * @see org.eclipse.persistence.queries.ObjectLevelReadQuery#setWaitTimeoutUnit(TimeUnit)
+     */
+    public static final String PESSIMISTIC_LOCK_TIMEOUT_UNIT = "eclipselink.pessimistic.lock.timeout.unit";
+
+    /**
      * "eclipselink.refresh"
      * <p>Configures the query to refresh the resulting objects in the cache and persistent context with the current state of the database.
      * This will also refresh the objects in the shared cache, unless a flush has occurred.
@@ -363,8 +379,8 @@ public class QueryHints {
      * <p>Configures the query timeout unit value. Allows users more refinement.
      * <b>Valid Values:</b>
      * <ul>
-     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>",
-     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.MILLISECONDS</code>" (DEFAULT),
+     * <li>"<code>java.util.concurrent.TimeUnit.SECONDS</code>",
      * <li>"<code>java.util.concurrent.TimeUnit.MINUTES</code>".
      * </ul>
      * @see org.eclipse.persistence.queries.DatabaseQuery#setQueryTimeoutUnit(TimeUnit)

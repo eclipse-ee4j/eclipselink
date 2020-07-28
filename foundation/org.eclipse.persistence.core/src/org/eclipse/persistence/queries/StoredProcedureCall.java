@@ -1,28 +1,43 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     09/27/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     09/27/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.queries;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.CallableStatement;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import org.eclipse.persistence.exceptions.QueryException;
+import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.databaseaccess.Accessor;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
 
@@ -35,7 +50,6 @@ public class StoredProcedureCall extends DatabaseCall {
     protected String procedureName;
     protected List<String> procedureArgumentNames;
     protected List<DatabaseField> optionalArguments;
-    protected Map<String, Integer> cursorOrdinalPositions;
 
     public StoredProcedureCall() {
         super();
@@ -783,28 +797,6 @@ public class StoredProcedureCall extends DatabaseCall {
 
     /**
      * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name
-     * with position. This is used to ease JPA API.
-     */
-    public Integer getCursorOrdinalPosition(String cursorName) {
-        return getCursorOrdinalPositions().get(cursorName);
-    }
-
-    /**
-     * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name
-     * with position. This is used to ease JPA API.
-     */
-    public Map<String, Integer> getCursorOrdinalPositions() {
-        if (cursorOrdinalPositions == null) {
-            cursorOrdinalPositions = new HashMap<String, Integer>();
-        }
-
-        return cursorOrdinalPositions;
-    }
-
-    /**
-     * INTERNAL:
      * Return the first index of parameter to be placed inside brackets
      * in the call string
      */
@@ -816,6 +808,7 @@ public class StoredProcedureCall extends DatabaseCall {
      * INTERNAL:
      * The if the names are provide the order is not required to match the call def.
      * This is lazy initialized to conserve space on calls that have no parameters.
+     * If the argument name is null, then it is a positional parameter.
      */
     public List<String> getProcedureArgumentNames() {
         if (procedureArgumentNames == null) {
@@ -830,6 +823,14 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public String getProcedureName() {
         return procedureName;
+    }
+
+    /**
+     * Callable statements are used for StoredProcedures that have argument names (named parameters)
+     */
+    @Override
+    protected boolean isCallableStatementRequired() {
+        return super.isCallableStatementRequired() || (getProcedureArgumentNames().size() > 0 && getProcedureArgumentNames().get(0) != null);
     }
 
     public boolean isStoredProcedureCall() {
@@ -848,11 +849,58 @@ public class StoredProcedureCall extends DatabaseCall {
 
     /**
      * INTERNAL:
-     * Used by JPA named stored procedure queries to associate parameter name
-     * with position. This is used to ease JPA API.
+     * Prepare the JDBC statement, this may be parameterize or a call statement.
+     * If caching statements this must check for the pre-prepared statement and re-bind to it.
      */
-    public void setCursorOrdinalPosition(String cursorName, int index) {
-        getCursorOrdinalPositions().put(cursorName, index);
+    @Override
+    public Statement prepareStatement(DatabaseAccessor accessor, 
+            AbstractRecord translationRow, AbstractSession session) throws SQLException {
+
+        List<String> procedureArgs = getProcedureArgumentNames();
+        if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
+            return super.prepareStatement(accessor, translationRow, session);
+        }
+
+        //#Bug5200836 pass shouldUnwrapConnection flag to indicate whether or not using unwrapped connection.
+        Statement statement = accessor.prepareStatement(this, session);
+
+        // Setup the max rows returned and query timeout limit.
+        if (this.queryTimeout > 0 && this.queryTimeoutUnit != null) {
+            long timeout = TimeUnit.SECONDS.convert(this.queryTimeout, this.queryTimeoutUnit);
+
+            if(timeout > Integer.MAX_VALUE){
+                timeout = Integer.MAX_VALUE;
+            }
+
+            //Round up the timeout if SECONDS are larger than the given units
+            if(TimeUnit.SECONDS.compareTo(this.queryTimeoutUnit) > 0 && this.queryTimeout % 1000 > 0){
+                timeout += 1;
+            }
+            statement.setQueryTimeout((int)timeout);
+        }
+        if (!this.ignoreMaxResultsSetting && this.maxRows > 0) {
+            statement.setMaxRows(this.maxRows);
+        }
+        if (this.resultSetFetchSize > 0) {
+            statement.setFetchSize(this.resultSetFetchSize);
+        }
+
+        if (this.parameters == null) {
+            return statement;
+        }
+        List parameters = getParameters();
+        int size = parameters.size();
+        DatabasePlatform platform = session.getPlatform();
+        //Both lists should be the same size
+        for (int index = 0; index < size; index++) {
+            if (session.getProject().namingIntoIndexed()) {
+                platform.setParameterValueInDatabaseCall(parameters.get(index), (PreparedStatement) statement, index+1, session);
+            } else {
+                platform.setParameterValueInDatabaseCall(parameters.get(index), (CallableStatement) statement, procedureArgs.get(index), session);
+            }
+        }
+
+        return statement;
     }
 
     /**
@@ -920,8 +968,6 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public void useNamedCursorOutputAsResultSet(String argumentName) {
         useCursorOutputResultSet(argumentName, argumentName);
-        // Store the cursor ordinal position after you add it.
-        setCursorOrdinalPosition(argumentName, getParameters().size());
     }
 
     /**
@@ -941,8 +987,6 @@ public class StoredProcedureCall extends DatabaseCall {
     public void useUnnamedCursorOutputAsResultSet(int position) {
         String positionName = String.valueOf(position);
         useCursorOutputResultSet(null, positionName);
-        // Store the cursor ordinal position after you add it.
-        setCursorOrdinalPosition(positionName, position);
     }
 
     /**
@@ -1005,5 +1049,65 @@ public class StoredProcedureCall extends DatabaseCall {
      */
     public void setOptionalArguments(List<DatabaseField> optionalArguments) {
         this.optionalArguments = optionalArguments;
+    }
+
+    @Override
+    public Object getOutputParameterValue(CallableStatement statement, int index, AbstractSession session) throws SQLException {
+        List<String> procedureArgs = getProcedureArgumentNames();
+        if(procedureArgs.size() == 0 || procedureArgs.get(0) == null) {
+            return super.getOutputParameterValue(statement, index, session);
+        }
+
+        String name = procedureArgs.get(index);
+        return getOutputParameterValue(statement, name, session);
+    }
+
+    /**
+     * Bind the parameter. Binding is determined by the call and second the platform.
+     */
+    @Override
+    public void bindParameter(Writer writer, Object parameter) {
+        if (parameter instanceof Collection) {
+            throw QueryException.inCannotBeParameterized(getQuery());
+        }
+
+        try {
+            writer.write("?");
+        } catch (IOException exception) {
+            throw ValidationException.fileError(exception);
+        }
+        getParameters().add(parameter);
+    }
+
+    /**
+     * Return the SQL string for logging purposes.
+     */
+    @Override
+    public String getLogString(Accessor accessor) {
+        if (hasParameters()) {
+            StringWriter writer = new StringWriter();
+            writer.write(getSQLString());
+            writer.write(Helper.cr());
+            if (hasParameters()) {
+                AbstractSession session = null;
+                if (getQuery() != null) {
+                    session = getQuery().getSession();
+                }
+                List<String> procedureArgs = getProcedureArgumentNames();
+                boolean indexBased = procedureArgs.size() == 0 || procedureArgs.get(0) == null || session.getProject().namingIntoIndexed();
+                Collection<String> parameters = new ArrayList<>();
+                for (int index = 0; index < getParameters().size(); index++) {
+                    if (indexBased) {
+                        parameters.add(String.valueOf(getParameters().get(index)));
+                    } else {
+                        parameters.add(procedureArgs.get(index) + "=>" + getParameters().get(index));
+                    }
+                }
+                appendLogParameters(parameters, accessor, writer, session);
+            }
+            return writer.toString();
+        } else {
+            return getSQLString();
+        }
     }
 }

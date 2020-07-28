@@ -1,19 +1,21 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     04/01/2011-2.3 Guy Pelletier
- *       - 337323: Multi-tenant with shared schema support (part 2)
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     04/01/2011-2.3 Guy Pelletier
+//       - 337323: Multi-tenant with shared schema support (part 2)
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
 package org.eclipse.persistence.queries;
 
 import java.sql.ResultSet;
@@ -36,6 +38,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
+import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.InvalidObject;
@@ -50,6 +53,7 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.internal.sessions.remote.RemoteSessionController;
 import org.eclipse.persistence.internal.sessions.remote.Transporter;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.OneToManyMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.remote.DistributedSession;
@@ -306,10 +310,27 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
      * Conform the result if specified.
      */
     protected Object conformResult(Object result, UnitOfWorkImpl unitOfWork, AbstractRecord arguments, boolean buildDirectlyFromRows) {
-        if (getSelectionCriteria() != null) {
+        Expression selectionCriteria = getSelectionCriteria();
+        if (selectionCriteria != null) {
             ExpressionBuilder builder = getSelectionCriteria().getBuilder();
             builder.setSession(unitOfWork.getRootSession(null));
             builder.setQueryClass(getReferenceClass());
+            if (getQueryMechanism().isExpressionQueryMechanism() && selectionCriteria.isLogicalExpression()) {
+                // bug #526546
+                if (builder.derivedExpressions != null) {
+                    for (Expression e : builder.derivedExpressions) {
+                        if (e.isQueryKeyExpression() && ((QueryKeyExpression) e).shouldQueryToManyRelationship()) {
+                            DatabaseMapping mapping = ((QueryKeyExpression) e).getMapping();
+                            if (mapping.isOneToManyMapping()) {
+                                OneToManyMapping otm = (OneToManyMapping) mapping;
+                                Expression join = otm.buildSelectionCriteria();
+                                selectionCriteria = selectionCriteria.and(join);
+                            }
+                        }
+                    }
+                }
+            }
+
         }
 
         // If the query is redirected then the collection returned might no longer
@@ -330,7 +351,7 @@ public class ReadAllQuery extends ObjectLevelReadQuery {
         // Let c be objects from cache.
         // Presently p intersect c = empty set, but later p subset c.
         // By checking cache now doesConform will be called p fewer times.
-        Map<Object, Object> indexedInterimResult = unitOfWork.scanForConformingInstances(getSelectionCriteria(), getReferenceClass(), arguments, this);
+        Map<Object, Object> indexedInterimResult = unitOfWork.scanForConformingInstances(selectionCriteria, getReferenceClass(), arguments, this);
 
         Cursor cursor = null;
         // In the case of cursors just conform/register the initially read collection.

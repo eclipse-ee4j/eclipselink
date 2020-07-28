@@ -1,17 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     11/10/2011-2.4 Guy Pelletier
- *       - 357474: Address primaryKey option from tenant discriminator column
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     11/10/2011-2.4 Guy Pelletier
+//       - 357474: Address primaryKey option from tenant discriminator column
+//     10/01/2018: Will Dazey
+//       - #253: Add support for embedded constructor results with CriteriaBuilder
 package org.eclipse.persistence.queries;
 
 import java.io.*;
@@ -22,6 +27,8 @@ import java.security.PrivilegedActionException;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.*;
+import org.eclipse.persistence.expressions.ExpressionOperator;
+import org.eclipse.persistence.internal.expressions.FunctionExpression;
 import org.eclipse.persistence.internal.expressions.MapEntryExpression;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
@@ -30,7 +37,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedInvokeConstructor;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.mappings.*;
-import org.eclipse.persistence.mappings.converters.Converter;
 import org.eclipse.persistence.mappings.foundation.AbstractColumnMapping;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
@@ -88,52 +94,21 @@ public class ReportQueryResult implements Serializable, Map {
         if (query.shouldDistinctBeUsed() && (query.shouldFilterDuplicates())) {
             this.key = new StringBuffer();
         }
-        List items = query.getItems();
-        int itemSize = items.size();
-        List results = new ArrayList(itemSize);
 
         if (query.shouldRetrievePrimaryKeys()) {
             setId(query.getDescriptor().getObjectBuilder().extractPrimaryKeyFromRow(row, query.getSession()));
             // For bug 3115576 this is only used for EXISTS sub-selects so no result is needed.
         }
-        for (int index = 0; index < itemSize; index++) {
-            ReportItem item = (ReportItem)items.get(index);
+
+        List<Object> results = new ArrayList<Object>();
+        for(ReportItem item: query.getItems()) {
             if (item.isConstructorItem()) {
-                // For constructor items need to process each constructor argument.
-                ConstructorReportItem constructorItem = (ConstructorReportItem)item;
-                Class[] constructorArgTypes = constructorItem.getConstructorArgTypes();
-                int numberOfArguments = constructorItem.getReportItems().size();
-                Object[] constructorArgs = new Object[numberOfArguments];
-
-                for (int argumentIndex = 0; argumentIndex < numberOfArguments; argumentIndex++) {
-                    ReportItem argumentItem = (ReportItem)constructorItem.getReportItems().get(argumentIndex);
-                    Object result = processItem(query, row, toManyData, argumentItem);
-                    constructorArgs[argumentIndex] = ConversionManager.getDefaultManager().convertObject(result, constructorArgTypes[argumentIndex]);
-                }
-                try {
-                    Constructor constructor = constructorItem.getConstructor();
-                    Object returnValue = null;
-                    if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
-                        try {
-                            returnValue = AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, constructorArgs));
-                        } catch (PrivilegedActionException exception) {
-                            throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);                       }
-                    } else {
-                        returnValue = PrivilegedAccessHelper.invokeConstructor(constructor, constructorArgs);
-                    }
-                    results.add(returnValue);
-                } catch (IllegalAccessException exc){
-                    throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
-                } catch (java.lang.reflect.InvocationTargetException exc){
-                    throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
-                } catch (InstantiationException exc){
-                    throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
-                }
-
-            } else if (item.getAttributeExpression()!=null && item.getAttributeExpression().isClassTypeExpression()){
+                Object result = processConstructorItem(query, row, toManyData, (ConstructorReportItem) item);
+                results.add(result);
+            } else if (item.getAttributeExpression() != null && item.getAttributeExpression().isClassTypeExpression()) {
                 Object value = processItem(query, row, toManyData, item);
                 ClassDescriptor descriptor = ((org.eclipse.persistence.internal.expressions.ClassTypeExpression)item.getAttributeExpression()).getContainingDescriptor(query);
-                if (descriptor !=null && descriptor.hasInheritance()){
+                if (descriptor != null && descriptor.hasInheritance()) {
                     value = descriptor.getInheritancePolicy().classFromValue(value, query.getSession());
                 } else {
                     value = query.getSession().getDatasourcePlatform().convertObject(value, Class.class);
@@ -147,6 +122,72 @@ public class ReportQueryResult implements Serializable, Map {
         }
 
         setResults(results);
+    }
+
+    private Object processConstructorItem(ReportQuery query, AbstractRecord row, Vector toManyData, ConstructorReportItem constructorItem) {
+        // For constructor items need to process each constructor argument.
+        Class[] constructorArgTypes = constructorItem.getConstructorArgTypes();
+        int numberOfArguments = constructorItem.getReportItems().size();
+        Object[] constructorArgs = new Object[numberOfArguments];
+        for (int argumentIndex = 0; argumentIndex < numberOfArguments; argumentIndex++) {
+            ReportItem argumentItem = (ReportItem)constructorItem.getReportItems().get(argumentIndex);
+            Object result = null;
+            if(argumentItem.isConstructorItem()) {
+                result = processConstructorItem(query, row, toManyData, (ConstructorReportItem) argumentItem);
+            } else {
+                result = processItem(query, row, toManyData, argumentItem);
+            }
+            constructorArgs[argumentIndex] = ConversionManager.getDefaultManager().convertObject(result, constructorArgTypes[argumentIndex]);
+        }
+        try {
+            Constructor constructor = constructorItem.getConstructor();
+            Object returnValue = null;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
+                try {
+                    returnValue = AccessController.doPrivileged(new PrivilegedInvokeConstructor(constructor, constructorArgs));
+                } catch (PrivilegedActionException exception) {
+                    throw QueryException.exceptionWhileUsingConstructorExpression(exception.getException(), query);
+                }
+            } else {
+                returnValue = PrivilegedAccessHelper.invokeConstructor(constructor, constructorArgs);
+            }
+            return returnValue;
+        } catch (ReflectiveOperationException exc) {
+            throw QueryException.exceptionWhileUsingConstructorExpression(exc, query);
+        }
+    }
+
+    private Object processItemFromMapping(ReportQuery query, AbstractRecord row, DatabaseMapping mapping, ReportItem item, int itemIndex) {
+        Object value = null;
+
+        // If mapping is not null then it must be a direct mapping - see Reportitem.init.
+        // Check for non database (EIS) records to use normal get.
+        if (row instanceof DatabaseRecord) {
+            value = row.getValues().get(itemIndex);
+        } else {
+            value = row.get(mapping.getField());
+        }
+
+        //Bug 421056: JPA 2.1; section 4.8.5
+        if(item.getAttributeExpression().isFunctionExpression()) {
+            FunctionExpression exp = (FunctionExpression) item.getAttributeExpression();
+            int selector = exp.getOperator().getSelector();
+            //a value of null for max/min implies no rows could be applied
+            //we want to return null, per the spec, here before the mapping gets to alter the value
+            if(value == null && (((selector == ExpressionOperator.Maximum) 
+                    || (selector == ExpressionOperator.Minimum))
+                    && query.getSession().getProject().allowNullResultMaxMin())) {
+                return value;
+            }
+        }
+
+        //If the mapping was set on the ReportItem, then use the mapping to convert the value
+        if (mapping.isAbstractColumnMapping()) {
+            value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
+        } else if (mapping.isDirectCollectionMapping()) {
+            value = ((DirectCollectionMapping)mapping).getObjectValue(value, query.getSession());
+        }
+        return value;
     }
 
     /**
@@ -164,13 +205,16 @@ public class ReportQueryResult implements Serializable, Map {
                 }
             }
         }
+
         Object value = null;
-        DatabaseMapping mapping = item.getMapping();
         int rowSize = row.size();
         int itemIndex = item.getResultIndex();
+
         ClassDescriptor descriptor = item.getDescriptor();
-        if (!item.isPlaceHolder()) {
-            if (descriptor == null && mapping != null){
+        DatabaseMapping mapping = item.getMapping();
+
+        if (item.getAttributeExpression() != null) {
+            if (descriptor == null && mapping != null) {
                 descriptor = mapping.getReferenceDescriptor();
             }
             if (mapping != null && (mapping.isAbstractColumnMapping() || mapping.isDirectCollectionMapping())) {
@@ -178,21 +222,9 @@ public class ReportQueryResult implements Serializable, Map {
                 if (itemIndex >= rowSize) {
                     throw QueryException.reportQueryResultSizeMismatch(itemIndex + 1, rowSize);
                 }
-                // If mapping is not null then it must be a direct mapping - see Reportitem.init.
-                // Check for non database (EIS) records to use normal get.
-                if (row instanceof DatabaseRecord) {
-                    value = row.getValues().get(itemIndex);
-                } else {
-                    value = row.get(mapping.getField());
-                }
-                if (mapping.isAbstractColumnMapping()){
-                    value = ((AbstractColumnMapping)mapping).getObjectValue(value, query.getSession());
-                } else {
-                    Converter converter = ((DirectCollectionMapping)mapping).getValueConverter();
-                    if (converter != null){
-                        value = converter.convertDataValueToObjectValue(value, query.getSession());
-                    }
-                }
+
+                value = processItemFromMapping(query, row, mapping, item, itemIndex);
+
                 // GF_ISSUE_395+
                 if (this.key != null) {
                     this.key.append(value);

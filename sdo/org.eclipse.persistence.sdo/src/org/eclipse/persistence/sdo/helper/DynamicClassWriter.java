@@ -1,17 +1,19 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     bdoughan - Mar 18/2009 - 2.0 - Dynamically generated impl classes now
- *                                    implement correct interface.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     bdoughan - Mar 18/2009 - 2.0 - Dynamically generated impl classes now
+//                                    implement correct interface.
 package org.eclipse.persistence.sdo.helper;
 
 import java.io.ObjectStreamException;
@@ -106,11 +108,11 @@ public class DynamicClassWriter {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         if (null == type.getInstanceClass()) {
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
         } else {
             String[] interfaces = new String[1];
             interfaces[0] = type.getInstanceClassName().replace('.', '/');
-            cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), interfaces);
+            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), interfaces);
             addPropertyIndices(cw);
             for (Object object : type.getDeclaredProperties()) {
                 SDOProperty sdoProperty = (SDOProperty) object;

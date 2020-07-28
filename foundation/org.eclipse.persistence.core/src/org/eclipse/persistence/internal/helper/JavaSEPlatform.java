@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Tomas Kraus, Peter Benedikovic - initial API and implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Tomas Kraus, Peter Benedikovic - initial API and implementation
 package org.eclipse.persistence.internal.helper;
 
 import java.util.HashMap;
@@ -42,7 +44,13 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     /** Java SE 10. */
     v10_0(10,0),
     /** Java SE 11. */
-    v11_0(11,0);
+    v11_0(11,0),
+    /** Java SE 12. */
+    v12_0(12,0),
+    /** Java SE 13. */
+    v13_0(13,0),
+    /** Java SE 14. */
+    v14_0(14,0);
 
     public static final class Version {
         /**
@@ -126,7 +134,7 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
     public static final JavaSEPlatform MIN_SUPPORTED = v1_8;
 
     /** Latest Java SE platform. This value is used when Java SE platform detection fails. */
-    static final JavaSEPlatform LATEST = JavaSEPlatform.v11_0;
+    static final JavaSEPlatform LATEST = JavaSEPlatform.v14_0;
 
     /** Current Java SE platform. */
     public static final JavaSEPlatform CURRENT
@@ -199,6 +207,9 @@ public enum JavaSEPlatform implements Comparable<JavaSEPlatform> {
         case 9: return v9_0;
         case 10: return v10_0;
         case 11: return v11_0;
+        case 12: return v12_0;
+        case 13: return v13_0;
+        case 14: return v14_0;
         default: return LATEST;
         }
     }

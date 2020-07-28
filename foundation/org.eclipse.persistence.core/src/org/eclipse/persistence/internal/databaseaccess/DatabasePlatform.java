@@ -1,30 +1,37 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
- *     tware - added implementation of computeMaxRowsForSQL
- *     Dies Koper (Fujitsu) - bug fix for printFieldUnique()
- *     Dies Koper (Fujitsu) - added methods to create/drop indices
- *     Vikram Bhatia - added method for releasing temporary LOBs after conversion
- *     09/09/2011-2.3.1 Guy Pelletier
- *       - 356197: Add new VPD type to MultitenantType
- *     02/04/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     04/30/2014-2.6 Lukas Jungmann
- *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
- *     02/19/2015 - Rick Curtis
- *       - 458877 : Add national character support
- *     02/23/2015-2.6 Dalia Abo Sheasha
- *       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Markus KARG - Added methods allowing to support stored procedure creation on SQLAnywherePlatform.
+//     tware - added implementation of computeMaxRowsForSQL
+//     Dies Koper (Fujitsu) - bug fix for printFieldUnique()
+//     Dies Koper (Fujitsu) - added methods to create/drop indices
+//     Vikram Bhatia - added method for releasing temporary LOBs after conversion
+//     09/09/2011-2.3.1 Guy Pelletier
+//       - 356197: Add new VPD type to MultitenantType
+//     02/04/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     04/30/2014-2.6 Lukas Jungmann
+//       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+//     02/19/2015 - Rick Curtis
+//       - 458877 : Add national character support
+//     02/23/2015-2.6 Dalia Abo Sheasha
+//       - 460607: Change DatabasePlatform StoredProcedureTerminationToken to be configurable
+//     11/12/2018 - Will Dazey
+//       - 540929 : 'jdbc.sql-cast' property does not copy
+//     12/06/2018 - Will Dazey
+//       - 542491: Add new 'eclipselink.jdbc.force-bind-parameters' property to force enable binding
 package org.eclipse.persistence.internal.databaseaccess;
 
 // javase imports
@@ -73,6 +80,7 @@ import org.eclipse.persistence.internal.helper.JavaPlatform;
 import org.eclipse.persistence.internal.sequencing.Sequencing;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDatabaseField;
@@ -86,6 +94,7 @@ import org.eclipse.persistence.platform.database.SymfowarePlatform;
 import org.eclipse.persistence.platform.database.converters.StructConverter;
 import org.eclipse.persistence.platform.database.partitioning.DataPartitioningCallback;
 import org.eclipse.persistence.queries.Call;
+import org.eclipse.persistence.queries.DataReadQuery;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReportQuery;
 import org.eclipse.persistence.queries.SQLCall;
@@ -128,6 +137,9 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /** Bind all arguments to any SQL statement. */
     protected boolean shouldBindAllParameters;
+
+    /** Bind all arguments to any SQL statement. */
+    protected boolean shouldForceBindAllParameters;
 
     /** Cache all prepared statements, this requires full parameter binding as well. */
     protected boolean shouldCacheAllStatements;
@@ -239,7 +251,6 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public final static int Types_SQLXML = 2009;
 
-
     /**
      * String used on all table creation statements generated from the DefaultTableGenerator
      * with a session using this project.  This value will be appended to CreationSuffix strings
@@ -265,6 +276,9 @@ public class DatabasePlatform extends DatasourcePlatform {
     protected Boolean useJDBCStoredProcedureSyntax;
     protected String driverName;
 
+    /**
+     * Creates an instance of default database platform.
+     */
     public DatabasePlatform() {
         this.tableQualifier = "";
         this.usesNativeSQL = false;
@@ -273,6 +287,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         this.stringBindingSize = 255;
         this.shouldTrimStrings = true;
         this.shouldBindAllParameters = true;
+        this.shouldForceBindAllParameters = false;
         this.shouldCacheAllStatements = false;
         this.shouldOptimizeDataConversion = true;
         this.statementCacheSize = 50;
@@ -515,6 +530,22 @@ public class DatabasePlatform extends DatasourcePlatform {
                 appendTime((java.sql.Time)dbValue, writer);
             } else if (dbValue instanceof java.sql.Timestamp) {
                 appendTimestamp((java.sql.Timestamp)dbValue, writer);
+            } else if (dbValue instanceof java.time.LocalDate){
+                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
+            } else if (dbValue instanceof java.time.LocalDateTime){
+                appendTimestamp(java.sql.Timestamp.valueOf((java.time.LocalDateTime) dbValue), writer);
+            } else if (dbValue instanceof java.time.OffsetDateTime) {
+                appendTimestamp(java.sql.Timestamp.from(((java.time.OffsetDateTime) dbValue).toInstant()), writer);
+            } else if (dbValue instanceof java.time.LocalTime){
+                java.time.LocalTime lt = (java.time.LocalTime) dbValue;
+                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
+                appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.time.OffsetTime) {
+                java.time.OffsetTime ot = (java.time.OffsetTime) dbValue;
+                java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
+                appendTimestamp(ts, writer);
+            } else if (dbValue instanceof java.time.LocalDate){
+                appendDate(java.sql.Date.valueOf((java.time.LocalDate) dbValue), writer);
             } else if (dbValue instanceof java.sql.Date) {
                 appendDate((java.sql.Date)dbValue, writer);
             } else if (dbValue == null) {
@@ -808,13 +839,10 @@ public class DatabasePlatform extends DatasourcePlatform {
             Integer parameterType = call.getParameterTypes().get(index);
             // If the argument is optional and null, ignore it.
             if (!call.hasOptionalArguments() || !call.getOptionalArguments().contains(parameter) || (row.get(parameter) != null)) {
-                if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
-                    writer.write(getProcedureArgumentString());
-                    writer.write(name);
-                    writer.write(getProcedureArgumentSetter());
-                }
-                writer.write("?");
-                if (call.isOutputParameterType(parameterType)) {
+
+                writer.write(getProcedureArgument(name, parameter, parameterType, call, session));
+
+                if (DatasourceCall.isOutputParameterType(parameterType)) {
                     if (requiresProcedureCallOuputToken()) {
                         writer.write(" ");
                         writer.write(getOutputProcedureToken());
@@ -967,6 +995,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         databasePlatform.setUsesByteArrayBinding(usesByteArrayBinding());
         databasePlatform.setUsesStringBinding(usesStringBinding());
         databasePlatform.setShouldBindAllParameters(shouldBindAllParameters());
+        databasePlatform.setShouldForceBindAllParameters(shouldForceBindAllParameters());
         databasePlatform.setShouldCacheAllStatements(shouldCacheAllStatements());
         databasePlatform.setStatementCacheSize(getStatementCacheSize());
         databasePlatform.setTransactionIsolation(getTransactionIsolation());
@@ -985,6 +1014,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         //use the variable directly to avoid custom platform strings - only want to copy user set values.
         //specifically used for login platform detection
         databasePlatform.setTableCreationSuffix(this.tableCreationSuffix);
+        databasePlatform.setIsCastRequired(isCastRequired());
     }
 
     /**
@@ -1122,6 +1152,16 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public String getProcedureAsString() {
         return " AS";
+    }
+
+    /**
+     * Some platforms have an option list
+     * Only to be used for stored procedure creation.
+     * 
+     * @see org.eclipse.persistence.tools.schemaframework.StoredProcedureDefinition
+     */
+    public String getProcedureOptionList() {
+        return "";
     }
 
     /**
@@ -1302,7 +1342,7 @@ public class DatabasePlatform extends DatasourcePlatform {
         } else if (javaType == ClassConstants.INTEGER) {
             return Types.INTEGER;
         } else if (javaType == ClassConstants.LONG) {
-            return Types.INTEGER;
+            return Types.BIGINT;
         } else if (javaType == ClassConstants.NUMBER) {
             return Types.DECIMAL;
         } else if (javaType == ClassConstants.SHORT ) {
@@ -1311,14 +1351,21 @@ public class DatabasePlatform extends DatasourcePlatform {
             return Types.TIMESTAMP;
         } else if (javaType == ClassConstants.UTILDATE ) {
             return Types.TIMESTAMP;
-        } else if (javaType == ClassConstants.TIME) {
+        } else if (javaType == ClassConstants.TIME ||
+            javaType == ClassConstants.TIME_LTIME) { //bug 546312
             return Types.TIME;
-        } else if (javaType == ClassConstants.SQLDATE) {
+        } else if (javaType == ClassConstants.SQLDATE ||
+            javaType == ClassConstants.TIME_LDATE) { //bug 546312
             return Types.DATE;
         } else if (javaType == ClassConstants.TIMESTAMP ||
-            javaType == ClassConstants.UTILDATE) { //bug 5237080, return TIMESTAMP for java.util.Date as well
+            javaType == ClassConstants.UTILDATE || //bug 5237080, return TIMESTAMP for java.util.Date as well
+            javaType == ClassConstants.TIME_LDATETIME) { //bug 546312
             return Types.TIMESTAMP;
-        } else if (javaType == ClassConstants.ABYTE) {
+        } else if(javaType == ClassConstants.TIME_OTIME) { //bug 546312
+            return Types.TIME_WITH_TIMEZONE;
+        } else if(javaType == ClassConstants.TIME_ODATETIME) { //bug 546312
+            return Types.TIMESTAMP_WITH_TIMEZONE;
+        }else if (javaType == ClassConstants.ABYTE) {
             return Types.LONGVARBINARY;
         } else if (javaType == ClassConstants.APBYTE) {
             return Types.LONGVARBINARY;
@@ -1452,17 +1499,20 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * Used for sp calls.
-     */
-    public String getProcedureArgumentSetter() {
-        return " = ";
-    }
-
-    /**
      * Used for sp defs.
      */
     public String getProcedureArgumentString() {
         return "";
+    }
+
+    /**
+     * Obtain the platform specific argument string
+     */
+    public String getProcedureArgument(String name, Object parameter, Integer parameterType, StoredProcedureCall call, AbstractSession session) {
+        if (name != null && shouldPrintStoredProcedureArgumentNameInCall()) {
+            return getProcedureArgumentString() + name + " = " + "?";
+        }
+        return "?";
     }
 
     /**
@@ -1530,6 +1580,8 @@ public class DatabasePlatform extends DatasourcePlatform {
     /**
      * Platforms that support the WAIT option should override this method.
      * By default the wait timeout is ignored.
+     * 
+     *  @see DatabasePlatform#supportsWaitForUpdate()
      */
     public String getSelectForUpdateWaitString(Integer waitTimeout) {
         return getSelectForUpdateString();
@@ -1755,11 +1807,43 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
-     * This method is used to register output parameter on Callable Statements for Stored Procedures
+     * This method is used to register output parameter on CallableStatements for Stored Procedures
      * as each database seems to have a different method.
+     * 
+     * @see java.sql.CallableStatement#registerOutParameter(int parameterIndex, int sqlType)
      */
-    public void registerOutputParameter(CallableStatement statement, int index, int jdbcType) throws SQLException {
-        statement.registerOutParameter(index, jdbcType);
+    public void registerOutputParameter(CallableStatement statement, int parameterIndex, int sqlType) throws SQLException {
+        statement.registerOutParameter(parameterIndex, sqlType);
+    }
+
+    /**
+     * This method is used to register output parameter on CallableStatements for Stored Procedures
+     * as each database seems to have a different method.
+     * 
+     * @see java.sql.CallableStatement#registerOutParameter(int parameterIndex, int sqlType, String typeName)
+     */
+    public void registerOutputParameter(CallableStatement statement, int parameterIndex, int sqlType, String typeName) throws SQLException {
+        statement.registerOutParameter(parameterIndex, sqlType, typeName);
+    }
+
+    /**
+     * This method is used to register output parameter on CallableStatements for Stored Procedures
+     * as each database seems to have a different method.
+     * 
+     * @see java.sql.CallableStatement#registerOutParameter(String parameterName, int sqlType)
+     */
+    public void registerOutputParameter(CallableStatement statement, String parameterName, int sqlType) throws SQLException {
+        statement.registerOutParameter(parameterName, sqlType);
+    }
+
+    /**
+     * This method is used to register output parameter on CallableStatements for Stored Procedures
+     * as each database seems to have a different method.
+     * 
+     * @see java.sql.CallableStatement#registerOutParameter(String parameterName, int sqlType, String typeName)
+     */
+    public void registerOutputParameter(CallableStatement statement, String parameterName, int sqlType, String typeName) throws SQLException {
+        statement.registerOutParameter(parameterName, sqlType, typeName);
     }
 
     /**
@@ -1928,6 +2012,13 @@ public class DatabasePlatform extends DatasourcePlatform {
      */
     public void setShouldCacheAllStatements(boolean shouldCacheAllStatements) {
         this.shouldCacheAllStatements = shouldCacheAllStatements;
+    }
+
+    /**
+     * Used to enable parameter binding and override the platform default
+     */
+    public void setShouldForceBindAllParameters(boolean shouldForceBindAllParameters) {
+        this.shouldForceBindAllParameters = shouldForceBindAllParameters;
     }
 
     /**
@@ -2147,6 +2238,13 @@ public class DatabasePlatform extends DatasourcePlatform {
     }
 
     /**
+     * Used to enable parameter binding and override platform default
+     */
+    public boolean shouldForceBindAllParameters() {
+        return this.shouldForceBindAllParameters;
+    }
+
+    /**
      * Can be used if the app expects upper case but the database is not return consistent case, i.e. different databases.
      */
     public boolean shouldForceFieldNamesToUpperCase() {
@@ -2329,6 +2427,16 @@ public class DatabasePlatform extends DatasourcePlatform {
         return false;
     }
 
+    /**
+     *  INTERNAL:
+     *  Indicates whether the platform supports timeouts on For Update
+     *  
+     *  @see DatabasePlatform#getSelectForUpdateWaitString(Integer waitTimeout)
+     */
+    public boolean supportsWaitForUpdate() {
+        return false;
+    }
+
     public boolean supportsPrimaryKeyConstraint() {
         return true;
     }
@@ -2378,7 +2486,8 @@ public class DatabasePlatform extends DatasourcePlatform {
         if (!dbCall.getReturnsResultSet()) {// no result set is expected
             if (dbCall.isCursorOutputProcedure()) {
                 result = accessor.executeNoSelect(dbCall, statement, session);
-                resultSet = (ResultSet)((CallableStatement)statement).getObject(dbCall.getCursorOutIndex());
+                int index = dbCall.getCursorOutIndex();
+                resultSet = (ResultSet)dbCall.getOutputParameterValue((CallableStatement)statement, index - 1, session);
             } else {
                 accessor.executeDirectNoSelect(statement, dbCall, session);
 
@@ -2437,7 +2546,7 @@ public class DatabasePlatform extends DatasourcePlatform {
 
     /**
      * INTERNAL
-     * Set the parameter in the JDBC statement.
+     * Set the parameter in the JDBC statement at the given index.
      * This support a wide range of different parameter types,
      * and is heavily optimized for common types.
      */
@@ -2493,13 +2602,11 @@ public class DatabasePlatform extends DatasourcePlatform {
             statement.setTime(index,(java.sql.Time)parameter);
         } else if (parameter instanceof java.time.LocalTime){
             java.time.LocalTime lt = (java.time.LocalTime) parameter;
-            java.sql.Timestamp ts = new java.sql.Timestamp(
-                    70, 0, 1, lt.getHour(), lt.getMinute(), lt.getSecond(), lt.getNano());
+            java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof java.time.OffsetTime) {
             java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
-            java.sql.Timestamp ts = new java.sql.Timestamp(
-                    70, 0, 1, ot.getHour(), ot.getMinute(), ot.getSecond(), ot.getNano());
+            java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
             statement.setTimestamp(index, ts);
         } else if (parameter instanceof Boolean) {
             statement.setBoolean(index, ((Boolean) parameter).booleanValue());
@@ -2542,6 +2649,111 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    /**
+     * INTERNAL
+     * Set the parameter in the JDBC statement with the given name.
+     * This support a wide range of different parameter types,
+     * and is heavily optimized for common types.
+     */
+    public void setParameterValueInDatabaseCall(Object parameter,
+                CallableStatement statement, String name, AbstractSession session)
+                throws SQLException {
+        // Process common types first.
+        if (parameter instanceof String) {
+            // Check for stream binding of large strings.
+            if (usesStringBinding() && (((String)parameter).length() > getStringBindingSize())) {
+                CharArrayReader reader = new CharArrayReader(((String)parameter).toCharArray());
+                statement.setCharacterStream(name, reader, ((String)parameter).length());
+            } else {
+                if (shouldUseGetSetNString()) {
+                    statement.setNString(name, (String) parameter);
+                } else {
+                    statement.setString(name, (String) parameter);
+                }
+            }
+        } else if (parameter instanceof Number) {
+            Number number = (Number) parameter;
+            if (number instanceof Integer) {
+                statement.setInt(name, number.intValue());
+            } else if (number instanceof Long) {
+                statement.setLong(name, number.longValue());
+            }  else if (number instanceof BigDecimal) {
+                statement.setBigDecimal(name, (BigDecimal) number);
+            } else if (number instanceof Double) {
+                statement.setDouble(name, number.doubleValue());
+            } else if (number instanceof Float) {
+                statement.setFloat(name, number.floatValue());
+            } else if (number instanceof Short) {
+                statement.setShort(name, number.shortValue());
+            } else if (number instanceof Byte) {
+                statement.setByte(name, number.byteValue());
+            } else if (number instanceof BigInteger) {
+                // Convert to BigDecimal.
+                statement.setBigDecimal(name, new BigDecimal((BigInteger) number));
+            } else {
+                statement.setObject(name, parameter);
+            }
+        }  else if (parameter instanceof java.sql.Date){
+            statement.setDate(name,(java.sql.Date)parameter);
+        }  else if (parameter instanceof java.time.LocalDate){
+            statement.setDate(name, java.sql.Date.valueOf((java.time.LocalDate) parameter));
+        } else if (parameter instanceof java.sql.Timestamp){
+            statement.setTimestamp(name,(java.sql.Timestamp)parameter);
+        } else if (parameter instanceof java.time.LocalDateTime){
+            statement.setTimestamp(name, java.sql.Timestamp.valueOf((java.time.LocalDateTime) parameter));
+        } else if (parameter instanceof java.time.OffsetDateTime) {
+            statement.setTimestamp(name, java.sql.Timestamp.from(((java.time.OffsetDateTime) parameter).toInstant()));
+        } else if (parameter instanceof java.sql.Time){
+            statement.setTime(name,(java.sql.Time)parameter);
+        } else if (parameter instanceof java.time.LocalTime){
+            java.time.LocalTime lt = (java.time.LocalTime) parameter;
+            java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), lt));
+            statement.setTimestamp(name, ts);
+        } else if (parameter instanceof java.time.OffsetTime) {
+            java.time.OffsetTime ot = (java.time.OffsetTime) parameter;
+            java.sql.Timestamp ts = java.sql.Timestamp.valueOf(java.time.LocalDateTime.of(java.time.LocalDate.ofEpochDay(0), ot.toLocalTime()));
+            statement.setTimestamp(name, ts);
+        } else if (parameter instanceof Boolean) {
+            statement.setBoolean(name, ((Boolean) parameter).booleanValue());
+        } else if (parameter == null) {
+            // Normally null is passed as a DatabaseField so the type is included, but in some case may be passed directly.
+            statement.setNull(name, getJDBCType((Class)null));
+        } else if (parameter instanceof DatabaseField) {
+            setNullFromDatabaseField((DatabaseField)parameter, statement, name);
+        } else if (parameter instanceof byte[]) {
+            if (usesStreamsForBinding()) {
+                ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[])parameter);
+                statement.setBinaryStream(name, inputStream, ((byte[])parameter).length);
+            } else {
+                statement.setBytes(name, (byte[])parameter);
+            }
+        }
+        // Next process types that need conversion.
+        else if (parameter instanceof Calendar) {
+            statement.setTimestamp(name, Helper.timestampFromDate(((Calendar)parameter).getTime()));
+        } else if (parameter.getClass() == ClassConstants.UTILDATE) {
+            statement.setTimestamp(name, Helper.timestampFromDate((java.util.Date) parameter));
+        } else if (parameter instanceof Character) {
+            statement.setString(name, ((Character)parameter).toString());
+        } else if (parameter instanceof char[]) {
+            statement.setString(name, new String((char[])parameter));
+        } else if (parameter instanceof Character[]) {
+            statement.setString(name, (String)convertObject(parameter, ClassConstants.STRING));
+        } else if (parameter instanceof Byte[]) {
+            statement.setBytes(name, (byte[])convertObject(parameter, ClassConstants.APBYTE));
+        } else if (parameter instanceof SQLXML) {
+            statement.setSQLXML(name, (SQLXML) parameter);
+        } else if (parameter instanceof BindCallCustomParameter) {
+            ((BindCallCustomParameter)(parameter)).set(this, statement, name, session);
+        } else if (typeConverters != null && typeConverters.containsKey(parameter.getClass())){
+            StructConverter converter = typeConverters.get(parameter.getClass());
+            parameter = converter.convertToStruct(parameter, getConnection(session, statement.getConnection()));
+            statement.setObject(name, parameter);
+        } else {
+            statement.setObject(name, parameter);
+        }
+    }
+
     protected void setNullFromDatabaseField(DatabaseField databaseField, PreparedStatement statement, int index) throws SQLException {
         // Substituted null value for the corresponding DatabaseField.
         // Cannot bind null through set object, so we must compute the type, this is not good.
@@ -2554,6 +2766,37 @@ public class DatabasePlatform extends DatasourcePlatform {
             int jdbcType = getJDBCTypeForSetNull(databaseField);
             statement.setNull(index, jdbcType);
         }
+    }
+
+    protected void setNullFromDatabaseField(DatabaseField databaseField, CallableStatement statement, String name) throws SQLException {
+        // Substituted null value for the corresponding DatabaseField.
+        // Cannot bind null through set object, so we must compute the type, this is not good.
+        // Fix for bug 2730536: for ARRAY/REF/STRUCT types must pass in the
+        // user defined type to setNull as well.
+        if (databaseField instanceof ObjectRelationalDatabaseField) {
+            ObjectRelationalDatabaseField field = (ObjectRelationalDatabaseField)databaseField;
+            statement.setNull(name, field.getSqlType(), field.getSqlTypeName());
+        } else {
+            int jdbcType = getJDBCTypeForSetNull(databaseField);
+            statement.setNull(name, jdbcType);
+        }
+    }
+
+    /**
+     * INTERNAL
+     * Get the parameter from the JDBC statement with the given index.
+     * @param index - 1-based index in the argument list
+     */
+    public Object getParameterValueFromDatabaseCall(CallableStatement statement, int index, AbstractSession session) throws SQLException {
+        return statement.getObject(index);
+    }
+
+    /**
+     * INTERNAL
+     * Get the parameter from the JDBC statement with the given name.
+     */
+    public Object getParameterValueFromDatabaseCall(CallableStatement statement, String name, AbstractSession session) throws SQLException {
+        return statement.getObject(name);
     }
 
     public boolean usesBatchWriting() {
@@ -3498,22 +3741,59 @@ public class DatabasePlatform extends DatasourcePlatform {
         field.appendDBString(writer, session, table);
     }
 
-     /**
-      * INTERNAL:
-      * Override this method if the platform supports storing JDBC connection user name during
-      * {@link #initializeConnectionData(Connection)}.
-      * @return Always returns {@code false}
-      */
-     public boolean supportsConnectionUserName() {
-         return false;
-     }
+    /**
+     * INTERNAL:
+     * Override this method if the platform supports storing JDBC connection user name during
+     * {@link #initializeConnectionData(Connection)}.
+     * @return Always returns {@code false}
+     */
+    public boolean supportsConnectionUserName() {
+        return false;
+    }
 
-     /**
-      * INTERNAL:
-      * Returns user name retrieved from JDBC connection.
-      * @throws UnsupportedOperationException on every single call until overridden.
-      */
-     public String getConnectionUserName() {
-         throw new UnsupportedOperationException("Connection user name is not supported.");
-     }
+    /**
+     * INTERNAL:
+     * Returns user name retrieved from JDBC connection.
+     * @throws UnsupportedOperationException on every single call until overridden.
+     */
+    public String getConnectionUserName() {
+        throw new UnsupportedOperationException("Connection user name is not supported.");
+    }
+
+    // Value of shouldCheckResultTableExistsQuery must be false.
+    /**
+     * INTERNAL:
+     * Returns query to check whether given table exists.
+     * Query execution throws an exception when no such table exists.
+     * @param table database table meta-data
+     * @return query to check whether given table exists
+     */
+    protected DataReadQuery getTableExistsQuery(final TableDefinition table) {
+        final String sql = "SELECT 1 FROM " + table.getFullName();
+        final DataReadQuery query = new DataReadQuery(sql);
+        query.setMaxRows(1);
+        return query;
+    }
+
+    /**
+     * INTERNAL:
+     * Executes and evaluates query to check whether given table exists.
+     * Returned value is always {@code true}, because an exception is thrown
+     * when given table does not exists.
+     * @param session current database session
+     * @param table database table meta-data
+     * @param suppressLogging whether to suppress logging during query execution
+     * @return value of {@code true} if given table exists or {@code false} otherwise
+     */
+    public boolean checkTableExists(final DatabaseSessionImpl session,
+            final TableDefinition table, final boolean suppressLogging) {
+        try {
+            session.setLoggingOff(suppressLogging);
+            session.executeQuery(getTableExistsQuery(table));
+            return true;
+        } catch (Exception notFound) {
+            return false;
+        }
+    }
+
 }

@@ -1,11 +1,30 @@
-<!--/*******************************************************************************
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
+<!--
+
+    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<!--
+  Contributors:
+      eric.gwin - initial API and implementation (checked in by Tware)
+-->
+<!-- =============================================================================
+*  General Comments
+*  This buildfile contains branch and automation specific instructions for the
+*  automated build process using Hudson for EclipseLink at Eclipse and is intended
+*  to be called by Hudson (generic user).
 *
+*  All publishing commands are now external to this file (see eclipselink.releng: publish.sh)
+*================================================================================= -->
+<!--
 *   Ant naming conventions:
 *   - regardless of the actual OS platform,'/' is the directory separator
 *     (Ant will convert as appropriate).
@@ -26,19 +45,7 @@
 *   - OS environment variables are in ALLCAPS and have 'env' as a prefix
 *     e.g. ${env.XXX}.
 *   - Ant properties are lower case.
-*
-* Contributors:
-*     eric.gwin - initial API and implementation (checked in by Tware)
-#******************************************************************************/-->
-
-<!-- =============================================================================
-*  General Comments
-*  This buildfile contains branch and automation specific instructions for the
-*  automated build process using Hudson for EclipseLink at Eclipse and is intended
-*  to be called by Hudson (generic user).
-*
-*  All publishing commands are now external to this file (see eclipselink.releng: publish.sh)
-*================================================================================= -->
+-->
 <project name="AutoBuild" basedir="." default="build-nightly">
 <echo message="---- AutoBuild.xml ----"/>
     <dirname  property="build.location_temp" file="${ant.file.AutoBuild}"/>
@@ -142,6 +149,16 @@
             <arg value="$git.output"/>
         </exec>
         <property name="git.hash" value="NA"/>
+    </target>
+
+    <target name="check-maven" description="Verify the Maven tool is installed and configured">
+        <condition property="M2_HOME" value="${env.M2_HOME}"
+                   else="/opt/java/maven">
+            <isset property="env.M2_HOME"/>
+        </condition>
+        <echo message="Maven install (M2_HOME) set to: '${M2_HOME}'"/>
+        <available file="${M2_HOME}/bin/mvn" property="use.maven"/>
+        <fail message="Maven 3 not found. Build won't run if Maven 3 not installed and M2_HOME properly set!." unless="use.maven"/>
     </target>
 
     <target name="pre-init" depends="get-git-hash">
@@ -345,12 +362,13 @@
 
     <!--  =====  #####        Post 'build' Processing Targets            #####  =====  -->
     <target name="generate-nightly-p2-site" depends="common-init">
-        <!-- Set here because needed by both nightly-P2, and extract-build-artifacts -->
-        <property name="build.extract.dir" value="${extract.root.dir}/build/${release.version}/${version.qualifier}"/>
-        <mkdir dir="${build.extract.dir}"/>
+
+        <!-- Prepare directory for EclipseLink p2site results, before uploading to Eclipse.org download server -->
+        <property name="p2site.extract.dir" value="${extract.root.dir}/build/p2repo/${release.version}.${version.qualifier}"/>
+        <mkdir dir="${p2site.extract.dir}"/>
 
         <property name="p2.archive.to.use"       value="${hudson.workspace}/features/${p2.archive.presigned.zip}"/>
-        <property name="p2.repos.dir"            value="${build.extract.dir}/p2repo"/>
+        <property name="p2.repos.dir"            value="${p2site.extract.dir}"/>
         <property name="metadata.repos.name"     value="&quot;${p2.nightly.repos.name}&quot;"/>
         <property name="artifact.repos.name"     value="&quot;EclipseLink Incremental Artifacts&quot;"/>
         <property name="p2.SDK.install.dir"      value="${build.deps.dir}/eclipse"/>
@@ -371,6 +389,11 @@
 
     <!-- Extract build artifacts from Hudson Workspace and make them accessible to publish -->
     <target name="extract-build-artifacts" depends="generate-nightly-p2-site">
+
+        <!-- Prepare directory for EclipseLink build results, before uploading to Eclipse.org download server -->
+        <property name="build.extract.dir" value="${extract.root.dir}/build/bundles/${release.version}/${build.date}"/>
+        <mkdir dir="${build.extract.dir}"/>
+
         <!-- New Publish Architecture -->
         <echo message="Extracting Build artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
@@ -398,10 +421,13 @@
 
     <!-- Extract test artifacts from Hudson Workspace and make them accessible to publish -->
     <target name="extract-test-results" depends="common-init">
+
         <!-- 'Publish' from Hudson to Build -->
+        <!-- Prepare directory for test results, before uploading to Eclipse.org download server -->
         <property name="host" value="Eclipse"/>
-        <property name="test.extract.dir" value="${extract.root.dir}/test/${release.version}/${version.qualifier}/${host}"/>
+        <property name="test.extract.dir" value="${extract.root.dir}/test/${release.version}/${build.date}/${host}"/>
         <mkdir dir="${test.extract.dir}"/>
+
         <echo message="Exporting test artifacts..."/>
         <echo message="   from '${hudson.workspace}'"/>
         <echo message="     to '${test.extract.dir}'"/>
@@ -526,7 +552,7 @@
     </target -->
 
     <!--  =====     Milestone Init     =====  -->
-    <target name="promote-init" depends="publish-init"> <!-- In order to promote need the settings from Publish-init too -->
+    <target name="promote-init" depends="publish-init,check-maven"> <!-- In order to promote need the settings from Publish-init too -->
         <!-- git.hash and build.time should already be set to the git hash and build date of the -->
         <!-- build being promoted - however, build.time is undefined (it is currently unused)                   -->
         <fail unless="git.hash"        message="git.hash doesn't exist and it should before we reach this point!"/>
@@ -556,6 +582,7 @@
         <property name="eclipselink.root.download.dir" value="/home/data/httpd/download.eclipse.org/rt/eclipselink"/>
         <!-- This depends upon freezing nightly builds after an RC# build - otherwise the nightly to be -->
         <!-- promoted to a 'RELEASE' build (same as last milestone) could expire off the nightly site   -->
+        <property name="signing.script"  value="sign"/>
         <property name="promote.source.dir"            value="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}"/>
         <property name="promote.archive.unsigned.lib"  value="${promote.source.dir}/${p2.archive.presigned.zip}"/>
         <property name="promote.archive.signed.lib"    value="${promote.source.dir}/${p2.archive.signed.zip}"/>
@@ -584,7 +611,7 @@
     <target name="sign-and-wait" unless="signed.archive.exist" depends="promote-init">
         <echo message="Proceeding with signing of unsigned archive..."/>
         <ant antfile="antbuild.xml" dir="${build.location}/features" target="sign-jars">
-            <property name="signing.script"  value="sign"/>
+            <property name="signing.script"  value="${signing.script}"/>
             <property name="signed.archive.src.file"   value="${promote.archive.unsigned.lib}"/>
             <property name="signed.archive.dest.file"  value="${promote.archive.signed.lib}"/>
         </ant>
@@ -709,6 +736,7 @@
                 <include name="org.eclipse.persistence.*oracleddl*.jar"/>
             </fileset>
         </copy>
+        <copy todir="${tmp.maven.dir}/buildsystem/compdeps" file="${build.location}/buildsystem/compdeps/pom.xml"/>
     </target>
 
     <!--  =====     Milestone Publish   =====  -->

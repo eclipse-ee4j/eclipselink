@@ -1,31 +1,36 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2020 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     22/05/2012-2.4 Guy Pelletier
- *       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
- *     31/05/2012-2.4 Guy Pelletier
- *       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
- *     12/24/2012-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     01/11/2013-2.5 Guy Pelletier
- *       - 389090: JPA 2.1 DDL Generation Support
- *     03/19/2015 - Rick Curtis
- *       - 462586 : Add national character support for z/OS.
- *     04/14/2015 - Will Dazey
- *       - 464641 : Fixed platform matching returning CNF.
- *     09/03/2015 - Will Dazey
- *       - 456067 : Added support for defining query timeout units
- *       ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     22/05/2012-2.4 Guy Pelletier
+//       - 380008: Multitenant persistence units with a dedicated emf should force tenant property specification up front.
+//     31/05/2012-2.4 Guy Pelletier
+//       - 381196: Multitenant persistence units with a dedicated emf should allow for DDL generation.
+//     12/24/2012-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     01/11/2013-2.5 Guy Pelletier
+//       - 389090: JPA 2.1 DDL Generation Support
+//     03/19/2015 - Rick Curtis
+//       - 462586 : Add national character support for z/OS.
+//     04/14/2015 - Will Dazey
+//       - 464641 : Fixed platform matching returning CNF.
+//     09/03/2015 - Will Dazey
+//       - 456067 : Added support for defining query timeout units
+//     06/26/2018 - Will Dazey
+//       - 532160 : Add support for non-extension OracleXPlatform classes
 package org.eclipse.persistence.internal.sessions;
 
 import java.sql.Connection;
@@ -203,31 +208,25 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
      * @param throwException - set to true if the caller cares to throw exceptions, false to swallow them.
      */
     protected void setOrDetectDatasource(boolean throwException) {
-        String vendorNameAndVersion = null;
+        String vendorName = null;
+        String minorVersion = null;
+        String majorVersion = null;
         String driverName = null;
 
         // Try to set the platform from JPA 2.1 schema properties first before
         // attempting a detection.
         if (getProperties().containsKey(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME)) {
-            vendorNameAndVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
-
-            String majorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION);
-            if (majorVersion != null) {
-                vendorNameAndVersion += majorVersion;
-            }
-
-            // The minorVersion is not currently used in platform matching, but
-            // shouldn't change matching when added
-            String minorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION);
-            if (minorVersion != null) {
-                vendorNameAndVersion += minorVersion;
-            }
+            vendorName = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_PRODUCT_NAME);
+            minorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MINOR_VERSION);
+            majorVersion = (String) getProperties().get(PersistenceUnitProperties.SCHEMA_DATABASE_MAJOR_VERSION);
         } else {
             Connection conn = null;
             try {
                 conn = (Connection) getReadLogin().connectToDatasource(null, this);
                 DatabaseMetaData dmd = conn.getMetaData();
-                vendorNameAndVersion = dmd.getDatabaseProductName() + dmd.getDatabaseMajorVersion() + dmd.getDatabaseProductVersion();
+                vendorName = dmd.getDatabaseProductName();
+                minorVersion = dmd.getDatabaseProductVersion();
+                majorVersion = Integer.toString(dmd.getDatabaseMajorVersion());
                 driverName = conn.getMetaData().getDriverName();
             } catch (SQLException ex) {
                 if (throwException) {
@@ -263,21 +262,27 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             // null out the cached platform because the platform on the login
             // will be changed by the following line of code
             this.platform = null;
-            platformName = DBPlatformHelper.getDBPlatform(vendorNameAndVersion, getSessionLog());
+            platformName = DBPlatformHelper.getDBPlatform(vendorName, minorVersion, majorVersion, getSessionLog());
             getLogin().setPlatformClassName(platformName);
-            if (driverName != null) {
-                getLogin().getPlatform().setDriverName(driverName);
-            }
         } catch (EclipseLinkException classNotFound) {
             if (platformName != null && platformName.indexOf("Oracle") != -1) {
-                // If we are running against Oracle, it is possible that we are
-                // running in an environment where
-                // the OracleXPlatform class can not be loaded. Try using
-                // OraclePlatform class before giving up
-                getLogin().setPlatformClassName(OraclePlatform.class.getName());
+                try {
+                    // If we are running against Oracle, it is possible that we are
+                    // running in an environment where the extension OracleXPlatform classes can 
+                    // not be loaded. Try using the core OracleXPlatform classes
+                    platformName = DBPlatformHelper.getDBPlatform("core."+ vendorName, minorVersion, majorVersion, getSessionLog());
+                    getLogin().setPlatformClassName(platformName);
+                } catch (EclipseLinkException oracleClassNotFound) {
+                    // If we still cannot classload a matching OracleXPlatform class, 
+                    // fallback on the base OraclePlatform class
+                    getLogin().setPlatformClassName(OraclePlatform.class.getName());
+                }
             } else {
                 throw classNotFound;
             }
+        }
+        if (driverName != null) {
+            getLogin().getPlatform().setDriverName(driverName);
         }
     }
 
@@ -887,7 +892,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
             }
         }
 
-        log(SessionLog.INFO, SessionLog.CONNECTION, "login_successful", this.getName());
+        log(SessionLog.FINE, SessionLog.CONNECTION, "login_successful", this.getName());
         // postLogin event should not be risen before descriptors have been initialized
         if (!hasBroker()) {
             postLogin();
@@ -1001,7 +1006,7 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
         if (this.eventManager != null) {
             this.eventManager.postLogout(this);
         }
-        log(SessionLog.INFO, SessionLog.CONNECTION, "logout_successful", this.getName());
+        log(SessionLog.FINE, SessionLog.CONNECTION, "logout_successful", this.getName());
 
     }
 
@@ -1082,7 +1087,9 @@ public class DatabaseSessionImpl extends AbstractSession implements org.eclipse.
                 try {
                     // Give the failover time to recover.
                     Thread.currentThread().sleep(getLogin().getDelayBetweenConnectionAttempts());
-                    log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", (Object[])null, null);
+                    Object[] args = new Object[1];
+                    args[0] = ex;
+                    log(SessionLog.INFO, SessionLog.QUERY, "communication_failure_attempting_query_retry", args, null);
                 } catch (InterruptedException intEx) {
                     break;
                 }

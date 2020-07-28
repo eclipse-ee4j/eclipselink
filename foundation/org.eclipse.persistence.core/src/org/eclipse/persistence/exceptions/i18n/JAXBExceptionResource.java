@@ -1,19 +1,22 @@
-/*******************************************************************************
-* Copyright (c) 1998, 2015 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
-* This program and the accompanying materials are made available under the
-* terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
-* which accompanies this distribution.
-* The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
-* and the Eclipse Distribution License is available at
-* http://www.eclipse.org/org/documents/edl-v10.php.
-*
-* Contributors:
-* mmacivor - June 11/2008 - 1.0 - Initial implementation
- *     09/24/2014-2.6 Rick Curtis
- *       - 443762 : Misc message cleanup.
- *     12/18/2014-2.6 Rick Curtis
- *       - 454189 : Misc message cleanup.#2
-******************************************************************************/
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+// mmacivor - June 11/2008 - 1.0 - Initial implementation
+//     09/24/2014-2.6 Rick Curtis
+//       - 443762 : Misc message cleanup.
+//     12/18/2014-2.6 Rick Curtis
+//       - 454189 : Misc message cleanup.#2
 package org.eclipse.persistence.exceptions.i18n;
 
 import java.util.ListResourceBundle;
@@ -33,12 +36,12 @@ public class JAXBExceptionResource extends ListResourceBundle {
         {"50006", "Invalid XmlElementRef on property {0} on class {1}. Referenced Element not declared."},
         {"50007", "Name collision.  Two classes have the XML type with uri {0} and name {1}."},
         {"50008", "Unsupported Node class {0}.  The createBinder(Class) method only supports the class org.w3c.dom.Node."},
-        {"50009", "The property or field {0} is annotated to be transient so it cannot be included in the propOrder annotation."},
-        {"50010", "The property or field {0} must be an attribute because another field or property is annotated with XmlValue."},
-        {"50011", "The property or field {0} cannot be annotated with XmlValue since it is a subclass of another XML-bound class."},
-        {"50012", "The property or field {0} was specified in propOrder but is not a valid property."},
+        {"50009", "The property or field {0} on the class {1} is annotated to be transient so it cannot be included in the propOrder annotation."},
+        {"50010", "The property or field {0} on the class {1} must be an attribute because another field or property is annotated with XmlValue."},
+        {"50011", "The property or field {0} on the class {1} cannot be annotated with XmlValue since it is a subclass of another XML-bound class."},
+        {"50012", "The property or field {0} on the class {1} was specified in propOrder but is not a valid property."},
         {"50013", "The property or field {0} on the class {1} is required to be included in the propOrder element of the XmlType annotation."},
-        {"50014", "The property or field {0} with the XmlValue annotation must be of a type that maps to a simple schema type."},
+        {"50014", "The property or field {0} on the class {1} with the XmlValue annotation must be of a type that maps to a simple schema type."},
         {"50015", "XmlElementWrapper is only allowed on a collection or array property but [{0}] is not a collection or array property."},
         {"50016", "Property [{0}] has an XmlID annotation but its type is not String."},
         {"50017", "Invalid XmlIDREF on property [{0}].  Class [{1}] is required to have a property annotated with XmlID."},

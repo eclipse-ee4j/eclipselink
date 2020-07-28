@@ -1,15 +1,17 @@
-/*******************************************************************************
+/*
  * Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.junit.helper;
 
 import java.math.BigDecimal;
@@ -285,11 +287,30 @@ public class HelperTest {
     public void timestampFromStringTest() {
         boolean optimizedDatesState = Helper.shouldOptimizeDates();
         try {
-            String currentTime = new Timestamp(System.currentTimeMillis()).toString();
-
             Helper.setShouldOptimizeDates(true);
+            
+            String currentTime = new Timestamp(System.currentTimeMillis()).toString();
             Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
                     currentTime, Helper.timestampFromString(currentTime).toString());
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.00013"), Helper.timestampFromString("2018-01-01 16:24:33.00013+02"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.0"), Helper.timestampFromString("2018-01-01 16:24:33+02"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.1"), Helper.timestampFromString("2018-01-01 16:24:33.1+02"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.0"), Helper.timestampFromString("2018-01-01 16:24:33.0000000+02"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.0"), Helper.timestampFromString("2018-01-01 16:24:33.0000000"));
+
+            Assert.assertEquals("Failed to convert String to java.sql.Timestamp when shouldOptimizedDates is on",
+                    Timestamp.valueOf("2018-01-01 16:24:33.0"), Helper.timestampFromString("2018-01-01 16:24:33"));
+
         } finally {
             Helper.setShouldOptimizeDates(optimizedDatesState);
         }

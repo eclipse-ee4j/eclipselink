@@ -1,19 +1,21 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     dclarke, mnorman - Dynamic Persistence
- *       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
- *       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
- *     dclarke - Bug 387240: added field and method calls to allow extensibility
- *
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     dclarke, mnorman - Dynamic Persistence
+//       http://wiki.eclipse.org/EclipseLink/Development/Dynamic
+//       (https://bugs.eclipse.org/bugs/show_bug.cgi?id=200045)
+//     dclarke - Bug 387240: added field and method calls to allow extensibility
+//
 package org.eclipse.persistence.dynamic;
 
 //javase imports
@@ -47,7 +49,7 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.SIPUSH;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_5;
+import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 
 import java.lang.reflect.Modifier;
 
@@ -181,7 +183,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         // public class Foo extends DynamicEntityImpl {
-        cw.visit(V1_5, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, null);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, null);
 
         // public static DynamicPropertiesManager DPM = new
         // DynamicPropertiesManager();
@@ -244,7 +246,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         String internalClassName = className.replace('.', '/');
 
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        cw.visit(V1_5, ACC_PUBLIC + ACC_FINAL + ACC_SUPER + ACC_ENUM, internalClassName, null, "java/lang/Enum", null);
+        cw.visit(V1_8, ACC_PUBLIC + ACC_FINAL + ACC_SUPER + ACC_ENUM, internalClassName, null, "java/lang/Enum", null);
 
         // Add the individual enum values
         for (String enumValue : enumValues) {

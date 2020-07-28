@@ -45,7 +45,7 @@ public class ModuleRequireNode {
    */
   public int access;
 
-  /** The module version at compile time, or <tt>null</tt>. */
+  /** The module version at compile time, or {@literal null}. */
   public String version;
 
   /**
@@ -54,7 +54,7 @@ public class ModuleRequireNode {
    * @param module the fully qualified name (using dots) of the dependence.
    * @param access the access flag of the dependence among {@code ACC_TRANSITIVE}, {@code
    *     ACC_STATIC_PHASE}, {@code ACC_SYNTHETIC} and {@code ACC_MANDATED}.
-   * @param version the module version at compile time, or <tt>null</tt>.
+   * @param version the module version at compile time, or {@literal null}.
    */
   public ModuleRequireNode(final String module, final int access, final String version) {
     this.module = module;

@@ -1,28 +1,30 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     07/13/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     01/31/2017-2.6 Will Dazey
- *       - 511426: Adding cloning support
- *     04/11/2018 - Will Dazey
- *       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     07/13/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     08/24/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     01/31/2017-2.6 Will Dazey
+//       - 511426: Adding cloning support
+//     04/11/2018 - Will Dazey
+//       - 533148 : Add the eclipselink.jpa.sql-call-deferral property
 package org.eclipse.persistence.internal.queries;
 
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -35,9 +37,12 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.DatabaseMapping.WriteType;
+import org.eclipse.persistence.queries.ConstructorReportItem;
 import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.DeleteAllQuery;
 import org.eclipse.persistence.queries.ReportQuery;
@@ -368,8 +373,8 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
             shouldAcquireValueAfterInsert = descriptor.getSequence().shouldAcquireValueAfterInsert();
         }
         Collection returnFields = null;
-        if (descriptor.hasReturningPolicy()) {
-            returnFields = descriptor.getReturningPolicy().getFieldsToMergeInsert();
+        if (descriptor.getReturnFieldsToMergeInsert() != null) {
+            returnFields = descriptor.getReturnFieldsToMergeInsert();
         }
 
         // Check to see if sequence number should be retrieved after insert
@@ -612,22 +617,38 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
         //calculate indexes after normalize to insure expressions are set up correctly
         //take into account any field expressions added to the ReportQuery
         ReportQuery query = (ReportQuery)getQuery();
-        int itemOffset = query.getQueryExpressions().size();
-        for (Iterator items = query.getItems().iterator(); items.hasNext();) {
-            ReportItem item = (ReportItem) items.next();
-            item.setResultIndex(itemOffset);
-            if (item.getAttributeExpression() != null) {
-                if (item.hasJoining()){
-                    itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
-                } else {
-                    if (item.getDescriptor() != null) {
-                        itemOffset += item.getDescriptor().getAllSelectionFields(query).size();
+        computeAndSetItemOffset(query, query.getItems(), query.getQueryExpressions().size());
+    }
+
+    /**
+     * calculate indexes for given items, given the current Offset
+     */
+    protected int computeAndSetItemOffset(ReportQuery query, List<ReportItem> items, int itemOffset) {
+        for(ReportItem item : items) {
+            if (item.isConstructorItem()) {
+                List<ReportItem> reportItems = ((ConstructorReportItem) item).getReportItems();
+                itemOffset = computeAndSetItemOffset(query, reportItems, itemOffset);
+            } else {
+                //Don't set the offset on the ConstructorItem
+                item.setResultIndex(itemOffset);
+                if (item.getAttributeExpression() != null) {
+                    if (item.hasJoining()){
+                        itemOffset = item.getJoinedAttributeManager().computeJoiningMappingIndexes(true, getSession(), itemOffset);
                     } else {
-                        ++itemOffset; //only a single attribute can be selected
+                        if (item.getDescriptor() != null) {
+                            itemOffset += item.getDescriptor().getAllSelectionFields(query).size();
+                        } else {
+                            if (item.getMapping() != null && item.getMapping().isAggregateObjectMapping()) {
+                                itemOffset += item.getMapping().getFields().size(); // Aggregate object may consist out of 1..n fields
+                            } else {
+                                ++itemOffset; //only a single attribute can be selected
+                            }
+                        }
                     }
                 }
             }
         }
+        return itemOffset;
     }
 
     /**
@@ -792,10 +813,10 @@ public class DatasourceCallQueryMechanism extends DatabaseQueryMechanism {
      * @return the row count.
      */
     public Integer updateObject() throws DatabaseException {
-        Collection returnFields = null;
         ClassDescriptor descriptor = getDescriptor();
-        if (descriptor.hasReturningPolicy()) {
-            returnFields = descriptor.getReturningPolicy().getFieldsToMergeUpdate();
+        Collection returnFields = null;
+        if (descriptor.getReturnFieldsToMergeUpdate() != null) {
+            returnFields = descriptor.getReturnFieldsToMergeUpdate();
         }
         Integer returnedRowCount = null;
         if (hasMultipleCalls()) {

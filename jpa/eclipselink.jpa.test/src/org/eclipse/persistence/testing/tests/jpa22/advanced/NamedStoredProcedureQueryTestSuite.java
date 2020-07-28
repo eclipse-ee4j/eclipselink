@@ -1,33 +1,37 @@
-/*******************************************************************************
- * Copyright (c) 2012, 2017 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     02/08/2012-2.4 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     06/20/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     07/13/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/13/2013-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/27/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     11/05/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     01/23/2013-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     02/08/2012-2.4 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     06/20/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     07/13/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     08/24/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/13/2013-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/27/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     11/05/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     01/23/2013-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 package org.eclipse.persistence.testing.tests.jpa22.advanced;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.EntityManager;
 import javax.persistence.StoredProcedureQuery;
@@ -35,7 +39,9 @@ import javax.persistence.StoredProcedureQuery;
 import junit.framework.TestSuite;
 import junit.framework.Test;
 
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.jpa.StoredProcedureQueryImpl;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 
 import org.eclipse.persistence.testing.models.jpa22.advanced.Address;
@@ -62,6 +68,7 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryGetResultListWithNamedCursors"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithMultipleResults"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNamedColumnResult"));
+        suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNamedColumnResultTranslationIntoNumbered"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNamedFieldResult"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithNumberedFieldResult"));
         suite.addTest(new NamedStoredProcedureQueryTestSuite("testQueryWithResultClass"));
@@ -300,6 +307,52 @@ public class NamedStoredProcedureQueryTestSuite extends JUnitTestCase {
                 assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
                 assertNotNull("No results returned from store procedure call", values[1]);
                 assertTrue("Address not found using stored procedure", address.getStreet().equals(values[1]));
+            } catch (RuntimeException e) {
+                if (isTransactionActive(em)){
+                    rollbackTransaction(em);
+                }
+
+                throw e;
+            } finally {
+                closeEntityManager(em);
+            }
+        }
+    }
+
+    /**
+     * Tests a NamedStoredProcedureQuery using positional paramters transalated from named.
+     */
+    public void testQueryWithNamedColumnResultTranslationIntoNumbered() {
+        if (supportsStoredProcedures() && getPlatform().isMySQL()) {
+            Map<String, String> properties = new HashMap<String, String>();
+            properties.put(PersistenceUnitProperties.NAMING_INTO_INDEXED, "true");
+            EntityManager em = createEntityManager(properties);
+            QuerySQLTracker querySQLTracker = new QuerySQLTracker(((org.eclipse.persistence.jpa.JpaEntityManager)em).getServerSession());
+
+            try {
+                beginTransaction(em);
+
+                Address address = new Address();
+                address.setCity("Ottawa");
+                address.setPostalCode("K1G 6P3");
+                address.setProvince("ON");
+                address.setStreet("123 Street");
+                address.setCountry("Canada");
+                em.persist(address);
+                commitTransaction(em);
+
+                // Clear the cache
+                em.clear();
+                clearCache();
+
+                Object[] values = (Object[]) em.createNamedStoredProcedureQuery("ReadAddressMappedNamedColumnResult").setParameter("address_id_v", address.getId()).getSingleResult();
+                assertTrue("Address data not found or returned using stored procedure", ((values != null) && (values.length == 6)));
+                assertNotNull("No results returned from store procedure call", values[1]);
+                assertTrue("Address not found using stored procedure", address.getStreet().equals(values[1]));
+
+                String sqlStatement = querySQLTracker.getSqlStatements().get(0);
+                int count = (sqlStatement.split("=>", -1).length) - 1;
+                assertEquals("Transformation into numbered parameters was not called", 1, count);
             } catch (RuntimeException e) {
                 if (isTransactionActive(em)){
                     rollbackTransaction(em);

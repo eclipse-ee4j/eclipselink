@@ -27,9 +27,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 package org.eclipse.persistence.internal.libraries.asm.tree;
 
-import java.util.ArrayList;
 import java.util.List;
-
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
@@ -56,29 +54,29 @@ public class FieldNode extends FieldVisitor {
   /** The field's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}). */
   public String desc;
 
-  /** The field's signature. May be <tt>null</tt>. */
+  /** The field's signature. May be {@literal null}. */
   public String signature;
 
   /**
-   * The field's initial value. This field, which may be <tt>null</tt> if the field does not have an
-   * initial value, must be an {@link Integer}, a {@link Float}, a {@link Long}, a {@link Double} or
-   * a {@link String}.
+   * The field's initial value. This field, which may be {@literal null} if the field does not have
+   * an initial value, must be an {@link Integer}, a {@link Float}, a {@link Long}, a {@link Double}
+   * or a {@link String}.
    */
   public Object value;
 
-  /** The runtime visible annotations of this field. May be <tt>null</tt>. */
+  /** The runtime visible annotations of this field. May be {@literal null}. */
   public List<AnnotationNode> visibleAnnotations;
 
-  /** The runtime invisible annotations of this field. May be <tt>null</tt>. */
+  /** The runtime invisible annotations of this field. May be {@literal null}. */
   public List<AnnotationNode> invisibleAnnotations;
 
-  /** The runtime visible type annotations of this field. May be <tt>null</tt>. */
+  /** The runtime visible type annotations of this field. May be {@literal null}. */
   public List<TypeAnnotationNode> visibleTypeAnnotations;
 
-  /** The runtime invisible type annotations of this field. May be <tt>null</tt>. */
+  /** The runtime invisible type annotations of this field. May be {@literal null}. */
   public List<TypeAnnotationNode> invisibleTypeAnnotations;
 
-  /** The non standard attributes of this field. * May be <tt>null</tt>. */
+  /** The non standard attributes of this field. * May be {@literal null}. */
   public List<Attribute> attrs;
 
   /**
@@ -90,8 +88,8 @@ public class FieldNode extends FieldVisitor {
    * @param name the field's name.
    * @param descriptor the field's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
    * @param signature the field's signature.
-   * @param value the field's initial value. This parameter, which may be <tt>null</tt> if the field
-   *     does not have an initial value, must be an {@link Integer}, a {@link Float}, a {@link
+   * @param value the field's initial value. This parameter, which may be {@literal null} if the
+   *     field does not have an initial value, must be an {@link Integer}, a {@link Float}, a {@link
    *     Long}, a {@link Double} or a {@link String}.
    * @throws IllegalStateException If a subclass calls this constructor.
    */
@@ -101,24 +99,25 @@ public class FieldNode extends FieldVisitor {
       final String descriptor,
       final String signature,
       final Object value) {
-    this(Opcodes.ASM6, access, name, descriptor, signature, value);
+    this(/* latest api = */ Opcodes.ASM8, access, name, descriptor, signature, value);
     if (getClass() != FieldNode.class) {
       throw new IllegalStateException();
     }
   }
 
   /**
-   * Constructs a new {@link FieldNode}. <i>Subclasses must not use this constructor</i>.
+   * Constructs a new {@link FieldNode}.
    *
-   * @param api the ASM API version implemented by this visitor. Must be one of {@link Opcodes#ASM4}
-   *     or {@link Opcodes#ASM5}.
+   * @param api the ASM API version implemented by this visitor. Must be one of {@link
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}.
    * @param access the field's access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). This parameter
    *     also indicates if the field is synthetic and/or deprecated.
    * @param name the field's name.
    * @param descriptor the field's descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
    * @param signature the field's signature.
-   * @param value the field's initial value. This parameter, which may be <tt>null</tt> if the field
-   *     does not have an initial value, must be an {@link Integer}, a {@link Float}, a {@link
+   * @param value the field's initial value. This parameter, which may be {@literal null} if the
+   *     field does not have an initial value, must be an {@link Integer}, a {@link Float}, a {@link
    *     Long}, a {@link Double} or a {@link String}.
    */
   public FieldNode(
@@ -144,15 +143,9 @@ public class FieldNode extends FieldVisitor {
   public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
     AnnotationNode annotation = new AnnotationNode(descriptor);
     if (visible) {
-      if (visibleAnnotations == null) {
-        visibleAnnotations = new ArrayList<AnnotationNode>(1);
-      }
-      visibleAnnotations.add(annotation);
+      visibleAnnotations = Util.add(visibleAnnotations, annotation);
     } else {
-      if (invisibleAnnotations == null) {
-        invisibleAnnotations = new ArrayList<AnnotationNode>(1);
-      }
-      invisibleAnnotations.add(annotation);
+      invisibleAnnotations = Util.add(invisibleAnnotations, annotation);
     }
     return annotation;
   }
@@ -162,25 +155,16 @@ public class FieldNode extends FieldVisitor {
       final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
     TypeAnnotationNode typeAnnotation = new TypeAnnotationNode(typeRef, typePath, descriptor);
     if (visible) {
-      if (visibleTypeAnnotations == null) {
-        visibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
-      }
-      visibleTypeAnnotations.add(typeAnnotation);
+      visibleTypeAnnotations = Util.add(visibleTypeAnnotations, typeAnnotation);
     } else {
-      if (invisibleTypeAnnotations == null) {
-        invisibleTypeAnnotations = new ArrayList<TypeAnnotationNode>(1);
-      }
-      invisibleTypeAnnotations.add(typeAnnotation);
+      invisibleTypeAnnotations = Util.add(invisibleTypeAnnotations, typeAnnotation);
     }
     return typeAnnotation;
   }
 
   @Override
   public void visitAttribute(final Attribute attribute) {
-    if (attrs == null) {
-      attrs = new ArrayList<Attribute>(1);
-    }
-    attrs.add(attribute);
+    attrs = Util.add(attrs, attribute);
   }
 
   @Override
@@ -197,8 +181,8 @@ public class FieldNode extends FieldVisitor {
    * that this node, and all its children recursively, do not contain elements that were introduced
    * in more recent versions of the ASM API than the given version.
    *
-   * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5} or
-   *     {@link Opcodes#ASM6}.
+   * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5},
+   *     {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
    */
   public void check(final int api) {
     if (api == Opcodes.ASM4) {

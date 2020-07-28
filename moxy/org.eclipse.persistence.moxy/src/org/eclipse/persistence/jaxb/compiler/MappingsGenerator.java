@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.jaxb.compiler;
 
 import java.awt.Image;
@@ -76,6 +78,7 @@ import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.NamespaceResolver;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -121,8 +124,11 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlNullPolicy;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlReadTransformer;
 import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.oxm.XMLConstants;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLField;
 import org.eclipse.persistence.oxm.mappings.FixedMimeTypePolicy;
@@ -1976,7 +1982,7 @@ public class MappingsGenerator {
         }
 
         String sig = "Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";" + valuePrefix + qualifiedInternalValueClassName+";>;";
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
 
         cw.visitField(Opcodes.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
 
@@ -2164,6 +2170,7 @@ public class MappingsGenerator {
     }
 
     public CompositeCollectionMapping generateCompositeCollectionMapping(Property property, Descriptor descriptor, JavaClass javaClass, NamespaceInfo namespaceInfo, String referenceClassName) {
+        boolean nestedArray = false;
         CompositeCollectionMapping mapping = new XMLCompositeCollectionMapping();
         initializeXMLMapping((XMLMapping)mapping, property);
         initializeXMLContainerMapping(mapping, property.getType().isArray());
@@ -2211,6 +2218,14 @@ public class MappingsGenerator {
             String mapClassName = property.getType().getRawName();
             mapping.setAttributeAccessor(new MapValueAttributeAccessor(mapping.getAttributeAccessor(), mapping.getContainerPolicy(), generatedClass, mapClassName, helper.getClassLoader()));
         }
+        //Nested array check (used in JSON marshalling)
+        if (collectionType.getComponentType() == null) {
+            if ((collectionType.isArray() || helper.isCollectionType(collectionType)) && (referenceClassName != null && referenceClassName.contains(AnnotationsProcessor.ARRAY_PACKAGE_NAME))) {
+                nestedArray = true;
+            }
+        } else if ((collectionType.isArray() || helper.isCollectionType(collectionType)) && (collectionType.getComponentType().isArray() || helper.isCollectionType(collectionType.getComponentType()))) {
+            nestedArray = true;
+        }
         collectionType = containerClassImpl(collectionType);
         mapping.useCollectionClassName(collectionType.getRawName());
 
@@ -2240,6 +2255,7 @@ public class MappingsGenerator {
             ((Field) mapping.getField()).setRequired(true);
         }
 
+        ((Field) mapping.getField()).setNestedArray(nestedArray);
         return mapping;
     }
 
@@ -2425,7 +2441,7 @@ public class MappingsGenerator {
                 if (rootTypeInfo.isSetXmlDiscriminatorNode()) {
                     classIndicatorField = new XMLField(rootTypeInfo.getXmlDiscriminatorNode());
                 } else {
-                    classIndicatorField = new XMLField(ATT + "type");
+                    classIndicatorField = XMLConstants.DEFAULT_XML_TYPE_ATTRIBUTE;
                     classIndicatorField.getXPathFragment().setNamespaceURI(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
                 }
                 rootDescriptor.getInheritancePolicy().setClassIndicatorField(classIndicatorField);
@@ -2519,6 +2535,9 @@ public class MappingsGenerator {
                 }
             }
             info.postInitialize();
+            if (descriptor != null) {
+                logMappingGeneration(descriptor);
+            }
         }
     }
 
@@ -3261,7 +3280,7 @@ public class MappingsGenerator {
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 
         String sig = null;
-        cw.visit(Opcodes.V1_5, Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
+        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
 
         String fieldType = null;
         if(isList){
@@ -3526,5 +3545,16 @@ public class MappingsGenerator {
 
     private NamespaceResolver getNamespaceResolverForDescriptor(NamespaceInfo info) {
         return info.getNamespaceResolverForDescriptor(globalNamespaceResolver, isDefaultNamespaceAllowed);
+    }
+
+    private void logMappingGeneration(Descriptor xmlDescriptor) {
+        String i18nmsg = JAXBLocalization.buildMessage("create_mappings", new Object[] { xmlDescriptor.getJavaClassName() });
+        AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, i18nmsg, new Object[0], false);
+        Iterator mappingIterator = xmlDescriptor.getMappings().iterator();
+        Mapping xmlMapping;
+        while (mappingIterator.hasNext()) {
+            xmlMapping = (Mapping) mappingIterator.next();
+            AbstractSessionLog.getLog().log(SessionLog.FINEST, SessionLog.MOXY, xmlMapping.toString(), new Object[0], false);
+        }
     }
 }

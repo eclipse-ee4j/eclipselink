@@ -1,27 +1,29 @@
-/*******************************************************************************
+/*
  * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     12/30/2010-2.3 Guy Pelletier
- *       - 312253: Descriptor exception with Embeddable on DDL gen
- *     07/27/2012-2.5 Chris Delahunt
- *       - 371950: Metadata caching
- *     10/25/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     02/11/2013-2.5 Guy Pelletier
- *       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
- *     02/14/2018-2.7.2 Lukas Jungmann
- *       - 530680: embedded element collection within an entity of protected isolation does not merged changes into clones correctly
- *     03/14/2018-2.7 Will Dazey
- *       - 500753: Synchronize initialization of InsertQuery
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     12/30/2010-2.3 Guy Pelletier
+//       - 312253: Descriptor exception with Embeddable on DDL gen
+//     07/27/2012-2.5 Chris Delahunt
+//       - 371950: Metadata caching
+//     10/25/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     02/11/2013-2.5 Guy Pelletier
+//       - 365931: @JoinColumn(name="FK_DEPT",insertable = false, updatable = true) causes INSERT statement to include this data value that it is associated with
+//     02/14/2018-2.7.2 Lukas Jungmann
+//       - 530680: embedded element collection within an entity of protected isolation does not merged changes into clones correctly
+//     03/14/2018-2.7 Will Dazey
+//       - 500753: Synchronize initialization of InsertQuery
 package org.eclipse.persistence.mappings;
 
 import java.util.ArrayList;

@@ -41,12 +41,12 @@ import java.util.Set;
  */
 final class SmallSet<T> extends AbstractSet<T> {
 
-  /** The first element of this set, maybe <tt>null</tt>. */
+  /** The first element of this set, maybe {@literal null}. */
   private final T element1;
 
   /**
-   * The second element of this set, maybe <tt>null</tt>. If {@link #element1} is <tt>null</tt> then
-   * this field must be <tt>null</tt>, otherwise it must be different from {@link #element1}.
+   * The second element of this set, maybe {@literal null}. If {@link #element1} is {@literal null}
+   * then this field must be {@literal null}, otherwise it must be different from {@link #element1}.
    */
   private final T element2;
 
@@ -87,49 +87,18 @@ final class SmallSet<T> extends AbstractSet<T> {
 
   @Override
   public Iterator<T> iterator() {
-    return new IteratorImpl<T>(element1, element2);
-  }
-
-  static class IteratorImpl<T> implements Iterator<T> {
-
-    /** The next element to return in {@link #next}. Maybe <tt>null</tt>. */
-    private T firstElement;
-
-    /**
-     * The element to return in {@link #next}, after {@link #firstElement} is returned. If {@link
-     * #firstElement} is <tt>null</tt> then this field must be <tt>null</tt>, otherwise it must be
-     * different from {@link #firstElement}.
-     */
-    private T secondElement;
-
-    IteratorImpl(final T firstElement, final T secondElement) {
-      this.firstElement = firstElement;
-      this.secondElement = secondElement;
-    }
-
-    public boolean hasNext() {
-      return firstElement != null;
-    }
-
-    public T next() {
-      if (firstElement == null) {
-        throw new NoSuchElementException();
-      }
-      T element = firstElement;
-      firstElement = secondElement;
-      secondElement = null;
-      return element;
-    }
-
-    @Override
-    public void remove() {
-      throw new UnsupportedOperationException();
-    }
+    return new IteratorImpl<>(element1, element2);
   }
 
   @Override
   public int size() {
-    return element1 == null ? 0 : (element2 == null ? 1 : 2);
+    if (element1 == null) {
+      return 0;
+    } else if (element2 == null) {
+      return 1;
+    } else {
+      return 2;
+    }
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -161,7 +130,7 @@ final class SmallSet<T> extends AbstractSet<T> {
     if (otherSet.element2 == null) {
       // If this set also contains exactly one element, we have two distinct elements.
       if (element2 == null) {
-        return new SmallSet<T>(element1, otherSet.element1);
+        return new SmallSet<>(element1, otherSet.element1);
       }
       // If otherSet is included in this set, return this set.
       if (otherSet.element1 == element1 || otherSet.element1 == element2) {
@@ -176,7 +145,7 @@ final class SmallSet<T> extends AbstractSet<T> {
 
     // At this point we know that there are at least 3 distinct elements, so we need a generic set
     // to store the result.
-    HashSet<T> result = new HashSet<T>(4);
+    HashSet<T> result = new HashSet<>(4);
     result.add(element1);
     if (element2 != null) {
       result.add(element2);
@@ -186,5 +155,44 @@ final class SmallSet<T> extends AbstractSet<T> {
       result.add(otherSet.element2);
     }
     return result;
+  }
+
+  static class IteratorImpl<T> implements Iterator<T> {
+
+    /** The next element to return in {@link #next}. Maybe {@literal null}. */
+    private T firstElement;
+
+    /**
+     * The element to return in {@link #next}, after {@link #firstElement} is returned. If {@link
+     * #firstElement} is {@literal null} then this field must be {@literal null}, otherwise it must
+     * be different from {@link #firstElement}.
+     */
+    private T secondElement;
+
+    IteratorImpl(final T firstElement, final T secondElement) {
+      this.firstElement = firstElement;
+      this.secondElement = secondElement;
+    }
+
+    @Override
+    public boolean hasNext() {
+      return firstElement != null;
+    }
+
+    @Override
+    public T next() {
+      if (firstElement == null) {
+        throw new NoSuchElementException();
+      }
+      T element = firstElement;
+      firstElement = secondElement;
+      secondElement = null;
+      return element;
+    }
+
+    @Override
+    public void remove() {
+      throw new UnsupportedOperationException();
+    }
   }
 }

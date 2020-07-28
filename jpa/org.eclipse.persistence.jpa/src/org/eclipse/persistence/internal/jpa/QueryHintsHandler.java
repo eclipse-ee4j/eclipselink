@@ -1,27 +1,34 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     07/13/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     corteggiano, Frank Schwarz, Tom Ware - Fix for bug Bug 320254 - EL 2.1.0 JPA: Query with hint eclipselink.batch
- *              and org.eclipse.persistence.exceptions.QueryException.queryHintNavigatedNonExistantRelationship
- *     10/29/2010-2.2 Michael O'Brien
- *       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
- *     06/30/2011-2.3.1 Guy Pelletier
- *       - 341940: Add disable/enable allowing native queries
- *     06/30/2015-2.6.0 Will Dazey
- *       - 471487: Fixed eclipselink.jdbc.timeout hint not applying correctly to SQLCall
- *     09/03/2015 - Will Dazey
- *       - 456067 : Added support for defining query timeout units
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     07/13/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     corteggiano, Frank Schwarz, Tom Ware - Fix for bug Bug 320254 - EL 2.1.0 JPA: Query with hint eclipselink.batch
+//              and org.eclipse.persistence.exceptions.QueryException.queryHintNavigatedNonExistantRelationship
+//     10/29/2010-2.2 Michael O'Brien
+//       - 325167: Make reserved # bind parameter char generic to enable native SQL pass through
+//     06/30/2011-2.3.1 Guy Pelletier
+//       - 341940: Add disable/enable allowing native queries
+//     06/30/2015-2.6.0 Will Dazey
+//       - 471487: Fixed eclipselink.jdbc.timeout hint not applying correctly to SQLCall
+//     09/03/2015 - Will Dazey
+//       - 456067 : Added support for defining query timeout units
+//     09/04/2018-3.0 Ravi Babu Tummuru
+//       - 538183: SETTING QUERYHINTS.CURSOR ON A NAMEDQUERY THROWS QUERYEXCEPTION
+//     09/02/2019-3.0 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa;
 
 import java.security.AccessController;
@@ -30,6 +37,7 @@ import java.sql.Time;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -243,6 +251,7 @@ public class QueryHintsHandler {
             addHint(new PessimisticLockHint());
             addHint(new PessimisticLockScope());
             addHint(new PessimisticLockTimeoutHint());
+            addHint(new PessimisticLockTimeoutUnitHint());
             addHint(new RefreshHint());
             addHint(new CascadePolicyHint());
             addHint(new BatchHint());
@@ -391,7 +400,7 @@ public class QueryHintsHandler {
         }
 
         static String getUpperCaseString(Object hintValue) {
-            return hintValue != null ? hintValue.toString().toUpperCase() : null;
+            return hintValue != null ? hintValue.toString().toUpperCase(Locale.ROOT) : null;
         }
 
         static Class loadClass(String className, DatabaseQuery query, ClassLoader loader) throws QueryException {
@@ -441,7 +450,7 @@ public class QueryHintsHandler {
                         }
                     }
                 }
-                defaultValueToApply = valueMap.get(defaultValue.toUpperCase());
+                defaultValueToApply = valueMap.get(defaultValue.toUpperCase(Locale.ROOT));
             }
         }
 
@@ -803,6 +812,23 @@ public class QueryHintsHandler {
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             if (query.isObjectLevelReadQuery()) {
                 ((ObjectLevelReadQuery) query).setWaitTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
+            } else {
+                throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
+            }
+
+            return query;
+        }
+    }
+
+    protected static class PessimisticLockTimeoutUnitHint extends Hint {
+        PessimisticLockTimeoutUnitHint() {
+            super(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, "");
+        }
+
+        DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
+            if (query.isObjectLevelReadQuery()) {
+                TimeUnit unit = TimeUnit.valueOf((String)valueToApply);
+                ((ObjectLevelReadQuery) query).setWaitTimeoutUnit(unit);
             } else {
                 throw new IllegalArgumentException(ExceptionLocalization.buildMessage("ejb30-wrong-type-for-query-hint",new Object[]{getQueryId(query), name, getPrintValue(valueToApply)}));
             }
@@ -1678,6 +1704,8 @@ public class QueryHintsHandler {
                 }
             }
 
+            query.setIsPrepared(false);
+
             return query;
         }
     }
@@ -1901,6 +1929,7 @@ public class QueryHintsHandler {
 
         DatabaseQuery applyToDatabaseQuery(Object valueToApply, DatabaseQuery query, ClassLoader loader, AbstractSession activeSession) {
             query.setQueryTimeout(QueryHintsHandler.parseIntegerHint(valueToApply, QueryHints.QUERY_TIMEOUT));
+            query.setIsPrepared(false);
             return query;
         }
     }

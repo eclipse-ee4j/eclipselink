@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
@@ -6,13 +20,13 @@
     <name>EclipseLink Parent</name>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.parent</artifactId>
-    <version>2.7.2-SNAPSHOT</version>
+    <version>2.7.8-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <!-- tycho requires maven >= 3.0 -->
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
+    <scm>
+        <connection>scm:git:https://github.com/eclipse-ee4j/eclipselink.git</connection>
+        <url>https://github.com/eclipse-ee4j/eclipselink.git</url>
+    </scm>
 
     <organization>
         <name>Eclipse.org - EclipseLink Project</name>
@@ -22,19 +36,17 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <tycho.version>1.1.0</tycho.version>
+        <tycho.version>1.3.0</tycho.version>
         <junit4-version>4.12</junit4-version>
         <!-- maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format> Seems it must be in settings.xml -->
         <!-- PROJECT Properties -->
-        <release.version>2.7.2</release.version>
+        <release.version>2.7.8</release.version>
         <!-- build.qualifier>v${maven.build.timestamp}</build.qualifier -->
         <!-- forceContextQualifier>${build.qualifier}</forceContextQualifier -->
         <build.type>SNAPSHOT</build.type>
         <svn.revision>NA</svn.revision>
         <src>./src</src>
         <!-- BUILD Properties -->
-        <orbit.drop>S20180302171354</orbit.drop>
-        <eclipse.drop>photon</eclipse.drop>
         <findbugs.version>3.0.1</findbugs.version>
         <findbugs.threshold>Normal</findbugs.threshold>
     </properties>
@@ -48,50 +60,18 @@
     <!-- Default repositories set and added to by all profiles -->
     <repositories>
         <repository>
-            <id>Orbit</id>
+            <id>Local_CompDeps</id>
             <layout>p2</layout>
-            <url>http://download.eclipse.org/tools/orbit/downloads/drops/${orbit.drop}/repository</url>
+            <url>file:/${basedir}/../../buildsystem/compdeps/org.eclipse.persistence.compdeps.p2repo/target/repository</url>
         </repository>
         <repository>
-            <id>Eclipse</id>
+            <id>Oracle-local-p2</id>
             <layout>p2</layout>
-            <url>http://download.eclipse.org/releases/${eclipse.drop}</url>
+            <url>${oracle.p2.url}</url>
         </repository>
     </repositories>
 
     <profiles>
-        <profile>
-            <id>tycho.local.compdeps</id>
-            <activation>
-                <property>
-                    <name>local.compdeps</name>
-                    <value>true</value>
-                </property>
-            </activation>
-            <repositories>
-                <repository>
-                     <id>Local_CompDeps</id>
-                     <layout>p2</layout>
-                     <url>file:/${basedir}/../../buildsystem/compdeps/p2repo</url>
-                </repository>
-             </repositories>
-        </profile>
-        <profile>
-            <id>hosted.compdeps</id>
-            <activation>
-                <property>
-                    <name>local.compdeps</name>
-                    <value>false</value>
-                </property>
-            </activation>
-            <repositories>
-                <repository>
-                    <id>EL_CompDeps</id>
-                    <layout>p2</layout>
-                    <url>http://archive.eclipse.org/rt/eclipselink/compdeps27-update</url>
-                </repository>
-             </repositories>
-        </profile>
         <profile>
             <id>full-build</id>
             <activation>
@@ -109,6 +89,8 @@
                 <module>../../sdo/org.eclipse.persistence.sdo</module>
                 <module>../../dbws/org.eclipse.persistence.dbws</module>
                 <module>../../utils/org.eclipse.persistence.dbws.builder</module>
+                <module>../../foundation/org.eclipse.persistence.oracle</module>
+                <module>../../foundation/org.eclipse.persistence.oracle.nosql</module>
             </modules>
         </profile>
         <profile>
@@ -124,14 +106,6 @@
                 <module>../../foundation/org.eclipse.persistence.oracle.nosql</module>
                 <module>../../foundation/org.eclipse.persistence.oracle</module>
             </modules>
-            <repositories>
-                <repository>
-                    <id>Oracle-local-p2</id>
-                    <layout>p2</layout>
-                    <url>${oracle.p2.url}</url>
-                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
-                </repository>
-            </repositories>
         </profile>
         <profile>
             <id>oracle-ext</id>
@@ -144,14 +118,6 @@
             <modules>
                 <module>../../foundation/org.eclipse.persistence.oracle</module>
             </modules>
-            <repositories>
-                <repository>
-                    <id>Oracle-local-p2</id>
-                    <layout>p2</layout>
-                    <url>${oracle.p2.url}</url>
-                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
-                </repository>
-            </repositories>
         </profile>
         <profile>
             <id>oracle-nosql</id>
@@ -165,14 +131,6 @@
                 <module>../../foundation/org.eclipse.persistence.nosql</module>
                 <module>../../foundation/org.eclipse.persistence.oracle.nosql</module>
             </modules>
-            <repositories>
-                <repository>
-                    <id>Oracle-local-p2</id>
-                    <layout>p2</layout>
-                    <url>${oracle.p2.url}</url>
-                    <!-- file:/<view_root>/buildsystem/oraclelibs/p2repo/ -->
-                </repository>
-            </repositories>
         </profile>
     </profiles>
 
@@ -199,6 +157,19 @@
                 <artifactId>tycho-compiler-plugin</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+                    <target>1.8</target>
+                    <extraClasspathElements>
+                        <dependency>
+                            <groupId>com.sun.activation</groupId>
+                            <artifactId>jakarta.activation</artifactId>
+                            <version>1.2.1</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>jakarta.xml.bind</groupId>
+                            <artifactId>jakarta.xml.bind-api</artifactId>
+                            <version>2.3.2</version>
+                        </dependency>
+                    </extraClasspathElements>
                     <!-- Set to force OSGi Compatability settings (defaults to "false") (Only available as of Tycho 0.16.0) -->
                     <!-- requireJREPackageImports>true</requireJREPackageImports -->
                     <!-- compilerArgument>-nowarn</compilerArgument> <disable all warnings -->
@@ -222,7 +193,42 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+                    <dependency-resolution>
+                        <extraRequirements>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>com.sun.activation.jakarta.activation</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>jakarta.xml.bind-api</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>jakarta.xml.ws-api</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>jakarta.annotation-api</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>org.glassfish.corba.glassfish-corba-omgapi</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                            <requirement>
+                                <type>p2-installable-unit</type>
+                                <id>jakarta.xml.soap-api</id>
+                                <versionRange>0.0.0</versionRange>
+                            </requirement>
+                        </extraRequirements>
+                    </dependency-resolution>
                     <executionEnvironmentDefault>JavaSE-1.8</executionEnvironmentDefault>
+                    <resolveWithExecutionEnvironmentConstraints>false</resolveWithExecutionEnvironmentConstraints>
                     <pomDependencies>consider</pomDependencies>
                     <resolver>p2</resolver>
                     <environments>

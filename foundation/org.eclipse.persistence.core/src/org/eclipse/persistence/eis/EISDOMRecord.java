@@ -1,15 +1,17 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
 package org.eclipse.persistence.eis;
 
 import java.lang.reflect.*;
@@ -35,7 +37,7 @@ import org.eclipse.persistence.oxm.record.XMLRecord;
 public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord implements DOMRecord, MappedRecord {
 
     /** The original adapter record. */
-    protected Record record;
+    protected javax.resource.cci.Record record;
 
     /** The record name. */
     protected String recordName;
@@ -58,7 +60,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
     /**
      * Create a TopLink record from the JCA adapter record and DOM tree.
      */
-    public EISDOMRecord(Record record, Element dom) {
+    public EISDOMRecord(javax.resource.cci.Record record, Element dom) {
         super(dom);
         this.record = record;
         this.recordName = record.getRecordName();
@@ -81,7 +83,7 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
      * Create a TopLink record from the JCA adapter record.
      * This attempts to introspect the record to retrieve the DOM tree.
      */
-    public EISDOMRecord(Record record) {
+    public EISDOMRecord(javax.resource.cci.Record record) {
         this.record = record;
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();
@@ -133,14 +135,14 @@ public class EISDOMRecord extends org.eclipse.persistence.oxm.record.DOMRecord i
     /**
      * Return the JCA adapter record.
      */
-    public Record getRecord() {
+    public javax.resource.cci.Record getRecord() {
         return record;
     }
 
     /**
      * Set the JCA adapter record.
      */
-    public void setRecord(Record record) {
+    public void setRecord(javax.resource.cci.Record record) {
         this.record = record;
         this.recordName = record.getRecordName();
         this.recordShortDescription = record.getRecordShortDescription();

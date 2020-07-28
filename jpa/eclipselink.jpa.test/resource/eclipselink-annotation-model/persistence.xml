@@ -1,3 +1,18 @@
+<!--
+
+    Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019 IBM Corporation. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
 <persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence persistence_1_0.xsd" version="1.0">
     <persistence-unit name="default" transaction-type="RESOURCE_LOCAL">
         <provider>
@@ -62,9 +77,9 @@
             <property name="eclipselink.weaving.eager" value="true"/>
             <property name="eclipselink.weaving.internal" value="false"/-->
             <property name="eclipselink.orm.validate.schema" value="true"/>
-            <property name="javax.persistence.lock.timeout" value="5"/>
+            <property name="javax.persistence.lock.timeout" value="5000"/>
             <property name="eclipselink.id-validation" value="NEGATIVE"/>
-            <property name="javax.persistence.query.timeout" value="20"/>
+            <property name="javax.persistence.query.timeout" value="20000"/>
             <property name="NAME" value="Montreal%"/>
             <!-- Since we don't exclude unlisted classes here, we will       -->
             <!-- eventually hit the multitenant entities which turn native   -->

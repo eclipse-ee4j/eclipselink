@@ -1,17 +1,19 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property,
- *                             added Bean Validation support.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     Marcel Valovy - 2.6.0 - added case insensitive unmarshalling property,
+//                             added Bean Validation support.
 package org.eclipse.persistence.jaxb;
 
 import java.io.File;
@@ -51,12 +53,16 @@ import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jaxb.ObjectGraphImpl;
 import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
+import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.record.namespaces.MapNamespacePrefixMapper;
 import org.eclipse.persistence.internal.oxm.record.namespaces.NamespacePrefixMapperWrapper;
 import org.eclipse.persistence.jaxb.JAXBContext.RootLevelXmlAdapter;
 import org.eclipse.persistence.jaxb.attachment.AttachmentMarshallerAdapter;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.JSONWithPadding;
 import org.eclipse.persistence.oxm.MediaType;
@@ -85,10 +91,10 @@ import org.xml.sax.ContentHandler;
  * XMLMarshaller API.</p>
  *
  * @author mmacivor
- * @since Oracle TopLink 11.1.1.0.0
  * @see javax.xml.bind.Marshaller
  * @see org.eclipse.persistence.jaxb.MarshallerProperties
  * @see org.eclipse.persistence.oxm.XMLMarshaller
+ * @since Oracle TopLink 11.1.1.0.0
  */
 
 public class JAXBMarshaller implements javax.xml.bind.Marshaller {
@@ -117,7 +123,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     private static final String SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "com.sun.xml.bind.marshaller.CharacterEscapeHandler";
     private static final String SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER = "com.sun.xml.internal.bind.marshaller.CharacterEscapeHandler";
 
-    private static final String SUN_CHARACTER_ESCAPE_HANDLER= "com.sun.xml.bind.characterEscapeHandler";
+    private static final String SUN_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.bind.characterEscapeHandler";
     private static final String SUN_JSE_CHARACTER_ESCAPE_HANDLER = "com.sun.xml.internal.bind.characterEscapeHandler";
 
     // XML_DECLARATION is the "opposite" to JAXB_FRAGMENT.  If XML_DECLARATION is set to false it means JAXB_FRAGMENT should be set to true.
@@ -131,7 +137,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
      * This constructor initializes various settings on the XML marshaller.
      *
      * @param newXMLMarshaller xml marshaller
-     * @param jaxbContext jaxb context
+     * @param jaxbContext      jaxb context
      */
     public JAXBMarshaller(XMLMarshaller newXMLMarshaller, JAXBContext jaxbContext) {
         this.jaxbContext = jaxbContext;
@@ -171,7 +177,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 elt.getDeclaredType().isEnum()) {
             // need a binary data mapping so need to wrap
             Class generatedClass = getClassToGeneratedClasses().get(elt.getDeclaredType().getCanonicalName());
-            if(!elt.getDeclaredType().isEnum()) {
+            if (!elt.getDeclaredType().isEnum()) {
                 xmlroot.setSchemaType(Constants.BASE_64_BINARY_QNAME);
             }
             if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
@@ -259,7 +265,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     @Override
     public Marshaller.Listener getListener() {
         XMLMarshalListener xmlMarshalListener = xmlMarshaller.getMarshalListener();
-        if(null != xmlMarshalListener) {
+        if (null != xmlMarshalListener) {
             return ((JAXBMarshalListener) xmlMarshalListener).getListener();
         }
         return null;
@@ -273,6 +279,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     /**
      * Get a property from the JAXBMarshaller. Attempting to get any unsupported
      * property will result in a javax.xml.bind.PropertyException
+     *
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     @Override
@@ -317,7 +324,11 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getJsonTypeConfiguration().isUseXsdTypesWithPrefix();
         } else if (MarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
             return xmlMarshaller.getJsonTypeConfiguration().isJsonTypeCompatibility();
-        } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) ||SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
+        } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
+            return xmlMarshaller.getJsonTypeConfiguration().getJsonTypeAttributeName();
+        } else if (MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME.equals(key)) {
+            return xmlMarshaller.getJsonTypeConfiguration().isJsonDisableNestedArrayName();
+        } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
             if (xmlMarshaller.getCharacterEscapeHandler() instanceof CharacterEscapeHandlerWrapper) {
                 CharacterEscapeHandlerWrapper wrapper = (CharacterEscapeHandlerWrapper) xmlMarshaller.getCharacterEscapeHandler();
                 return wrapper.getHandler();
@@ -325,14 +336,14 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return xmlMarshaller.getCharacterEscapeHandler();
         } else if (SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
             NamespacePrefixMapperWrapper wrapper = (NamespacePrefixMapperWrapper) xmlMarshaller.getNamespacePrefixMapper();
-            if(wrapper == null){
+            if (wrapper == null) {
                 return null;
             }
             return wrapper.getPrefixMapper();
         } else if (MarshallerProperties.OBJECT_GRAPH.equals(key)) {
             Object graph = xmlMarshaller.getMarshalAttributeGroup();
-            if(graph instanceof CoreAttributeGroup) {
-                return new ObjectGraphImpl((CoreAttributeGroup)graph);
+            if (graph instanceof CoreAttributeGroup) {
+                return new ObjectGraphImpl((CoreAttributeGroup) graph);
             }
             return graph;
         } else if (MarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
@@ -343,6 +354,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             return this.beanValidationGroups;
         } else if (MarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
             return this.bvNoOptimisation;
+        } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+            return xmlMarshaller.isLogPayload();
         }
         throw new PropertyException(key);
     }
@@ -359,8 +372,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
         Listener listener = getListener();
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.beforeMarshal(object);
             }
         }
@@ -374,8 +387,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(e);
         }
 
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.afterMarshal(object);
             }
         }
@@ -399,8 +412,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
         Listener listener = getListener();
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.beforeMarshal(object);
             }
         }
@@ -416,8 +429,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(ex);
         }
 
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.afterMarshal(object);
             }
         }
@@ -456,8 +469,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
         Listener listener = getListener();
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.beforeMarshal(object);
             }
         }
@@ -471,8 +484,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(e);
         }
 
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.afterMarshal(object);
             }
         }
@@ -485,8 +498,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
         Listener listener = getListener();
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.beforeMarshal(object);
             }
         }
@@ -500,8 +513,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(e);
         }
 
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.afterMarshal(object);
             }
         }
@@ -551,7 +564,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 value = element.getValue();
             }
 
-            if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() > 0){
+            if (jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() > 0) {
                 RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
 
                 if (adapter != null) {
@@ -574,8 +587,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
         Listener listener = getListener();
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.beforeMarshal(object);
             }
         }
@@ -591,8 +604,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(ex);
         }
 
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.afterMarshal(object);
             }
         }
@@ -626,19 +639,19 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
     }
 
-    private Object modifySingleObjectIfNeeded(Object obj){
-    // let the JAXBIntrospector determine if the object is a JAXBElement
+    private Object modifySingleObjectIfNeeded(Object obj) {
+        // let the JAXBIntrospector determine if the object is a JAXBElement
         if (obj instanceof JAXBElement) {
             // use the JAXBElement's properties to populate an XMLRoot
             return createXMLRootFromJAXBElement((JAXBElement) obj);
-        } else if(obj != null && obj.getClass().isEnum()) {
+        } else if (obj != null && obj.getClass().isEnum()) {
             return wrapEnumeration(obj, obj.getClass());
-        } else if (obj instanceof JSONWithPadding){
-            Object nestedObject = ((JSONWithPadding)obj).getObject();
-            if(nestedObject != null){
+        } else if (obj instanceof JSONWithPadding) {
+            Object nestedObject = ((JSONWithPadding) obj).getObject();
+            if (nestedObject != null) {
                 Object newNestedObject = modifyObjectIfNeeded(nestedObject);
-                if(nestedObject != newNestedObject){
-                    return new JSONWithPadding(newNestedObject,((JSONWithPadding)obj).getCallbackName());
+                if (nestedObject != newNestedObject) {
+                    return new JSONWithPadding(newNestedObject, ((JSONWithPadding) obj).getCallbackName());
                 }
             }
         }
@@ -656,7 +669,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
                 element = (JAXBElement) object;
                 value = element.getValue();
             }
-            if(jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() > 0){
+            if (jaxbContext.getTypeMappingInfoToJavaTypeAdapters().size() > 0) {
                 RootLevelXmlAdapter adapter = jaxbContext.getTypeMappingInfoToJavaTypeAdapters().get(type);
                 if (adapter != null) {
                     try {
@@ -673,10 +686,10 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     }
 
     private Object wrapObject(Object object, JAXBElement wrapperElement, TypeMappingInfo typeMappingInfo) {
-        if(jaxbContext.getTypeMappingInfoToGeneratedType().size() > 0){
+        if (jaxbContext.getTypeMappingInfoToGeneratedType().size() > 0) {
             Class generatedClass = jaxbContext.getTypeMappingInfoToGeneratedType().get(typeMappingInfo);
-            if(generatedClass != null && object == null && wrapperElement != null) {
-            return wrapObjectInXMLRoot(wrapperElement, null, typeMappingInfo);
+            if (generatedClass != null && object == null && wrapperElement != null) {
+                return wrapObjectInXMLRoot(wrapperElement, null, typeMappingInfo);
             }
 
             if (generatedClass != null && WrappedValue.class.isAssignableFrom(generatedClass)) {
@@ -716,9 +729,9 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         xmlroot.setLocalName(qname.getLocalPart());
         xmlroot.setNamespaceURI(qname.getNamespaceURI());
         xmlroot.setDeclaredType(wrapperElement.getDeclaredType());
-        if(typeMappingInfo != null){
+        if (typeMappingInfo != null) {
             xmlroot.setSchemaType(typeMappingInfo.getSchemaType());
-        } else if(value != null) {
+        } else if (value != null) {
             if (value.getClass() == CoreClassConstants.ABYTE || value.getClass() == CoreClassConstants.APBYTE ||
                     value.getClass().getCanonicalName().equals("javax.activation.DataHandler")) {
                 xmlroot.setSchemaType(Constants.BASE_64_BINARY_QNAME);
@@ -734,8 +747,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         }
 
         Listener listener = getListener();
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.beforeMarshal(object);
             }
         }
@@ -749,8 +762,8 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
             throw new MarshalException(e);
         }
 
-        if(listener != null) {
-            if(object instanceof JAXBElement) {
+        if (listener != null) {
+            if (object instanceof JAXBElement) {
                 listener.afterMarshal(object);
             }
         }
@@ -832,17 +845,17 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
 
     @Override
     public void setListener(Marshaller.Listener listener) {
-        if(xmlMarshaller.getMarshalListener() == null) {
+        if (xmlMarshaller.getMarshalListener() == null) {
             xmlMarshaller.setMarshalListener(new JAXBMarshalListener(jaxbContext, this));
         }
         ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).setListener(listener);
     }
 
     public void setMarshalCallbacks(Map callbacks) {
-        if(callbacks == null || callbacks.isEmpty()) {
+        if (callbacks == null || callbacks.isEmpty()) {
             return;
         }
-        if(xmlMarshaller.getMarshalListener() == null) {
+        if (xmlMarshaller.getMarshalListener() == null) {
             xmlMarshaller.setMarshalListener(new JAXBMarshalListener(jaxbContext, this));
         }
         ((JAXBMarshalListener) xmlMarshaller.getMarshalListener()).setClassBasedMarshalEvents(callbacks);
@@ -851,6 +864,7 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
     /**
      * Set a property on the JAXBMarshaller. Attempting to set any unsupported
      * property will result in a javax.xml.bind.PropertyException
+     *
      * @see org.eclipse.persistence.jaxb.MarshallerProperties
      */
     @Override
@@ -858,133 +872,154 @@ public class JAXBMarshaller implements javax.xml.bind.Marshaller {
         try {
             if (key == null) {
                 throw new IllegalArgumentException();
-            } else if (Constants.JAXB_FRAGMENT.equals(key)) {
-                if(value == null){
-                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                Boolean fragment = (Boolean) value;
-                xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if (JAXB_FORMATTED_OUTPUT.equals(key)) {
-                if(value == null){
-                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                Boolean formattedOutput = (Boolean) value;
-                xmlMarshaller.setFormattedOutput(formattedOutput.booleanValue());
-            } else if (JAXB_ENCODING.equals(key)) {
-                xmlMarshaller.setEncoding((String) value);
-            } else if (JAXB_SCHEMA_LOCATION.equals(key)) {
-                xmlMarshaller.setSchemaLocation((String) value);
-            } else if (JAXB_NO_NAMESPACE_SCHEMA_LOCATION.equals(key)) {
-                xmlMarshaller.setNoNamespaceSchemaLocation((String) value);
-            } else if(MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) {
-                if(value == null){
-                    xmlMarshaller.setNamespacePrefixMapper(null);
-                }else if(value instanceof Map){
-                    NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map)value);
-                    xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
-                }else{
-                    xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper)value);
-                }
-            } else if(SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
-                if(value == null){
-                    xmlMarshaller.setNamespacePrefixMapper(null);
-                }else{
-                    xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
-                }
-            } else if (MarshallerProperties.INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
-                xmlMarshaller.setIndentString((String) value);
-            } else if (MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS.equals(key)){
-                xmlMarshaller.setMarshalEmptyCollections((Boolean) value);
-            } else if (MarshallerProperties.JSON_REDUCE_ANY_ARRAYS.equals(key)){
-                xmlMarshaller.setReduceAnyArrays((Boolean) value);
-            } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
-                xmlMarshaller.setWrapperAsCollectionName((Boolean) value);
-            } else if (MarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
-                xmlMarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean)value);
-            } else if (MarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
-                xmlMarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean)value);
-            } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
-                xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
-            } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key)  ||SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
-                if (value == null) {
-                    xmlMarshaller.setCharacterEscapeHandler(null);
-                } else {
-                    xmlMarshaller.setCharacterEscapeHandler(new CharacterEscapeHandlerWrapper(value));
-                }
-            } else if (XML_DECLARATION.equals(key)) {
-                if(value == null){
-                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                Boolean fragment = !(Boolean) value;
-                xmlMarshaller.setFragment(fragment.booleanValue());
-            } else if (XML_HEADERS.equals(key)) {
-                xmlMarshaller.setXmlHeader((String) value);
-            } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
-                if(value == null){
-                     throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                xmlMarshaller.setEqualUsingIdenity(((Boolean) value).booleanValue());
-            } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
-                MediaType mType = null;
-                if(value instanceof MediaType) {
-                    mType = (MediaType) value;
-                } else if(value instanceof String) {
-                    mType = MediaType.getMediaType((String)value);
-                }
-                if(mType == null){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                xmlMarshaller.setMediaType(mType);
-            } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
-                xmlMarshaller.setAttributePrefix((String)value);
-            } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
-         if(value == null){
-            throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                xmlMarshaller.setIncludeRoot((Boolean)value);
-            } else if(MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)){
-                if(value == null || (((String)value).length() == 0)){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                xmlMarshaller.setValueWrapper((String)value);
-            } else if(MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)){
-        if(value == null){
-            throw new PropertyException(key, Constants.EMPTY_STRING);
-                 }
-                xmlMarshaller.setNamespaceSeparator((Character)value);
-            } else if(MarshallerProperties.OBJECT_GRAPH.equals(key)) {
-                if(value == null) {
-                    xmlMarshaller.setMarshalAttributeGroup(null);
-                } else if(value instanceof ObjectGraphImpl) {
-                    xmlMarshaller.setMarshalAttributeGroup(((ObjectGraphImpl)value).getAttributeGroup());
-                } else if(value.getClass() == ClassConstants.STRING){
-                    xmlMarshaller.setMarshalAttributeGroup(value);
-                } else {
-                    throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
-                }
-            } else if (MarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
-                if(value == null){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                this.beanValidationMode = ((BeanValidationMode) value);
-            } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
-                //noinspection StatementWithEmptyBody
-                if(value == null) {
-                    // Allow null value for preferred validation factory.
-                }
-                this.prefValidatorFactory = value;
-            } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
-                if(value == null){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                this.beanValidationGroups = ((Class<?>[]) value);
-            } else if (MarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
-                if(value == null){
-                    throw new PropertyException(key, Constants.EMPTY_STRING);
-                }
-                this.bvNoOptimisation = ((boolean) value);
             } else {
-                throw new PropertyException(key, value);
+                SessionLog logger = AbstractSessionLog.getLog();
+                if (logger.shouldLog(SessionLog.FINE, SessionLog.MOXY)) {
+                    logger.log(SessionLog.FINE, SessionLog.MOXY, "moxy_set_marshaller_property", new Object[]{key, value});
+                }
+                if (MOXySystemProperties.moxyLogPayload != null && xmlMarshaller.isLogPayload() == null) {
+                    xmlMarshaller.setLogPayload(MOXySystemProperties.moxyLogPayload);
+                }
+                if (Constants.JAXB_FRAGMENT.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    Boolean fragment = (Boolean) value;
+                    xmlMarshaller.setFragment(fragment.booleanValue());
+                } else if (JAXB_FORMATTED_OUTPUT.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    Boolean formattedOutput = (Boolean) value;
+                    xmlMarshaller.setFormattedOutput(formattedOutput.booleanValue());
+                } else if (JAXB_ENCODING.equals(key)) {
+                    xmlMarshaller.setEncoding((String) value);
+                } else if (JAXB_SCHEMA_LOCATION.equals(key)) {
+                    xmlMarshaller.setSchemaLocation((String) value);
+                } else if (JAXB_NO_NAMESPACE_SCHEMA_LOCATION.equals(key)) {
+                    xmlMarshaller.setNoNamespaceSchemaLocation((String) value);
+                } else if (MarshallerProperties.NAMESPACE_PREFIX_MAPPER.equals(key)) {
+                    if (value == null) {
+                        xmlMarshaller.setNamespacePrefixMapper(null);
+                    } else if (value instanceof Map) {
+                        NamespacePrefixMapper namespacePrefixMapper = new MapNamespacePrefixMapper((Map) value);
+                        xmlMarshaller.setNamespacePrefixMapper(namespacePrefixMapper);
+                    } else {
+                        xmlMarshaller.setNamespacePrefixMapper((NamespacePrefixMapper) value);
+                    }
+                } else if (SUN_NAMESPACE_PREFIX_MAPPER.equals(key) || SUN_JSE_NAMESPACE_PREFIX_MAPPER.equals(key)) {
+                    if (value == null) {
+                        xmlMarshaller.setNamespacePrefixMapper(null);
+                    } else {
+                        xmlMarshaller.setNamespacePrefixMapper(new NamespacePrefixMapperWrapper(value));
+                    }
+                } else if (MarshallerProperties.INDENT_STRING.equals(key) || SUN_INDENT_STRING.equals(key) || SUN_JSE_INDENT_STRING.equals(key)) {
+                    xmlMarshaller.setIndentString((String) value);
+                } else if (MarshallerProperties.JSON_MARSHAL_EMPTY_COLLECTIONS.equals(key)) {
+                    xmlMarshaller.setMarshalEmptyCollections((Boolean) value);
+                } else if (MarshallerProperties.JSON_REDUCE_ANY_ARRAYS.equals(key)) {
+                    xmlMarshaller.setReduceAnyArrays((Boolean) value);
+                } else if (MarshallerProperties.JSON_WRAPPER_AS_ARRAY_NAME.equals(key)) {
+                    xmlMarshaller.setWrapperAsCollectionName((Boolean) value);
+                } else if (MarshallerProperties.JSON_USE_XSD_TYPES_WITH_PREFIX.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setUseXsdTypesWithPrefix((Boolean) value);
+                } else if (MarshallerProperties.JSON_TYPE_COMPATIBILITY.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setJsonTypeCompatibility((Boolean) value);
+                } else if (MarshallerProperties.JSON_TYPE_ATTRIBUTE_NAME.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setJsonTypeAttributeName((String) value);
+                } else if (MarshallerProperties.JSON_DISABLE_NESTED_ARRAY_NAME.equals(key)) {
+                    xmlMarshaller.getJsonTypeConfiguration().setJsonDisableNestedArrayName((Boolean) value);
+                } else if (MarshallerProperties.CHARACTER_ESCAPE_HANDLER.equals(key)) {
+                    xmlMarshaller.setCharacterEscapeHandler((CharacterEscapeHandler) value);
+                } else if (MarshallerProperties.MOXY_LOG_PAYLOAD.equals(key)) {
+                    xmlMarshaller.setLogPayload(((Boolean) value));
+                } else if (MarshallerProperties.MOXY_LOGGING_LEVEL.equals(key)) {
+                    if (value instanceof String) {
+                        AbstractSessionLog.getLog().setLevel(LogLevel.toValue((String) value).getId(), SessionLog.MOXY);
+                    } else {
+                        AbstractSessionLog.getLog().setLevel(((LogLevel) value).getId(), SessionLog.MOXY);
+                    }
+                } else if (SUN_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER.equals(key) || SUN_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key) || SUN_JSE_CHARACTER_ESCAPE_HANDLER_MARSHALLER.equals(key)) {
+                    if (value == null) {
+                        xmlMarshaller.setCharacterEscapeHandler(null);
+                    } else {
+                        xmlMarshaller.setCharacterEscapeHandler(new CharacterEscapeHandlerWrapper(value));
+                    }
+                } else if (XML_DECLARATION.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    Boolean fragment = !(Boolean) value;
+                    xmlMarshaller.setFragment(fragment.booleanValue());
+                } else if (XML_HEADERS.equals(key)) {
+                    xmlMarshaller.setXmlHeader((String) value);
+                } else if (OBJECT_IDENTITY_CYCLE_DETECTION.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setEqualUsingIdenity(((Boolean) value).booleanValue());
+                } else if (MarshallerProperties.MEDIA_TYPE.equals(key)) {
+                    MediaType mType = null;
+                    if (value instanceof MediaType) {
+                        mType = (MediaType) value;
+                    } else if (value instanceof String) {
+                        mType = MediaType.getMediaType((String) value);
+                    }
+                    if (mType == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setMediaType(mType);
+                } else if (MarshallerProperties.JSON_ATTRIBUTE_PREFIX.equals(key)) {
+                    xmlMarshaller.setAttributePrefix((String) value);
+                } else if (MarshallerProperties.JSON_INCLUDE_ROOT.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setIncludeRoot((Boolean) value);
+                } else if (MarshallerProperties.JSON_VALUE_WRAPPER.equals(key)) {
+                    if (value == null || (((String) value).length() == 0)) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setValueWrapper((String) value);
+                } else if (MarshallerProperties.JSON_NAMESPACE_SEPARATOR.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    xmlMarshaller.setNamespaceSeparator((Character) value);
+                } else if (MarshallerProperties.OBJECT_GRAPH.equals(key)) {
+                    if (value == null) {
+                        xmlMarshaller.setMarshalAttributeGroup(null);
+                    } else if (value instanceof ObjectGraphImpl) {
+                        xmlMarshaller.setMarshalAttributeGroup(((ObjectGraphImpl) value).getAttributeGroup());
+                    } else if (value.getClass() == ClassConstants.STRING) {
+                        xmlMarshaller.setMarshalAttributeGroup(value);
+                    } else {
+                        throw org.eclipse.persistence.exceptions.JAXBException.invalidValueForObjectGraph(value);
+                    }
+                } else if (MarshallerProperties.BEAN_VALIDATION_MODE.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    this.beanValidationMode = ((BeanValidationMode) value);
+                } else if (MarshallerProperties.BEAN_VALIDATION_FACTORY.equals(key)) {
+                    //noinspection StatementWithEmptyBody
+                    if (value == null) {
+                        // Allow null value for preferred validation factory.
+                    }
+                    this.prefValidatorFactory = value;
+                } else if (MarshallerProperties.BEAN_VALIDATION_GROUPS.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    this.beanValidationGroups = ((Class<?>[]) value);
+                } else if (MarshallerProperties.BEAN_VALIDATION_NO_OPTIMISATION.equals(key)) {
+                    if (value == null) {
+                        throw new PropertyException(key, Constants.EMPTY_STRING);
+                    }
+                    this.bvNoOptimisation = ((boolean) value);
+                } else {
+                    throw new PropertyException(key, value);
+                }
             }
         } catch (ClassCastException exception) {
             throw new PropertyException(key, exception);

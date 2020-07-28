@@ -17,7 +17,6 @@
     <facet type="jpa" name="JPA">
       <configuration>
         <setting name="validation-enabled" value="true" />
-        <setting name="provider-name" value="" />
         <datasource-mapping>
           <factory-entry name="jpars_auction" />
           <factory-entry name="jpars_auction-static" />
@@ -27,6 +26,7 @@
           <factory-entry name="jpars_phonebook" />
           <factory-entry name="jpars_traveler-static" />
         </datasource-mapping>
+        <naming-strategy-map />
         <deploymentDescriptor name="persistence.xml" url="file://$MODULE_DIR$/src/META-INF/persistence.xml" />
       </configuration>
     </facet>
@@ -46,7 +46,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.xml.ws_2.0.0.v200902170419.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.xml.ws-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -55,11 +55,11 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../plugins/javax.persistence_2.2.0.v201708071007.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence_2.2.3.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES>
-          <root url="jar://$MODULE_DIR$/../plugins/javax.persistence.source_2.2.0.v201708071007.jar!/" />
+          <root url="jar://$MODULE_DIR$/../plugins/jakarta.persistence-source_2.2.3.jar!/" />
         </SOURCES>
       </library>
     </orderEntry>
@@ -84,7 +84,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ejb_3.1.0.v201205171433.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.ejb-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -102,7 +102,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../plugins/javax.ws.rs_2.0.1.v201504171603.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../plugins/jakarta.ws.rs-api.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

@@ -1,17 +1,19 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     07/07/2014-2.5.3 Rick Curtis
- *       - 375101: Date and Calendar should not require @Temporal.
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     07/07/2014-2.5.3 Rick Curtis
+//       - 375101: Date and Calendar should not require @Temporal.
 package org.eclipse.persistence.testing.models.jpa.datetime;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;
@@ -80,6 +82,56 @@ public class DateTimeTableCreator extends TogglingFastTableCreator {
         fieldPOSTALCODE.setUnique(false);
         fieldPOSTALCODE.setShouldAllowNull(true);
         table.addField(fieldPOSTALCODE);
+
+        FieldDefinition fieldLocalDate = new FieldDefinition();
+        fieldLocalDate.setName("LOCAL_DATE");
+        fieldLocalDate.setTypeName("DATE");
+        fieldLocalDate.setSize(6);
+        fieldLocalDate.setIsPrimaryKey(false);
+        fieldLocalDate.setIsIdentity(false);
+        fieldLocalDate.setUnique(false);
+        fieldLocalDate.setShouldAllowNull(true);
+        table.addField(fieldLocalDate);
+
+        FieldDefinition fieldLocalTime = new FieldDefinition();
+        fieldLocalTime.setName("LOCAL_TIME");
+        fieldLocalTime.setTypeName("TIME");
+        fieldLocalTime.setSize(6);
+        fieldLocalTime.setIsPrimaryKey(false);
+        fieldLocalTime.setIsIdentity(false);
+        fieldLocalTime.setUnique(false);
+        fieldLocalTime.setShouldAllowNull(true);
+        table.addField(fieldLocalTime);
+
+        FieldDefinition fieldLocalDateTime = new FieldDefinition();
+        fieldLocalDateTime.setName("LOCAL_DATE_TIME");
+        fieldLocalDateTime.setTypeName("TIMESTAMP");
+        fieldLocalDateTime.setSize(6);
+        fieldLocalDateTime.setIsPrimaryKey(false);
+        fieldLocalDateTime.setIsIdentity(false);
+        fieldLocalDateTime.setUnique(false);
+        fieldLocalDateTime.setShouldAllowNull(true);
+        table.addField(fieldLocalDateTime);
+
+        FieldDefinition fieldOffsetTime = new FieldDefinition();
+        fieldOffsetTime.setName("OFFSET_TIME");
+        fieldOffsetTime.setTypeName("TIME");
+        fieldOffsetTime.setSize(6);
+        fieldOffsetTime.setIsPrimaryKey(false);
+        fieldOffsetTime.setIsIdentity(false);
+        fieldOffsetTime.setUnique(false);
+        fieldOffsetTime.setShouldAllowNull(true);
+        table.addField(fieldOffsetTime);
+
+        FieldDefinition fieldOffsetDateTime = new FieldDefinition();
+        fieldOffsetDateTime.setName("OFFSET_DATE_TIME");
+        fieldOffsetDateTime.setTypeName("TIMESTAMP");
+        fieldOffsetDateTime.setSize(6);
+        fieldOffsetDateTime.setIsPrimaryKey(false);
+        fieldOffsetDateTime.setIsIdentity(false);
+        fieldOffsetDateTime.setUnique(false);
+        fieldOffsetDateTime.setShouldAllowNull(true);
+        table.addField(fieldOffsetDateTime);
 
         FieldDefinition fieldCalToCal = new FieldDefinition();
         fieldCalToCal.setName("CAL");

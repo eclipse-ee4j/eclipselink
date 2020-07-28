@@ -1,29 +1,31 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     01/28/2009-2.0 Guy Pelletier
- *       - 248293: JPA 2.0 Element Collections (part 1)
- *     02/25/2009-2.0 Guy Pelletier
- *       - 265359: JPA 2.0 Element Collections - Metadata processing portions
- *     11/06/2009-2.0 Guy Pelletier
- *       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
- *     03/08/2010-2.1 Guy Pelletier
- *       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
- *     03/29/2010-2.1 Guy Pelletier
- *       - 267217: Add Named Access Type to EclipseLink-ORM
- *     06/16/2010-2.2 Guy Pelletier
- *       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
- *     10/15/2010-2.2 Guy Pelletier
- *       - 322008: Improve usability of additional criteria applied to queries at the session/EM
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     01/28/2009-2.0 Guy Pelletier
+//       - 248293: JPA 2.0 Element Collections (part 1)
+//     02/25/2009-2.0 Guy Pelletier
+//       - 265359: JPA 2.0 Element Collections - Metadata processing portions
+//     11/06/2009-2.0 Guy Pelletier
+//       - 286317: UniqueConstraint xml element is changing (plus couple other fixes, see bug)
+//     03/08/2010-2.1 Guy Pelletier
+//       - 303632: Add attribute-type for mapping attributes to EclipseLink-ORM
+//     03/29/2010-2.1 Guy Pelletier
+//       - 267217: Add Named Access Type to EclipseLink-ORM
+//     06/16/2010-2.2 Guy Pelletier
+//       - 247078: eclipselink-orm.xml schema should allow lob and enumerated on version and id mappings
+//     10/15/2010-2.2 Guy Pelletier
+//       - 322008: Improve usability of additional criteria applied to queries at the session/EM
 package org.eclipse.persistence.testing.models.jpa.xml.composite.advanced.member_3;
 
 import org.eclipse.persistence.testing.framework.TogglingFastTableCreator;

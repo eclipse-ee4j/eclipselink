@@ -1,27 +1,30 @@
-/*******************************************************************************
- * Copyright (c) 2012, 2015 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 2012, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019 Payara Services Ltd.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     10/09/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     10/25/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     10/30/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     11/28/2012-2.5 Guy Pelletier
- *       - 374688: JPA 2.1 Converter support
- *     06/03/2013-2.5.1 Guy Pelletier
- *       - 402380: 3 jpa21/advanced tests failed on server with
- *         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
- *     07/16/2013-2.5.1 Guy Pelletier
- *       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     10/09/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     10/25/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     10/30/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     11/28/2012-2.5 Guy Pelletier
+//       - 374688: JPA 2.1 Converter support
+//     06/03/2013-2.5.1 Guy Pelletier
+//       - 402380: 3 jpa21/advanced tests failed on server with
+//         "java.lang.NoClassDefFoundError: org/eclipse/persistence/testing/models/jpa21/advanced/enums/Gender"
+//     07/16/2013-2.5.1 Guy Pelletier
+//       - 412384: Applying Converter for parameterized basic-type for joda-time's DateTime does not work
 package org.eclipse.persistence.mappings.converters;
 
 import java.security.AccessController;
@@ -59,6 +62,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
     protected String attributeConverterClassName;
     protected AttributeConverter<X,Y> attributeConverter;
     protected AbstractSession session;
+    private Class<T> attributeConverterClass;
 
     /**
      * INTERNAL:
@@ -80,12 +84,11 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
      * that has been built with class names to a project with classes.
      */
     public void convertClassNamesToClasses(ClassLoader classLoader) {
-        constructAttributeConverter(classLoader);
+        attributeConverterClass = getAttributeConverterClass(classLoader);
         constructFieldClassification(classLoader);
     }
 
-    private void constructAttributeConverter(ClassLoader classLoader) {
-        Class<T> attributeConverterClass = getAttributeConverterClass(classLoader);
+    private void constructAttributeConverter() {
         T attributeConverterInstance = getAttributeConverterInstance(attributeConverterClass);
         
         try {
@@ -158,7 +161,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
     @SuppressWarnings("unchecked")
     public Object convertDataValueToObjectValue(Object dataValue, Session session) {
         try {
-            return attributeConverter.convertToEntityAttribute((Y)dataValue);
+            return getAttributeConverter().convertToEntityAttribute((Y)dataValue);
         } catch (RuntimeException re) {
             throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception",
                     new Object[]{"convertToEntityAttribute", attributeConverterClassName, dataValue}), re);
@@ -172,7 +175,7 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
     @SuppressWarnings("unchecked")
     public Object convertObjectValueToDataValue(Object objectValue, Session session) {
         try {
-            return attributeConverter.convertToDatabaseColumn((X) objectValue);
+            return getAttributeConverter().convertToDatabaseColumn((X) objectValue);
         } catch (RuntimeException re) {
             throw new PersistenceException(ExceptionLocalization.buildMessage("wrap_convert_exception",
                     new Object[]{"convertToDatabaseColumn", attributeConverterClassName, objectValue}), re);
@@ -230,5 +233,12 @@ public class ConverterClass<T extends AttributeConverter<X,Y>,X,Y> implements Co
 
     public void setSession(AbstractSession session) {
         this.session = session;
+    }
+
+    protected AttributeConverter<X, Y> getAttributeConverter() {
+        if (attributeConverter == null) {
+            constructAttributeConverter();
+        }
+        return attributeConverter;
     }
 }

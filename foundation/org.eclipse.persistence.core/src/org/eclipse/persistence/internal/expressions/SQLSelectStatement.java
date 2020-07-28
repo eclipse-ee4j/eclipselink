@@ -1,19 +1,22 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *     20/11/2012-2.5 Guy Pelletier
- *       - 394524: Invalid query key [...] in expression
- *     04/30/2014-2.6 Lukas Jungmann
- *       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//     20/11/2012-2.5 Guy Pelletier
+//       - 394524: Invalid query key [...] in expression
+//     04/30/2014-2.6 Lukas Jungmann
+//       - 380101: Invalid MySQL SQL syntax in query with LIMIT and FOR UPDATE
+//     IBM - Bug 537795: CASE THEN and ELSE scalar expression Constants should not be casted to CASE operand type
 package org.eclipse.persistence.internal.expressions;
 
 import static org.eclipse.persistence.queries.ReadAllQuery.Direction.CHILD_TO_PARENT;
@@ -1662,18 +1665,18 @@ public class SQLSelectStatement extends SQLStatement {
             if (orderBy.isFunctionExpression()) {
                 if (base.getOperator().getSelector() == ExpressionOperator.NullsFirst) {
                     nullsFirst = true;
-                    base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                    base = ((FunctionExpression)base).getChildren().get(0);
                 } else if (base.getOperator().getSelector() == ExpressionOperator.NullsLast) {
                     nullsFirst = false;
-                    base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                    base = ((FunctionExpression)base).getChildren().get(0);
                 }
                 if (base.isFunctionExpression()) {
                     if (base.getOperator().getSelector() == ExpressionOperator.Ascending) {
                         asc = true;
-                        base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                        base = ((FunctionExpression)base).getChildren().get(0);
                     } else if (base.getOperator().getSelector() == ExpressionOperator.Descending) {
                         asc = false;
-                        base = (Expression)((FunctionExpression)base).getChildren().get(0);
+                        base = ((FunctionExpression)base).getChildren().get(0);
                     }
                 }
             }
@@ -2207,9 +2210,9 @@ public class SQLSelectStatement extends SQLStatement {
             tables.addAll(mapTableIndexToExpression(ce.getSecondChild(), map, tablesInOrder));
         } else if(expression instanceof FunctionExpression) {
             FunctionExpression fe = (FunctionExpression)expression;
-            Iterator it = fe.getChildren().iterator();
+            Iterator<Expression> it = fe.getChildren().iterator();
             while(it.hasNext()) {
-                tables.addAll(mapTableIndexToExpression((Expression)it.next(), map, tablesInOrder));
+                tables.addAll(mapTableIndexToExpression(it.next(), map, tablesInOrder));
             }
         }
 

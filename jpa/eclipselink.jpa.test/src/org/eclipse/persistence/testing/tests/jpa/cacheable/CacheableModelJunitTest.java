@@ -1,24 +1,27 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+/*
+ * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     06/16/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     07/16/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     06/09/2010-2.0.3 Guy Pelletier
- *       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
- *     06/19/2014-2.6: - Tomas Kraus (Oracle)
- *       - 437578: Tests to verify @Cacheable inheritance in JPA 2.1
- *     12/03/2015-2.6 Dalia Abo Sheasha
- *       - 483582: Add the javax.persistence.sharedCache.mode property
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     06/16/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     07/16/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     06/09/2010-2.0.3 Guy Pelletier
+//       - 313401: shared-cache-mode defaults to NONE when the element value is unrecognized
+//     06/19/2014-2.6: - Tomas Kraus (Oracle)
+//       - 437578: Tests to verify @Cacheable inheritance in JPA 2.1
+//     12/03/2015-2.6 Dalia Abo Sheasha
+//       - 483582: Add the javax.persistence.sharedCache.mode property
 package org.eclipse.persistence.testing.tests.jpa.cacheable;
 
 import java.util.ArrayList;

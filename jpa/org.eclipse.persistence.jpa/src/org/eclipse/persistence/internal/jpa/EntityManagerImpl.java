@@ -1,41 +1,48 @@
-/*******************************************************************************
- * Copyright (c) 1998, 2017 IBM Corporation, Oracle and/or its affiliates. All rights reserved.
+/*
+ * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2019 IBM Corporation and/or its affiliates. All rights reserved.
+ *
  * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
- * which accompanies this distribution.
- * The Eclipse Public License is available at http://www.eclipse.org/legal/epl-v10.html
- * and the Eclipse Distribution License is available at
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
- * Contributors:
- *     Oracle - initial API and implementation from Oracle TopLink
- *
- *     05/28/2008-1.0M8 Andrei Ilitchev
- *        - 224964: Provide support for Proxy Authentication through JPA.
- *        Added setProperties method to be used in case properties couldn't be passed to createEM method.
- *        The properties now set to the uow's parent - not to the uow itself.
- *        In case there's no active transaction, close method now releases uow.
- *        UowImpl was amended to allow value holders instantiation even after it has been released,
- *        the parent ClientSession is released, too.
- *     03/19/2009-2.0 Michael O'Brien
- *       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
- *     07/13/2009-2.0 Guy Pelletier
- *       - 277039: JPA 2.0 Cache Usage Settings
- *     02/08/2012-2.4 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     14/05/2012-2.4 Guy Pelletier
- *       - 376603: Provide for table per tenant support for multitenant applications
- *     06/20/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/24/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     09/13/2012-2.5 Guy Pelletier
- *       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
- *     08/11/2012-2.5 Guy Pelletier
- *       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
- *     02/16/2017-2.6 Jody Grassel
- *       - 512255: Eclipselink JPA/Auditing capablity in EE Environment fails with JNDI name parameter type
- ******************************************************************************/
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+// Contributors:
+//     Oracle - initial API and implementation from Oracle TopLink
+//
+//     05/28/2008-1.0M8 Andrei Ilitchev
+//        - 224964: Provide support for Proxy Authentication through JPA.
+//        Added setProperties method to be used in case properties couldn't be passed to createEM method.
+//        The properties now set to the uow's parent - not to the uow itself.
+//        In case there's no active transaction, close method now releases uow.
+//        UowImpl was amended to allow value holders instantiation even after it has been released,
+//        the parent ClientSession is released, too.
+//     03/19/2009-2.0 Michael O'Brien
+//       - 266912: JPA 2.0 Metamodel API (part of the JSR-317 EJB 3.1 Criteria API)
+//     07/13/2009-2.0 Guy Pelletier
+//       - 277039: JPA 2.0 Cache Usage Settings
+//     02/08/2012-2.4 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     14/05/2012-2.4 Guy Pelletier
+//       - 376603: Provide for table per tenant support for multitenant applications
+//     06/20/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     08/24/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     09/13/2012-2.5 Guy Pelletier
+//       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
+//     08/11/2012-2.5 Guy Pelletier
+//       - 393867: Named queries do not work when using EM level Table Per Tenant Multitenancy.
+//     02/16/2017-2.6 Jody Grassel
+//       - 512255: Eclipselink JPA/Auditing capablity in EE Environment fails with JNDI name parameter type
+//     07/16/2019-2.7 Jody Grassel
+//       - 547173: EntityManager.unwrap(Connection.class) returns null
+//     09/02/2019-2.7 Alexandre Jacob
+//        - 527415: Fix code when locale is tr, az or lt
 package org.eclipse.persistence.internal.jpa;
 
 import java.util.ArrayList;
@@ -44,6 +51,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -314,7 +322,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             put(EntityManagerProperties.PERSISTENCE_CONTEXT_COMMIT_ORDER, new PropertyProcessor() {
             @Override
             void process(String name, Object value, EntityManagerImpl em) {
-                em.commitOrder = CommitOrderType.valueOf(getPropertiesHandlerProperty(name, (String)value).toUpperCase());
+                em.commitOrder = CommitOrderType.valueOf(getPropertiesHandlerProperty(name, (String)value).toUpperCase(Locale.ROOT));
                 if (em.hasActivePersistenceContext()) {
                     em.extendedPersistenceContext.setCommitOrder(em.commitOrder);
                 }
@@ -2729,6 +2737,9 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT)) {
                 queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT));
             }
+            if (properties.containsKey(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT)) {
+                queryHints.put(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT, properties.get(QueryHints.PESSIMISTIC_LOCK_TIMEOUT_UNIT));
+            }
 
             // Ignore the JPA cache settings if the eclipselink setting has
             // been specified.
@@ -2920,13 +2931,34 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             } else if (cls.equals(SessionBroker.class)) {
                 return (T) this.getSessionBroker();
             } else if (cls.equals(java.sql.Connection.class)) {
-                UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
-                if(unitOfWork.isInTransaction() || unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
-                    return (T) unitOfWork.getAccessor().getConnection();
+                final UnitOfWorkImpl unitOfWork = (UnitOfWorkImpl) this.getUnitOfWork();
+                Accessor accessor = unitOfWork.getAccessor();
+                if (unitOfWork.getParent().isExclusiveIsolatedClientSession()) {
+                    // If the ExclusiveIsolatedClientSession hasn't serviced a query prior to the unwrap, 
+                    // there will be no available Connection.
+                    java.sql.Connection conn = accessor.getConnection();
+                    if (conn == null) {
+                        final boolean uowInTran = unitOfWork.isInTransaction();
+                        final boolean activeTran = checkForTransaction(false) != null;
+                        if (uowInTran || activeTran) {
+                            if (activeTran) {
+                                unitOfWork.beginEarlyTransaction();
+                            }
+                            accessor.incrementCallCount(unitOfWork.getParent());
+                            accessor.decrementCallCount();
+                            conn = accessor.getConnection();
+                        }
+                        // if not in a tx, still return null
+                    }
+                    
+                    return (T) conn;
+                } else if (unitOfWork.isInTransaction()) {
+                    return (T) accessor.getConnection();
                 }
-                if (checkForTransaction(false) != null) {
+                
+                if (checkForTransaction(false) != null) { 
                     unitOfWork.beginEarlyTransaction();
-                    Accessor accessor = unitOfWork.getAccessor();
+                    accessor = unitOfWork.getAccessor();
                     // Ensure external connection is acquired.
                     accessor.incrementCallCount(unitOfWork.getParent());
                     accessor.decrementCallCount();
