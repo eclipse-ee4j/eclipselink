@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2019 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
+ * Copyright (c) 2009, 2020 Sun Microsystems, Inc, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -11,14 +11,13 @@
  *     08/20/2014-2.5 Rick Curtis
  *       - 441890: Cache Validator instances.
  *     Marcel Valovy - 2.6 - skip validation of objects that are not constrained.
+ *     02/23/2016-2.6 Dalia Abo Sheasha
+ *       - 487889: Fix EclipseLink Bean Validation optimization
+ *     03/09/2016-2.6 Dalia Abo Sheasha
+ *       - 489298: Wrap EclipseLink's Bean Validation calls in doPrivileged blocks when security is enabled
  ******************************************************************************/
 
 package org.eclipse.persistence.internal.jpa.metadata.listeners;
-
-import java.lang.annotation.ElementType;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -29,14 +28,22 @@ import javax.validation.ValidatorFactory;
 import javax.validation.groups.Default;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.descriptors.ClassDescriptor;
-import org.eclipse.persistence.descriptors.DescriptorEvent;
 import org.eclipse.persistence.descriptors.DescriptorEventAdapter;
+import org.eclipse.persistence.descriptors.DescriptorEvent;
+import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
-import org.eclipse.persistence.internal.jpa.metadata.beanvalidation.BeanValidationHelper;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
+
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.lang.annotation.ElementType;
 
 /**
  * Responsible for performing automatic bean validation on call back events.
@@ -49,7 +56,6 @@ public class BeanValidationListener extends DescriptorEventAdapter {
     private final Class[] groupPreRemove;
     private static final Class[] groupDefault = new Class[]{Default.class};
     private final Map<ClassDescriptor, Validator> validatorMap;
-    private final BeanValidationHelper beanValidationHelper = new BeanValidationHelper();
 
     public BeanValidationListener(ValidatorFactory validatorFactory, Class[] groupPrePersit, Class[] groupPreUpdate, Class[] groupPreRemove) {
         this.validatorFactory = validatorFactory;
@@ -98,18 +104,19 @@ public class BeanValidationListener extends DescriptorEventAdapter {
 
     private void validateOnCallbackEvent(DescriptorEvent event, String callbackEventName, Class[] validationGroup) {
         Object source = event.getSource();
+        Validator validator = getValidator(event);
+        boolean isBeanConstrained = isBeanConstrained(source, validator);
         boolean noOptimization = "true".equalsIgnoreCase((String) event.getSession().getProperty(PersistenceUnitProperties.BEAN_VALIDATION_NO_OPTIMISATION));
-        boolean shouldValidate = noOptimization || beanValidationHelper.isConstrained(source.getClass());
+        boolean shouldValidate = noOptimization || isBeanConstrained;
         if (shouldValidate) {
-            Set<ConstraintViolation<Object>> constraintViolations = getValidator(event).validate(source, validationGroup);
+            Set<ConstraintViolation<Object>> constraintViolations = validate(source, validationGroup, validator);
             if (constraintViolations.size() > 0) {
                 // There were errors while call to validate above.
                 // Throw a ConstrainViolationException as required by the spec.
                 // The transaction would be rolled back automatically
-                // TODO need to I18N this.
                 throw new ConstraintViolationException(
-                        "Bean Validation constraint(s) violated while executing Automatic Bean Validation on callback event:'" +
-                                callbackEventName + "'. Please refer to embedded ConstraintViolations for details.",
+                        ExceptionLocalization.buildMessage("bean_validation_constraint_violated", 
+                                new Object[]{callbackEventName, source.getClass().getName()}),
                         (Set<ConstraintViolation<?>>) (Object) constraintViolations); /* Do not remove the explicit
                         cast. This issue is related to capture#a not being instance of capture#b. */
             }
@@ -133,6 +140,39 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         return res;
     }
 
+    /**
+     * Returns if a bean/entity is constrained by calling the bean validation provider's
+     * #javax.validation.metadata.BeanDescriptor.isBeanConstrained method.
+     */
+    private boolean isBeanConstrained(final Object source, final Validator validator) {
+        // If Java Security is enabled, surround this call with a doPrivileged block.
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+                @Override
+                public Boolean run() {
+                    return validator.getConstraintsForClass(source.getClass()).isBeanConstrained();
+
+                }
+            });
+        } else {
+            return validator.getConstraintsForClass(source.getClass()).isBeanConstrained();
+        }
+    }
+
+    private Set<ConstraintViolation<Object>> validate(final Object source, final Class[] validationGroup, final Validator validator) {
+        // If Java Security is enabled, surround this call with a doPrivileged block.
+        if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+            return AccessController.doPrivileged(new PrivilegedAction<Set<ConstraintViolation<Object>>>() {
+                @Override
+                public Set<ConstraintViolation<Object>> run() {
+                    return validator.validate(source, validationGroup);
+
+                }
+            });
+        } else {
+            return validator.validate(source, validationGroup);
+        }
+    }
 
     /**
      * This traversable resolver ensures that validation is not cascaded to any associations and no lazily loaded
@@ -150,7 +190,6 @@ public class BeanValidationListener extends DescriptorEventAdapter {
         /**
          * @return false for any lazily loaded property of root object being validated
          */
-        @Override
         public boolean isReachable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
             boolean reachable = true;
             String attributeName = null;
@@ -181,7 +220,6 @@ public class BeanValidationListener extends DescriptorEventAdapter {
          * Called only if isReachable returns true
          * @return false for any associatons of root object being validated true otherwise
          */
-        @Override
         public boolean isCascadable(Object traversableObject, Path.Node traversableProperty, Class<?> rootBeanType, Path pathToTraversableObject, ElementType elementType) {
             boolean cascadable = true;
             if (isRootObjectPath(pathToTraversableObject)) {
