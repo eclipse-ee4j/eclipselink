@@ -28,12 +28,16 @@ public class OverrideEmbeddableA implements Serializable{
     @Column(name = "VALUE")
     private Integer value;
 
+    @Column(name = "VALUE2")
+    private Integer value2;
+
     private OverrideNestedEmbeddableA nestedValue;
 
     public OverrideEmbeddableA() { }
 
-    public OverrideEmbeddableA(Integer value, OverrideNestedEmbeddableA nestedValue) {
+    public OverrideEmbeddableA(Integer value, Integer value2, OverrideNestedEmbeddableA nestedValue) {
         this.value = value;
+        this.value2 = value2;
         this.nestedValue = nestedValue;
     }
 }
