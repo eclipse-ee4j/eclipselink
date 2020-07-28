@@ -1,6 +1,5 @@
-/*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- *
+/*******************************************************************************
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0,
@@ -218,7 +217,7 @@ public class Oracle9Platform extends Oracle8Platform {
                 sqlXml.free();
             }
             // Oracle 12c appends a \n character to the xml string
-            return str.endsWith("\n") ? str.substring(0, str.length() - 1) : str;
+            return (str != null && str.endsWith("\n")) ? str.substring(0, str.length() - 1) : str; 
         } else if (type == OracleTypes.OPAQUE) {
             try {
                 Object result = resultSet.getObject(columnNumber);
