@@ -12,13 +12,17 @@
  */
 
 // Contributors:
-//     01/06/2020 - Will Dazey
-//       - 347987: Fix Attribute Override for Complex Embeddables
+//     07/30/2020 - Will Dazey
+//       - 564260: ElementCollection lowercase AttributeOverride is ignored
 package org.eclipse.persistence.jpa.test.mapping.model;
+
+import java.util.Set;
 
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -35,8 +39,17 @@ public class OverrideEntityA {
     //OverrideEmbeddableA.value must have the same field name and Column name as OverrideEmbeddableIdA.value
     @AttributeOverrides({
         @AttributeOverride(name = "value", column = @Column(name = "OVERRIDE_VALUE")),
-        @AttributeOverride(name = "nestedValue.nestedValue", column = @Column(name = "OVERRIDE_NESTED_VALUE")) })
-    private OverrideEmbeddableA id2;
+        @AttributeOverride(name = "nestedValue.nestedValue", column = @Column(name = "OVERRIDE_NESTED_VALUE"))
+    })
+    private OverrideEmbeddableA embeddedField1;
+
+    @ElementCollection
+    @CollectionTable(name = "CT_OVERRIDE_ENTITY_A") // use default join column name
+    @AttributeOverrides({
+        @AttributeOverride(name = "value", column = @Column(name = "CT_A_OVERRIDE_VALUE")),
+        @AttributeOverride(name = "nestedValue.nestedValue", column = @Column(name = "CT_A_OVERRIDE_NESTED_VALUE"))
+    })
+    private Set<OverrideEmbeddableA> simpleMappingEmbeddable;
 
     public OverrideEmbeddableIdA getId() {
         return id;
@@ -46,11 +59,19 @@ public class OverrideEntityA {
         this.id = id;
     }
 
-    public OverrideEmbeddableA getId2() {
-        return id2;
+    public OverrideEmbeddableA getEmbeddedField1() {
+        return embeddedField1;
     }
 
-    public void setId2(OverrideEmbeddableA id2) {
-        this.id2 = id2;
+    public void setEmbeddedField1(OverrideEmbeddableA embeddedField1) {
+        this.embeddedField1 = embeddedField1;
+    }
+
+    public Set<OverrideEmbeddableA> getSimpleMappingEmbeddable() {
+        return simpleMappingEmbeddable;
+    }
+
+    public void setSimpleMappingEmbeddable(Set<OverrideEmbeddableA> simpleMappingEmbeddable) {
+        this.simpleMappingEmbeddable = simpleMappingEmbeddable;
     }
 }
