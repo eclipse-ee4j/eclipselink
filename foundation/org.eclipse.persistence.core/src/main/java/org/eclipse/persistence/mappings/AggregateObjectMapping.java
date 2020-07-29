@@ -1975,8 +1975,6 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             //merge fieldInSource into the field from the Aggregate descriptor
             mappingField.setName(sourceField.getName());
             mappingField.setUseDelimiters(sourceField.shouldUseDelimiters());
-            mappingField.useUpperCaseForComparisons(sourceField.getUseUpperCaseForComparisons());
-            mappingField.setNameForComparisons(sourceField.getNameForComparisons());
             //copy type information
             mappingField.setNullable(sourceField.isNullable());
             mappingField.setUpdatable(sourceField.isUpdatable());

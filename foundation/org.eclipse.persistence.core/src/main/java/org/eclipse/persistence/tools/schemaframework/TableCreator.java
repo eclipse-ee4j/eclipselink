@@ -522,9 +522,6 @@ public class TableCreator {
                             final String fieldName = (String)record.get(columnNameLookupField);
                             if (fieldName != null && fieldName.length() > 0) {
                                 final DatabaseField column = new DatabaseField(fieldName);
-                                if (session.getPlatform().shouldForceFieldNamesToUpperCase()) {
-                                    column.useUpperCaseForComparisons(true);
-                                }
                                 final String schema = (String)record.get(schemaLookupField);
                                 // Check the schema as well.  Ignore columns for other schema if a schema match is found.
                                 if (schemaMatchFound) {

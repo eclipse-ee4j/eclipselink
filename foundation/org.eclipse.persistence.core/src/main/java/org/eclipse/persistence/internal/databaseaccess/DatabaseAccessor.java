@@ -1220,11 +1220,6 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 columnName = "C" + (index + 1);// Some column may be unnamed.
             }
             DatabaseField column = new DatabaseField(columnName);
-
-            // Force field names to upper case is set.
-            if (getPlatform().shouldForceFieldNamesToUpperCase()) {
-                column.useUpperCaseForComparisons(true);
-            }
             columnNames.addElement(column);
         }
         return columnNames;

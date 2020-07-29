@@ -638,8 +638,6 @@ public class MetadataProject {
                 DatabaseField pkField = new DatabaseField(MetadataConstants.MAPPED_SUPERCLASS_RESERVED_PK_NAME);
                 if (this.useDelimitedIdentifier()) {
                     pkField.setUseDelimiters(true);
-                } else if (this.getShouldForceFieldNamesToUpperCase()) {
-                    pkField.useUpperCaseForComparisons(true);
                 }
 
                 metadataDescriptor.addPrimaryKeyField(pkField);

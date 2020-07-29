@@ -148,8 +148,6 @@ public class CacheIndexMetadata extends ORMetadata {
         DatabaseField field = new DatabaseField(name);
         if (m_project.useDelimitedIdentifier()) {
             field.setUseDelimiters(true);
-        } else if (m_project.getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
-            field.useUpperCaseForComparisons(true);
         }
         return field;
     }

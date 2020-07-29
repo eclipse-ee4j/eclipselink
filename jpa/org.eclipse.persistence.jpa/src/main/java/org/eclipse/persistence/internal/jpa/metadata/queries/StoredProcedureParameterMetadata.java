@@ -519,8 +519,6 @@ public class StoredProcedureParameterMetadata extends ORMetadata {
     protected void setDatabaseFieldSettings(DatabaseField field) {
         if (getProject().useDelimitedIdentifier()) {
             field.setUseDelimiters(true);
-        } else if (getProject().getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
-            field.useUpperCaseForComparisons(true);
         }
     }
 

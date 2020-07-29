@@ -741,8 +741,6 @@ public abstract class ORMetadata {
         // point if the global flag is set to false.
         if (m_project.useDelimitedIdentifier()) {
             field.setUseDelimiters(true);
-        } else if (m_project.getShouldForceFieldNamesToUpperCase() && ! field.shouldUseDelimiters()) {
-            field.useUpperCaseForComparisons(true);
         }
     }
 

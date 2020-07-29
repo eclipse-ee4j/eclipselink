@@ -782,8 +782,6 @@ public class DefaultTableGenerator {
         resolvedDatabaseField.setUpdatable(childField.isUpdatable());
         resolvedDatabaseField.setInsertable(childField.isInsertable());
         resolvedDatabaseField.setUseDelimiters(childField.shouldUseDelimiters());
-        resolvedDatabaseField.useUpperCaseForComparisons(childField.getUseUpperCaseForComparisons());
-        resolvedDatabaseField.setNameForComparisons(childField.getNameForComparisons());
 
         String columnDef = childField.getColumnDefinition();
         if(columnDef == null || columnDef.trim().equals("")) {

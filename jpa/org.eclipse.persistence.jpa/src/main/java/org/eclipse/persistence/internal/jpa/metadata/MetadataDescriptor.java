@@ -361,7 +361,7 @@ public class MetadataDescriptor {
     public void addField(DatabaseField field) {
         // If it should use an upper case for comparisons upper case the name
         // before putting it in the map.
-        m_fields.put(field.getNameForComparisons(), field);
+        m_fields.put(field.getName(), field);
     }
 
     /**

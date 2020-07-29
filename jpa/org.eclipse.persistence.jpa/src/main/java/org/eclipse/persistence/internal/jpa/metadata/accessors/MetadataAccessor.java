@@ -488,7 +488,7 @@ public abstract class MetadataAccessor extends ORMetadata {
                 // now this will do (better than what we had before :-) ).
                 DatabaseField lookupField = new DatabaseField();
                 setFieldName(lookupField, referencedColumnName);
-                referenceField = referenceDescriptor.getField(lookupField.getNameForComparisons());
+                referenceField = referenceDescriptor.getField(lookupField.getName());
 
                 if (referenceField == null) {
                     // So here's the thing, there are a few reasons why we

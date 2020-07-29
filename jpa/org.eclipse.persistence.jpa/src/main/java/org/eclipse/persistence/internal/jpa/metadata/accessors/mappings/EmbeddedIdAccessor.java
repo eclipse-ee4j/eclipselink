@@ -61,8 +61,9 @@ import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.classes.ClassAccessor;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAccessibleObject;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataAnnotation;
-
 import org.eclipse.persistence.mappings.EmbeddableMapping;
+
+//import org.eclipse.persistence.mappings.EmbeddableMapping;
 
 /**
  * An embedded id relationship accessor.
@@ -101,6 +102,8 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
         super(embeddedId, accessibleObject, classAccessor);
     }
 
+// This feels like it violates the convention of m_idFields by replacing an "original" metadata field, for this Embeddable,
+// with a field that was specifically built for a specific table! I mean, the table is even set on the overrideField!
     /**
      * INTERNAL:
      * Process an attribute override for an embedded object, that is, an
@@ -222,10 +225,35 @@ public class EmbeddedIdAccessor extends EmbeddedAccessor {
                             clone.setTable(owningDescriptor.getPrimaryTable());
                         }
 
-                        owningDescriptor.addPrimaryKeyField(clone, m_idAccessors.get(clone));
+                        // Lookup the m_idAccessor value using the m_idField value
+                        owningDescriptor.addPrimaryKeyField(clone, m_idAccessors.get(field));
                     }
                 }
             }
         }
+    }
+
+    @Override
+    protected void updatePrimaryKeyField(MappingAccessor idAccessor, DatabaseField overrideField) {
+
+        DatabaseField mappingField = idAccessor.getMapping().getField();
+//        DatabaseField clone = mappingField.clone();
+//        if ("".equals(clone.getTableName())) {
+//            clone.setTable(getOwningDescriptor().getPrimaryTable());
+//        }
+
+        // We can get the "cloned" DatabaseField (set during EmbeddedIdAccessor.process()) reference based on the field name
+        DatabaseField field = getOwningDescriptor().getField(mappingField.getName());
+        
+
+        // The issue here is that the OwningDescriptor PrimaryKey DatabaseFields all have Table names associated with them!
+        // The idAccessor.mapping DatabaseField is the ORIGINAL DatabaseField, with no Table, that maps to the Embeddable class.
+        // The idAccessor.mapping DatabaseField is correctly unchanged since it's associated with an Embeddable; it needs to
+        //  remain Table agnostic.
+        // The only other options are:
+        //    1) Have the OwningDescriptor PrimaryKeyFields NOT have the table set
+        //    2) Recreate the PrimaryKeyField
+        getOwningDescriptor().removePrimaryKeyField(field);
+        getOwningDescriptor().addPrimaryKeyField(overrideField, idAccessor);
     }
 }

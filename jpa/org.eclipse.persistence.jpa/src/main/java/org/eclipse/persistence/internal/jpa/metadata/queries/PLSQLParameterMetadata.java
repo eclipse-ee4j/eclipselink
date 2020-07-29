@@ -285,8 +285,6 @@ public class PLSQLParameterMetadata extends ORMetadata {
     protected void setDatabaseFieldSettings(DatabaseField field, MetadataProject project){
         if (project.useDelimitedIdentifier()) {
             field.setUseDelimiters(true);
-        } else if (project.getShouldForceFieldNamesToUpperCase() && !field.shouldUseDelimiters()) {
-            field.useUpperCaseForComparisons(true);
         }
     }
 

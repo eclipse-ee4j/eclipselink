@@ -41,8 +41,6 @@ public class ObjectRelationalDatabaseField extends DatabaseField {
         this.table = field.getTable();
         this.type = field.type;
         this.useDelimiters = field.shouldUseDelimiters();
-        this.useUpperCaseForComparisons = field.getUseUpperCaseForComparisons();
-        this.nameForComparisons = field.getNameForComparisons();
         this.typeName = field.getTypeName();
         this.sqlTypeName = "";
     }
