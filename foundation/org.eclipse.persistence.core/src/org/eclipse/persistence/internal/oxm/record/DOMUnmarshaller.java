@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -408,91 +408,89 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
      * INTERNAL: Convert the Oracle XMLDocument to the reference-class.
      */
     public Object xmlToObject(DOMRecord xmlRow, Class referenceClass) throws XMLMarshalException {
-    	try{
-	        //Try to get the Encoding and Version from DOM3 APIs if available
-	        String xmlEncoding = "UTF-8";
-	        String xmlVersion = "1.0";
-	
-	        try {
-	            Method getEncoding = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlEncoding", new Class[] {}, true);
-	            Method getVersion = PrivilegedAccessHelper.getMethod(xmlRow.getDocument().getClass(), "getXmlVersion", new Class[] {}, true);
-	            xmlEncoding = (String) PrivilegedAccessHelper.invokeMethod(getEncoding, xmlRow.getDocument(), new Object[] {});
-	            xmlVersion = (String) PrivilegedAccessHelper.invokeMethod(getVersion, xmlRow.getDocument(), new Object[] {});
-	        } catch (Exception ex) {
-	            //if the methods aren't available, then just use the default values
-	        }
-	
-	        XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
-	
-	        // handle case where the reference class is a primitive wrapper - in
-	        // this case, we need to use the conversion manager to convert the 
-	        // node's value to the primitive wrapper class, then create, 
-	        // populate and return an XMLRoot
-	        if (referenceClass != null && (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
-	        	    ||CoreClassConstants.DURATION.isAssignableFrom(referenceClass))){
-	            // we're assuming that since we're unmarshalling to a primitive
-	            // wrapper, the root element has a single text node
-	            Object nodeVal;
-	            try {
-	                Text rootTxt = (Text) xmlRow.getDOM().getFirstChild();
-	                nodeVal = rootTxt.getNodeValue();
-	            } catch (Exception ex) {
-	                // here, either the root element doesn't have a text node as a
-	                // first child, or there is no first child at all - in any case,
-	                // try converting null
-	                nodeVal = null;
-	            }
-	  
-	            Object obj = ((XMLConversionManager) xmlContext.getSession().getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
-	            Root xmlRoot = new XMLRoot();
-	            xmlRoot.setObject(obj);
-	            String lName = xmlRow.getDOM().getLocalName();
-	            if (lName == null) {
-	                lName = xmlRow.getDOM().getNodeName();
-	            }
-	            xmlRoot.setLocalName(lName);
-	            xmlRoot.setNamespaceURI(xmlRow.getDOM().getNamespaceURI());
-	            xmlRoot.setEncoding(xmlEncoding);
-	            xmlRoot.setVersion(xmlVersion);
-	            return xmlRoot;
-	        }
+        try {
+            //Try to get the Encoding and Version from DOM3 APIs if available
+            String xmlEncoding = "UTF-8";
+            String xmlVersion = "1.0";
+
+            try {
+                xmlEncoding = xmlRow.getDocument().getXmlEncoding() != null ? xmlRow.getDocument().getXmlEncoding() : xmlEncoding;
+                xmlVersion = xmlRow.getDocument().getXmlVersion() != null ? xmlRow.getDocument().getXmlVersion() : xmlVersion;
+            } catch (Exception ex) {
+                //if the methods aren't available, then just use the default values
+            }
+
+            XMLContext xmlContext = xmlUnmarshaller.getXMLContext();
+
+            // handle case where the reference class is a primitive wrapper - in
+            // this case, we need to use the conversion manager to convert the 
+            // node's value to the primitive wrapper class, then create, 
+            // populate and return an XMLRoot
+            if (referenceClass != null && (XMLConversionManager.getDefaultJavaTypes().get(referenceClass) != null ||CoreClassConstants.XML_GREGORIAN_CALENDAR.isAssignableFrom(referenceClass)
+                    ||CoreClassConstants.DURATION.isAssignableFrom(referenceClass))) {
+                // we're assuming that since we're unmarshalling to a primitive
+                // wrapper, the root element has a single text node
+                Object nodeVal;
+                try {
+                    Text rootTxt = (Text) xmlRow.getDOM().getFirstChild();
+                    nodeVal = rootTxt.getNodeValue();
+                } catch (Exception ex) {
+                    // here, either the root element doesn't have a text node as a
+                    // first child, or there is no first child at all - in any case,
+                    // try converting null
+                    nodeVal = null;
+                }
+
+                Object obj = ((XMLConversionManager) xmlContext.getSession().getDatasourcePlatform().getConversionManager()).convertObject(nodeVal, referenceClass);
+                Root xmlRoot = new XMLRoot();
+                xmlRoot.setObject(obj);
+                String lName = xmlRow.getDOM().getLocalName();
+                if (lName == null) {
+                    lName = xmlRow.getDOM().getNodeName();
+                }
+                xmlRoot.setLocalName(lName);
+                xmlRoot.setNamespaceURI(xmlRow.getDOM().getNamespaceURI());
+                xmlRoot.setEncoding(xmlEncoding);
+                xmlRoot.setVersion(xmlVersion);
+                return xmlRoot;
+            }
             Descriptor descriptor = null;
             CoreAbstractSession readSession = null;
-            boolean shouldWrap = true;            
-            if(referenceClass == null){
+            boolean shouldWrap = true;
+            if(referenceClass == null) {
                 QName rootQName = new QName(xmlRow.getNamespaceURI(), xmlRow.getLocalName());
-                descriptor = xmlContext.getDescriptor(rootQName);   
+                descriptor = xmlContext.getDescriptor(rootQName);
                 if (null == descriptor) {
                     String type = ((Element) xmlRow.getDOM()).getAttributeNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, "type");
                     if (null != type) {
-     	                XPathFragment typeFragment = new XPathFragment(type);
-     	                String namespaceURI = xmlRow.resolveNamespacePrefix(typeFragment.getPrefix());
-     	                typeFragment.setNamespaceURI(namespaceURI);
-     	                descriptor = xmlContext.getDescriptorByGlobalType(typeFragment);    	               
-     	            }
-                 }else{
-                	 if(null != descriptor.getDefaultRootElementField() && !descriptor.isResultAlwaysXMLRoot() && !xmlUnmarshaller.isResultAlwaysXMLRoot()){
-                 	    String descLocalName = descriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
-                 	    String localName = xmlRow.getDOM().getLocalName();
-                 	    if (localName == null) {
-                 		  localName = xmlRow.getDOM().getNodeName();
-       	                }
-                 	String namespaceURI = xmlRow.getDOM().getNamespaceURI();
-                     	if( descLocalName != null && descLocalName.equals(localName) ){
-                     	    String descUri = descriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();
-                         	if((namespaceURI == null && descUri == null ) || (namespaceURI !=null &&namespaceURI.length() == 0 && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))){
-                      	       //found a descriptor based on root element then know we won't need to wrap in an XMLRoot
-                     	       shouldWrap = false;
-                     	    }
-                         }
-                 	}
-                 }          
-                
-                 if (null == descriptor) {
-                     throw XMLMarshalException.noDescriptorWithMatchingRootElement(rootQName.toString());
-                 }else{
-                     readSession = xmlContext.getSession(descriptor.getJavaClass());
-                 }
+                        XPathFragment typeFragment = new XPathFragment(type);
+                        String namespaceURI = xmlRow.resolveNamespacePrefix(typeFragment.getPrefix());
+                        typeFragment.setNamespaceURI(namespaceURI);
+                        descriptor = xmlContext.getDescriptorByGlobalType(typeFragment);
+                    }
+                } else {
+                    if(null != descriptor.getDefaultRootElementField() && !descriptor.isResultAlwaysXMLRoot() && !xmlUnmarshaller.isResultAlwaysXMLRoot()) {
+                        String descLocalName = descriptor.getDefaultRootElementField().getXPathFragment().getLocalName();
+                        String localName = xmlRow.getDOM().getLocalName();
+                        if (localName == null) {
+                            localName = xmlRow.getDOM().getNodeName();
+                        }
+                        String namespaceURI = xmlRow.getDOM().getNamespaceURI();
+                        if( descLocalName != null && descLocalName.equals(localName) ) {
+                            String descUri = descriptor.getDefaultRootElementField().getXPathFragment().getNamespaceURI();
+                            if((namespaceURI == null && descUri == null ) || (namespaceURI !=null &&namespaceURI.length() == 0 && descUri == null ) || (namespaceURI != null && namespaceURI.equals(descUri))) {
+                                //found a descriptor based on root element then know we won't need to wrap in an XMLRoot
+                                shouldWrap = false;
+                            }
+                        }
+                    }
+                }
+
+                if (null == descriptor) {
+                    throw XMLMarshalException.noDescriptorWithMatchingRootElement(rootQName.toString());
+                } else {
+                    readSession = xmlContext.getSession(descriptor.getJavaClass());
+                }
             } else {
                 // for XMLObjectReferenceMappings we need a non-shared cache, so
                 // try and get a Unit Of Work from the XMLContext
@@ -502,36 +500,36 @@ public class DOMUnmarshaller implements PlatformUnmarshaller {
                     throw XMLMarshalException.descriptorNotFoundInProject(referenceClass.getName());
                 } 
             }
-	    		
-	        Object object = null;
-	        if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE)) {
-	            xmlRow.setUnmarshaller(xmlUnmarshaller);
-	            xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy((AbstractSession) readSession));
-	            XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
-	
-	            ReadObjectQuery query = new ReadObjectQuery();
-	            query.setReferenceClass(referenceClass);
-	            query.setSession((AbstractSession) readSession);
-	            object = objectBuilder.buildObject(query, xmlRow, null);
-	
-	            // resolve mapping references
-	            xmlRow.resolveReferences(readSession, xmlUnmarshaller.getIDResolver());
-	        }
-	
-	        String elementNamespaceUri = xmlRow.getDOM().getNamespaceURI();
-	        String elementLocalName = xmlRow.getDOM().getLocalName();
-	        if (elementLocalName == null) {
-	            elementLocalName = xmlRow.getDOM().getNodeName();
-	        }
-	        String elementPrefix = xmlRow.getDOM().getPrefix();
-	        if(shouldWrap || descriptor.isResultAlwaysXMLRoot() || isResultAlwaysXMLRoot){
-	            return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot, true, xmlUnmarshaller);
-	        }else{
-	        	return object;
-	        }
-    	}finally{    		
-            xmlUnmarshaller.getStringBuffer().reset();           
-    	}
+
+            Object object = null;
+            if(null == xmlRow.getDOM().getAttributes().getNamedItemNS(javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI, Constants.SCHEMA_NIL_ATTRIBUTE)) {
+                xmlRow.setUnmarshaller(xmlUnmarshaller);
+                xmlRow.setDocPresPolicy(xmlContext.getDocumentPreservationPolicy((AbstractSession) readSession));
+                XMLObjectBuilder objectBuilder = (XMLObjectBuilder) descriptor.getObjectBuilder();
+
+                ReadObjectQuery query = new ReadObjectQuery();
+                query.setReferenceClass(referenceClass);
+                query.setSession((AbstractSession) readSession);
+                object = objectBuilder.buildObject(query, xmlRow, null);
+
+                // resolve mapping references
+                xmlRow.resolveReferences(readSession, xmlUnmarshaller.getIDResolver());
+            }
+
+            String elementNamespaceUri = xmlRow.getDOM().getNamespaceURI();
+            String elementLocalName = xmlRow.getDOM().getLocalName();
+            if (elementLocalName == null) {
+                elementLocalName = xmlRow.getDOM().getNodeName();
+            }
+            String elementPrefix = xmlRow.getDOM().getPrefix();
+            if(shouldWrap || descriptor.isResultAlwaysXMLRoot() || isResultAlwaysXMLRoot){
+                return descriptor.wrapObjectInXMLRoot(object, elementNamespaceUri, elementLocalName, elementPrefix, xmlEncoding, xmlVersion, this.isResultAlwaysXMLRoot, true, xmlUnmarshaller);
+            } else {
+                return object;
+            }
+        } finally {
+            xmlUnmarshaller.getStringBuffer().reset();
+        }
     }
 
     public boolean isResultAlwaysXMLRoot() {
