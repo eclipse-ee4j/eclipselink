@@ -110,28 +110,28 @@
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
         <!--Eclipse Dependencies version-->
-        <annotation.version>2.0.0-RC1</annotation.version>
-        <activation.version>2.0.0-RC3</activation.version>
-        <cdi.version>3.0.0-M2</cdi.version>
+        <activation.version>2.0.0</activation.version>
+        <annotation.version>2.0.0</annotation.version>
+        <cdi.version>3.0.0</cdi.version>
         <ejb.version>4.0.0-RC2</ejb.version>
-        <el.version>4.0.0-RC1</el.version>
+        <el.version>4.0.0</el.version>
         <glassfish.version>5.1.0</glassfish.version>
         <jaxwsrt.version>3.0.0-M3</jaxwsrt.version>
         <jaxb.version>3.0.0-M4</jaxb.version>
-        <jaxb.api.version>3.0.0-RC3</jaxb.api.version>
-        <soap.api.version>2.0.0-RC3</soap.api.version>
-        <jersey.version>3.0.0-M1</jersey.version>
+        <jaxb.api.version>3.0.0</jaxb.api.version>
+        <soap.api.version>2.0.0</soap.api.version>
+        <jersey.version>3.0.0-M6</jersey.version>
         <jms.version>3.0.0-RC1</jms.version>
-        <json.version>2.0.0-RC2</json.version>
-        <jpa.api.version>3.0.0-RC2</jpa.api.version>
+        <json.version>2.0.0</json.version>
+        <jpa.api.version>3.0.0</jpa.api.version>
         <mail.version>2.0.0-RC6</mail.version>
         <oracle.ddlparser.version>2.7.7</oracle.ddlparser.version>
-        <org.glassfish.corba.version>4.2.1</org.glassfish.corba.version>
-        <resource.version>2.0.0-RC1</resource.version>
-        <servlet.version>5.0.0-M1</servlet.version>
-        <transaction.version>2.0.0-RC1</transaction.version>
-        <validation.version>3.0.0-M1</validation.version>
-        <ws-api.version>3.0.0-RC3</ws-api.version>
+        <org.glassfish.corba.version>4.2.3-RC1</org.glassfish.corba.version>
+        <resource.version>2.0.0-RC2</resource.version>
+        <servlet.version>5.0.0</servlet.version>
+        <transaction.version>2.0.0-RC2</transaction.version>
+        <validation.version>3.0.0</validation.version>
+        <ws-api.version>3.0.0</ws-api.version>
         <ws-rs.version>3.0.0-M1</ws-rs.version>
 
 
