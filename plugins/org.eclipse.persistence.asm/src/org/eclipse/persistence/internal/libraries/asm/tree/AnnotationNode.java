@@ -60,7 +60,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public AnnotationNode(final String descriptor) {
-    this(/* latest api = */ Opcodes.ASM7, descriptor);
+    this(/* latest api = */ Opcodes.ASM8, descriptor);
     if (getClass() != AnnotationNode.class) {
       throw new IllegalStateException();
     }
@@ -70,7 +70,8 @@ public class AnnotationNode extends AnnotationVisitor {
    * Constructs a new {@link AnnotationNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
+   *     Opcodes#ASM8}
    * @param descriptor the class descriptor of the annotation class.
    */
   public AnnotationNode(final int api, final String descriptor) {
@@ -84,7 +85,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * @param values where the visited values must be stored.
    */
   AnnotationNode(final List<Object> values) {
-    super(/* latest api = */ Opcodes.ASM7);
+    super(/* latest api = */ Opcodes.ASM8);
     this.values = values;
   }
 
@@ -173,7 +174,7 @@ public class AnnotationNode extends AnnotationVisitor {
    * introduced in more recent versions of the ASM API than the given version.
    *
    * @param api an ASM API version. Must be one of {@link Opcodes#ASM4}, {@link Opcodes#ASM5},
-   *     {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link Opcodes#ASM8}.
    */
   public void check(final int api) {
     // nothing to do

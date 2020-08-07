@@ -74,7 +74,7 @@ public class ClassRemapper extends ClassVisitor {
    * @param remapper the remapper to use to remap the types in the visited class.
    */
   public ClassRemapper(final ClassVisitor classVisitor, final Remapper remapper) {
-    this(/* latest api = */ Opcodes.ASM7, classVisitor, remapper);
+    this(/* latest api = */ Opcodes.ASM8, classVisitor, remapper);
   }
 
   /**
@@ -82,7 +82,8 @@ public class ClassRemapper extends ClassVisitor {
    *
    * @param api the ASM API version supported by this remapper. Must be one of {@link
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7} or {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}.
    * @param classVisitor the class visitor this remapper must deleted to.
    * @param remapper the remapper to use to remap the types in the visited class.
    */
@@ -143,12 +144,11 @@ public class ClassRemapper extends ClassVisitor {
   }
 
   @Override
-  public RecordComponentVisitor visitRecordComponentExperimental(
-      final int access, final String name, final String descriptor, final String signature) {
+  public RecordComponentVisitor visitRecordComponent(
+      final String name, final String descriptor, final String signature) {
     RecordComponentVisitor recordComponentVisitor =
-        super.visitRecordComponentExperimental(
-            access,
-            remapper.mapRecordComponentNameExperimental(className, name, descriptor),
+        super.visitRecordComponent(
+            remapper.mapRecordComponentName(className, name, descriptor),
             remapper.mapDesc(descriptor),
             remapper.mapSignature(signature, true));
     return recordComponentVisitor == null
@@ -219,7 +219,14 @@ public class ClassRemapper extends ClassVisitor {
     super.visitNestMember(remapper.mapType(nestMember));
   }
 
+  /**
+   * <b>Experimental, use at your own risk.</b>.
+   *
+   * @param permittedSubtype the internal name of a permitted subtype.
+   * @deprecated this API is experimental.
+   */
   @Override
+  @Deprecated
   public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
     super.visitPermittedSubtypeExperimental(remapper.mapType(permittedSubtype));
   }

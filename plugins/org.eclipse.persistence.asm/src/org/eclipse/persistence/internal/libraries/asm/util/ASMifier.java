@@ -104,6 +104,7 @@ public class ASMifier extends Printer {
     classVersions.put(Opcodes.V12, "V12");
     classVersions.put(Opcodes.V13, "V13");
     classVersions.put(Opcodes.V14, "V14");
+    classVersions.put(Opcodes.V15, "V15");
     CLASS_VERSIONS = Collections.unmodifiableMap(classVersions);
   }
 
@@ -123,7 +124,7 @@ public class ASMifier extends Printer {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public ASMifier() {
-    this(/* latest api = */ Opcodes.ASM7, "classWriter", 0);
+    this(/* latest api = */ Opcodes.ASM8, "classWriter", 0);
     if (getClass() != ASMifier.class) {
       throw new IllegalStateException();
     }
@@ -133,7 +134,7 @@ public class ASMifier extends Printer {
    * Constructs a new {@link ASMifier}.
    *
    * @param api the ASM API version implemented by this class. Must be one of {@link Opcodes#ASM4},
-   *     {@link Opcodes#ASM5}, {@link Opcodes#ASM6} or {@link Opcodes#ASM7}.
+   *     {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link Opcodes#ASM8}.
    * @param visitorVariableName the name of the visitor variable in the produced code.
    * @param annotationVisitorId identifier of the annotation visitor variable in the produced code.
    */
@@ -322,11 +323,18 @@ public class ASMifier extends Printer {
     text.add(stringBuilder.toString());
   }
 
+  /**
+   * <b>Experimental, use at your own risk.</b>.
+   *
+   * @param permittedSubtype the internal name of a permitted subtype.
+   * @deprecated this API is experimental.
+   */
   @Override
-  public void visitPermittedSubtypeExperimental(final String visitPermittedSubtype) {
+  @Deprecated
+  public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
     stringBuilder.setLength(0);
     stringBuilder.append("classWriter.visitPermittedSubtypeExperimental(");
-    appendConstant(visitPermittedSubtype);
+    appendConstant(permittedSubtype);
     stringBuilder.append(END_PARAMETERS);
     text.add(stringBuilder.toString());
   }
@@ -348,13 +356,11 @@ public class ASMifier extends Printer {
   }
 
   @Override
-  public ASMifier visitRecordComponentExperimental(
-      final int access, final String name, final String descriptor, final String signature) {
+  public ASMifier visitRecordComponent(
+      final String name, final String descriptor, final String signature) {
     stringBuilder.setLength(0);
     stringBuilder.append("{\n");
-    stringBuilder.append("recordComponentVisitor = classWriter.visitRecordComponentExperimental(");
-    appendAccessFlags(access | ACCESS_FIELD);
-    stringBuilder.append(", ");
+    stringBuilder.append("recordComponentVisitor = classWriter.visitRecordComponent(");
     appendConstant(name);
     stringBuilder.append(", ");
     appendConstant(descriptor);
@@ -610,58 +616,25 @@ public class ASMifier extends Printer {
   // -----------------------------------------------------------------------------------------------
 
   @Override
-  public ASMifier visitRecordComponentAnnotationExperimental(
-      final String descriptor, final boolean visible) {
-    // TODO Use this call when not experimental anymore
-    // return visitAnnotation(descriptor, visible);
-    stringBuilder.setLength(0);
-    stringBuilder
-        .append("{\n")
-        .append(ANNOTATION_VISITOR0)
-        .append(name)
-        .append(".visitAnnotationExperimental(");
-    appendConstant(descriptor);
-    stringBuilder.append(", ").append(visible).append(");\n");
-    text.add(stringBuilder.toString());
-    ASMifier asmifier = createASMifier(ANNOTATION_VISITOR, 0);
-    text.add(asmifier.getText());
-    text.add("}\n");
-    return asmifier;
+  public ASMifier visitRecordComponentAnnotation(final String descriptor, final boolean visible) {
+    return visitAnnotation(descriptor, visible);
   }
 
   @Override
-  public ASMifier visitRecordComponentTypeAnnotationExperimental(
+  public ASMifier visitRecordComponentTypeAnnotation(
       final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
-    // TODO Use this call when not experimental anymore
-    // return visitTypeAnnotation(typeRef, typePath, descriptor, visible);
-    return visitTypeAnnotation(
-        "visitTypeAnnotationExperimental", typeRef, typePath, descriptor, visible);
+    return visitTypeAnnotation(typeRef, typePath, descriptor, visible);
   }
 
   @Override
-  public void visitRecordComponentAttributeExperimental(final Attribute attribute) {
-    // TODO Use this call when not experimental anymore
-    // visitAttribute(attribute);
-    stringBuilder.setLength(0);
-    stringBuilder.append("// ATTRIBUTE ").append(attribute.type).append('\n');
-    if (attribute instanceof ASMifierSupport) {
-      if (labelNames == null) {
-        labelNames = new HashMap<>();
-      }
-      stringBuilder.append("{\n");
-      ((ASMifierSupport) attribute).asmify(stringBuilder, "attribute", labelNames);
-      stringBuilder.append(name).append(".visitAttributeExperimental(attribute);\n");
-      stringBuilder.append("}\n");
-    }
-    text.add(stringBuilder.toString());
+  public void visitRecordComponentAttribute(final Attribute attribute) {
+    visitAttribute(attribute);
   }
 
   @Override
-  public void visitRecordComponentEndExperimental() {
+  public void visitRecordComponentEnd() {
     stringBuilder.setLength(0);
-    // TODO Use this call when not experimental anymore
-    // stringBuilder.append(name).append(VISIT_END);
-    stringBuilder.append(name).append(".visitEndExperimental();\n");
+    stringBuilder.append(name).append(VISIT_END);
     text.add(stringBuilder.toString());
   }
 
@@ -1432,6 +1405,13 @@ public class ASMifier extends Printer {
         stringBuilder.append(" | ");
       }
       stringBuilder.append("ACC_DEPRECATED");
+      isEmpty = false;
+    }
+    if ((accessFlags & Opcodes.ACC_RECORD) != 0) {
+      if (!isEmpty) {
+        stringBuilder.append(" | ");
+      }
+      stringBuilder.append("ACC_RECORD");
       isEmpty = false;
     }
     if ((accessFlags & (Opcodes.ACC_MANDATED | Opcodes.ACC_MODULE)) != 0) {

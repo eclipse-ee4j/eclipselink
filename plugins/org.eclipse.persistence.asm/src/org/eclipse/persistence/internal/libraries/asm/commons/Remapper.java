@@ -294,10 +294,8 @@ public abstract class Remapper {
    * @param name the name of the field.
    * @param descriptor the descriptor of the field.
    * @return the new name of the field.
-   * @deprecated this API is experimental.
    */
-  @Deprecated
-  public String mapRecordComponentNameExperimental(
+  public String mapRecordComponentName(
       final String owner, final String name, final String descriptor) {
     return name;
   }
