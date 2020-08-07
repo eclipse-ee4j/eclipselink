@@ -213,7 +213,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     }
 
     public ClassWeaver(ClassVisitor classWriter, ClassDetails classDetails) {
-        super(ASM7, classWriter);
+        super(ASM8, classWriter);
         this.classDetails = classDetails;
     }
 
