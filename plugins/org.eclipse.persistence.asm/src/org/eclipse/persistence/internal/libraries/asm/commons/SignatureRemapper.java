@@ -53,15 +53,16 @@ public class SignatureRemapper extends SignatureVisitor {
    * @param remapper the remapper to use to remap the types in the visited signature.
    */
   public SignatureRemapper(final SignatureVisitor signatureVisitor, final Remapper remapper) {
-    this(/* latest api = */ Opcodes.ASM7, signatureVisitor, remapper);
+    this(/* latest api = */ Opcodes.ASM8, signatureVisitor, remapper);
   }
 
   /**
    * Constructs a new {@link SignatureRemapper}.
    *
    * @param api the ASM API version supported by this remapper. Must be one of {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5} or {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5},{@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7} or {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}.
    * @param signatureVisitor the signature visitor this remapper must deleted to.
    * @param remapper the remapper to use to remap the types in the visited signature.
    */

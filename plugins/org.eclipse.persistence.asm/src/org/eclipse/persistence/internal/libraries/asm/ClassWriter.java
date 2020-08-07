@@ -79,8 +79,8 @@ public class ClassWriter extends ClassVisitor {
 
   /**
    * The access_flags field of the JVMS ClassFile structure. This field can contain ASM specific
-   * access flags, such as {@link Opcodes#ACC_DEPRECATED}, which are removed when generating the
-   * ClassFile structure.
+   * access flags, such as {@link Opcodes#ACC_DEPRECATED} or {}@link Opcodes#ACC_RECORD}, which are
+   * removed when generating the ClassFile structure.
    */
   private int accessFlags;
 
@@ -254,7 +254,7 @@ public class ClassWriter extends ClassVisitor {
    *     maximum stack size nor the stack frames will be computed for these methods</i>.
    */
   public ClassWriter(final ClassReader classReader, final int flags) {
-    super(/* latest api = */ Opcodes.ASM7);
+    super(/* latest api = */ Opcodes.ASM8);
     symbolTable = classReader == null ? new SymbolTable(this) : new SymbolTable(this, classReader);
     if ((flags & COMPUTE_FRAMES) != 0) {
       this.compute = MethodWriter.COMPUTE_ALL_FRAMES;
@@ -372,7 +372,14 @@ public class ClassWriter extends ClassVisitor {
     nestMemberClasses.putShort(symbolTable.addConstantClass(nestMember).index);
   }
 
+  /**
+   * <b>Experimental, use at your own risk.</b>
+   *
+   * @param permittedSubtype the internal name of a permitted subtype.
+   * @deprecated this API is experimental.
+   */
   @Override
+  @Deprecated
   public final void visitPermittedSubtypeExperimental(final String permittedSubtype) {
     if (permittedSubtypeClasses == null) {
       permittedSubtypeClasses = new ByteVector();
@@ -407,10 +414,10 @@ public class ClassWriter extends ClassVisitor {
   }
 
   @Override
-  public final RecordComponentVisitor visitRecordComponentExperimental(
-      final int access, final String name, final String descriptor, final String signature) {
+  public final RecordComponentVisitor visitRecordComponent(
+      final String name, final String descriptor, final String signature) {
     RecordComponentWriter recordComponentWriter =
-        new RecordComponentWriter(symbolTable, access, name, descriptor, signature);
+        new RecordComponentWriter(symbolTable, name, descriptor, signature);
     if (firstRecordComponent == null) {
       firstRecordComponent = recordComponentWriter;
     } else {
@@ -576,7 +583,7 @@ public class ClassWriter extends ClassVisitor {
     }
     int recordComponentCount = 0;
     int recordSize = 0;
-    if (firstRecordComponent != null) {
+    if ((accessFlags & Opcodes.ACC_RECORD) != 0 || firstRecordComponent != null) {
       RecordComponentWriter recordComponentWriter = firstRecordComponent;
       while (recordComponentWriter != null) {
         ++recordComponentCount;
@@ -698,7 +705,7 @@ public class ClassWriter extends ClassVisitor {
           .putShort(numberOfPermittedSubtypeClasses)
           .putByteArray(permittedSubtypeClasses.data, 0, permittedSubtypeClasses.length);
     }
-    if (firstRecordComponent != null) {
+    if ((accessFlags & Opcodes.ACC_RECORD) != 0 || firstRecordComponent != null) {
       result
           .putShort(symbolTable.addConstantUtf8(Constants.RECORD))
           .putInt(recordSize + 2)
