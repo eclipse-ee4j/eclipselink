@@ -44,7 +44,7 @@ public class MethodWeaver extends MethodVisitor implements Opcodes {
     protected boolean methodStarted = false;
 
     public MethodWeaver(ClassWeaver tcw, String methodName, String methodDescriptor, MethodVisitor mv) {
-        super(ASM7, mv);
+        super(ASM8, mv);
         this.tcw = tcw;
         this.methodName = methodName;
         this.methodDescriptor = methodDescriptor;
