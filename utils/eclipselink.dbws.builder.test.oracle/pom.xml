@@ -42,6 +42,11 @@
             <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracle</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!--Test framework-->
         <dependency>
             <groupId>junit</groupId>
@@ -49,6 +54,21 @@
             <scope>test</scope>
         </dependency>
         <!--Other dependencies-->
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
@@ -107,6 +127,7 @@
                                 <db.ddl.create>true</db.ddl.create>
                                 <db.ddl.drop>true</db.ddl.drop>
                                 <db.ddl.debug>false</db.ddl.debug>
+                                <user.timezone>Canada/Eastern</user.timezone>
                             </systemPropertyVariables>
                             <workingDirectory>${project.build.directory}/test-run</workingDirectory>
                         </configuration>
