@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2005, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2005, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2005, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2005, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,6 +73,18 @@ public class DerbyPlatform extends DB2Platform {
     @Override
     protected void appendByteArray(byte[] bytes, Writer writer) throws IOException {
             super.appendByteArray(bytes, writer);
+    }
+
+    /**
+     * Derby error the data type, length or value of arguments 'TIMESTAMP' and 'DATE' is incompatible.
+     * Instead, use a java.sql.Date type for property {d } casting
+     */
+    @Override
+    public Object convertToDatabaseType(Object value) {
+        if (value != null && value.getClass() == ClassConstants.UTILDATE) {
+            return Helper.sqlDateFromUtilDate((java.util.Date)value);
+        }
+        return super.convertToDatabaseType(value);
     }
 
     /**
