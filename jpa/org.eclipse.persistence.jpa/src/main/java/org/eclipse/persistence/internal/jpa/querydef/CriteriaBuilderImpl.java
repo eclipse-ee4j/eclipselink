@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2261,7 +2262,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     public <Y> Expression<Y> coalesce(Expression<? extends Y> x, Y y){
         ArgumentListFunctionExpression coalesce = ((InternalSelection)x).getCurrentNode().coalesce();
         coalesce.addChild(((InternalSelection)x).getCurrentNode());
-        coalesce.addChild(((InternalSelection)y).getCurrentNode());
+        coalesce.addChild(org.eclipse.persistence.expressions.Expression.from(y, new ExpressionBuilder()));
         return new CoalesceImpl(metamodel, x.getJavaType(), coalesce, buildList(x, internalLiteral(y)), "coalesce");
     }
 
