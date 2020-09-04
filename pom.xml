@@ -151,7 +151,6 @@
         <ws-api.version>3.0.0</ws-api.version>
         <ws-rs.version>3.0.0</ws-rs.version>
 
-
         <!--Third-Party Dependencies version-->
         <!-- CQ #21132 -->
         <apache.felix.framework.version>6.0.3</apache.felix.framework.version>
