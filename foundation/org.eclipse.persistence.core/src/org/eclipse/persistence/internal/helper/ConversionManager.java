@@ -35,6 +35,8 @@ import org.eclipse.persistence.internal.core.helper.CoreConversionManager;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetClassLoaderForClass;
 import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * <p>
@@ -49,41 +51,57 @@ import org.eclipse.persistence.internal.security.PrivilegedGetContextClassLoader
  */
 public class ConversionManager extends CoreConversionManager implements Serializable, Cloneable {
     protected Map defaultNullValues;
-    private static final ZoneId defaultZoneOffset;
+    private static ZoneId defaultZoneOffset = null;
     
-    static {
-        ZoneId tzoneid = null;
-        try {
-            String tzone = PrivilegedAccessHelper.getSystemProperty(SystemProperties.CONVERSION_USE_TIMEZONE);
-            if (tzone != null) {
-                
-                try {
-                    tzoneid = java.time.ZoneId.of(tzone);
-                } catch (Throwable t) {
-                    // If an invalid time zone id is supplied, then fall back to checking for checking for using
-                    // either UTC or the system's default time zone.
-                }
-            } 
-        } catch (Exception e) {
-            // Error occurred attempting to access this system property.  Fall back to the next property.
-        }
-        
-        try {
-            if (tzoneid == null) {
-                String propVal = PrivilegedAccessHelper.getSystemProperty(SystemProperties.CONVERSION_USE_DEFAULT_TIMEZONE, "false");
-                if (Boolean.parseBoolean(propVal)) {
-                    tzoneid = java.time.ZoneId.systemDefault();
-                } else {
-                    tzoneid = ZoneOffset.UTC;
-                }
+    private static ZoneId getDefaultZoneOffset() {
+        if (defaultZoneOffset == null) {
+            ZoneId tzoneid = null;
+            String tzone = null;
+            try {
+                tzone = PrivilegedAccessHelper.getSystemProperty(SystemProperties.CONVERSION_USE_TIMEZONE);
+                if (tzone != null) {
+                    try {
+                        tzoneid = java.time.ZoneId.of(tzone);
+                    } catch (Throwable t) {
+                        // If an invalid time zone id is supplied, then fall back to checking for checking for using
+                        // either UTC or the system's default time zone.
+                        if (AbstractSessionLog.getLog().shouldLog(SessionLog.WARNING)) {
+                            AbstractSessionLog.getLog().log(SessionLog.WARNING, "invalid_tzone", 
+                                    SystemProperties.CONVERSION_USE_TIMEZONE, tzone);
+                        }
+                    }
+                } 
+            } catch (Exception e) {
+                // Error occurred attempting to access this system property.  Fall back to the next property.
             }
-        } catch (Exception e) {
-            // Error occurred attempting to access this system property.  Fall back to UTC.
-            tzoneid = ZoneOffset.UTC;
+            
+            String propVal = null;
+            try {
+                if (tzoneid == null) {
+                    propVal = PrivilegedAccessHelper.getSystemProperty(SystemProperties.CONVERSION_USE_DEFAULT_TIMEZONE, "false");
+                    if (Boolean.parseBoolean(propVal)) {
+                        tzoneid = java.time.ZoneId.systemDefault();
+                    } else {
+                        tzoneid = ZoneOffset.UTC;
+                    }
+                }
+            } catch (Exception e) {
+                // Error occurred attempting to access this system property.  Fall back to UTC.
+                tzoneid = ZoneOffset.UTC;
+                if (AbstractSessionLog.getLog().shouldLog(SessionLog.WARNING)) {
+                    AbstractSessionLog.getLog().log(SessionLog.WARNING, "invalid_default_tzone", 
+                            SystemProperties.CONVERSION_USE_DEFAULT_TIMEZONE, propVal);
+                }
+            }           
+            
+            defaultZoneOffset = tzoneid;
+            
+            if (AbstractSessionLog.getLog().shouldLog(SessionLog.FINER)) {
+                AbstractSessionLog.getLog().log(SessionLog.FINER, "using_conversion_tzone", defaultZoneOffset);
+            }
         }
         
-        
-        defaultZoneOffset = tzoneid;
+        return defaultZoneOffset;        
     }
 
     /**
@@ -923,7 +941,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                     cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), cal.get(Calendar.MILLISECOND));
         } else if (sourceObject instanceof Long) {
             localDateTime = java.time.LocalDateTime.ofInstant(
-                    java.time.Instant.ofEpochSecond((Long) sourceObject), defaultZoneOffset);
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), getDefaultZoneOffset());
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_LDATETIME);
         }
@@ -966,7 +984,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
         } else if (sourceObject instanceof Long) {
             offsetDateTime = java.time.OffsetDateTime.ofInstant(
-                    java.time.Instant.ofEpochSecond((Long) sourceObject), defaultZoneOffset);
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), getDefaultZoneOffset());
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_ODATETIME);
         }
@@ -1011,7 +1029,7 @@ public class ConversionManager extends CoreConversionManager implements Serializ
                     java.time.ZoneOffset.ofTotalSeconds((cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)) / 1000));
         } else if (sourceObject instanceof Long) {
             offsetTime = java.time.OffsetTime.ofInstant(
-                    java.time.Instant.ofEpochSecond((Long) sourceObject), defaultZoneOffset);
+                    java.time.Instant.ofEpochSecond((Long) sourceObject), getDefaultZoneOffset());
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIME_OTIME);
         }
