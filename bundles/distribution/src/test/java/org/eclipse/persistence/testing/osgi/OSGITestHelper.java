@@ -35,7 +35,7 @@ public class OSGITestHelper {
     private static final String PLUGINS_DIR = System.getProperty("moxytest.2.common.plugins.dir","target/osgi-test-plugins/");
     private static final String QUALIFIER = System.getProperty("build.qualifier", "SNAPSHOT");
     private static final String RELEASE_VERSION = System.getProperty("release.version", "3.0.0");
-    private static final String ACTIVATION_JAR = System.getProperty("activation.jar", "jakarta.activation-api.jar");
+    private static final String ACTIVATION_JAR = System.getProperty("activation.jar", "jakarta.activation.jar");
     private static final String PERSISTENCE_JAR = System.getProperty("persistence.jar", "jakarta.persistence-api.jar");
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "jakarta.xml.bind-api.jar");
     private static final String JAXB_OSGI = System.getProperty("jaxb-osgi.jar", "jaxb-xjc.jar");
