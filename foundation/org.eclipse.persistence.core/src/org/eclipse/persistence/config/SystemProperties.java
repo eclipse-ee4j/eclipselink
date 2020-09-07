@@ -83,4 +83,18 @@ public class SystemProperties {
      * with the one either set in persistence.xml or auto detected.
      */
     public static final String ENFORCE_TARGET_SERVER = "eclipselink.target-server.enforce";
+    
+    /**
+     * This system property can be set the specific time zone used by ConversionManager to convert 
+     * LocalDateTime, OffsetDateTime, and OffsetTime types.
+     */
+    public static final String CONVERSION_USE_TIMEZONE = "org.eclipse.persistence.conversion.useTimeZone";
+    
+    /**
+     * This system property can be set to restore ConversionManager behavior with converting 
+     * LocalDateTime, OffsetDateTime, and OffsetTime types back to using the JVM's default time zone instead
+     * of UTC.  This restores behavior prior to fixing Bug 538296.  This property is ignored if the
+     * System Property CONVERSION_USE_TIMEZONE has been set.
+     */
+    public static final String CONVERSION_USE_DEFAULT_TIMEZONE = "org.eclipse.persistence.conversion.useDefaultTimeZoneForJavaTime";
 }
