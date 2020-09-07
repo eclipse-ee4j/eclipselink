@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Parent</name>
-    <description>TBD</description>
+    <description>Comprehensive and universal persistence framework for Java.</description>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.parent</artifactId>
     <version>3.0.0-SNAPSHOT</version>
@@ -41,6 +41,44 @@
         <name>Eclipse.org - EclipseLink Project</name>
         <url>http://www.eclipse.org/eclipselink</url>
     </organization>
+
+    <inceptionYear>2007</inceptionYear>
+    <url>http://www.eclipse.org/eclipselink</url>
+
+    <licenses>
+        <license>
+            <name>Eclipse Public License - v 2.0</name>
+            <url>http://www.eclipse.org/legal/epl-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+        <license>
+            <name>Eclipse Distribution License - v 1.0</name>
+            <url>http://www.eclipse.org/org/documents/edl-v10.php</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/eclipse-ee4j/eclipselink/issues</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>EclipseLink user's mailing list</name>
+            <post>eclipselink-users@eclipse.org</post>
+            <subscribe>https://accounts.eclipse.org/mailing-list/eclipselink-users</subscribe>
+            <unsubscribe>https://accounts.eclipse.org/mailing-list/eclipselink-users</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/eclipselink-users/</archive>
+        </mailingList>
+        <mailingList>
+            <name>EclipseLink developer's mailing list</name>
+            <post>eclipselink-dev@eclipse.org</post>
+            <subscribe>https://accounts.eclipse.org/mailing-list/eclipselink-dev</subscribe>
+            <unsubscribe>https://accounts.eclipse.org/mailing-list/eclipselink-dev</unsubscribe>
+            <archive>https://dev.eclipse.org/mhonarc/lists/eclipselink-dev/</archive>
+        </mailingList>
+    </mailingLists>
 
     <repositories>
         <repository>
