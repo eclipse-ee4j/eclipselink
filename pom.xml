@@ -1725,6 +1725,7 @@
             <modules>
                 <!--Helper parent pom for server side test modules-->
                 <module>pom_test_server.xml</module>
+                <module>pom_oracle_test_server.xml</module>
                 <module>foundation/org.eclipse.persistence.core.test.framework</module>
                 <module>foundation/eclipselink.core.test</module>
                 <module>jpa/org.eclipse.persistence.jpa.test.framework</module>
