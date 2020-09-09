@@ -44,8 +44,6 @@ fi
 
 echo '-[ mvn version set ]--------------------------------------'
 mvn --no-transfer-progress -DnewVersion=${RELEASE_VERSION} -DgenerateBackupPoms=false -Doracle.modules.subdirectory=bundles clean org.codehaus.mojo:versions-maven-plugin:2.7:set
-echo '-[ mvn version update-parent ALL]--------------------------------------'
-mvn -DparentVersion=${RELEASE_VERSION} -DgenerateBackupPoms=false -Doracle.modules.subdirectory=bundles clean org.codehaus.mojo:versions-maven-plugin:2.7:update-parent
 
 echo '-[ Build project mvn clean install ]-----------------------------'
 #This step is needed to populate local Maven repository with required but not deployed artifacts
