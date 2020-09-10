@@ -1738,26 +1738,13 @@
                 <module>jpa/eclipselink.jpa.nosql.test</module>
                 <!--JPA JSE test module-->
                 <module>jpa/eclipselink.jpa.test.jse</module>
-                <!--JPA JAXRS test module-->
-                <!--TODO FIXIT Doesn't work well. Temporary disabled.
-                <module>jpa/eclipselink.jaxrs.test</module>
-                -->
                 <!--JPA Spring test module-->
                 <module>jpa/eclipselink.jpa.spring.test</module>
                 <!--JPA WDF test module-->
                 <module>jpa/eclipselink.jpa.wdf.test</module>
-                <!--JPA JPA-RS test module-->
-                <!--TODO FIXIT Doesn't work well. Temporary disabled.
-                <module>jpa/eclipselink.jpars.test</module>
-                -->
 
                 <!-- Oracle DB specific tests -->
                 <module>foundation/org.eclipse.persistence.oracle.test</module>
-                <!--TODO uncomment after sdoapi dependency resolution-->
-                <!--<module>foundation/eclipselink.extension.oracle.spatial.test</module>-->
-                <!--JPA test module-->
-                <!--TODO uncomment after sdoapi dependency resolution-->
-                <!--<module>jpa/eclipselink.jpa.oracle.test</module>-->
                 <!--DBWS Oracle Test module module-->
                 <module>dbws/eclipselink.dbws.test.oracle</module>
                 <!--DBWS Builder Oracle Test modules-->
@@ -1767,6 +1754,23 @@
                 <module>utils/eclipselink.utils.sigcompare</module>
             </modules>
         </profile>
-    </profiles>
+        <profile>
+            <id>extra-tests</id>
+            <modules>
+                <!--JPA JAXRS test module-->
+                <!--TODO FIXIT Doesn't work well. -->
+                <module>jpa/eclipselink.jaxrs.test</module>
+                <!--JPA JPA-RS test module-->
+                <!--TODO FIXIT Doesn't work well. -->
+                <module>jpa/eclipselink.jpars.test</module>
 
+                <!-- Oracle DB specific tests -->
+                <!--TODO sdoapi dependency resolution is not solved-->
+                <module>foundation/eclipselink.extension.oracle.spatial.test</module>
+                <!--JPA test module-->
+                <!--TODO sdoapi dependency resolution is not solved-->
+                <module>jpa/eclipselink.jpa.oracle.test</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
