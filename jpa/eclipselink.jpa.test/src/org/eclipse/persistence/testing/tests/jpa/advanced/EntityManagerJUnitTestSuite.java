@@ -424,6 +424,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         tests.add("testBeginTransactionOnClosedEM");
         tests.add("testUpdateDetachedEntityWithRelationshipCascadeRefresh");
         tests.add("testForNPEInCloning"); //Bug#457480
+        tests.add("testCopy"); //Bug#463350
 //        if (isJPA21()){
 //            tests.add("testUnsynchronizedPC");
 //        }
@@ -12768,5 +12769,51 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             }
         }
     }
-    
+
+    //Bug#463350
+    public void testCopy() {
+        EntityManager em = null;
+        Job job = new ConcreteJob();
+        CopyGroup eventsCG = new CopyGroup();
+        eventsCG.addAttribute("id");
+        eventsCG.addAttribute("datef");
+        CopyGroup jobCG = new CopyGroup();
+        jobCG.addAttribute("id");
+        eventsCG.addAttribute("job", jobCG);
+        jobCG.addAttribute("events", eventsCG);
+
+        try {
+            em = createEntityManager();
+            beginTransaction(em);
+            em.persist(job);
+            em.flush();
+            job = (Job) em.unwrap(JpaEntityManager.class).copy(job, jobCG);
+            commitTransaction(em);
+
+            for (int i = 0; i < 10; i++) {
+                beginTransaction(em);
+                job = em.merge(job);
+                em.flush();
+                Event e = new Event();
+                e.setJob(job);
+                job.getEvents().add(e);
+                em.flush();
+
+                CopyGroup eventsCG2 = new CopyGroup();
+                eventsCG2.addAttribute("id");
+                eventsCG2.addAttribute("datef");
+                CopyGroup jobCG2 = new CopyGroup();
+                jobCG2.addAttribute("id");
+                eventsCG2.addAttribute("job", jobCG2);
+                jobCG2.addAttribute("events", eventsCG2);
+
+                job = (Job) em.unwrap(JpaEntityManager.class).copy(job, jobCG2);
+                commitTransaction(em);
+            }
+        } finally {
+            if (em != null) {
+                closeEntityManagerAndTransaction(em);
+            }
+        }
+    }
 }
