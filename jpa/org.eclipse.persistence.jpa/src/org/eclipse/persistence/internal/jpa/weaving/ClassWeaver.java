@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -459,15 +460,19 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
         // create a setter method for the new valueholder
         MethodVisitor cv_set_value = cv.visitMethod(ACC_PUBLIC, PERSISTENCE_SET + attribute + PERSISTENCE_FIELDNAME_POSTFIX, "(" + VHI_SIGNATURE + ")V", null, null);
 
-        // _toplink_foo_vh = valueholderinterface;
+        // _persistence_foo_vh = valueholderinterface;
         cv_set_value.visitVarInsn(ALOAD, 0);
         cv_set_value.visitVarInsn(ALOAD, 1);
         cv_set_value.visitFieldInsn(PUTFIELD, className, PERSISTENCE_FIELDNAME_PREFIX + attribute + PERSISTENCE_FIELDNAME_POSTFIX, VHI_SIGNATURE);
 
+        // if (valueholderinterface != null)
+        cv_set_value.visitVarInsn(ALOAD, 1);
+        Label l0 = new Label();
+        cv_set_value.visitJumpInsn(IFNULL, l0);
+
         // if (valueholderinterface.isInstantiated()){
         cv_set_value.visitVarInsn(ALOAD, 1);
         cv_set_value.visitMethodInsn(INVOKEINTERFACE, VHI_SHORT_SIGNATURE, "isInstantiated", "()Z", true);
-        Label l0 = new Label();
         cv_set_value.visitJumpInsn(IFEQ, l0);
 
         // Object object = getFoo();
