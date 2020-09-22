@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2024 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -216,9 +217,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         if (fieldsForGeneration == null) {
             // the method is called for the first time for this operation and this table
             fieldsForGeneration = new ArrayList<>();
-            Iterator<DatabaseField> it = this.main[operation][ALL].iterator();
-            while (it.hasNext()) {
-                DatabaseField field = it.next();
+            for (DatabaseField field : this.main[operation][ALL]) {
                 if (field.getTable().equals(table)) {
                     fieldsForGeneration.add(field);
                 }
@@ -756,9 +755,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         Hashtable<DatabaseField, DatabaseField> allFields = new Hashtable<>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if (main[operation][ALL] != null) {
-                Iterator<DatabaseField> it = main[operation][ALL].iterator();
-                while (it.hasNext()) {
-                    DatabaseField field = it.next();
+                for (DatabaseField field : main[operation][ALL]) {
                     allFields.put(field, field);
                 }
             }
@@ -889,9 +886,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         Hashtable<DatabaseField, DatabaseField> mapped = new Hashtable<>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if ((main[operation][MAPPED] != null) && !main[operation][MAPPED].isEmpty()) {
-                Iterator<DatabaseField> it = main[operation][MAPPED].iterator();
-                while (it.hasNext()) {
-                    DatabaseField field = it.next();
+                for (DatabaseField field : main[operation][MAPPED]) {
                     mapped.put(field, field);
                 }
             }
