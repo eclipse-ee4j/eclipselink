@@ -13,8 +13,8 @@
 
 -->
 
-<xs:schema xmlns:myns="mynamespace" xmlns:myns2="secondnamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
-    jxb:version="1.0" targetNamespace="mynamespace" attributeFormDefault="qualified" elementFormDefault="qualified">
+<xs:schema xmlns:myns="mynamespace" xmlns:myns2="secondnamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="https://jakarta.ee/xml/ns/jaxb"
+    jxb:version="3.0" targetNamespace="mynamespace" attributeFormDefault="qualified" elementFormDefault="qualified">
 
     <xs:element name="person">
         <xs:annotation>
