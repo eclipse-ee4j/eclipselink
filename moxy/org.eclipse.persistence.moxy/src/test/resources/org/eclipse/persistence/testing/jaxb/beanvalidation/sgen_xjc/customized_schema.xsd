@@ -14,11 +14,11 @@
 -->
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+           xmlns:jxb="https://jakarta.ee/xml/ns/jaxb"
            xmlns:bv="http://jaxb.dev.java.net/plugin/bean-validation"
            targetNamespace="cs" elementFormDefault="qualified"
            jxb:extensionBindingPrefixes="bv"
-           jxb:version="2.1">
+           jxb:version="3.0">
 
     <xs:annotation>
         <xs:appinfo>

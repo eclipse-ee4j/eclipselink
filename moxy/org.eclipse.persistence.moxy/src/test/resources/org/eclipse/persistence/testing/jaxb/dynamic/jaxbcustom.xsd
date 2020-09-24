@@ -14,7 +14,7 @@
 -->
 
 <xs:schema targetNamespace="myNamespace" xmlns:myns="myNamespace" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-    xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="1.0">
+    xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" jxb:version="3.0">
 
     <xs:annotation>
         <xs:appinfo>
