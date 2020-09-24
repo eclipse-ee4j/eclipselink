@@ -170,21 +170,21 @@
         <cdi.version>3.0.0</cdi.version>
         <ejb.version>4.0.0-RC2</ejb.version>
         <el.version>4.0.0</el.version>
-        <glassfish.version>5.1.0</glassfish.version>
-        <jaxwsrt.version>3.0.0-M4</jaxwsrt.version>
-        <jaxb.version>3.0.0-M4</jaxb.version>
+        <glassfish.version>6.0.0-M1</glassfish.version>
+        <jaxwsrt.version>3.0.0-M5</jaxwsrt.version>
+        <jaxb.version>3.0.0-M5</jaxb.version>
         <jaxb.api.version>3.0.0</jaxb.api.version>
         <soap.api.version>2.0.0</soap.api.version>
         <jersey.version>3.0.0-M6</jersey.version>
-        <jms.version>3.0.0-RC1</jms.version>
+        <jms.version>3.0.0</jms.version>
         <json.version>2.0.0</json.version>
         <jpa.api.version>3.0.0</jpa.api.version>
         <mail.version>2.0.0</mail.version>
         <oracle.ddlparser.version>3.0.0-M1</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.3-RC2</org.glassfish.corba.version>
-        <resource.version>2.0.0-RC2</resource.version>
+        <resource.version>2.0.0-RC3</resource.version>
         <servlet.version>5.0.0</servlet.version>
-        <transaction.version>2.0.0-RC2</transaction.version>
+        <transaction.version>2.0.0</transaction.version>
         <validation.version>3.0.0</validation.version>
         <ws-api.version>3.0.0</ws-api.version>
         <ws-rs.version>3.0.0</ws-rs.version>
@@ -208,9 +208,9 @@
         <jgroups.version>4.1.8.Final</jgroups.version>
         <jmh.version>1.21</jmh.version>
         <jmockit.version>1.35</jmockit.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13</junit.version>
         <!-- CQ #21138 -->
-        <mongodb.version>3.11.2</mongodb.version>
+        <mongodb.version>3.12.7</mongodb.version>
         <mysql.version>5.1.44</mysql.version>
         <mssql.version>7.4.1.jre8</mssql.version>
         <pgsql.version>42.2.11</pgsql.version>
@@ -227,7 +227,7 @@
         <!-- CQ #21143 -->
         <slf4j.version>2.0.0-alpha1</slf4j.version>
         <!-- CQ #21123, 21124, 21125, 21126, 21127, 21128, 21144, 21145, 21146, 21146, 21147, 21149-->
-        <springframework.version>5.2.0.RELEASE</springframework.version>
+        <springframework.version>5.2.9.RELEASE</springframework.version>
         <weblogic.version>12.2.1-3</weblogic.version>
         <wildfly.version>18.0.0.Final</wildfly.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
