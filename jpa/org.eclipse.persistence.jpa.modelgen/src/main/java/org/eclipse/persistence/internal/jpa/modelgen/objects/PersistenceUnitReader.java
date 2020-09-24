@@ -156,27 +156,31 @@ public class PersistenceUnitReader {
             final String filename = CanonicalModelProperties.getOption(ECLIPSELINK_PERSISTENCE_XML, ECLIPSELINK_PERSISTENCE_XML_DEFAULT, processingEnv.getOptions());
             HashSet<String> persistenceUnitList = getPersistenceUnitList(processingEnv);
 
+            InputStream in = null;
             InputStream inStream1 = null;
             InputStream inStream2 = null;
 
             try {
-                inStream1 = getInputStream(filename, true);
+                in = getInputStream(filename, true);
 
-                // If the persistence.xml was not found, then there is nothing
-                // to do.
-                if (inStream1 != null) {
+                // If the persistence.xml was not found, then there is nothing to do.
+                if (in != null) {
                     PersistenceXML persistenceXML;
-
                     try {
-                        // Try a 2.1 context first.
-                        persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_1Context().createUnmarshaller().unmarshal(inStream1);
-                    } catch (Exception e) {
-                        // Catch all exceptions and try a 2.0 context second
-                        // with a new input stream.
-                        inStream2 = getInputStream(filename, true);
-                        persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_0Context().createUnmarshaller().unmarshal(inStream2);
-                    }
+                        // Try a 3.0 context first.
+                        persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML3_0Context().createUnmarshaller().unmarshal(in);
+                    } catch (Throwable t) {
+                        try {
+                            // Then 2.1 context with a new input stream.
+                            inStream1 = getInputStream(filename, true);
+                            persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_1Context().createUnmarshaller().unmarshal(inStream1);
+                        } catch (Exception e) {
+                            // Catch all exceptions and try a 2.0 context with a new input stream the last
+                            inStream2 = getInputStream(filename, true);
+                            persistenceXML = (PersistenceXML) PersistenceXMLMappings.createXML2_0Context().createUnmarshaller().unmarshal(inStream2);
+                        }
 
+                    }
                     for (SEPersistenceUnitInfo puInfo : persistenceXML.getPersistenceUnitInfos()) {
                         // If no persistence unit list has been specified or one
                         // has been specified and this persistence unit info's
@@ -188,6 +192,7 @@ public class PersistenceUnitReader {
                     }
                 }
             } finally {
+                closeInputStream(in);
                 closeInputStream(inStream1);
                 closeInputStream(inStream2);
             }
