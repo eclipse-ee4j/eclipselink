@@ -28,7 +28,8 @@ public class XPathEngine {
     private static final String ATTRIBUTE = "@";
     private static final String TEXT = "text()";
     private static final String ALL_CHILDREN = "child::*";
-    private static final String NAMESPACE_URI = "http://java.sun.com/xml/ns/persistence/orm";
+    private static final String NAMESPACE_URI = "https://jakarta.ee/xml/ns/persistence/orm";
+    private static final String OLD_NAMESPACE_URI = "http://java.sun.com/xml/ns/persistence/orm";
     private static XPathEngine instance = null;
 
     private XPathEngine() {
@@ -141,7 +142,7 @@ public class XPathEngine {
     private Node selectSingleElement(Node contextNode, String xPathFragment) {
         Node child = contextNode.getFirstChild();
         while (null != child) {
-            if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment) && sameNamespaceURI(child, NAMESPACE_URI)) {
+            if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment) && (sameNamespaceURI(child, NAMESPACE_URI) || sameNamespaceURI(child, OLD_NAMESPACE_URI))) {
                 return child;
             }
 
@@ -169,7 +170,7 @@ public class XPathEngine {
         Node child = contextNode.getFirstChild();
 
         while (null != child) {
-            if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment) && sameNamespaceURI(child, NAMESPACE_URI)) {
+            if ((child.getNodeType() == Node.ELEMENT_NODE) && sameName(child, xPathFragment) && (sameNamespaceURI(child, NAMESPACE_URI) || sameNamespaceURI(child, OLD_NAMESPACE_URI))) {
                 xmlNodeList.add(child);
             }
 

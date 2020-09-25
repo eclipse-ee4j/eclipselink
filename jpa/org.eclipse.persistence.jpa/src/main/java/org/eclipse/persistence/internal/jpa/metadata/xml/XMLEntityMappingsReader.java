@@ -73,6 +73,8 @@ public class XMLEntityMappingsReader {
     public static final String ORM_2_1_NAMESPACE = "http://xmlns.jcp.org/xml/ns/persistence/orm";
     public static final String ORM_2_2_XSD = "org/eclipse/persistence/jpa/orm_2_2.xsd";
     public static final String ORM_2_2_NAMESPACE = "http://xmlns.jcp.org/xml/ns/persistence/orm";
+    public static final String ORM_3_0_XSD = "org/eclipse/persistence/jpa/orm_3_0.xsd";
+    public static final String ORM_3_0_NAMESPACE = "https://jakarta.ee/xml/ns/persistence/orm";
     public static final String ECLIPSELINK_ORM_XSD = "org/eclipse/persistence/jpa/eclipselink_orm_2_5.xsd";
     public static final String ECLIPSELINK_ORM_NAMESPACE = "http://www.eclipse.org/eclipselink/xsds/persistence/orm";
 
@@ -80,12 +82,14 @@ public class XMLEntityMappingsReader {
     private static XMLContext m_orm2_0Project;
     private static XMLContext m_orm2_1Project;
     private static XMLContext m_orm2_2Project;
+    private static XMLContext m_orm3_0Project;
     private static XMLContext m_eclipseLinkOrmProject;
 
     private static Schema m_orm1_0Schema;
     private static Schema m_orm2_0Schema;
     private static Schema m_orm2_1Schema;
     private static Schema m_orm2_2Schema;
+    private static Schema m_orm3_0Schema;
     private static Schema m_eclipseLinkOrmSchema;
 
     /**
@@ -119,25 +123,30 @@ public class XMLEntityMappingsReader {
                 if (validateSchema) {
                     context[1] = getEclipseLinkOrmSchema();
                 }
-            } else if (contentHandler.getVersion() == null || contentHandler.getVersion().indexOf('2') == -1) {
+            } else if (contentHandler.getVersion() == null || contentHandler.getVersion().contains("1.")) {
                 context[0] = getOrm1_0Project();
                 if (validateSchema) {
                     context[1] = getOrm1_0Schema();
                 }
-            } else if (contentHandler.getVersion().indexOf("2.0") != -1) {
+            } else if (contentHandler.getVersion().contains("2.0")) {
                 context[0] = getOrm2_0Project();
                 if (validateSchema) {
                     context[1] = getOrm2_0Schema();
                 }
-            } else if (contentHandler.getVersion().indexOf("2.1") != -1) {
+            } else if (contentHandler.getVersion().contains("2.1")) {
                 context[0] = getOrm2_1Project();
                 if (validateSchema) {
                     context[1] = getOrm2_1Schema();
                 }
-            } else {
+            } else if (contentHandler.getVersion().contains("2.2")) {
                 context[0] = getOrm2_2Project();
                 if (validateSchema) {
                     context[1] = getOrm2_2Schema();
+                }
+            } else {
+                context[0] = getOrm3_0Project();
+                if (validateSchema) {
+                    context[1] = getOrm3_0Schema();
                 }
             }
         }
@@ -266,6 +275,28 @@ public class XMLEntityMappingsReader {
     }
 
     /**
+     * @return the JPA 3.0 orm project.
+     */
+    public static XMLContext getOrm3_0Project() {
+        if (m_orm3_0Project == null) {
+            m_orm3_0Project = new XMLContext(new XMLEntityMappingsMappingProject(ORM_3_0_NAMESPACE, ORM_3_0_XSD));
+        }
+
+        return m_orm3_0Project;
+    }
+
+    /**
+     * @return the JPA 3.0 orm schema.
+     */
+    public static Schema getOrm3_0Schema() throws IOException, SAXException {
+        if (m_orm3_0Schema == null) {
+            m_orm3_0Schema = loadLocalSchema(ORM_3_0_XSD);
+        }
+
+        return m_orm3_0Schema;
+    }
+
+    /**
      * Free the project and schema objects to avoid holding onto the memory.
      * This can be done post-deployment to conserve memory.
      */
@@ -274,12 +305,14 @@ public class XMLEntityMappingsReader {
         m_orm2_0Project = null;
         m_orm2_1Project = null;
         m_orm2_2Project = null;
+        m_orm3_0Project = null;
         m_eclipseLinkOrmProject = null;
 
         m_orm1_0Schema = null;
         m_orm2_0Schema = null;
         m_orm2_1Schema = null;
         m_orm2_2Schema = null;
+        m_orm3_0Schema = null;
         m_eclipseLinkOrmSchema = null;
     }
 

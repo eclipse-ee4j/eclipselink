@@ -19,7 +19,6 @@ package org.eclipse.persistence.internal.jpa.modelgen.objects;
 
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitProperty;
-import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceXML;
 
 import org.eclipse.persistence.oxm.NamespaceResolver;
 import org.eclipse.persistence.oxm.XMLContext;
@@ -114,15 +113,19 @@ public class PersistenceXMLMappings {
     /**
      * INTERNAL:
      */
-    public static XMLContext createXML2_0Context() {
+    static XMLContext createXML2_0Context() {
         return createXMLContext("http://java.sun.com/xml/ns/persistence");
     }
 
     /**
      * INTERNAL:
      */
-    public static XMLContext createXML2_1Context() {
+    static XMLContext createXML2_1Context() {
         return createXMLContext("http://xmlns.jcp.org/xml/ns/persistence");
+    }
+
+    static XMLContext createXML3_0Context() {
+        return createXMLContext("https://jakarta.ee/xml/ns/persistence");
     }
 
     /**
