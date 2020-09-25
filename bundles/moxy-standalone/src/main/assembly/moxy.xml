@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+
+    This program and the accompanying materials are made available under the
+    terms of the Eclipse Public License v. 2.0 which is available at
+    http://www.eclipse.org/legal/epl-2.0,
+    or the Eclipse Distribution License v. 1.0 which is available at
+    http://www.eclipse.org/org/documents/edl-v10.php.
+
+    SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+
+-->
+
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.0.0 http://maven.apache.org/xsd/assembly-2.0.0.xsd">
+    <id>eclipselink.zip</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputDirectory>moxy/jlib/</outputDirectory>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+        </dependencySet>
+    </dependencySets>
+    <fileSets>
+        <!--License files-->
+        <fileSet>
+            <directory>${project.root.location}</directory>
+            <outputDirectory>moxy/</outputDirectory>
+            <includes>
+                <include>about.html</include>
+                <include>license.html</include>
+                <include>readme.html</include>
+            </includes>
+        </fileSet>
+        <!--Scripts to bin directory-->
+        <fileSet>
+            <directory>${generated.res.dir}/xsds</directory>
+            <outputDirectory>moxy/xsds</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${generated.res.dir}/bin</directory>
+            <outputDirectory>moxy/bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${generated.res.dir}/bin</directory>
+            <outputDirectory>moxy/bin</outputDirectory>
+            <excludes>
+                <exclude>*.sh</exclude>
+            </excludes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/scripts</directory>
+            <outputDirectory>moxy/bin</outputDirectory>
+            <fileMode>0755</fileMode>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/scripts</directory>
+            <outputDirectory>moxy/bin</outputDirectory>
+            <excludes>
+                <exclude>*.sh</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+</assembly>
