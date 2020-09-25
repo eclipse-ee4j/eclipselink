@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -66,13 +67,14 @@ import org.w3c.dom.Document;
 
 import dbws.testing.AllTests;
 import dbws.testing.DBWSTestHelper;
+import java.time.Instant;
 
 public class RelationshipsTestSuite {
 
     private static final String TIMEZONE_OFFSET;
 
     static {
-        int offsetInMillis = TimeZone.getDefault().getRawOffset();
+        int offsetInMillis = TimeZone.getDefault().getOffset(Instant.now().getEpochSecond());
         if (offsetInMillis != 0) {
             String offset = String.format("%02d:%02d",
                 Math.abs(offsetInMillis / 3600000),
@@ -823,7 +825,7 @@ public class RelationshipsTestSuite {
         XMLUnmarshaller unmarshaller = context.createUnmarshaller();
         DBWSModel model = (DBWSModel)unmarshaller.unmarshal(new StringReader(RELATIONSHIPS_DBWS));
         xrService = factory.buildService(model);
-
+        
         if (ddlCreate) {
             try {
                 AllTests.runDdl(CREATE_DDL, ddlDebug);
