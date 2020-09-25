@@ -35,6 +35,7 @@
     </properties>
 
     <modules>
+        <module>moxy-standalone</module>
         <module>eclipselink</module>
         <module>distribution</module>
     </modules>
