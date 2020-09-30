@@ -182,7 +182,7 @@
         <mail.version>2.0.0</mail.version>
         <oracle.ddlparser.version>3.0.0-M1</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.3-RC2</org.glassfish.corba.version>
-        <resource.version>2.0.0-RC3</resource.version>
+        <resource.version>2.0.0</resource.version>
         <servlet.version>5.0.0</servlet.version>
         <transaction.version>2.0.0</transaction.version>
         <validation.version>3.0.0</validation.version>
