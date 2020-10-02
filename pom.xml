@@ -206,7 +206,7 @@
         <hibernate.version>7.0.0.Alpha6</hibernate.version>
         <!-- CQ #21122 -->
         <jgroups.version>4.1.8.Final</jgroups.version>
-        <jmh.version>1.21</jmh.version>
+        <jmh.version>1.25.2</jmh.version>
         <jmockit.version>1.35</jmockit.version>
         <junit.version>4.13</junit.version>
         <!-- CQ #21138 -->
@@ -1115,7 +1115,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.6.0</version>
+                    <version>3.0.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
