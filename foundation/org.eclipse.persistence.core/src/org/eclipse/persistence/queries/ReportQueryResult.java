@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -278,6 +278,21 @@ public class ReportQueryResult implements Serializable, Map {
                 }
             } else {
                 value = row.getValues().get(itemIndex);
+
+                // Verify that the expected result type matches the actual value type
+                if(value != null && query.getSession().getProject().allowResultTypeConversion()) {
+                    Class valueType = value.getClass();
+                    Class resultType = item.getResultType();
+                    if(!valueType.isInstance(resultType)) {
+                        try {
+                            value = query.getSession().getPlatform().convertObject(value, resultType);
+                        } catch (ConversionException e) {
+                            // If an Exception is thrown while attempting to 
+                            // convert, ignore and return the original value
+                        }
+                    }
+                }
+
                 // GF_ISSUE_395
                 if (this.key != null) {
                     this.key.append(value);

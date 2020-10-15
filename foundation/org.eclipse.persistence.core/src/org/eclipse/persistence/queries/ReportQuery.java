@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -75,7 +75,7 @@ public class ReportQuery extends ReadAllQuery {
     public static final int NO_PRIMARY_KEY = 0;
     
     //GF_ISSUE_395
-    protected static final Boolean RESULT_IGNORED = Boolean.TRUE;
+    private enum ResultStatus { IGNORED };
     //end GF_ISSUE
     
     /** Flag indicating whether the primary key values should also be retrieved for the reference class. */
@@ -599,7 +599,7 @@ public class ReportQuery extends ReadAllQuery {
         //GF_ISSUE_395
         if (this.returnedKeys != null){
             if (this.returnedKeys.contains(reportQueryResult.getResultKey())){
-                return RESULT_IGNORED; //distinguish between null values and thrown away duplicates
+                return ResultStatus.IGNORED; //distinguish between null values and thrown away duplicates
             } else {
                 this.returnedKeys.add(reportQueryResult.getResultKey());
             }
@@ -647,7 +647,7 @@ public class ReportQuery extends ReadAllQuery {
         for (int index = 0; index < size; index++) {
             // GF_ISSUE_395
             Object result = buildObject((AbstractRecord)rows.get(index), rows);
-            if (result != RESULT_IGNORED) {
+            if (result != ResultStatus.IGNORED) {
                 containerPolicy.addInto(result, reportResults, this.session);
             }
             //end GF_ISSUE

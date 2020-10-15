@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -2546,6 +2546,14 @@ public class PersistenceUnitProperties {
      * Default: "<code>true</code>".
      */
     public static final String ALLOW_NULL_MAX_MIN = "eclipselink.allow-null-max-min";
+
+    /**
+     * The "<code>eclipselink.allow-result-type-conversion</code>" property configures eclipselink
+     * should convert resultset values to the expected value based on the query expression.
+     *
+     * Default: "<code>false</code>".
+     */
+    public static final String ALLOW_RESULT_TYPE_CONVERSION = "eclipselink.allow-result-type-conversion";
 
     /**
      * The "<code>eclipselink.id-validation</code>" property defines
