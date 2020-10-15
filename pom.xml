@@ -168,7 +168,7 @@
         <activation.version>2.0.0</activation.version>
         <annotation.version>2.0.0</annotation.version>
         <cdi.version>3.0.0</cdi.version>
-        <ejb.version>4.0.0-RC2</ejb.version>
+        <ejb.version>4.0.0</ejb.version>
         <el.version>4.0.0</el.version>
         <glassfish.version>6.0.0-M1</glassfish.version>
         <jaxwsrt.version>3.0.0-M5</jaxwsrt.version>
@@ -193,9 +193,9 @@
         <!-- CQ #21132 -->
         <apache.felix.framework.version>6.0.3</apache.felix.framework.version>
         <!-- CQ #21133 -->
-        <ant.version>1.10.7</ant.version>
+        <ant.version>1.10.9</ant.version>
         <!-- CQ #22146 -->
-        <asm.version>8.0.1</asm.version>
+        <asm.version>9.0</asm.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.14.2.0</derby.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
@@ -206,12 +206,12 @@
         <hibernate.version>7.0.0.Alpha6</hibernate.version>
         <!-- CQ #21122 -->
         <jgroups.version>4.1.8.Final</jgroups.version>
-        <jmh.version>1.25.2</jmh.version>
+        <jmh.version>1.26</jmh.version>
         <jmockit.version>1.35</jmockit.version>
-        <junit.version>4.13</junit.version>
+        <junit.version>4.13.1</junit.version>
         <!-- CQ #21138 -->
         <mongodb.version>3.12.7</mongodb.version>
-        <mysql.version>5.1.44</mysql.version>
+        <mysql.version>5.1.49</mysql.version>
         <mssql.version>7.4.1.jre8</mssql.version>
         <pgsql.version>42.2.11</pgsql.version>
         <!-- CQ #21139, 21140 -->
