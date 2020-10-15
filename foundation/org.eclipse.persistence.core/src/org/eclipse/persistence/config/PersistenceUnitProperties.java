@@ -2600,6 +2600,14 @@ public class PersistenceUnitProperties {
     public static final String ALLOW_NULL_MAX_MIN = "eclipselink.allow-null-max-min";
 
     /**
+     * The "<code>eclipselink.allow-result-type-conversion</code>" property configures eclipselink
+     * should convert resultset values to the expected value based on the query expression.
+     *
+     * Default: "<code>false</code>".
+     */
+    public static final String ALLOW_RESULT_TYPE_CONVERSION = "eclipselink.allow-result-type-conversion";
+
+    /**
      * The "<code>eclipselink.id-validation</code>" property defines
      * which primary key components values are considered invalid.
      * These values will be also overridden by sequencing.
