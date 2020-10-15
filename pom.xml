@@ -228,6 +228,7 @@
         <slf4j.version>2.0.0-alpha1</slf4j.version>
         <!-- CQ #21123, 21124, 21125, 21126, 21127, 21128, 21144, 21145, 21146, 21146, 21147, 21149-->
         <springframework.version>5.2.9.RELEASE</springframework.version>
+        <weld-se.version>4.0.0.Beta1</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
         <wildfly.version>18.0.0.Final</wildfly.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
@@ -845,6 +846,11 @@
                 <version>${jmockit.version}</version>
             </dependency>
             <!--APIs and other libs used in test classes-->
+            <dependency>
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se-core</artifactId>
+                <version>${weld-se.version}</version>
+            </dependency>
             <dependency>
                 <groupId>org.glassfish</groupId>
                 <artifactId>jakarta.el</artifactId>

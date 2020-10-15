@@ -129,7 +129,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public void acquire() {
         if (this.isIsolated) {
-            this.depth++;
+            this.depth.incrementAndGet();
             return;
         }
         super.acquire(false);
@@ -142,7 +142,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public void acquire(boolean forMerge) {
         if (this.isIsolated) {
-            this.depth++;
+            this.depth.incrementAndGet();
             return;
         }
         super.acquire(forMerge);
@@ -155,7 +155,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public boolean acquireNoWait() {
         if (this.isIsolated) {
-            this.depth++;
+            this.depth.incrementAndGet();
             return true;
         }
         return super.acquireNoWait(false);
@@ -169,10 +169,10 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
 
     public boolean acquireIfUnownedNoWait() {
         if (this.isIsolated) {
-            if (this.depth > 0) {
+            if (this.depth.get() > 0) {
                 return false;
             }
-            this.depth++;
+            this.depth.incrementAndGet();
             return true;
         }
         return super.acquireIfUnownedNoWait(false);
@@ -186,7 +186,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public boolean acquireNoWait(boolean forMerge) {
         if (this.isIsolated) {
-            this.depth++;
+            this.depth.incrementAndGet();
             return true;
         }
         return super.acquireNoWait(forMerge);
@@ -200,7 +200,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public boolean acquireWithWait(boolean forMerge, int wait) {
         if (this.isIsolated) {
-            this.depth++;
+            this.depth.incrementAndGet();
             return true;
         }
         return super.acquireWithWait(forMerge, wait);
@@ -212,7 +212,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public void acquireDeferredLock() {
         if (this.isIsolated) {
-            this.depth++;
+            this.depth.incrementAndGet();
             return;
         }
         super.acquireDeferredLock();
@@ -338,6 +338,9 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
         if (this == key) {
             return true;
         }
+        if (key.key == null || this.key == null) {
+            return false;
+        }
         return this.key.equals(key.key);
     }
 
@@ -362,7 +365,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public Thread getActiveThread() {
         if (this.isIsolated) {
-            if (this.depth > 0) {
+            if (this.depth.get() > 0) {
                 return Thread.currentThread();
             } else {
                 return null;
@@ -465,7 +468,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public void release() {
         if (this.isIsolated) {
-            this.depth--;
+            this.depth.decrementAndGet();
             return;
         }
         super.release();
@@ -477,7 +480,7 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
     @Override
     public void releaseDeferredLock() {
         if (this.isIsolated) {
-            this.depth--;
+            this.depth.decrementAndGet();
             return;
         }
         super.releaseDeferredLock();

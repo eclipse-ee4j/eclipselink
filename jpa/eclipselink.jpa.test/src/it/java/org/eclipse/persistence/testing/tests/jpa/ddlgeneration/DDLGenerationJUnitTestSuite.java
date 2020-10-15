@@ -1442,6 +1442,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
                 }
             }
         } catch (Exception e) {
+            e.printStackTrace();
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);
             }

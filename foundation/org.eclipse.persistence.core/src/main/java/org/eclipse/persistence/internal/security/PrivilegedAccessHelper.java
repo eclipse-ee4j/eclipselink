@@ -67,6 +67,8 @@ public class PrivilegedAccessHelper {
             SystemProperties.ARCHIVE_FACTORY, SystemProperties.ENFORCE_TARGET_SERVER, SystemProperties.RECORD_STACK_ON_LOCK,
             SystemProperties.WEAVING_OUTPUT_PATH, SystemProperties.WEAVING_SHOULD_OVERWRITE, SystemProperties.WEAVING_REFLECTIVE_INTROSPECTION,
             SystemProperties.DO_NOT_PROCESS_XTOMANY_FOR_QBE, SystemProperties.ONETOMANY_DEFER_INSERTS,
+            SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION,
+            SystemProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME, SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE,
             ServerPlatformBase.JMX_REGISTER_RUN_MBEAN_PROPERTY, ServerPlatformBase.JMX_REGISTER_DEV_MBEAN_PROPERTY,
             XMLPlatformFactory.XML_PLATFORM_PROPERTY};
     private final static Set<String> legalPropertiesSet = Collections.unmodifiableSet(new HashSet(Arrays.asList(legalProperties)));

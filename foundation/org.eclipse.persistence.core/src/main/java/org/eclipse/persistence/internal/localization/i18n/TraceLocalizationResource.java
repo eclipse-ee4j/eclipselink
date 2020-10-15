@@ -104,6 +104,145 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "acquiring_deferred_lock", "Thread \"{1}\" has acquired a deferred lock on object : {0} in order to avoid deadlock." },
         { "dead_lock_encountered_on_write", "Thread \"{1}\" encountered deadlock when attempting to lock : {0}.  Entering deadlock avoidance algorithm." },
         { "dead_lock_encountered_on_write_no_cache_key", "Thread \"{2}\" encountered deadlock when attempting to lock object of class: {0} with PK {1}.  Entering deadlock avoidance algorithm." },
+        { "concurrency_manager_release_locks_acquired_by_thread_1", "releaseAllLocksAcquiredByThread: Thread \"{1}\"  .The Lock manager is null. This might be an acquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). Cache Key:  \"{2}\"" },
+        { "concurrency_manager_release_locks_acquired_by_thread_2", "releaseAllLocksAcquiredByThread: Release active locks on Thread \"{1}\"" },
+        { "concurrency_manager_allow_concurrency_exception_fired_up", "allowConcurrencyExceptionToBeFiredUp: is set to FALSE."
+                + " No any exception be fired to avoid the risk of aborting the current thread not being sufficient to resolve any dead lock."
+                + " and leaving the system in a worth shape where aver 3 retries the business transaction is not re-attempted and the recovery of the system becomes complicated. "
+                + " We are going with the option of letting the system freeze. " },
+        { "concurrency_util_stuck_thread_tiny_log_cache_key", "Stuck thread problem: unique tiny message number ({0}) \n"
+                + " The Thread [{1}]  appears to be stuck (possible dead lock ongoing). \n"
+                + " The thread is working in the context of (CacheKey) = ({2}) . \n"
+                + " The thread has been stuck for: ({3} ms) \n "
+                + " Bellow we will describe the ActiveLocks, DeferredLocks and ReadLocks for this thread. " },
+        { "concurrency_util_owned_cache_key_null", "ObjectNull. Most likely not yet in server session cache and in the process of being created."},
+        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object: {2}) (cacheKeyClass: {3}) (current cache key owner/activeThread: {4}) (getNumberOfReaders: {5}) "
+                + " (concurrencyManagerId: {6}) (concurrencyManagerCreationDate: {7})"
+                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {8}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {9}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {10})  ---"},
+        { "concurrency_util_owned_cache_key_is_not_cache_key", "--- ConcurrencyManager: (ConcurrencyManagerClass: {0} ) (ConcurrencyManagerToString: {1}) (current cache key owner/activeThread: {2}) (concurrencyManagerId: {3}) (concurrencyManagerCreationDate: {4}) "
+                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {5}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {6}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {7})  ---"},
+        { "concurrency_util_header_current_cache_key", "Summary current cache key of thread {0} "},
+        { "concurrency_util_header_active_locks_owned_by_thread", "Summary of active locks owned by thread {0} "},
+        { "concurrency_util_header_deferred_locks_owned_by_thread", "Summary of deferred locks (could not be acquired and cause thread to wait for object building to complete) of thread {0} "},
+        { "concurrency_util_header_reader_locks_owned_by_thread", "Summary of read locks acquired by thread {0} "},
+        { "concurrency_util_summary_active_locks_on_thread_1", "Listing of all ACTIVE Locks.\n"
+                + "Thread Name: {0} \n"},
+        { "concurrency_util_summary_active_locks_on_thread_2", "0 Active locks. The lockManager for this thread is null. \n\n"},
+        { "concurrency_util_summary_active_locks_on_thread_3", "{0} Active locks.\n"},
+        { "concurrency_util_summary_active_locks_on_thread_4", "Active lock nr: {0} , Active cache key: {1}\n\n"},
+        { "concurrency_util_summary_deferred_locks_on_thread_1", "Listing of all DEFERRED Locks.\n"
+                + "Thread Name: {0} \n"},
+        { "concurrency_util_summary_deferred_locks_on_thread_2", "0 deferred locks. The lockManager for this thread is null. \n\n"},
+        { "concurrency_util_summary_deferred_locks_on_thread_3", "{0} Deferred locks.\n"},
+        { "concurrency_util_summary_deferred_locks_on_thread_4", "Deferred lock nr: {0} , Deferred cache key: {1}\n\n"},
+        { "concurrency_util_summary_read_locks_on_thread_step001_1", "Listing of all READ Locks. Step 001 - sparse summary loop over all read locks acquired:\n"
+                 + "Thread Name: {0} \n"},
+        { "concurrency_util_summary_read_locks_on_thread_step001_2", "0 read locks. The lockManager for this thread is null. \n\n"},
+        { "concurrency_util_summary_read_locks_on_thread_step001_3", "{0} Read locks.\n"},
+        { "concurrency_util_summary_read_locks_on_thread_step001_4", "Read lock nr: {0} , Read cache key: {1}\n\n"},
+        { "concurrency_util_summary_read_locks_on_thread_step002_1", "\nListing of all READ Locks. Step 002 - fat-detailed information about all read locks acquired:"},
+        { "concurrency_util_summary_read_locks_on_thread_step002_2", "Read locks acquired by thread: {0} with id: {1} never released.\n"
+                + "number of never released read locks: {2}"},
+        { "concurrency_util_summary_read_locks_on_thread_step002_3", "\nRead lock nr: {0} Read lock Cache Key: {1}"
+                + "\nRead lock nr: {0} dateOfReadLockAcquisition: {2}"
+                + "\nRead lock nr: {0} numberOfReadersOnCacheKeyBeforeIncrementingByOne: {3}"
+                + "\nRead lock nr: {0} currentThreadStackTraceInformationCpuTimeCostMs: {4}"},
+        { "concurrency_util_summary_read_locks_on_thread_step002_4", "\nRead lock nr: {0}  stackTraceInformation:  same as stack trace id: {1}"},
+        { "concurrency_util_summary_read_locks_on_thread_step002_5", "\nRead lock nr: {0} Stack trace id: {1} Start"
+                + "\nRead lock nr: {0} stackTraceInformation: {2}"
+                + "\nRead lock nr: {0} Stack trace id: {1} End"},
+        { "concurrency_util_summary_read_locks_on_thread_step002_6", "Read locks problems detected by thread: {0} during release read locks"
+                + "\n{1} removeReadLockProblemsDetected."},
+        { "concurrency_util_summary_read_locks_on_thread_step002_7", "\nRelease read lock problem nr: {0} \n   {1}"},
+        { "concurrency_util_enrich_thread_dump", "enrichGenerateThreadDump: Failed to generate thread dump with error: {0} "},
+        { "concurrency_util_enrich_thread_dump_thread_info_1", "\"{0}\" "
+                + "\n   java.lang.Thread.State: {1}"},
+        { "concurrency_util_enrich_thread_dump_thread_info_2", "\n        at {0}"},
+        { "concurrency_util_create_information_thread_dump", "Concurrency manager - Page 01 start - thread dump about all threads at time of event\n {0}"
+                + "\nConcurrency manager - Page 01 end - thread dump about all threads at time of event\n"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_1", "Concurrency manager - Page 02 start - information about threads waiting to acquire (write/deferred) cache keys "
+                + "\nTotal number of threads waiting to acquire lock: {0}\n\n"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_2", "[currentThreadNumber: {0}] [ThreadName: {1}]: Waiting to acquire (write/deferred): {2}\n"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_3", "Concurrency manager - Page 02 end - information about threads waiting to acquire (write/deferred) cache keys\n"},
+        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_1", "Concurrency manager - Page 03 start - information about threads waiting to acquire read cache keys "
+                + "\nTotal number of threads waiting to acquire read locks: {0} \n\n"},
+        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_2", "[currentThreadNumber: {0}] [ThreadName: {1} ]: Waiting to acquire (read lock): {2}\n"},
+        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_3", "Concurrency manager - Page 03 end - information about threads waiting to acquire read cache keys\n"},
+        { "concurrency_util_create_information_all_threads_release_deferred_locks_1", "Concurrency manager - Page 04 start - information about threads waiting on release deferred locks (waiting for other thread to finish building the objects deferred) "
+                + "\nTotal number of threads waiting to acquire lock: {0} \n\n"},
+        { "concurrency_util_create_information_all_threads_release_deferred_locks_2", "[currentThreadNumber: {0}] [ThreadName: {1} ]\n"},
+        { "concurrency_util_create_information_all_threads_release_deferred_locks_3", "Concurrency manager - Page 04 end - information about threads waiting on release deferred locks (waiting for other thread to finish building the objects deferred)\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_1", "Concurrency manager - Page 05 start (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread "
+                + "\nThread: {2}"
+                + "\nThreadWaitingToReleaseDeferredLocks: {3}"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_2", " waitingOnAcquireWritingCacheKey: true  waiting to acquire writing: {0}\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_3", " waitingOnAcquireWritingCacheKey: false\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_4", " waitingOnAcquireReadCacheKey: true   waiting to acquire reading: {0}\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_5", " waitingOnAcquireReadCacheKey: false\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_6", " writeManagerThreadPrimaryKeysWithChangesToBeMerged: true"
+                + "\n writeManagerThreadPrimaryKeysWithChangesToBeMerged list: {0}\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_7", " writeManagerThreadPrimaryKeysWithChangesToBeMerged: false\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_8", "Concurrency manager - Page 05 end (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread\n"},
+        { "concurrency_util_read_lock_manager_problem01", "Remove cache key from read lock manager problem 01:"
+                + "\n The current thread: {0} is about to decrement the currentNumberOfReaders from: {1}  to decrementedNumberOfReaders {2} "
+                + "\n  on the cache key: {3}"
+                + "\n however the readLockManager for the current thread is null."
+                + "\n This should never happen. If the readLockManager is null either the we have not incremented the number readers in the past. "
+                + "\n Or we have removed all the cache keys of the readLockManager belonging to this thread making the map become empty and be removed. "
+                + "\n It should never be the case that we are bout the decrement the count of readers and are not tracing the cache key are we about to decrement."
+                + "\n Stack trace as we detect the problem: {4}"
+                + "\n CurrentDate: {5}"},
+        { "concurrency_util_read_lock_manager_problem02", "Remove cache key from read lock manager problem 02:"
+                + "\n removeReadLock PROBLEM Detected - mapThreadToReadLockAcquisitionMetadata does not have have threadId  . "
+                + "\n The following problem is taking place. The Thread: {0} is about to decrease the number of readers on the cacheKey: {1} "
+                + "\n However this ReadLockManager currently has no entries on the mapThreadToReadLockAcquisitionMetadata associated to the ongoing threadId:  {2}"
+                + "\n as result in terms of tracing we will simply ignore this call to removeReadLock for the current cache key. "
+                + "\n Problem is taking place in Thread: {2} "
+                + "\n Stack trace as we detect the problem: {3}"
+                + "\n CurrentDate: {4}"},
+        { "concurrency_util_read_lock_manager_problem03", "Remove cache key from read lock manager problem 03:"
+                + "\n removeReadLock problem detected - mapThreadToReadLockAcquisitionMetadata.readLocksAcquiredDuringCurrentThread does not have have threadId  . "
+                + "\n The following problem is taking place. The Thread: {0} is about to decrease the number of readers on the cacheKey: {1}"
+                + "\n However this ReadLockManager currently has no entries on the mapThreadToReadLockAcquisitionMetadata.readLocksAcquiredDuringCurrentThread associated to the ongoing threadId:  {2}"
+                + "\n as result in terms of tracing we will simply ignore this call to removeReadLock for the current cache key. "
+                + "\n Problem is taking place in Thread: {2} "
+                + "\n Stack trace as we detect the problem: {3}"
+                + "\n CurrentDate: {4}"},
+        { "concurrency_util_read_lock_acquisition_metadata", "No stack trace take. isAllowTakingStackTraceDuringReadLockAcquisition is false."},
+        { "concurrency_util_dump_concurrency_manager_information_step02_01", "Start full concurrency manager state (massive) dump No: {0}\n"},
+        { "concurrency_util_dump_concurrency_manager_information_step02_02", "End full concurrency manager state (massive) dump No: {0}\n"},
+        { "concurrency_util_dump__dead_lock_explanation_01", "dumpDeadLockExplanationIfPossible code is buggy. The algorithm to try to explain dead locks should not break. Instead we have caught an exception"},
+        { "concurrency_util_dump__dead_lock_explanation_02", "Concurrency manager - Page 07 start - dead lock explanation\n"},
+        { "concurrency_util_dump__dead_lock_explanation_03", "We were not able to determine to determine a set of threads that went into dead lock."},
+        { "concurrency_util_dump__dead_lock_explanation_04", "Dead  lock result is comprised by  {0} thread entries where one of them is repeated. \n"},
+        { "concurrency_util_dump__dead_lock_explanation_05", "Dead lock participantNR: {0} "
+                + "\n {1} \n\n"},
+        { "concurrency_util_dump__dead_lock_explanation_06", "deadlock algorithm took {0} ms to try to find deadlock."
+                + "\nConcurrency manager - Page 07 end - dead lock explanation\n"},
+        { "concurrency_util_cache_keys_threads_making_use_cache_key_01", "Concurrency manager - Page 06 start - information about cache keys and threads needing them "
+                + "\nTotal number of cacheKeys to describe: {0} \n\n"},
+        { "concurrency_util_cache_keys_threads_making_use_cache_key_02", "-------------- [currentCacheKeyNumber: {0} of {1}]--------------\n"},
+        { "concurrency_util_cache_keys_threads_making_use_cache_key_03", "[currentCacheKeyNumber: {0}] [CacheKey: {1} ]:"
+                + "\n[currentCacheKeyNumber: {0}] threadsThatAcquiredActiveLock: {2}"
+                + "\n[currentCacheKeyNumber: {0}] threadsThatAcquiredDeferredLock: {3}"
+                + "\n[currentCacheKeyNumber: {0}] threadsThatAcquiredReadLock:  {4}"
+                + "\n[currentCacheKeyNumber: {0}] threadsKnownToBeStuckTryingToAcquireLock:  {5}"
+                + "\n[currentCacheKeyNumber: {0}] threadsKnownToBeStuckTryingToAcquireLockForReading:  {6}"
+                + "\n[currentCacheKeyNumber: {0}] threads doing object building with root on this cache key (not yet supported)...\n\n"},
+        { "concurrency_util_cache_keys_threads_making_use_cache_key_04", "Concurrency manager - Page 06 end - information about cache keys and threads needing them\n"},
+        { "explain_dead_lock_util_current_thread_blocked_active_thread_warning", "recursiveExplainPossibleDeadLockStep03Scenario03CurrentWriterVsCacheKeyActiveThread: nextCandidateThreadPartOfTheDeadLock is Thread: {0}  "
+                + " This thread appears to be blocking the thread: {1}  from progressing because it is set as the active thread on the cacheKey: {2} "},
+        { "explain_dead_lock_util_thread_stuck_deferred_locks", "recursiveExplainPossibleDeadLockStep04ExpandBasedOnThreadStuckOnReleaseDeferredLocks: currentCandidateThreadPartOfTheDeadLock is Thread: {0}  "
+                + " This thread appears to be stuck in the releaseDeferredLock logic. "
+                + " But our hacked implementation of the  isBuildObjectOnThreadComplete was not able to explain what thread and cache key are recursively "
+                + " stopping the candidate thread to make progress... We expect this code spot to never be invoked. "
+                + " Either this thread made progress or if it continues to be stuck in the releaseDeferredLock "
+                + " we most likely have an implementation bug somewhere. "},
+
         { "XML_call", "XML call" },
         { "XML_data_call", "XML data call" },
         { "XML_data_delete", "XML data delete" },
