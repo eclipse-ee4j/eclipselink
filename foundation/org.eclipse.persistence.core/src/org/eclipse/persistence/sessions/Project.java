@@ -176,6 +176,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Collection<String> structConverters;
 
     protected boolean allowNullResultMaxMin = true;
+    protected boolean allowResultTypeConversion = false;
 
     /**
      * PUBLIC:
@@ -1299,6 +1300,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL:
+     * Return true if ResultSet values should be converted for this project.
+     */
+    public boolean allowResultTypeConversion() {
+        return this.allowResultTypeConversion;
+    }
+
+    /**
+     * INTERNAL:
      * Return true if SQL calls can defer to EOT on this project.
      */
     public boolean allowSQLDeferral() {
@@ -1350,6 +1359,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setAllowNullResultMaxMin(boolean allowNullResultMaxMin) {
         this.allowNullResultMaxMin = allowNullResultMaxMin;
+    }
+
+    /**
+     * INTERNAL:
+     * Set whether ResultSet values should be converted for this project.
+     */
+    public void setAllowResultTypeConversion(boolean allowResultTypeConversion) {
+        this.allowResultTypeConversion = allowResultTypeConversion;
     }
 
     /**
