@@ -141,136 +141,147 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>start-corba-server</id>
-                        <phase>process-test-resources</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${test-skip-corba}</skip>
-                            <executable>java</executable>
-                            <classpathScope>test</classpathScope>
-                            <arguments>
-                                <argument>-classpath</argument>
-                                <!-- automatically creates the classpath using all project dependencies,
-                                     also adding the project build directory -->
-                                <classpath/>
-                                <argument>com.sun.corba.ee.impl.naming.cosnaming.TransientNameServer</argument>
-                                <argument>-ORBInitialPort</argument>
-                                <argument>${corba.server.port}</argument>
-                            </arguments>
-                            <async>true</async>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>wait-for-corba-server-start</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <sleep seconds="${corba.server.startup.timeout}"/>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-                <configuration>
-                    <dependenciesToScan>
-                        <dependency>org.eclipse.persistence:org.eclipse.persistence.core.test.framework</dependency>
-                    </dependenciesToScan>
-                    <workingDirectory>${project.build.directory}/test-classes</workingDirectory>
-                    <!--Set system properties required for tests-->
-                    <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
-                    <systemPropertyVariables>
-                        <java.security.policy>./java.policy.allpermissions</java.security.policy>
-                        <java.naming.factory.initial>${naming.factory}</java.naming.factory.initial>
-                        <java.naming.provider.url>iiop://${corba.server.host}:${corba.server.port}</java.naming.provider.url>
-                        <org.omg.CORBA.ORBInitialHost>${corba.server.host}</org.omg.CORBA.ORBInitialHost>
-                        <org.omg.CORBA.ORBInitialPort>${corba.server.port}</org.omg.CORBA.ORBInitialPort>
-                    </systemPropertyVariables>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>clear-database</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-corba}</skipTests>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>test-corba</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                        </goals>
-                        <configuration>
-                            <skipTests>${test-skip-corba}</skipTests>
-                            <includes>
-                                <include>org.eclipse.persistence.testing.tests.corba.CorbaTestModel</include>
-                            </includes>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>verify-integration-tests</id>
-                        <goals>
-                            <goal>verify</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${integration.test.skip.verify}</skip>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.carlspring.maven</groupId>
-                <artifactId>derby-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>start-derby</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>start</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>stop-derby</id>
-                        <phase>post-integration-test</phase>
-                        <goals>
-                            <goal>stop</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <profiles>
+        <profile>
+            <!-- see https://github.com/eclipse-ee4j/orb-gmbal/issues/22 -->
+            <id>corba-tests</id>
+            <activation>
+                <jdk>[8,14)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-corba-server</id>
+                                <phase>process-test-resources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${test-skip-corba}</skip>
+                                    <executable>java</executable>
+                                    <classpathScope>test</classpathScope>
+                                    <arguments>
+                                        <argument>-classpath</argument>
+                                        <!-- automatically creates the classpath using all project dependencies,
+                                        also adding the project build directory -->
+                                        <classpath/>
+                                        <argument>com.sun.corba.ee.impl.naming.cosnaming.TransientNameServer</argument>
+                                        <argument>-ORBInitialPort</argument>
+                                        <argument>${corba.server.port}</argument>
+                                    </arguments>
+                                    <async>true</async>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>wait-for-corba-server-start</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <sleep seconds="${corba.server.startup.timeout}"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <dependenciesToScan>
+                                <dependency>org.eclipse.persistence:org.eclipse.persistence.core.test.framework</dependency>
+                            </dependenciesToScan>
+                            <workingDirectory>${project.build.directory}/test-classes</workingDirectory>
+                            <!--Set system properties required for tests-->
+                            <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
+                            <systemPropertyVariables>
+                                <java.security.policy>./java.policy.allpermissions</java.security.policy>
+                                <java.naming.factory.initial>${naming.factory}</java.naming.factory.initial>
+                                <java.naming.provider.url>iiop://${corba.server.host}:${corba.server.port}</java.naming.provider.url>
+                                <org.omg.CORBA.ORBInitialHost>${corba.server.host}</org.omg.CORBA.ORBInitialHost>
+                                <org.omg.CORBA.ORBInitialPort>${corba.server.port}</org.omg.CORBA.ORBInitialPort>
+                            </systemPropertyVariables>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>clear-database</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${test-skip-corba}</skipTests>
+                                    <includes>
+                                        <include>org.eclipse.persistence.testing.tests.ClearDatabaseSchemaTest</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>test-corba</id>
+                                <goals>
+                                    <goal>integration-test</goal>
+                                </goals>
+                                <configuration>
+                                    <skipTests>${test-skip-corba}</skipTests>
+                                    <includes>
+                                        <include>org.eclipse.persistence.testing.tests.corba.CorbaTestModel</include>
+                                    </includes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>verify-integration-tests</id>
+                                <goals>
+                                    <goal>verify</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>${integration.test.skip.verify}</skip>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.carlspring.maven</groupId>
+                        <artifactId>derby-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-derby</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-derby</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>oracle</id>
             <dependencies>
