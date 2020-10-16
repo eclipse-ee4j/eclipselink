@@ -14,15 +14,12 @@
 //     Mike Norman - from Proof-of-concept, become production code
 package dbws.testing.shadowddlgeneration.oldjpub;
 
-//javase imports
-import java.lang.reflect.Modifier;
-
 /**
  * The Modifier class provides static methods and constants to decode class and member access
  * modifiers. It extends the java.lang.reflect.Modifier class to support additional modifiers for
  * other languages.
  */
-public class PublisherModifier extends Modifier
+public class PublisherModifier
 
 /*
  * The inherited Java modifiers are: PUBLIC PRIVATE PROTECTED STATIC FINAL SYNCHRONIZED VOLATILE
