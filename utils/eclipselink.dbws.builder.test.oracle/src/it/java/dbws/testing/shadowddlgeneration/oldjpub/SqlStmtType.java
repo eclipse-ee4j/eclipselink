@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //EclipseLink imports
-import dbws.testing.shadowddlgeneration.oldjpub.PublisherException;
+import java.lang.reflect.Modifier;
 
 /*
  * All SQL statements are published as methods in one Java class,
@@ -64,7 +64,7 @@ public class SqlStmtType extends SqlType {
      * subclass this.
      */
     public int getModifiers() throws SQLException {
-        return PublisherModifier.PUBLIC;
+        return Modifier.PUBLIC;
     }
 
 
