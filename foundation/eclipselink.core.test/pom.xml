@@ -93,10 +93,6 @@
         <!--Filtering enables generate/substitute test properties from Maven into *.xml files.-->
         <testResources>
             <testResource>
-                <directory>src/test/resources</directory>
-                <filtering>true</filtering>
-            </testResource>
-            <testResource>
                 <directory>${integration.test.resources.directory}</directory>
                 <filtering>true</filtering>
             </testResource>
