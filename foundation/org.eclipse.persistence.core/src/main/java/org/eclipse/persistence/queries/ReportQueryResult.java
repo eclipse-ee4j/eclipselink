@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
+import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.exceptions.QueryException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.expressions.FunctionExpression;
@@ -288,6 +289,21 @@ public class ReportQueryResult implements Serializable, Map {
                 }
             } else {
                 value = row.getValues().get(itemIndex);
+
+                // Verify that the expected result type matches the actual value type
+                if(value != null) {
+                    Class valueType = value.getClass();
+                    Class resultType = item.getResultType();
+                    if(!valueType.isInstance(resultType)) {
+                        try {
+                            value = query.getSession().getPlatform().convertObject(value, resultType);
+                        } catch (ConversionException e) {
+                            // If an Exception is thrown while attempting to 
+                            // convert, ignore and return the original value
+                        }
+                    }
+                }
+
                 // GF_ISSUE_395
                 if (this.key != null) {
                     this.key.append(value);
