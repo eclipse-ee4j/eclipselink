@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -235,6 +235,42 @@ public class TestQueryCase {
             assertEquals(2, intList.size());
             assertEquals(new Integer(100), intList.get(0));
             assertEquals(new Integer(100), intList.get(1));
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testQueryCase5() {
+        if (emf == null)
+            return;
+
+        if(!POPULATED) 
+            populate();
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            TypedQuery<Boolean> query = em.createQuery(""
+                    + "SELECT ("
+                       + "CASE "
+                       + "WHEN t.itemInteger1 = 1 THEN TRUE "
+                       + "ELSE FALSE "
+                       + "END "
+                    + ") "
+                    + "FROM EntityTbl01 t ORDER BY t.itemInteger1 ASC", Boolean.class);
+
+            List<Boolean> boolList = query.getResultList();
+            assertNotNull(boolList);
+            assertEquals(2, boolList.size());
+            assertEquals(true, boolList.get(0));
+            assertEquals(false, boolList.get(1));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
