@@ -18,7 +18,7 @@ JVM_ARGS=-Xmx256m
 
 # Please do not change any of the following lines:
 CLASSPATH=`dirname $0`/jakarta.servlet-api.jar:\
-`dirname $0`/javax.wsdl_1.6.2.v201012040545.jar:\
+`dirname $0`/wsdl4j.jar:\
 `dirname $0`/org.eclipse.persistence.oracleddlparser.jar:\
 `dirname $0`/../../jlib/eclipselink.jar:\
 `dirname $0`/org.eclipse.persistence.dbws.builder.jar:\

@@ -31,7 +31,6 @@ import org.ops4j.pax.exam.junit.PaxExam;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
 
 /**
  * Tests that all MOXy exported bundles can be properly loaded by OSGi framework.
@@ -62,7 +61,7 @@ public class OSGiBundleTest {
     @Test
     public void testAsmVersion() {
         Class<?> c = loadClass("org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor");
-        assertClassLoadedByBundle(c, ASM_BUNDLE_NAME, System.getProperty("asm.version", "7.1.0.v201909231337"));
+        assertClassLoadedByBundle(c, ASM_BUNDLE_NAME);
     }
 
     @Test
@@ -206,13 +205,4 @@ public class OSGiBundleTest {
         Assert.assertEquals("Bundle '" + bundle + "' is not running", Bundle.ACTIVE, b.getState());
     }
 
-    private void assertClassLoadedByBundle(Class<?> c, String bundle, String version) {
-        Bundle b = FrameworkUtil.getBundle(c);
-        Version v = b.getVersion();
-        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '" + b.getSymbolicName() +
-                        "', expected was '" + bundle + "'", bundle, b.getSymbolicName());
-        Assert.assertEquals("Class '" + c.getName() + "' was loaded by '"  + b.getSymbolicName() + "', version '"
-                        + v.toString() + "' expected was '" + bundle + "', version '" + v.toString() + "'.", version, v.toString());
-        Assert.assertEquals("Bundle '" + bundle + "' is not running", Bundle.ACTIVE, b.getState());
-    }
 }
