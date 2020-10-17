@@ -38,6 +38,7 @@
         <module>moxy-standalone</module>
         <module>eclipselink</module>
         <module>distribution</module>
+        <module>tests</module>
     </modules>
 
     <profiles>

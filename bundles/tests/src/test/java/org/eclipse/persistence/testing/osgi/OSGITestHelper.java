@@ -19,10 +19,8 @@ import org.ops4j.pax.exam.Option;
 import static org.ops4j.pax.exam.CoreOptions.bundle;
 import static org.ops4j.pax.exam.CoreOptions.cleanCaches;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 /**
  * Helper class with PAX options for different kind of OSGi tests.
@@ -32,30 +30,22 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
  */
 public class OSGITestHelper {
     // Environment variables defined in antbuild.properties/antbuild.xml
-    private static final String PLUGINS_DIR = System.getProperty("moxytest.2.common.plugins.dir","target/osgi-test-plugins/");
-    private static final String QUALIFIER = System.getProperty("build.qualifier", "SNAPSHOT");
-    private static final String RELEASE_VERSION = System.getProperty("release.version", "3.0.0");
+    private static final String PLUGINS_DIR = System.getProperty("plugins.dir","target/osgi-test-plugins/");
     private static final String ACTIVATION_JAR = System.getProperty("activation.jar", "jakarta.activation.jar");
-    private static final String PERSISTENCE_JAR = System.getProperty("persistence.jar", "jakarta.persistence-api.jar");
     private static final String JAXB_API_JAR = System.getProperty("jaxb-api.jar", "jakarta.xml.bind-api.jar");
     private static final String JAXB_OSGI = System.getProperty("jaxb-osgi.jar", "jaxb-xjc.jar");
     private static final String JAXRS_JAR = System.getProperty("jaxrs.jar", "jakarta.ws.rs-api.jar");
-    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm_3.0.0.SNAPSHOT.jar");
-    private static final String ASM_VERSION = System.getProperty("asm.version", "7.1.0.v201909231337");
-    private static final String BEAN_VALIDATION_LIB = System.getProperty("jakarta.validation.lib", "jakarta.validation-api.jar");
+    private static final String ASM_JAR = System.getProperty("asm.jar", "org.eclipse.persistence.asm.jar");
 
     public static Option[] getDefaultOptions() {
 
         return options(
-
-                systemProperty("asm.version").value(ASM_VERSION),
                 // JAXB API
                 bundle("file:" + PLUGINS_DIR + ACTIVATION_JAR),
                 bundle("file:" + PLUGINS_DIR + JAXB_API_JAR),
                 //JAXB_OSGI
                 bundle("file:" + PLUGINS_DIR + JAXB_OSGI),
-                // Jakarta Persistence api
-                bundle("file:" + PLUGINS_DIR + PERSISTENCE_JAR),
+
                 systemPackage("javax.rmi"),
                 systemPackage("javax.rmi.CORBA"),
                 systemPackage("org.omg.CORBA"),
@@ -65,8 +55,8 @@ public class OSGITestHelper {
                 bundle("file:" + PLUGINS_DIR + JAXRS_JAR),
 
                 // EclipseLink bundles
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy_" + RELEASE_VERSION + "." + QUALIFIER + ".jar"),
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.core_" + RELEASE_VERSION + "." + QUALIFIER + ".jar"),
+                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy.jar"),
+                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.core.jar"),
                 bundle("file:" + PLUGINS_DIR + ASM_JAR),
 
                 cleanCaches(),
@@ -75,11 +65,6 @@ public class OSGITestHelper {
 
     public static Option[] getOptionsWithBeanValidation() {
         return options(
-                mavenBundle().groupId("org.hibernate.validator").artifactId("hibernate-validator").version("6.0.7.Final"),
-                mavenBundle().groupId("com.fasterxml").artifactId("classmate").version("1.3.1"),
-                mavenBundle().groupId("org.glassfish").artifactId("javax.el").version("3.0.1-b08"),
-                mavenBundle().groupId("org.jboss.logging").artifactId("jboss-logging").version("3.3.0.Final"),
-
                 // JAXB API
                 bundle("file:" + PLUGINS_DIR + ACTIVATION_JAR),
                 bundle("file:" + PLUGINS_DIR + JAXB_API_JAR),
@@ -88,11 +73,16 @@ public class OSGITestHelper {
                 bundle("file:" + PLUGINS_DIR + JAXRS_JAR),
 
                 // EclipseLink bundles
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy_" + RELEASE_VERSION + "." + QUALIFIER + ".jar"),
-                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.core_" + RELEASE_VERSION + "." + QUALIFIER + ".jar"),
+                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.moxy.jar"),
+                bundle("file:" + PLUGINS_DIR + "org.eclipse.persistence.core.jar"),
                 bundle("file:" + PLUGINS_DIR + ASM_JAR),
-                bundle("file:" + BEAN_VALIDATION_LIB),
 
+                bundle("file:" + PLUGINS_DIR + "jakarta.validation-api.jar"),
+                bundle("file:" + PLUGINS_DIR + "hibernate-validator.jar"),
+                bundle("file:" + PLUGINS_DIR + "classmate.jar"),
+                bundle("file:" + PLUGINS_DIR + "jakarta.el-api.jar"),
+                bundle("file:" + PLUGINS_DIR + "jakarta.el.jar"),
+                bundle("file:" + PLUGINS_DIR + "jboss-logging.jar"),
                 cleanCaches(),
                 junitBundles()
         );
