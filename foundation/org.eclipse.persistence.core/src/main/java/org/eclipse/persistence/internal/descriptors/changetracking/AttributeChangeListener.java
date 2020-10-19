@@ -15,7 +15,6 @@
 package org.eclipse.persistence.internal.descriptors.changetracking;
 
 import java.beans.*;
-import java.lang.ref.WeakReference;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.changetracking.*;
@@ -36,8 +35,8 @@ import org.eclipse.persistence.exceptions.ValidationException;
  * ChangeRecords for the changed attributes.
  */
 public class AttributeChangeListener extends ObjectChangeListener {
-    protected transient WeakReference<ClassDescriptor> descriptor;
-    protected transient WeakReference<UnitOfWorkImpl> uow;
+    protected transient ClassDescriptor descriptor;
+    protected transient UnitOfWorkImpl uow;
     protected org.eclipse.persistence.internal.sessions.ObjectChangeSet objectChangeSet;
     protected Object owner;
 
@@ -47,8 +46,8 @@ public class AttributeChangeListener extends ObjectChangeListener {
      */
     public AttributeChangeListener(ClassDescriptor descriptor, UnitOfWorkImpl uow, Object owner) {
         super();
-        this.descriptor = new WeakReference<ClassDescriptor>(descriptor);
-        this.uow = new WeakReference<UnitOfWorkImpl>(uow);
+        this.descriptor = descriptor;
+        this.uow = uow;
         this.owner = owner;
     }
 
@@ -73,7 +72,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
      * Return the descriptor associated with this listener
      */
     public ClassDescriptor getDescriptor() {
-        return descriptor.get();
+        return descriptor;
     }
 
     /**
@@ -81,7 +80,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
      * Set the descriptor associated with this listener
      */
     public void setDescriptor(ClassDescriptor descriptor) {
-        this.descriptor = new WeakReference<ClassDescriptor>(descriptor);
+        this.descriptor = descriptor;
     }
 
     /**
@@ -89,7 +88,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
      * Return the unit of work associated with this listener
      */
     public UnitOfWorkImpl getUnitOfWork() {
-        return uow.get();
+        return uow;
     }
 
     /**
@@ -97,7 +96,7 @@ public class AttributeChangeListener extends ObjectChangeListener {
      * Set the unit of work associated with this listener
      */
     public void setUnitOfWork(UnitOfWorkImpl uow) {
-        this.uow = new WeakReference<UnitOfWorkImpl>(uow);
+        this.uow = uow;
     }
 
     /**
@@ -126,45 +125,36 @@ public class AttributeChangeListener extends ObjectChangeListener {
             return;
         }
 
-        ClassDescriptor descriptor = getDescriptor();
-        DatabaseMapping mapping = null;
-        if(descriptor != null) {
-            mapping = descriptor.getObjectBuilder().getMappingForAttributeName(evt.getPropertyName());
-            //Bug#4127952 Throw an exception indicating there is no mapping for the property name.
-            if (mapping == null) {
-                throw ValidationException.wrongPropertyNameInChangeEvent(owner.getClass(), evt.getPropertyName());
-            }
-            if (mapping instanceof AbstractDirectMapping || mapping instanceof AbstractTransformationMapping) {
-                //If both newValue and oldValue are null, or newValue is not null and newValue equals oldValue, don't build ChangeRecord
-                if (((evt.getNewValue() == null) && (evt.getOldValue() == null)) || ((evt.getNewValue() != null) && (evt.getNewValue()).equals(evt.getOldValue()))) {
-                    return;
-                }
+        DatabaseMapping mapping = descriptor.getObjectBuilder().getMappingForAttributeName(evt.getPropertyName());
+        //Bug#4127952 Throw an exception indicating there is no mapping for the property name.
+        if (mapping == null) {
+            throw ValidationException.wrongPropertyNameInChangeEvent(owner.getClass(), evt.getPropertyName());
+        }
+        if (mapping instanceof AbstractDirectMapping || mapping instanceof AbstractTransformationMapping) {
+            //If both newValue and oldValue are null, or newValue is not null and newValue equals oldValue, don't build ChangeRecord
+            if (((evt.getNewValue() == null) && (evt.getOldValue() == null)) || ((evt.getNewValue() != null) && (evt.getNewValue()).equals(evt.getOldValue()))) {
+                return;
             }
         }
 
         super.internalPropertyChange(evt);
 
-        UnitOfWorkImpl uow = getUnitOfWork();
-        if(uow != null) {
-            if (uow.getUnitOfWorkChangeSet() == null) {
-                uow.setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(uow));
-            }
-            if (objectChangeSet == null) {//only null if new or if in a new UOW
-                //add to tracker list to prevent GC of clone if using weak references
-                //put it in here so that it only occurs on the 1st change for a particular UOW
-                uow.addToChangeTrackedHardList(owner);
-                objectChangeSet = getDescriptor().getObjectBuilder().createObjectChangeSet(owner, (UnitOfWorkChangeSet) uow.getUnitOfWorkChangeSet(), false, uow);
-            }
+        if (uow.getUnitOfWorkChangeSet() == null) {
+            uow.setUnitOfWorkChangeSet(new UnitOfWorkChangeSet(uow));
+        }
+        if (objectChangeSet == null) {//only null if new or if in a new UOW
+            //add to tracker list to prevent GC of clone if using weak references
+            //put it in here so that it only occurs on the 1st change for a particular UOW
+            uow.addToChangeTrackedHardList(owner);
+            objectChangeSet = getDescriptor().getObjectBuilder().createObjectChangeSet(owner, (UnitOfWorkChangeSet) uow.getUnitOfWorkChangeSet(), false, uow);
         }
 
-        if(mapping != null) {
-            if (evt.getClass().equals(ClassConstants.PropertyChangeEvent_Class)) {
-                mapping.updateChangeRecord(evt.getSource(), evt.getNewValue(), evt.getOldValue(), objectChangeSet, getUnitOfWork());
-            } else if (evt.getClass().equals(ClassConstants.CollectionChangeEvent_Class) || (evt.getClass().equals(ClassConstants.MapChangeEvent_Class))) {
-                mapping.updateCollectionChangeRecord((CollectionChangeEvent)evt, objectChangeSet, getUnitOfWork());
-            } else {
-                throw ValidationException.wrongChangeEvent(evt.getClass());
-            }
+        if (evt.getClass().equals(ClassConstants.PropertyChangeEvent_Class)) {
+            mapping.updateChangeRecord(evt.getSource(), evt.getNewValue(), evt.getOldValue(), objectChangeSet, getUnitOfWork());
+        } else if (evt.getClass().equals(ClassConstants.CollectionChangeEvent_Class) || (evt.getClass().equals(ClassConstants.MapChangeEvent_Class))) {
+            mapping.updateCollectionChangeRecord((CollectionChangeEvent)evt, objectChangeSet, getUnitOfWork());
+        } else {
+            throw ValidationException.wrongChangeEvent(evt.getClass());
         }
     }
 
