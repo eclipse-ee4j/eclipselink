@@ -72,7 +72,7 @@
                             <outputDirectory>${generated.res.dir}/bin</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${basedir}/../distribution/src/main/scripts</directory>
+                                    <directory>${basedir}/../eclipselink/src/main/scripts</directory>
                                     <includes>
                                         <include>setenv*</include>
                                     </includes>
