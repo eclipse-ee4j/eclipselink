@@ -31,13 +31,10 @@
     </parent>
 
     <properties>
-        <archive.tmp.dir>archive-tmp</archive.tmp.dir>
-        <test.jars.tmp.dir>eclipselink-test-jars</test.jars.tmp.dir>
+        <gen.src.dir>${project.build.directory}/generated-sources/dependency-sources</gen.src.dir>
 
         <!--Javadoc properties-->
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
-        <javadoc.jpars.prefixTitle>EclipseLink JPA-RS ${release.version}</javadoc.jpars.prefixTitle>
-        <javadoc.nosql.prefixTitle>EclipseLink NoSQL ${release.version}</javadoc.nosql.prefixTitle>
         <javadoc.postfixTitle>API Reference</javadoc.postfixTitle>
 
         <!--Properties used for MANIFEST.MF generation-->
@@ -47,11 +44,6 @@
         <manifest.implementation.vendor>${manifest.specification.vendor}</manifest.implementation.vendor>
         <manifest.main.class>org.eclipse.persistence.Version</manifest.main.class>
         <manifest.premain.class>org.eclipse.persistence.internal.jpa.deployment.JavaSECMPInitializerAgent</manifest.premain.class>
-
-        <!--Test properties-->
-        <eclipselink.unzip.dir>${project.build.directory}/eclipselink.zip-tmp/</eclipselink.unzip.dir>
-        <osgi.test.plugins.dir>osgi-test-plugins/</osgi.test.plugins.dir>
-
     </properties>
 
     <dependencies>
@@ -69,21 +61,18 @@
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-            <scope>provided</scope>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>jakarta.mail</groupId>
-            <artifactId>jakarta.mail-api</artifactId>
-            <scope>provided</scope>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 
@@ -91,19 +80,16 @@
         <dependency>
             <groupId>jakarta.xml.soap</groupId>
             <artifactId>jakarta.xml.soap-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.ws</groupId>
             <artifactId>jakarta.xml.ws-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 
@@ -111,43 +97,36 @@
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.enterprise</groupId>
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.transaction</groupId>
             <artifactId>jakarta.transaction-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.jms</groupId>
             <artifactId>jakarta.jms-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.resource</groupId>
             <artifactId>jakarta.resource-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.corba</groupId>
-            <artifactId>glassfish-corba-omgapi</artifactId>
-            <scope>provided</scope>
+            <groupId>org.glassfish</groupId>
+            <artifactId>jakarta.json</artifactId>
             <optional>true</optional>
         </dependency>
 
@@ -159,8 +138,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>jakarta.json</artifactId>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
@@ -171,17 +150,34 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- runtime dependencies -->
         <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
-            <scope>runtime</scope>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <scope>runtime</scope>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>xmlparserv2</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>ucp</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>xdb</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>dms</artifactId>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 
@@ -312,62 +308,124 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>eclipselink.jar</id>
-                        <phase>package</phase>
+                        <id>bundle-manifest</id>
+                        <configuration>
+                            <!-- we can't skip execution, so generate manifest to some dummy location
+                                 to not include it in final jar-->
+                            <manifestLocation>${project.build.directory}/tmp-m</manifestLocation>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-classes</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/eclipselink.jar.xml</descriptor>
-                            </descriptors>
-                            <!--<finalName>eclipselink</finalName>-->
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <archive>
-                                <manifest>
-                                    <addDefaultEntries>false</addDefaultEntries>
-                                    <mainClass>${manifest.main.class}</mainClass>
-                                </manifest>
-                                <manifestEntries>
-                                    <Specification-Title>${manifest.specification.title}</Specification-Title>
-                                    <Specification-Vendor>${manifest.specification.vendor}</Specification-Vendor>
-                                    <Specification-Version>${release.version}</Specification-Version>
-                                    <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
-                                    <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
-                                    <Implementation-Version>${project.version}</Implementation-Version>
-                                    <Premain-Class>${manifest.premain.class}</Premain-Class>
-                                    <Multi-Release>true</Multi-Release>
-                                </manifestEntries>
-                            </archive>
+                            <excludeTransitive>true</excludeTransitive>
+                            <includeGroupIds>${project.groupId}</includeGroupIds>
+                            <includeScope>provided</includeScope>
+                            <excludeArtifactIds>commonj.sdo</excludeArtifactIds>
+                            <excludeClassifiers>sources,javadoc</excludeClassifiers>
+                            <excludes>META-INF/MANIFEST.MF,*.html,org/eclipse/persistence/jpa/jpql/tools/**</excludes>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>eclipselink-src.jar</id>
-                        <phase>package</phase>
+                        <id>unpack-sources</id>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <descriptors>
-                                <descriptor>src/main/assembly/eclipselink-src.jar.xml</descriptor>
-                            </descriptors>
-                            <!--<finalName>eclipselink-src</finalName>-->
-                            <!--<appendAssemblyId>false</appendAssemblyId>-->
-                            <archive>
-                                <manifestEntries>
-                                    <Specification-Title>${manifest.specification.title} Source</Specification-Title>
-                                    <Specification-Vendor>${manifest.specification.vendor}</Specification-Vendor>
-                                    <Specification-Version>${release.version}</Specification-Version>
-                                    <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
-                                    <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
-                                    <Implementation-Version>${project.version}</Implementation-Version>
-                                </manifestEntries>
-                            </archive>
+                            <excludeTransitive>true</excludeTransitive>
+                            <includeGroupIds>${project.groupId}</includeGroupIds>
+                            <includeScope>provided</includeScope>
+                            <includeClassifiers>sources</includeClassifiers>
+                            <excludeArtifactIds>commonj.sdo</excludeArtifactIds>
+                            <excludes>META-INF/MANIFEST.MF,*.html,org/eclipse/persistence/jpa/jpql/tools/**</excludes>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <outputDirectory>${gen.src.dir}</outputDirectory>
                         </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-generated-sources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${gen.src.dir}</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive combine.self="override">
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                            <mainClass>${manifest.main.class}</mainClass>
+                        </manifest>
+                        <manifestEntries>
+                            <Specification-Title>${manifest.specification.title}</Specification-Title>
+                            <Specification-Vendor>${manifest.specification.vendor}</Specification-Vendor>
+                            <Specification-Version>${release.version}</Specification-Version>
+                            <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
+                            <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                            <Premain-Class>${manifest.premain.class}</Premain-Class>
+                            <Multi-Release>true</Multi-Release>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                <configuration>
+                    <archive  combine.self="override">
+                        <manifest>
+                            <addDefaultEntries>false</addDefaultEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <Specification-Title>${manifest.specification.title} Source</Specification-Title>
+                            <Specification-Vendor>${manifest.specification.vendor}</Specification-Vendor>
+                            <Specification-Version>${release.version}</Specification-Version>
+                            <Implementation-Title>${manifest.implementation.title}</Implementation-Title>
+                            <Implementation-Vendor>${manifest.implementation.vendor}</Implementation-Vendor>
+                            <Implementation-Version>${project.version}</Implementation-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -379,6 +437,14 @@
                     <detectOfflineLinks>false</detectOfflineLinks>
                     <use>false</use>
                     <quiet>true</quiet>
+                    <includeDependencySources>false</includeDependencySources>
+                    <doctitle><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></doctitle>
+                    <header><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></header>
+                    <windowtitle>${javadoc.prefixTitle}, ${javadoc.postfixTitle}</windowtitle>
+                    <excludePackageNames>org.eclipse.persistence.internal.*,META-INF.*</excludePackageNames>
+                    <sourceFileExcludes>
+                        <sourceFileExclude>module-info.java</sourceFileExclude>
+                    </sourceFileExcludes>
                     <tags>
                         <tag>
                             <name>author</name>
@@ -402,36 +468,11 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>eclipselink-javadoc.jar</id>
+                        <id>attach-javadocs</id>
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
                         </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/apidocs/eclipselink-javadoc.jar/</outputDirectory>
-                            <includeDependencySources>true</includeDependencySources>
-                            <doctitle><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></doctitle>
-                            <header><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></header>
-                            <windowtitle>${javadoc.prefixTitle}, ${javadoc.postfixTitle}</windowtitle>
-                            <dependencySourceIncludes>
-                                <!--APIs-->
-                                <dependencySourceInclude>jakarta.persistence:jakarta.persistence-api</dependencySourceInclude>
-                                <dependencySourceInclude>jakarta.xml.bind:jakarta.xml.bind-api</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:commonj.sdo</dependencySourceInclude>
-                                <!--Eclipselink modules-->
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.core</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.corba</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.dbws</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpa</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpa.jpql</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.moxy</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.sdo</dependencySourceInclude>
-                            </dependencySourceIncludes>
-                            <excludePackageNames>org.eclipse.persistence.internal.*,META-INF.*,org.eclipse.persistence.jpa.jpql.tools,org.eclipse.persistence.jpa.jpql.tools.*</excludePackageNames>
-                            <sourceFileExcludes>
-                                <sourceFileExclude>module-info.java</sourceFileExclude>
-                            </sourceFileExcludes>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
