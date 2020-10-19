@@ -32,6 +32,7 @@
 
     <properties>
         <gen.src.dir>${project.build.directory}/generated-sources/dependency-sources</gen.src.dir>
+        <gen.zip.dir>${project.build.directory}/generated-sources/zip-sources</gen.zip.dir>
 
         <!--Javadoc properties-->
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
@@ -51,6 +52,11 @@
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
             <optional>true</optional>
         </dependency>
 
@@ -303,6 +309,83 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- artifacts for zip -->
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.utils.rename</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
+            <classifier>sources</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.extension</artifactId>
+            <classifier>sources</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
+            <classifier>sources</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars</artifactId>
+            <classifier>sources</classifier>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
+            <classifier>sources</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars</artifactId>
+            <classifier>javadoc</classifier>
+            <scope>provided</scope>
+            <!-- ### fix me -->
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -335,7 +418,18 @@
                             <excludeTransitive>true</excludeTransitive>
                             <includeGroupIds>${project.groupId}</includeGroupIds>
                             <includeScope>provided</includeScope>
-                            <excludeArtifactIds>commonj.sdo</excludeArtifactIds>
+                            <includeArtifactIds>
+                                org.eclipse.persistence.asm,
+                                org.eclipse.persistence.core,
+                                org.eclipse.persistence.corba,
+                                org.eclipse.persistence.dbws,
+                                org.eclipse.persistence.jpa,
+                                org.eclipse.persistence.jpa.jpql,
+                                org.eclipse.persistence.moxy,
+                                org.eclipse.persistence.moxy.utils.xjc,
+                                org.eclipse.persistence.oracle,
+                                org.eclipse.persistence.sdo
+                            </includeArtifactIds>
                             <excludeClassifiers>sources,javadoc</excludeClassifiers>
                             <excludes>META-INF/MANIFEST.MF,*.html,org/eclipse/persistence/jpa/jpql/tools/**</excludes>
                             <overWriteSnapshots>true</overWriteSnapshots>
@@ -353,10 +447,83 @@
                             <includeGroupIds>${project.groupId}</includeGroupIds>
                             <includeScope>provided</includeScope>
                             <includeClassifiers>sources</includeClassifiers>
-                            <excludeArtifactIds>commonj.sdo</excludeArtifactIds>
+                            <includeArtifactIds>
+                                org.eclipse.persistence.asm,
+                                org.eclipse.persistence.core,
+                                org.eclipse.persistence.corba,
+                                org.eclipse.persistence.dbws,
+                                org.eclipse.persistence.jpa,
+                                org.eclipse.persistence.jpa.jpql,
+                                org.eclipse.persistence.moxy,
+                                org.eclipse.persistence.moxy.utils.xjc,
+                                org.eclipse.persistence.oracle,
+                                org.eclipse.persistence.sdo
+                            </includeArtifactIds>
                             <excludes>META-INF/MANIFEST.MF,*.html,org/eclipse/persistence/jpa/jpql/tools/**</excludes>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <outputDirectory>${gen.src.dir}</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>prepare-package-rename.properties-for-eclipselink.zip</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeArtifactIds>org.eclipse.persistence.utils.rename</includeArtifactIds>
+                            <outputDirectory>${gen.zip.dir}/utils/rename</outputDirectory>
+                            <includes>package-rename.properties</includes>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>prepare-xsds-for-eclipselink.zip</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <excludeTransitive>true</excludeTransitive>
+                            <includeGroupIds>${project.groupId}</includeGroupIds>
+                            <includeScope>provided</includeScope>
+                            <includeArtifactIds>
+                                org.eclipse.persistence.asm,
+                                org.eclipse.persistence.core,
+                                org.eclipse.persistence.corba,
+                                org.eclipse.persistence.dbws,
+                                org.eclipse.persistence.jpa,
+                                org.eclipse.persistence.jpa.jpql,
+                                org.eclipse.persistence.moxy,
+                                org.eclipse.persistence.moxy.utils.xjc,
+                                org.eclipse.persistence.oracle,
+                                org.eclipse.persistence.sdo
+                            </includeArtifactIds>
+                            <excludeClassifiers>sources,javadoc</excludeClassifiers>
+                            <includes>**/*.xsd</includes>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                            <outputDirectory>${gen.zip.dir}/xsds</outputDirectory>
+                            <fileMappers>
+                                <org.codehaus.plexus.components.io.filemappers.FlattenFileMapper/>
+                            </fileMappers>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stage</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>${project.groupId}</groupId>
+                                    <artifactId>${project.artifactId}</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}/stage</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
@@ -473,6 +640,25 @@
                         <goals>
                             <goal>jar</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>eclipselink.zip</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${project.basedir}/src/main/assembly/eclipselink.zip.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>false</appendAssemblyId>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

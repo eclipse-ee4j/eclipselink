@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.distribution</artifactId>
+            <artifactId>eclipselink</artifactId>
             <type>zip</type>
              <!-- ### fix me-->
             <version>${project.version}</version>
@@ -185,7 +185,7 @@
                             <goal>unpack-dependencies</goal>
                         </goals>
                         <configuration>
-                            <includeArtifactIds>org.eclipse.persistence.distribution</includeArtifactIds>
+                            <includeArtifactIds>eclipselink</includeArtifactIds>
                             <outputDirectory>${eclipselink.unzip.dir}</outputDirectory>
                         </configuration>
                     </execution>
@@ -258,7 +258,7 @@
                                     <stripVersion>true</stripVersion>
                                     <outputDirectory>${project.build.directory}/${osgi.test.plugins.dir}</outputDirectory>
                                     <overWriteSnapshots>true</overWriteSnapshots>
-                                    <excludeArtifactIds>org.eclipse.persistence.distribution</excludeArtifactIds>
+                                    <excludeArtifactIds>eclipselink</excludeArtifactIds>
                                 </configuration>
                             </execution>
                         </executions>

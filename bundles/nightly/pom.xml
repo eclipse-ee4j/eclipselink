@@ -70,7 +70,8 @@
         </dependency>
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.distribution</artifactId>
+            <artifactId>eclipselink</artifactId>
+            <type>zip</type>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -206,7 +207,7 @@
                         <configuration>
                             <fileSets>
                                 <fileSet>
-                                    <sourceFile>../distribution/target/eclipselink.zip</sourceFile>
+                                    <sourceFile>../eclipselink/target/eclipselink.zip</sourceFile>
                                     <destinationFile>
                                         ${project.build.directory}${nightlyDir}/eclipselink${nightlyVersion}.zip
                                     </destinationFile>
@@ -237,14 +238,14 @@
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>
-                                        ../distribution/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink.jar
+                                        ../eclipselink/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink.jar
                                     </sourceFile>
                                     <destinationFile>${project.build.directory}${nightlyDir}/eclipselink.jar
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>
-                                        ../distribution/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink-sources.jar
+                                        ../eclipselink/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink-sources.jar
                                     </sourceFile>
                                     <destinationFile>
                                         ${project.build.directory}${nightlyDir}/eclipselink-src${nightlyVersion}.zip
