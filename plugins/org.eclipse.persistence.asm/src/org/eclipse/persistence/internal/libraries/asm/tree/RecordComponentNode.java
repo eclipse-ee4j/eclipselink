@@ -76,7 +76,7 @@ public class RecordComponentNode extends RecordComponentVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public RecordComponentNode(final String name, final String descriptor, final String signature) {
-    this(/* latest api = */ Opcodes.ASM8, name, descriptor, signature);
+    this(/* latest api = */ Opcodes.ASM9, name, descriptor, signature);
     if (getClass() != RecordComponentNode.class) {
       throw new IllegalStateException();
     }
@@ -85,7 +85,8 @@ public class RecordComponentNode extends RecordComponentVisitor {
   /**
    * Constructs a new {@link RecordComponentNode}.
    *
-   * @param api the ASM API version implemented by this visitor. Must be {@link Opcodes#ASM8}.
+   * @param api the ASM API version implemented by this visitor. Must be one of {@link Opcodes#ASM8}
+   *     or {@link Opcodes#ASM9}.
    * @param name the record component name.
    * @param descriptor the record component descriptor (see {@link org.eclipse.persistence.internal.libraries.asm.Type}).
    * @param signature the record component signature.
@@ -144,7 +145,7 @@ public class RecordComponentNode extends RecordComponentVisitor {
    * method checks that this node, and all its children recursively, do not contain elements that
    * were introduced in more recent versions of the ASM API than the given version.
    *
-   * @param api an ASM API version. Must be {@link Opcodes#ASM8}.
+   * @param api an ASM API version. Must be one of {@link Opcodes#ASM8} or {@link Opcodes#ASM9}.
    */
   public void check(final int api) {
     if (api < Opcodes.ASM8) {

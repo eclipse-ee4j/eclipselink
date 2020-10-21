@@ -112,7 +112,7 @@ public class Textifier extends Printer {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public Textifier() {
-    this(/* latest api = */ Opcodes.ASM8);
+    this(/* latest api = */ Opcodes.ASM9);
     if (getClass() != Textifier.class) {
       throw new IllegalStateException();
     }
@@ -122,8 +122,8 @@ public class Textifier extends Printer {
    * Constructs a new {@link Textifier}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
-   *     Opcodes#ASM8}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7}, {@link
+   *     Opcodes#ASM8} or {@link Opcodes#ASM9}.
    */
   protected Textifier(final int api) {
     super(api);
@@ -306,18 +306,11 @@ public class Textifier extends Printer {
     text.add(stringBuilder.toString());
   }
 
-  /**
-   * <b>Experimental, use at your own risk.</b>.
-   *
-   * @param permittedSubtype the internal name of a permitted subtype.
-   * @deprecated this API is experimental.
-   */
   @Override
-  @Deprecated
-  public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
+  public void visitPermittedSubclass(final String permittedSubclass) {
     stringBuilder.setLength(0);
-    stringBuilder.append(tab).append("PERMITTEDSUBTYPE ");
-    appendDescriptor(INTERNAL_NAME, permittedSubtype);
+    stringBuilder.append(tab).append("PERMITTEDSUBCLASS ");
+    appendDescriptor(INTERNAL_NAME, permittedSubclass);
     stringBuilder.append('\n');
     text.add(stringBuilder.toString());
   }

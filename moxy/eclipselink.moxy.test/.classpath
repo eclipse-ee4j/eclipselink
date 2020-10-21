@@ -18,7 +18,7 @@
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/pax-exam-junit4-3.0.0.M3.jar"/>
 	<classpathentry kind="var" path="EXTENSION_LIB_EXTERNAL/org.osgi.core-4.2.0.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.json.jar"/>
-	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_8.0.1.v202005150941.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_8.0.1.v202005150941.jar"/>
+	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm_9.0.0.v202010211629.jar" sourcepath="/ECLIPSELINK_HOME/plugins/org.eclipse.persistence.asm.source_9.0.0.v202010211629.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jaxb-osgi.jar" sourcepath="/ECLIPSELINK_HOME/plugins/jaxb-osgi.source.jar"/>
 	<classpathentry kind="var" path="ECLIPSELINK_HOME/plugins/jakarta.validation-api.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.persistence.moxy.dynamicxjc"/>
