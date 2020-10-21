@@ -17,6 +17,8 @@
 //       - 350487: JPA 2.1 Specification defined support for Stored Procedure Calls
 //     11/07/2017 - Dalia Abo Sheasha
 //       - 526957 : Split the logging and trace messages
+//     05/11/2020-2.7.0 Jody Grassel
+//       - 538296: Wrong month is returned if OffsetDateTime is used in JPA 2.2 code
 package org.eclipse.persistence.internal.localization.i18n;
 
 import java.util.ListResourceBundle;
@@ -376,7 +378,10 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "moxy_write_to_moxy_json_provider", "MOXyJsonProvider.writeTo(...) is called."},
         { "moxy_set_marshaller_property", "Setting marshaller property (name/value): {0}/{1}"},
         { "moxy_set_unmarshaller_property", "Setting unmarshaller property (name/value): {0}/{1}"},
-        { "moxy_set_jaxb_context_property", "Setting JAXBContext property (name/value): {0}/{1}"}
+        { "moxy_set_jaxb_context_property", "Setting JAXBContext property (name/value): {0}/{1}"},
+        { "invalid_tzone", "Invalid timezone conversion property {0} value: {1}.  Will attempt to resolve default." },
+        { "invalid_default_tzone", "Invalid timezone conversion property {0} value: {1}.  Defaulting to UTC." },
+        { "using_conversion_tzone", "ConversionManager using default zone offset: {1}." }
     };
 
     /**
