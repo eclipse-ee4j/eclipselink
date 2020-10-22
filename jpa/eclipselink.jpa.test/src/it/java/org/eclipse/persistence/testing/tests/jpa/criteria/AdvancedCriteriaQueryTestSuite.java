@@ -404,6 +404,7 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             closeEntityManager(em);
         }
     }
+
     public void testInCollectionPrimitives(){
         EntityManager em = createEntityManager();
         beginTransaction(em);
@@ -416,6 +417,43 @@ public class AdvancedCriteriaQueryTestSuite extends JUnitTestCase {
             Query query = em.createQuery(cq);
             List<Employee> result = query.getResultList();
             assertFalse("No Employees were returned", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testInCollectionEmpty(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            Root<PhoneNumber> phone = cq.from(PhoneNumber.class);
+            cq.where(qb.literal("Bug fixes").in(new HashSet()));
+            Query query = em.createQuery(cq);
+            List<Employee> result = query.getResultList();
+            assertTrue("No any Employees was expected", result.isEmpty());
+        } finally {
+            rollbackTransaction(em);
+            closeEntityManager(em);
+        }
+    }
+
+    public void testInCollectionNull(){
+        EntityManager em = createEntityManager();
+        beginTransaction(em);
+        try {
+            CriteriaBuilder qb = em.getCriteriaBuilder();
+            CriteriaQuery<Employee> cq = qb.createQuery(Employee.class);
+            Root<Employee> emp = cq.from(Employee.class);
+            Root<PhoneNumber> phone = cq.from(PhoneNumber.class);
+            List list = null;
+            cq.where(qb.literal("Bug fixes").in(list));
+            Query query = em.createQuery(cq);
+            List<Employee> result = query.getResultList();
+            assertTrue("No any Employees was expected", result.isEmpty());
         } finally {
             rollbackTransaction(em);
             closeEntityManager(em);
