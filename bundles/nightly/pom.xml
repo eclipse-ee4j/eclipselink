@@ -207,7 +207,7 @@
                         <configuration>
                             <fileSets>
                                 <fileSet>
-                                    <sourceFile>../eclipselink/target/eclipselink.zip</sourceFile>
+                                    <sourceFile>../eclipselink/target/eclipselink-${project.version}.zip</sourceFile>
                                     <destinationFile>
                                         ${project.build.directory}${nightlyDir}/eclipselink${nightlyVersion}.zip
                                     </destinationFile>
