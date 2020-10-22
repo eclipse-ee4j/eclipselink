@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -87,6 +88,7 @@ import org.eclipse.persistence.internal.queries.ContainerPolicy;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredField;
 import org.eclipse.persistence.internal.security.PrivilegedGetDeclaredMethod;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.CollectionMapping;
@@ -1327,6 +1329,18 @@ public abstract class ManagedTypeImpl<X> extends TypeImpl<X> implements ManagedT
             }
 
             this.members.put(mapping.getAttributeName(), member);
+        }
+    }
+    
+    public void preinitaliseMappings(AbstractSession session) {
+        for (DatabaseMapping mapping : getDescriptor().getMappings()) {
+            try {
+                mapping.preInitialize(session);
+            } catch (NullPointerException npe) {
+                // A NPE gets thrown if the expected method is not present for the mapping
+                AbstractSessionLog.getLog().log(SessionLog.FINE, "Caught NPE when preinitializing database mapping",
+                        npe.getMessage());
+            }
         }
     }
 
