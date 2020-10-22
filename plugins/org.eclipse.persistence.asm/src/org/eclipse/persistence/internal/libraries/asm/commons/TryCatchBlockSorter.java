@@ -71,7 +71,7 @@ public class TryCatchBlockSorter extends MethodNode {
       final String signature,
       final String[] exceptions) {
     this(
-        /* latest api = */ Opcodes.ASM8,
+        /* latest api = */ Opcodes.ASM9,
         methodVisitor,
         access,
         name,
