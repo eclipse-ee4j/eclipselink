@@ -483,7 +483,7 @@ public class MetamodelImpl implements Metamodel, Serializable {
             managedType.initialize();
         }
 
-        // 3 - process all the Id attributes on each IdentifiableType
+        // 4 - process all the Id attributes on each IdentifiableType
         for(ManagedTypeImpl<?> potentialIdentifiableType : managedTypes.values()) {
             if(potentialIdentifiableType.isIdentifiableType()) {
                 ((IdentifiableTypeImpl<?>)potentialIdentifiableType).initializeIdAttributes();
