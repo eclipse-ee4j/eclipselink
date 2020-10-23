@@ -3021,7 +3021,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             return null;
         }
         if (descriptor.isDescriptorTypeAggregate()) {
-            throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(object.getClass());
+           return null;
         }
         Object registeredObject = checkIfAlreadyRegistered(object, descriptor);
         if (registeredObject == null) {
