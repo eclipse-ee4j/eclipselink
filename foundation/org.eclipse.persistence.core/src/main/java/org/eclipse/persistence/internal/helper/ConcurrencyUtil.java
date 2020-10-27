@@ -38,7 +38,7 @@ public class ConcurrencyUtil {
 
     public static final ConcurrencyUtil SINGLETON = new ConcurrencyUtil();
 
-    public static final long ACQUIRE_WAIT_TIME = Long.valueOf(getPropertyConcurrencyManagerAcquireWaitTime());
+    public static final long ACQUIRE_WAIT_TIME = getPropertyConcurrencyManagerAcquireWaitTime();
 
     private static final long DEFAULT_MAX_ALLOWED_SLEEP_TIME_MS = 40000L;
     private static final long DEFAULT_MAX_ALLOWED_FREQUENCY_TINY_DUMP_LOG_MESSAGE = 40000L;
@@ -72,7 +72,7 @@ public class ConcurrencyUtil {
      * NOTE: <br>
      * Needs to be accessed in a synchronized method.
      */
-    private Date dateWhenLastConcurrencyManagerStateFullDumpWasPerformed = new Date(0l);
+    private long dateWhenLastConcurrencyManagerStateFullDumpWasPerformed = 0L;
 
     /**
      * When we are explaining where read locks were acquired, the first time we see a new stack trace we create a stack
@@ -80,32 +80,34 @@ public class ConcurrencyUtil {
      */
     private final AtomicLong stackTraceIdAtomicLong = new AtomicLong(0);
 
+    private ConcurrencyUtil() {
+    }
+
     /**
      * Throw an interrupted exception if appears that eclipse link code is taking too long to release a deferred lock.
      *
-     * @param whileStartDate
+     * @param whileStartTimeMillis
      *            the start date of the while tru loop for releasing a deferred lock
      * @param callerIsWillingToAllowInterruptedExceptionToBeFiredUpIfNecessary
-     *            this flag is to allow the write lock manager to say that it is afraid of a concurrency exceptin being
+     *            this flag is to allow the write lock manager to say that it is afraid of a concurrency exception being
      *            fire up because the thread in a dead lock might be trying to do a commit and blowing these threads up
      *            is most likely too dangerous and possibly the eclipselink code is not robust enough to code with such
      *            scenarios We do not care so much about blowing up exception during object building but during
-     *            commiting of transactions we are very afraid
+     *            committing of transactions we are very afraid
      * @throws InterruptedException
-     *             we fire an interupted exception to ensure that the code blows up and releases all of the locks it
+     *             we fire an interrupted exception to ensure that the code blows up and releases all of the locks it
      *             had.
      */
     public void determineIfReleaseDeferredLockAppearsToBeDeadLocked(ConcurrencyManager concurrencyManager,
-                                                                    final Date whileStartDate, DeferredLockManager lockManager, ReadLockManager readLockManager,
+                                                                    final long whileStartTimeMillis, DeferredLockManager lockManager, ReadLockManager readLockManager,
                                                                     boolean callerIsWillingToAllowInterruptedExceptionToBeFiredUpIfNecessary)
             throws InterruptedException {
         // (a) Determine if we believe to be dealing with a dead lock
 
-        final long maxAllowedSleepTimeMs = ConcurrencyUtil.SINGLETON.getMaxAllowedSleepTimeMs();
-        Date whileCurrentDate = new Date();
-
-        long elapsedTime = whileCurrentDate.getTime() - whileStartDate.getTime();
-        boolean tooMuchTimeHasElapsed = tooMuchTimeHasElapsed(whileStartDate, maxAllowedSleepTimeMs);
+        final long maxAllowedSleepTimeMillis = ConcurrencyUtil.SINGLETON.getMaxAllowedSleepTimeMs();
+        long whileCurrentTimeMillis = System.currentTimeMillis();
+        long elapsedTime = whileCurrentTimeMillis - whileStartTimeMillis;
+        boolean tooMuchTimeHasElapsed = tooMuchTimeHasElapsed(whileStartTimeMillis, maxAllowedSleepTimeMillis);
         if (!tooMuchTimeHasElapsed) {
             // this thread is not stuck for that long let us allow the code to continue waiting for the lock to be acquired
             // or for the deferred locks to be considered as finished
@@ -120,7 +122,7 @@ public class ConcurrencyUtil {
         }
         Date dateWhenTinyCurrentThreadBeingStuckMessageWasLastLogged = threadLocalDateWhenCurrentThreadLastComplainedAboutBeingStuckInDeadLock.get();
         final long maxAllowedFrequencyToDumpTinyMessage = getMaxAllowedFrequencyToProduceTinyDumpLogMessage();
-        boolean tooMuchTimeHasElapsedSinceLastLoggingOfTinyMessage = tooMuchTimeHasElapsed(dateWhenTinyCurrentThreadBeingStuckMessageWasLastLogged, maxAllowedFrequencyToDumpTinyMessage);
+        boolean tooMuchTimeHasElapsedSinceLastLoggingOfTinyMessage = tooMuchTimeHasElapsed(dateWhenTinyCurrentThreadBeingStuckMessageWasLastLogged.getTime(), maxAllowedFrequencyToDumpTinyMessage);
 
         if(!tooMuchTimeHasElapsedSinceLastLoggingOfTinyMessage) {
             // this thread has recently logged a small message about the fact that it is stuck
@@ -133,8 +135,7 @@ public class ConcurrencyUtil {
         // this thread has been keeping silent about the problem for some time since the dateWhenTinyCurrentThreadBeingStuckMessageWasLastLogged
         // indicates that quite some time has elapsed since we have last spammed the server log
         // we now start by spamming into the server log a "tiny message" specific to the current thread
-        String tinyErrorMessage = currentThreadIsStuckForSomeTimeProduceTinyLogMessage(elapsedTime, concurrencyManager,
-                whileStartDate, lockManager, readLockManager);
+        String tinyErrorMessage = currentThreadIsStuckForSomeTimeProduceTinyLogMessage(elapsedTime, concurrencyManager, lockManager, readLockManager);
 
         // (d) next step is to log into the server log the massive dump log message where we try to explaing the concrrency mangaer state
         // only one thread will suceed in doing the massive dump ever 1 minute or so
@@ -263,8 +264,6 @@ public class ConcurrencyUtil {
      * @param concurrencyManager
      *            the current cache key that the thread is trying to acquire or the object where the thread is waiting
      *            for the release deferred locks .
-     * @param whileStartDate
-     *            the while start
      * @param lockManager
      *            the lock manager
      * @param readLockManager
@@ -272,9 +271,7 @@ public class ConcurrencyUtil {
      * @return Return the string with the tiny message we logged on the server log. This message can be interesting if
      *         we decide to fire up an interrupted exception
      */
-    protected String currentThreadIsStuckForSomeTimeProduceTinyLogMessage(long elapsedTime,
-                                                                          ConcurrencyManager concurrencyManager, final Date whileStartDate, DeferredLockManager lockManager,
-                                                                          ReadLockManager readLockManager) {
+    protected String currentThreadIsStuckForSomeTimeProduceTinyLogMessage(long elapsedTime, ConcurrencyManager concurrencyManager, DeferredLockManager lockManager, ReadLockManager readLockManager) {
         // We believe this is a dead lock so now we will log some information
         Thread currentThread = Thread.currentThread();
         String threadName = currentThread.getName();
@@ -294,7 +291,7 @@ public class ConcurrencyUtil {
         // deferred locks are essential
         errorMessage.write(createStringWithSummaryOfDeferredLocksOnThread(lockManager, threadName));
 
-        // (iv) Add information about all cache keys te current thread acuired with READ permission
+        // (iv) Add information about all cache keys te current thread acquired with READ permission
         errorMessage.write(createStringWithSummaryOfReadLocksAcquiredByThread(readLockManager, threadName));
 
         AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, errorMessage.toString(), new Object[] {}, false);
@@ -302,12 +299,11 @@ public class ConcurrencyUtil {
         return errorMessage.toString();
     }
 
-    private boolean tooMuchTimeHasElapsed(final Date whileStartDate, final long maxAllowedSleepTimeMs) {
+    private boolean tooMuchTimeHasElapsed(final long whileStartTimeMillis, final long maxAllowedSleepTimeMs) {
         if (maxAllowedSleepTimeMs == 0L) {
             return false;
         }
-        Date whileCurrentDate = new Date();
-        long elapsedTime = whileCurrentDate.getTime() - whileStartDate.getTime();
+        long elapsedTime = System.currentTimeMillis() - whileStartTimeMillis;
         return elapsedTime > maxAllowedSleepTimeMs;
     }
 
@@ -340,7 +336,7 @@ public class ConcurrencyUtil {
             }
 
             // we should proceed with making the big log dump - update the date of when the big dump was last done
-            dateWhenLastConcurrencyManagerStateFullDumpWasPerformed = new Date();
+            dateWhenLastConcurrencyManagerStateFullDumpWasPerformed = System.currentTimeMillis();
         }
 
         // do the "MassiveDump" logging if enough time has passed since the previous massive dump logging
@@ -362,7 +358,7 @@ public class ConcurrencyUtil {
      * cache key for writing, as a deferred cache key or it is at the end of the process and it is waiting for some
      * other thread to finish building some objects it needed to defer.
      *
-     * Now that the system is fozen we want to start spamming into the server log file the state of the concurrency
+     * Now that the system is frozen we want to start spamming into the server log file the state of the concurrency
      * manager since this might help us understand the situation of the system.
      *
      *
@@ -495,7 +491,7 @@ public class ConcurrencyUtil {
 
     protected String dumpDeadLockExplanationIfPossible(ConcurrencyManagerState concurrencyManagerState) {
         // (a) Step one - try to detect dead lock
-        final Date startDate = new Date();
+        final long startTimeMillis = System.currentTimeMillis();
         List<DeadLockComponent> deadLockExplanation = Collections.emptyList();
         long deadLockDetectionTotalExecutionTimeMs = 0l;
         try {
@@ -507,8 +503,8 @@ public class ConcurrencyUtil {
                     TraceLocalization.buildMessage("concurrency_util_dump__dead_lock_explanation_01"),
                     codeIsBuggyAndBlowingUp));
         } finally {
-            final Date endDate = new Date();
-            deadLockDetectionTotalExecutionTimeMs = endDate.getTime() - startDate.getTime();
+            final long endTimeMillis = System.currentTimeMillis();
+            deadLockDetectionTotalExecutionTimeMs = endTimeMillis - startTimeMillis;
         }
         // (b) explain what has happened
         StringWriter writer = new StringWriter();
@@ -519,9 +515,8 @@ public class ConcurrencyUtil {
             // (i) Write out a summary of how many threads are involved in the deadloc
             writer.write(TraceLocalization.buildMessage("concurrency_util_dump__dead_lock_explanation_04", new Object[] {deadLockExplanation.size()}));
             // (ii) Print them all out
-            int currentThreadNumber = 1;
-            for (DeadLockComponent currentDto : deadLockExplanation) {
-                writer.write(TraceLocalization.buildMessage("concurrency_util_dump__dead_lock_explanation_05", new Object[] {currentThreadNumber++, currentDto.toString()}));
+            for (int currentThreadNumber = 0; currentThreadNumber < deadLockExplanation.size(); currentThreadNumber++) {
+                writer.write(TraceLocalization.buildMessage("concurrency_util_dump__dead_lock_explanation_05", new Object[] {currentThreadNumber + 1, deadLockExplanation.get(currentThreadNumber).toString()}));
             }
         }
         // (c) return the string that tries to explain the reason for the dead lock
@@ -597,12 +592,6 @@ public class ConcurrencyUtil {
                 mapThreadToObjectIdWithWriteLockManagerChangesClone);
     }
 
-
-    //TODO remove after EclipseLink logging
-    public String createHeader(String msg) {
-        return String.format("%n%1$s%n%2$s%n%1$s%n", "*******", msg);
-    }
-
     /**
      * Create a print of the ACTIVE locks associated to the DeferredLockManager. Owning an active lock on a thread
      * implies that the thread is allowed to do write operations in relation to the object.
@@ -618,13 +607,10 @@ public class ConcurrencyUtil {
         }
         // (b) Try to build a string that lists all of the active locks on the thread
         // Loop over all of the active locks and print them
-        long activeLockNr = 0;
-        @SuppressWarnings("unchecked")
         List<ConcurrencyManager> activeLocks = new ArrayList<>(lockManager.getActiveLocks());
         writer.write(TraceLocalization.buildMessage("concurrency_util_summary_active_locks_on_thread_3", new Object[] {activeLocks.size()}));
-        for (ConcurrencyManager currentCacheKey : activeLocks) {
-            activeLockNr++;
-            writer.write(TraceLocalization.buildMessage("concurrency_util_summary_active_locks_on_thread_4", new Object[] {activeLockNr, createToStringExplainingOwnedCacheKey(currentCacheKey)}));
+        for (int activeLockNumber = 0; activeLockNumber < activeLocks.size(); activeLockNumber++) {
+            writer.write(TraceLocalization.buildMessage("concurrency_util_summary_active_locks_on_thread_4", new Object[] {activeLockNumber, createToStringExplainingOwnedCacheKey(activeLocks.get(activeLockNumber))}));
         }
         return writer.toString();
     }
@@ -647,16 +633,13 @@ public class ConcurrencyUtil {
             writer.write(TraceLocalization.buildMessage("concurrency_util_summary_deferred_locks_on_thread_2"));
             return writer.toString();
         }
-        // (b) Try to build a string that lists all of the acitve locks on the thread
+        // (b) Try to build a string that lists all of the active locks on the thread
         // Loop over all of the deferred locks and print them
-        long deferredLockNr = 0;
         @SuppressWarnings("unchecked")
         List<ConcurrencyManager> deferredLocks = new ArrayList<>(lockManager.getDeferredLocks());
         writer.write(TraceLocalization.buildMessage("concurrency_util_summary_deferred_locks_on_thread_3", new Object[] {deferredLocks.size()}));
-
-        for (ConcurrencyManager currentCacheKey : deferredLocks) {
-            deferredLockNr++;
-            writer.write(TraceLocalization.buildMessage("concurrency_util_summary_deferred_locks_on_thread_4", new Object[] {deferredLockNr, createToStringExplainingOwnedCacheKey(currentCacheKey)}));
+        for (int deferredLockNumber = 0; deferredLockNumber < deferredLocks.size(); deferredLockNumber++) {
+            writer.write(TraceLocalization.buildMessage("concurrency_util_summary_deferred_locks_on_thread_4", new Object[] {deferredLockNumber, createToStringExplainingOwnedCacheKey(deferredLocks.get(deferredLockNumber))}));
         }
         return writer.toString();
     }
@@ -686,13 +669,11 @@ public class ConcurrencyUtil {
         }
         // (b) Try to build a string that lists all of the acitve locks on the thread
         // Loop over al of the active locks and print them
-        long readLockNr = 0;
         @SuppressWarnings("unchecked")
         List<ConcurrencyManager> readLocks = readLockManager.getReadLocks();
         writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step001_3", new Object[] {readLocks.size()}));
-        for (ConcurrencyManager currentCacheKey : readLocks) {
-            readLockNr++;
-            writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step001_4", new Object[] {readLockNr, createToStringExplainingOwnedCacheKey(currentCacheKey)}));
+        for (int readLockNumber = 0; readLockNumber < readLocks.size(); readLockNumber++) {
+            writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step001_4", new Object[] {readLockNumber + 1, createToStringExplainingOwnedCacheKey(readLocks.get(readLockNumber))}));
         }
         // (c) This is the main point of candidate 007 - having a lot fatter information about when and where the read
         // locks were acquired
@@ -712,10 +693,10 @@ public class ConcurrencyUtil {
             List<ReadLockAcquisitionMetadata> readLocksAcquiredByThread = mapThreadToReadLockAcquisitionMetadata.get(currentThreadId);
             writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_2", new Object[] {threadName, currentThreadId, readLocksAcquiredByThread.size()}));
             // LOOP OVER EACH CACHE KEY ACQUIRED FORE READING BUT NEVER RELEASED FOR CURRENT THREAD ID
-            readLockNr = 0;
+            int readLockNumber = 0;
             for (ReadLockAcquisitionMetadata currentReadLockAcquiredAndNeverReleased : readLocksAcquiredByThread) {
-                readLockNr++;
-                writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_3", new Object[] {readLockNr,
+                readLockNumber++;
+                writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_3", new Object[] {readLockNumber,
                         SINGLETON.createToStringExplainingOwnedCacheKey(currentReadLockAcquiredAndNeverReleased.getCacheKeyWhoseNumberOfReadersThreadIsIncrementing()),
                         currentReadLockAcquiredAndNeverReleased.getDateOfReadLockAcquisition(),
                         currentReadLockAcquiredAndNeverReleased.getNumberOfReadersOnCacheKeyBeforeIncrementingByOne(),
@@ -725,13 +706,13 @@ public class ConcurrencyUtil {
                     // we can spare the massive dump from being any fatter we have alreayd added a stack trace id that
                     // is identical to the stack trace were were about dump
                     // we just refer to the stack trace id.
-                    writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_4", new Object[] {readLockNr, stackTraceStringToStackTraceExampleNumber.get(stackTraceInformation)}));
+                    writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_4", new Object[] {readLockNumber, stackTraceStringToStackTraceExampleNumber.get(stackTraceInformation)}));
                 } else {
                     // Since we have not see this stack trace pattern for this thread yet we will dump the stack trace
                     // into the massive dump giving it a new global id
                     long stackTraceId = stackTraceIdAtomicLong.incrementAndGet();
                     stackTraceStringToStackTraceExampleNumber.put(stackTraceInformation, stackTraceId);
-                    writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_5", new Object[] {readLockNr, stackTraceId, stackTraceInformation}));
+                    writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_5", new Object[] {readLockNumber, stackTraceId, stackTraceInformation}));
                 }
                 writer.write("\n\n");
             }
@@ -740,19 +721,15 @@ public class ConcurrencyUtil {
         // (d) We have some more information to pump out namely errors we have traced each time the number of readers was decremented
         writer.write("\n\n");
         writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_6", new Object[] {threadName, readLockManager.getRemoveReadLockProblemsDetected().size()}));
-        long releaseReadLockProblemNr = 0;
-        for (String currentReleaseReadLockProblem : readLockManager.getRemoveReadLockProblemsDetected()) {
-            releaseReadLockProblemNr++;
-            writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_7", new Object[] {releaseReadLockProblemNr, currentReleaseReadLockProblem}));
+        for (int releaseReadLockProblemNumber = 0; releaseReadLockProblemNumber < readLockManager.getRemoveReadLockProblemsDetected().size(); releaseReadLockProblemNumber++) {
+            writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_7", new Object[] {releaseReadLockProblemNumber + 1, readLockManager.getRemoveReadLockProblemsDetected().get(releaseReadLockProblemNumber)}));
         }
         writer.write("\n\n");
         return writer.toString();
     }
 
-    private static String getPropertyConcurrencyManagerAcquireWaitTime() {
-        return (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME))
-                : System.getProperty(SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, "0");
+    private static long getPropertyConcurrencyManagerAcquireWaitTime() {
+        return SINGLETON.getLongProperty(SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, 0L);
     }
 
     /**
@@ -773,14 +750,13 @@ public class ConcurrencyUtil {
 
         try {
             // (a) search for the stack trace of the current
+            final StringWriter writer = new StringWriter();
             final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
             final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(new long[] { currentThreadId }, 700);
             for (ThreadInfo threadInfo : threadInfos) {
-                final StringWriter writer = new StringWriter();
                 enrichGenerateThreadDumpForThreadInfo(writer, threadInfo);
-                return writer.toString();
             }
-            return "";
+            return writer.toString();
         } catch (Exception failToAcquireThreadDumpProgrammatically) {
             AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, failToAcquireThreadDumpProgrammatically);
             return TraceLocalization.buildMessage("concurrency_util_enrich_thread_dump", new Object[] {failToAcquireThreadDumpProgrammatically.getMessage()});
@@ -891,8 +867,7 @@ public class ConcurrencyUtil {
      * @param setThreadWaitingToReleaseDeferredLocksClone
      *            threads waiting for the release deferred lock process to complete.
      */
-    protected String createInformationAboutAllThreadsWaitingToReleaseDeferredLocks(
-            Set<Thread> setThreadWaitingToReleaseDeferredLocksClone) {
+    protected String createInformationAboutAllThreadsWaitingToReleaseDeferredLocks(Set<Thread> setThreadWaitingToReleaseDeferredLocksClone) {
         // (a) Create a header string of information
         StringWriter writer = new StringWriter();
         writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_release_deferred_locks_1", new Object[] {setThreadWaitingToReleaseDeferredLocksClone.size()}));
@@ -1447,10 +1422,10 @@ public class ConcurrencyUtil {
         String currentThreadStackTraceInformation = TraceLocalization.buildMessage("concurrency_util_read_lock_acquisition_metadata");
         long currentThreadStackTraceInformationCpuTimeCostMs = 0l;
         if (isAllowTakingStackTraceDuringReadLockAcquisition) {
-            Date startDate = new Date();
+            long startTimeMillis = System.currentTimeMillis();
             currentThreadStackTraceInformation = enrichGenerateThreadDumpForCurrentThread();
-            Date endDate = new Date();
-            currentThreadStackTraceInformationCpuTimeCostMs = endDate.getTime() - startDate.getTime();
+            long endTimeMillis = System.currentTimeMillis();
+            currentThreadStackTraceInformationCpuTimeCostMs = endTimeMillis - startTimeMillis;
         }
         int numberOfReadersOnCacheKeyBeforeIncrementingByOne = concurrencyManager.getNumberOfReaders();
         // data in ReadLockAcquisitionMetadata are immutable it reflects an accurate snapshot of the time of acquisition
@@ -1461,7 +1436,7 @@ public class ConcurrencyUtil {
 
     private long getLongProperty(final String key, final long defaultValue) {
         String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key))
+                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, "0"))
                 : System.getProperty(key, "0");
         if (value != null) {
             try {

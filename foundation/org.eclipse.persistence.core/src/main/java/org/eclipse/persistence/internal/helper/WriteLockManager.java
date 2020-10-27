@@ -126,7 +126,7 @@ public class WriteLockManager {
      */
     public Map acquireLocksForClone(Object objectForClone, ClassDescriptor descriptor, CacheKey cacheKey, AbstractSession cloningSession) {
         // determineIfReleaseDeferredLockAppearsToBeDeadLocked
-        final Date whileStartDate = new Date();
+        final long whileStartTimeMillis = System.currentTimeMillis();
         final Thread currentThread = Thread.currentThread();
         DeferredLockManager lockManager = ConcurrencyManager.getDeferredLockManager(currentThread);
         ReadLockManager readLockManager = ConcurrencyManager.getReadLockManager(currentThread);
@@ -157,9 +157,7 @@ public class WriteLockManager {
                 // we threads frozen here forever inside of the wait that used to have no timeout
                 // we will now always check for how long the current thread is stuck in this while loop going nowhere
                 // using the exact same approach we have been adding to the concurrency manager
-                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(toWaitOn,
-                        whileStartDate, lockManager, readLockManager,
-                        ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE);
+                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(toWaitOn, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE);
 
                 synchronized (toWaitOn) {
                     try {
@@ -324,7 +322,7 @@ public class WriteLockManager {
         boolean locksToAcquire = true;
 
         final Thread currentThread = Thread.currentThread();
-        final Date dateWhenLocksToAcquireLoopStarted = new Date();
+        final long timeWhenLocksToAcquireLoopStarted = System.currentTimeMillis();
         populateMapThreadToObjectIdsWithChagenSet(currentThread, changeSet.getAllChangeSets().values());
         clearMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread);
 
@@ -440,7 +438,7 @@ public class WriteLockManager {
                                 throw org.eclipse.persistence.exceptions.ConcurrencyException.waitWasInterrupted(exception.getMessage());
                             }
                             // we want to record this information so that we have traceability over this sort of problems
-                            addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread, activeCacheKey, dateWhenLocksToAcquireLoopStarted);
+                            addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread, activeCacheKey, timeWhenLocksToAcquireLoopStarted);
                             // failed to acquire, exit this loop to restart all over again.
                             locksToAcquire = true;
                             break;
@@ -681,8 +679,7 @@ public class WriteLockManager {
      *             See
      *             {@link #ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_FALSE}
      */
-    public static void addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(Thread thread,
-                                                                                         ConcurrencyManager cacheKeyThatCouldNotBeAcquired, Date whileStartDate) throws InterruptedException {
+    public static void addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(Thread thread, ConcurrencyManager cacheKeyThatCouldNotBeAcquired, long whileStartDate) throws InterruptedException {
 
         // sanity check, make sure the cacheKeyThatCouldNotBeAcquired is not null
         // should never happen because when the write lock manager fails to acquire the cache key both with acquire no

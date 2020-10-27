@@ -87,7 +87,7 @@ public class ConcurrencyManager implements Serializable {
      * not as sensible as when the write lock manager is starving to run commit.
      *
      */
-    private static final Boolean ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED = true;
+    private static Boolean ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED = true;
 
     /**
      * Initialize the newly allocated instance of this class.
@@ -116,12 +116,12 @@ public class ConcurrencyManager implements Serializable {
      */
     public synchronized void acquire(boolean forMerge) throws ConcurrencyException {
         //Flag the time when we start the while loop
-        final Date whileStartDate = new Date();
+        final long whileStartTimeMillis = System.currentTimeMillis();
         Thread currentThread = Thread.currentThread();
         DeferredLockManager lockManager = getDeferredLockManager(currentThread);
         ReadLockManager readLockManager = getReadLockManager(currentThread);
 
-        // Waiting to acquire cahe key will now start on the while loop
+        // Waiting to acquire cache key will now start on the while loop
         // NOTE: this step bares no influence in acquiring or not acquiring locks
         // is just storing debug metadata that we can use when we detect the system is frozen in a dead lock
         final boolean currentThreadWillEnterTheWhileWait = ((this.activeThread != null) || (this.numberOfReaders.get() > 0)) && (this.activeThread != currentThread);
@@ -134,12 +134,12 @@ public class ConcurrencyManager implements Serializable {
                 this.numberOfWritersWaiting.incrementAndGet();
                 wait(ConcurrencyUtil.ACQUIRE_WAIT_TIME);
                 // Run a method that will fire up an exception if we having been sleeping for too long
-                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
+                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
             } catch (InterruptedException exception) {
                 // If the thread is interrupted we want to make sure we release all of the locks the thread was owning
                 releaseAllLocksAcquiredByThread(lockManager);
                 // Improve concurrency manager metadata
-                // Waiting to acquire cahe key is is over
+                // Waiting to acquire cache key is is over
                 if (currentThreadWillEnterTheWhileWait) {
                     removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
                 }
@@ -250,7 +250,7 @@ public class ConcurrencyManager implements Serializable {
         }
         lockManager.incrementDepth();
         synchronized (this) {
-            final Date whileStartDate = new Date();
+            final long whileStartTimeMillis = System.currentTimeMillis();
             final boolean currentThreadWillEnterTheWhileWait = this.numberOfReaders.get() != 0;
             if(currentThreadWillEnterTheWhileWait) {
                 putThreadAsWaitingToAcquireLockForWriting(currentThread);
@@ -265,7 +265,7 @@ public class ConcurrencyManager implements Serializable {
                 try {
                     this.numberOfWritersWaiting.incrementAndGet();
                     wait(ConcurrencyUtil.ACQUIRE_WAIT_TIME);
-                    ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
+                    ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
                 } catch (InterruptedException exception) {
                     // If the thread is interrupted we want to make sure we release all of the locks the thread was owning
                     releaseAllLocksAcquiredByThread(lockManager);
@@ -324,7 +324,7 @@ public class ConcurrencyManager implements Serializable {
      */
     public synchronized void acquireReadLock() throws ConcurrencyException {
         final Thread currentThread = Thread.currentThread();
-        final Date whileStartDate = new Date();
+        final long whileStartTimeMillis = System.currentTimeMillis();
         DeferredLockManager lockManager = getDeferredLockManager(currentThread);
         ReadLockManager readLockManager = getReadLockManager(currentThread);
         final boolean currentThreadWillEnterTheWhileWait = (this.activeThread != null) && (this.activeThread != currentThread);
@@ -335,7 +335,7 @@ public class ConcurrencyManager implements Serializable {
         while ((this.activeThread != null) && (this.activeThread != Thread.currentThread())) {
             try {
                 wait(ConcurrencyUtil.ACQUIRE_WAIT_TIME);
-                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
+                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
             } catch (InterruptedException exception) {
                 releaseAllLocksAcquiredByThread(lockManager);
                 if (currentThreadWillEnterTheWhileWait) {
@@ -542,7 +542,7 @@ public class ConcurrencyManager implements Serializable {
 
         lockManager.setIsThreadComplete(true);
 
-        final Date whileStartDate = new Date();
+        final long whileStartTimeMillis = System.currentTimeMillis();
         boolean releaseAllLocksAquiredByThreadAlreadyPerformed = false;
         boolean currentThreadRegisteredAsWaitingForisBuildObjectOnThreadComplete = false;
 
@@ -573,7 +573,7 @@ public class ConcurrencyManager implements Serializable {
                             THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS.add(currentThread);
                         }
                         Thread.sleep(20);
-                        ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartDate, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
+                        ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
                     } catch (InterruptedException interrupted) {
                         AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
                         releaseAllLocksAcquiredByThread(lockManager);
@@ -840,7 +840,7 @@ public class ConcurrencyManager implements Serializable {
             removeReadLockManagerIfEmpty(currentThread);
         } else {
             // We have a problem we do not want ever see a decrement on the number of readers if we
-            // are not tracing one or more precessro add read lock keys.
+            // are not tracing one or more predecessor add read lock keys.
             // so we will put the error message into a fresh new read lock manager
             final int currentNumberOfReaders = this.numberOfReaders.get();
             final int decrementedNumberOfReaders = currentNumberOfReaders - 1;
@@ -860,7 +860,9 @@ public class ConcurrencyManager implements Serializable {
     protected static ReadLockManager getReadLockManagerEnsureResultIsNotNull(Thread thread) {
         Map<Thread, ReadLockManager> readLockManagers = getReadLockManagers();
         if (!readLockManagers.containsKey(thread)) {
-            readLockManagers.putIfAbsent(thread, new ReadLockManager());
+            ReadLockManager  readLockManager = new ReadLockManager();
+            readLockManagers.putIfAbsent(thread, readLockManager);
+            return readLockManager;
         }
         return readLockManagers.get(thread);
     }

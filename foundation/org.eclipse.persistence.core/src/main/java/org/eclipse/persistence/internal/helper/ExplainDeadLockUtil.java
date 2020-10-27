@@ -32,6 +32,9 @@ public class ExplainDeadLockUtil {
 
     private static final DeadLockComponent DEAD_LOCK_NOT_FOUND = null;
 
+    private ExplainDeadLockUtil() {
+    }
+
     /**
      * Given the concurrency manager state try to explain why we are facing a dead lock.
      *
