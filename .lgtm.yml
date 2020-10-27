@@ -1,0 +1,21 @@
+path_classifiers:
+
+  # exclude tests
+  test:
+  - "**/src/test"
+  - "**/src/it"
+  - "**/*.test"
+  - "**/tests"
+  - "performance"
+
+  # exclude docs
+  docs:
+  - "about.html"
+  - "license.html"
+  - "readme.html"
+
+extraction:
+  java:
+    index:
+      build_command: "mvn -DskipTests clean package"
+
