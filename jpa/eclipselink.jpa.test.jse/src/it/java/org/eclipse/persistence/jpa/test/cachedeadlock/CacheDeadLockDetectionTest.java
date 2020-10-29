@@ -19,6 +19,7 @@ import jakarta.enterprise.inject.se.SeContainerInitializer;
 
 import jakarta.persistence.*;
 
+import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionDetail;
 import org.eclipse.persistence.jpa.test.cachedeadlock.model.CacheDeadLockDetectionMaster;
@@ -27,6 +28,8 @@ import org.eclipse.persistence.jpa.test.cachedeadlock.cdi.event.EventProducer;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -45,6 +48,7 @@ public class CacheDeadLockDetectionTest {
     @Test
     public void bugTest() {
         EntityManager em = emf.createEntityManager();
+        verifyPersistenceProperties();
         setup();
         try {
             em.getTransaction().begin();
@@ -113,5 +117,15 @@ public class CacheDeadLockDetectionTest {
                 em.close();
             }
         }
+    }
+
+    private void verifyPersistenceProperties() {
+        assertEquals(1L, ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
+        assertEquals(2L, ConcurrencyUtil.SINGLETON.getMaxAllowedSleepTime());
+        assertEquals(3L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceTinyDumpLogMessage());
+        assertEquals(4L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceMassiveDumpLogMessage());
+        assertTrue(ConcurrencyUtil.SINGLETON.isAllowTakingStackTraceDuringReadLockAcquisition());
+        assertTrue(ConcurrencyUtil.SINGLETON.isAllowConcurrencyExceptionToBeFiredUp());
+        assertTrue(ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
     }
 }

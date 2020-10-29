@@ -165,13 +165,6 @@
                             <goal>integration-test</goal>
                         </goals>
                         <configuration>
-                            <systemProperties>
-                                <eclipselink.concurrency.manager.waittime>1</eclipselink.concurrency.manager.waittime>
-                                <eclipselink.concurrency.manager.maxsleeptime>1</eclipselink.concurrency.manager.maxsleeptime>
-                                <eclipselink.concurrency.manager.maxfrequencytodumptinymessage>1</eclipselink.concurrency.manager.maxfrequencytodumptinymessage>
-                                <eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage>1</eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage>
-                                <eclipselink.concurrency.manager.allow.readlockstacktrace>true</eclipselink.concurrency.manager.allow.readlockstacktrace>
-                            </systemProperties>
                             <includes>
                                 <include>CacheDeadLockDetectionTest*</include>
                             </includes>

@@ -38,11 +38,13 @@ public class ConcurrencyUtil {
 
     public static final ConcurrencyUtil SINGLETON = new ConcurrencyUtil();
 
-    public static final long ACQUIRE_WAIT_TIME = getPropertyConcurrencyManagerAcquireWaitTime();
-
-    private static final long DEFAULT_MAX_ALLOWED_SLEEP_TIME_MS = 40000L;
-    private static final long DEFAULT_MAX_ALLOWED_FREQUENCY_TINY_DUMP_LOG_MESSAGE = 40000L;
-    private static final long DEFAULT_MAX_ALLOWED_FREQUENCY_MASSIVE_DUMP_LOG_MESSAGE = 60000L;
+    private long acquireWaitTime = 0L;
+    private long maxAllowedSleepTime = 40000L;
+    private long maxAllowedFrequencyToProduceTinyDumpLogMessage = 40000L;
+    private long maxAllowedFrequencyToProduceMassiveDumpLogMessage = 60000L;
+    private boolean allowInterruptedExceptionFired = true;
+    private boolean allowConcurrencyExceptionToBeFiredUp = true;
+    private boolean allowTakingStackTraceDuringReadLockAcquisition = true;
 
     /**
      * Thread local variable that allows the current thread to know when was the last time that this specific thread
@@ -104,7 +106,7 @@ public class ConcurrencyUtil {
             throws InterruptedException {
         // (a) Determine if we believe to be dealing with a dead lock
 
-        final long maxAllowedSleepTimeMillis = ConcurrencyUtil.SINGLETON.getMaxAllowedSleepTimeMs();
+        final long maxAllowedSleepTimeMillis = ConcurrencyUtil.SINGLETON.getMaxAllowedSleepTime();
         long whileCurrentTimeMillis = System.currentTimeMillis();
         long elapsedTime = whileCurrentTimeMillis - whileStartTimeMillis;
         boolean tooMuchTimeHasElapsed = tooMuchTimeHasElapsed(whileStartTimeMillis, maxAllowedSleepTimeMillis);
@@ -154,7 +156,7 @@ public class ConcurrencyUtil {
         // NOTE:
         // This project has reported that our blowing up of the JTA transaction
         // to release the dead lock is not being 100% effective the system can still freeze forever
-        // And if interupting the thread and releasing its resources is not effective
+        // And if interrupting the thread and releasing its resources is not effective
         // then we are worse off.
         // Best is to leave the system frozen and simply spam into the log of the server
         // the current state of cache
@@ -173,6 +175,28 @@ public class ConcurrencyUtil {
     }
 
     /**
+     * @return "eclipselink.concurrency.manager.waittime" persistence property value.
+     */
+    public long getAcquireWaitTime() {
+        return this.acquireWaitTime;
+    }
+
+    public void setAcquireWaitTime(long acquireWaitTime) {
+        this.acquireWaitTime = acquireWaitTime;
+    }
+
+    /**
+     * @return property to control how long we are willing to wait before firing up an exception
+     */
+    public long getMaxAllowedSleepTime() {
+        return this.maxAllowedSleepTime;
+    }
+
+    public void setMaxAllowedSleepTime(long maxAllowedSleepTime) {
+        this.maxAllowedSleepTime = maxAllowedSleepTime;
+    }
+
+    /**
      * Just like we have a massive dump log message see {@link #getMaxAllowedFrequencyToProduceMassiveDumpLogMessage()}
      * we also want threads to produce "tiny" dump about the fact that they rae stuck. We want to avoid these threads
      * spaming too much the server log ... once the log message is out there not much point in continuously pumping the
@@ -183,7 +207,11 @@ public class ConcurrencyUtil {
      * @return the frequency with which we are allowed to create a tiny dump log message
      */
     public long getMaxAllowedFrequencyToProduceTinyDumpLogMessage() {
-        return getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, DEFAULT_MAX_ALLOWED_FREQUENCY_TINY_DUMP_LOG_MESSAGE);
+        return this.maxAllowedFrequencyToProduceTinyDumpLogMessage;
+    }
+
+    public void setMaxAllowedFrequencyToProduceTinyDumpLogMessage(long maxAllowedFrequencyToProduceTinyDumpLogMessage) {
+        this.maxAllowedFrequencyToProduceTinyDumpLogMessage = maxAllowedFrequencyToProduceTinyDumpLogMessage;
     }
 
     /**
@@ -195,18 +223,20 @@ public class ConcurrencyUtil {
      * See also {@link #dateWhenLastConcurrencyManagerStateFullDumpWasPerformed}.
      */
     public long getMaxAllowedFrequencyToProduceMassiveDumpLogMessage() {
-        return getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE, DEFAULT_MAX_ALLOWED_FREQUENCY_MASSIVE_DUMP_LOG_MESSAGE);
+        return this.maxAllowedFrequencyToProduceMassiveDumpLogMessage;
     }
 
-
-    /**
-     * @return check if the user has specified a system property to control how long we are willing to wait before
-     *         firing up an exception
-     */
-    public long getMaxAllowedSleepTimeMs() {
-        return getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME, DEFAULT_MAX_ALLOWED_SLEEP_TIME_MS);
+    public void setMaxAllowedFrequencyToProduceMassiveDumpLogMessage(long maxAllowedFrequencyToProduceMassiveDumpLogMessage) {
+        this.maxAllowedFrequencyToProduceMassiveDumpLogMessage = maxAllowedFrequencyToProduceMassiveDumpLogMessage;
     }
 
+    public boolean isAllowInterruptedExceptionFired() {
+        return this.allowInterruptedExceptionFired;
+    }
+
+    public void setAllowInterruptedExceptionFired(boolean allowInterruptedExceptionFired) {
+        this.allowInterruptedExceptionFired = allowInterruptedExceptionFired;
+    }
 
     /**
      * @return true if we are supposed to be firing up exception to abort the thread in a dead lock, false we are afraid
@@ -214,11 +244,19 @@ public class ConcurrencyUtil {
      *         and be forced into restarting it.
      */
     public boolean isAllowConcurrencyExceptionToBeFiredUp() {
-        return getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, false);
+        return this.allowConcurrencyExceptionToBeFiredUp;
+    }
+
+    public void setAllowConcurrencyExceptionToBeFiredUp(boolean allowConcurrencyExceptionToBeFiredUp) {
+        this.allowConcurrencyExceptionToBeFiredUp = allowConcurrencyExceptionToBeFiredUp;
     }
 
     public boolean isAllowTakingStackTraceDuringReadLockAcquisition() {
-        return getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK, false);
+        return this.allowTakingStackTraceDuringReadLockAcquisition;
+    }
+
+    public void setAllowTakingStackTraceDuringReadLockAcquisition(boolean allowTakingStackTraceDuringReadLockAcquisition) {
+        this.allowTakingStackTraceDuringReadLockAcquisition = allowTakingStackTraceDuringReadLockAcquisition;
     }
 
     /**
@@ -726,10 +764,6 @@ public class ConcurrencyUtil {
         }
         writer.write("\n\n");
         return writer.toString();
-    }
-
-    private static long getPropertyConcurrencyManagerAcquireWaitTime() {
-        return SINGLETON.getLongProperty(SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, 0L);
     }
 
     /**
@@ -1433,33 +1467,4 @@ public class ConcurrencyUtil {
                 currentThreadStackTraceInformation, currentThreadStackTraceInformationCpuTimeCostMs);
 
     }
-
-    private long getLongProperty(final String key, final long defaultValue) {
-        String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, "0"))
-                : System.getProperty(key, "0");
-        if (value != null) {
-            try {
-                return Long.parseLong(value.trim());
-            } catch (Exception ignoreE) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-
-    public boolean getBooleanProperty(final String key, final boolean defaultValue) {
-        String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
-                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, "false"))
-                : System.getProperty(key, "false");
-        if (value != null) {
-            try {
-                return Boolean.parseBoolean(value.trim());
-            } catch (Exception ignoreE) {
-                return defaultValue;
-            }
-        }
-        return defaultValue;
-    }
-
 }

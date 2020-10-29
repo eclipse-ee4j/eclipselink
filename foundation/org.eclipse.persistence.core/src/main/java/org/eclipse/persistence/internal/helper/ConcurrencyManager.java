@@ -80,16 +80,6 @@ public class ConcurrencyManager implements Serializable {
     private static final Set<Thread> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS = ConcurrentHashMap.newKeySet();
 
     /**
-     * In the places where we use this constant normally if a thread is stuck it is because it is doing object building.
-     * Blowing the threads ups is not that dangerous. It can be very dangerous for production if the dead lock ends up
-     * not being resolved because the productive business transactions will become cancelled if the application has a
-     * limited number of retries to for example process an MDB. However, the code spots where we use this constant are
-     * not as sensible as when the write lock manager is starving to run commit.
-     *
-     */
-    private static Boolean ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED = true;
-
-    /**
      * Initialize the newly allocated instance of this class.
      * Set the depth to zero.
      */
@@ -132,9 +122,9 @@ public class ConcurrencyManager implements Serializable {
             // This must be in a while as multiple threads may be released, or another thread may rush the acquire after one is released.
             try {
                 this.numberOfWritersWaiting.incrementAndGet();
-                wait(ConcurrencyUtil.ACQUIRE_WAIT_TIME);
+                wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
                 // Run a method that will fire up an exception if we having been sleeping for too long
-                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
+                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
             } catch (InterruptedException exception) {
                 // If the thread is interrupted we want to make sure we release all of the locks the thread was owning
                 releaseAllLocksAcquiredByThread(lockManager);
@@ -264,8 +254,8 @@ public class ConcurrencyManager implements Serializable {
                 //the object is not being built.
                 try {
                     this.numberOfWritersWaiting.incrementAndGet();
-                    wait(ConcurrencyUtil.ACQUIRE_WAIT_TIME);
-                    ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
+                    wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
+                    ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
                 } catch (InterruptedException exception) {
                     // If the thread is interrupted we want to make sure we release all of the locks the thread was owning
                     releaseAllLocksAcquiredByThread(lockManager);
@@ -334,8 +324,8 @@ public class ConcurrencyManager implements Serializable {
         // Cannot check for starving writers as will lead to deadlocks.
         while ((this.activeThread != null) && (this.activeThread != Thread.currentThread())) {
             try {
-                wait(ConcurrencyUtil.ACQUIRE_WAIT_TIME);
-                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
+                wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());
+                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
             } catch (InterruptedException exception) {
                 releaseAllLocksAcquiredByThread(lockManager);
                 if (currentThreadWillEnterTheWhileWait) {
@@ -573,7 +563,7 @@ public class ConcurrencyManager implements Serializable {
                             THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS.add(currentThread);
                         }
                         Thread.sleep(20);
-                        ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED);
+                        ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(this, whileStartTimeMillis, lockManager, readLockManager, ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());
                     } catch (InterruptedException interrupted) {
                         AbstractSessionLog.getLog().logThrowable(SessionLog.SEVERE, SessionLog.CACHE, interrupted);
                         releaseAllLocksAcquiredByThread(lockManager);

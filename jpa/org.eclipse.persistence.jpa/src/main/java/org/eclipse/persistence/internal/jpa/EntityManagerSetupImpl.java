@@ -209,11 +209,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatasourcePlatform;
 import org.eclipse.persistence.internal.databaseaccess.Platform;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy.LockOnChange;
-import org.eclipse.persistence.internal.helper.ClassConstants;
-import org.eclipse.persistence.internal.helper.ConcurrencyManager;
-import org.eclipse.persistence.internal.helper.Helper;
-import org.eclipse.persistence.internal.helper.JPAClassLoaderHolder;
-import org.eclipse.persistence.internal.helper.JPAConversionManager;
+import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.jpa.deployment.BeanValidationInitializationHelper;
 import org.eclipse.persistence.internal.jpa.deployment.PersistenceUnitProcessor;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
@@ -2906,7 +2902,14 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateShouldOptimizeResultSetAccess(m);
             updateTolerateInvalidJPQL(m);
             updateTenancy(m, loader);
-
+            // ConcurrencyManager properties
+            updateConcurrencyManagerWaitTime(m);
+            updateConcurrencyManagerMaxAllowedSleepTime(m);
+            updateConcurrencyManagerMaxAllowedFrequencyToProduceTinyDumpLogMessage(m);
+            updateConcurrencyManagerMaxAllowedFrequencyToProduceMassiveDumpLogMessage(m);
+            updateConcurrencyManagerAllowInterruptedExceptionFired(m);
+            updateConcurrencyManagerAllowConcurrencyExceptionToBeFiredUp(m);
+            updateConcurrencyManagerAllowTakingStackTraceDuringReadLockAcquisition(m);
             // Customizers should be processed last
             processDescriptorCustomizers(m, loader);
             processSessionCustomizer(m, loader);
@@ -3736,6 +3739,83 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             } else {
                 this.session.handleException(ValidationException.invalidBooleanValueForProperty(namingIntoIndexed, PersistenceUnitProperties.NAMING_INTO_INDEXED));
             }
+        }
+    }
+
+    private void updateConcurrencyManagerWaitTime(Map persistenceProperties) {
+        String acquireWaitTime = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, persistenceProperties, session);
+        try {
+            if (acquireWaitTime != null) {
+                ConcurrencyUtil.SINGLETON.setAcquireWaitTime(Long.parseLong(acquireWaitTime));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(acquireWaitTime, PersistenceUnitProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerMaxAllowedSleepTime(Map persistenceProperties) {
+        String maxAllowedSleepTime = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME, persistenceProperties, session);
+        try {
+            if (maxAllowedSleepTime != null) {
+                ConcurrencyUtil.SINGLETON.setMaxAllowedSleepTime(Long.parseLong(maxAllowedSleepTime));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(maxAllowedSleepTime, PersistenceUnitProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerMaxAllowedFrequencyToProduceTinyDumpLogMessage(Map persistenceProperties) {
+        String maxAllowedSleepTime = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, persistenceProperties, session);
+        try {
+            if (maxAllowedSleepTime != null) {
+                ConcurrencyUtil.SINGLETON.setMaxAllowedFrequencyToProduceTinyDumpLogMessage(Long.parseLong(maxAllowedSleepTime));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(maxAllowedSleepTime, PersistenceUnitProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerMaxAllowedFrequencyToProduceMassiveDumpLogMessage(Map persistenceProperties) {
+        String maxAllowedSleepTime = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE, persistenceProperties, session);
+        try {
+            if (maxAllowedSleepTime != null) {
+                ConcurrencyUtil.SINGLETON.setMaxAllowedFrequencyToProduceMassiveDumpLogMessage(Long.parseLong(maxAllowedSleepTime));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(maxAllowedSleepTime, PersistenceUnitProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerAllowInterruptedExceptionFired(Map persistenceProperties) {
+        String allowInterruptedExceptionFired = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION, persistenceProperties, session);
+        try {
+            if (allowInterruptedExceptionFired != null) {
+                ConcurrencyUtil.SINGLETON.setAllowInterruptedExceptionFired(Boolean.parseBoolean(allowInterruptedExceptionFired));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(allowInterruptedExceptionFired, PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerAllowConcurrencyExceptionToBeFiredUp(Map persistenceProperties) {
+        String allowConcurrencyExceptionToBeFiredUp = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, persistenceProperties, session);
+        try {
+            if (allowConcurrencyExceptionToBeFiredUp != null) {
+                ConcurrencyUtil.SINGLETON.setAllowConcurrencyExceptionToBeFiredUp(Boolean.parseBoolean(allowConcurrencyExceptionToBeFiredUp));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(allowConcurrencyExceptionToBeFiredUp, PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerAllowTakingStackTraceDuringReadLockAcquisition(Map persistenceProperties) {
+        String allowTakingStackTraceDuringReadLockAcquisition = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK, persistenceProperties, session);
+        try {
+            if (allowTakingStackTraceDuringReadLockAcquisition != null) {
+                ConcurrencyUtil.SINGLETON.setAllowTakingStackTraceDuringReadLockAcquisition(Boolean.parseBoolean(allowTakingStackTraceDuringReadLockAcquisition));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(allowTakingStackTraceDuringReadLockAcquisition, PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK, exception));
         }
     }
 

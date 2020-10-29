@@ -162,7 +162,7 @@ public class WriteLockManager {
                 synchronized (toWaitOn) {
                     try {
                         if (toWaitOn.isAcquired()) {//last minute check to insure it is still locked.
-                            toWaitOn.wait(ConcurrencyUtil.ACQUIRE_WAIT_TIME);// wait for lock on object to be released
+                            toWaitOn.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());// wait for lock on object to be released
                         }
                     } catch (InterruptedException ex) {
                         // Ignore exception thread should continue.
