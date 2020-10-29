@@ -94,7 +94,7 @@ public class SimpleVerifier extends BasicVerifier {
       final List<Type> currentClassInterfaces,
       final boolean isInterface) {
     this(
-        /* latest api = */ ASM8,
+        /* latest api = */ ASM9,
         currentClass,
         currentSuperClass,
         currentClassInterfaces,
@@ -110,8 +110,8 @@ public class SimpleVerifier extends BasicVerifier {
    *
    * @param api the ASM API version supported by this verifier. Must be one of {@link
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7} or {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}, {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8} or or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM9}.
    * @param currentClass the type of the class to be verified.
    * @param currentSuperClass the type of the super class of the class to be verified.
    * @param currentClassInterfaces the types of the interfaces directly implemented by the class to

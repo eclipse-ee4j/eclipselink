@@ -53,14 +53,14 @@ public class RecordComponentRemapper extends RecordComponentVisitor {
    */
   public RecordComponentRemapper(
       final RecordComponentVisitor recordComponentVisitor, final Remapper remapper) {
-    this(/* latest api = */ Opcodes.ASM8, recordComponentVisitor, remapper);
+    this(/* latest api = */ Opcodes.ASM9, recordComponentVisitor, remapper);
   }
 
   /**
    * Constructs a new {@link RecordComponentRemapper}.
    *
-   * @param api the ASM API version supported by this remapper. Must be {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}.
+   * @param api the ASM API version supported by this remapper. Must be one of {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM9}.
    * @param recordComponentVisitor the record component visitor this remapper must delegate to.
    * @param remapper the remapper to use to remap the types in the visited record component.
    */

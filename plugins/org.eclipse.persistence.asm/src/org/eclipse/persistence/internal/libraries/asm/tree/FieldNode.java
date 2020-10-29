@@ -99,7 +99,7 @@ public class FieldNode extends FieldVisitor {
       final String descriptor,
       final String signature,
       final Object value) {
-    this(/* latest api = */ Opcodes.ASM8, access, name, descriptor, signature, value);
+    this(/* latest api = */ Opcodes.ASM9, access, name, descriptor, signature, value);
     if (getClass() != FieldNode.class) {
       throw new IllegalStateException();
     }
@@ -109,8 +109,8 @@ public class FieldNode extends FieldVisitor {
    * Constructs a new {@link FieldNode}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
-   *     Opcodes#ASM8}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7}, {@link
+   *     Opcodes#ASM8} or {@link Opcodes#ASM9}.
    * @param access the field's access flags (see {@link org.eclipse.persistence.internal.libraries.asm.Opcodes}). This parameter
    *     also indicates if the field is synthetic and/or deprecated.
    * @param name the field's name.

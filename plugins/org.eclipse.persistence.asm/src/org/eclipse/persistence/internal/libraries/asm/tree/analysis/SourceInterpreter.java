@@ -51,7 +51,7 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
    * version.
    */
   public SourceInterpreter() {
-    super(/* latest api = */ ASM8);
+    super(/* latest api = */ ASM9);
     if (getClass() != SourceInterpreter.class) {
       throw new IllegalStateException();
     }
@@ -62,8 +62,8 @@ public class SourceInterpreter extends Interpreter<SourceValue> implements Opcod
    *
    * @param api the ASM API version supported by this interpreter. Must be one of {@link
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7} or {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}.
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}, {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8} or or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM9}.
    */
   protected SourceInterpreter(final int api) {
     super(api);

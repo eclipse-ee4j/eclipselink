@@ -52,7 +52,7 @@ public class CheckFieldAdapter extends FieldVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public CheckFieldAdapter(final FieldVisitor fieldVisitor) {
-    this(/* latest api = */ Opcodes.ASM8, fieldVisitor);
+    this(/* latest api = */ Opcodes.ASM9, fieldVisitor);
     if (getClass() != CheckFieldAdapter.class) {
       throw new IllegalStateException();
     }
@@ -62,8 +62,8 @@ public class CheckFieldAdapter extends FieldVisitor {
    * Constructs a new {@link CheckFieldAdapter}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
-   *     Opcodes#ASM8}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7}, {@link
+   *     Opcodes#ASM8} or {@link Opcodes#ASM9}.
    * @param fieldVisitor the field visitor to which this adapter must delegate calls.
    */
   protected CheckFieldAdapter(final int api, final FieldVisitor fieldVisitor) {
