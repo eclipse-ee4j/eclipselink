@@ -62,7 +62,7 @@ public final class TraceRecordComponentVisitor extends RecordComponentVisitor {
    */
   public TraceRecordComponentVisitor(
       final RecordComponentVisitor recordComponentVisitor, final Printer printer) {
-    super(/* latest api ='*/ Opcodes.ASM8, recordComponentVisitor);
+    super(/* latest api ='*/ Opcodes.ASM9, recordComponentVisitor);
     this.printer = printer;
   }
 

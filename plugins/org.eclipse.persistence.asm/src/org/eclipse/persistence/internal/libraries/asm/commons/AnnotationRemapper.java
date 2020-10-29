@@ -49,7 +49,7 @@ public class AnnotationRemapper extends AnnotationVisitor {
    * @param remapper the remapper to use to remap the types in the visited annotation.
    */
   public AnnotationRemapper(final AnnotationVisitor annotationVisitor, final Remapper remapper) {
-    this(/* latest api = */ Opcodes.ASM8, annotationVisitor, remapper);
+    this(/* latest api = */ Opcodes.ASM9, annotationVisitor, remapper);
   }
 
   /**
@@ -57,8 +57,8 @@ public class AnnotationRemapper extends AnnotationVisitor {
    *
    * @param api the ASM API version supported by this remapper. Must be one of {@link
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5}, {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7} or {@link
-   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8}
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}, {@link
+   *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM9}.
    * @param annotationVisitor the annotation visitor this remapper must deleted to.
    * @param remapper the remapper to use to remap the types in the visited annotation.
    */

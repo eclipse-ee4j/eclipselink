@@ -119,7 +119,7 @@ public final class TraceClassVisitor extends ClassVisitor {
    */
   public TraceClassVisitor(
       final ClassVisitor classVisitor, final Printer printer, final PrintWriter printWriter) {
-    super(/* latest api = */ Opcodes.ASM9_EXPERIMENTAL, classVisitor);
+    super(/* latest api = */ Opcodes.ASM10_EXPERIMENTAL, classVisitor);
     this.printWriter = printWriter;
     this.p = printer;
   }
@@ -187,17 +187,10 @@ public final class TraceClassVisitor extends ClassVisitor {
     super.visitNestMember(nestMember);
   }
 
-  /**
-   * <b>Experimental, use at your own risk.</b>.
-   *
-   * @param permittedSubtype the internal name of a permitted subtype.
-   * @deprecated this API is experimental.
-   */
   @Override
-  @Deprecated
-  public void visitPermittedSubtypeExperimental(final String permittedSubtype) {
-    p.visitPermittedSubtypeExperimental(permittedSubtype);
-    super.visitPermittedSubtypeExperimental(permittedSubtype);
+  public void visitPermittedSubclass(final String permittedSubclass) {
+    p.visitPermittedSubclass(permittedSubclass);
+    super.visitPermittedSubclass(permittedSubclass);
   }
 
   @Override

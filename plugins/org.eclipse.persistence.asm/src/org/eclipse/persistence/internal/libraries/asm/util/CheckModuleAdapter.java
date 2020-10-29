@@ -71,7 +71,7 @@ public class CheckModuleAdapter extends ModuleVisitor {
    * @throws IllegalStateException If a subclass calls this constructor.
    */
   public CheckModuleAdapter(final ModuleVisitor moduleVisitor, final boolean isOpen) {
-    this(/* latest api = */ Opcodes.ASM8, moduleVisitor, isOpen);
+    this(/* latest api = */ Opcodes.ASM9, moduleVisitor, isOpen);
     if (getClass() != CheckModuleAdapter.class) {
       throw new IllegalStateException();
     }
@@ -81,8 +81,8 @@ public class CheckModuleAdapter extends ModuleVisitor {
    * Constructs a new {@link CheckModuleAdapter}.
    *
    * @param api the ASM API version implemented by this visitor. Must be one of {@link
-   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7} or {@link
-   *     Opcodes#ASM8}.
+   *     Opcodes#ASM4}, {@link Opcodes#ASM5}, {@link Opcodes#ASM6}, {@link Opcodes#ASM7}, {@link
+   *     Opcodes#ASM8} or {@link Opcodes#ASM9}.
    * @param moduleVisitor the module visitor to which this adapter must delegate calls.
    * @param isOpen whether the visited module is open. Open modules have their {@link
    *     Opcodes#ACC_OPEN} access flag set in {@link org.eclipse.persistence.internal.libraries.asm.ClassVisitor#visitModule}.
