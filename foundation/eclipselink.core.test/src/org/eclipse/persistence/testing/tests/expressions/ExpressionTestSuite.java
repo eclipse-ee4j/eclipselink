@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -739,6 +739,32 @@ public class ExpressionTestSuite extends TestSuite {
         ReadObjectExpressionTest test = new ReadObjectExpressionTest(employee, expression);
         test.setName("InCollectionExpressionTest");
         test.setDescription("Test IN expression");
+        addTest(test);
+    }
+
+    private void addInCollectionEmptyTest() {
+        // Empty collection without any items
+        Set names = new HashSet();
+
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression expression = builder.get("lastName").in(names);
+
+        ReadObjectExpressionTest test = new ReadObjectExpressionTest(new Employee().getClass(), expression);
+        test.setName("InCollectionEmptyExpressionTest");
+        test.setDescription("Test IN expression with empty collection");
+        addTest(test);
+    }
+
+    private void addInCollectionNullTest() {
+        // Collection is not initialized
+        Set names = null;
+
+        ExpressionBuilder builder = new ExpressionBuilder();
+        Expression expression = builder.get("lastName").in(names);
+
+        ReadObjectExpressionTest test = new ReadObjectExpressionTest(new Employee().getClass(), expression);
+        test.setName("InCollectionNullExpressionTest");
+        test.setDescription("Test IN expression with null collection");
         addTest(test);
     }
 
@@ -1692,6 +1718,8 @@ public class ExpressionTestSuite extends TestSuite {
         // ET. The test doesn't work with DB2 jcc driver(Bug 4563813)
         addAdvancedDB2ExpressionFunctionTest();
         addInCollectionTest();
+        addInCollectionEmptyTest();
+        addInCollectionNullTest();
         // Bug 247076 - LiteralExpression does not print SQL in statement
         addTest(new LiteralExpressionTest());
         // Bug 284884 - Quoted '?' symbol in expression literal causes ArrayIndexOutOfBoundsException
