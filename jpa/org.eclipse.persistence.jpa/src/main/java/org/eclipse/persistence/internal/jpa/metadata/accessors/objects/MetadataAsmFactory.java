@@ -112,8 +112,8 @@ public class MetadataAsmFactory extends MetadataFactory {
             // without class version check
             SessionLog log = getLogger().getSession() != null
                     ? getLogger().getSession().getSessionLog() : AbstractSessionLog.getLog();
-            if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
-                SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, iae);
+            if (log.shouldLog(SessionLog.WARNING, SessionLog.METADATA)) {
+                SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.WARNING, SessionLog.METADATA, iae);
                 entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
                 log.log(entry);
             }
@@ -123,6 +123,7 @@ public class MetadataAsmFactory extends MetadataFactory {
                     Attribute[] attributes = new Attribute[0];
                     reader.accept(visitor, attributes, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
                 } catch (Exception e) {
+                    // our fall-back failed, this is severe
                     if (log.shouldLog(SessionLog.SEVERE, SessionLog.METADATA)) {
                         SessionLogEntry entry = new SessionLogEntry(getLogger().getSession(), SessionLog.SEVERE, SessionLog.METADATA, e);
                         entry.setMessage(ExceptionLocalization.buildMessage("unsupported_classfile_version", new Object[] { className }));
