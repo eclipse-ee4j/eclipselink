@@ -39,26 +39,32 @@ The project maintains the following source code repositories
 * https://github.com/eclipse-ee4j/eclipselink-workbench
 * https://github.com/eclipse-ee4j/eclipselink-oracleddlparser
 * https://github.com/eclipse-ee4j/eclipselink-examples
-* http://git.eclipse.org/c/eclipselink/eclipselink.releng.git
-* http://git.eclipse.org/c/eclipselink/eclipselink.runtime.git
-* http://git.eclipse.org/c/eclipselink/eclipselink.utils.temp.git
-* http://git.eclipse.org/c/eclipselink/examples.git
-* http://git.eclipse.org/c/eclipselink/examples/mysports.git
-* http://git.eclipse.org/c/eclipselink/examples/nosql.git
-* http://git.eclipse.org/c/eclipselink/examples/performance.git
-* http://git.eclipse.org/c/eclipselink/examples/temporal.git
-* http://git.eclipse.org/c/eclipselink/incubator.git
-* http://git.eclipse.org/c/eclipselink/javax.persistence.git
-* http://git.eclipse.org/c/eclipselink/oracleddlparser.git
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/eclipselink.releng
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/eclipselink.runtime
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/eclipselink.utils.temp
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples/mysports
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples/nosql
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples/performance
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples/temporal
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/incubator
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/javax.persistence
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/oracleddlparser
 
-This project uses Bugzilla to track ongoing development and issues.
+This project uses GitHub Issue Tracker and Bugzilla to track ongoing development and issues.
 
-* Search for issues: https://bugs.eclipse.org/bugs/buglist.cgi?product=EclipseLink
+* Search for issues:
+   https://bugs.eclipse.org/bugs/buglist.cgi?product=EclipseLink
 * Create a new report:
    https://bugs.eclipse.org/bugs/enter_bug.cgi?product=EclipseLink
 
 Be sure to search for existing bugs before you create another one. Remember that
 contributions are always welcome!
+
+## Eclipse Development Process
+
+This Eclipse Foundation open project is governed by the Eclipse Foundation
+Development Process and operates under the terms of the Eclipse IP Policy.
 
 ## Eclipse Contributor Agreement
 

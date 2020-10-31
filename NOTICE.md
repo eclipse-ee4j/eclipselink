@@ -16,7 +16,7 @@ This content is produced and maintained by the EclipseLink project.
 
 ## Trademarks
 
-EclipseLink is a trademark of the Eclipse Foundation.
+ EclipseLink is a trademark of the Eclipse Foundation.
 
 ## Copyright
 
@@ -27,11 +27,11 @@ source code repository logs.
 ## Declared Project Licenses
 
 This program and the accompanying materials are made available under the terms
-of the Eclipse Public License v. 1.0 which is available at
-http://www.eclipse.org/legal/epl-v10.html, or the Eclipse Distribution License
-v. 1.0 which is available at http://www.eclipse.org/org/documents/edl-v10.php.
+of the Eclipse Public License v. 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0, or the Eclipse Distribution License v1.0
+which is available at https://www.eclipse.org/org/documents/edl-v10.php.
 
-SPDX-License-Identifier: EPL-1.0 OR BSD-3-Clause
+SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 
 ## Source Code
 
@@ -41,19 +41,21 @@ The project maintains the following source code repositories:
 * https://github.com/eclipse-ee4j/eclipselink-workbench
 * https://github.com/eclipse-ee4j/eclipselink-oracleddlparser
 * https://github.com/eclipse-ee4j/eclipselink-examples
-* http://git.eclipse.org/c/eclipselink/eclipselink.releng.git
-* http://git.eclipse.org/c/eclipselink/eclipselink.runtime.git
-* http://git.eclipse.org/c/eclipselink/eclipselink.utils.temp.git
-* http://git.eclipse.org/c/eclipselink/examples.git
-* http://git.eclipse.org/c/eclipselink/examples/mysports.git
-* http://git.eclipse.org/c/eclipselink/examples/nosql.git
-* http://git.eclipse.org/c/eclipselink/examples/performance.git
-* http://git.eclipse.org/c/eclipselink/examples/temporal.git
-* http://git.eclipse.org/c/eclipselink/incubator.git
-* http://git.eclipse.org/c/eclipselink/javax.persistence.git
-* http://git.eclipse.org/c/eclipselink/oracleddlparser.git
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/eclipselink.releng
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/eclipselink.runtime
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/eclipselink.utils.temp
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples/mysports
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples/nosql
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples/performance
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/examples/temporal
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/incubator
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/javax.persistence
+* https://git.eclipse.org/r/plugins/gitiles/eclipselink/oracleddlparser
 
 ## Third-party Content
+
+This project leverages the following third party content.
 
 * Service Data Objects (SDO) (2.1)
 
@@ -81,6 +83,14 @@ ANTLR Runtime only: Version (3.2)
 Apache Ant (1.7.0)
 
 * License: Apache License, 2.0
+
+Apache Ant (1.10.7)
+
+* License: Apache-2.0 AND W3C AND LicenseRef-Public-Domain
+
+Apache Ant (1.10.7)
+
+* License: Apache-2.0 AND W3C AND LicenseRef-Public-Domain
 
 Apache Geronimo Jaxws 2.1 Spec (1.0)
 
@@ -124,6 +134,29 @@ ASM (6.1.1)
 * License: BSD-3-Clause
 * Project: http://asm.ow2.org
 * Source: https://gitlab.ow2.org/asm/asm/tags/ASM_6_1_1
+
+asm (6.2)
+
+* License: BSD-3-Clause
+
+asm (7.1)
+
+* License: BSD-3-Clause
+
+ASM (7.2)
+
+* License: Pending
+
+ASM (7.3.1)
+
+* License: BSD-3-Clause
+
+ASM (8.0.1)
+
+* License: BSD-3-Clause
+
+ASM 9 (n/a)
+
 
 atinject (Package javax.inject) (1.0)
 
@@ -213,6 +246,32 @@ Expression Language Implementation (2.2.2)
 * Source:
    http://search.maven.org/remotecontent?filepath=org/glassfish/web/javax.el/2.2.2/javax.el-2.2.2-sources.jar
 
+geronimo activation (1.1)
+
+* License: Apache License, 2.0
+
+glassfish-corba-orb (4.2.0)
+
+* License: CDDL-1.1 OR GPL-2.0 With Classpath-exception-2.0
+
+gmbal (4.0.0)
+
+* License: (CDDL-1.1 OR GPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0) AND
+   Apache-2.0
+* Project: https://javaee.github.io/gmbal/
+* Source: https://github.com/javaee/gmbal
+
+gmbal-api (3.2.0)
+
+* License: CDDL-1.1 or GPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
+* Project: https://javaee.github.io/gmbal/
+* Source: https://github.com/javaee/gmbal
+
+gmbal-pfl basic_4.0.1.b003 (4.0.1)
+
+* License: (CDDL-1.1 OR GPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0) AND
+   Apache-2.0 AND BSD-3-Clause
+
 hk2-api (2.3.0)
 
 * License: Common Development and Distribution License
@@ -223,7 +282,7 @@ hk2-locator (2.3.0)
 
 hk2-utils (2.3.0)
 
-* License: Common Development and Distribution License
+* License: (CDDL-1.1 OR GPL-2.0 WITH Classpath-exception-2.0)
 
 Java API for JSON Processing JSR-353 (JSON-P) (0.0.99)
 
@@ -420,6 +479,10 @@ jersey-common (2.14)
 
 * License: Common Development and Distribution License
 
+jgroups (4.1.8)
+
+* License: Apache-2.0 AND CC-BY-2.5 AND LicenseRef-Public-Domain
+
 JMS (1.1)
 
 * License: Common Development and Distribution License
@@ -441,6 +504,17 @@ Logback Core (1.0.7)
 
 * License: Eclipse Public License
 
+logback-classic (1.3.0)
+
+* License: EPL-1.0 OR LGPL-2.1
+
+management-api (3.2.1)
+
+* License: (CDDL-1.1 OR GPL-2.0-only OR GPL-2.0-only WITH
+   Classpath-exception-2.0)
+* Project: https://javaee.github.io/gmbal-commons/
+* Source: https://github.com/javaee/gmbal-commons
+
 MongoDB Java Driver (2.7.3)
 
 * License: Apache License, 2.0, Eclipse Public License (One File)
@@ -457,6 +531,10 @@ mongodb java driver (3.2.0)
 * Source:
    http://central.maven.org/maven2/org/mongodb/mongo-java-driver/3.2.0/mongo-java-driver-3.2.0-sources.jar
 
+mongodb java driver (3.11.2)
+
+* License: Apache-2.0 AND MIT AND AND CC-BY-2.5 AND CC0-1.0
+
 opencsv (1.8)
 
 * License: Apache License, 2.0
@@ -464,10 +542,26 @@ opencsv (1.8)
 * Source:
    http://downloads.sourceforge.net/opencsv/opencsv-1.8-src-with-libs.tar.gz?modtime=1185864370&big_mirror=0
 
+oracle-nosql-client (18.3.10)
+
+* License: Apache-2.0
+
 org.apache.ant (1.6.5)
 
 * License: Apache License, 2.0
 * Project: http://ant.apache.org/
+
+org.apache.felix.framework (6.0.3)
+
+* License: Pending
+
+org.osgi.core (1.2.0)
+
+* License: Apache-2.0
+
+org.osgi.core (6.0.0)
+
+* License: Apache-2.0
 
 OSGi Enterprise Specification APIs (4.2)
 
@@ -480,6 +574,22 @@ osgi.compendium (4.1.0)
 osgi.core (4.1.0)
 
 * License: Apache License, 2.0
+
+pax-exam (n/a)
+
+* License: Pending
+
+pax-exam-container-forked (4.13.1)
+
+* License: Pending
+
+pax-exam-junit4 (4.13.1)
+
+* License: Pending
+
+pax-exam-link-mvn (4.13.1)
+
+* License: Pending
 
 saaj-api-1.3.jar (1.3)
 
@@ -494,12 +604,64 @@ SLF4J API (1.7.2)
 
 * License: MIT License
 
+slf4j-api (1.7.30)
+
+* License: MIT
+
+slf4j-api (2.0.0)
+
+* License: MIT
+
 spring-agent (2.5.3)
 
 * License: Apache License, 2.0
 * Project: http://www.springframework.org
 * Source:
    http://downloads.sourceforge.net/springframework/spring-framework-2.5.3-with-dependencies.zip?modtime=1204283106&big_mirror=0
+
+spring-aop (5.2.0)
+
+* License: Apache-2.0
+
+spring-beans (5.2.0)
+
+* License: Apache-2.0
+
+spring-context (5.2.0)
+
+* License: Apache-2.0
+
+spring-core (5.2.0)
+
+* License: Apache-2.0 AND BSD-3-Clause
+
+spring-expression (5.2.0)
+
+* License: Apache-2.0
+
+spring-instrument (5.2.0)
+
+* License: Pending
+
+spring-jcl (5.2.0)
+
+* License: Apache-2.0
+
+spring-jdbc (5.2.0)
+
+* License: Pending
+
+spring-orm (5.2.0)
+
+* License: Pending
+
+spring-test (5.2.0)
+
+* License: Apache-2.0 AND BSD-3-Clause AND LicenseRef-Public-Domain
+
+spring-tx (5.2.0)
+
+* License: Pending
 
 StAX-API.Jar (1.0.1)
 
@@ -513,6 +675,12 @@ Xerces (2.9.0)
 
 * License: Apache License, 2.0
 
+Xerces (2.12.0)
+
+* License: Apache-2.0 AND W3C-19980720
+* Project: http://xerces.apache.org/xerces2-j/
+* Source: https://svn.apache.org/repos/asf/xerces/java/tags/Xerces-J_2_12_0/
+
 ## Cryptography
 
 Content may contain encryption software. The country in which you are currently
@@ -521,4 +689,3 @@ another country, of encryption software. BEFORE using any encryption software,
 please check the country's laws, regulations and policies concerning the import,
 possession, or use, and re-export of encryption software, to see if this is
 permitted.
-

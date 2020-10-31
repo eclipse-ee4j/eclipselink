@@ -110,7 +110,7 @@
         <project.build.testReports.summaryFile>test-summary</project.build.testReports.summaryFile>
 
         <!--Common properties-->
-        <common.licenceFiles>about.html, license.html, readme.html</common.licenceFiles>
+        <common.licenceFiles>LICENSE.md, NOTICE.md</common.licenceFiles>
         <!--Integration test sources/resources directory. Relative directory to ${project.basedir}
         !!!Can't start with / character!!!-->
         <integration.test.directory>src/it/</integration.test.directory>
@@ -1259,6 +1259,7 @@
                                 <resource>
                                     <directory>${project.root.location}</directory>
                                     <includes>${common.licenceFiles}</includes>
+                                    <targetPath>META-INF</targetPath>
                                 </resource>
                             </resources>
                         </configuration>
