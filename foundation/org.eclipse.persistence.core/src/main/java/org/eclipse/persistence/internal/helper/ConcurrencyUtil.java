@@ -38,13 +38,21 @@ public class ConcurrencyUtil {
 
     public static final ConcurrencyUtil SINGLETON = new ConcurrencyUtil();
 
-    private long acquireWaitTime = 0L;
-    private long maxAllowedSleepTime = 40000L;
-    private long maxAllowedFrequencyToProduceTinyDumpLogMessage = 40000L;
-    private long maxAllowedFrequencyToProduceMassiveDumpLogMessage = 60000L;
-    private boolean allowInterruptedExceptionFired = true;
-    private boolean allowConcurrencyExceptionToBeFiredUp = true;
-    private boolean allowTakingStackTraceDuringReadLockAcquisition = true;
+    private static final long DEFAULT_ACQUIRE_WAIT_TIME = 0L;
+    private static final long DEFAULT_MAX_ALLOWED_SLEEP_TIME_MS = 40000L;
+    private static final long DEFAULT_MAX_ALLOWED_FREQUENCY_TINY_DUMP_LOG_MESSAGE = 40000L;
+    private static final long DEFAULT_MAX_ALLOWED_FREQUENCY_MASSIVE_DUMP_LOG_MESSAGE = 60000L;
+    private static final boolean DEFAULT_INTERRUPTED_EXCEPTION_FIRED = true;
+    private static final boolean DEFAULT_CONCURRENCY_EXCEPTION_FIRED = true;
+    private static final boolean DEFAULT_TAKING_STACKTRACE_DURING_READ_LOCK_ACQUISITION = true;
+
+    private long acquireWaitTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, DEFAULT_ACQUIRE_WAIT_TIME);
+    private long maxAllowedSleepTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME, DEFAULT_MAX_ALLOWED_SLEEP_TIME_MS);
+    private long maxAllowedFrequencyToProduceTinyDumpLogMessage = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, DEFAULT_MAX_ALLOWED_FREQUENCY_TINY_DUMP_LOG_MESSAGE);
+    private long maxAllowedFrequencyToProduceMassiveDumpLogMessage = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE, DEFAULT_MAX_ALLOWED_FREQUENCY_MASSIVE_DUMP_LOG_MESSAGE);
+    private boolean allowInterruptedExceptionFired = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION, DEFAULT_INTERRUPTED_EXCEPTION_FIRED);
+    private boolean allowConcurrencyExceptionToBeFiredUp = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, DEFAULT_CONCURRENCY_EXCEPTION_FIRED);
+    private boolean allowTakingStackTraceDuringReadLockAcquisition = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK, DEFAULT_TAKING_STACKTRACE_DURING_READ_LOCK_ACQUISITION);
 
     /**
      * Thread local variable that allows the current thread to know when was the last time that this specific thread
@@ -1465,6 +1473,33 @@ public class ConcurrencyUtil {
         // data in ReadLockAcquisitionMetadata are immutable it reflects an accurate snapshot of the time of acquisition
         return new ReadLockAcquisitionMetadata(concurrencyManager, numberOfReadersOnCacheKeyBeforeIncrementingByOne,
                 currentThreadStackTraceInformation, currentThreadStackTraceInformationCpuTimeCostMs);
+    }
 
+    private long getLongProperty(final String key, final long defaultValue) {
+        String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
+                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, String.valueOf(defaultValue)))
+                : System.getProperty(key, String.valueOf(defaultValue));
+        if (value != null) {
+            try {
+                return Long.parseLong(value.trim());
+            } catch (Exception ignoreE) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
+    }
+
+    private boolean getBooleanProperty(final String key, final boolean defaultValue) {
+        String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
+                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, String.valueOf(defaultValue)))
+                : System.getProperty(key, String.valueOf(defaultValue));
+        if (value != null) {
+            try {
+                return Boolean.parseBoolean(value.trim());
+            } catch (Exception ignoreE) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
     }
 }
