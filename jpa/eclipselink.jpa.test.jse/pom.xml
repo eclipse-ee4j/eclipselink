@@ -41,6 +41,16 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se-core</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!--Other modules-->
         <!--EclipseLink JPA-->
         <dependency>
@@ -134,15 +144,29 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>test-jpa-jse</id>
+                        <id>test-jpa-jse-without-deadlock</id>
                         <goals>
                             <goal>integration-test</goal>
                         </goals>
                         <configuration>
                             <skipTests>${test-skip-jpa-jse}</skipTests>
                             <reportNameSuffix>test-jpa-jse</reportNameSuffix>
+                            <excludes>
+                                <exclude>CacheDeadLockDetectionTest*</exclude>
+                            </excludes>
                             <includes>
                                 <include>*.Test*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-jpa-jse-deadlock</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>CacheDeadLockDetectionTest*</include>
                             </includes>
                         </configuration>
                     </execution>
