@@ -101,8 +101,8 @@ spec:
         stage('Init') {
             steps {
                 container('el-build') {
-                    git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
-                    sshagent(['SSH_CREDENTIALS_ID']) {
+                    git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
+                    sshagent([SSH_CREDENTIALS_ID]) {
                         sh """
                             # Directory for JEE server binaries (WildFly, Glassfish)
                             # Maven build automatically download and unpack them.
@@ -117,6 +117,11 @@ spec:
                                 echo -e "5\\ny\\n" |  gpg --batch --command-fd 0 --expert --edit-key $fpr trust;
                             done'''
                     }
+                    // Git configuration
+                    sh '''
+                    git config --global user.name "${GIT_USER_NAME}"
+                    git config --global user.email "${GIT_USER_EMAIL}"
+                '''
                 }
             }
         }
@@ -125,10 +130,10 @@ spec:
         stage('Build and release EclipseLink') {
             steps {
                 container('el-build') {
-                    git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
-                    sshagent(['SSH_CREDENTIALS_ID']) {
+                    git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
+                    sshagent([SSH_CREDENTIALS_ID]) {
                         sh """
-                            etc/jenkins/release.sh "${RELEASE_VERSION}" "${NEXT_VERSION}" "${DRY_RUN}"
+                            etc/jenkins/release.sh "${RELEASE_VERSION}" "${NEXT_VERSION}" "${DRY_RUN}" "${OVERWRITE}"
                         """
                     }
                 }
