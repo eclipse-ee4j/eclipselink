@@ -154,7 +154,7 @@ public class XMLStreamReaderReader extends XMLReaderAdapter {
                         contentHandler.endElement(namespaceURI, localName, prefix + Constants.COLON + localName);
                     }
                 } else {
-                    contentHandler.endElement(namespaceURI, localName, null);
+                    contentHandler.endElement(namespaceURI, localName, localName);
                 }
                 int namespaceCount = xmlStreamReader.getNamespaceCount();
                 if(namespaceCount > 0) {
