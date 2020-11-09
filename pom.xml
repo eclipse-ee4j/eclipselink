@@ -170,12 +170,12 @@
         <cdi.version>3.0.0</cdi.version>
         <ejb.version>4.0.0</ejb.version>
         <el.version>4.0.0</el.version>
-        <glassfish.version>6.0.0-M1</glassfish.version>
+        <glassfish.version>6.0.0-RC2</glassfish.version>
         <jaxwsrt.version>3.0.0-M5</jaxwsrt.version>
         <jaxb.version>3.0.0-M5</jaxb.version>
         <jaxb.api.version>3.0.0</jaxb.api.version>
         <soap.api.version>2.0.0</soap.api.version>
-        <jersey.version>3.0.0-M6</jersey.version>
+        <jersey.version>3.0.0</jersey.version>
         <jms.version>3.0.0</jms.version>
         <json.version>2.0.0</json.version>
         <jpa.api.version>3.0.0</jpa.api.version>
@@ -227,8 +227,8 @@
         <!-- CQ #21143 -->
         <slf4j.version>2.0.0-alpha1</slf4j.version>
         <!-- CQ #21123, 21124, 21125, 21126, 21127, 21128, 21144, 21145, 21146, 21146, 21147, 21149-->
-        <springframework.version>5.2.9.RELEASE</springframework.version>
-        <weld-se.version>4.0.0.Beta1</weld-se.version>
+        <springframework.version>5.3.0</springframework.version>
+        <weld-se.version>4.0.0.Beta5</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
         <wildfly.version>18.0.0.Final</wildfly.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
