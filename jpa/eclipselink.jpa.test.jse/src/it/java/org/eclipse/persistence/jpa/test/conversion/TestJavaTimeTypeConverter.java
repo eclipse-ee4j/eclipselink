@@ -17,7 +17,6 @@
 
 package org.eclipse.persistence.jpa.test.conversion;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,19 +25,16 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
+import java.util.Date;
 
-import jakarta.persistence.EntityManagerFactory;
+import java.util.TimeZone;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.jpa.test.framework.Emf;
-import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(EmfRunner.class)
 public class TestJavaTimeTypeConverter { 
     private ConversionManager cm = ConversionManager.getDefaultManager();
     
@@ -49,7 +45,7 @@ public class TestJavaTimeTypeConverter {
         LocalDate ld = (LocalDate) cm.convertObject(src, ClassConstants.TIME_LDATE);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(src,  ld);;
+        Assert.assertEquals(src, ld);
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
         Assert.assertEquals(2020,  ld.getYear());
@@ -71,23 +67,22 @@ public class TestJavaTimeTypeConverter {
     @Test
     public void timeConvertUtilDateToLocalDate() {
         Calendar cal = Calendar.getInstance();
-        java.util.Date date = null;
-        OffsetDateTime odt = null;
-        
+
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         cal.set(2020, 0, 1, 0, 0, 0);
-        date = cal.getTime();
+        Date date = cal.getTime();
         Assert.assertEquals(2020 - 1900, date.getYear());
         Assert.assertEquals(0, date.getMonth());
-        Assert.assertEquals(1, date.getDate());        
-        
+        Assert.assertEquals(1, date.getDate());
+
         LocalDate ld = (LocalDate) cm.convertObject(date, ClassConstants.TIME_LDATE);
-        
+
         Assert.assertNotNull(ld);
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
-        Assert.assertEquals(2020,  ld.getYear());
+        Assert.assertEquals(2020, ld.getYear());
     }
-    
+
     @Test
     public void timeConvertSqlDateToLocalDate() {
         java.sql.Date date = java.sql.Date.valueOf("2020-01-01"); 
@@ -154,7 +149,7 @@ public class TestJavaTimeTypeConverter {
         LocalDateTime ld = (LocalDateTime) cm.convertObject(src, ClassConstants.TIME_LDATETIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(src,  ld);;
+        Assert.assertEquals(src, ld);
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
         Assert.assertEquals(2020,  ld.getYear());
@@ -243,7 +238,7 @@ public class TestJavaTimeTypeConverter {
         LocalTime ld = (LocalTime) cm.convertObject(src, ClassConstants.TIME_LTIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(src,  ld);;
+        Assert.assertEquals(src, ld);
         Assert.assertEquals(1, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
