@@ -175,6 +175,18 @@ spec:
                 }
             }
         }
+        // Publish to snapshots
+        stage('Publish to snapshots') {
+            steps {
+                container('el-build') {
+                    sshagent([SSH_CREDENTIALS_ID]) {
+                        sh """
+                            etc/jenkins/publish_snapshots.sh
+                            """
+                    }
+                }
+            }
+        }
         stage('Proceed test results') {
             steps {
                 script {
