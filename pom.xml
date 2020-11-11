@@ -95,9 +95,6 @@
     </repositories>
 
     <properties>
-        <sonatypeOssDistMgmtNexusUrl>https://jakarta.oss.sonatype.org</sonatypeOssDistMgmtNexusUrl>
-        <sonatypeOssDistMgmtStagingUrl>${sonatypeOssDistMgmtNexusUrl}/content/repositories/staging/</sonatypeOssDistMgmtStagingUrl>
-
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- PROJECT Properties -->
