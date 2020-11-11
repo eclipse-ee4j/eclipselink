@@ -16,6 +16,5 @@ echo '-[ EclipseLink Publish to Jakarta Snapshots ]-----------------------------
 . /etc/profile
 mvn --no-transfer-progress -U -C -B -V \
       -Psnapshots -DskipTests \
-      -DskipTests -Ddoclint=none \
-      -Ddeploy \
+      -Ddoclint=none -Ddeploy \
       clean deploy
