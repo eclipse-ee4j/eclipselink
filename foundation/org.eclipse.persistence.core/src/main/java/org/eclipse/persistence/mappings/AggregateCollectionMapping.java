@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -1626,6 +1627,12 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
 
             for (String aggregateFieldName : aggregateToSourceFields.keySet()) {
                 DatabaseField aggregateField = new DatabaseField(aggregateFieldName);
+
+                // 564260 - Force field names to upper case is set.
+                if (session.getPlatform() != null && session.getPlatform().shouldForceFieldNamesToUpperCase()) {
+                    aggregateField.useUpperCaseForComparisons(true);
+                }
+
                 // 322233 - continue using a string for the Aggregate field name
                 // because the table may or may not have been set. DatabaseFields without a table
                 // will match any DatabaseField with a table if the name is the same, breaking

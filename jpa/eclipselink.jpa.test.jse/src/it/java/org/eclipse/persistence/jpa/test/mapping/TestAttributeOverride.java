@@ -14,18 +14,29 @@
 // Contributors:
 //     01/06/2020 - Will Dazey
 //       - 347987: Fix Attribute Override for Complex Embeddables
+//     07/30/2020 - Will Dazey
+//       - 564260: ElementCollection lowercase AttributeOverride is ignored
 package org.eclipse.persistence.jpa.test.mapping;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
+import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.mapping.model.OverrideEmbeddableA;
+import org.eclipse.persistence.jpa.test.mapping.model.OverrideEmbeddableB;
 import org.eclipse.persistence.jpa.test.mapping.model.OverrideEmbeddableIdA;
 import org.eclipse.persistence.jpa.test.mapping.model.OverrideEntityA;
+import org.eclipse.persistence.jpa.test.mapping.model.OverrideEntityB;
 import org.eclipse.persistence.jpa.test.mapping.model.OverrideNestedEmbeddableA;
+import org.eclipse.persistence.jpa.test.mapping.model.OverrideNestedEmbeddableB;
 import org.eclipse.persistence.jpa.test.mapping.model.OverrideNestedEmbeddableIdA;
 import org.junit.After;
 import org.junit.Before;
@@ -36,7 +47,11 @@ import org.junit.runner.RunWith;
 public class TestAttributeOverride {
 
     @Emf(createTables = DDLGen.DROP_CREATE,
-            classes = { OverrideEntityA.class, OverrideEmbeddableA.class, OverrideEmbeddableIdA.class, OverrideNestedEmbeddableA.class, OverrideNestedEmbeddableIdA.class} )
+            classes = { OverrideEntityA.class, OverrideEmbeddableA.class, OverrideEmbeddableIdA.class, 
+                    OverrideNestedEmbeddableA.class, OverrideNestedEmbeddableIdA.class, 
+                    OverrideEntityB.class, OverrideEmbeddableB.class, OverrideNestedEmbeddableB.class},
+            properties = { @Property(name="eclipselink.logging.level", value="FINE"),
+                    @Property(name="eclipselink.logging.parameters", value="true")} )
     private EntityManagerFactory emf;
 
     @Before
@@ -82,7 +97,55 @@ public class TestAttributeOverride {
         try {
             em.getTransaction().begin();
             OverrideEntityA t1 = em.find(OverrideEntityA.class, new OverrideEmbeddableIdA(1, new OverrideNestedEmbeddableIdA(1)));
-            t1.setId2(new OverrideEmbeddableA(2, new OverrideNestedEmbeddableA(2)));
+            t1.setEmbeddedField1(new OverrideEmbeddableA(2, 3, new OverrideNestedEmbeddableA(2)));
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    /*
+     * This test is to validate that the Collection table was created with the correct attribute
+     * override column name. 
+     */
+    @Test
+    public void testOverrideLowerCaseElementCollectionObjectMapping() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // Validate that the tables were generated with the correct column names
+            Query query = em.createNativeQuery("select t0.b_id from override_entity_b t0");
+            query.getResultList();
+
+            // CREATE TABLE ct_override_entity_b (ct_b_override_value INTEGER, value2 INTEGER, ct_b_override_nested_value INTEGER, nested_value2 INTEGER, entity_b_ct_entity_b INTEGER)
+            query = em.createNativeQuery("select t0.ct_b_override_value, t0.value2, t0.ct_b_override_nested_value, t0.entity_b_ct_entity_b, t0.nested_value2 from ct_override_entity_b t0");
+            query.getResultList();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+
+        em = emf.createEntityManager();
+        try {
+            Integer id = new Integer(41);
+
+            OverrideEmbeddableB emb1 = new OverrideEmbeddableB(43, 44, new OverrideNestedEmbeddableB(45, 46));
+            OverrideEmbeddableB emb2 = new OverrideEmbeddableB(47, 48, new OverrideNestedEmbeddableB(49, 50));
+            OverrideEmbeddableB emb3 = new OverrideEmbeddableB(51, 52, new OverrideNestedEmbeddableB(53, 54));
+            Set<OverrideEmbeddableB> set = new HashSet<OverrideEmbeddableB>(Arrays.asList(emb1, emb2, emb3));
+
+            OverrideEntityB ent = new OverrideEntityB(id, set);
+
+            em.getTransaction().begin();
+            em.persist(ent);
             em.getTransaction().commit();
         } finally {
             if (em.getTransaction().isActive()) {
