@@ -959,8 +959,7 @@ public class ExplainDeadLockUtil {
                             IsBuildObjectCompleteOutcome recursiveOutcome = isBuildObjectOnThreadComplete(
                                     concurrencyManagerStateDto, activeThread, recursiveSet);
                             if (recursiveOutcome != null) {
-                                // return false
-                                return recursiveOutcome;
+                                return new IsBuildObjectCompleteOutcome(activeThread, deferedLock);
                             }
                         }
                     } else {
