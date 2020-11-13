@@ -37,6 +37,8 @@
             <outputFileNameMapping>${artifact.artifactId}${dashClassifier?}.${artifact.extension}</outputFileNameMapping>
             <includes>
                 <include>${project.groupId}:org.eclipse.persistence.extension</include>
+                <include>${project.groupId}:org.eclipse.persistence.nosql</include>
+                <include>${project.groupId}:org.eclipse.persistence.oracle.nosql</include>
             </includes>
         </dependencySet>
         <dependencySet>
