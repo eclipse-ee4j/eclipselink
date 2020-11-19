@@ -37,7 +37,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Vector;
-
 import org.eclipse.persistence.exceptions.ValidationException;
 import org.eclipse.persistence.expressions.ExpressionOperator;
 import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
@@ -838,6 +837,53 @@ public class MySQLPlatform extends DatabasePlatform {
         } catch (Exception notFound) {
             return false;
         }
+    }
+
+    @Override
+    public boolean isAlterSequenceObjectSupported() {
+        return false;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns sql used to create sequence object in the database.
+     */
+    @Override
+    public Writer buildSequenceObjectCreationWriter(Writer writer, String fullSeqName, int increment, int start) throws IOException {
+        writer.write("CREATE SEQUENCE ");
+        writer.write(fullSeqName);
+        if(start != 1) {
+            writer.write(" START WITH " + start);
+        }
+        if (increment != 1) {
+            writer.write(" INCREMENT BY " + increment);
+        }
+        return writer;
+    }
+
+    /**
+     * INTERNAL:
+     * Returns sql used to delete sequence object from the database.
+     */
+    @Override
+    public Writer buildSequenceObjectDeletionWriter(Writer writer, String fullSeqName) throws IOException {
+        writer.write("DROP SEQUENCE ");
+        writer.write(fullSeqName);
+        return writer;
+    }
+
+    @Override
+    public ValueReadQuery buildSelectQueryForSequenceObject(String seqName, Integer size) {
+        StringBuilder builder = new StringBuilder(26 + seqName.length());
+        builder.append("SELECT NEXTVAL(");
+        builder.append(seqName);
+        builder.append(")");
+        return new ValueReadQuery(builder.toString());
+    }
+
+    @Override
+    public boolean supportsSequenceObjects() {
+        return true;
     }
 
 }
