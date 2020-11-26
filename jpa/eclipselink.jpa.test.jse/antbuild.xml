@@ -15,16 +15,51 @@
     <property name="reports.dir"        value="${basedir}/reports" />
 
     <property name="jse.el.root" value="${basedir}/../.."/>
-    <property name="plugins.dir" value="${jse.el.root}/plugins"/>
+    <property name="jse.plugins.dir" value="${jse.el.root}/plugins"/>
     
     <property name="jpa.jse.el.root" value="../"/>
-    <property name="jpa.plugins.dir" value="${jpa.jse.el.root}/plugins"/>
+    <property name="jpa.jse.plugins.dir" value="${jpa.jse.el.root}/plugins"/>
 
     <!-- Not sure if there is a better way to refer to dependencies? -->
     <property name="jse.eclipselink.jar" value="${jse.el.root}/eclipselink.jar"/>
-    <property name="javax.transaction" value="${plugins.dir}/javax.transaction_1.1.0.v201002051055.jar"/>
-    <property name="javax.validation" value="${plugins.dir}/javax.validation_1.1.0.v201304101302.jar"/>
-    <property name="javax.persistence" value="${jpa.plugins.dir}/javax.persistence_2.1.1.v201509150925.jar"/>
+    <property name="javax.annotation.api" value="${jse.plugins.dir}/javax.annotation-api-1.3.2.jar"/>
+    <property name="javax.el.api" value="${jse.plugins.dir}/javax.el-api-3.0.1-b06.jar"/>
+    <property name="javax.transaction" value="${jse.plugins.dir}/javax.transaction_1.1.0.v201002051055.jar"/>
+    <property name="javax.validation" value="${jse.plugins.dir}/javax.validation_1.1.0.v201304101302.jar"/>
+    <property name="javax.inject" value="${jse.plugins.dir}/javax.inject-1.jar"/>
+    <property name="javax.interceptor" value="${jse.plugins.dir}/javax.interceptor-api-1.2.2.jar"/>
+    <property name="javax.enterprise.cdi-api" value="${jse.plugins.dir}/cdi.api_2.0.v201705091004.jar"/>
+    <property name="jboss.classfilewriter" value="${jse.plugins.dir}/jboss-classfilewriter-1.2.4.Final.jar"/>
+    <property name="jboss.logging" value="${jse.plugins.dir}/jboss-logging-3.4.1.Final.jar"/>
+    <property name="jboss.weld.api" value="${jse.plugins.dir}/weld-api-3.1.SP3.v202008110916.jar"/>
+    <property name="jboss.weld.spi" value="${jse.plugins.dir}/weld-spi-3.1.SP3.v202008110916.jar"/>
+    <property name="jboss.weld.environment.common" value="${jse.plugins.dir}/weld-environment-common-3.1.5.SP1.v202008280510.jar"/>
+    <property name="jboss.weld.se.core" value="${jse.plugins.dir}/weld-se-core-3.1.5.SP1.v202008280510.jar"/>
+    <property name="jboss.weld.core.impl" value="${jse.plugins.dir}/weld-core-impl-3.1.5.SP1.v202008280510.jar"/>
+
+
+<!--
+    //TODO
+
+    <dependency>
+        <groupId>org.jboss.weld.environment</groupId>
+        <artifactId>weld-environment-common</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.jboss.weld.probe</groupId>
+        <artifactId>weld-probe-core</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.jboss.logging</groupId>
+        <artifactId>jboss-logging-processor</artifactId>
+        <scope>provided</scope>
+    </dependency>
+-->
+
+
+    <property name="javax.persistence" value="${jpa.jse.plugins.dir}/javax.persistence_2.1.1.v201509150925.jar"/>
 
 	<property file="${user.home}/build.properties"/>
     <property file="./antbuild.properties" />
@@ -36,15 +71,28 @@
 		<pathelement path="${javax.transaction}" />
 		<pathelement path="${javax.validation}" />
 		<pathelement path="${javax.persistence}" />
+        <pathelement path="${javax.enterprise.cdi-api}" />
 		<pathelement path="${junit.lib}" />
 	</path>
 	<path id="run.path">
 		<pathelement path="${jse.classes.dir}" />
 		<pathelement path="${jse.eclipselink.jar}" />
 
+        <pathelement path="${javax.annotation.api}" />
+        <pathelement path="${javax.el.api}" />
 		<pathelement path="${javax.transaction}" />
 		<pathelement path="${javax.validation}" />
 		<pathelement path="${javax.persistence}" />
+        <pathelement path="${javax.inject}" />
+        <pathelement path="${javax.interceptor}" />
+        <pathelement path="${javax.enterprise.cdi-api}" />
+        <pathelement path="${jboss.classfilewriter}" />
+        <pathelement path="${jboss.logging}" />
+        <pathelement path="${jboss.weld.api}" />
+        <pathelement path="${jboss.weld.spi}" />
+        <pathelement path="${jboss.weld.environment.common}" />
+        <pathelement path="${jboss.weld.se.core}" />
+        <pathelement path="${jboss.weld.core.impl}" />
 		<pathelement path="${junit.lib}" />
 		<pathelement path="${jdbc.driver.jar}" />
 	</path>
@@ -70,6 +118,33 @@
             <batchtest fork="no" todir="${reports.dir}">
                 <fileset dir="${jse.src.dir}">
                     <include name="**/Test*.java"/>
+                    <exclude name="**/CacheDeadLockDetectionTest*.java"/>
+                </fileset>
+            </batchtest>
+
+        </junit>
+        <junit printsummary="on" haltonfailure="false" failureproperty="fail" logfailedtests="true">
+            <jvmarg line="${additional.jvmargs}"/>
+            <sysproperty key="javax.persistence.jdbc.url" value="${db.url}"/>
+            <sysproperty key="javax.persistence.jdbc.driver" value="${db.driver}"/>
+            <sysproperty key="javax.persistence.jdbc.user" value="${db.user}"/>
+            <sysproperty key="javax.persistence.jdbc.password" value="${db.pwd}"/>
+            <sysproperty key="eclipselink.concurrency.manager.waittime" value="1"/>
+            <sysproperty key="eclipselink.concurrency.manager.maxsleeptime" value="2"/>
+            <sysproperty key="eclipselink.concurrency.manager.maxfrequencytodumptinymessage" value="3"/>
+            <sysproperty key="eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage" value="4"/>
+            <sysproperty key="eclipselink.concurrency.manager.allow.readlockstacktrace" value="true"/>
+            <sysproperty key="eclipselink.concurrency.manager.allow.concurrencyexception" value="true"/>
+            <sysproperty key="eclipselink.concurrency.manager.allow.interruptedexception" value="true"/>
+            <classpath>
+                <path refid="run.path" />
+            </classpath>
+
+            <formatter type="xml"/>
+
+            <batchtest fork="no" todir="${reports.dir}">
+                <fileset dir="${jse.src.dir}">
+                    <include name="**/CacheDeadLockDetectionTest*.java"/>
                 </fileset>
             </batchtest>
 
@@ -127,9 +202,21 @@
             <path id="compile.path">
                 <pathelement path="${jse.eclipselink.jar}" />
 
+                <pathelement path="${javax.annotation.api}" />
+                <pathelement path="${javax.el.api}" />
                 <pathelement path="${javax.transaction}" />
                 <pathelement path="${javax.validation}" />
                 <pathelement path="${javax.persistence}" />
+                <pathelement path="${javax.inject}" />
+                <pathelement path="${javax.interceptor}" />
+                <pathelement path="${javax.enterprise.cdi-api}" />
+                <pathelement path="${jboss.classfilewriter}" />
+                <pathelement path="${jboss.logging}" />
+                <pathelement path="${jboss.weld.api}" />
+                <pathelement path="${jboss.weld.spi}" />
+                <pathelement path="${jboss.weld.environment.common}" />
+                <pathelement path="${jboss.weld.se.core}" />
+                <pathelement path="${jboss.weld.core.impl}" />
                 <pathelement path="${junit.lib}" />
             </path>
         </sequential>
