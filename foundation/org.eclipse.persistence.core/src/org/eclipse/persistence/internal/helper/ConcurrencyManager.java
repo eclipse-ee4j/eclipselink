@@ -71,7 +71,7 @@ public class ConcurrencyManager implements Serializable {
     private static final Map<Thread, ConcurrencyManager> THREADS_TO_WAIT_ON_ACQUIRE = new ConcurrentHashMap<>();
     // Holds as a keys threads that needed to acquire one or more read locks on different cache keys.
     private static final Map<Thread, ReadLockManager> READ_LOCK_MANAGERS = new ConcurrentHashMap<>();
-    private static final Set<Thread> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS = new ConcurrentHashMap().keySet();
+    private static final Set<Thread> THREADS_WAITING_TO_RELEASE_DEFERRED_LOCKS = new HashSet<>();
 
     /**
      * Initialize the newly allocated instance of this class.

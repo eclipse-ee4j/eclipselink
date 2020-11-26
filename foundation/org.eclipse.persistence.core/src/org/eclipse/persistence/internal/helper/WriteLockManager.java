@@ -688,8 +688,7 @@ public class WriteLockManager {
         }
 
         // (b) add the cache key to the set if absent
-        Set<ConcurrencyManager> cacheKeysWeAreHavingDifficultyAcquiring = getCacheKeysThatCouldNotBeAcquiredByThread(
-                thread);
+        Set<ConcurrencyManager> cacheKeysWeAreHavingDifficultyAcquiring = getCacheKeysThatCouldNotBeAcquiredByThread(thread);
         if(!cacheKeysWeAreHavingDifficultyAcquiring.contains(cacheKeyThatCouldNotBeAcquired)) {
             cacheKeysWeAreHavingDifficultyAcquiring.add(cacheKeyThatCouldNotBeAcquired);
         }
@@ -736,10 +735,9 @@ public class WriteLockManager {
         // (a) make sure the map has an entry for the the thread
         boolean hasKey = THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.containsKey(thread);
         if (!hasKey) {
-            Set<ConcurrencyManager> cacheKeySet = new ConcurrentHashMap().keySet();
             Set value = THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.get(thread);
             if (value == null) {
-                THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.put(thread, cacheKeySet);
+                THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.put(thread, new HashSet<>());
             }
         }
         // (b) We are certain the map is not empty anymore return the set
