@@ -737,7 +737,7 @@ public class WriteLockManager {
         if (!hasKey) {
             Set value = THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.get(thread);
             if (value == null) {
-                THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.put(thread, new HashSet<>());
+                THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.put(thread, new HashSet<ConcurrencyManager>());
             }
         }
         // (b) We are certain the map is not empty anymore return the set
