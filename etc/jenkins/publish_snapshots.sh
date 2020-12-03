@@ -12,9 +12,13 @@
 # Arguments:
 #  N/A
 
-echo '-[ EclipseLink Publish to Jakarta Snapshots ]-----------------------------------------------------------'
-. /etc/profile
-mvn --no-transfer-progress -U -C -B -V \
+if [ ${CONTINUOUS_BUILD} = "true" ]; then
+    echo '-[ EclipseLink Publish to Jakarta Snapshots -> No publishing any artifacts]-----------------------------------------------------------'
+else
+    echo '-[ EclipseLink Publish to Jakarta Snapshots ]-----------------------------------------------------------'
+    . /etc/profile
+    mvn --no-transfer-progress -U -C -B -V \
       -Psnapshots -DskipTests \
       -Ddoclint=none -Ddeploy \
-      clean deploy
+      deploy
+fi
