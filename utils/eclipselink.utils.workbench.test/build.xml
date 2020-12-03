@@ -100,6 +100,7 @@
         <ant antfile="build.xml" dir="${mappingspluginDir}"  target="clean"/>
         <ant antfile="build.xml" dir="${scpluginDir}"        target="clean"/>
         <delete file="${libDir}/${workbench.jarfile}"/>
+        <delete failonerror="false" dir="${_buildLogDir}"/>
     </target>
 
     <!-- =================================================================== -->

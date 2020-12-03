@@ -455,7 +455,9 @@
     </target>
 
     <!-- Cleans all build generated files. -->
-    <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build"/>
+    <target name="clean" depends="clean-runtime,clean-testing" description="Clean the build">
+        <ant antfile="antbuild.xml" dir="${eclipselink.compdeps}"               target="clean"/>
+    </target>
 
     <target name="clean-runtime" depends="generate-local-compdeps, clean-runtime-checkedin, clean-runtime-built" description="Clean the runtime projects"/>
     <!--   This allows testing to call a specific target that won't remove the default
@@ -475,6 +477,7 @@
         <delete failonerror="false">
             <fileset dir="${eclipselink.util.rename}" includes="${package-rename.jar}*"/>
         </delete>
+        <delete failonerror="false" dir="${build.dir}"/>
     </target>
 
     <target name="clean-runtime-built" description="Clean the runtime projects" depends="clean-core">
@@ -513,11 +516,15 @@
     </target>
 
     <target name="clean-testing" description="Clean the testing projects">
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpa.wdf.test}"        target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.jpars.test}"          target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.core.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.jpa.test}"            target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.moxy.test}"           target="clean"/>
         <ant antfile="antbuild.xml" dir="${eclipselink.sdo.test}"            target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.test}"           target="clean"/>
         <ant antfile="build.xml"    dir="${eclipselink.util.workbench.test}" target="clean"/>
+        <ant antfile="antbuild.xml" dir="${eclipselink.dbws.builder.test}"   target="clean"/>
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
