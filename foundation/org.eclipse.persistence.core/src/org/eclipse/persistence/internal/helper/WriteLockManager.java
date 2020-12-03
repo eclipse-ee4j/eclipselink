@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -17,10 +17,8 @@
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -36,6 +34,8 @@ import org.eclipse.persistence.internal.sessions.UnitOfWorkChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.mappings.DatabaseMapping;
+
+import static java.util.Collections.unmodifiableMap;
 
 /**
  * INTERNAL:
@@ -54,6 +54,51 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
  * @since 10.0.3
  */
 public class WriteLockManager {
+
+    /**
+     * The code spots where we use this constant are code spots where we afraid the thread might be trying to run a
+     * commit. Blowing up the thread with an interrupted exception might be too dangerous. We are not certain the
+     * eclipselink code is able to cope with it and release all resources appropriately.
+     *
+     */
+    private static final Boolean ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_FALSE = false;
+
+    /**
+     * This flag we use if the write lock manager is stuck building clones of objects. Because we are not in the code
+     * area of commit to the db anything.
+     */
+    private static final Boolean ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE = true;
+
+    /**
+     * This a map from a thread to cache keys the thread is finding itself not being able to acquire. This map is
+     * important to explain why a thread might be stuck in a stack trace of the form: {@code
+     * at java.lang.Class.getEnclosingMethod0(Native Method)
+    at java.lang.Class.getEnclosingMethodInfo(Class.java:1072)
+    at java.lang.Class.getEnclosingClass(Class.java:1272)
+    at java.lang.Class.getSimpleBinaryName(Class.java:1443)
+    at java.lang.Class.getSimpleName(Class.java:1309)
+    at org.eclipse.persistence.internal.identitymaps.IdentityMapManager.acquireLockNoWait(IdentityMapManager.java:205)
+    at org.eclipse.persistence.internal.sessions.IdentityMapAccessor.acquireLockNoWait(IdentityMapAccessor.java:108)
+    at org.eclipse.persistence.internal.helper.WriteLockManager.attemptToAcquireLock(WriteLockManager.java:431)
+    at org.eclipse.persistence.internal.helper.WriteLockManager.acquireRequiredLocks(WriteLockManager.java:280)
+     * }
+     *
+     * We want to be able to trace these dead lock situations. To put them our on the massive log dump as to do the dead
+     * lock detection.
+     *
+     */
+    private static final Map<Thread, Set<ConcurrencyManager>> THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS = new ConcurrentHashMap<>();
+
+    /**
+     * We want to have traceability of what objects where changed by thread that is in the middle of a commit. This
+     * information can be useful when a massive dump is performed to explain the situation of any thread that might
+     * eventually be stuck inside of the write lock manager to tells us what exactly are the objects it has changed and
+     * wants to commit or merge into the shared cache. Relates to the
+     * {@link #THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS} but this map does not tells us about any
+     * specific problem such as a cache key that could not be acquired just tells us what objects were modified.
+     *
+     */
+    private static final Map<Thread, Set<Object>> MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET = new ConcurrentHashMap<>();
 
     // this will allow us to prevent a readlock thread from looping forever.
     public static int MAXTRIES = 10000;
@@ -74,9 +119,18 @@ public class WriteLockManager {
      * related objects are also locked.
      */
     public Map acquireLocksForClone(Object objectForClone, ClassDescriptor descriptor, CacheKey cacheKey, AbstractSession cloningSession) {
+        // determineIfReleaseDeferredLockAppearsToBeDeadLocked
+        final long whileStartTimeMillis = System.currentTimeMillis();
+        final Thread currentThread = Thread.currentThread();
+        DeferredLockManager lockManager = ConcurrencyManager.getDeferredLockManager(currentThread);
+        ReadLockManager readLockManager = ConcurrencyManager.getReadLockManager(currentThread);
+
         boolean successful = false;
         IdentityHashMap lockedObjects = new IdentityHashMap();
         IdentityHashMap refreshedObjects = new IdentityHashMap();
+
+        CacheKey lastCacheKeyWeNeededToWaitToAcquire = null;
+
         try {
             // if the descriptor has indirection for all mappings then wait as there will be no deadlock risks
             CacheKey toWaitOn = acquireLockAndRelatedLocks(objectForClone, lockedObjects, refreshedObjects, cacheKey, descriptor, cloningSession);
@@ -86,10 +140,23 @@ public class WriteLockManager {
                     ((CacheKey)lockedList.next()).releaseReadLock();
                     lockedList.remove();
                 }
+
+                // of the concurrency manager that we use for creating the massive log dump
+                // to indicate that the current thread is now stuck trying to acquire some arbitrary
+                // cache key for writing
+                lastCacheKeyWeNeededToWaitToAcquire = toWaitOn;
+                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread);
+
+                // Since we know this one of those methods that can appear in the dead locks
+                // we threads frozen here forever inside of the wait that used to have no timeout
+                // we will now always check for how long the current thread is stuck in this while loop going nowhere
+                // using the exact same approach we have been adding to the concurrency manager
+                ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(toWaitOn, whileStartTimeMillis, lockManager, readLockManager, ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_TRUE);
+
                 synchronized (toWaitOn) {
                     try {
                         if (toWaitOn.isAcquired()) {//last minute check to insure it is still locked.
-                            toWaitOn.wait();// wait for lock on object to be released
+                            toWaitOn.wait(ConcurrencyUtil.SINGLETON.getAcquireWaitTime());// wait for lock on object to be released
                         }
                     } catch (InterruptedException ex) {
                         // Ignore exception thread should continue.
@@ -108,7 +175,12 @@ public class WriteLockManager {
                 }
             }
             successful = true;//successfully acquired all locks
+        } catch (InterruptedException exception) {
+            throw ConcurrencyException.maxTriesLockOnCloneExceded(objectForClone);
         } finally {
+            if (lastCacheKeyWeNeededToWaitToAcquire != null) {
+                cacheKey.removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
+            }
             if (!successful) {//did not acquire locks but we are exiting
                 for (Iterator lockedList = lockedObjects.values().iterator(); lockedList.hasNext();) {
                     ((CacheKey)lockedList.next()).releaseReadLock();
@@ -165,7 +237,9 @@ public class WriteLockManager {
      */
     public void transitionToDeferredLocks(MergeManager mergeManager){
         try{
-            if (mergeManager.isTransitionedToDeferredLocks()) return;
+            if (mergeManager.isTransitionedToDeferredLocks()) {
+                return;
+            }
             for (CacheKey cacheKey : mergeManager.getAcquiredLocks()){
                 cacheKey.transitionToDeferredLock();
             }
@@ -240,6 +314,11 @@ public class WriteLockManager {
             return;
         }
         boolean locksToAcquire = true;
+
+        final Thread currentThread = Thread.currentThread();
+        final long timeWhenLocksToAcquireLoopStarted = System.currentTimeMillis();
+        populateMapThreadToObjectIdsWithChagenSet(currentThread, changeSet.getAllChangeSets().values());
+        clearMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread);
 
         //while that thread has locks to acquire continue to loop.
         try {
@@ -352,14 +431,18 @@ public class WriteLockManager {
                             } catch (InterruptedException exception) {
                                 throw org.eclipse.persistence.exceptions.ConcurrencyException.waitWasInterrupted(exception.getMessage());
                             }
-                            // failed to acquire, exit this loop to restart all over again. 
+                            // we want to record this information so that we have traceability over this sort of problems
+                            addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread, activeCacheKey, timeWhenLocksToAcquireLoopStarted);
+                            // failed to acquire, exit this loop to restart all over again.
                             locksToAcquire = true;
                             break;
                         }else{
+                            removeCacheKeyFromMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread, activeCacheKey);
                             objectChangeSet.setActiveCacheKey(activeCacheKey);
                             mergeManager.getAcquiredLocks().add(activeCacheKey);
                         }
                     } else {
+                        removeCacheKeyFromMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread, activeCacheKey);
                         objectChangeSet.setActiveCacheKey(activeCacheKey);
                         mergeManager.getAcquiredLocks().add(activeCacheKey);
                     }
@@ -371,7 +454,10 @@ public class WriteLockManager {
             // if there is a problem or all of the locks can not be acquired.
             releaseAllAcquiredLocks(mergeManager);
             throw exception;
-        }catch (Error error){
+        } catch (InterruptedException exception) {
+            releaseAllAcquiredLocks(mergeManager);
+            throw ConcurrencyException.waitFailureOnClientSession(exception);
+        } catch (Error error){
             releaseAllAcquiredLocks(mergeManager);
             mergeManager.getSession().logThrowable(SessionLog.SEVERE, SessionLog.TRANSACTION, error);
             throw error;
@@ -383,6 +469,8 @@ public class WriteLockManager {
                 }
                 mergeManager.setWriteLockQueued(null);
             }
+            clearMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(currentThread);
+            clearMapThreadToObjectIdsWithChagenSet(currentThread);
         }
     }
 
@@ -506,5 +594,153 @@ public class WriteLockManager {
      */
     protected CacheKey waitOnObjectLock(ClassDescriptor descriptor, Object primaryKey, AbstractSession session, int waitTime) {
         return session.getIdentityMapAccessorInstance().acquireLockWithWait(primaryKey, descriptor.getJavaClass(), true, descriptor, waitTime);
+    }
+
+    // Helper data structures to have tracebility about object ids with change sets and cache keys we are sturggling to acquire
+
+    /** Getter for {@link #THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS} */
+    public static Map<Thread, Set<ConcurrencyManager>> getThreadToFailToAcquireCacheKeys() {
+        return unmodifiableMap(THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS);
+    }
+
+    /** Getter for {@link #MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET} */
+    public static Map<Thread, Set<Object>> getMapWriteLockManagerThreadToObjectIdsWithChangeSet() {
+        return unmodifiableMap(MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET);
+    }
+
+    /**
+     * Remove the current thread from the map of object ids with change sets that are about to bec ommited
+     *
+     * @param thread
+     *            the thread that is clearing itself out of the map of change sets it needs to merge into the shared
+     *            cache
+     */
+    public static void clearMapThreadToObjectIdsWithChagenSet(Thread thread) {
+        MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET.remove(thread);
+    }
+    /**
+     * Before a thread starts long wait loop to acquire write locks during a commit transaction the thread will record
+     * in this map the object ids it holds with chance sets. It will be useful information if a dead lock is taking
+     * place.
+     *
+     * @param thread
+     *            the thread that is in the middle of merge to the shared cache trying to acquire write locks to do this
+     *            merge
+     * @param objectChangeSets
+     *            the object change sets it has in its hands and that it would like to merge into the cache
+     */
+    public static void populateMapThreadToObjectIdsWithChagenSet(Thread thread,
+                                                                 Collection<ObjectChangeSet> objectChangeSets) {
+        // (a) make sure the map has an entry for the the thread
+        boolean hasKey = MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET.containsKey(thread);
+        if (!hasKey) {
+           Set value = MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET.get(thread);
+            if (value == null) {
+                MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET.put(thread, new HashSet<>());
+            }
+        }
+
+        // (b) The ids of the objects with change sets
+        Set<Object> primarykeys = MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET.get(thread);
+        primarykeys.clear();
+        for (ObjectChangeSet objectChangeSet : objectChangeSets) {
+            Object primaryKey = objectChangeSet.getId();
+            primarykeys.add(primaryKey);
+        }
+    }
+
+    /**
+     * Before the problematic while loop starts we should always clear for this thread the set of cache keys it could
+     * not acquire.
+     *
+     * @param thread
+     *            the thread that what clear his set of cache keys it is struggling to acquire.
+     */
+    public static void clearMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(Thread thread) {
+        THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.remove(thread);
+    }
+
+    /**
+     * The thread was doing its while loop to acquire all required locks to proceed with the commmit and it realized
+     * there was one cache key it is unable to acquire
+     *
+     * @param thread
+     *            thread the thread working on updating the shared cache
+     * @param cacheKeyThatCouldNotBeAcquired
+     *            the cache key it is not managing to acquire
+     * @throws InterruptedException
+     *             Should be fired because we are passing a flag into the
+     *             determineIfReleaseDeferredLockAppearsToBeDeadLocked to say we do not want the thread to be blown up
+     *             (e.g. we are afraid of breaking threads in the middle of a commit process could be quite dangerous).
+     *             See
+     *             {@link #ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_FALSE}
+     */
+    public static void addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(Thread thread, ConcurrencyManager cacheKeyThatCouldNotBeAcquired, long whileStartDate) throws InterruptedException {
+
+        // sanity check, make sure the cacheKeyThatCouldNotBeAcquired is not null
+        // should never happen because when the write lock manager fails to acquire the cache key both with acquire no
+        // wait and acquire with wait
+        // then the code will just grab the cache key fro loggging puprposes using the
+        // see the code getCacheKeyForObjectForLock
+        // this is why we believe this is never null. But the sanity check does not hurt us.
+        if (cacheKeyThatCouldNotBeAcquired == null) {
+            return;
+        }
+
+        // (b) add the cache key to the set if absent
+        Set<ConcurrencyManager> cacheKeysWeAreHavingDifficultyAcquiring = getCacheKeysThatCouldNotBeAcquiredByThread(thread);
+        if(!cacheKeysWeAreHavingDifficultyAcquiring.contains(cacheKeyThatCouldNotBeAcquired)) {
+            cacheKeysWeAreHavingDifficultyAcquiring.add(cacheKeyThatCouldNotBeAcquired);
+        }
+
+        // (c) If a write lock fails to be acquired and goes into the basked of cache keys that could not be acquired
+        // it could be an indication this thread is stuck for a long while
+        // NOTE:
+        // it might be best to not even give the possibility for an exception to be fired
+        // for code that is in the lock manager
+        final Thread currentThread = Thread.currentThread();
+        DeferredLockManager lockManager = ConcurrencyManager.getDeferredLockManager(currentThread);
+        ReadLockManager readLockManager = ConcurrencyManager.getReadLockManager(currentThread);
+        ConcurrencyUtil.SINGLETON.determineIfReleaseDeferredLockAppearsToBeDeadLocked(
+                cacheKeyThatCouldNotBeAcquired, whileStartDate, lockManager, readLockManager,
+                ALLOW_INTERRUPTED_EXCEPTION_TO_BE_FIRED_UP_FALSE);
+    }
+
+    /**
+     * A cache keys was successfully acquired we want to make sure it is not recorded in the map of cache keys that
+     * could not be acquired. The situation theoretically can change. Failing to acquire a write lock can be a temporary
+     * situation. The lock might become available eventually. Otherwise there would be no point for the while loop that
+     * is trying to acquire these locks.
+     *
+     * @param thread
+     *            the thread that just managed to grab a write lock
+     * @param cacheKeyThatCouldNotBeAcquired
+     *            the cache key it managed to acquire for writing.
+     */
+    public static void removeCacheKeyFromMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(Thread thread,
+                                                                                              ConcurrencyManager cacheKeyThatCouldNotBeAcquired) {
+        Set<ConcurrencyManager> cacheKeysWeAreHavingDifficultyAcquiring = getCacheKeysThatCouldNotBeAcquiredByThread(
+                thread);
+        cacheKeysWeAreHavingDifficultyAcquiring.remove(cacheKeyThatCouldNotBeAcquired);
+    }
+
+    /**
+     * If the thread is not yet registered in the map it will get registered with an empty map.
+     *
+     * @param thread
+     *            the thread that wants to get its set of cache keys it is not managing to acquire.
+     * @return the set of cache keys the thrad is struggling to acquire
+     */
+    private static Set<ConcurrencyManager> getCacheKeysThatCouldNotBeAcquiredByThread(Thread thread) {
+        // (a) make sure the map has an entry for the the thread
+        boolean hasKey = THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.containsKey(thread);
+        if (!hasKey) {
+            Set value = THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.get(thread);
+            if (value == null) {
+                THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.put(thread, new HashSet<ConcurrencyManager>());
+            }
+        }
+        // (b) We are certain the map is not empty anymore return the set
+        return THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS.get(thread);
     }
 }
