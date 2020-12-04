@@ -23,7 +23,6 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.TraceLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
-import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -31,8 +30,8 @@ import java.io.StringWriter;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
-import java.lang.reflect.Method;
 import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -796,11 +795,8 @@ public class ConcurrencyUtil {
             // (a) search for the stack trace of the current
             final StringWriter writer = new StringWriter();
             final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-            final Class[] getThreadInfoMethodArgs = {long[].class, int.class};
-            final Method getThreadInfoMethod = Helper.getDeclaredMethod(threadMXBean.getClass(), "getThreadInfo", getThreadInfoMethodArgs);
-            final Object[] getThreadInfoMethodArgValues = new Object[] {new long[] { currentThreadId }, 700};
             final ThreadInfo[] threadInfos = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
-                    ? (ThreadInfo[])AccessController.doPrivileged(new PrivilegedMethodInvoker(getThreadInfoMethod, threadMXBean, getThreadInfoMethodArgValues))
+                    ? (ThreadInfo[])AccessController.doPrivileged((PrivilegedAction) () -> threadMXBean.getThreadInfo(new long[] { currentThreadId }, 700))
                     : threadMXBean.getThreadInfo(new long[] { currentThreadId }, 700);
             for (ThreadInfo threadInfo : threadInfos) {
                 enrichGenerateThreadDumpForThreadInfo(writer, threadInfo);
