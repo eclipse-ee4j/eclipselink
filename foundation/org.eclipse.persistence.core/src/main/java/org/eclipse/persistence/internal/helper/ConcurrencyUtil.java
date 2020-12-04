@@ -823,7 +823,12 @@ public class ConcurrencyUtil {
         try {
             final StringWriter writer = new StringWriter();
             final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-            final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 700);
+            final long[] threadIds = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                    ? (long[])AccessController.doPrivileged((PrivilegedAction) () -> threadMXBean.getAllThreadIds())
+                    : threadMXBean.getAllThreadIds();
+            final ThreadInfo[] threadInfos = PrivilegedAccessHelper.shouldUsePrivilegedAccess()
+                    ? (ThreadInfo[])AccessController.doPrivileged((PrivilegedAction) () -> threadMXBean.getThreadInfo(threadIds, 700))
+                    : threadMXBean.getThreadInfo(threadIds, 700);
             for (ThreadInfo threadInfo : threadInfos) {
                 enrichGenerateThreadDumpForThreadInfo(writer, threadInfo);
             }
