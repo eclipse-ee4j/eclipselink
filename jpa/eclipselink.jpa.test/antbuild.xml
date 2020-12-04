@@ -535,7 +535,7 @@
             <fileset dir="${jpatest.basedir}/${build.dir}"/>
             <fileset file="${jpatest.basedir}/${jpa.test.jar}"/>
             <fileset file="${jpatest.basedir}/${jpa21.test.jar}"/>
-            <fileset file="${jpatest.basedir}/${jpatest.framework}.jar"/>
+            <fileset file="${jpatest.basedir}/${jpatest.framework.jar}"/>
             <fileset file="${jpatest.basedir}/*-model.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.jpa21.model}.jar"/>
             <fileset file="${jpatest.basedir}/${eclipselink.annotation.model}.jar"/>

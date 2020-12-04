@@ -104,6 +104,7 @@
         <delete file="${libDir}/${workbench.jarfile}"/>
         <delete file="${libDir}/${mwcore.src.jarfile}"/>
         <delete file="${libDir}/${workbench.src.jarfile}"/>
+        <delete failonerror="false" dir="${_buildLogDir}"/>
     </target>
 
     <!-- =================================================================== -->
