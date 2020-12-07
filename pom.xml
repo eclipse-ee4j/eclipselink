@@ -22,7 +22,7 @@
     <description>Comprehensive and universal persistence framework for Java.</description>
     <groupId>org.eclipse.persistence</groupId>
     <artifactId>org.eclipse.persistence.parent</artifactId>
-    <version>3.0.0-RC2</version>
+    <version>3.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
