@@ -1383,8 +1383,9 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
-        } else if (fieldType == ClassConstants.BOOLEAN) {
-            value = resultSet.getBoolean(columnNumber);
+        } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN))  {
+            value = Boolean.valueOf(resultSet.getBoolean(columnNumber));
+            isPrimitive = ((Boolean)value).booleanValue() == false;
         } else if ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP)) {
             if (Helper.shouldOptimizeDates) {
                 // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
