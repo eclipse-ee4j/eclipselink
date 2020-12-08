@@ -1407,7 +1407,6 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
     @Override
     public Expression<String> toString(Expression<Character> character){
         ExpressionImpl impl = (ExpressionImpl) character;
-        impl.javaType = ClassConstants.STRING;
         return impl;
     }
 
