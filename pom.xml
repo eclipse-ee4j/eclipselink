@@ -98,7 +98,7 @@
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- PROJECT Properties -->
-        <release.version>3.0.0</release.version>
+        <release.version>3.0.1</release.version>
         <build.type>SNAPSHOT</build.type>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
         <build.qualifier>v${maven.build.timestamp}</build.qualifier>
