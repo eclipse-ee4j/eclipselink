@@ -277,21 +277,6 @@ public class ReportQueryResult implements Serializable, Map {
                 }
             } else {
                 value = row.getValues().get(itemIndex);
-
-                // Verify that the expected result type matches the actual value type
-                if(value != null && query.getSession().getProject().allowResultTypeConversion()) {
-                    Class valueType = value.getClass();
-                    Class resultType = item.getResultType();
-                    if(!valueType.isInstance(resultType)) {
-                        try {
-                            value = query.getSession().getPlatform().convertObject(value, resultType);
-                        } catch (ConversionException e) {
-                            // If an Exception is thrown while attempting to 
-                            // convert, ignore and return the original value
-                        }
-                    }
-                }
-
                 // GF_ISSUE_395
                 if (this.key != null) {
                     this.key.append(value);
