@@ -34,8 +34,7 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestQueryCase {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { EntityTbl01.class }, 
-            properties = { @Property(name="eclipselink.logging.level", value="FINE"), 
-                    @Property(name=PersistenceUnitProperties.ALLOW_RESULT_TYPE_CONVERSION, value="true")})
+            properties = { @Property(name="eclipselink.logging.level", value="FINE")})
     private EntityManagerFactory emf;
 
     private static boolean POPULATED = false;
