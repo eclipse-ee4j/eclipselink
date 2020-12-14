@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 Oracle, IBM and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -9,6 +9,7 @@
  *
  * Contributors:
  *     Oracle - initial API and implementation from Oracle TopLink
+ *     IBM - ConcurrencyUtil call of ThreadMXBean.getThreadInfo() needs doPriv
  ******************************************************************************/
 package org.eclipse.persistence.internal.helper;
 
@@ -21,6 +22,7 @@ import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
+import org.eclipse.persistence.internal.security.PrivilegedGetThreadInfo;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
@@ -791,8 +793,13 @@ public class ConcurrencyUtil {
         try {
             // (a) search for the stack trace of the current
             final StringWriter writer = new StringWriter();
-            final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-            final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(new long[] { currentThreadId }, 700);
+            ThreadInfo[] threadInfos = null;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                threadInfos = AccessController.doPrivileged(new PrivilegedGetThreadInfo(new long[] { currentThreadId }, 700));
+            } else {
+                final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+                threadInfos = threadMXBean.getThreadInfo(new long[] { currentThreadId }, 700);
+            }
             for (ThreadInfo threadInfo : threadInfos) {
                 enrichGenerateThreadDumpForThreadInfo(writer, threadInfo);
             }
@@ -817,8 +824,13 @@ public class ConcurrencyUtil {
     private String enrichGenerateThreadDump() {
         try {
             final StringWriter writer = new StringWriter();
-            final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-            final ThreadInfo[] threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 700);
+            ThreadInfo[] threadInfos = null;
+            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
+                threadInfos = AccessController.doPrivileged(new PrivilegedGetThreadInfo(700));
+            } else {
+                final ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+                threadInfos = threadMXBean.getThreadInfo(threadMXBean.getAllThreadIds(), 700);
+            }
             for (ThreadInfo threadInfo : threadInfos) {
                 enrichGenerateThreadDumpForThreadInfo(writer, threadInfo);
             }
