@@ -180,7 +180,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "concurrency_util_create_information_all_threads_release_deferred_locks_3", "Concurrency manager - Page 04 end - information about threads waiting on release deferred locks (waiting for other thread to finish building the objects deferred)\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_1", "Concurrency manager - Page 05 start (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread "
                 + "\nThread: {2}"
-                + "\nThreadWaitingToReleaseDeferredLocks: {3}"},
+                + "\nThreadWaitingToReleaseDeferredLocks: {3}\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_2", " waitingOnAcquireWritingCacheKey: true  waiting to acquire writing: {0}\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_3", " waitingOnAcquireWritingCacheKey: false\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_4", " waitingOnAcquireReadCacheKey: true   waiting to acquire reading: {0}\n"},

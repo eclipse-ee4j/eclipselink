@@ -935,7 +935,7 @@ public class ConcurrencyUtil {
         int currentThreadNumber = 0;
         for (Thread currentEntry : setThreadWaitingToReleaseDeferredLocksClone) {
             currentThreadNumber++;
-            writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_release_deferred_locks_1", new Object[] {currentThreadNumber, currentEntry.getName()}));
+            writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_release_deferred_locks_2", new Object[] {currentThreadNumber, currentEntry.getName()}));
         }
         writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_release_deferred_locks_3"));
         return writer.toString();
