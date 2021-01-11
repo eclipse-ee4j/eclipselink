@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2020 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle, IBM Corporation and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -569,11 +569,11 @@ public class LoggingLocalizationResource extends ListResourceBundle {
                 + " The thread has been stuck for: ({3} ms) \n "
                 + " Bellow we will describe the ActiveLocks, DeferredLocks and ReadLocks for this thread. " },
         { "concurrency_util_owned_cache_key_null", "ObjectNull. Most likely not yet in server session cache and in the process of being created."},
-        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object: {2}) (cacheKeyClass: {3}) (current cache key owner/activeThread: {4}) (getNumberOfReaders: {5}) "
-                + " (concurrencyManagerId: {6}) (concurrencyManagerCreationDate: {7})"
-                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {8}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {9}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {10})  ---"},
+        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object: {2}) (object hash code: {3}) (cacheKeyClass: {4}) (cacheKey hash code: {5}) (current cache key owner/activeThread: {6}) (getNumberOfReaders: {7}) "
+                + " (concurrencyManagerId: {8}) (concurrencyManagerCreationDate: {9})"
+                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {10}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {11}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {12})  ---"},
         { "concurrency_util_owned_cache_key_is_not_cache_key", "--- ConcurrencyManager: (ConcurrencyManagerClass: {0} ) (ConcurrencyManagerToString: {1}) (current cache key owner/activeThread: {2}) (concurrencyManagerId: {3}) (concurrencyManagerCreationDate: {4}) "
                 + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {5}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReading:  {6}) "
@@ -631,7 +631,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "concurrency_util_create_information_all_threads_release_deferred_locks_3", "Concurrency manager - Page 04 end - information about threads waiting on release deferred locks (waiting for other thread to finish building the objects deferred)\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_1", "Concurrency manager - Page 05 start (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread "
                 + "\nThread: {2}"
-                + "\nThreadWaitingToReleaseDeferredLocks: {3}"},
+                + "\nThreadWaitingToReleaseDeferredLocks: {3}\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_2", " waitingOnAcquireWritingCacheKey: true  waiting to acquire writing: {0}\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_3", " waitingOnAcquireWritingCacheKey: false\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_4", " waitingOnAcquireReadCacheKey: true   waiting to acquire reading: {0}\n"},
