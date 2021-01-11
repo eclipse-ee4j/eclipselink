@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle, IBM and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle, IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -285,9 +285,11 @@ public class ConcurrencyUtil {
             Object cacheKeyObject = cacheKey.getObject();
             String canonicalName = cacheKeyObject != null ? cacheKeyObject.getClass().getCanonicalName()
                     : TraceLocalization.buildMessage("concurrency_util_owned_cache_key_null");
-            return TraceLocalization.buildMessage("concurrency_util_owned_cache_key_is_cache_key", new Object[] {canonicalName, primaryKey, cacheKeyObject, cacheKeyClass, activeThread,
-                    concurrencyManager.getNumberOfReaders(), concurrencyManagerId,
-                    concurrencyManagerCreationDate
+            return TraceLocalization.buildMessage("concurrency_util_owned_cache_key_is_cache_key", new Object[] {canonicalName, primaryKey,
+                    cacheKeyObject, String.valueOf(System.identityHashCode(cacheKeyObject)),
+                    cacheKeyClass, String.valueOf(System.identityHashCode(cacheKey)),
+                    activeThread, concurrencyManager.getNumberOfReaders(), concurrencyManagerId,
+                    ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class).toString()
                     // metadata of number of times the cache key suffered increases in number readers
                     , cacheKey.getTotalNumberOfKeysAcquiredForReading(),
                     cacheKey.getTotalNumberOfKeysReleasedForReading(),
@@ -295,7 +297,7 @@ public class ConcurrencyUtil {
 
         } else {
             return TraceLocalization.buildMessage("concurrency_util_owned_cache_key_is_not_cache_key", new Object[] {cacheKeyClass, concurrencyManager, activeThread,
-                    concurrencyManagerId, concurrencyManagerCreationDate,
+                    concurrencyManagerId, ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class).toString(),
                     concurrencyManager.getTotalNumberOfKeysAcquiredForReading(),
                     concurrencyManager.getTotalNumberOfKeysReleasedForReading(), concurrencyManager
                     .getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero()});
@@ -746,7 +748,7 @@ public class ConcurrencyUtil {
                 readLockNumber++;
                 writer.write(TraceLocalization.buildMessage("concurrency_util_summary_read_locks_on_thread_step002_3", new Object[] {readLockNumber,
                         SINGLETON.createToStringExplainingOwnedCacheKey(currentReadLockAcquiredAndNeverReleased.getCacheKeyWhoseNumberOfReadersThreadIsIncrementing()),
-                        currentReadLockAcquiredAndNeverReleased.getDateOfReadLockAcquisition(),
+                        ConversionManager.getDefaultManager().convertObject(currentReadLockAcquiredAndNeverReleased.getDateOfReadLockAcquisition(), String.class).toString(),
                         currentReadLockAcquiredAndNeverReleased.getNumberOfReadersOnCacheKeyBeforeIncrementingByOne(),
                         currentReadLockAcquiredAndNeverReleased.getCurrentThreadStackTraceInformationCpuTimeCostMs()}));
                 String stackTraceInformation = currentReadLockAcquiredAndNeverReleased.getCurrentThreadStackTraceInformation();
@@ -934,7 +936,7 @@ public class ConcurrencyUtil {
         int currentThreadNumber = 0;
         for (Thread currentEntry : setThreadWaitingToReleaseDeferredLocksClone) {
             currentThreadNumber++;
-            writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_release_deferred_locks_1", new Object[] {currentThreadNumber, currentEntry.getName()}));
+            writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_release_deferred_locks_2", new Object[] {currentThreadNumber, currentEntry.getName()}));
         }
         writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_release_deferred_locks_3"));
         return writer.toString();
@@ -1438,7 +1440,7 @@ public class ConcurrencyUtil {
         Thread currentThread = Thread.currentThread();
         StringWriter writer = new StringWriter();
         writer.write(TraceLocalization.buildMessage("concurrency_util_read_lock_manager_problem01", new Object[] {currentThread.getName(), currentNumberOfReaders, decrementedNumberOfReaders,
-                ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey), enrichGenerateThreadDumpForCurrentThread(), new Date()}));
+                ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey), enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class).toString()}));
         AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
         return writer.toString();
     }
@@ -1447,7 +1449,7 @@ public class ConcurrencyUtil {
         Thread currentThread = Thread.currentThread();
         StringWriter writer = new StringWriter();
         writer.write(TraceLocalization.buildMessage("concurrency_util_read_lock_manager_problem02", new Object[] {currentThread.getName(), SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey),
-                threadId, enrichGenerateThreadDumpForCurrentThread(), new Date()}));
+                threadId, enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class).toString()}));
         // We do log immediately the error as we spot it
         AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
         // we also return the error message we just logged to added it to our tracing permanently
@@ -1458,7 +1460,7 @@ public class ConcurrencyUtil {
         Thread currentThread = Thread.currentThread();
         StringWriter writer = new StringWriter();
         writer.write(TraceLocalization.buildMessage("concurrency_util_read_lock_manager_problem03", new Object[] {currentThread.getName(), SINGLETON.createToStringExplainingOwnedCacheKey(cacheKey),
-                threadId, enrichGenerateThreadDumpForCurrentThread(), new Date()}));
+                threadId, enrichGenerateThreadDumpForCurrentThread(), ConversionManager.getDefaultManager().convertObject(new Date(), String.class).toString()}));
         // We do log immediately the error as we spot it
         AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
         // we also return the error message we just logged to added it to our tracing permanently
