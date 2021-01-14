@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,6 +73,8 @@
             depends="clean, build-no-javadoc, build-utils, test-srg"
     />
     <target name="build-milestone" depends="promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
+    />
+    <target name="build-snapshot" depends="snapshot-init, promote-init, extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, regen-nosql-archive, gen-build-for-maven, publish-milestone-artifacts, publish-milestone-nexus" description="Promote build to snapshot repository)"
     />
     <target name="build-ora-extension" description="Trigger the automated oracle extension build"
             depends="init, build-oracle-extension"
@@ -605,6 +607,21 @@
         <property name="temp.rebuild.dir" value="/tmp/EL${run.date}.${run.time}-${version.string}"/>
         <delete dir="${temp.rebuild.dir}" failonerror="false"/>
         <mkdir dir="${temp.rebuild.dir}"/>
+    </target>
+
+    <!--  =====     Snapshot Init     =====  -->
+    <target name="snapshot-init" depends="init">
+        <property name="build.extract.dir" value="${extract.root.dir}/build/bundles/${release.version}/${build.date}"/>
+
+        <echo message="build.extract.dir='${build.extract.dir}'"/>
+
+        <delete dir="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}" failonerror="false"/>
+        <mkdir dir="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}"/>
+        <copy todir="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}">
+            <fileset dir="${build.extract.dir}"/>
+        </copy>
+        <copy file="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}/${p2.archive.presigned.zip}" tofile="${eclipselink.root.download.dir}/nightly/${release.version}/${build.date}/${p2.archive.signed.zip}"/>
+        <copy file="${custom.tasks.lib}" tofile="${releng.repo.dir}/ant_customizations.jar"/>
     </target>
 
     <!--  =====     Milestone Signing     =====  -->
