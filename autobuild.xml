@@ -74,7 +74,7 @@
     />
     <target name="build-milestone" depends="promote-init, sign-and-wait, regen-archives, publish-milestone, create-tag" description="Promote a build: nightly to milestone or milestone to release ('release' is a special milestone in this case)"
     />
-    <target name="build-snapshot" depends="snapshot-init, promote-init, extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, regen-nosql-archive, gen-build-for-maven, publish-milestone-artifacts, publish-milestone-nexus" description="Promote build to snapshot repository)"
+    <target name="build-snapshot" depends="snapshot-init, promote-init, extract-signed-artifacts, regen-installer-archive, regen-plugin-archive, regen-nosql-archive, gen-build-for-maven, publish-milestone-artifacts, publish-milestone-nexus" description="Promote build to snapshot repository"
     />
     <target name="build-ora-extension" description="Trigger the automated oracle extension build"
             depends="init, build-oracle-extension"
