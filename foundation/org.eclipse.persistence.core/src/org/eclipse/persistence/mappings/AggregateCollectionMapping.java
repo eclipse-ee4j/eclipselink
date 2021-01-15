@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2591,7 +2591,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void prepareModifyQueryForDelete(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object wrappedObject, Map extraData) {
         Object object = getContainerPolicy().unwrapIteratorResult(wrappedObject);
         AbstractRecord aggregateRow = getAggregateRow(originalQuery, object);
-        ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, modifyQuery.getSession()), aggregateRow);
+        ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, originalQuery.getSession()), aggregateRow);
         if(this.listOrderField != null && extraData != null) {
             aggregateRow.put(this.listOrderField, extraData.get(this.listOrderField));
         }
