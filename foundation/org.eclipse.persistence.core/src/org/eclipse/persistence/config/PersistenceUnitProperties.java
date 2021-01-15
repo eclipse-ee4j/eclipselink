@@ -2551,7 +2551,7 @@ public class PersistenceUnitProperties {
      * The "<code>eclipselink.allow-result-type-conversion</code>" property configures eclipselink
      * should convert resultset values to the expected value based on the query expression.
      *
-     * Default: "<code>false</code>".
+     * Default: "<code>true</code>".
      */
     public static final String ALLOW_RESULT_TYPE_CONVERSION = "eclipselink.allow-result-type-conversion";
 

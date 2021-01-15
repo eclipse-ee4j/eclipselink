@@ -1377,6 +1377,11 @@ public class DatabaseAccessor extends DatasourceAccessor {
         } else if ((fieldType == ClassConstants.SHORT) || (fieldType == ClassConstants.PSHORT)) {
             value = Short.valueOf(resultSet.getShort(columnNumber));
             isPrimitive = ((Short)value).shortValue() == 0;
+        } else if ((fieldType == ClassConstants.BOOLEAN) || (fieldType == ClassConstants.PBOOLEAN)) {
+            if(session.getProject().allowResultTypeConversion()) {
+                value = Boolean.valueOf(resultSet.getBoolean(columnNumber));
+                isPrimitive = ((Boolean)value).booleanValue() == false;
+            }
         } else if (Helper.shouldOptimizeDates && (fieldType != null) && ((type == Types.TIME) || (type == Types.DATE) || (type == Types.TIMESTAMP))) {
             // Optimize dates by avoid conversion to timestamp then back to date or time or util.date.
             String dateString = resultSet.getString(columnNumber);

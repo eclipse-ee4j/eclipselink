@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -176,7 +176,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Collection<String> structConverters;
 
     protected boolean allowNullResultMaxMin = true;
-    protected boolean allowResultTypeConversion = false;
+    protected boolean allowResultTypeConversion = true;
 
     /**
      * PUBLIC:
