@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -131,6 +131,18 @@ spec:
                         sh """
                             etc/jenkins/build.sh
                         """
+                    }
+                }
+            }
+        }
+        // Publish to snapshots
+        stage('Publish to snapshots') {
+            steps {
+                container('el-build') {
+                    sshagent([SSH_CREDENTIALS_ID]) {
+                        sh """
+                            etc/jenkins/publish_snapshots.sh
+                            """
                     }
                 }
             }

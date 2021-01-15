@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -80,8 +80,8 @@
     <!--    Override value to change defaults                          -->
     <property name="stagingId"   value="ossrh"/>
     <property name="stagingURL"  value="https://jakarta.oss.sonatype.org/service/local/staging/deploy/maven2"/>
-    <property name="snapshotId"  value="sonatype-nexus-snapshots"/>
-    <property name="snapshotURL" value="https://oss.sonatype.org/content/repositories/snapshots"/>
+    <property name="snapshotId"  value="ossrh"/>
+    <property name="snapshotURL" value="https://jakarta.oss.sonatype.org/content/repositories/snapshots/"/>
 
     <target name="upload-maven-all" depends="upload-eclipselink"/>
 
@@ -160,6 +160,11 @@
         <condition property="sign">
             <not> <equals arg1="${build.type}" arg2="SNAPSHOT"/> </not>
         </condition>
+
+        <condition property="is.snapshot.build">
+            <equals arg1="${build.type}" arg2="SNAPSHOT"/>
+        </condition>
+        <echo message="is.snapshot.build:   ${is.snapshot.build}"/>
 
         <condition property="target.repo.message" value="Target repository ID: '${stagingId}' URL:'${stagingURL}'"
                    else="Target repository ID: '${snapshotId}' URL:'${snapshotURL}'">
@@ -593,33 +598,32 @@
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
-    <target name="ua-snapshot" unless="sign">
-        <!-- Install provider for https protocol -->
-        <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}"/>
-        <!-- Deploy Artifact to repote repo, attach source -->
-        <artifact:deploy file="${artifact}">
-          <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}" />
-          <artifact:pom id="maven.project" file="pom.xml" />
-          <artifact:attach file="${artifactSrc}"     type="jar" classifier="sources"/>
-          <artifact:attach file="${artifactJavadoc}" type="jar" classifier="javadoc"/>
-        </artifact:deploy>
-    </target>
 
     <!-- Uploads a single artifact, source & javadoc to maven repository -->
     <target name="upload-artifact-with-javadoc" depends="prepare-pom, uawj-snapshot, ua-staging, us-staging, uj-staging">
         <!-- cleanup -->
         <delete file="pom.xml"/>
     </target>
-    <target name="uawj-snapshot" unless="sign">
-        <!-- Install provider for https protocol -->
-        <artifact:install-provider artifactId="wagon-http" version="${wagon.http.version}"/>
-        <!-- Deploy Artifact to repote repo, attach source and javadoc -->
-        <artifact:deploy file="${artifact}">
-          <artifact:remoteRepository id="${snapshotId}" url="${snapshotURL}"/>
-          <artifact:pom id="maven.project" file="pom.xml" />
-          <artifact:attach file="${artifactSrc}"     type="jar" classifier="sources"/>
-          <artifact:attach file="${artifactJavadoc}" type="zip" classifier="javadoc"/>
-        </artifact:deploy>
+
+    <target name="uawj-snapshot" if="is.snapshot.build" depends="ua-snapshot, us-snapshot, uj-snapshot" />
+
+    <!-- Snapshot targets -->
+    <target name="ua-snapshot" if="is.snapshot.build">
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean deploy:deploy-file -Dfile=${artifact} -DpomFile=${maven.build.location}/pom.xml -Durl=${snapshotURL} -DrepositoryId=${snapshotId} -Psnapshots'" />
+        </exec>
+    </target>
+    <target name="us-snapshot" if="is.snapshot.build">
+        <!-- sign and deploy the sources artifact -->
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean deploy:deploy-file -Dfile=${artifactSrc} -DpomFile=${maven.build.location}/pom.xml -Durl=${snapshotURL} -DrepositoryId=${snapshotId} -Dclassifier=sources -Psnapshots'" />
+        </exec>
+    </target>
+    <target name="uj-snapshot" if="is.snapshot.build">
+        <!-- sign and deploy the javadoc artifact -->
+        <exec dir="${maven.build.location}" executable="sh">
+            <arg line="-c '${M2_HOME}/bin/mvn clean deploy:deploy-file -Dfile=${artifactJavadoc} -DpomFile=${maven.build.location}/pom.xml -Durl=${snapshotURL} -DrepositoryId=${snapshotId} -Dclassifier=javadoc -Psnapshots'" />
+        </exec>
     </target>
 
     <!-- Staging targets -->
