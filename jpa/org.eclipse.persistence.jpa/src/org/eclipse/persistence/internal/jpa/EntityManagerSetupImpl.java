@@ -2848,6 +2848,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 updateAllowZeroIdSetting(m);
             }
             updateAllowNULLMAXMINSetting(m);
+            updateAllowConvertResultToBoolean(m);
             updateIdValidation(m);
             updatePessimisticLockTimeout(m);
             updatePessimisticLockTimeoutUnit(m);
@@ -3558,6 +3559,22 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                 session.getProject().setAllowNullResultMaxMin(false);
             } else {
                 session.handleException(ValidationException.invalidBooleanValueForProperty(allowNull, PersistenceUnitProperties.ALLOW_NULL_MAX_MIN));
+            }
+        }
+    }
+
+    /**
+     * Enable or disable default allowing conversion of ResultSet values type to boolean type
+     */
+    protected void updateAllowConvertResultToBoolean(Map m) {
+        String allowNull = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.ALLOW_CONVERT_RESULT_TO_BOOLEAN, m, this.session);
+        if (allowNull != null) {
+            if (allowNull.equalsIgnoreCase("true")) {
+                session.getProject().setAllowConvertResultToBoolean(true);
+            } else if (allowNull.equalsIgnoreCase("false")) {
+                session.getProject().setAllowConvertResultToBoolean(false);
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForProperty(allowNull, PersistenceUnitProperties.ALLOW_CONVERT_RESULT_TO_BOOLEAN));
             }
         }
     }

@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2598,6 +2598,14 @@ public class PersistenceUnitProperties {
      * Default: "<code>true</code>".
      */
     public static final String ALLOW_NULL_MAX_MIN = "eclipselink.allow-null-max-min";
+
+    /**
+     * The "<code>eclipselink.sql.allow-convert-result-to-boolean</code>" property allows
+     * eclipselink to convert resultset values to boolean types.
+     *
+     * Default: "<code>true</code>".
+     */
+    public static final String ALLOW_CONVERT_RESULT_TO_BOOLEAN = "eclipselink.sql.allow-convert-result-to-boolean";
 
     /**
      * The "<code>eclipselink.id-validation</code>" property defines
