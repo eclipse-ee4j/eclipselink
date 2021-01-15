@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -192,6 +192,7 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Collection<String> structConverters;
 
     protected boolean allowNullResultMaxMin = true;
+    protected boolean allowConvertResultToBoolean = true;
 
     /**
      * PUBLIC:
@@ -1316,6 +1317,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
 
     /**
      * INTERNAL:
+     * Return true if ResultSet values should be converted for this project.
+     */
+    public boolean allowConvertResultToBoolean() {
+        return this.allowConvertResultToBoolean;
+    }
+
+    /**
+     * INTERNAL:
      * Return true if SQL calls can defer to EOT on this project.
      */
     public boolean allowSQLDeferral() {
@@ -1375,6 +1384,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setAllowNullResultMaxMin(boolean allowNullResultMaxMin) {
         this.allowNullResultMaxMin = allowNullResultMaxMin;
+    }
+
+    /**
+     * INTERNAL:
+     * Set whether ResultSet values should be converted for this project.
+     */
+    public void setAllowConvertResultToBoolean(boolean allowConvertResultToBoolean) {
+        this.allowConvertResultToBoolean = allowConvertResultToBoolean;
     }
 
     /**
