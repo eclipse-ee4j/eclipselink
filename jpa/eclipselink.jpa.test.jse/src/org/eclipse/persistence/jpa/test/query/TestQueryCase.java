@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 IBM Corporation, Oracle, and/or affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 IBM Corporation, Oracle, and/or affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.TypedQuery;
 
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
@@ -34,8 +33,7 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestQueryCase {
     @Emf(createTables = DDLGen.DROP_CREATE, classes = { EntityTbl01.class }, 
-            properties = { @Property(name="eclipselink.logging.level", value="FINE"), 
-                    @Property(name=PersistenceUnitProperties.ALLOW_RESULT_TYPE_CONVERSION, value="true")})
+            properties = { @Property(name="eclipselink.logging.level", value="FINE")})
     private EntityManagerFactory emf;
 
     private static boolean POPULATED = false;
