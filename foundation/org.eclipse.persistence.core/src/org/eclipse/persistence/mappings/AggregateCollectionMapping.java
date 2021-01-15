@@ -2592,7 +2592,7 @@ public class AggregateCollectionMapping extends CollectionMapping implements Rel
     public void prepareModifyQueryForDelete(ObjectLevelModifyQuery originalQuery, ObjectLevelModifyQuery modifyQuery, Object wrappedObject, Map extraData) {
         Object object = getContainerPolicy().unwrapIteratorResult(wrappedObject);
         AbstractRecord aggregateRow = getAggregateRow(originalQuery, object);
-        ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, modifyQuery.getSession()), aggregateRow);
+        ContainerPolicy.copyMapDataToRow(containerPolicy.getKeyMappingDataForWriteQuery(wrappedObject, originalQuery.getSession()), aggregateRow);
         if(this.listOrderField != null && extraData != null) {
             aggregateRow.put(this.listOrderField, extraData.get(this.listOrderField));
         }
