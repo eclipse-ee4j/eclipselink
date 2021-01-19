@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,7 +41,6 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
@@ -51,8 +50,8 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataFactory;
 import org.eclipse.persistence.internal.jpa.modelgen.objects.PersistenceUnit;
 import org.eclipse.persistence.internal.jpa.modelgen.visitors.ElementVisitor;
-import org.eclipse.persistence.logging.LogCategory;
-import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.DatabaseLogin;
 import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.server.ServerSession;
@@ -83,9 +82,6 @@ public class MetadataMirrorFactory extends MetadataFactory {
 
     private ProcessingEnvironment processingEnv;
 
-    /** Current logger context from command line options. */
-    private final LoggerContext loggerContext;
-
     /**
      * INTERNAL:
      * The factory is kept as a static object to the persistence unit. The first
@@ -95,9 +91,8 @@ public class MetadataMirrorFactory extends MetadataFactory {
      * classes and may not be able to rebuild till individual elements are
      * 'touched' or if the project is rebuilt as a whole.
      */
-    protected MetadataMirrorFactory(final MetadataLogger logger, final LoggerContext loggerContext, final ClassLoader loader) {
+    protected MetadataMirrorFactory(final MetadataLogger logger, final ClassLoader loader) {
         super(logger, loader);
-        this.loggerContext = loggerContext;
         roundElements = new HashMap<>();
         roundMetadataClasses = new HashSet<>();
         persistenceUnits = new HashMap<>();
@@ -134,9 +129,9 @@ public class MetadataMirrorFactory extends MetadataFactory {
             // As a performance gain, avoid visiting this class if it is not a
             // round element. We must re-visit round elements.
             if (isRoundElement(element)) {
-                if (m_logger.shouldLog(LogLevel.FINE, LogCategory.PROCESSOR)) {
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for round element: " + element);
-                }
+                m_logger.getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
+                        "Building metadata class for round element: {0}",
+                        new Object[] {element}, false);
                 metadataClass = new MetadataClass(MetadataMirrorFactory.this, "");
                 roundElements.put(element, metadataClass);
                 roundMetadataClasses.add(metadataClass);
@@ -165,9 +160,9 @@ public class MetadataMirrorFactory extends MetadataFactory {
                 //    with only a name/type from the toString value.
                 if (element instanceof TypeElement || element instanceof TypeParameterElement) {
                     if (element instanceof TypeElement) {
-                        if (m_logger.shouldLog(LogLevel.FINE, LogCategory.PROCESSOR)) {
-                            processingEnv.getMessager().printMessage(Kind.NOTE, "Building metadata class for type element: " + name);
-                        }
+                        m_logger.getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
+                            "Building metadata class for type element: {0}",
+                            new Object[] {name}, false);
                         metadataClass = new MetadataClass(MetadataMirrorFactory.this, name);
                         addMetadataClass(metadataClass);
                         element.accept(elementVisitor, metadataClass);
@@ -176,9 +171,9 @@ public class MetadataMirrorFactory extends MetadataFactory {
                         // Only thing going to get through at this point are
                         // TypeParameterElements (presumably generic ones). Look
                         // at those further since they 'should' be simple visits.
-                        if (m_logger.shouldLog(LogLevel.FINE, LogCategory.PROCESSOR)) {
-                            processingEnv.getMessager().printMessage(Kind.NOTE, "Building type parameter element: " + name);
-                        }
+                        m_logger.getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
+                            "Building type parameter element:  {0}",
+                            new Object[] {name}, false);
                         metadataClass = new MetadataClass(MetadataMirrorFactory.this, name);
                         addMetadataClass(metadataClass);
                         element.accept(elementVisitor, metadataClass);
@@ -251,7 +246,9 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     public MetadataProject getMetadataProject(SEPersistenceUnitInfo puInfo) {
         if (! metadataProjects.containsKey(puInfo.getPersistenceUnitName())) {
-            MetadataProject project = new MetadataProject(puInfo, new ServerSession(new Project(new DatabaseLogin())), false, false, false, false, false);
+            AbstractSession session = new ServerSession(new Project(new DatabaseLogin()));
+            session.setSessionLog(getLogger().getSession().getSessionLog());
+            MetadataProject project = new MetadataProject(puInfo, session, false, false, false, false, false);
             metadataProjects.put(puInfo.getPersistenceUnitName(), project);
             return project;
         } else {
@@ -292,14 +289,6 @@ public class MetadataMirrorFactory extends MetadataFactory {
      */
     public boolean isRoundElement(MetadataClass cls) {
         return roundMetadataClasses.contains(cls);
-    }
-
-    /**
-     * INTERNAL:
-     * Get current logger context from command line options.
-     */
-    public LoggerContext getLoggerContext() {
-        return loggerContext;
     }
 
     /**

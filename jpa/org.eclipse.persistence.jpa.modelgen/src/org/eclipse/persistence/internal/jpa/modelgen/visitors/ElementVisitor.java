@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,7 +37,6 @@ import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.AbstractElementVisitor8;
-import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
@@ -47,8 +46,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataField;
 import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataMethod;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
-import org.eclipse.persistence.logging.LogCategory;
-import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * An element visitor.
@@ -197,9 +195,9 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
     @Override
     public MetadataClass visitPackage(PackageElement packageElement, MetadataClass metadataClass) {
         MetadataLogger logger = ((MetadataMirrorFactory) metadataClass.getMetadataFactory()).getLogger();
-        if (logger.shouldLog(LogLevel.FINE, LogCategory.PROCESSOR)) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "ElementVisitor Package NOT IMPLEMENTED : " + packageElement);
-        }
+        logger.getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
+                "ElementVisitor Package NOT IMPLEMENTED : {0}",
+                new Object[] {packageElement}, false);
         return null;
     }
 
@@ -209,9 +207,9 @@ public class ElementVisitor<R, P> extends AbstractElementVisitor8<MetadataAnnota
     @Override
     public MetadataClass visitType(TypeElement typeElement, MetadataClass metadataClass) {
         MetadataMirrorFactory factory = ((MetadataMirrorFactory) metadataClass.getMetadataFactory());
-        if (factory.getLogger().shouldLog(LogLevel.FINEST, LogCategory.PROCESSOR)) {
-            processingEnv.getMessager().printMessage(Kind.NOTE, "Visiting class: " + typeElement);
-        }
+        factory.getLogger().getSession().getSessionLog().log(SessionLog.FINEST, SessionLog.PROCESSOR,
+                "Visiting class: {0}",
+                new Object[] {typeElement}, false);
 
         // Set the qualified name.
         metadataClass.setName(typeElement.getQualifiedName().toString());

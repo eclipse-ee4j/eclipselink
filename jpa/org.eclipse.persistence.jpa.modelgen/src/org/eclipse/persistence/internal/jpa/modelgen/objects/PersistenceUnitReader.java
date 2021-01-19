@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
@@ -45,8 +44,7 @@ import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
-import org.eclipse.persistence.logging.LogCategory;
-import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * Used to read persistence units through the java annotation processing API.
@@ -108,15 +106,17 @@ public class PersistenceUnitReader {
             } catch (IOException e) {
                 if (loadingPersistenceXML) {
                     // If loading the persistence.xml, log a BIG warning message.
-                    if (logger.shouldLog(LogLevel.WARNING, LogCategory.PROCESSOR)) {
-                        processingEnv.getMessager().printMessage(Kind.NOTE, "The persistence xml file [" + filename
-                                + "] was not found. NO GENERATION will occur!! Please ensure a persistence xml file is available either from the CLASS_OUTPUT directory [META-INF/persistence.xml] or using the eclipselink.persistencexml property to specify its location.");
-                    }
+                    logger.getSession().getSessionLog().log(SessionLog.WARNING, SessionLog.PROCESSOR,
+                            "The persistence xml file [{0}] was not found. NO GENERATION will occur!!"
+                            + " Please ensure a persistence xml file is available either from the CLASS_OUTPUT directory"
+                            + " [META-INF/persistence.xml] or using the eclipselink.persistencexml property"
+                            + " to specify its location.",
+                            new Object[] {filename}, false);
                 } else {
                     // For any other mapping file log a message.
-                    if (logger.shouldLog(LogLevel.INFO, LogCategory.PROCESSOR)) {
-                        processingEnv.getMessager().printMessage(Kind.NOTE, "Optional file was not found: " + filename + " continuing with generation.");
-                    }
+                    logger.getSession().getSessionLog().log(SessionLog.INFO, SessionLog.PROCESSOR,
+                            "Optional file was not found: {0} continuing with generation.",
+                            new Object[] {filename}, false);
                 }
             }
         }

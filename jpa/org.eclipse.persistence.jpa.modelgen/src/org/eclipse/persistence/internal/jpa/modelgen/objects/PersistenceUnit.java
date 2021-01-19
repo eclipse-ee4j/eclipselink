@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,6 @@ import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
-import javax.tools.Diagnostic.Kind;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.exceptions.XMLMarshalException;
@@ -60,8 +59,7 @@ import org.eclipse.persistence.internal.jpa.metadata.accessors.objects.MetadataC
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappings;
 import org.eclipse.persistence.internal.jpa.metadata.xml.XMLEntityMappingsReader;
 import org.eclipse.persistence.internal.jpa.modelgen.MetadataMirrorFactory;
-import org.eclipse.persistence.logging.LogCategory;
-import org.eclipse.persistence.logging.LogLevel;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.oxm.XMLContext;
 
 /**
@@ -264,9 +262,9 @@ public class PersistenceUnit {
                 // For eclipselink-orm merging and overriding these need to be set.
                 entityMappings.setIsEclipseLinkORMFile(mappingFile.equals(MetadataHelper.ECLIPSELINK_ORM_FILE));
                 entityMappings.setMappingFile(mappingFile);
-                if (factory.getLogger().shouldLog(LogLevel.INFO, LogCategory.PROCESSOR)) {
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "File loaded : " + mappingFile + ", is eclipselink-orm file: " + entityMappings.isEclipseLinkORMFile());
-                }
+                factory.getLogger().getSession().getSessionLog().log(SessionLog.INFO, SessionLog.PROCESSOR,
+                            "File loaded : {0}, is eclipselink-orm file: {1}",
+                            new Object[] {mappingFile, entityMappings.isEclipseLinkORMFile()}, false);
                 xmlEntityMappings.add(entityMappings);
             } finally {
                 persistenceUnitReader.closeInputStream(inputStream);
@@ -386,9 +384,9 @@ public class PersistenceUnit {
         // named properties.
         for (SEPersistenceUnitProperty property : persistenceUnitInfo.getPersistenceUnitProperties()) {
             if (property.getName() != null) {
-                if (factory.getLogger().shouldLog(LogLevel.FINE, LogCategory.PROCESSOR)) {
-                    processingEnv.getMessager().printMessage(Kind.NOTE, "Key: " + property.getName() + " , value: " + property.getValue());
-                }
+                factory.getLogger().getSession().getSessionLog().log(SessionLog.FINE, SessionLog.PROCESSOR,
+                            "Key: {0} , value: {1}",
+                            new Object[] {property.getName(), property.getValue()}, false);
                 persistenceUnitProperties.put(property.getName(), property.getValue());
             }
         }
