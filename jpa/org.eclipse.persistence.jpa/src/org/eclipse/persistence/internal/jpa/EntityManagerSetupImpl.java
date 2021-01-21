@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1430,7 +1430,13 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if ((queryCache != null) && queryCache.equalsIgnoreCase("true")) {
             session.getProject().setDefaultQueryResultsCachePolicy(new QueryResultsCachePolicy());
         }
-        
+        String queryCacheForceDeferredLocks = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_QUERY_FORCE_DEFERRED_LOCKS, m, session);
+        if ((queryCacheForceDeferredLocks != null) && queryCacheForceDeferredLocks.equalsIgnoreCase("true")) {
+            session.getProject().setQueryCacheForceDeferredLocks(true);
+        } else {
+            session.getProject().setQueryCacheForceDeferredLocks(false);
+        }
+
         Map typeMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_TYPE_, m, session);
         Map sizeMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_SIZE_, m, session);
         Map sharedMap = PropertiesHandler.getPrefixValuesLogDebug(PersistenceUnitProperties.CACHE_SHARED_, m, session);

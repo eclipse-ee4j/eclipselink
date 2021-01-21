@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -170,6 +170,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     protected Collection<String> classNamesForWeaving;
     protected Collection<String> structConverters;
 
+    /** Force all queries and relationships to use deferred lock strategy during object building and L2 cache population. */
+    protected boolean queryCacheForceDeferredLocks = false;
+
     /**
      * PUBLIC:
      * Create a new project.
@@ -225,7 +228,23 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     public void setDefaultQueryResultsCachePolicy(QueryResultsCachePolicy defaultQueryResultsCachePolicy) {
         this.defaultQueryResultsCachePolicy = defaultQueryResultsCachePolicy;
     }
-    
+
+    /**
+     * PUBLIC:
+     * Get property to Force all queries and relationships to use deferred lock strategy during object building and L2 cache population.
+     */
+    public boolean isQueryCacheForceDeferredLocks() {
+        return queryCacheForceDeferredLocks;
+    }
+
+    /**
+     * PUBLIC:
+     * Set property to Force all queries and relationships to use deferred lock strategy during object building and L2 cache population.
+     * By default there is false value - use use mixed object cache locking strategy (depends on relationship and fetch type) */
+    public void setQueryCacheForceDeferredLocks(boolean queryCacheForceDeferredLocks) {
+        this.queryCacheForceDeferredLocks = queryCacheForceDeferredLocks;
+    }
+
     /**
      * PUBLIC:
      * Return the default setting for configuring if dates and calendars are mutable.
