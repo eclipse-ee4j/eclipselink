@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1481,6 +1481,18 @@ public class PersistenceUnitProperties {
      * @see "org.eclipse.persistence.platform.database.oracle.dcn.OracleChangeNotificationListener"
      */
     public static final String DATABASE_EVENT_LISTENER = "eclipselink.cache.database-event-listener";
+
+    /**
+     * The "<code>eclipselink.cache.query-force-deferred-locks</code>" property force all queries and relationships
+     * to use deferred lock strategy during object building and L2 cache population.
+     * <p>
+     * <b>Allowed Values</b> (String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT) - use use mixed object cache locking strategy
+     * <li>"<code>true</code>" - use deferred locking strategy all queries and relationships
+     * </ul>
+     */
+    public static final String CACHE_QUERY_FORCE_DEFERRED_LOCKS = "eclipselink.cache.query-force-deferred-locks";
 
     // Customizations properties
 
