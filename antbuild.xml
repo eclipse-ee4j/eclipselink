@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -684,6 +684,7 @@
         <copy-plugin from="jaxws-rt*.jar" to="${ws-rt.jar}"/>
         <copy-plugin from="com.sun.activation.jakarta.activation*.jar" to="${activation.jar}"/>
         <copy-plugin from="jakarta.annotation-api*.jar" to="${annotation-api.jar}"/>
+        <copy-plugin from="javax.el-api*.jar" to="${el-api.jar}"/>
         <copy-plugin from="jakarta.ejb-api*.jar" to="${ejb-api.jar}"/>
         <copy-plugin from="org.glassfish.hk2.external.jakarta.inject*.jar" to="${inject.jar}"/>
         <copy-plugin from="jakarta.interceptor-api*.jar" to="${interceptor-api.jar}"/>
@@ -728,6 +729,13 @@
         <copy-plugin from="slf4j.api*.jar" to="${slf4j-api.jar}"/>
         <copy-plugin from="slf4j.nop*.jar" to="${slf4j-nop.jar}"/>
         <copy-plugin from="stax2-api*.jar" to="${stax2-api.jar}"/>
+        <copy-plugin from="jboss-classfilewriter*.jar" to="${jboss-classfilewriter.jar}"/>
+        <copy-plugin from="org.jboss.logging.jboss-logging*.jar" to="${jboss-logging.jar}"/>
+        <copy-plugin from="weld-api*.jar" to="${jboss-weld-api.jar}"/>
+        <copy-plugin from="weld-spi*.jar" to="${jboss-weld-spi.jar}"/>
+        <copy-plugin from="weld-environment-common*.jar" to="${jboss-weld-environment-common.jar}"/>
+        <copy-plugin from="weld-se-core*.jar" to="${jboss-weld-se-core.jar}"/>
+        <copy-plugin from="weld-core-impl*.jar" to="${jboss-weld-core-impl.jar}"/>
 
         <!-- Copy source jars -->
         <copy-plugin from="jakarta.xml.bind-api*sources.jar" to="${jaxb-api.src.jar}"/>
