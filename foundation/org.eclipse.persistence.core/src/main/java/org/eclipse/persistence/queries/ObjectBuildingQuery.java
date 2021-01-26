@@ -608,7 +608,7 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * with an object the acquires deferred locks behaves the same as its owner
      */
     public void setRequiresDeferredLocks(boolean cascadeDeferredLocks) {
-        if (session.getProject().isQueryCacheForceDeferredLocks()) {
+        if (session != null && session.getProject().isQueryCacheForceDeferredLocks()) {
             this.requiresDeferredLocks = true;
         } else {
             this.requiresDeferredLocks = Boolean.valueOf(cascadeDeferredLocks);
