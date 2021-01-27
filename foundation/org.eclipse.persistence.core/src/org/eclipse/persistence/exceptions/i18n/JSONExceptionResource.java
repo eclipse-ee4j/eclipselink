@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +23,7 @@ import java.util.ListResourceBundle;
  */
 public class JSONExceptionResource extends ListResourceBundle {
     public static final Object[][] contents = {
-            {"60001", "Input JSON document is invalid or doesn't match target object graph."},
+            {"60001", "Input JSON document is invalid or does not match target object graph."},
     };
 
     /**

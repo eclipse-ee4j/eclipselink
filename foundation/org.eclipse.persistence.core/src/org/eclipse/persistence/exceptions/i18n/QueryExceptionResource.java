@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2022 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -158,7 +158,7 @@ public class QueryExceptionResource extends ListResourceBundle {
        { "6132", "Query argument {0} not found in list of parameters provided during query execution."},
        { "6133", "First argument of addUpdate method defines a field to be assigned a new value - it cannot be null."},
        { "6134", "Attribute name or expression passed as a first parameter to addUpdate method does not define a field. {1}Attribute name or Expression: [{2}]{1}Descriptor: [{0}]" },
-       { "6135", "Attribute name or expression passed as a first parameter to addUpdate method defines a field from a table that''s not mapped to query descriptor. {1}Attribute name or Expression: [{2}]{1}Wrong field: [{3}]{1}Descriptor: [{0}]" },
+       { "6135", "Attribute name or expression passed as a first parameter to addUpdate method defines a field from a table that is not mapped to query descriptor. {1}Attribute name or Expression: [{2}]{1}Wrong field: [{3}]{1}Descriptor: [{0}]" },
        { "6136", "Classes mapped with multi table inheritance cannot be ReportQuery items. Item: {0}, Expression: {1}."},
        { "6137", "An Exception was thrown while executing a ReportQuery with a constructor expression: {0}" },
        { "6138", "Query requires temporary storage, but {0} does not support temporary tables." },
