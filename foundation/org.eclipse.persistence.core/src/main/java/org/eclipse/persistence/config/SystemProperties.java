@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -154,8 +154,8 @@ public class SystemProperties {
     public static final String CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION  = "eclipselink.concurrency.manager.allow.concurrency.exception";
 
     /**
-     * true - collect debug/trace information during ReadLock acquisition
-     * false - don't collect debug/trace information during ReadLock acquisition
+     * true - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
+     * false - (Default) don't collect debug/trace information during ReadLock acquisition
      * Allowed values are: true/false.
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = "eclipselink.concurrency.manager.allow.readlockstacktrace";
