@@ -3966,8 +3966,8 @@ public class PersistenceUnitProperties {
     public static final String CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION  = "eclipselink.concurrency.manager.allow.concurrencyexception";
 
     /**
-     * true - collect debug/trace information during ReadLock acquisition
-     * false - don't collect debug/trace information during ReadLock acquisition
+     * true - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
+     * false - (Default) don't collect debug/trace information during ReadLock acquisition
      * Allowed values are: true/false.
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = "eclipselink.concurrency.manager.allow.readlockstacktrace";
