@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -109,6 +109,14 @@
         <oracle.jdbc.version>19.3.0.0</oracle.jdbc.version>
         <!-- CQ #21141 -->
         <oracle.nosql.version>18.3.10</oracle.nosql.version>
+        <!-- CQ #22994 -->
+        <jboss.classfilewriter.version>1.2.4.Final</jboss.classfilewriter.version>
+        <!-- CQ #22995 -->
+        <jboss.logging.version>3.4.1.Final</jboss.logging.version>
+        <!-- CQ #22996 API, #22997 SPI-->
+        <jboss.weld.api.version>3.1.SP3</jboss.weld.api.version>
+        <!-- CQ #22998 weld-environment-common, #22999 weld-se-core,  #23000 weld-core-impl -->
+        <jboss.weld.version>3.1.6.Final</jboss.weld.version>
     </properties>
 
     <build>
@@ -572,6 +580,42 @@
             <groupId>com.oracle.kv</groupId>
             <artifactId>oracle-nosql-client</artifactId>
             <version>${oracle.nosql.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.classfilewriter</groupId>
+            <artifactId>jboss-classfilewriter</artifactId>
+            <version>${jboss.classfilewriter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>${jboss.logging.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-api</artifactId>
+            <version>${jboss.weld.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-spi</artifactId>
+            <version>${jboss.weld.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.environment</groupId>
+            <artifactId>weld-environment-common</artifactId>
+            <version>${jboss.weld.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se-core</artifactId>
+            <version>${jboss.weld.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-core-impl</artifactId>
+            <version>${jboss.weld.version}</version>
         </dependency>
     </dependencies>
 </project>

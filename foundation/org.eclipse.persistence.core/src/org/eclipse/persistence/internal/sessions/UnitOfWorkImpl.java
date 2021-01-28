@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -6072,8 +6072,8 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             if (currentThread != lockThread) {
                 if (ConcurrencyManager.getDeferredLockManager(lockThread) != null){
                     // check for transitioned old deferred lock manager and switch to the new thread.
-                    ConcurrencyManager.deferredLockManagers.put(
-                        currentThread, ConcurrencyManager.deferredLockManagers.remove(lockThread));
+                    ConcurrencyManager.DEFERRED_LOCK_MANAGERS.put(
+                        currentThread, ConcurrencyManager.DEFERRED_LOCK_MANAGERS.remove(lockThread));
                 }
                 ArrayList<CacheKey> locks = this.getMergeManager().getAcquiredLocks();
                 if (null != locks) {
