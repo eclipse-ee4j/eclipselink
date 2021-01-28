@@ -44,7 +44,7 @@ public class ConcurrencyUtil {
     private static final long DEFAULT_MAX_ALLOWED_FREQUENCY_MASSIVE_DUMP_LOG_MESSAGE = 60000L;
     private static final boolean DEFAULT_INTERRUPTED_EXCEPTION_FIRED = true;
     private static final boolean DEFAULT_CONCURRENCY_EXCEPTION_FIRED = true;
-    private static final boolean DEFAULT_TAKING_STACKTRACE_DURING_READ_LOCK_ACQUISITION = true;
+    private static final boolean DEFAULT_TAKING_STACKTRACE_DURING_READ_LOCK_ACQUISITION = false;
 
     private long acquireWaitTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, DEFAULT_ACQUIRE_WAIT_TIME);
     private long maxAllowedSleepTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME, DEFAULT_MAX_ALLOWED_SLEEP_TIME_MS);
