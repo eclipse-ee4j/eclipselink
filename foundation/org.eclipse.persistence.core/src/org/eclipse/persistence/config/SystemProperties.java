@@ -128,33 +128,49 @@ public class SystemProperties {
     public static final String CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE  = "eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage";
 
     /**
-     * true - if we want the to fire up an exception to try to get the current thread to release all of its acquired locks and allow other
-     * threads to progress.
-     * false - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
+     * <p>
+     * This property control (enable/disable) if <code>InterruptedException</code> fired when dead-lock diagnostic is enabled.
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" - if aborting frozen thread is not effective it is preferable to not fire the interrupted exception let the system
      * In the places where use this property normally if a thread is stuck it is because it is doing object building.
      * Blowing the threads ups is not that dangerous. It can be very dangerous for production if the dead lock ends up
      * not being resolved because the productive business transactions will become cancelled if the application has a
      * limited number of retries to for example process an MDB. However, the code spots where we use this constant are
      * not as sensible as when the write lock manager is starving to run commit.
+     * <li>"<code>true</code>" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired locks and allow other
+     * threads to progress.
+     * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION  = "eclipselink.concurrency.manager.allow.interruptedexception";
 
     /**
-     * true - if we want the to fire up an exception to try to get the current thread to realease all of its acquired locks and allow other
-     * threads to progress.
-     * false - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
+     * <p>
+     * This property control (enable/disable) if <code>ConcurrencyException</code> fired when dead-lock diagnostic is enabled.
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" - if aborting frozen thread is not effective it is preferable to not fire the concurrency exception let the system
      * freeze and die and force the administration to kill the server. This is preferable to aborting the transactions
      * multiple times without success in resolving the dead lock and having business critical messages that after 3 JMS
      * retries are discarded out. Failing to resolve a dead lock can have terrible impact in system recovery unless we
      * have infinite retries for the business transactions.
-     * Allowed values are: true/false.
+     * <li>"<code>true</code>" (DEFAULT) - if we want the to fire up an exception to try to get the current thread to release all of its acquired
+     * locks and allow other threads to progress.
+     * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION  = "eclipselink.concurrency.manager.allow.concurrency.exception";
 
     /**
-     * true - collect debug/trace information during ReadLock acquisition
-     * false - don't collect debug/trace information during ReadLock acquisition
-     * Allowed values are: true/false.
+     * <p>
+     * This property control (enable/disable) collection debug/trace information during ReadLock acquisition, when dead-lock diagnostic is enabled.
+     * <p>
+     * <b>Allowed Values</b> (case sensitive String)<b>:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT) - don't collect debug/trace information during ReadLock acquisition
+     * <li>"<code>true</code>" - collect debug/trace information during ReadLock acquisition. Has negative impact to the performance.
+     * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = "eclipselink.concurrency.manager.allow.readlockstacktrace";
 }
