@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -289,6 +289,18 @@ public interface SemanticValidatorHelper {
 	 * otherwise
 	 */
 	boolean isCollectionMapping(Object mapping);
+
+    /**
+     * Determines whether the given mapping is an embeddable type mapping.
+     * <p>
+     * If it was going through Hermes SPI, the type of the arguments would be
+     * {@link org.eclipse.persistence.jpa.jpql.tools.spi.IMapping IMapping}.
+     *
+     * @param mapping The mapping object to verify if it represents an embeddable mapping
+     * @return <code>true</code> if the given mapping is an embeddable mapping; <code>false</code>
+     * otherwise
+     */
+    boolean isEmbeddableMapping(Object mapping);
 
 	/**
 	 * Determines whether the given type represents an {@link Enum}.

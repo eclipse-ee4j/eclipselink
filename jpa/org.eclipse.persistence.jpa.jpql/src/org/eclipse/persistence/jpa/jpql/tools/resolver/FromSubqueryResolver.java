@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2012, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -285,6 +285,12 @@ public class FromSubqueryResolver extends Resolver {
 			IMapping mapping = resolver.getMapping();
 			return (mapping != null) ? mapping.isCollection() : false;
 		}
+
+        @Override
+        public boolean isEmbeddable() {
+            IMapping mapping = resolver.getMapping();
+            return (mapping != null) ? mapping.isEmbeddable() : false;
+        }
 
 		/**
 		 * {@inheritDoc}

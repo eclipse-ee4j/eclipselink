@@ -126,7 +126,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         suite.addTest(new JUnitJPQLValidationTestSuite("testParameterPositionValidation2"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testParameterTypeValidation"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testEjbqlCaseSensitivity"));
-        suite.addTest(new JUnitJPQLValidationTestSuite("testEjbqlUnsupportJoinArgument"));
+        suite.addTest(new JUnitJPQLValidationTestSuite("testEjbqlSupportJoinArgument"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidSetClause"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testUnsupportedCountDistinctOnOuterJoinedCompositePK"));
         suite.addTest(new JUnitJPQLValidationTestSuite("testInvalidHint"));
@@ -1175,29 +1175,27 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         }
     }
 
-    public void testEjbqlUnsupportJoinArgument() {
+    public void testEjbqlSupportJoinArgument() {
+        boolean testPass = true;
         String ejbqlString;
-        List result;
-        
-        try 
+
+        try
         {
             ejbqlString = "SELECT e.firstName FROM Employee e JOIN e.period ep";
-            result = createEntityManager().createQuery(ejbqlString).getResultList();
-            fail ("JOINing of embedded entities is not allowed must be thrown");
-        } catch(IllegalArgumentException ex)
-        {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }   
-        
-        try 
+            createEntityManager().createQuery(ejbqlString).getResultList();
+        } catch(Exception ex) {
+            testPass = false;
+        }
+        Assert.assertTrue(testPass);
+
+        try
         {
             ejbqlString = "SELECT e.firstName FROM Employee e JOIN FETCH e.period";
-            result = createEntityManager().createQuery(ejbqlString).getResultList();
-            fail ("JOINing of embedded entities is not allowed must be thrown");
-        } catch(IllegalArgumentException ex)
-        {
-            Assert.assertTrue(ex.getCause() instanceof JPQLException);
-        }   
+            createEntityManager().createQuery(ejbqlString).getResultList();
+        } catch(Exception ex) {
+            testPass = false;
+        }
+        Assert.assertTrue(testPass);
     }
 
     public void testInvalidSetClause() {
