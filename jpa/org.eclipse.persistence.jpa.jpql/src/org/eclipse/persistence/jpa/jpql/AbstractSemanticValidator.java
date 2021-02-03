@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2006, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -933,6 +933,76 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 		return valid;
 	}
 
+    /**
+     * Validates the given {@link Expression} and makes sure it's a valid collection value path expression.
+     * 
+     * join_collection_valued_path_expression::=
+     *     identification_variable.{single_valued_embeddable_object_field.}*collection_valued_field
+     * join_single_valued_path_expression::=
+     *     identification_variable.{single_valued_embeddable_object_field.}*single_valued_object_field
+     *
+     * @param expression The {@link Expression} to validate
+     * @param collectionTypeOnly <code>true</code> to make sure the path expression resolves to a
+     * collection mapping only; <code>false</code> if it can simply resolves to a relationship mapping
+     */
+    protected boolean validateJoinCollectionValuedPathExpression(Expression expression,
+                                                             boolean collectionTypeOnly) {
+
+        boolean valid = true;
+
+        // The path expression resolves to a collection-valued path expression
+        CollectionValuedPathExpression collectionValuedPathExpression = getCollectionValuedPathExpression(expression);
+
+        if (collectionValuedPathExpression != null &&
+            collectionValuedPathExpression.hasIdentificationVariable() &&
+           !collectionValuedPathExpression.endsWithDot()) {
+
+            // A collection_valued_field is designated by the name of an association field in a
+            // one-to-many or a many-to-many relationship or by the name of an element collection field
+
+            // A single_valued_object_field is designated by the name of an association field in a one-to-one or
+            // many-to-one relationship or a field of embeddable class type
+            Object mapping = helper.resolveMapping(expression);
+            Object type = helper.getMappingType(mapping);
+
+            // Does not resolve to a valid path
+            if (!helper.isTypeResolvable(type) || (mapping == null)) {
+
+                int startPosition = position(expression);
+                int endPosition   = startPosition + length(expression);
+
+                addProblem(
+                    expression,
+                    startPosition,
+                    endPosition,
+                    CollectionValuedPathExpression_NotResolvable,
+                    expression.toParsedText()
+                );
+
+                valid = false;
+            }
+            else if (!helper.isCollectionMapping(mapping) && 
+                    !helper.isRelationshipMapping(mapping) && 
+                    !helper.isEmbeddableMapping(mapping)) {
+
+                int startPosition = position(expression);
+                int endPosition   = startPosition + length(expression);
+
+                addProblem(
+                    expression,
+                    startPosition,
+                    endPosition,
+                    CollectionValuedPathExpression_NotCollectionType,
+                    expression.toParsedText()
+                );
+
+                valid = false;
+            }
+        }
+
+        return valid;
+    }
+
 	/**
 	 * Validates the left and right expressions of the given {@link ComparisonExpression}. The tests
 	 * to perform are:
@@ -1600,7 +1670,7 @@ public abstract class AbstractSemanticValidator extends AbstractValidator {
 
 		if (expression.hasJoinAssociationPath()) {
 			Expression joinAssociationPath = expression.getJoinAssociationPath();
-			validateCollectionValuedPathExpression(joinAssociationPath, false);
+			validateJoinCollectionValuedPathExpression(joinAssociationPath, false);
 			joinAssociationPath.accept(this);
 		}
 
