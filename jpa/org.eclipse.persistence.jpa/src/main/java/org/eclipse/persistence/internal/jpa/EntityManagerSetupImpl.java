@@ -765,8 +765,10 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
                                 } else {
                                     login(getDatabaseSession(), deployProperties, requiresConnection);
                                 }
+
                                 final Platform platform = getDatabaseSession().getDatasourcePlatform();
-                                PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, (String) deployProperties.get(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES));
+                                String dbProperties = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, deployProperties, this.session);
+                                PropertiesUtils.set(platform, PersistenceUnitProperties.TARGET_DATABASE_PROPERTIES, dbProperties);
 
                                 // Make JTA integration throw JPA exceptions.
                                 if (this.session.hasExternalTransactionController()) {
