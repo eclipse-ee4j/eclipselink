@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,8 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.Query;
 
-import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.jpa.returninsert.model.*;
-import org.eclipse.persistence.platform.database.DatabasePlatform;
-import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.junit.Test;
 
@@ -64,6 +61,8 @@ public class TestReturnInsert {
         testFindUpdate();
         testQuery();
         testCreateJoined();
+        testUpdateMasterDetailJoined();
+        testUpdateDetailJoined();
         emf.close();
     }
 
@@ -114,7 +113,8 @@ public class TestReturnInsert {
                         "    TYPE   VARCHAR2(50) NOT NULL)");
                 session.executeNonSelectingSQL("CREATE TABLE JPA22_RETURNINSERT_DETAIL_JOINED  (" +
                         "    ID          NUMBER(15) PRIMARY KEY ," +
-                        "    DETAIL_NR   NUMBER(15) AS ( ID * 10 ) VIRTUAL)");
+                        "    DETAIL_NR           NUMBER(15)," +
+                        "    DETAIL_NR_VIRTUAL   NUMBER(15) AS ( DETAIL_NR * 10 ) VIRTUAL)");
             } catch (Exception ignore) {
             }
         } finally {
@@ -165,7 +165,7 @@ public class TestReturnInsert {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-            returnInsertDetailJoined = new ReturnInsertDetailJoined(1L, "TYPE_A");
+            returnInsertDetailJoined = new ReturnInsertDetailJoined(1L, 1L, "TYPE_A");
             returnInsertDetailJoined = em.merge(returnInsertDetailJoined);
 
             em.getTransaction().commit();
@@ -179,9 +179,57 @@ public class TestReturnInsert {
         }
         assertEquals(Long.valueOf(1L), returnInsertDetailJoined.getId());
         assertEquals("TYPE_A", returnInsertDetailJoined.getType());
-        assertEquals(Long.valueOf(10L), returnInsertDetailJoined.getDetailNumber());
+        assertEquals(Long.valueOf(10L), returnInsertDetailJoined.getDetailNumberVirtual());
     }
 
+    private void testUpdateMasterDetailJoined() {
+        ReturnInsertDetailJoined returnInsertDetailJoined = null;
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            returnInsertDetailJoined = em.find(ReturnInsertDetailJoined.class, 1L);
+            returnInsertDetailJoined.setType("TYPE_B");
+            returnInsertDetailJoined.setDetailNumber(22L);
+            returnInsertDetailJoined = em.merge(returnInsertDetailJoined);
+
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+        assertEquals(Long.valueOf(1L), returnInsertDetailJoined.getId());
+        assertEquals("TYPE_B", returnInsertDetailJoined.getType());
+        assertEquals(Long.valueOf(220L), returnInsertDetailJoined.getDetailNumberVirtual());
+    }
+
+    private void testUpdateDetailJoined() {
+        ReturnInsertDetailJoined returnInsertDetailJoined = null;
+
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            returnInsertDetailJoined = em.find(ReturnInsertDetailJoined.class, 1L);
+            returnInsertDetailJoined.setDetailNumber(33L);
+            returnInsertDetailJoined = em.merge(returnInsertDetailJoined);
+
+            em.getTransaction().commit();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if (em.isOpen()) {
+                em.close();
+            }
+        }
+        assertEquals(Long.valueOf(1L), returnInsertDetailJoined.getId());
+        assertEquals("TYPE_B", returnInsertDetailJoined.getType());
+        assertEquals(Long.valueOf(330L), returnInsertDetailJoined.getDetailNumberVirtual());
+    }
 
     private void testFindUpdate() {
         //Test find and update
