@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2020 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -778,8 +778,8 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
     }
 
     /**
-     * Return the appropriate update statement
-     * @return SQLInsertStatement
+     * Return the appropriate update statement with return update columns (if any)
+     * @return SQLUpdateStatement
      */
     protected SQLUpdateStatement buildUpdateStatement(DatabaseTable table) {
         SQLUpdateStatement updateStatement = new SQLUpdateStatement();
@@ -787,7 +787,15 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         updateStatement.setModifyRow(getModifyRow());
         updateStatement.setTranslationRow(getTranslationRow());
         if (getDescriptor().hasReturningPolicies() && getDescriptor().getReturnFieldsToGenerateUpdate() != null) {
-            updateStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateUpdate());
+            List<DatabaseField> returnFieldsForTable = new ArrayList<>();
+            for (DatabaseField item: getDescriptor().getReturnFieldsToGenerateInsert()) {
+                if (table.equals(item.getTable())) {
+                    returnFieldsForTable.add(item);
+                }
+                if (!returnFieldsForTable.isEmpty()) {
+                    updateStatement.setReturnFields(getDescriptor().getReturnFieldsToGenerateInsert());
+                }
+            }
         }
         updateStatement.setTable(table);
         updateStatement.setWhereClause(getDescriptor().getObjectBuilder().buildUpdateExpression(table, getTranslationRow(), getModifyRow()));
