@@ -162,23 +162,23 @@
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
         <!--Eclipse Dependencies version-->
-        <activation.version>2.0.0</activation.version>
+        <activation.version>2.0.1</activation.version>
         <annotation.version>2.0.0</annotation.version>
         <cdi.version>3.0.0</cdi.version>
         <ejb.version>4.0.0</ejb.version>
-        <el.version>4.0.0</el.version>
-        <glassfish.version>6.0.0-RC2</glassfish.version>
+        <el.version>4.0.1</el.version>
+        <glassfish.version>6.0.0</glassfish.version>
         <jaxwsrt.version>3.0.0</jaxwsrt.version>
         <jaxb.version>3.0.0</jaxb.version>
         <jaxb.api.version>3.0.0</jaxb.api.version>
         <soap.api.version>2.0.0</soap.api.version>
-        <jersey.version>3.0.0</jersey.version>
+        <jersey.version>3.0.1</jersey.version>
         <jms.version>3.0.0</jms.version>
         <json.version>2.0.0</json.version>
         <jpa.api.version>3.0.0</jpa.api.version>
         <mail.version>2.0.0</mail.version>
         <oracle.ddlparser.version>3.0.0</oracle.ddlparser.version>
-        <org.glassfish.corba.version>4.2.3</org.glassfish.corba.version>
+        <org.glassfish.corba.version>4.2.4</org.glassfish.corba.version>
         <resource.version>2.0.0</resource.version>
         <servlet.version>5.0.0</servlet.version>
         <transaction.version>2.0.0</transaction.version>
@@ -187,30 +187,30 @@
         <ws-rs.version>3.0.0</ws-rs.version>
 
         <!--Third-Party Dependencies version-->
-        <!-- CQ #21132 -->
-        <apache.felix.framework.version>6.0.3</apache.felix.framework.version>
+        <!-- CQ #23046 -->
+        <apache.felix.framework.version>7.0.0</apache.felix.framework.version>
         <!-- CQ #21133 -->
         <ant.version>1.10.9</ant.version>
-        <!-- CQ #22750 -->
-        <asm.version>9.0</asm.version>
+        <!-- CQ #23047 -->
+        <asm.version>9.1</asm.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.14.2.0</derby.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
         <exam.version>4.13.2</exam.version>
         <hamcrest.version>1.3</hamcrest.version>
-        <!-- CQ #3571 - TBD: Update for final release -->
-        <!-- need "jakarta" version -->
-        <hibernate.version>7.0.0.Alpha6</hibernate.version>
-        <!-- CQ #21122 -->
-        <jgroups.version>4.1.8.Final</jgroups.version>
-        <jmh.version>1.26</jmh.version>
+        <!-- CQ #23048 -->
+        <hibernate.version>7.0.1.Final</hibernate.version>
+        <checkstyle.version>8.40</checkstyle.version>
+        <!-- CQ #23049 -->
+        <jgroups.version>4.2.11.Final</jgroups.version>
+        <jmh.version>1.27</jmh.version>
         <jmockit.version>1.35</jmockit.version>
-        <junit.version>4.13.1</junit.version>
+        <junit.version>4.13.2</junit.version>
         <!-- CQ #21138 -->
         <mongodb.version>3.12.7</mongodb.version>
         <mysql.version>5.1.49</mysql.version>
-        <mssql.version>7.4.1.jre8</mssql.version>
-        <pgsql.version>42.2.11</pgsql.version>
+        <mssql.version>9.2.0.jre8</mssql.version>
+        <pgsql.version>42.2.18</pgsql.version>
         <!-- CQ #21139, 21140 -->
         <logback.version>1.3.0-alpha5</logback.version>
         <oracle.jdbc.version>19.3.0.0</oracle.jdbc.version>
@@ -223,9 +223,10 @@
         <osgi.version>6.0.0</osgi.version>
         <!-- CQ #21143 -->
         <slf4j.version>2.0.0-alpha1</slf4j.version>
-        <!-- CQ #21123, 21124, 21125, 21126, 21127, 21128, 21144, 21145, 21146, 21146, 21147, 21149-->
-        <springframework.version>5.3.0</springframework.version>
-        <weld-se.version>4.0.0.CR1</weld-se.version>
+        <!-- CQ #23051, 23052, 23053, 53054, 53055 -->
+        <springframework.version>5.3.4</springframework.version>
+        <!-- CQ #23050 -->
+        <weld-se.version>4.0.0.Final</weld-se.version>
         <weblogic.version>12.2.1-3</weblogic.version>
         <wildfly.version>18.0.0.Final</wildfly.version>
         <wsdl4j.version>1.6.3</wsdl4j.version>
@@ -983,7 +984,7 @@
                 <plugin>
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>download-maven-plugin</artifactId>
-                    <version>1.6.0</version>
+                    <version>1.6.1</version>
                 </plugin>
                 <plugin>
                     <groupId>com.google.code.maven-replacer-plugin</groupId>
@@ -1093,7 +1094,7 @@
                 <plugin>
                     <groupId>org.bsc.maven</groupId>
                     <artifactId>maven-processor-plugin</artifactId>
-                    <version>3.3.3</version>
+                    <version>4.5-jdk8</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.cargo</groupId>
@@ -1154,7 +1155,7 @@
                 <plugin>
                     <groupId>org.reficio</groupId>
                     <artifactId>p2-maven-plugin</artifactId>
-                    <version>1.3.0</version>
+                    <version>1.5.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.carlspring.maven</groupId>
@@ -1181,7 +1182,14 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.1.2</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>${checkstyle.version}</version>
+                        </dependency>
+                    </dependencies>
                     <configuration>
                         <checkstyleRules>
                             <module name="Checker">
