@@ -162,7 +162,7 @@
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
         <!--Eclipse Dependencies version-->
-        <activation.version>2.0.1</activation.version>
+        <activation.version>2.0.0</activation.version>
         <annotation.version>2.0.0</annotation.version>
         <cdi.version>3.0.0</cdi.version>
         <ejb.version>4.0.0</ejb.version>
