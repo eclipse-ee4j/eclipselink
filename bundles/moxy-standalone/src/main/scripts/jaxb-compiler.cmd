@@ -1,5 +1,5 @@
 @REM
-@REM Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+@REM Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
 @REM
 @REM This program and the accompanying materials are made available under the
 @REM terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,7 +15,7 @@
 call "%~dp0setenv.cmd"
 
 @REM User may increase Java memory setting(s) if desired:
-set JVM_ARGS=-Xmx256m
+set JVM_ARGS=-Xmx256m -Djakarta.xml.bind.JAXBContextFactory=org.eclipse.persistence.jaxb.JAXBContextFactory
 
 @REM If going through a proxy, set the proxy host and proxy port below, then uncomment the line
 @REM set JVM_ARGS=%JVM_ARGS% -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort=
