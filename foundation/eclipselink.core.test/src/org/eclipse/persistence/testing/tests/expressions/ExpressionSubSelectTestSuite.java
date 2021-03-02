@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -873,15 +873,12 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         query.addItem("e", builder);
         Expression alias = builder.getAlias(builder.subQuery(subQuery));
         query.addNonFetchJoin(alias);
-        query.setSelectionCriteria(builder.get("id").equal(alias.get("id")).and(builder.get("id").notEqual(alias.get("id2"))));
+        query.setSelectionCriteria(builder.get("id").equal(alias.get("id")).and(builder.get("id").notEqual(alias.get("id2"))).and(builder.get("id").equal("0")));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
         test.setQuery(query);
         test.setName("SubSelectFromClauseTest2");
         test.setDescription("Test subselects in the from clause");
-        //bug 535088: this test fails randomly on public infra
-        //TODO: investigate why; hardly reproducible locally
-        test.addUnsupportedPlatform(MySQLPlatform.class);
         addTest(test);
     }
 
