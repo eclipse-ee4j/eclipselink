@@ -865,9 +865,6 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         test.setQuery(query);
         test.setName("SubSelectFromClauseTest2");
         test.setDescription("Test subselects in the from clause");
-        //bug 535088: this test fails randomly on public infra
-        //TODO: investigate why; hardly reproducible locally
-        test.addUnsupportedPlatform(MySQLPlatform.class);
         addTest(test);
     }
 
