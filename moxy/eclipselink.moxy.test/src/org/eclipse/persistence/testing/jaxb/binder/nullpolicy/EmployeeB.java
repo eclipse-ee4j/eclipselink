@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,8 @@ public class EmployeeB {
 
     private String address;
 
+    private Gender gender;
+
     @XmlElement(name="name")
     @XmlNullPolicy(nullRepresentationForXml = XmlMarshalNullRepresentation.XSI_NIL, xsiNilRepresentsNull=true)
     public String getName() {
@@ -52,5 +54,15 @@ public class EmployeeB {
 
     public void setAddress(String addr) {
         this.address = addr;
+    }
+
+    @XmlElement(name="gender")
+    @XmlNullPolicy(nullRepresentationForXml = XmlMarshalNullRepresentation.XSI_NIL, xsiNilRepresentsNull=true)
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }
