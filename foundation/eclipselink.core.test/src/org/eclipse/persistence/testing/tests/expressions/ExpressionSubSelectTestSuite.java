@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -859,7 +859,7 @@ public class ExpressionSubSelectTestSuite extends TestSuite {
         query.addItem("e", builder);
         Expression alias = builder.getAlias(builder.subQuery(subQuery));
         query.addNonFetchJoin(alias);
-        query.setSelectionCriteria(builder.get("id").equal(alias.get("id")).and(builder.get("id").notEqual(alias.get("id2"))));
+        query.setSelectionCriteria(builder.get("id").equal(alias.get("id")).and(builder.get("id").notEqual(alias.get("id2"))).and(builder.get("id").equal("0")));
 
         ReadAllExpressionTest test = new ReadAllExpressionTest(Employee.class, 0);
         test.setQuery(query);
