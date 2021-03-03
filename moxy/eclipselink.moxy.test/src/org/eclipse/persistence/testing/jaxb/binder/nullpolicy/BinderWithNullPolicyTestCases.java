@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -40,7 +40,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
     }
 
     public void testAbsentNode() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address><gender>MALE</gender></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/absentnode.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
@@ -51,7 +51,8 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         EmployeeA emp = (EmployeeA)binder.unmarshal(parser.parse(new StringReader(xml)));
         
         emp.setName(null);
-        
+        emp.setGender(null);
+
         binder.updateXML(emp);
         
         JAXBXMLComparer comparer = new JAXBXMLComparer();
@@ -59,7 +60,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
     }
     
     public void testXsiNilNullMarshal() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address><gender>MALE</gender></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/xsinil.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
@@ -70,7 +71,8 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         EmployeeB emp = (EmployeeB)binder.unmarshal(parser.parse(new StringReader(xml)));
         
         emp.setName(null);
-        
+        emp.setGender(null);
+
         binder.updateXML(emp);
         
         JAXBXMLComparer comparer = new JAXBXMLComparer();
@@ -78,7 +80,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
     }
     
     public void testXsiNilUnmarshalMarshalValue() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name xmlns:xsi=\"" + javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI + "\" xsi:nil=\"true\">Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name xmlns:xsi=\"" + javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI + "\" xsi:nil=\"true\">Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address><gender xmlns:xsi=\"" + javax.xml.XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI + "\" xsi:nil=\"true\">MALE</gender></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/nilwithvalue.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
@@ -89,7 +91,8 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         EmployeeB emp = (EmployeeB)binder.unmarshal(parser.parse(new StringReader(xml)));
         
         emp.setName("Matt");
-        
+        emp.setGender(Gender.MALE);
+
         binder.updateXML(emp);
         
         JAXBXMLComparer comparer = new JAXBXMLComparer();
@@ -97,7 +100,7 @@ public class BinderWithNullPolicyTestCases extends TestCase{
     }
     
     public void testEmptyNode() throws Exception {
-        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address></employee>";
+        String xml = "<employee><!-- Comment 1 --><name>Matt</name><age>32</age><!-- Comment 2 --><address>Kanata</address><gender>MALE</gender></employee>";
         String controlSource = "org/eclipse/persistence/testing/jaxb/binder/nullpolicy/emptynode.xml";
         Document controlDocument = parser.parse(Thread.currentThread().getContextClassLoader().getResource(controlSource));
 
@@ -108,7 +111,8 @@ public class BinderWithNullPolicyTestCases extends TestCase{
         EmployeeC emp = (EmployeeC)binder.unmarshal(parser.parse(new StringReader(xml)));
         
         emp.setName(null);
-        
+        emp.setGender(null);
+
         binder.updateXML(emp);
         
         JAXBXMLComparer comparer = new JAXBXMLComparer();
