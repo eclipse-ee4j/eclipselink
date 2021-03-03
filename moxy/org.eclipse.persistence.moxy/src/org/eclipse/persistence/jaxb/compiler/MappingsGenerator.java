@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -1804,6 +1804,13 @@ public class MappingsGenerator {
     	initializeXMLMapping((XMLMapping)mapping, property);
         mapping.setNullValueMarshalled(true);
         mapping.setConverter(buildJAXBEnumTypeConverter(mapping, enumInfo));
+        // handle null policy set via xml metadata
+        if (property.isSetNullPolicy()) {
+            mapping.setNullPolicy(getNullPolicyFromProperty(property, getNamespaceResolverForDescriptor(namespaceInfo)));
+        } else if (property.isNillable()) {
+            mapping.getNullPolicy().setNullRepresentedByXsiNil(true);
+            mapping.getNullPolicy().setMarshalNullRepresentation(XMLNullRepresentationType.XSI_NIL);
+        }
         mapping.setField(getXPathForField(property, namespaceInfo, true, false));
         if (!mapping.getXPath().equals("text()")) {
             ((NullPolicy) mapping.getNullPolicy()).setSetPerformedForAbsentNode(false);
