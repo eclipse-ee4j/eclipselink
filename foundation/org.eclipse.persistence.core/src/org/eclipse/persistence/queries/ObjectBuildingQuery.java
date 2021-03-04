@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -609,7 +609,11 @@ public abstract class ObjectBuildingQuery extends ReadQuery {
      * with an object the acquires deferred locks behaves the same as its owner
      */
     public void setRequiresDeferredLocks(boolean cascadeDeferredLocks) {
-        this.requiresDeferredLocks = Boolean.valueOf(cascadeDeferredLocks);
+        if (session != null && session.getProject().isQueryCacheForceDeferredLocks()) {
+            this.requiresDeferredLocks = true;
+        } else {
+            this.requiresDeferredLocks = Boolean.valueOf(cascadeDeferredLocks);
+        }
     }
 
     /**
