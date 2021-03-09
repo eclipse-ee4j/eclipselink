@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2018, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Root;
 
 import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
+import org.eclipse.persistence.jpa.test.criteria.model.CriteriaCar;
+import org.eclipse.persistence.jpa.test.criteria.model.CriteriaCar_;
 import org.eclipse.persistence.jpa.test.criteria.model.L1;
 import org.eclipse.persistence.jpa.test.criteria.model.L1Model;
 import org.eclipse.persistence.jpa.test.criteria.model.L1_;
@@ -45,7 +47,7 @@ import org.junit.runner.RunWith;
 @RunWith(EmfRunner.class)
 public class TestCriteriaBuilder {
 
-    @Emf(createTables = DDLGen.DROP_CREATE, classes = { L1.class, L2.class })
+    @Emf(createTables = DDLGen.DROP_CREATE, classes = { L1.class, L2.class, CriteriaCar.class })
     private EntityManagerFactory emf;
 
     /**
@@ -149,6 +151,36 @@ public class TestCriteriaBuilder {
             q.setParameter("parameterList", parameterList);
 
             q.getResultList();
+        } finally {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            if(em.isOpen()) {
+                em.close();
+            }
+        }
+    }
+
+    @Test
+    public void testCriteriaBuilder_ParameterInSelectClause() throws Exception {
+        EntityManager em = emf.createEntityManager();
+        try {
+            // First test JPQL
+            TypedQuery<Object[]> query = em.createQuery("SELECT c.id, ?1 FROM CriteriaCar c WHERE c.id = ?2", Object[].class);
+            query.setParameter(1, "TEST");
+            query.setParameter(2, "ID1");
+            query.getResultList();
+
+            final CriteriaBuilder criteriabuilder = em.getCriteriaBuilder();
+            final CriteriaQuery<Object[]> criteriaquery = criteriabuilder.createQuery(Object[].class);
+            Root<CriteriaCar> root = criteriaquery.from(CriteriaCar.class);
+            criteriaquery.multiselect(root.get(CriteriaCar_.id), criteriabuilder.parameter(String.class, "stringValue"));
+            criteriaquery.where(criteriabuilder.equal(root.get(CriteriaCar_.id), criteriabuilder.parameter(String.class, "idValue")));
+
+            query = em.createQuery(criteriaquery);
+            query.setParameter("stringValue", "TEST");
+            query.setParameter("idValue", "ID1");
+            query.getResultList();
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
