@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2017 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -24,7 +24,6 @@ import javax.persistence.criteria.AbstractQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
 import javax.persistence.metamodel.EntityType;
 import javax.persistence.metamodel.Metamodel;
 
@@ -225,14 +224,6 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
 
     protected void findJoins(FromImpl root) {
         root.findJoins((AbstractQueryImpl)this);
-    }
-
-    protected void findRootAndParameters(Selection<?> selection) {
-        if (selection.isCompoundSelection()) {
-            for (Selection subSelection : selection.getCompoundSelectionItems()) {
-                findRootAndParameters(subSelection);
-            }
-        }
     }
 
     /**
