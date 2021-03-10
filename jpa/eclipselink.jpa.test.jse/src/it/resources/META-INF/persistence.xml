@@ -71,6 +71,7 @@
                <property name="eclipselink.concurrency.manager.maxsleeptime" value="2"/>
                <property name="eclipselink.concurrency.manager.maxfrequencytodumptinymessage" value="3"/>
                <property name="eclipselink.concurrency.manager.maxfrequencytodumpmassivemessage" value="4"/>
+               <property name="eclipselink.concurrency.manager.build.object.complete.waittime" value="5"/>
                <property name="eclipselink.concurrency.manager.allow.readlockstacktrace" value="true"/>
                <property name="eclipselink.concurrency.manager.allow.concurrencyexception" value="true"/>
                <property name="eclipselink.concurrency.manager.allow.interruptedexception" value="true"/>

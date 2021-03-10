@@ -2912,6 +2912,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateTenancy(m, loader);
             // ConcurrencyManager properties
             updateConcurrencyManagerWaitTime(m);
+            updateConcurrencyManagerBuildObjectCompleteWaitTime(m);
             updateConcurrencyManagerMaxAllowedSleepTime(m);
             updateConcurrencyManagerMaxAllowedFrequencyToProduceTinyDumpLogMessage(m);
             updateConcurrencyManagerMaxAllowedFrequencyToProduceMassiveDumpLogMessage(m);
@@ -3758,6 +3759,17 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(acquireWaitTime, PersistenceUnitProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerBuildObjectCompleteWaitTime(Map persistenceProperties) {
+        String buildObjectCompleteWaitTime = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME, persistenceProperties, session);
+        try {
+            if (buildObjectCompleteWaitTime != null) {
+                ConcurrencyUtil.SINGLETON.setBuildObjectCompleteWaitTime(Long.parseLong(buildObjectCompleteWaitTime));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(buildObjectCompleteWaitTime, PersistenceUnitProperties.CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME, exception));
         }
     }
 
