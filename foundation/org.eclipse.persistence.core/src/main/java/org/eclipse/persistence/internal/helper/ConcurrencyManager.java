@@ -15,6 +15,7 @@
 package org.eclipse.persistence.internal.helper;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.security.AccessController;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -771,12 +772,14 @@ public class ConcurrencyManager implements Serializable {
         //When this method is invoked during an acquire lock sometimes there is no lock manager
         if (lockManager == null) {
             String cacheKeyToString = ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(this);
-            AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE,"concurrency_manager_release_locks_acquired_by_thread_1", currentThread.getName(), cacheKeyToString);
+            StringWriter writer = new StringWriter();
+            writer.write(TraceLocalization.buildMessage("concurrency_manager_release_locks_acquired_by_thread_1", new Object[] {currentThread.getName(), cacheKeyToString}));
+            AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
             return;
         }
-
-        //Release the active locks on the thread
-        AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE,"concurrency_manager_release_locks_acquired_by_thread_2", currentThread.toString());
+        StringWriter writer = new StringWriter();
+        writer.write(TraceLocalization.buildMessage("concurrency_manager_release_locks_acquired_by_thread_2", new Object[] {currentThread.toString()}));
+        AbstractSessionLog.getLog().log(SessionLog.SEVERE, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
         lockManager.releaseActiveLocksOnThread();
         removeDeferredLockManager(currentThread);
     }
