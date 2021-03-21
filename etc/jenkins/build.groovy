@@ -61,11 +61,11 @@ spec:
   - name: jnlp
     resources:
       limits:
-        memory: "1Gi"
-        cpu: "1"
+        memory: "2Gi"
+        cpu: "2"
       requests:
-        memory: "1Gi"
-        cpu: "500m"
+        memory: "2Gi"
+        cpu: "1"
   - name: el-build
     resources:
       limits:
