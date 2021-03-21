@@ -69,10 +69,10 @@ spec:
   - name: el-build
     resources:
       limits:
-        memory: "8Gi"
+        memory: "10Gi"
         cpu: "6"
       requests:
-        memory: "8Gi"
+        memory: "10Gi"
         cpu: "6"
         cpu: "5.5"
     image: tkraus/el-build:1.1.9
