@@ -69,12 +69,12 @@ spec:
   - name: el-build
     resources:
       limits:
-        memory: "6Gi"
-        cpu: "4"
+        memory: "8Gi"
+        cpu: "6"
       requests:
-        memory: "6Gi"
-        cpu: "4"
-        cpu: "3.5"
+        memory: "8Gi"
+        cpu: "6"
+        cpu: "5.5"
     image: tkraus/el-build:1.1.9
     volumeMounts:
     - name: tools
