@@ -61,18 +61,18 @@ spec:
   - name: jnlp
     resources:
       limits:
-        memory: "2Gi"
+        memory: "4Gi"
         cpu: "2"
       requests:
-        memory: "2Gi"
+        memory: "4Gi"
         cpu: "1"
   - name: el-build
     resources:
       limits:
-        memory: "10Gi"
+        memory: "12Gi"
         cpu: "6"
       requests:
-        memory: "10Gi"
+        memory: "12Gi"
         cpu: "6"
         cpu: "5.5"
     image: tkraus/el-build:1.1.9
