@@ -41,5 +41,21 @@ the terms of [Eclipse Contributor Agreement](http://www.eclipse.org/legal/ECA.ph
 ## Links
 
 * [Home page](http://eclipse.org/eclipselink)
+* [Documentation](https://www.eclipse.org/eclipselink/documentation/) 
 * [Javadoc](https://javadoc.io/doc/org.eclipse.persistence/eclipselink/latest/index.html)
 * [Mailing list](https://accounts.eclipse.org/mailing-list/eclipselink-users)
+* [Wiki](https://wiki.eclipse.org/EclipseLink)  
+* [Examples](https://wiki.eclipse.org/EclipseLink/Examples)
+* [Nightly builds](https://www.eclipse.org/eclipselink/downloads/nightly.php)
+* [Maven staging repository](https://jakarta.oss.sonatype.org/content/groups/staging/org/eclipse/persistence/)
+* [Maven snapshots repository](https://jakarta.oss.sonatype.org/content/repositories/snapshots/org/eclipse/persistence/), another output from the nightly builds
+
+
+## Issue/bug trackers
+
+* [GitHub Issues](https://github.com/eclipse-ee4j/eclipselink/issues), this is preferred bug tracker
+* [Eclipse.org Bugzilla](https://bugs.eclipse.org/bugs/buglist.cgi?product=EclipseLink)
+
+Hint: If it's possible, it helps if some test reproducer is attached to the new bug.
+If it's not possible, attached entities and persistence.xml file should help too for JPA related bugs.
+For MOXy, entities and XML or JSON resources/files are welcome.
