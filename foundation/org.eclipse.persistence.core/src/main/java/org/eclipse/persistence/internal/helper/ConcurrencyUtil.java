@@ -50,6 +50,12 @@ public class ConcurrencyUtil {
     private static final boolean DEFAULT_INTERRUPTED_EXCEPTION_FIRED = true;
     private static final boolean DEFAULT_CONCURRENCY_EXCEPTION_FIRED = true;
     private static final boolean DEFAULT_TAKING_STACKTRACE_DURING_READ_LOCK_ACQUISITION = false;
+    public static final boolean DEFAULT_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING_CONCURRENCY = false;
+    public static final boolean DEFAULT_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS = false;
+    public static final int DEFAULT_CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS = 10;
+    public static final int DEFAULT_CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS = 2;
+    public static final long DEFAULT_CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT = 2000L;
+    public static final long DEFAULT_CONCURRENCY_SEMAPHORE_LOG_TIMEOUT = 10000L;
 
     private long acquireWaitTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, DEFAULT_ACQUIRE_WAIT_TIME);
     private long buildObjectCompleteWaitTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME, DEFAULT_BUILD_OBJECT_COMPLETE_WAIT_TIME);
@@ -59,6 +65,13 @@ public class ConcurrencyUtil {
     private boolean allowInterruptedExceptionFired = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_INTERRUPTED_EXCEPTION, DEFAULT_INTERRUPTED_EXCEPTION_FIRED);
     private boolean allowConcurrencyExceptionToBeFiredUp = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_CONCURRENCY_EXCEPTION, DEFAULT_CONCURRENCY_EXCEPTION_FIRED);
     private boolean allowTakingStackTraceDuringReadLockAcquisition = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK, DEFAULT_TAKING_STACKTRACE_DURING_READ_LOCK_ACQUISITION);
+
+    private boolean useSemaphoreInObjectBuilder  = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING, DEFAULT_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING_CONCURRENCY);
+    private boolean useSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks  = getBooleanProperty(SystemProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS, DEFAULT_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS);
+    private int noOfThreadsAllowedToObjectBuildInParallel = getIntProperty(SystemProperties.CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS, DEFAULT_CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS);
+    private int noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel = getIntProperty(SystemProperties.CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS, DEFAULT_CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS);
+    private long concurrencySemaphoreMaxTimePermit = getLongProperty(SystemProperties.CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT, DEFAULT_CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT);
+    private long concurrencySemaphoreLogTimeout = getLongProperty(SystemProperties.CONCURRENCY_SEMAPHORE_LOG_TIMEOUT, DEFAULT_CONCURRENCY_SEMAPHORE_LOG_TIMEOUT);
 
     /**
      * Thread local variable that allows the current thread to know when was the last time that this specific thread
@@ -282,6 +295,54 @@ public class ConcurrencyUtil {
 
     public void setAllowTakingStackTraceDuringReadLockAcquisition(boolean allowTakingStackTraceDuringReadLockAcquisition) {
         this.allowTakingStackTraceDuringReadLockAcquisition = allowTakingStackTraceDuringReadLockAcquisition;
+    }
+
+    public boolean isUseSemaphoreInObjectBuilder() {
+        return useSemaphoreInObjectBuilder;
+    }
+
+    public void setUseSemaphoreInObjectBuilder(boolean useSemaphoreInObjectBuilder) {
+        this.useSemaphoreInObjectBuilder = useSemaphoreInObjectBuilder;
+    }
+
+    public boolean isUseSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks() {
+        return useSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks;
+    }
+
+    public void setUseSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks(boolean useSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks) {
+        this.useSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks = useSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks;
+    }
+
+    public int getNoOfThreadsAllowedToObjectBuildInParallel() {
+        return noOfThreadsAllowedToObjectBuildInParallel;
+    }
+
+    public void setNoOfThreadsAllowedToObjectBuildInParallel(int noOfThreadsAllowedToObjectBuildInParallel) {
+        this.noOfThreadsAllowedToObjectBuildInParallel = noOfThreadsAllowedToObjectBuildInParallel;
+    }
+
+    public int getNoOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel() {
+        return noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel;
+    }
+
+    public void setNoOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel(int noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel) {
+        this.noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel = noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel;
+    }
+
+    public long getConcurrencySemaphoreMaxTimePermit() {
+        return concurrencySemaphoreMaxTimePermit;
+    }
+
+    public void setConcurrencySemaphoreMaxTimePermit(long concurrencySemaphoreMaxTimePermit) {
+        this.concurrencySemaphoreMaxTimePermit = concurrencySemaphoreMaxTimePermit;
+    }
+
+    public long getConcurrencySemaphoreLogTimeout() {
+        return concurrencySemaphoreLogTimeout;
+    }
+
+    public void setConcurrencySemaphoreLogTimeout(long concurrencySemaphoreLogTimeout) {
+        this.concurrencySemaphoreLogTimeout = concurrencySemaphoreLogTimeout;
     }
 
     /**
@@ -1592,6 +1653,20 @@ public class ConcurrencyUtil {
         // data in ReadLockAcquisitionMetadata are immutable it reflects an accurate snapshot of the time of acquisition
         return new ReadLockAcquisitionMetadata(concurrencyManager, numberOfReadersOnCacheKeyBeforeIncrementingByOne,
                 currentThreadStackTraceInformation, currentThreadStackTraceInformationCpuTimeCostMs);
+    }
+
+    private int getIntProperty(final String key, final int defaultValue) {
+        String value = (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) ?
+                AccessController.doPrivileged(new PrivilegedGetSystemProperty(key, String.valueOf(defaultValue)))
+                : System.getProperty(key, String.valueOf(defaultValue));
+        if (value != null) {
+            try {
+                return Integer.parseInt(value.trim());
+            } catch (Exception ignoreE) {
+                return defaultValue;
+            }
+        }
+        return defaultValue;
     }
 
     private long getLongProperty(final String key, final long defaultValue) {
