@@ -106,8 +106,8 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "acquiring_deferred_lock", "Thread \"{1}\" has acquired a deferred lock on object : {0} in order to avoid deadlock." },
         { "dead_lock_encountered_on_write", "Thread \"{1}\" encountered deadlock when attempting to lock : {0}.  Entering deadlock avoidance algorithm." },
         { "dead_lock_encountered_on_write_no_cache_key", "Thread \"{2}\" encountered deadlock when attempting to lock object of class: {0} with PK {1}.  Entering deadlock avoidance algorithm." },
-        { "concurrency_manager_release_locks_acquired_by_thread_1", "releaseAllLocksAcquiredByThread: Thread \"{1}\"  .The Lock manager is null. This might be an acquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). Cache Key:  \"{2}\"" },
-        { "concurrency_manager_release_locks_acquired_by_thread_2", "releaseAllLocksAcquiredByThread: Release active locks on Thread \"{1}\"" },
+        { "concurrency_manager_release_locks_acquired_by_thread_1", "releaseAllLocksAcquiredByThread: Thread \"{0}\"  .The Lock manager is null. This might be an acquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). Cache Key:  \"{1}\"" },
+        { "concurrency_manager_release_locks_acquired_by_thread_2", "releaseAllLocksAcquiredByThread: Release active locks on Thread \"{0}\"" },
         { "concurrency_manager_build_object_thread_complete_1", "isBuildObjectComplete ExpandedThread NR  {0}: {1} \n" },
         { "concurrency_manager_build_object_thread_complete_2", "\nAll threads in this stack are doing object building and needed to defer on one or more cache keys.\n"
                 + "The last thread has deferred lock on ac cache key that is acquired by thread that is not yet finished with its work. \n\n"},
