@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2017, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -108,6 +108,16 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "dead_lock_encountered_on_write_no_cache_key", "Thread \"{2}\" encountered deadlock when attempting to lock object of class: {0} with PK {1}.  Entering deadlock avoidance algorithm." },
         { "concurrency_manager_release_locks_acquired_by_thread_1", "releaseAllLocksAcquiredByThread: Thread \"{1}\"  .The Lock manager is null. This might be an acquire operation. So not possible to lockManager.releaseActiveLocksOnThread(). Cache Key:  \"{2}\"" },
         { "concurrency_manager_release_locks_acquired_by_thread_2", "releaseAllLocksAcquiredByThread: Release active locks on Thread \"{1}\"" },
+        { "concurrency_manager_build_object_thread_complete_1", "isBuildObjectComplete ExpandedThread NR  {0}: {1} \n" },
+        { "concurrency_manager_build_object_thread_complete_2", "\nAll threads in this stack are doing object building and needed to defer on one or more cache keys.\n"
+                + "The last thread has deferred lock on ac cache key that is acquired by thread that is not yet finished with its work. \n\n"},
+        { "concurrency_manager_build_object_thread_complete_3", "finalDeferredLockCausingTrouble:  {0} \n"
+                + " This cache key had to be deferred by the last thread on the recursive stack. The thread was ACQUIRED. \n"},
+        { "concurrency_manager_build_object_thread_complete_4", "activeThreadOnTheCacheKey: {0}  \n"
+                + " hasDeferredLockManager: {1} \n "
+                + " This is the thread that has acquired the cache key and has been considered to not yet be finished with its business. \n"
+                + " When hasDeferredLockManager is true it typically means this thread is doing object building. \n"
+                + " When hasDeferredLockManager is false it might an object building thread or it could be a thread doing a commit and acquiring final locks to merge its objects with changesets look at the stack trace to understand. \n"},
         { "concurrency_manager_allow_concurrency_exception_fired_up", "allowConcurrencyExceptionToBeFiredUp: is set to FALSE."
                 + " No any exception be fired to avoid the risk of aborting the current thread not being sufficient to resolve any dead lock."
                 + " and leaving the system in a worth shape where aver 3 retries the business transaction is not re-attempted and the recovery of the system becomes complicated. "
@@ -122,11 +132,13 @@ public class TraceLocalizationResource extends ListResourceBundle {
                 + " (concurrencyManagerId: {8}) (concurrencyManagerCreationDate: {9})"
                 + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {10}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReading:  {11}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {12})  ---"},
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {12})  "
+                + "(depth: {13}) ---"},
         { "concurrency_util_owned_cache_key_is_not_cache_key", "--- ConcurrencyManager: (ConcurrencyManagerClass: {0} ) (ConcurrencyManagerToString: {1}) (current cache key owner/activeThread: {2}) (concurrencyManagerId: {3}) (concurrencyManagerCreationDate: {4}) "
                 + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {5}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReading:  {6}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {7})  ---"},
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {7}) "
+                + "(depth: {8}) ---"},
         { "concurrency_util_header_current_cache_key", "Summary current cache key of thread {0} "},
         { "concurrency_util_header_active_locks_owned_by_thread", "Summary of active locks owned by thread {0} "},
         { "concurrency_util_header_deferred_locks_owned_by_thread", "Summary of deferred locks (could not be acquired and cause thread to wait for object building to complete) of thread {0} "},
@@ -169,11 +181,14 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "concurrency_util_create_information_all_threads_acquire_cache_keys_1", "Concurrency manager - Page 02 start - information about threads waiting to acquire (write/deferred) cache keys "
                 + "\nTotal number of threads waiting to acquire lock: {0}\n\n"},
         { "concurrency_util_create_information_all_threads_acquire_cache_keys_2", "[currentThreadNumber: {0}] [ThreadName: {1}]: Waiting to acquire (write/deferred): {2}\n"},
-        { "concurrency_util_create_information_all_threads_acquire_cache_keys_3", "Concurrency manager - Page 02 end - information about threads waiting to acquire (write/deferred) cache keys\n"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_3", "It seems, that trace was produced by the THREADS_TO_FAIL_TO_ACQUIRE_CACHE_KEYS - - org.eclipse.persistence.internal.helper.WriteLockManager.acquireRequiredLocks(MergeManager, UnitOfWorkChangeSet)"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_4", "[methodNameThatGotStuckWaitingToAcquire: {0}] \n"},
+        { "concurrency_util_create_information_all_threads_acquire_cache_keys_5", "Concurrency manager - Page 02 end - information about threads waiting to acquire (write/deferred) cache keys\n"},
         { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_1", "Concurrency manager - Page 03 start - information about threads waiting to acquire read cache keys "
                 + "\nTotal number of threads waiting to acquire read locks: {0} \n\n"},
         { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_2", "[currentThreadNumber: {0}] [ThreadName: {1} ]: Waiting to acquire (read lock): {2}\n"},
-        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_3", "Concurrency manager - Page 03 end - information about threads waiting to acquire read cache keys\n"},
+        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_3", "[methodNameThatGotStuckWaitingToAcquire: {0}]  \n"},
+        { "concurrency_util_create_information_all_threads_acquire_read_cache_keys_4", "Concurrency manager - Page 03 end - information about threads waiting to acquire read cache keys\n"},
         { "concurrency_util_create_information_all_threads_release_deferred_locks_1", "Concurrency manager - Page 04 start - information about threads waiting on release deferred locks (waiting for other thread to finish building the objects deferred) "
                 + "\nTotal number of threads waiting to acquire lock: {0} \n\n"},
         { "concurrency_util_create_information_all_threads_release_deferred_locks_2", "[currentThreadNumber: {0}] [ThreadName: {1} ]\n"},
@@ -188,7 +203,9 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "concurrency_util_create_information_all_resources_acquired_deferred_6", " writeManagerThreadPrimaryKeysWithChangesToBeMerged: true"
                 + "\n writeManagerThreadPrimaryKeysWithChangesToBeMerged list: {0}\n"},
         { "concurrency_util_create_information_all_resources_acquired_deferred_7", " writeManagerThreadPrimaryKeysWithChangesToBeMerged: false\n"},
-        { "concurrency_util_create_information_all_resources_acquired_deferred_8", "Concurrency manager - Page 05 end (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread\n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_8", " waitingToReleaseDeferredLocksJustification: \n {0} \n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_9", " waitingToReleaseDeferredLocksJustification: information not available. \n"},
+        { "concurrency_util_create_information_all_resources_acquired_deferred_10", "Concurrency manager - Page 05 end (currentThreadNumber: {0} of totalNumberOfThreads: {1})  - detailed information about specific thread\n"},
         { "concurrency_util_read_lock_manager_problem01", "Remove cache key from read lock manager problem 01:"
                 + "\n The current thread: {0} is about to decrement the currentNumberOfReaders from: {1}  to decrementedNumberOfReaders {2} "
                 + "\n  on the cache key: {3}"

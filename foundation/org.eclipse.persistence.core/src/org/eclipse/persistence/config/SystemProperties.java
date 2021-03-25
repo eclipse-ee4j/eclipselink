@@ -108,6 +108,14 @@ public class SystemProperties {
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
+     * It control how much time ConcurrencyManager will wait before it will identify, that thread which builds new object/entity instance
+     * should be identified as a potential dead lock source. It leads into some additional log messages.
+     * Default value is 0 (unit is ms). In this case extended logging is not active. Allowed values are: long
+     */
+    public static final String CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME = "eclipselink.concurrency.manager.build.object.complete.waittime";
+
+    /**
+     * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
      * It control how long we are willing to wait before firing up an exception
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
