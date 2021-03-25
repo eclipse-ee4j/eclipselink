@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -122,6 +122,7 @@ public class CacheDeadLockDetectionTest {
         assertEquals(2L, ConcurrencyUtil.SINGLETON.getMaxAllowedSleepTime());
         assertEquals(3L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceTinyDumpLogMessage());
         assertEquals(4L, ConcurrencyUtil.SINGLETON.getMaxAllowedFrequencyToProduceMassiveDumpLogMessage());
+        assertEquals(5L, ConcurrencyUtil.SINGLETON.getBuildObjectCompleteWaitTime());
         assertTrue(ConcurrencyUtil.SINGLETON.isAllowTakingStackTraceDuringReadLockAcquisition());
         assertTrue(ConcurrencyUtil.SINGLETON.isAllowConcurrencyExceptionToBeFiredUp());
         assertTrue(ConcurrencyUtil.SINGLETON.isAllowInterruptedExceptionFired());

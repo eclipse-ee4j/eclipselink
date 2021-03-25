@@ -39,6 +39,7 @@ public class ConcurrencyUtil {
     public static final ConcurrencyUtil SINGLETON = new ConcurrencyUtil();
 
     private static final long DEFAULT_ACQUIRE_WAIT_TIME = 0L;
+    private static final long DEFAULT_BUILD_OBJECT_COMPLETE_WAIT_TIME = 0L;
     private static final long DEFAULT_MAX_ALLOWED_SLEEP_TIME_MS = 40000L;
     private static final long DEFAULT_MAX_ALLOWED_FREQUENCY_TINY_DUMP_LOG_MESSAGE = 40000L;
     private static final long DEFAULT_MAX_ALLOWED_FREQUENCY_MASSIVE_DUMP_LOG_MESSAGE = 60000L;
@@ -47,6 +48,7 @@ public class ConcurrencyUtil {
     private static final boolean DEFAULT_TAKING_STACKTRACE_DURING_READ_LOCK_ACQUISITION = false;
 
     private long acquireWaitTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_ACQUIRE_WAIT_TIME, DEFAULT_ACQUIRE_WAIT_TIME);
+    private long buildObjectCompleteWaitTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME, DEFAULT_BUILD_OBJECT_COMPLETE_WAIT_TIME);
     private long maxAllowedSleepTime = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_SLEEP_TIME, DEFAULT_MAX_ALLOWED_SLEEP_TIME_MS);
     private long maxAllowedFrequencyToProduceTinyDumpLogMessage = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_TINY_MESSAGE, DEFAULT_MAX_ALLOWED_FREQUENCY_TINY_DUMP_LOG_MESSAGE);
     private long maxAllowedFrequencyToProduceMassiveDumpLogMessage = getLongProperty(SystemProperties.CONCURRENCY_MANAGER_MAX_FREQUENCY_DUMP_MASSIVE_MESSAGE, DEFAULT_MAX_ALLOWED_FREQUENCY_MASSIVE_DUMP_LOG_MESSAGE);
@@ -194,6 +196,17 @@ public class ConcurrencyUtil {
     }
 
     /**
+     * @return "eclipselink.concurrency.manager.build.object.complete.waittime" persistence property value.
+     */
+    public long getBuildObjectCompleteWaitTime() {
+        return buildObjectCompleteWaitTime;
+    }
+
+    public void setBuildObjectCompleteWaitTime(long buildObjectCompleteWaitTime) {
+        this.buildObjectCompleteWaitTime = buildObjectCompleteWaitTime;
+    }
+
+    /**
      * @return property to control how long we are willing to wait before firing up an exception
      */
     public long getMaxAllowedSleepTime() {
@@ -291,15 +304,15 @@ public class ConcurrencyUtil {
                     // metadata of number of times the cache key suffered increases in number readers
                     cacheKey.getTotalNumberOfKeysAcquiredForReading(),
                     cacheKey.getTotalNumberOfKeysReleasedForReading(),
-                    cacheKey.getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero()});
-
+                    cacheKey.getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero(),
+                    concurrencyManager.getDepth()});
         } else {
             return LoggingLocalization.buildMessage("concurrency_util_owned_cache_key_is_not_cache_key", new Object[] {cacheKeyClass, concurrencyManager, activeThread,
                     concurrencyManagerId, ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class).toString(),
                     concurrencyManager.getTotalNumberOfKeysAcquiredForReading(),
                     concurrencyManager.getTotalNumberOfKeysReleasedForReading(), concurrencyManager
-                    .getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero()});
-
+                    .getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero(),
+                    concurrencyManager.getDepth()});
         }
     }
 
@@ -347,7 +360,7 @@ public class ConcurrencyUtil {
         return errorMessage.toString();
     }
 
-    private boolean tooMuchTimeHasElapsed(final long whileStartTimeMillis, final long maxAllowedSleepTimeMs) {
+    public boolean tooMuchTimeHasElapsed(final long whileStartTimeMillis, final long maxAllowedSleepTimeMs) {
         if (maxAllowedSleepTimeMs == 0L) {
             return false;
         }
@@ -356,7 +369,7 @@ public class ConcurrencyUtil {
     }
 
     /**
-     * Invoke the {@link #dumpConcurrencyManagerInformationStep01(Map, Map, Map, Map, Map, Set, Map)} if sufficient time has passed.
+     * Invoke the {@link #dumpConcurrencyManagerInformationStep01(Map, Map, Map, Map, Map, Map, Map, Set, Map, Map)} if sufficient time has passed.
      * This log message will potentially create a massive dump in the server log file. So we need to check when was the
      * last time that the masive dump was produced and decide if we can log again the state of the concurrency manager.
      *
@@ -391,14 +404,24 @@ public class ConcurrencyUtil {
         Map<Thread, DeferredLockManager> deferredLockManagers = ConcurrencyManager.getDeferredLockManagers();
         Map<Thread, ReadLockManager> readLockManagersOriginal = ConcurrencyManager.getReadLockManagers();
         Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireOriginal = ConcurrencyManager.getThreadsToWaitOnAcquire();
+        Map<Thread, String> mapThreadToWaitOnAcquireMethodNameOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireMethodName();
         Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireReadLock();
+        Map<Thread, String> mapThreadToWaitOnAcquireReadLockMethodNameOriginal = ConcurrencyManager.getThreadsToWaitOnAcquireReadLockMethodName();
         Map<Thread, Set<ConcurrencyManager>> mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal = WriteLockManager.getThreadToFailToAcquireCacheKeys();
         Set<Thread> setThreadWaitingToReleaseDeferredLocksOriginal = ConcurrencyManager.getThreadsWaitingToReleaseDeferredLocks();
+        Map<Thread, String> mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone = ConcurrencyManager.getThreadsWaitingToReleaseDeferredLocksJustification();
         Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesOriginal = WriteLockManager.getMapWriteLockManagerThreadToObjectIdsWithChangeSet();
-        dumpConcurrencyManagerInformationStep01(deferredLockManagers, readLockManagersOriginal,
-                mapThreadToWaitOnAcquireOriginal, mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal,
+        dumpConcurrencyManagerInformationStep01(
+                deferredLockManagers,
+                readLockManagersOriginal,
+                mapThreadToWaitOnAcquireOriginal,
+                mapThreadToWaitOnAcquireMethodNameOriginal,
+                mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal,
                 mapThreadToWaitOnAcquireReadLockOriginal,
-                setThreadWaitingToReleaseDeferredLocksOriginal, mapThreadToObjectIdWithWriteLockManagerChangesOriginal);
+                mapThreadToWaitOnAcquireReadLockMethodNameOriginal,
+                setThreadWaitingToReleaseDeferredLocksOriginal,
+                mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone,
+                mapThreadToObjectIdWithWriteLockManagerChangesOriginal);
     }
 
     /**
@@ -446,16 +469,25 @@ public class ConcurrencyUtil {
     protected void dumpConcurrencyManagerInformationStep01(Map<Thread, DeferredLockManager> deferredLockManagers,
                                                            Map<Thread, ReadLockManager> readLockManagersOriginal,
                                                            Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireOriginal,
+                                                           Map<Thread, String> mapThreadToWaitOnAcquireMethodNameOriginal,
                                                            Map<Thread, Set<ConcurrencyManager>> mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal,
                                                            Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockOriginal,
+                                                           Map<Thread, String> mapThreadToWaitOnAcquireReadLockMethodNameOriginal,
                                                            Set<Thread> setThreadWaitingToReleaseDeferredLocksOriginal,
+                                                           Map<Thread, String> mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone,
                                                            Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesOriginal) {
-
         // (a) create object to represent our cache state.
         ConcurrencyManagerState concurrencyManagerState = createConcurrencyManagerState(
-                deferredLockManagers, readLockManagersOriginal, mapThreadToWaitOnAcquireOriginal,
-                mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal, mapThreadToWaitOnAcquireReadLockOriginal,
-                setThreadWaitingToReleaseDeferredLocksOriginal, mapThreadToObjectIdWithWriteLockManagerChangesOriginal);
+                deferredLockManagers,
+                readLockManagersOriginal,
+                mapThreadToWaitOnAcquireOriginal,
+                mapThreadToWaitOnAcquireMethodNameOriginal,
+                mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal,
+                mapThreadToWaitOnAcquireReadLockOriginal,
+                mapThreadToWaitOnAcquireReadLockMethodNameOriginal,
+                setThreadWaitingToReleaseDeferredLocksOriginal,
+                mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone,
+                mapThreadToObjectIdWithWriteLockManagerChangesOriginal);
         dumpConcurrencyManagerInformationStep02(concurrencyManagerState);
     }
 
@@ -475,10 +507,12 @@ public class ConcurrencyUtil {
         writer.write(createInformationThreadDump());
         // (b) log information about the threads that are waiting to acquire WRITE/DEFERRED locks
         // PAGE 02 of logging information
-        writer.write(createInformationAboutAllThreadsWaitingToAcquireCacheKeys(concurrencyManagerState.getUnifiedMapOfThreadsStuckTryingToAcquireWriteLock()));
+        writer.write(createInformationAboutAllThreadsWaitingToAcquireReadCacheKeys(concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockClone(),
+                concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockCloneMethodName()));
         // (c) log information about the threads that are waiting to acquire READ locks
         // PAGE 03 of logging information
-        writer.write(createInformationAboutAllThreadsWaitingToAcquireReadCacheKeys(concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockClone()));
+        writer.write(createInformationAboutAllThreadsWaitingToAcquireReadCacheKeys(concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockClone(),
+                concurrencyManagerState.getMapThreadToWaitOnAcquireReadLockCloneMethodName()));
         // (c) An interesting summary of information as well is to tell the user about the threads
         // that have finished their part of object building and now would like for othe threads to finish the object
         // building of locks they had to defer
@@ -580,9 +614,12 @@ public class ConcurrencyUtil {
             Map<Thread, DeferredLockManager> deferredLockManagers,
             Map<Thread, ReadLockManager> readLockManagersOriginal,
             Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireOriginal,
+            Map<Thread, String> mapThreadToWaitOnAcquireMethodNameOriginal,
             Map<Thread, Set<ConcurrencyManager>> mapThreadToWaitOnAcquireInsideWriteLockManagerOriginal,
             Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockOriginal,
+            Map<Thread, String> mapThreadToWaitOnAcquireReadLockMethodNameOriginal,
             Set<Thread> setThreadWaitingToReleaseDeferredLocksOriginal,
+            Map<Thread, String> mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone,
             Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesOriginal) {
         // (a) As a first step we want to clone-copy the two maps
         // once we start working with the maps and using them to do dead lock detection
@@ -596,6 +633,8 @@ public class ConcurrencyUtil {
         // both the one we track in the hash map of the concurrency manager
         // as well as the ones we need to track inside of the write lock manager
         Map<Thread, Set<ConcurrencyManager>> unifiedMapOfThreadsStuckTryingToAcquireWriteLock = null;
+        // additional method data about the method that created the trace
+        Map<Thread, String> mapThreadToWaitOnAcquireMethodNameClone = cloneMapThreadToMethodName(mapThreadToWaitOnAcquireMethodNameOriginal);
         {
             // information from the concurrency manager state
             Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireClone = cloneMapThreadToWaitOnAcquire(mapThreadToWaitOnAcquireOriginal);
@@ -608,6 +647,7 @@ public class ConcurrencyUtil {
             unifiedMapOfThreadsStuckTryingToAcquireWriteLock = mapThreadToWaitOnAcquireInsideWriteLockManagerClone;
         }
         Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockClone = cloneMapThreadToWaitOnAcquire(mapThreadToWaitOnAcquireReadLockOriginal);
+        Map<Thread, String> mapThreadToWaitOnAcquireReadLockMethodNameClone = cloneMapThreadToMethodName(mapThreadToWaitOnAcquireReadLockMethodNameOriginal);
         Set<Thread> setThreadWaitingToReleaseDeferredLocksClone = cloneSetThreadsThatAreCurrentlyWaitingToReleaseDeferredLocks(setThreadWaitingToReleaseDeferredLocksOriginal);
         Map<Thread, Set<Object>> mapThreadToObjectIdWithWriteLockManagerChangesClone = cloneMapThreadToObjectIdWithWriteLockManagerChanges(
                 mapThreadToObjectIdWithWriteLockManagerChangesOriginal);
@@ -635,9 +675,9 @@ public class ConcurrencyUtil {
 
         return new ConcurrencyManagerState(
                 readLockManagerMapClone, deferredLockManagerMapClone, unifiedMapOfThreadsStuckTryingToAcquireWriteLock,
-                mapThreadToWaitOnAcquireReadLockClone, setThreadWaitingToReleaseDeferredLocksClone,
-                mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey,
-                mapThreadToObjectIdWithWriteLockManagerChangesClone);
+                mapThreadToWaitOnAcquireMethodNameClone, mapThreadToWaitOnAcquireReadLockClone, mapThreadToWaitOnAcquireReadLockMethodNameClone,
+                setThreadWaitingToReleaseDeferredLocksClone, mapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone,
+                mapOfCacheKeyToDtosExplainingThreadExpectationsOnCacheKey, mapThreadToObjectIdWithWriteLockManagerChangesClone);
     }
 
     /**
@@ -872,8 +912,23 @@ public class ConcurrencyUtil {
      *            this a cloned map that has an association between thread and cache keys the thread would like to
      *            acquire but cannot because there are readers on the cache key. The thread might be stuck either on the
      *            concurrency manager or on the write lock manager.
+     * @param mapThreadToWaitOnAcquireMethodNameClone
+     *            the name of the method that updated the
+     *            {@link org.eclipse.persistence.internal.helper.ConcurrencyManager#THREADS_TO_WAIT_ON_ACQUIRE} If we
+     *            do not know the method name that created the trace then it must have been the
+     *            {@link org.eclipse.persistence.internal.helper.WriteLockManager#addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(Thread, ConcurrencyManager, long)}
+     *            . This is not obvious but essentially we trace the acquisition of write locks in to places. The first
+     *            is the map already mentioned in the concurrency manager. The second is the map
+     *            {@link org.eclipse.persistence.internal.helper.WriteLockManager#THREAD_TO_FAIL_TO_ACQUIRE_CACHE_KEYS}
+     *            for the purose of the massive dump we act as if there was a single unified map. However when the
+     *            MAP_THREAD_TO_WAIT_ON_ACQUIRE we not only add to this map the cache key we cannot acquire but also the
+     *            method name. When we work with the map the THREADS_TO_FAIL_TO_ACQUIRE_CACHE_KEYS
+     *            we just keep trace of the cache key that could not be acquired. This
+     *            THREADS_TO_FAIL_TO_ACQUIRE_CACHE_KEYS is currently only used in one spot so we
+     *            can avoid the trouble of adding even more tracing for this.
      */
-    private String createInformationAboutAllThreadsWaitingToAcquireCacheKeys(Map<Thread, Set<ConcurrencyManager>> unifiedMapOfThreadsStuckTryingToAcquireWriteLock) {
+    private String createInformationAboutAllThreadsWaitingToAcquireCacheKeys(Map<Thread, Set<ConcurrencyManager>> unifiedMapOfThreadsStuckTryingToAcquireWriteLock,
+                                                                             Map<Thread, String> mapThreadToWaitOnAcquireMethodNameClone) {
         // (a) Create a header string of information
         StringWriter writer = new StringWriter();
         writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_cache_keys_1", new Object[] {unifiedMapOfThreadsStuckTryingToAcquireWriteLock.size()}));
@@ -885,9 +940,23 @@ public class ConcurrencyUtil {
             Set<ConcurrencyManager> writeLocksCurrentThreadIsTryingToAcquire = currentEntry.getValue();
             for (ConcurrencyManager cacheKey : writeLocksCurrentThreadIsTryingToAcquire) {
                 writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_cache_keys_2", new Object[] {currentThreadNumber, thread.getName(), createToStringExplainingOwnedCacheKey(cacheKey)}));
+                // add as well information about what method created this trace entry
+                // this important in case we start leaking traces when the code is configured
+                // to blow up
+                String methodNameThatGotStuckWaitingToAcquire = mapThreadToWaitOnAcquireMethodNameClone.get(currentEntry.getKey());
+                if (methodNameThatGotStuckWaitingToAcquire == null) {
+                    // this because the acquire trace was not on the
+                    // org.eclipse.persistence.internal.helper.ConcurrencyManager.MAP_THREAD_TO_WAIT_ON_ACQUIRE
+                    // by the concurrency manager but rather the trace of the wait on the write
+                    // lock was created by the mapThreadToWaitOnAcquireInsideWriteLockManagerClone
+                    // see
+                    // org.eclipse.persistence.internal.helper.WriteLockManager.addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(Thread, ConcurrencyManager, Date)
+                    methodNameThatGotStuckWaitingToAcquire = LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_cache_keys_3");
+                }
+                writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_cache_keys_4", new Object[] {methodNameThatGotStuckWaitingToAcquire}));
             }
         }
-        writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_cache_keys_3"));
+        writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_cache_keys_5"));
         return writer.toString();
     }
 
@@ -899,8 +968,8 @@ public class ConcurrencyUtil {
      *            this a cloned map that has an association between thread and cache keys the thread would like to
      *            acquire for READING but cannot because there is some active thread (other than themselves) holding the cache key (e.g. for writing)
      */
-    protected String createInformationAboutAllThreadsWaitingToAcquireReadCacheKeys(
-            Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockClone) {
+    protected String createInformationAboutAllThreadsWaitingToAcquireReadCacheKeys(Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireReadLockClone,
+                                                                                   Map<Thread, String> mapThreadToWaitOnAcquireReadLockMethodNameClone) {
         // (a) Create a header string of information
         StringWriter writer = new StringWriter();
         writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_read_cache_keys_1", new Object[] {mapThreadToWaitOnAcquireReadLockClone.size()}));
@@ -909,8 +978,10 @@ public class ConcurrencyUtil {
         for(Map.Entry<Thread, ConcurrencyManager> currentEntry : mapThreadToWaitOnAcquireReadLockClone.entrySet()) {
             currentThreadNumber++;
             writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_read_cache_keys_2", new Object[] {currentThreadNumber, currentEntry.getKey().getName(), createToStringExplainingOwnedCacheKey(currentEntry.getValue())}));
+            String methodNameThatGotStuckWaitingToAcquire =  mapThreadToWaitOnAcquireReadLockMethodNameClone.get(currentEntry.getKey());
+            writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_read_cache_keys_3", new Object[] {methodNameThatGotStuckWaitingToAcquire}));
         }
-        writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_read_cache_keys_3"));
+        writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_read_cache_keys_4"));
         return writer.toString();
     }
 
@@ -941,7 +1012,7 @@ public class ConcurrencyUtil {
      * Log information about all threads tracked in the concurrency manager.
      *
      * @param concurrencyManagerState
-     *            and object that represents a snaphot of the current state of the concurrency manager.
+     *            and object that represents a snapshot of the current state of the concurrency manager.
      */
     protected String createInformationAboutAllResourcesAcquiredAndDeferredByAllThreads(
             ConcurrencyManagerState concurrencyManagerState) {
@@ -960,6 +1031,7 @@ public class ConcurrencyUtil {
             currentThreadNumber++;
             ReadLockManager readLockManager = concurrencyManagerState.getReadLockManagerMapClone().get(currentThread);
             DeferredLockManager lockManager = concurrencyManagerState.getDeferredLockManagerMapClone().get(currentThread);
+            String waitingToReleaseDeferredLocksJustification = concurrencyManagerState.getMapThreadsThatAreCurrentlyWaitingToReleaseDeferredLocksJustificationClone().get(currentThread);
             Set<ConcurrencyManager> waitingOnAcquireCacheKeys = concurrencyManagerState
                     .getUnifiedMapOfThreadsStuckTryingToAcquireWriteLock()
                     .get(currentThread);
@@ -968,13 +1040,13 @@ public class ConcurrencyUtil {
             boolean threadWaitingToReleaseDeferredLocks = concurrencyManagerState
                     .getSetThreadWaitingToReleaseDeferredLocksClone().contains(currentThread);
 
-            Set<Object> wirteManagerThreadPrimaryKeysWithChangesToBeMerged = concurrencyManagerState
+            Set<Object> writeManagerThreadPrimaryKeysWithChangesToBeMerged = concurrencyManagerState
                     .getMapThreadToObjectIdWithWriteLockManagerChangesClone()
                     .get(currentThread);
             String informationAboutCurrentThread = createInformationAboutAllResourcesAcquiredAndDeferredByThread(
                     readLockManager, lockManager, waitingOnAcquireCacheKeys, waitingOnAcquireReadCacheKey,
                     threadWaitingToReleaseDeferredLocks, currentThread, currentThreadNumber, totalNumberOfThreads,
-                    wirteManagerThreadPrimaryKeysWithChangesToBeMerged);
+                    writeManagerThreadPrimaryKeysWithChangesToBeMerged, waitingToReleaseDeferredLocksJustification);
             writer.write(informationAboutCurrentThread);
         }
 
@@ -1026,13 +1098,18 @@ public class ConcurrencyUtil {
      *            a thread that has done too many changes and is creating a bigger risk fo dead lock. The more resources
      *            an individual thread tries to grab the worse it is for the concurrency layer. The size of the change
      *            set can be interesting.
+     * @param waitingToReleaseDeferredLocksJustification
+     *            when a thread is stuck for more than 500 ms in the release defferred locks algorithm, the concurrency
+     *            manager starts try to justify why the method isBuildObjectComplete keeps returning false. This
+     *            information is important whenever the param thread waiting to release deferred locks is true
      */
     protected String createInformationAboutAllResourcesAcquiredAndDeferredByThread(
             ReadLockManager readLockManager, DeferredLockManager lockManager,
             Set<ConcurrencyManager> waitingOnAcquireCacheKeys, ConcurrencyManager waitingOnAcquireReadCacheKey,
             boolean threadWaitingToReleaseDeferredLocks, Thread thread,
             int currentThreadNumber, int totalNumberOfThreads,
-            Set<Object> writeManagerThreadPrimaryKeysWithChangesToBeMerged) {
+            Set<Object> writeManagerThreadPrimaryKeysWithChangesToBeMerged,
+            String waitingToReleaseDeferredLocksJustification) {
 
         // (a) Build a base overview summary of the thread state
         StringWriter writer = new StringWriter();
@@ -1069,9 +1146,16 @@ public class ConcurrencyUtil {
         writer.write(ConcurrencyUtil.SINGLETON.createStringWithSummaryOfActiveLocksOnThread(lockManager, threadName));
         // (c) Now very interesting as well are all of the objects that current thread could not acquire the deferred locks are essential
         writer.write(createStringWithSummaryOfDeferredLocksOnThread(lockManager, threadName));
-        // (d) Add information about all cache keys te current thread acquired with READ permission
+        // (d) On the topic of the defferred locks we can also try to do better and explain why the algorithm
+        // keeps returning false that the build object is not yet complete
+        if (waitingToReleaseDeferredLocksJustification != null && waitingToReleaseDeferredLocksJustification.length() > 0) {
+            writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_resources_acquired_deferred_8", new Object[] {waitingToReleaseDeferredLocksJustification}));
+        } else {
+            writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_resources_acquired_deferred_9"));
+        }
+        // (e) Add information about all cache keys te current thread acquired with READ permission
         writer.write(createStringWithSummaryOfReadLocksAcquiredByThread(readLockManager, threadName));
-        writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_resources_acquired_deferred_8", new Object[] {currentThreadNumber, totalNumberOfThreads}));
+        writer.write(LoggingLocalization.buildMessage("concurrency_util_create_information_all_resources_acquired_deferred_10", new Object[] {currentThreadNumber, totalNumberOfThreads}));
         return writer.toString();
     }
 
@@ -1083,6 +1167,17 @@ public class ConcurrencyUtil {
      * @return a cloned map
      */
     public static Map<Thread, ConcurrencyManager> cloneMapThreadToWaitOnAcquire(Map<Thread, ConcurrencyManager> mapThreadToWaitOnAcquireOriginal) {
+        return new HashMap<>(mapThreadToWaitOnAcquireOriginal);
+    }
+
+    /**
+     * Clone the map of the method names that tells us justification where threads acquire locks.
+     *
+     * @param mapThreadToWaitOnAcquireOriginal
+     *            the original map we want to clone
+     * @return a cloned map
+     */
+    public static Map<Thread, String> cloneMapThreadToMethodName(Map<Thread, String> mapThreadToWaitOnAcquireOriginal) {
         return new HashMap<>(mapThreadToWaitOnAcquireOriginal);
     }
 

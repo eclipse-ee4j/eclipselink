@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -144,8 +144,9 @@ public class WriteLockManager {
                 // of the concurrency manager that we use for creating the massive log dump
                 // to indicate that the current thread is now stuck trying to acquire some arbitrary
                 // cache key for writing
+                StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[1];
                 lastCacheKeyWeNeededToWaitToAcquire = toWaitOn;
-                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread);
+                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
 
                 // Since we know this one of those methods that can appear in the dead locks
                 // we threads frozen here forever inside of the wait that used to have no timeout
@@ -179,7 +180,7 @@ public class WriteLockManager {
             throw ConcurrencyException.maxTriesLockOnCloneExceded(objectForClone);
         } finally {
             if (lastCacheKeyWeNeededToWaitToAcquire != null) {
-                cacheKey.removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
+                lastCacheKeyWeNeededToWaitToAcquire.removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
             }
             if (!successful) {//did not acquire locks but we are exiting
                 for (Iterator lockedList = lockedObjects.values().iterator(); lockedList.hasNext();) {

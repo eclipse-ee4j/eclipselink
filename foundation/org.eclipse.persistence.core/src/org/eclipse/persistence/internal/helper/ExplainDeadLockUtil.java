@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -899,7 +899,7 @@ public class ExplainDeadLockUtil {
     /**
      * This method is nothing more than copy paste code from the algorithm
      *
-     * {@link ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map)}
+     * {@link ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)}
      *
      * We re-write this code to instead of returning true/false return an actual DTO object that can allow our dead lock
      * explanation algorithm to identify the next thread to expand to explain the dead lock.
