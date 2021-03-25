@@ -2842,6 +2842,12 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateConcurrencyManagerAllowInterruptedExceptionFired(m);
             updateConcurrencyManagerAllowConcurrencyExceptionToBeFiredUp(m);
             updateConcurrencyManagerAllowTakingStackTraceDuringReadLockAcquisition(m);
+            updateConcurrencyManagerUseObjectBuildingSemaphore(m);
+            updateConcurrencyManagerUseWriteLockManagerSemaphore(m);
+            updateConcurrencyManagerNoOfThreadsAllowedToObjectBuildInParallel(m);
+            updateConcurrencyManagerNoOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel(m);
+            updateConcurrencySemaphoreMaxTimePermit(m);
+            updateConcurrencySemaphoreLogTimeout(m);
             // Customizers should be processed last
             processDescriptorCustomizers(m, loader);
             processSessionCustomizer(m, loader);
@@ -3680,6 +3686,72 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(allowTakingStackTraceDuringReadLockAcquisition, PersistenceUnitProperties.CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerUseObjectBuildingSemaphore(Map persistenceProperties) {
+        String useObjectBuildingSemaphore = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING, persistenceProperties, session);
+        try {
+            if (useObjectBuildingSemaphore != null) {
+                ConcurrencyUtil.SINGLETON.setUseSemaphoreInObjectBuilder(Boolean.parseBoolean(useObjectBuildingSemaphore));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(useObjectBuildingSemaphore, PersistenceUnitProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerUseWriteLockManagerSemaphore(Map persistenceProperties) {
+        String useWriteLockManagerSemaphore = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS, persistenceProperties, session);
+        try {
+            if (useWriteLockManagerSemaphore != null) {
+                ConcurrencyUtil.SINGLETON.setUseSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks(Boolean.parseBoolean(useWriteLockManagerSemaphore));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(useWriteLockManagerSemaphore, PersistenceUnitProperties.CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerNoOfThreadsAllowedToObjectBuildInParallel(Map persistenceProperties) {
+        String noOfThreadsAllowedToObjectBuildInParallel = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS, persistenceProperties, session);
+        try {
+            if (noOfThreadsAllowedToObjectBuildInParallel != null) {
+                ConcurrencyUtil.SINGLETON.setNoOfThreadsAllowedToObjectBuildInParallel(Integer.parseInt(noOfThreadsAllowedToObjectBuildInParallel));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(noOfThreadsAllowedToObjectBuildInParallel, PersistenceUnitProperties.CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS, exception));
+        }
+    }
+
+    private void updateConcurrencyManagerNoOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel(Map persistenceProperties) {
+        String noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS, persistenceProperties, session);
+        try {
+            if (noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel != null) {
+                ConcurrencyUtil.SINGLETON.setNoOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel(Integer.parseInt(noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(noOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel, PersistenceUnitProperties.CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS, exception));
+        }
+    }
+
+    private void updateConcurrencySemaphoreMaxTimePermit(Map persistenceProperties) {
+        String concurrencySemaphoreMaxTimePermit = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT, persistenceProperties, session);
+        try {
+            if (concurrencySemaphoreMaxTimePermit != null) {
+                ConcurrencyUtil.SINGLETON.setConcurrencySemaphoreMaxTimePermit(Long.parseLong(concurrencySemaphoreMaxTimePermit));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(concurrencySemaphoreMaxTimePermit, PersistenceUnitProperties.CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT, exception));
+        }
+    }
+
+    private void updateConcurrencySemaphoreLogTimeout(Map persistenceProperties) {
+        String concurrencySemaphoreLogTimeout = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CONCURRENCY_SEMAPHORE_LOG_TIMEOUT, persistenceProperties, session);
+        try {
+            if (concurrencySemaphoreLogTimeout != null) {
+                ConcurrencyUtil.SINGLETON.setConcurrencySemaphoreLogTimeout(Long.parseLong(concurrencySemaphoreLogTimeout));
+            }
+        } catch (NumberFormatException exception) {
+            this.session.handleException(ValidationException.invalidValueForProperty(concurrencySemaphoreLogTimeout, PersistenceUnitProperties.CONCURRENCY_SEMAPHORE_LOG_TIMEOUT, exception));
         }
     }
 
@@ -4567,4 +4639,3 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         }
     }
 }
-
