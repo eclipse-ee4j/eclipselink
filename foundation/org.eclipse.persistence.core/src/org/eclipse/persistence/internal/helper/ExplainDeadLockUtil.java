@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -16,9 +16,11 @@ import org.eclipse.persistence.internal.helper.type.CacheKeyToThreadRelationship
 import org.eclipse.persistence.internal.helper.type.ConcurrencyManagerState;
 import org.eclipse.persistence.internal.helper.type.DeadLockComponent;
 import org.eclipse.persistence.internal.helper.type.IsBuildObjectCompleteOutcome;
+import org.eclipse.persistence.internal.localization.LoggingLocalization;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 
+import java.io.StringWriter;
 import java.util.*;
 
 import static java.lang.String.format;
@@ -735,11 +737,13 @@ public class ExplainDeadLockUtil {
                 // this cache key has an active thread that seems to not be tracked by our
                 // ConcurrencyManagerState
                 //
-                AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "explain_dead_lock_util_current_thread_blocked_active_thread_warning",
+                StringWriter writer = new StringWriter();
+                writer.write(LoggingLocalization.buildMessage("explain_dead_lock_util_current_thread_blocked_active_thread_warning",
                         new Object[] {nextCandidateThreadPartOfTheDeadLock.getName(),
                         currentCandidateThreadPartOfTheDeadLock.getName(),
                         ConcurrencyUtil.SINGLETON.createToStringExplainingOwnedCacheKey(
-                        cacheKeyThreadWantsToAcquireButCannotGet)});
+                                cacheKeyThreadWantsToAcquireButCannotGet)}));
+                AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
                 return DEAD_LOCK_NOT_FOUND;
             } else {
                 // The active thread on the cache key is needing some resources we are tracing
@@ -805,8 +809,9 @@ public class ExplainDeadLockUtil {
         // the only case where it would make sense for this to be null is if the current candidate is actually making progress and
         // was stuck for only a short period
         if(result == null) {
-            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, "explain_dead_lock_util_thread_stuck_deferred_locks",
-                    new Object[] {currentCandidateThreadPartOfTheDeadLock.getName()});
+            StringWriter writer = new StringWriter();
+            writer.write(LoggingLocalization.buildMessage("explain_dead_lock_util_thread_stuck_deferred_locks", new Object[] {currentCandidateThreadPartOfTheDeadLock.getName()}));
+            AbstractSessionLog.getLog().log(SessionLog.WARNING, SessionLog.CACHE, writer.toString(), new Object[] {}, false);
             return DEAD_LOCK_NOT_FOUND;
         }
 
@@ -899,7 +904,7 @@ public class ExplainDeadLockUtil {
     /**
      * This method is nothing more than copy paste code from the algorithm
      *
-     * {@link ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map)}
+     * {@link ConcurrencyManager#isBuildObjectOnThreadComplete(Thread, Map, List, boolean)}
      *
      * We re-write this code to instead of returning true/false return an actual DTO object that can allow our dead lock
      * explanation algorithm to identify the next thread to expand to explain the dead lock.

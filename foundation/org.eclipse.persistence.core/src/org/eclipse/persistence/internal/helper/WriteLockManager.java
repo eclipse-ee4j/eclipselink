@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -19,6 +19,7 @@ package org.eclipse.persistence.internal.helper;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Semaphore;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.descriptors.FetchGroupManager;
@@ -100,6 +101,12 @@ public class WriteLockManager {
      */
     private static final Map<Thread, Set<Object>> MAP_WRITE_LOCK_MANAGER_THREAD_TO_OBJECT_IDS_WITH_CHANGE_SET = new ConcurrentHashMap<>();
 
+    /** Semaphore related properties */
+    private static final transient ThreadLocal<Boolean> SEMAPHORE_THREAD_LOCAL_VAR = new ThreadLocal<>();
+    private static final transient int SEMAPHORE_MAX_NUMBER_THREADS = ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToDoWriteLockManagerAcquireRequiredLocksInParallel();
+    private static final transient Semaphore SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_WRITE_LOCK_MANAGER = new Semaphore(SEMAPHORE_MAX_NUMBER_THREADS);
+    private transient ConcurrencySemaphore writeLockManagerSemaphore = new ConcurrencySemaphore(SEMAPHORE_THREAD_LOCAL_VAR, SEMAPHORE_MAX_NUMBER_THREADS, SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_WRITE_LOCK_MANAGER, this,"write_lock_manager_semaphore_acquired_01");
+
     // this will allow us to prevent a readlock thread from looping forever.
     public static int MAXTRIES = 10000;
     
@@ -144,8 +151,9 @@ public class WriteLockManager {
                 // of the concurrency manager that we use for creating the massive log dump
                 // to indicate that the current thread is now stuck trying to acquire some arbitrary
                 // cache key for writing
+                StackTraceElement stackTraceElement = Thread.currentThread().getStackTrace()[1];
                 lastCacheKeyWeNeededToWaitToAcquire = toWaitOn;
-                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread);
+                lastCacheKeyWeNeededToWaitToAcquire.putThreadAsWaitingToAcquireLockForWriting(currentThread, stackTraceElement.getClassName() + "." + stackTraceElement.getMethodName() + "(...)");
 
                 // Since we know this one of those methods that can appear in the dead locks
                 // we threads frozen here forever inside of the wait that used to have no timeout
@@ -179,7 +187,7 @@ public class WriteLockManager {
             throw ConcurrencyException.maxTriesLockOnCloneExceded(objectForClone);
         } finally {
             if (lastCacheKeyWeNeededToWaitToAcquire != null) {
-                cacheKey.removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
+                lastCacheKeyWeNeededToWaitToAcquire.removeThreadNoLongerWaitingToAcquireLockForWriting(currentThread);
             }
             if (!successful) {//did not acquire locks but we are exiting
                 for (Iterator lockedList = lockedObjects.values().iterator(); lockedList.hasNext();) {
@@ -308,8 +316,27 @@ public class WriteLockManager {
      * a changeset.  This method will hand off the processing of the deadlock algorithm to other member
      * methods.  The mergeManager must be the active mergemanager for the calling thread.
      * Returns true if all required locks were acquired
+     * This is wrapper method with semaphore logic.
      */
     public void acquireRequiredLocks(MergeManager mergeManager, UnitOfWorkChangeSet changeSet) {
+        boolean semaphoreWasAcquired = false;
+        boolean useSemaphore = ConcurrencyUtil.SINGLETON.isUseSemaphoreToLimitConcurrencyOnWriteLockManagerAcquireRequiredLocks();
+        try {
+            semaphoreWasAcquired = writeLockManagerSemaphore.acquireSemaphoreIfAppropriate(useSemaphore);
+            acquireRequiredLocksInternal(mergeManager, changeSet);
+        } finally {
+            writeLockManagerSemaphore.releaseSemaphoreAllowOtherThreadsToStartDoingObjectBuilding(semaphoreWasAcquired);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * This method will be the entry point for threads attempting to acquire locks for all objects that have
+     * a changeset.  This method will hand off the processing of the deadlock algorithm to other member
+     * methods.  The mergeManager must be the active mergemanager for the calling thread.
+     * Returns true if all required locks were acquired
+     */
+    private void acquireRequiredLocksInternal(MergeManager mergeManager, UnitOfWorkChangeSet changeSet) {
         if (!MergeManager.LOCK_ON_MERGE) {//lockOnMerge is a backdoor and not public
             return;
         }
