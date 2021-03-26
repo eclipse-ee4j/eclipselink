@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ package org.eclipse.persistence.internal.descriptors;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.Semaphore;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -128,6 +129,11 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     protected boolean shouldKeepRow = false;
     /** PERF: is there an cache index field that's would not be selected by SOP query. Ignored unless descriptor uses SOP and CachePolicy has cache indexes. */
     protected boolean hasCacheIndexesInSopObject = false;
+    /** Semaphore related properties. Transient to avoid serialization in clustered/replicated environments see CORBA tests*/
+    private static final transient ThreadLocal<Boolean> SEMAPHORE_THREAD_LOCAL_VAR = new ThreadLocal<>();
+    private static final transient int SEMAPHORE_MAX_NUMBER_THREADS = ConcurrencyUtil.SINGLETON.getNoOfThreadsAllowedToObjectBuildInParallel();
+    private static final transient Semaphore SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING = new Semaphore(SEMAPHORE_MAX_NUMBER_THREADS);
+    private transient ConcurrencySemaphore objectBuilderSemaphore = new ConcurrencySemaphore(SEMAPHORE_THREAD_LOCAL_VAR, SEMAPHORE_MAX_NUMBER_THREADS, SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING, this, "object_builder_semaphore_acquired_01");
 
     public ObjectBuilder(ClassDescriptor descriptor) {
         this.descriptor = descriptor;
@@ -706,8 +712,29 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
     /**
      * Return an instance of the receivers javaClass. Set the attributes of an instance
      * from the values stored in the database row.
+     * This is wrapper method with semaphore logic.
      */
     public Object buildObject(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager,
+                              AbstractSession session, ClassDescriptor concreteDescriptor, InheritancePolicy inheritancePolicy, boolean isUnitOfWork,
+                              boolean shouldCacheQueryResults, boolean shouldUseWrapperPolicy) {
+        boolean semaphoreWasAcquired = false;
+        boolean useSemaphore = ConcurrencyUtil.SINGLETON.isUseSemaphoreInObjectBuilder();
+        if (objectBuilderSemaphore == null) {
+            objectBuilderSemaphore = new ConcurrencySemaphore(SEMAPHORE_THREAD_LOCAL_VAR, SEMAPHORE_MAX_NUMBER_THREADS, SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING, this, "object_builder_semaphore_acquired_01");
+        }
+        try {
+            semaphoreWasAcquired = objectBuilderSemaphore.acquireSemaphoreIfAppropriate(useSemaphore);
+            return buildObjectInternal(query, databaseRow, joinManager, session, concreteDescriptor, inheritancePolicy, isUnitOfWork, shouldCacheQueryResults, shouldUseWrapperPolicy);
+        } finally {
+            objectBuilderSemaphore.releaseSemaphoreAllowOtherThreadsToStartDoingObjectBuilding(semaphoreWasAcquired);
+        }
+    }
+
+    /**
+     * Return an instance of the receivers javaClass. Set the attributes of an instance
+     * from the values stored in the database row.
+     */
+    private Object buildObjectInternal(ObjectBuildingQuery query, AbstractRecord databaseRow, JoinedAttributeManager joinManager,
             AbstractSession session, ClassDescriptor concreteDescriptor, InheritancePolicy inheritancePolicy, boolean isUnitOfWork,
             boolean shouldCacheQueryResults, boolean shouldUseWrapperPolicy) {
         Object domainObject = null;
@@ -2294,8 +2321,30 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
      * PERF: This method is optimized for a specific case of building objects
      * so can avoid many of the normal checks, only queries that have this criteria
      * can use this method of building objects.
+     * This is wrapper method with semaphore logic.
      */
     public Object buildObjectFromResultSet(ObjectBuildingQuery query, JoinedAttributeManager joinManager, ResultSet resultSet, AbstractSession executionSession, DatabaseAccessor accessor, ResultSetMetaData metaData, DatabasePlatform platform, Vector fieldsList, DatabaseField[] fieldsArray) throws SQLException {
+        boolean semaphoreWasAcquired = false;
+        boolean useSemaphore = ConcurrencyUtil.SINGLETON.isUseSemaphoreInObjectBuilder();
+        if (objectBuilderSemaphore == null) {
+            objectBuilderSemaphore = new ConcurrencySemaphore(SEMAPHORE_THREAD_LOCAL_VAR, SEMAPHORE_MAX_NUMBER_THREADS, SEMAPHORE_LIMIT_MAX_NUMBER_OF_THREADS_OBJECT_BUILDING, this, "object_builder_semaphore_acquired_01");
+        }
+        try {
+            semaphoreWasAcquired = objectBuilderSemaphore.acquireSemaphoreIfAppropriate(useSemaphore);
+            return buildObjectFromResultSetInternal(query, joinManager, resultSet, executionSession, accessor, metaData, platform, fieldsList, fieldsArray);
+        } finally {
+            objectBuilderSemaphore.releaseSemaphoreAllowOtherThreadsToStartDoingObjectBuilding(semaphoreWasAcquired);
+        }
+    }
+
+    /**
+     * INTERNAL:
+     * Builds a working copy clone directly from a result set.
+     * PERF: This method is optimized for a specific case of building objects
+     * so can avoid many of the normal checks, only queries that have this criteria
+     * can use this method of building objects.
+     */
+    private Object buildObjectFromResultSetInternal(ObjectBuildingQuery query, JoinedAttributeManager joinManager, ResultSet resultSet, AbstractSession executionSession, DatabaseAccessor accessor, ResultSetMetaData metaData, DatabasePlatform platform, Vector fieldsList, DatabaseField[] fieldsArray) throws SQLException {
         ClassDescriptor descriptor = this.descriptor;
         int pkFieldsSize = descriptor.getPrimaryKeyFields().size();
         DatabaseMapping primaryKeyMapping = null;

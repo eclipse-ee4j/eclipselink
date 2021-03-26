@@ -26,8 +26,8 @@ import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
-
-import javax.persistence.EntityManagerFactory;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -49,7 +49,7 @@ public class TestJavaTimeTypeConverter {
         LocalDate ld = (LocalDate) cm.convertObject(src, ClassConstants.TIME_LDATE);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(src,  ld);;
+        Assert.assertEquals(src, ld);
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
         Assert.assertEquals(2020,  ld.getYear());
@@ -71,21 +71,19 @@ public class TestJavaTimeTypeConverter {
     @Test
     public void timeConvertUtilDateToLocalDate() {
         Calendar cal = Calendar.getInstance();
-        java.util.Date date = null;
-        OffsetDateTime odt = null;
-        
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
         cal.set(2020, 0, 1, 0, 0, 0);
-        date = cal.getTime();
+        Date date = cal.getTime();
         Assert.assertEquals(2020 - 1900, date.getYear());
         Assert.assertEquals(0, date.getMonth());
-        Assert.assertEquals(1, date.getDate());        
-        
+        Assert.assertEquals(1, date.getDate());
+
         LocalDate ld = (LocalDate) cm.convertObject(date, ClassConstants.TIME_LDATE);
-        
+
         Assert.assertNotNull(ld);
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
-        Assert.assertEquals(2020,  ld.getYear());
+        Assert.assertEquals(2020, ld.getYear());
     }
     
     @Test
@@ -154,10 +152,10 @@ public class TestJavaTimeTypeConverter {
         LocalDateTime ld = (LocalDateTime) cm.convertObject(src, ClassConstants.TIME_LDATETIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(src,  ld);;
+        Assert.assertEquals(src, ld);
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
-        Assert.assertEquals(2020,  ld.getYear());
+        Assert.assertEquals(2020, ld.getYear());
         Assert.assertEquals(1, ld.getHour());
         Assert.assertEquals(0, ld.getMinute());
         Assert.assertEquals(0, ld.getSecond());
@@ -171,7 +169,7 @@ public class TestJavaTimeTypeConverter {
         Assert.assertNotNull(ld);
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(1, ld.getDayOfMonth());
-        Assert.assertEquals(2020,  ld.getYear());
+        Assert.assertEquals(2020, ld.getYear());
         Assert.assertEquals(1, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
@@ -191,7 +189,7 @@ public class TestJavaTimeTypeConverter {
         Assert.assertNotNull(ldt);
         Assert.assertEquals(Month.JANUARY, ldt.getMonth());
         Assert.assertEquals(1, ldt.getDayOfMonth());
-        Assert.assertEquals(2020,  ldt.getYear());
+        Assert.assertEquals(2020, ldt.getYear());
         Assert.assertEquals(2, ldt.getHour());
         Assert.assertEquals(15, ldt.getMinute());
         Assert.assertEquals(30, ldt.getSecond());
@@ -207,7 +205,7 @@ public class TestJavaTimeTypeConverter {
         Assert.assertNotNull(ldt);
         Assert.assertEquals(Month.JANUARY, ldt.getMonth());
         Assert.assertEquals(1, ldt.getDayOfMonth());
-        Assert.assertEquals(2020,  ldt.getYear());
+        Assert.assertEquals(2020, ldt.getYear());
         Assert.assertEquals(2, ldt.getHour());
         Assert.assertEquals(15, ldt.getMinute());
         Assert.assertEquals(30, ldt.getSecond());
@@ -221,7 +219,7 @@ public class TestJavaTimeTypeConverter {
         Assert.assertNotNull(ldt);
         Assert.assertEquals(Month.JANUARY, ldt.getMonth());
         Assert.assertEquals(1, ldt.getDayOfMonth());
-        Assert.assertEquals(2020,  ldt.getYear());
+        Assert.assertEquals(2020, ldt.getYear());
     }
     
     @Test
@@ -243,7 +241,7 @@ public class TestJavaTimeTypeConverter {
         LocalTime ld = (LocalTime) cm.convertObject(src, ClassConstants.TIME_LTIME);
         
         Assert.assertNotNull(ld);
-        Assert.assertEquals(src,  ld);;
+        Assert.assertEquals(src, ld);
         Assert.assertEquals(1, ld.getHour());
         Assert.assertEquals(15, ld.getMinute());
         Assert.assertEquals(30, ld.getSecond());
@@ -380,12 +378,12 @@ public class TestJavaTimeTypeConverter {
         odt = (OffsetDateTime) cm.convertObject(original, ClassConstants.TIME_ODATETIME);
         
         Assert.assertNotNull(odt);
-        Assert.assertSame(original,  odt);
+        Assert.assertSame(original, odt);
         Assert.assertEquals(Month.JANUARY, odt.getMonth());
         Assert.assertEquals(1, odt.getDayOfMonth());
-        Assert.assertEquals(2020,  odt.getYear());
+        Assert.assertEquals(2020, odt.getYear());
         Assert.assertEquals(1, odt.getHour());
-        Assert.assertEquals(15,  odt.getMinute());
+        Assert.assertEquals(15, odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
     
@@ -411,9 +409,9 @@ public class TestJavaTimeTypeConverter {
         odt = (OffsetTime) cm.convertObject(original, ClassConstants.TIME_OTIME);
         
         Assert.assertNotNull(odt);
-        Assert.assertSame(original,  odt);
+        Assert.assertSame(original, odt);
         Assert.assertEquals(1, odt.getHour());
-        Assert.assertEquals(15,  odt.getMinute());
+        Assert.assertEquals(15, odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
     
@@ -426,7 +424,7 @@ public class TestJavaTimeTypeConverter {
         
         Assert.assertNotNull(odt);
         Assert.assertEquals(1, odt.getHour());
-        Assert.assertEquals(15,  odt.getMinute());
+        Assert.assertEquals(15, odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
     
@@ -443,7 +441,7 @@ public class TestJavaTimeTypeConverter {
         
         Assert.assertNotNull(odt);
         Assert.assertEquals(1, odt.getHour());
-        Assert.assertEquals(15,  odt.getMinute());
+        Assert.assertEquals(15, odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
     
@@ -456,7 +454,7 @@ public class TestJavaTimeTypeConverter {
         
         Assert.assertNotNull(odt);
         Assert.assertEquals(1, odt.getHour());
-        Assert.assertEquals(15,  odt.getMinute());
+        Assert.assertEquals(15, odt.getMinute());
         Assert.assertEquals(30, odt.getSecond());
     }
     
@@ -467,7 +465,7 @@ public class TestJavaTimeTypeConverter {
         
         Assert.assertNotNull(ldt);
         Assert.assertEquals(1, ldt.getHour());
-        Assert.assertEquals(15,  ldt.getMinute());
+        Assert.assertEquals(15, ldt.getMinute());
         Assert.assertEquals(30, ldt.getSecond());
     }
     

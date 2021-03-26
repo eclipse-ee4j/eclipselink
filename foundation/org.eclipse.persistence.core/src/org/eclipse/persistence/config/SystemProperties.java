@@ -14,6 +14,8 @@
 //     tware - added to allow pluggage archive factory
 package org.eclipse.persistence.config;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * This class provides the list of System properties that are recognized by EclipseLink.
  * @author tware
@@ -108,6 +110,14 @@ public class SystemProperties {
 
     /**
      * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
+     * It control how much time ConcurrencyManager will wait before it will identify, that thread which builds new object/entity instance
+     * should be identified as a potential dead lock source. It leads into some additional log messages.
+     * Default value is 0 (unit is ms). In this case extended logging is not active. Allowed values are: long
+     */
+    public static final String CONCURRENCY_MANAGER_BUILD_OBJECT_COMPLETE_WAIT_TIME = "eclipselink.concurrency.manager.build.object.complete.waittime";
+
+    /**
+     * This system property in milliseconds can control thread management in org.eclipse.persistence.internal.helper.ConcurrencyManager.
      * It control how long we are willing to wait before firing up an exception
      * Default value is 40000 (unit is ms). Allowed values are: long
      */
@@ -173,4 +183,76 @@ public class SystemProperties {
      * </ul>
      */
     public static final String CONCURRENCY_MANAGER_ALLOW_STACK_TRACE_READ_LOCK = "eclipselink.concurrency.manager.allow.readlockstacktrace";
+
+    /**
+     * <p>
+     * This property control (enable/disable) semaphore in {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder}
+     * </p>
+     * Object building see {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder} could be one of the
+     * primary sources pressure on concurrency manager. Most of the cache key acquisition and releasing is taking place during object building.
+     * Enable <code>true</code> this property to try reduce the likelihood of having dead locks is to allow less threads to start object
+     * building in parallel. In this case there should be negative impact to the performance.
+     * Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
+     * <ul>
+     * <li>"<code>true</code>" - means we want to override vanilla behavior and use a semaphore to not allow too many
+     * threads in parallel to do object building
+     * <li>"<code>false</code>" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
+     * vanilla behavior).
+     * </ul>
+     */
+    public static final String CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_OBJECT_BUILDING = "eclipselink.concurrency.manager.object.building.semaphore";
+
+    /**
+     * <p>
+     * This property control (enable/disable) semaphore in {@link org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks}
+     * </p>
+     * This algorithm
+     * {@link org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks}
+     * is being used when a transaction is committing and it is acquire locks to merge the change set.
+     * It should happen if algorithm has trouble when multiple threads report change sets on the same entity (e.g.
+     * one-to-many relations of master detail being enriched with more details on this master).
+     * Note: Parallel access to the same entity/entity tree from different threads is not recommended technique in EclipseLink.
+     * <ul>
+     * <li>"<code>true</code>" - means we want to override vanilla behavior and use a semaphore to not allow too many
+     * threads. In this case there should be negative impact to the performance.
+     * <li>"<code>false</code>" (DEFAULT) - means just go ahead and try to build the object without any semaphore (false is
+     * vanilla behavior).
+     * </ul>
+     */
+    public static final String CONCURRENCY_MANAGER_USE_SEMAPHORE_TO_SLOW_DOWN_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS = "eclipselink.concurrency.manager.write.lock.manager.semaphore";
+
+    /**
+     * <p>
+     * This property control number of threads in semaphore in {@link org.eclipse.persistence.internal.descriptors.ObjectBuilder}
+     * If "eclipselink.concurrency.manager.object.building.semaphore" property is <code>true</code> default value is 10. Allowed values are: int
+     * If "eclipselink.concurrency.manager.object.building.semaphore" property is <code>false</code> (DEFAULT) number of threads is unlimited.
+     * </p>
+     */
+    public static final String CONCURRENCY_MANAGER_OBJECT_BUILDING_NO_THREADS = "eclipselink.concurrency.manager.object.building.no.threads";
+
+    /**
+     * <p>
+     * This property control number of threads in semaphore in {@link org.eclipse.persistence.internal.helper.WriteLockManager#acquireRequiredLocks}
+     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is <code>true</code> default value is 2. Allowed values are: int
+     * If "eclipselink.concurrency.manager.write.lock.manager.semaphore" property is <code>false</code> (DEFAULT) number of threads is unlimited.
+     * </p>
+     */
+    public static final String CONCURRENCY_MANAGER_WRITE_LOCK_MANAGER_ACQUIRE_REQUIRED_LOCKS_NO_THREADS = "eclipselink.concurrency.manager.write.lock.manager.no.threads";
+
+    /**
+     * <p>
+     * This property control semaphore the maximum time to wait for a permit in {@link org.eclipse.persistence.internal.helper.ConcurrencySemaphore#acquireSemaphoreIfAppropriate(boolean)}
+     * It's passed to {@link java.util.concurrent.Semaphore#tryAcquire(long, TimeUnit)}
+     * Default value is 2000 (unit is ms). Allowed values are: long
+     * </p>
+     */
+    public static final String CONCURRENCY_SEMAPHORE_MAX_TIME_PERMIT = "eclipselink.concurrency.semaphore.max.time.permit";
+
+    /**
+     * <p>
+     * This property control timeout between log messages in {@link org.eclipse.persistence.internal.helper.ConcurrencySemaphore#acquireSemaphoreIfAppropriate(boolean)} when method/thread tries to get permit for the execution.
+     * Default value is 10000 (unit is ms). Allowed values are: long
+     * </p>
+     */
+    public static final String CONCURRENCY_SEMAPHORE_LOG_TIMEOUT = "eclipselink.concurrency.semaphore.log.timeout";
 }
