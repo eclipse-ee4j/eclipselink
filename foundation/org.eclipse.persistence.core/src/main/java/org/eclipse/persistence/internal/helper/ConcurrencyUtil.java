@@ -36,8 +36,6 @@ import java.security.AccessController;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static java.lang.String.format;
-
 public class ConcurrencyUtil {
 
     public static final ConcurrencyUtil SINGLETON = new ConcurrencyUtil();
@@ -379,7 +377,6 @@ public class ConcurrencyUtil {
                     concurrencyManager.getTotalNumberOfKeysReleasedForReading(), concurrencyManager
                     .getTotalNumberOfKeysReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero(),
                     concurrencyManager.getDepth()});
-
         }
     }
 
@@ -1024,7 +1021,6 @@ public class ConcurrencyUtil {
                     // org.eclipse.persistence.internal.helper.WriteLockManager.addCacheKeyToMapWriteLockManagerToCacheKeysThatCouldNotBeAcquired(Thread, ConcurrencyManager, Date)
                     methodNameThatGotStuckWaitingToAcquire = TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_cache_keys_3");
                 }
-                writer.write(format("[methodNameThatGotStuckWaitingToAcquire: %1$s]  %n", methodNameThatGotStuckWaitingToAcquire));
                 writer.write(TraceLocalization.buildMessage("concurrency_util_create_information_all_threads_acquire_cache_keys_4", new Object[] {methodNameThatGotStuckWaitingToAcquire}));
             }
         }

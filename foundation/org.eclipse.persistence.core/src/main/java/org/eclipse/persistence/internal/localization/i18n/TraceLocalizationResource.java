@@ -133,12 +133,12 @@ public class TraceLocalizationResource extends ListResourceBundle {
                 + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {10}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReading:  {11}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {12})  "
-                + "(depth: {12}) ---"},
+                + "(depth: {13}) ---"},
         { "concurrency_util_owned_cache_key_is_not_cache_key", "--- ConcurrencyManager: (ConcurrencyManagerClass: {0} ) (ConcurrencyManagerToString: {1}) (current cache key owner/activeThread: {2}) (concurrencyManagerId: {3}) (concurrencyManagerCreationDate: {4}) "
                 + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {5}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReading:  {6}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {7}) "
-                + "(depth: {12}) ---"},
+                + "(depth: {8}) ---"},
         { "concurrency_util_header_current_cache_key", "Summary current cache key of thread {0} "},
         { "concurrency_util_header_active_locks_owned_by_thread", "Summary of active locks owned by thread {0} "},
         { "concurrency_util_header_deferred_locks_owned_by_thread", "Summary of deferred locks (could not be acquired and cause thread to wait for object building to complete) of thread {0} "},
