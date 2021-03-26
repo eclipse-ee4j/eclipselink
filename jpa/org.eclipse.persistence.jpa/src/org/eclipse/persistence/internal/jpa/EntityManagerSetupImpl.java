@@ -1467,6 +1467,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
         if(typeMap.isEmpty() && sizeMap.isEmpty() && sharedMap.isEmpty()) {
             return;
         }
+        String queryCacheForceDeferredLocks = getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_QUERY_FORCE_DEFERRED_LOCKS, m, session);
+        session.getProject().setQueryCacheForceDeferredLocks("true".equalsIgnoreCase(queryCacheForceDeferredLocks));
 
         String defaultTypeName = (String)typeMap.remove(PersistenceUnitProperties.DEFAULT);
         if (defaultTypeName != null) {
