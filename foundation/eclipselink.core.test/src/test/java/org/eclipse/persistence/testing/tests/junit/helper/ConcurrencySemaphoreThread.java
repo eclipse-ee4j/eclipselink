@@ -14,10 +14,10 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.junit.helper;
 
-import org.eclipse.persistence.internal.helper.ConcurrencySemaphore;
-
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.eclipse.persistence.internal.helper.ConcurrencySemaphore;
 
 import static org.junit.Assert.assertTrue;
 

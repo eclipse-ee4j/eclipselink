@@ -14,13 +14,13 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.junit.helper;
 
-import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
