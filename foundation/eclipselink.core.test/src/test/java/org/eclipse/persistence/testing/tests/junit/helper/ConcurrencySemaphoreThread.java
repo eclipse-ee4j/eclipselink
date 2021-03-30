@@ -41,7 +41,7 @@ public class ConcurrencySemaphoreThread implements Runnable {
             semaphoreWasAcquired = testSemaphore.acquireSemaphoreIfAppropriate(true);
             //Current No of threads there can't be more than SEMAPHORE_MAX_NUMBER_THREADS
             assertTrue(currentNoOfThreads.incrementAndGet() <= SEMAPHORE_MAX_NUMBER_THREADS);
-            //Instead or some code which should take some time is there sleep.
+            //Instead of some code which should take some time is there sleep.
             Thread.currentThread().sleep(300);
         } catch (InterruptedException ex) {
             Assert.fail("Semaphore Test thread was interrupted.  Test failed to run properly");
