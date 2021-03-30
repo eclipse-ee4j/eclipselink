@@ -14,6 +14,7 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.tests.junit.helper;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -44,14 +45,14 @@ public class ConcurrencySemaphoreTest {
         assertEquals(MAX_TIME_PERMIT, ConcurrencyUtil.SINGLETON.getConcurrencySemaphoreMaxTimePermit());
         assertEquals(TIMEOUT_BETWEEN_LOG_MESSAGES, ConcurrencyUtil.SINGLETON.getConcurrencySemaphoreLogTimeout());
         //Prepare executor and start threads
-        ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(INITIAL_NO_OF_THREADS);
+        ExecutorService executorService = Executors.newFixedThreadPool(INITIAL_NO_OF_THREADS);
         for (int i = 1; i <= INITIAL_NO_OF_THREADS; i++) {
-            Thread thread = new Thread(new ConcurrencySemaphoreThread());
-            executor.execute(thread);
+            Runnable thread = new ConcurrencySemaphoreThread();
+            executorService.execute(thread);
         }
-        executor.shutdown();
+        executorService.shutdown();
         // Wait for everything to finish.
-        while (!executor.awaitTermination(20, TimeUnit.SECONDS)) {
+        while (!executorService.awaitTermination(20, TimeUnit.SECONDS)) {
             System.out.println("Awaiting completion of threads.");
         }
     }
