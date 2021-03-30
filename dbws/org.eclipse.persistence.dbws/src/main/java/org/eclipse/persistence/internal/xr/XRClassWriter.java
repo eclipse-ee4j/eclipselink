@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,9 +19,9 @@ package org.eclipse.persistence.internal.xr;
 //EclipseLink imports
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.DynamicClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import static org.eclipse.persistence.internal.dynamic.DynamicPropertiesManager.PROPERTIES_MANAGER_FIELD;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PUBLIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_STATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_SUPER;
@@ -33,7 +33,6 @@ import static org.eclipse.persistence.internal.libraries.asm.Opcodes.INVOKESPECI
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.NEW;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.PUTSTATIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.RETURN;
-import static org.eclipse.persistence.internal.libraries.asm.Opcodes.V1_8;
 import static org.eclipse.persistence.internal.xr.XRDynamicClassLoader.COLLECTION_WRAPPER_SUFFIX;
 
 /**
@@ -71,12 +70,12 @@ public class XRClassWriter extends DynamicClassWriter {
     public byte[] writeClass(DynamicClassLoader loader, String className) throws ClassNotFoundException {
 
         String classNameAsSlashes = className.replace('.', '/');
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
         MethodVisitor mv;
 
         // special-case: build sub-class of XRDynamicEntityCollection
         if (className.endsWith(COLLECTION_WRAPPER_SUFFIX)) {
-            cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
+            cw.visit(ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, null);
             mv = cw.visitMethod(ACC_PUBLIC, INIT, "()V", null, null);
             mv.visitVarInsn(ALOAD, 0);
             mv.visitMethodInsn(INVOKESPECIAL, XR_DYNAMIC_ENTITY_COLLECTION_CLASSNAME_SLASHES, INIT, "()V", false);
@@ -85,7 +84,7 @@ public class XRClassWriter extends DynamicClassWriter {
             mv.visitEnd();
         } else {
             // public class Foo extends XRDynamicEntity {
-            cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
+            cw.visit(ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, XR_DYNAMIC_ENTITY_CLASSNAME_SLASHES, null);
 
             // public static XRDynamicPropertiesManager DPM = new
             // XRDynamicPropertiesManager();
