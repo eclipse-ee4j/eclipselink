@@ -16,7 +16,6 @@ package org.eclipse.persistence.testing.tests.junit.helper;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
