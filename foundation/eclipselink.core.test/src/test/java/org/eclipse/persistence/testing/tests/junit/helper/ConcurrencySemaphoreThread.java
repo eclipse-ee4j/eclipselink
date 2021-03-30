@@ -18,6 +18,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.eclipse.persistence.internal.helper.ConcurrencySemaphore;
+import org.junit.Assert;
 
 import static org.junit.Assert.assertTrue;
 
@@ -43,7 +44,7 @@ public class ConcurrencySemaphoreThread implements Runnable {
             //Instead or some code which should take some time is there sleep.
             Thread.currentThread().sleep(300);
         } catch (InterruptedException ex) {
-            throw new RuntimeException("Semaphore Test thread was interrupted.  Test failed to run properly");
+            Assert.fail("Semaphore Test thread was interrupted.  Test failed to run properly");
         } finally {
             currentNoOfThreads.decrementAndGet();
             testSemaphore.releaseSemaphoreAllowOtherThreadsToStartDoingObjectBuilding(semaphoreWasAcquired);
