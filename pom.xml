@@ -162,21 +162,21 @@
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
         <!--Eclipse Dependencies version-->
-        <activation.version>2.0.0</activation.version>
+        <activation.version>2.0.1</activation.version>
         <annotation.version>2.0.0</annotation.version>
         <cdi.version>3.0.0</cdi.version>
         <ejb.version>4.0.0</ejb.version>
         <el.version>4.0.1</el.version>
         <glassfish.version>6.0.0</glassfish.version>
         <jaxwsrt.version>3.0.0</jaxwsrt.version>
-        <jaxb.version>3.0.0</jaxb.version>
-        <jaxb.api.version>3.0.0</jaxb.api.version>
-        <soap.api.version>2.0.0</soap.api.version>
+        <jaxb.version>3.0.1</jaxb.version>
+        <jaxb.api.version>3.0.1</jaxb.api.version>
+        <soap.api.version>2.0.1</soap.api.version>
         <jersey.version>3.0.1</jersey.version>
         <jms.version>3.0.0</jms.version>
         <json.version>2.0.0</json.version>
         <jpa.api.version>3.0.0</jpa.api.version>
-        <mail.version>2.0.0</mail.version>
+        <mail.version>2.0.1</mail.version>
         <oracle.ddlparser.version>3.0.0</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.4</org.glassfish.corba.version>
         <resource.version>2.0.0</resource.version>
