@@ -181,9 +181,6 @@
         <property name="antlr.prefix"         value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria"       value="[3.0.0,4.0.0)"/>
         <property name="antlr.name"           value="EclipseLink ANTLR"/>
-        <property name="asm.prefix"           value="org.eclipse.persistence.asm"/>
-        <property name="asm.criteria"         value="[5.0.0,15.0.0)"/>
-        <property name="asm.name"             value="EclipseLink ASM"/>
         <property name="oracleddl.prefix"     value="org.eclipse.persistence.oracleddlparser"/>
         <property name="oracleddl.criteria"   value="[1.0.0,9.0.0)"/>
         <property name="oracleddl.name"       value="EclipseLink OracleDDL Parser"/>
@@ -206,9 +203,6 @@
         <selectbundle basename="${antlr.prefix}"  directory="${maven.2.common.plugins.dir}"
                       criterion="${antlr.criteria}" property="antlr.version" versiononly="true"
                 />
-        <selectbundle basename="${asm.prefix}"  directory="${maven.2.common.plugins.dir}"
-                      criterion="${asm.criteria}" property="asm.version" versiononly="true"
-                />
         <selectbundle basename="${oracleddl.prefix}"  directory="${maven.2.util.plugins.dir}"
                       criterion="${oracleddl.criteria}" property="oracleddl.version" versiononly="true"
                 />
@@ -227,7 +221,6 @@
 
         <echo message="sdoapi.version     = ${sdoapi.version}"/>
         <echo message="antlr.version      = ${antlr.version}"/>
-        <echo message="asm.version        = ${asm.version}"/>
         <echo message="oracleddl.version  = ${oracleddl.version}"/>
         <echo message="oraclebndl.version = ${oraclebndl.version}"/>
         <echo message="oraclenosql.version= ${oraclenosql.version}"/>
@@ -250,14 +243,14 @@
         <!--   OracleDDL is expected to follow suit                                            -->
         <!--   The Oracle bundles only build periodically, so the bundle version needs to be   -->
         <!--      'discovered' but they should be published as part of the build               -->
-        <!--   ANTLR and ASM bundle versions follow the jar it is based upon, and so new builds-->
+        <!--   ANTLR bundle version follow the jar it is based upon, and so new builds-->
         <!--      only rev the qualifier. However they are uniquely EclipseLink due to the     -->
         <!--      package renaming, so while the version needs to be 'discovered' for artifact -->
         <!--      publishing they will be published under the EclipseLink build version        -->
         <!--   In addition, in all these listed cases, the artifacts are EclipseLink specific, -->
         <!--   and won't be available separately anyway.                                       -->
 
-        <!-- since JPA API is treated as 3rd party dependency, we have to look up it's version -->
+        <!-- since JPA API and repackaged ASM are treated as 3rd party dependencies, we have to look up it's version -->
         <!-- in the dependency management section of appropriate pom                           -->
         <loadfile
             encoding="UTF-8"
@@ -272,10 +265,25 @@
                 </filterchain>
         </loadfile>
 
+        <loadfile
+            encoding="UTF-8"
+            property="asm.version"
+            srcFile="${maven.2.buildsys.dir}/compdeps/pom.xml" >
+                <filterchain>
+                    <tokenfilter>
+                        <containsregex
+                            pattern="&lt;eclipselink.asm.version&gt;(.*)&lt;/eclipselink.asm.version&gt;$"
+                            replace="\1" />
+                    </tokenfilter>
+                </filterchain>
+        </loadfile>
+
         <say  message="jpaapi.mvn.version = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
         <say  message="sdoapi.mvn.version = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
+        <echo message="asm.version        = ${asm.version}"             if="asm.version"/>
         <say  message="jpaapi.mvn.version:  Property not set!"      unless="jpaapi.mvn.version"/>
         <say  message="sdoapi.mvn.version:  Property not set!"      unless="sdoapi.mvn.version"/>
+        <say  message="asm.version:         Property not set!"      unless="asm.version"/>
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
@@ -303,10 +311,11 @@
         <!-- These are EclipseLink maintained public API bundles so are published under the EclipseLink GroupID, but with their own version info -->
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <!-- These are EclipseLink maintained public API bundles published under the EclipseLink GroupID by different build -->
+        <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.asm${dep.ver}${asm.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- APIs that are not EclipseLink's maintained public API bundles but are to be included in EclipseLink pom.xml.  -->
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
-        <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}${asm.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.hermes"        value="${dep.grp}org.eclipse.persistence${dep.art}${hermes.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.dbws"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.dbws${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.core"          value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.core${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>

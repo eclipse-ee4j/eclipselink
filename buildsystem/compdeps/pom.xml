@@ -57,6 +57,7 @@
         <eclipse.drop>2018-12</eclipse.drop>
 
         <!-- DEPENDENCY Versions -->
+        <eclipselink.asm.version>9.1.0-SNAPSHOT</eclipselink.asm.version>
         <!-- CQ #21139, 21140 -->
         <ch.qos.logback.version>1.2.3</ch.qos.logback.version>
         <com.sun.xml.bind.version>2.3.3</com.sun.xml.bind.version>
@@ -242,6 +243,17 @@
     </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <version>${eclipselink.asm.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.asm</artifactId>
+            <classifier>sources</classifier>
+            <version>${eclipselink.asm.version}</version>
+        </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>

@@ -183,7 +183,7 @@ public class DynamicClassWriter implements EclipseLinkClassWriter {
         EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
 
         // public class Foo extends DynamicEntityImpl {
-        cw.visit(ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, interfaces != null ? interfaces.toArray(new String[interfaces.size()]) : null);
+        cw.visit(ACC_PUBLIC + ACC_SUPER, classNameAsSlashes, null, parentClassNameAsSlashes, null);
 
         // public static DynamicPropertiesManager DPM = new
         // DynamicPropertiesManager();

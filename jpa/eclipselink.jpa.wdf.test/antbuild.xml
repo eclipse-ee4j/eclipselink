@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -145,14 +145,14 @@
             <pathelement path="${wdf_test.2.jpa.dir}/${classes.dir}"/>
             <pathelement path="${wdf_test.2.moxy.dir}/${classes.dir}"/>
             <pathelement path="${eclipselink.plugins}/${antlr}"/>
-            <pathelement path="${eclipselink.plugins}/${asm}"/>
+            <pathelement path="${eclipselink.plugins}/${asm.jar}"/>
         </path>
         <path id="product.bundles.path">
             <fileset dir="${wdf_test.2.common.plugins.dir}"
                 includes="org.eclipse.persistence.core_*.jar,
                           org.eclipse.persistence.jpa_*.jar,
                           org.eclipse.persistence.moxy_*.jar,
-                          org.eclipse.persistence.asm_*.jar,
+                          org.eclipse.persistence.asm.jar,
                           org.eclipse.persistence.antlr_*.jar"
             />
         </path>

@@ -4382,7 +4382,7 @@ public final class AnnotationsProcessor {
         mv.visitEnd();
 
         // Write @XmlType(namespace)
-        av = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
+        AnnotationVisitor av = cw.visitAnnotation("Ljavax/xml/bind/annotation/XmlType;", true);
         av.visit("namespace", namespace);
 
         cw.visitEnd();
