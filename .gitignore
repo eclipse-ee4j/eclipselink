@@ -62,3 +62,6 @@ plugins/pfl*.jar
 plugins/slf4j*.jar
 plugins/stax*.jar
 plugins/sun-misc*.jar
+plugins/weld*.jar
+plugins/jboss*.jar
+plugins/org.eclipse.persistence.asm*.jar
