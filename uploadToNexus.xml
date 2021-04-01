@@ -416,16 +416,6 @@
         </antcall>
         <antcall target="upload-artifact">
             <param name="groupId"         value="org.eclipse.persistence"/>
-            <param name="artifactId"      value="${asm.prefix}"/>
-            <param name="artifactVersion" value="${maven.version}"/>
-            <param name="artifact"        value="${maven.2.common.plugins.dir}/${asm.prefix}_${asm.version}.jar"/>
-            <param name="artifactSrc"     value="${maven.2.common.plugins.dir}/${asm.prefix}.source_${asm.version}.jar"/>
-            <param name="artifactJavadoc" value="${maven.2.common.plugins.dir}/${asm.prefix}.javadocs_${asm.version}.jar"/>
-            <param name="artifactName"    value="${asm.name}"/>
-            <param name="dependencies"    value=""/>
-        </antcall>
-        <antcall target="upload-artifact">
-            <param name="groupId"         value="org.eclipse.persistence"/>
             <param name="artifactId"      value="org.eclipse.persistence.core"/>
             <param name="artifactVersion" value="${maven.version}"/>
             <param name="artifact"        value="${maven.2.common.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
