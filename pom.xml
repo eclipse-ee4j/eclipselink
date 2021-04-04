@@ -162,7 +162,7 @@
 
         <!--Eclipse Dependencies version-->
         <!-- TODO: FIX ME before merge-->
-        <eclipselink.asm.version>9.1-SNAPSHOT</eclipselink.asm.version>
+        <eclipselink.asm.version>9.1.0-SNAPSHOT</eclipselink.asm.version>
         <activation.version>2.0.1</activation.version>
         <annotation.version>2.0.0</annotation.version>
         <cdi.version>3.0.0</cdi.version>
