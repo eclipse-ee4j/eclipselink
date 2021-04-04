@@ -672,7 +672,7 @@
         </macrodef>
 
          <!--Populate plugins directory from local compdeps repository.-->
-        <copy-plugin from="org.eclipse.persistence.asm-*.jar" to="${asm.src.jar}"/>
+        <copy-plugin from="org.eclipse.persistence.asm.source*.jar" to="${asm.src.jar}"/>
         <copy-plugin from="org.eclipse.persistence.asm_*.jar" to="${asm.jar}"/>
         <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="${cdi-api.jar}"/>
         <copy-plugin from="ch.qos.logback.classic*.jar" to="${logback-classic.jar}"/>
@@ -1005,7 +1005,7 @@
             <!-- Include all non-duplicate content from bOSGi bundles -->
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
-                <include name="org.eclipse.persistence.asm_*.jar"/>
+                <include name="${asm.jar}"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
                 <include name="org.eclipse.persistence.oracle_*.jar"/>
                 <exclude name="*.jpa.jpql*.jar"/>

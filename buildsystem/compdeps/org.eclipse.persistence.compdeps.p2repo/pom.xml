@@ -52,12 +52,6 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.eclipse.persistence</groupId>
-                                    <artifactId>org.eclipse.persistence.asm</artifactId>
-                                    <classifier>sources</classifier>
-                                    <version>${eclipselink.asm.version}</version>
-                                </artifactItem>
-                                <artifactItem>
                                     <groupId>jakarta.xml.bind</groupId>
                                     <artifactId>jakarta.xml.bind-api</artifactId>
                                     <version>${jakarta.xml.bind.version}</version>

@@ -36,12 +36,12 @@
       <discovery label="%secondaryUpdateSiteName" url="%secondaryUpdateURL"/>
    </url>
 
-<!--   <plugin
+   <plugin
          id="org.eclipse.persistence.asm.source"
          download-size="0"
          install-size="0"
          version="@ASM_VERSION@"
-         unpack="false"/>-->
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.persistence.core.source"
