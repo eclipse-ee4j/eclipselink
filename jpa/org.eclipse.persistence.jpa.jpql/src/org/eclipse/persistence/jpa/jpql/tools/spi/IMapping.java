@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,6 +102,15 @@ public interface IMapping extends IExternalForm,
      * @since 2.4
      */
     boolean isCollection();
+
+    /**
+     * Determines whether this {@link IMapping} is an embeddable type mapping.
+     *
+     * @return <code>true</code> if this {@link IMapping} is an embeddable mapping;
+     * <code>false</code> otherwise
+     * @since 2.4
+     */
+    boolean isEmbeddable();
 
     /**
      * Determines whether this {@link IMapping} is a property type mapping.
