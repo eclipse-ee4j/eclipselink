@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -78,8 +79,8 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
      */
     @Override
     public CriteriaQuery<T> select(Selection<? extends T> selection) {
-        findRootAndParameters(selection);
-        this.selection = (SelectionImpl) selection;
+        this.selection = (SelectionImpl<? extends T>) selection;
+        this.selection.findRootAndParameters(this);
         if (selection.isCompoundSelection()) {
             //bug 366386: validate that aliases are not reused
             if (this.selection.isCompoundSelection() && ((CompoundSelectionImpl)this.selection).getDuplicateAliasNames() != null) {
@@ -159,7 +160,7 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
             return this;
         }
         for (Selection select : selections) {
-            findRootAndParameters(select);
+            ((SelectionImpl)select).findRootAndParameters(this);
         }
         if (this.queryResult == ResultType.CONSTRUCTOR) {
             populateAndSetConstructorSelection(null, this.queryType, selections);
