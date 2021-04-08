@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,8 @@ import org.eclipse.persistence.sessions.Record;
  * @since TOPLink/Java 1.0
  */
 public class CacheKey extends ConcurrencyManager implements Cloneable {
+
+    public final CacheKey.ThreadInfo CREATION_THREAD_INFO = new CacheKey.ThreadInfo();
 
     /** The key holds the vector of primary key values for the object. */
     protected Object key;
@@ -613,5 +615,39 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
             //ignore as the loop is broken
         }
         return this.object;
+    }
+
+    public class ThreadInfo {
+        private long id;
+        private String name;
+        private long hashCode;
+
+        public ThreadInfo() {
+            Thread currentThread = Thread.currentThread();
+            this.id = currentThread.getId();
+            this.name = String.copyValueOf(currentThread.getName().toCharArray());
+            this.hashCode = currentThread.hashCode();
+        }
+
+        public long getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public long getHashCode() {
+            return hashCode;
+        }
+
+        @Override
+        public String toString() {
+            return "ThreadInfo{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    ", hashCode=" + hashCode +
+                    '}';
+        }
     }
 }
