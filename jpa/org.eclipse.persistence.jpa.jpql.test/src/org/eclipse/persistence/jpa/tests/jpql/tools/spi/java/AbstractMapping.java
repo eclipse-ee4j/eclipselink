@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -281,6 +282,15 @@ public abstract class AbstractMapping implements IMapping {
             case ELEMENT_COLLECTION:
             case MANY_TO_MANY:
             case ONE_TO_MANY: return true;
+            default:          return false;
+        }
+    }
+
+    @Override
+    public boolean isEmbeddable() {
+        switch (getMappingType()) {
+            case EMBEDDED:
+            case EMBEDDED_ID: return true;
             default:          return false;
         }
     }
