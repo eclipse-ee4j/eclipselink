@@ -13,17 +13,25 @@ package org.eclipse.persistence.jpa.embeddable;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Query;
 
 import org.eclipse.persistence.jpa.embeddable.model.ElementCollectionEmbeddableTemporal;
 import org.eclipse.persistence.jpa.embeddable.model.ElementCollectionEntity;
+import org.eclipse.persistence.jpa.embeddable.model.SpecAddress;
+import org.eclipse.persistence.jpa.embeddable.model.SpecContactInfo;
+import org.eclipse.persistence.jpa.embeddable.model.SpecEmployee;
+import org.eclipse.persistence.jpa.embeddable.model.SpecPhone;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
+import org.eclipse.persistence.jpa.test.framework.SQLListener;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -34,6 +42,13 @@ public class TestCollectionTableEmbeddable {
             properties = { 
                     @Property(name = "eclipselink.cache.shared.default", value = "false")})
     private EntityManagerFactory emf;
+
+    @Emf(name = "SpecPersistenceUnit", createTables = DDLGen.DROP_CREATE, 
+            classes = { SpecAddress.class, SpecContactInfo.class, SpecEmployee.class, SpecPhone.class })
+    private EntityManagerFactory emf2;
+
+    @SQLListener(name = "SpecPersistenceUnit")
+    List<String> _sql;
 
     @Test
     public void mergeTest() {
@@ -62,6 +77,25 @@ public class TestCollectionTableEmbeddable {
                 em.getTransaction().rollback();
             }
             em.close();
+        }
+    }
+
+    @Test
+    public void JPQLAggregateCollectionTests() {
+        EntityManager em = emf2.createEntityManager();
+        try {
+            /*
+             * ContactInfo.previousAddresses should end up being an AggregateCollectionMapping
+             */
+            Query queryEmbed = em.createQuery("SELECT p.city FROM SpecEmployee e JOIN e.contactInfo.previousAddresses p WHERE e.contactInfo.primaryAddress.zipcode = ?1");
+            queryEmbed.setParameter(1, "95054");
+            queryEmbed.getResultList();
+            Assert.assertEquals(1, _sql.size());
+            Assert.assertEquals("SELECT t0.CITY FROM PREV_ADDRESSES t0, SPECEMPLOYEE t1 WHERE ((t1.ZIPCODE = ?) AND (t0.SpecEmployee_ID = t1.ID))", _sql.remove(0));
+        } finally {
+            if (em.isOpen()) {
+                em.close();
+            }
         }
     }
 }
