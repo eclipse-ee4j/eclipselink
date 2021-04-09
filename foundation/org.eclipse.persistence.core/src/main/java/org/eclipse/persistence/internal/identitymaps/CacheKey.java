@@ -31,7 +31,10 @@ import org.eclipse.persistence.sessions.Record;
  */
 public class CacheKey extends ConcurrencyManager implements Cloneable {
 
-    public final CacheKey.ThreadInfo CREATION_THREAD_INFO = new CacheKey.ThreadInfo();
+    //These constants are used in extended cache logging to compare cache item creation thread and thread which picking item from the cache
+    public final long CREATION_THREAD_ID = Thread.currentThread().getId();
+    public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
+    public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
 
     /** The key holds the vector of primary key values for the object. */
     protected Object key;
@@ -615,39 +618,5 @@ public class CacheKey extends ConcurrencyManager implements Cloneable {
             //ignore as the loop is broken
         }
         return this.object;
-    }
-
-    public class ThreadInfo {
-        private long id;
-        private String name;
-        private long hashCode;
-
-        public ThreadInfo() {
-            Thread currentThread = Thread.currentThread();
-            this.id = currentThread.getId();
-            this.name = String.copyValueOf(currentThread.getName().toCharArray());
-            this.hashCode = currentThread.hashCode();
-        }
-
-        public long getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public long getHashCode() {
-            return hashCode;
-        }
-
-        @Override
-        public String toString() {
-            return "ThreadInfo{" +
-                    "id=" + id +
-                    ", name='" + name + '\'' +
-                    ", hashCode=" + hashCode +
-                    '}';
-        }
     }
 }
