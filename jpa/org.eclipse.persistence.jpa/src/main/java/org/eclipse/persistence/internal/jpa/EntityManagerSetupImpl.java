@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2892,6 +2892,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateSQLCastSetting(m);
             updateUppercaseSetting(m);
             updateCacheStatementSettings(m);
+            updateAllowExtendedCacheLogging(m);
             updateTemporalMutableSetting(m);
             updateTableCreationSettings(m);
             updateIndexForeignKeys(m);
@@ -3915,6 +3916,26 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             this.session.handleException(ValidationException.invalidValueForProperty(concurrencySemaphoreLogTimeout, PersistenceUnitProperties.CONCURRENCY_SEMAPHORE_LOG_TIMEOUT, exception));
         }
     }
+
+    /**
+     * Enable or disable extended logging of JPA L2 cache usage.
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateAllowExtendedCacheLogging(Map m){
+        // Set allow native SQL queries flag if it was specified.
+        String allowExtendedCacheLogging = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_EXTENDED_LOGGING, m, session);
+
+        if (allowExtendedCacheLogging != null) {
+            if (allowExtendedCacheLogging.equalsIgnoreCase("true")) {
+                session.getProject().setAllowExtendedCacheLogging(true);
+            } else if (allowExtendedCacheLogging.equalsIgnoreCase("false")) {
+                session.getProject().setAllowExtendedCacheLogging(false);
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForSettingAllowNativeSQLQueries(allowExtendedCacheLogging));
+            }
+        }
+    }
+
 
     /**
      * If Bean Validation is enabled, bootstraps Bean Validation on descriptors.

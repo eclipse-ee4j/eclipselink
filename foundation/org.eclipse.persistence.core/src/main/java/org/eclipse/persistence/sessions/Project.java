@@ -158,6 +158,9 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** Flag that allows transform named stored procedure parameters into positional/index based */
     protected boolean namingIntoIndexed = false;
 
+    /** Flag that allows extended logging of JPA L2 cache or not. */
+    protected boolean allowExtendedCacheLogging = false;
+
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
      * without creating a compile time dependency on JPA.
@@ -1319,6 +1322,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     }
 
     /**
+     * INTERNAL:
+     * Return true if extended logging of JPA L2 cache usage is allowed on this project.
+     */
+    public boolean allowExtendedCacheLogging() {
+        return this.allowExtendedCacheLogging;
+    }
+
+    /**
      * PUBLIC:
      * Return the descriptor for  the alias
      */
@@ -1371,6 +1382,14 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setNamingIntoIndexed(boolean namingIntoIndexed) {
         this.namingIntoIndexed = namingIntoIndexed;
+    }
+
+    /**
+     * INTERNAL:
+     * Set whether extended logging of JPA L2 cache usage is allowed on this project.
+     */
+    public void setAllowExtendedCacheLogging(boolean allowExtendedCacheLogging) {
+        this.allowExtendedCacheLogging = allowExtendedCacheLogging;
     }
 
     /**

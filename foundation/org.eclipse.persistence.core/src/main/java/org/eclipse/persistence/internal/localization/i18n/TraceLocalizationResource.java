@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2017, 2020 IBM Corporation. All rights reserved.
+ * Copyright (c) 2017, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,14 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "initialize_identitymaps", "initialize identitymaps" },
         { "external_transaction_has_rolled_back_internally", "external transaction has rolled back internally" },
         { "validate_cache", "validate cache." },
+        { "cache_item_creation", "Entity ({0}) with Id ({1}) was stored in the cache by thread (Id: {2} Name: {3})" },
+        { "cache_item_refresh", "Entity ({0}) with Id ({1}) was refreshed in the cache by thread (Id: {2} Name: {3})" },
+        { "cache_item_removal", "Entity ({0}) with Id ({1}) was removed from the cache by thread (Id: {2} Name: {3})" },
+        { "cache_item_invalidation", "Entity ({0}) with Id ({1}) was invalidated from the cache by thread (Id: {2} Name: {3})" },
+        { "cache_class_invalidation", "Entities based on class ({0}) was invalidated from the cache by thread (Id: {1} Name: {2})" },
+        { "cache_hit", "Cache hit for entity ({0}) with Id ({1})" },
+        { "cache_miss", "Cache miss for entity ({0}) with Id ({1})" },
+        { "cache_thread_info", "Cached entity ({0}) with Id ({1}) was stored into cache by another thread (id: {2} name: {3}), than current thread (id: {4} name: {5})" },
         { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
         { "corrupt_object_referenced_through_mapping", "corrupt object referenced through mapping: {0}" },
         { "corrupt_object", "corrupt object: {0}" },
