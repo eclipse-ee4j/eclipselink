@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -3922,6 +3922,22 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         if (descriptor.isDescriptorTypeAggregate()) {
             throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(objectToRegister.getClass());
+        }
+        if (project.allowExtendedCacheLogging()) {
+            //Not null if objectToRegister exist in cache
+            CacheKey cacheKey = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor)this.getRootSession(null).getParent().getIdentityMapAccessor()).getCacheKeyForObject(objectToRegister);
+            Object objectToRegisterId = this.getId(objectToRegister);
+            if (cacheKey != null) {
+                log(SessionLog.FINEST, SessionLog.CACHE, "cache_hit", new Object[] {objectToRegister.getClass(), objectToRegisterId});
+                Thread currentThread = Thread.currentThread();
+                if (currentThread.hashCode() != cacheKey.CREATION_THREAD_HASHCODE) {
+                    log(SessionLog.FINEST, SessionLog.CACHE, "cache_thread_info", new Object[]{objectToRegister.getClass(), objectToRegisterId,
+                            cacheKey.CREATION_THREAD_ID, cacheKey.CREATION_THREAD_NAME,
+                            currentThread.getId(), currentThread.getName()});
+                }
+            } else {
+                log(SessionLog.FINEST, SessionLog.CACHE, "cache_miss", new Object[] {objectToRegister.getClass(), objectToRegisterId});
+            }
         }
         //CR#2272
         logDebugMessage(objectToRegister, "register_existing");

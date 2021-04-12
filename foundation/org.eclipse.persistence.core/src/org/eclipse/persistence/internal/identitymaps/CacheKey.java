@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -28,6 +28,11 @@ import org.eclipse.persistence.sessions.Record;
  * @since TOPLink/Java 1.0
  */
 public class CacheKey extends ConcurrencyManager implements Cloneable {
+
+    //These constants are used in extended cache logging to compare cache item creation thread and thread which picking item from the cache
+    public final long CREATION_THREAD_ID = Thread.currentThread().getId();
+    public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
+    public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
 
     /** The key holds the vector of primary key values for the object. */
     protected Object key;

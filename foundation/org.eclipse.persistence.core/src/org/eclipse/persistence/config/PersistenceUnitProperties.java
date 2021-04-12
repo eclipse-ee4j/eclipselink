@@ -1261,6 +1261,22 @@ public class PersistenceUnitProperties {
      */
     public static final String CACHE_TYPE_DEFAULT = CACHE_TYPE_ + DEFAULT;
 
+    /**
+     * The "<code>eclipselink.cache.extended.logging</code>" property control (enable/disable)
+     * usage logging of JPA L2 cache. In case of "<code>true</code>" EclipseLink generates messages into log output
+     * about cache hit/miss new object population and object removal or invalidation.
+     * This kind of messages will by displayed only if logging level (property "<code>eclipselink.logging.level</code>")
+     * is "<code>FINEST</code>"
+     * It displays Entity class, ID and thread info (ID, Name).
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT)
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String CACHE_EXTENDED_LOGGING = "eclipselink.cache.extended.logging";
+
     /*
      * NOTE: The Canonical Model properties should be kept in sync with those
      * in org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.

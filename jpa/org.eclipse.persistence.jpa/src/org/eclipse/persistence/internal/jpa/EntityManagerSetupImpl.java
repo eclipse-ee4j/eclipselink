@@ -2813,6 +2813,7 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateSQLCastSetting(m);
             updateUppercaseSetting(m);
             updateCacheStatementSettings(m);
+            updateAllowExtendedCacheLogging(m);
             updateTemporalMutableSetting(m);
             updateTableCreationSettings(m);
             updateIndexForeignKeys(m);
@@ -3752,6 +3753,25 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             }
         } catch (NumberFormatException exception) {
             this.session.handleException(ValidationException.invalidValueForProperty(concurrencySemaphoreLogTimeout, PersistenceUnitProperties.CONCURRENCY_SEMAPHORE_LOG_TIMEOUT, exception));
+        }
+    }
+
+    /**
+     * Enable or disable extended logging of JPA L2 cache usage.
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateAllowExtendedCacheLogging(Map m) {
+        // Set allow native SQL queries flag if it was specified.
+        String allowExtendedCacheLogging = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_EXTENDED_LOGGING, m, session);
+
+        if (allowExtendedCacheLogging != null) {
+            if (allowExtendedCacheLogging.equalsIgnoreCase("true")) {
+                session.getProject().setAllowExtendedCacheLogging(true);
+            } else if (allowExtendedCacheLogging.equalsIgnoreCase("false")) {
+                session.getProject().setAllowExtendedCacheLogging(false);
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForSettingAllowNativeSQLQueries(allowExtendedCacheLogging));
+            }
         }
     }
 
