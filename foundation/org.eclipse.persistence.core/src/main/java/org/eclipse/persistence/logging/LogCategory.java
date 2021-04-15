@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
  * <tr><td>&nbsp;</td><td>SEQUENCING</td>     <td>&nbsp;</td><td>= "sequencing"</td></tr>
  * <tr><td>&nbsp;</td><td>SERVER</td>         <td>&nbsp;</td><td>= "server"</td></tr>
  * <tr><td>&nbsp;</td><td>SQL</td>            <td>&nbsp;</td><td>= "sql"</td></tr>
+ * <tr><td>&nbsp;</td><td>THREAD</td>         <td>&nbsp;</td><td>= "thread"</td></tr>
  * <tr><td>&nbsp;</td><td>TRANSACTION</td>    <td>&nbsp;</td><td>= "transaction"</td></tr>
  * <tr><td>&nbsp;</td><td>WEAVER</td>         <td>&nbsp;</td><td>= "weaver"</td></tr>
  * </table>
@@ -70,8 +71,9 @@ public enum LogCategory {
     SEQUENCING( (byte)0x12, SessionLog.SEQUENCING),
     SERVER(     (byte)0x13, SessionLog.SERVER),
     SQL(        (byte)0x14, SessionLog.SQL),
-    TRANSACTION((byte)0x15, SessionLog.TRANSACTION),
-    WEAVER(     (byte)0x16, SessionLog.WEAVER);
+    THREAD(     (byte)0x15, SessionLog.THREAD),
+    TRANSACTION((byte)0x16, SessionLog.TRANSACTION),
+    WEAVER(     (byte)0x17, SessionLog.WEAVER);
 
     /** Logging categories enumeration length. */
     public static final int length = LogCategory.values().length;

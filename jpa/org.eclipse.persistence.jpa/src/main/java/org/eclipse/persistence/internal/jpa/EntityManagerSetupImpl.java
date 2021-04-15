@@ -2893,6 +2893,8 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             updateUppercaseSetting(m);
             updateCacheStatementSettings(m);
             updateAllowExtendedCacheLogging(m);
+            updateAllowExtendedThreadLogging(m);
+            updateAllowExtendedThreadLoggingThreadDump(m);
             updateTemporalMutableSetting(m);
             updateTableCreationSettings(m);
             updateIndexForeignKeys(m);
@@ -3922,7 +3924,6 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
      * The method needs to be called in deploy stage.
      */
     protected void updateAllowExtendedCacheLogging(Map m){
-        // Set allow native SQL queries flag if it was specified.
         String allowExtendedCacheLogging = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.CACHE_EXTENDED_LOGGING, m, session);
 
         if (allowExtendedCacheLogging != null) {
@@ -3931,11 +3932,46 @@ public class EntityManagerSetupImpl implements MetadataRefreshListener {
             } else if (allowExtendedCacheLogging.equalsIgnoreCase("false")) {
                 session.getProject().setAllowExtendedCacheLogging(false);
             } else {
-                session.handleException(ValidationException.invalidBooleanValueForSettingAllowNativeSQLQueries(allowExtendedCacheLogging));
+                session.handleException(ValidationException.invalidBooleanValueForProperty(allowExtendedCacheLogging, PersistenceUnitProperties.CACHE_EXTENDED_LOGGING));
             }
         }
     }
 
+    /**
+     * Enable or disable extended thread logging.
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateAllowExtendedThreadLogging(Map m){
+        String allowExtendedThreadLogging = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.THREAD_EXTENDED_LOGGING, m, session);
+
+        if (allowExtendedThreadLogging != null) {
+            if (allowExtendedThreadLogging.equalsIgnoreCase("true")) {
+                session.getProject().setAllowExtendedThreadLogging(true);
+            } else if (allowExtendedThreadLogging.equalsIgnoreCase("false")) {
+                session.getProject().setAllowExtendedThreadLogging(false);
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForProperty(allowExtendedThreadLogging, PersistenceUnitProperties.THREAD_EXTENDED_LOGGING));
+            }
+        }
+    }
+
+    /**
+     * Enable or disable thread dump addition to extended thread logging.
+     * The method needs to be called in deploy stage.
+     */
+    protected void updateAllowExtendedThreadLoggingThreadDump(Map m){
+        String allowExtendedThreadLoggingThreadDump = EntityManagerFactoryProvider.getConfigPropertyAsStringLogDebug(PersistenceUnitProperties.THREAD_EXTENDED_LOGGING_THREADDUMP, m, session);
+
+        if (allowExtendedThreadLoggingThreadDump != null) {
+            if (allowExtendedThreadLoggingThreadDump.equalsIgnoreCase("true")) {
+                session.getProject().setAllowExtendedThreadLoggingThreadDump(true);
+            } else if (allowExtendedThreadLoggingThreadDump.equalsIgnoreCase("false")) {
+                session.getProject().setAllowExtendedThreadLoggingThreadDump(false);
+            } else {
+                session.handleException(ValidationException.invalidBooleanValueForProperty(allowExtendedThreadLoggingThreadDump, PersistenceUnitProperties.THREAD_EXTENDED_LOGGING_THREADDUMP));
+            }
+        }
+    }
 
     /**
      * If Bean Validation is enabled, bootstraps Bean Validation on descriptors.
