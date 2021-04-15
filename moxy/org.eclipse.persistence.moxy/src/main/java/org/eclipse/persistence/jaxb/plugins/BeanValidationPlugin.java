@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,7 +27,6 @@ import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.math.BigInteger;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
@@ -74,15 +73,14 @@ import com.sun.tools.xjc.model.CReferencePropertyInfo;
 import com.sun.tools.xjc.model.CValuePropertyInfo;
 import com.sun.tools.xjc.outline.ClassOutline;
 import com.sun.tools.xjc.outline.Outline;
+import com.sun.xml.xsom.XSAttributeUse;
 import com.sun.xml.xsom.XSElementDecl;
 import com.sun.xml.xsom.XSFacet;
 import com.sun.xml.xsom.XSParticle;
+import com.sun.xml.xsom.XSRestrictionSimpleType;
 import com.sun.xml.xsom.XSSimpleType;
 import com.sun.xml.xsom.XSTerm;
 import com.sun.xml.xsom.XSType;
-import com.sun.xml.xsom.impl.AttributeUseImpl;
-import com.sun.xml.xsom.impl.ParticleImpl;
-import com.sun.xml.xsom.impl.RestrictionSimpleTypeImpl;
 import com.sun.xml.xsom.impl.parser.DelayedRef;
 
 
@@ -284,7 +282,7 @@ public class BeanValidationPlugin extends Plugin {
         String valuePropertyName = valueProperty.getName(false);
 
         JFieldVar fieldVar = classOutline.implClass.fields().get(valuePropertyName);
-        XSSimpleType type = ((RestrictionSimpleTypeImpl) valueProperty.getSchemaComponent()).asSimpleType();
+        XSSimpleType type = ((XSRestrictionSimpleType) valueProperty.getSchemaComponent()).asSimpleType();
 
         processSimpleType(null, type, fieldVar, customizations);
     }
@@ -305,7 +303,7 @@ public class BeanValidationPlugin extends Plugin {
         String attributePropertyName = attributeProperty.getName(false);
         JFieldVar fieldVar = classOutline.implClass.fields().get(attributePropertyName);
 
-        AttributeUseImpl attribute = (AttributeUseImpl) attributeProperty.getSchemaComponent();
+        XSAttributeUse attribute = (XSAttributeUse) attributeProperty.getSchemaComponent();
         XSSimpleType type = attribute.getDecl().getType();
 
         // Use="required". It makes sense to annotate a required attribute with @NotNull even though it's not 100 % semantically equivalent.
@@ -338,7 +336,7 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private void processTermElement(XSParticle particle, JFieldVar fieldVar, XSElementDecl element, List<FacetCustomization> customizations) {
-        final int minOccurs = getOccursValue("minOccurs", particle);
+        final int minOccurs = particle.getMinOccurs().intValue();
         XSType elementType = element.getType();
 
         if (elementType.isComplexType()) {
@@ -683,8 +681,8 @@ public class BeanValidationPlugin extends Plugin {
      * If the values are not default, the property will be annotated with @Size.
      */
     private void processMinMaxOccurs(XSParticle particle, JFieldVar fieldVar) {
-        final int maxOccurs = getOccursValue("maxOccurs", particle);
-        final int minOccurs = getOccursValue("minOccurs", particle);
+        final int maxOccurs = particle.getMaxOccurs().intValue();
+        final int minOccurs = particle.getMinOccurs().intValue();
         if (maxOccurs > 1) {
             if (notAnnotated(fieldVar, ANNOTATION_SIZE))
                 fieldVar.annotate(ANNOTATION_SIZE).param("min", minOccurs).param("max", maxOccurs);
@@ -702,7 +700,7 @@ public class BeanValidationPlugin extends Plugin {
     private void convertToElement(XSParticle particle, JFieldVar fieldVar) {
         if (notAnnotated(fieldVar, ANNOTATION_XMLELEMENT)) {
             fieldVar.annotate(XmlElement.class);
-            if (particle != null && getOccursValue("minOccurs", particle) > 0) {
+            if (particle != null && particle.getMinOccurs().intValue() > 0) {
                 notNullAnnotate(fieldVar);
             }
         }
@@ -792,12 +790,6 @@ public class BeanValidationPlugin extends Plugin {
         return clazz;
     }
 
-    private int getOccursValue(final String attributeName, final XSParticle xsParticle) {
-        return securityEnabled
-            ? AccessController.doPrivileged(OccursValueActionExecutor.INSTANCE.with(attributeName, xsParticle)).intValue()
-            : loadOccursValue(attributeName, xsParticle).intValue();
-    }
-
     private String getExistingBoundaryValue(final JAnnotationUse jAnnotationUse) {
         return securityEnabled
             ? AccessController.doPrivileged(ExistingBoundaryValueActionExecutor.INSTANCE.with(jAnnotationUse))
@@ -879,6 +871,9 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private boolean isDefaultBoundary(String fieldVarType, String annotationClass, String boundaryValue) {
+        if (unboundedDigitsClasses.contains(fieldVarType)) {
+            return false;
+        }
         return ANNOTATION_DECIMALMIN.fullName().equals(annotationClass)
                 && nonFloatingDigitsClassesBoundaries.get(fieldVarType).min.equals(boundaryValue)
                 || (ANNOTATION_DECIMALMAX.fullName().equals(annotationClass)
@@ -911,6 +906,15 @@ public class BeanValidationPlugin extends Plugin {
         set.add("BigDecimal");
         set.add("BigInteger");
         nonFloatingDigitsClasses = Collections.unmodifiableSet(set);
+    }
+
+    private static final Set<String> unboundedDigitsClasses;
+
+    static {
+        Set<String> set = new HashSet<>();
+        set.add("BigInteger");
+        set.add("BigDecimal");
+        unboundedDigitsClasses = Collections.unmodifiableSet(new HashSet<>(set));
     }
 
     private static final Set<String> floatingDigitsClasses;
@@ -973,42 +977,6 @@ public class BeanValidationPlugin extends Plugin {
 
     private static Class<?> loadClassInternal(String className) throws ClassNotFoundException {
         return Class.forName(className);
-    }
-
-    private static final class OccursValueActionExecutor {
-
-        private interface PrivilegedActionWith<T> extends PrivilegedAction<T> {
-            PrivilegedAction<T> with(String fieldName, XSParticle xsParticle);
-        }
-
-        private static final PrivilegedActionWith<BigInteger> INSTANCE = new PrivilegedActionWith<BigInteger>() {
-            private String fieldName;
-            private XSParticle xsParticle;
-
-            @Override
-            public BigInteger run() {
-                return loadOccursValue(fieldName, xsParticle);
-            }
-
-            @Override
-            public PrivilegedActionWith<BigInteger> with(String className, XSParticle xsParticle) {
-                this.fieldName = className;
-                this.xsParticle = xsParticle;
-                return this;
-            }
-        };
-    }
-
-    private static BigInteger loadOccursValue(String fieldName, XSParticle xsParticle) {
-        try {
-            Field field = ParticleImpl.class.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            return ((BigInteger) field.get(xsParticle));
-        } catch (Exception e) {
-            // Nothing we can do, the user should be notified that his app is unable to
-            // execute this plugin correctly and not should not receive generated default values.
-            throw new RuntimeException(e);
-        }
     }
 
     private static final class ExistingBoundaryValueActionExecutor {
