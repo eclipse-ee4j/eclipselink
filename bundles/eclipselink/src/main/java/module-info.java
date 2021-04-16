@@ -1,0 +1,198 @@
+/*
+ * Copyright (c) 2021 Oracle and/or its affiliates. All rights reserved.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v. 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0,
+ * or the Eclipse Distribution License v. 1.0 which is available at
+ * http://www.eclipse.org/org/documents/edl-v10.php.
+ *
+ * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
+ */
+
+module eclipselink {
+
+    requires java.desktop;
+    requires java.management;
+    requires java.naming;
+    requires java.rmi;
+    requires java.sql;
+    requires java.xml;
+
+    requires static jakarta.activation;
+    requires static jakarta.annotation;
+    requires static jakarta.json;
+    requires static jakarta.mail;
+    requires static jakarta.persistence;
+    requires static jakarta.validation;
+    requires static jakarta.ws.rs;
+    requires static jakarta.xml.bind;
+
+    requires static jakarta.cdi; //AM
+    requires static jakarta.el; //AM
+    requires static jakarta.inject; //AM
+    requires static jakarta.transaction; //AM
+
+    requires static com.sun.tools.xjc;
+    requires static com.sun.xml.bind.core;
+
+    exports org.eclipse.persistence.jpa.jpql;
+    exports org.eclipse.persistence.jpa.jpql.parser;
+    exports org.eclipse.persistence.jpa.jpql.utility.iterable;
+
+    exports org.eclipse.persistence;
+    exports org.eclipse.persistence.annotations;
+    exports org.eclipse.persistence.config;
+    exports org.eclipse.persistence.core.descriptors;
+    exports org.eclipse.persistence.core.mappings;
+    exports org.eclipse.persistence.core.mappings.converters;
+    exports org.eclipse.persistence.core.mappings.transformers;
+    exports org.eclipse.persistence.core.queries;
+    exports org.eclipse.persistence.core.sessions;
+    exports org.eclipse.persistence.descriptors;
+    exports org.eclipse.persistence.descriptors.changetracking;
+    exports org.eclipse.persistence.descriptors.copying;
+    exports org.eclipse.persistence.descriptors.invalidation;
+    exports org.eclipse.persistence.descriptors.partitioning;
+    exports org.eclipse.persistence.dynamic;
+    exports org.eclipse.persistence.eis;
+    exports org.eclipse.persistence.eis.interactions;
+    exports org.eclipse.persistence.eis.mappings;
+    exports org.eclipse.persistence.exceptions;
+    exports org.eclipse.persistence.exceptions.i18n;
+    exports org.eclipse.persistence.expressions;
+    exports org.eclipse.persistence.history;
+    exports org.eclipse.persistence.indirection;
+    exports org.eclipse.persistence.logging;
+    exports org.eclipse.persistence.mappings;
+    exports org.eclipse.persistence.mappings.converters;
+    exports org.eclipse.persistence.mappings.foundation;
+    exports org.eclipse.persistence.mappings.querykeys;
+    exports org.eclipse.persistence.mappings.structures;
+    exports org.eclipse.persistence.mappings.transformers;
+    exports org.eclipse.persistence.mappings.xdb;
+    exports org.eclipse.persistence.oxm;
+    exports org.eclipse.persistence.oxm.annotations;
+    exports org.eclipse.persistence.oxm.attachment;
+    exports org.eclipse.persistence.oxm.documentpreservation;
+    exports org.eclipse.persistence.oxm.json;
+    exports org.eclipse.persistence.oxm.mappings;
+    exports org.eclipse.persistence.oxm.mappings.converters;
+    exports org.eclipse.persistence.oxm.mappings.nullpolicy;
+    exports org.eclipse.persistence.oxm.platform;
+    exports org.eclipse.persistence.oxm.record;
+    exports org.eclipse.persistence.oxm.schema;
+    exports org.eclipse.persistence.oxm.sequenced;
+    exports org.eclipse.persistence.oxm.unmapped;
+    exports org.eclipse.persistence.platform.database;
+    exports org.eclipse.persistence.platform.database.converters;
+    exports org.eclipse.persistence.platform.database.events;
+    exports org.eclipse.persistence.platform.database.jdbc;
+    exports org.eclipse.persistence.platform.database.oracle.annotations;
+    exports org.eclipse.persistence.platform.database.oracle.jdbc;
+    exports org.eclipse.persistence.platform.database.oracle.plsql;
+    exports org.eclipse.persistence.platform.database.partitioning;
+    exports org.eclipse.persistence.platform.server;
+    exports org.eclipse.persistence.platform.server.glassfish;
+    exports org.eclipse.persistence.platform.server.was;
+    exports org.eclipse.persistence.platform.server.wls;
+    exports org.eclipse.persistence.platform.xml;
+    exports org.eclipse.persistence.queries;
+    exports org.eclipse.persistence.sequencing;
+    exports org.eclipse.persistence.services;
+    exports org.eclipse.persistence.services.glassfish;
+    exports org.eclipse.persistence.services.jboss;
+    exports org.eclipse.persistence.services.mbean;
+    exports org.eclipse.persistence.services.weblogic;
+    exports org.eclipse.persistence.services.websphere;
+    exports org.eclipse.persistence.sessions;
+    exports org.eclipse.persistence.sessions.broker;
+    exports org.eclipse.persistence.sessions.changesets;
+    exports org.eclipse.persistence.sessions.coordination;
+    exports org.eclipse.persistence.sessions.coordination.broadcast;
+    exports org.eclipse.persistence.sessions.coordination.jms;
+    exports org.eclipse.persistence.sessions.coordination.rmi;
+    exports org.eclipse.persistence.sessions.factories;
+    exports org.eclipse.persistence.sessions.remote;
+    exports org.eclipse.persistence.sessions.remote.rmi;
+    exports org.eclipse.persistence.sessions.serializers;
+    exports org.eclipse.persistence.sessions.server;
+    exports org.eclipse.persistence.tools.profiler;
+    exports org.eclipse.persistence.tools.schemaframework;
+    exports org.eclipse.persistence.tools.tuning;
+    exports org.eclipse.persistence.transaction;
+    exports org.eclipse.persistence.transaction.glassfish;
+    exports org.eclipse.persistence.transaction.jboss;
+    exports org.eclipse.persistence.transaction.oc4j;
+    exports org.eclipse.persistence.transaction.sap;
+    exports org.eclipse.persistence.transaction.was;
+    exports org.eclipse.persistence.transaction.wls;
+
+    exports org.eclipse.persistence.sessions.coordination.corba;
+    exports org.eclipse.persistence.sessions.coordination.corba.sun;
+    exports org.eclipse.persistence.sessions.remote.corba.sun;
+    exports org.eclipse.persistence.sessions.remote.rmi.iiop;
+
+    exports org.eclipse.persistence.platform.database.oracle;
+    exports org.eclipse.persistence.platform.database.oracle.converters;
+    exports org.eclipse.persistence.platform.database.oracle.dcn;
+    exports org.eclipse.persistence.platform.database.oracle.ucp;
+    exports org.eclipse.persistence.platform.xml.xdk;
+    exports org.eclipse.persistence.tools.profiler.oracle;
+
+    exports org.eclipse.persistence.jpa;
+    exports org.eclipse.persistence.jpa.config;
+    exports org.eclipse.persistence.jpa.dynamic;
+    exports org.eclipse.persistence.jpa.metadata;
+    exports org.eclipse.persistence.tools.weaving.jpa;
+
+    exports org.eclipse.persistence.jaxb;
+    exports org.eclipse.persistence.jaxb.attachment;
+    exports org.eclipse.persistence.jaxb.compiler;
+    exports org.eclipse.persistence.jaxb.compiler.builder;
+    exports org.eclipse.persistence.jaxb.compiler.builder.helper;
+    exports org.eclipse.persistence.jaxb.compiler.facets;
+    exports org.eclipse.persistence.jaxb.dynamic;
+    exports org.eclipse.persistence.jaxb.dynamic.metadata;
+    exports org.eclipse.persistence.jaxb.javamodel;
+    exports org.eclipse.persistence.jaxb.javamodel.oxm;
+    exports org.eclipse.persistence.jaxb.javamodel.reflection;
+    exports org.eclipse.persistence.jaxb.javamodel.xjc;
+    exports org.eclipse.persistence.jaxb.json;
+    exports org.eclipse.persistence.jaxb.metadata;
+    exports org.eclipse.persistence.jaxb.plugins;
+    exports org.eclipse.persistence.jaxb.rs;
+    exports org.eclipse.persistence.jaxb.xmlmodel;
+
+    exports org.eclipse.persistence.jaxb.xjc;
+
+    exports commonj.sdo;
+    exports commonj.sdo.helper;
+    exports commonj.sdo.impl;
+
+    exports org.eclipse.persistence.sdo;
+    exports org.eclipse.persistence.sdo.helper;
+    exports org.eclipse.persistence.sdo.types;
+
+    exports org.eclipse.persistence.dbws;
+    exports org.eclipse.persistence.jpa.rs;
+    exports org.eclipse.persistence.jpa.rs.annotations;
+    exports org.eclipse.persistence.jpa.rs.eventlistener;
+    exports org.eclipse.persistence.jpa.rs.exceptions;
+    exports org.eclipse.persistence.jpa.rs.features;
+    exports org.eclipse.persistence.jpa.rs.features.core.selflinks;
+    exports org.eclipse.persistence.jpa.rs.features.fieldsfiltering;
+    exports org.eclipse.persistence.jpa.rs.features.paging;
+    exports org.eclipse.persistence.jpa.rs.logging;
+    exports org.eclipse.persistence.jpa.rs.resources;
+    exports org.eclipse.persistence.jpa.rs.resources.common;
+    exports org.eclipse.persistence.jpa.rs.resources.unversioned;
+    exports org.eclipse.persistence.jpa.rs.util;
+    exports org.eclipse.persistence.jpa.rs.util.list;
+    exports org.eclipse.persistence.jpa.rs.util.metadatasources;
+    exports org.eclipse.persistence.jpa.rs.util.xmladapters;
+
+    provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
+    provides com.sun.tools.xjc.Plugin with org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin;
+
+}

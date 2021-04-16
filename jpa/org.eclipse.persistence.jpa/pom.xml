@@ -65,6 +65,12 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.sun.activation</groupId>
+            <artifactId>jakarta.activation</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
         <!--Other libraries dependencies-->
         <dependency>
             <groupId>org.apache.ant</groupId>
@@ -75,6 +81,21 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-reads</arg>
+                                <arg>org.eclipse.persistence.jpa=ALL-UNNAMED</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!--Generate OSGi bundle/manifest-->
             <plugin>
                 <groupId>org.apache.felix</groupId>
@@ -131,6 +152,13 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalOptions>--add-reads org.eclipse.persistence.jpa=ALL-UNNAMED</additionalOptions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
