@@ -76,6 +76,7 @@ import org.eclipse.persistence.internal.descriptors.DescriptorIterator.CascadeCo
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.descriptors.PersistenceEntity;
 import org.eclipse.persistence.internal.helper.ConcurrencyManager;
+import org.eclipse.persistence.internal.helper.ConcurrencyUtil;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.IdentityHashSet;
 import org.eclipse.persistence.internal.helper.IdentityWeakHashMap;
@@ -105,6 +106,7 @@ import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReadQuery;
 import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionProfiler;
 import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
 
@@ -137,6 +139,12 @@ import org.eclipse.persistence.sessions.coordination.MergeChangeSetCommand;
  *
  */
 public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persistence.sessions.UnitOfWork {
+
+    //These constants and variables are used in extended thread logging to compare UnitOfWork creation thread and thread which registering object in UnitOfWork
+    public final long CREATION_THREAD_ID = Thread.currentThread().getId();
+    public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
+    public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
+    private String creationThreadStackTrace;
 
     /** Fix made for weak caches to avoid garbage collection of the originals. **/
     /** As well as used as lookup in merge algorithm for aggregates and others **/
@@ -396,6 +404,9 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         // Copy down the table per tenant information.
         this.tablePerTenantDescriptors = parent.tablePerTenantDescriptors;
         this.tablePerTenantQueries = parent.tablePerTenantQueries;
+
+        // Init only if thread extended logging + thread dump is enabled
+        creationThreadStackTrace = project.allowExtendedThreadLoggingThreadDump() ? ConcurrencyUtil.SINGLETON.enrichGenerateThreadDumpForCurrentThread() : null;
     }
 
     /**
@@ -2981,6 +2992,19 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
      */
     @Override
     public Object internalExecuteQuery(DatabaseQuery query, AbstractRecord databaseRow) throws DatabaseException, QueryException {
+        if (project.allowExtendedThreadLogging()) {
+            Thread currentThread = Thread.currentThread();
+            if (this.CREATION_THREAD_HASHCODE != currentThread.hashCode()) {
+                log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info", new Object[]{this.getName(),
+                        this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME,
+                        currentThread.getId(), currentThread.getName()});
+                if (project.allowExtendedThreadLoggingThreadDump()) {
+                    log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info_thread_dump", new Object[]{
+                            this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME, this.creationThreadStackTrace,
+                            currentThread.getId(), currentThread.getName(), ConcurrencyUtil.SINGLETON.enrichGenerateThreadDumpForCurrentThread()});
+                }
+            }
+        }
         Object result = query.executeInUnitOfWork(this, databaseRow);
         executeDeferredEvents();
         return result;
@@ -4022,20 +4046,41 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         if (descriptor.isDescriptorTypeAggregate()) {
             throw ValidationException.cannotRegisterAggregateObjectInUnitOfWork(objectToRegister.getClass());
         }
+        CacheKey cacheKey = null;
+        Object objectToRegisterId = null;
         if (project.allowExtendedCacheLogging()) {
             //Not null if objectToRegister exist in cache
-            CacheKey cacheKey = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor)this.getRootSession(null).getParent().getIdentityMapAccessor()).getCacheKeyForObject(objectToRegister);
-            Object objectToRegisterId = this.getId(objectToRegister);
+            Session rootSession = this.getRootSession(null).getParent() == null ? this.getRootSession(null) : this.getRootSession(null).getParent();
+            cacheKey = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor)rootSession.getIdentityMapAccessor()).getCacheKeyForObject(objectToRegister);
+            objectToRegisterId = this.getId(objectToRegister);
             if (cacheKey != null) {
                 log(SessionLog.FINEST, SessionLog.CACHE, "cache_hit", new Object[] {objectToRegister.getClass(), objectToRegisterId});
-                Thread currentThread = Thread.currentThread();
-                if (currentThread.hashCode() != cacheKey.CREATION_THREAD_HASHCODE) {
-                    log(SessionLog.FINEST, SessionLog.CACHE, "cache_thread_info", new Object[]{objectToRegister.getClass(), objectToRegisterId,
-                            cacheKey.CREATION_THREAD_ID, cacheKey.CREATION_THREAD_NAME,
-                            currentThread.getId(), currentThread.getName()});
-                }
             } else {
                 log(SessionLog.FINEST, SessionLog.CACHE, "cache_miss", new Object[] {objectToRegister.getClass(), objectToRegisterId});
+            }
+        }
+        if (project.allowExtendedThreadLogging()) {
+            Thread currentThread = Thread.currentThread();
+            if (cacheKey == null) {
+                cacheKey = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor) this.getRootSession(null).getParent().getIdentityMapAccessor()).getCacheKeyForObject(objectToRegister);
+            }
+            if (objectToRegisterId == null) {
+                objectToRegisterId = this.getId(objectToRegister);
+            }
+            if (cacheKey != null && currentThread.hashCode() != cacheKey.CREATION_THREAD_HASHCODE) {
+                log(SessionLog.SEVERE, SessionLog.THREAD, "cache_thread_info", new Object[]{objectToRegister.getClass(), objectToRegisterId,
+                        cacheKey.CREATION_THREAD_ID, cacheKey.CREATION_THREAD_NAME,
+                        currentThread.getId(), currentThread.getName()});
+            }
+            if (this.CREATION_THREAD_HASHCODE != currentThread.hashCode()) {
+                log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info", new Object[]{this.getName(),
+                        this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME,
+                        currentThread.getId(), currentThread.getName()});
+                if (project.allowExtendedThreadLoggingThreadDump()) {
+                    log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info_thread_dump", new Object[]{
+                            this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME, this.creationThreadStackTrace,
+                            currentThread.getId(), currentThread.getName(), ConcurrencyUtil.SINGLETON.enrichGenerateThreadDumpForCurrentThread()});
+                }
             }
         }
         //CR#2272
@@ -4071,7 +4116,6 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     // check object for cachekey otherwise
                     // a new cache-key is used as there is no original to use for locking.
                     // It read time must be set to avoid it being invalidated.
-                    CacheKey cacheKey = null;
                     if (objectToRegister instanceof PersistenceEntity){
                         cacheKey = ((PersistenceEntity)objectToRegister)._persistence_getCacheKey();
                     }
