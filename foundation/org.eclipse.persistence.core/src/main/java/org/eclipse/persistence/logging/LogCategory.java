@@ -71,9 +71,9 @@ public enum LogCategory {
     SEQUENCING( (byte)0x12, SessionLog.SEQUENCING),
     SERVER(     (byte)0x13, SessionLog.SERVER),
     SQL(        (byte)0x14, SessionLog.SQL),
-    THREAD(     (byte)0x15, SessionLog.THREAD),
-    TRANSACTION((byte)0x16, SessionLog.TRANSACTION),
-    WEAVER(     (byte)0x17, SessionLog.WEAVER);
+    THREAD(     (byte)0x17, SessionLog.THREAD),
+    TRANSACTION((byte)0x15, SessionLog.TRANSACTION),
+    WEAVER(     (byte)0x16, SessionLog.WEAVER);
 
     /** Logging categories enumeration length. */
     public static final int length = LogCategory.values().length;
