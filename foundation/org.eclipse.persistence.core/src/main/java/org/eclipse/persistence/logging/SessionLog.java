@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ import org.eclipse.persistence.sessions.Session;
  * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>    <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>        <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #SQL}</td>           <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
+ * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>        <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>   <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
  * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>        <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
  * </table>
@@ -134,6 +135,7 @@ public interface SessionLog extends Cloneable {
     String JPARS = "jpars";
     /** ModelGen logging name space. */
     String PROCESSOR = "processor";
+    String THREAD = "thread";
 
     String[] loggerCatagories = new String[] {
         SQL,
@@ -157,7 +159,8 @@ public interface SessionLog extends Cloneable {
         PROPERTIES,
         SERVER,
         DDL,
-        PROCESSOR
+        PROCESSOR,
+        THREAD
     };
 
     /**
@@ -314,6 +317,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>      <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>          <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #SQL}</td>             <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>          <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>     <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>          <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
      * </table>
@@ -378,6 +382,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>      <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>          <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #SQL}</td>             <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>          <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>     <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>          <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
      * </table>
@@ -443,6 +448,7 @@ public interface SessionLog extends Cloneable {
      * <tr><td>&nbsp;</td><td>{@link #SEQUENCING}</td>      <td>&nbsp;</td><td>= {@value #SEQUENCING}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #SERVER}</td>          <td>&nbsp;</td><td>= {@value #SERVER}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #SQL}</td>             <td>&nbsp;</td><td>= {@value #SQL}</td></tr>
+     * <tr><td>&nbsp;</td><td>{@link #THREAD}</td>          <td>&nbsp;</td><td>= {@value #THREAD}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #TRANSACTION}</td>     <td>&nbsp;</td><td>= {@value #TRANSACTION}</td></tr>
      * <tr><td>&nbsp;</td><td>{@link #WEAVER}</td>          <td>&nbsp;</td><td>= {@value #WEAVER}</td></tr>
      * </table>
