@@ -4116,6 +4116,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                     // check object for cachekey otherwise
                     // a new cache-key is used as there is no original to use for locking.
                     // It read time must be set to avoid it being invalidated.
+                    cacheKey = null;
                     if (objectToRegister instanceof PersistenceEntity){
                         cacheKey = ((PersistenceEntity)objectToRegister)._persistence_getCacheKey();
                     }
