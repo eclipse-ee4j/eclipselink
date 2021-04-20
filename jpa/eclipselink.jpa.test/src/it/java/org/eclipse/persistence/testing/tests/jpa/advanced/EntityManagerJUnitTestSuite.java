@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -528,6 +528,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testInheritanceFetchJoinSecondCall");
         }
         tests.add("testDetachChildObjects");
+        tests.add("testAutoCloseable");
 
 
         Collections.sort(tests);
@@ -4955,11 +4956,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        EntityManagerFactory factory = null;
-        try {
-            factory = Persistence.createEntityManagerFactory("broken-PU", JUnitTestCaseHelper.getDatabaseProperties());
-            EntityManager em = factory.createEntityManager();
-            em.close();
+        try (JpaEntityManagerFactory factory = (JpaEntityManagerFactory) Persistence.createEntityManagerFactory("broken-PU", JUnitTestCaseHelper.getDatabaseProperties());
+             JpaEntityManager em = (JpaEntityManager) factory.createEntityManager()) {
         } catch (jakarta.persistence.PersistenceException e)  {
             ArrayList expectedExceptions = new ArrayList();
             expectedExceptions.add(48);
@@ -4972,8 +4970,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (expectedExceptions.size() > 0){
                 fail("Not all expected exceptions were caught");
             }
-        } finally {
-            factory.close();
         }
     }
 
@@ -13174,8 +13170,25 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 		}
 		rollbackTransaction(em);
 		closeEntityManager(em);
-    
     }
+
+    public void testAutoCloseable() {
+        EntityManagerFactory emfOuter = null;
+        EntityManager emOuter = null;
+        try (JpaEntityManagerFactory emf = (JpaEntityManagerFactory) Persistence.createEntityManagerFactory(getPersistenceUnitName(), JUnitTestCaseHelper.getDatabaseProperties());
+                JpaEntityManager em = (JpaEntityManager) emf.createEntityManager()) {
+            emfOuter = emf;
+            emOuter = em;
+            assertNotNull(emf);
+            assertNotNull(em);
+            assertTrue(emOuter.isOpen());
+            assertTrue(emfOuter.isOpen());
+        } finally {
+            assertFalse(emOuter.isOpen());
+            assertFalse(emfOuter.isOpen());
+        }
+    }
+
     private void InitTestDetachChildObjects(EntityManager em) {
         // test data - manual creation
         try {
