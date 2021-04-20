@@ -506,7 +506,6 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "cache_class_invalidation", "Entities based on class ({0}) was invalidated from the cache by thread (Id: {1} Name: {2})" },
         { "cache_hit", "Cache hit for entity ({0}) with Id ({1})" },
         { "cache_miss", "Cache miss for entity ({0}) with Id ({1})" },
-        { "cache_thread_info", "Cached entity ({0}) with Id ({1}) was stored into cache by another thread (id: {2} name: {3}), than current thread (id: {4} name: {5})" },
         { "stack_of_visited_objects_that_refer_to_the_corrupt_object", "stack of visited objects that refer to the corrupt object: {0}" },
         { "corrupt_object_referenced_through_mapping", "corrupt object referenced through mapping: {0}" },
         { "corrupt_object", "corrupt object: {0}" },
