@@ -1277,6 +1277,33 @@ public class PersistenceUnitProperties {
      */
     public static final String CACHE_EXTENDED_LOGGING = "eclipselink.cache.extended.logging";
 
+    /**
+     * The "<code>eclipselink.thread.extended.logging</code>" property control (enable/disable)
+     * some additional logging messages like print error message if cached Entity is picked by different thread,
+     * or if EntityManager/UnitOfWork is reused/passed to different thread.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT)
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String THREAD_EXTENDED_LOGGING = "eclipselink.thread.extended.logging";
+
+    /**
+     * The "<code>eclipselink.thread.extended.logging.threaddump</code>" property control (enable/disable)
+     * store and display thread dump. This is extension to "<code>eclipselink.thread.extended.logging</code>" which
+     * must be enabled. It prints additionally to some log messages presented by "<code>eclipselink.thread.extended.logging</code>"
+     * creation and current thread stack traces.
+     * <p>
+     * <b>Allowed Values:</b>
+     * <ul>
+     * <li>"<code>false</code>" (DEFAULT)
+     * <li>"<code>true</code>"
+     * </ul>
+     */
+    public static final String THREAD_EXTENDED_LOGGING_THREADDUMP = "eclipselink.thread.extended.logging.threaddump";
+
     /*
      * NOTE: The Canonical Model properties should be kept in sync with those
      * in org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProperties.

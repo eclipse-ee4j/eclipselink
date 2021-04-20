@@ -141,6 +141,12 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     /** Flag that allows extended logging of JPA L2 cache or not. */
     protected boolean allowExtendedCacheLogging = false;
 
+    /** Flag that allows extended thread logging or not. */
+    protected boolean allowExtendedThreadLogging = false;
+
+    /** Flag that allows add to extended thread logging output thread stack trace or not.*/
+    protected boolean allowExtendedThreadLoggingThreadDump = false;
+
     /**
      * Mapped Superclasses (JPA 2) collection of parent non-relational descriptors keyed on MetadataClass
      * without creating a compile time dependency on JPA.
@@ -1306,6 +1312,22 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
     }
 
     /**
+     * INTERNAL:
+     * Return true if extended thread logging is allowed on this project.
+     */
+    public boolean allowExtendedThreadLogging() {
+        return this.allowExtendedThreadLogging;
+    }
+
+    /**
+     * INTERNAL:
+     * Return true if thread dumps will be added to extended thread logging.
+     */
+    public boolean allowExtendedThreadLoggingThreadDump() {
+        return this.allowExtendedThreadLoggingThreadDump;
+    }
+
+    /**
      * PUBLIC:
      * Return the descriptor for  the alias
      */
@@ -1350,6 +1372,22 @@ public class Project extends CoreProject<ClassDescriptor, Login, DatabaseSession
      */
     public void setAllowExtendedCacheLogging(boolean allowExtendedCacheLogging) {
         this.allowExtendedCacheLogging = allowExtendedCacheLogging;
+    }
+
+    /**
+     * INTERNAL:
+     * Set whether extended thread logging is allowed on this project.
+     */
+    public void setAllowExtendedThreadLogging(boolean allowExtendedThreadLogging) {
+        this.allowExtendedThreadLogging = allowExtendedThreadLogging;
+    }
+
+    /**
+     * INTERNAL:
+     * Set if thread dumps will be added to extended thread logging.
+     */
+    public void setAllowExtendedThreadLoggingThreadDump(boolean allowExtendedThreadLoggingThreadDump) {
+        this.allowExtendedThreadLoggingThreadDump = allowExtendedThreadLoggingThreadDump;
     }
 
     /**
