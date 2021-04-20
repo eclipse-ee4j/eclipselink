@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -4640,11 +4640,8 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
         if (isOnServer()) {
             return;
         }
-        EntityManagerFactory factory = null;
-        try {
-            factory = Persistence.createEntityManagerFactory("broken-PU", JUnitTestCaseHelper.getDatabaseProperties());
-            EntityManager em = factory.createEntityManager();
-            em.close();
+        try (JpaEntityManagerFactory factory = (JpaEntityManagerFactory) Persistence.createEntityManagerFactory("broken-PU", JUnitTestCaseHelper.getDatabaseProperties());
+             JpaEntityManager em = (JpaEntityManager) factory.createEntityManager()) {
         } catch (javax.persistence.PersistenceException e)  {
             ArrayList expectedExceptions = new ArrayList();
             expectedExceptions.add(48);
@@ -4657,8 +4654,6 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             if (expectedExceptions.size() > 0){
                 fail("Not all expected exceptions were caught");
             }
-        } finally {
-            factory.close();
         }
     }
 
