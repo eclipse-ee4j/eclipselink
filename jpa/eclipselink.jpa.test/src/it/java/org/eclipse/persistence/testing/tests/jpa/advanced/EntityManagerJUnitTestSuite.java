@@ -528,6 +528,7 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
             tests.add("testInheritanceFetchJoinSecondCall");
         }
         tests.add("testDetachChildObjects");
+        tests.add("testAutoCloseable");
 
 
         Collections.sort(tests);
@@ -13169,8 +13170,25 @@ public class EntityManagerJUnitTestSuite extends JUnitTestCase {
 		}
 		rollbackTransaction(em);
 		closeEntityManager(em);
-    
     }
+
+    public void testAutoCloseable() {
+        EntityManagerFactory emfOuter = null;
+        EntityManager emOuter = null;
+        try (JpaEntityManagerFactory emf = (JpaEntityManagerFactory) Persistence.createEntityManagerFactory(getPersistenceUnitName(), JUnitTestCaseHelper.getDatabaseProperties());
+                JpaEntityManager em = (JpaEntityManager) emf.createEntityManager()) {
+            emfOuter = emf;
+            emOuter = em;
+            assertNotNull(emf);
+            assertNotNull(em);
+            assertTrue(emOuter.isOpen());
+            assertTrue(emfOuter.isOpen());
+        } finally {
+            assertFalse(emOuter.isOpen());
+            assertFalse(emfOuter.isOpen());
+        }
+    }
+
     private void InitTestDetachChildObjects(EntityManager em) {
         // test data - manual creation
         try {
