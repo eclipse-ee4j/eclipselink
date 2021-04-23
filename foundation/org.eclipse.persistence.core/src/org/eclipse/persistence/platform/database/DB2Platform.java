@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -588,10 +588,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         v.add(")");
         operator.printsAs(v);
         operator.bePrefix();
-        int[] argumentIndices = new int[2];
-        argumentIndices[0] = 1;
-        argumentIndices[1] = 0;
-        operator.setArgumentIndices(argumentIndices);
+        // Bug 573094
+        int[] indices = { 1, 0 };
+        operator.setArgumentIndices(indices);
         operator.setNodeClass(ClassConstants.FunctionExpression_Class);
         operator.setIsBindingSupported(false);
         return operator;
@@ -611,10 +610,9 @@ public class DB2Platform extends org.eclipse.persistence.platform.database.Datab
         v.add(")");
         operator.printsAs(v);
         operator.bePrefix();
-        int[] argumentIndices = new int[2];
-        argumentIndices[0] = 1;
-        argumentIndices[1] = 0;
-        operator.setArgumentIndices(argumentIndices);
+        // Bug 573094
+        int[] indices = { 1, 0 };
+        operator.setArgumentIndices(indices);
         operator.setNodeClass(ClassConstants.FunctionExpression_Class);
         operator.setIsBindingSupported(false);
         return operator;

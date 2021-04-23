@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -29,6 +29,9 @@ public class SessionEvent extends EventObject {
     /** Some events may have a query associated with them (pre/postExecuteQuery). */
     protected DatabaseQuery query;
 
+    /** Some events may have a call associated with them (pre/postExecuteCall). */
+    protected Call call;
+
     /** Some events may have a result associated with them (pre/postExecuteQuery). */
     protected Object result;
 
@@ -48,6 +51,8 @@ public class SessionEvent extends EventObject {
     public static final int PostCommitTransaction = 6;
     public static final int PreRollbackTransaction = 7;
     public static final int PostRollbackTransaction = 8;
+    public static final int PreExecuteCall = 36;
+    public static final int PostExecuteCall = 37;
 
     // Unit of work events, only raised on unit of work.
     public static final int PostAcquireUnitOfWork = 9;
@@ -130,6 +135,14 @@ public class SessionEvent extends EventObject {
 
     /**
      * PUBLIC:
+     * Some events may have a call associated with them (pre/postExecuteCall).
+     */
+    public Call getCall() {
+        return call;
+    }
+
+    /**
+     * PUBLIC:
      * Some events may have a query associated with them (pre/postExecuteQuery).
      */
     public DatabaseQuery getQuery() {
@@ -175,6 +188,14 @@ public class SessionEvent extends EventObject {
      */
     public void setProperty(String name, Object value) {
         getProperties().put(name, value);
+    }
+
+    /**
+     * INTERNAL:
+     * Some events may have a call associated with them (pre/postExecuteCall).
+     */
+    public void setCall(Call call) {
+        this.call = call;
     }
 
     /**
