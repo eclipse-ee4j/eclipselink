@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -418,6 +419,18 @@ public class SessionEventTracker implements SessionEventListener {
      * This event is raised after the execution of every query against the session.
      * The event contains the query and query result.
      */
+    public void postExecuteCall(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
+     * PUBLIC:
+     * This event is raised after the execution of every query against the session.
+     * The event contains the query and query result.
+     */
     public void postExecuteQuery(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
@@ -525,6 +538,18 @@ public class SessionEventTracker implements SessionEventListener {
      * This will be raised on nest units of work.
      */
     public void preCommitUnitOfWork(SessionEvent event) {
+        if (!isTrackingEvent(event)) {
+            return;
+        }
+        log(event);
+    }
+
+    /**
+     * PUBLIC:
+     * This event is raised before the execution of every query against the session.
+     * The event contains the query to be executed.
+     */
+    public void preExecuteCall(SessionEvent event) {
         if (!isTrackingEvent(event)) {
             return;
         }
