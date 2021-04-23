@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -132,6 +133,14 @@ public interface SessionEventListener extends CoreSessionEventListener {
 
     /**
      * PUBLIC:
+     * This event is raised after the execution of every call against the session.
+     * The event contains the call and call result.
+     * This differs from query execution in that the call has been translated.
+     */
+    public void postExecuteCall(SessionEvent event);
+
+    /**
+     * PUBLIC:
      * This event is raised after the execution of every query against the session.
      * The event contains the query and query result.
      */
@@ -197,6 +206,14 @@ public interface SessionEventListener extends CoreSessionEventListener {
      * This will be raised on nest units of work.
      */
     public void preCommitUnitOfWork(SessionEvent event);
+
+    /**
+     * PUBLIC:
+     * This event is raised before the execution of every call against the session.
+     * The event contains the call to be executed.
+     * This differs from query execution in that the call has been translated.
+     */
+    public void preExecuteCall(SessionEvent event);
 
     /**
      * PUBLIC:
