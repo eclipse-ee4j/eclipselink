@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2015 IBM Corporation. All rights reserved.
+ * Copyright (c) 2014, 2021 IBM Corporation. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -8,10 +8,8 @@
  * http://www.eclipse.org/org/documents/edl-v10.php.
  *
  * Contributors:
- *     11/04/2014 - Rick Curtis  
- *       - 450010 : Add java se test bucket
- *     01/13/2015 - Rick Curtis  
- *       - 438871 : Add support for writing statement terminator character(s) when generating ddl to script.
+ *     04/24/2021 - Will Dazey
+ *       - 573094: TRIM function generates incorrect SQL for CriteriaBuilder
  ******************************************************************************/
 package org.eclipse.persistence.jpa.test.framework;
 
@@ -32,8 +30,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.jpa.deployment.SEPersistenceUnitInfo;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
+import org.eclipse.persistence.queries.Call;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 
@@ -73,18 +73,26 @@ public class EmfRunnerInjector {
 
         // PU name -> Field
         Map<String, Field> annotatedSqlListenerFields = getSqlListenerFieldMap(cls);
+        Map<String, Field> annotatedSqlCallListenerFields = getSqlCallListenerFieldMap(cls);
         for (Field emfField : cls.getDeclaredFields()) {
             Emf emfAnno = emfField.getAnnotation(Emf.class);
             if (emfAnno == null) {
                 continue;
             }
-            SqlCollector sqlCollector = null;
             String emfName = emfAnno.name();
-            Field listenerField = annotatedSqlListenerFields.get(emfName);
 
-            if (listenerField != null) {
+            SqlCollector sqlCollector = null;
+            Field sqlListenerField = annotatedSqlListenerFields.get(emfName);
+            if (sqlListenerField != null) {
                 sqlCollector = new SqlCollector();
             }
+
+            SqlCallCollector sqlCallCollector = null;
+            Field sqlCallListenerField = annotatedSqlCallListenerFields.get(emfName);
+            if (sqlCallListenerField != null) {
+                sqlCallCollector = new SqlCallCollector();
+            }
+
             Map<String,Object> props = null;
             if(testInstance instanceof PUPropertiesProvider) {
                 props = ((PUPropertiesProvider)testInstance).getAdditionalPersistenceProperties(emfName);
@@ -101,9 +109,16 @@ public class EmfRunnerInjector {
 
             if (sqlCollector != null) {
                 ((JpaEntityManagerFactory) factory).getServerSession().getEventManager().addListener(sqlCollector);
-                sqlCollector.inject(testInstance, listenerField);
-                injectedSqlListeneFields.add(listenerField);
-                d("Injected " + sqlCollector + " into " + listenerField);
+                sqlCollector.inject(testInstance, sqlListenerField);
+                injectedSqlListeneFields.add(sqlListenerField);
+                d("Injected " + sqlCollector + " into " + sqlListenerField);
+            }
+
+            if (sqlCallCollector != null) {
+                ((JpaEntityManagerFactory) factory).getServerSession().getEventManager().addListener(sqlCallCollector);
+                sqlCallCollector.inject(testInstance, sqlCallListenerField);
+                injectedSqlListeneFields.add(sqlCallListenerField);
+                d("Injected " + sqlCallCollector + " into " + sqlCallListenerField);
             }
         }
         // Check for @SQLListeners that weren't injected
@@ -142,6 +157,26 @@ public class EmfRunnerInjector {
                     // Found two SQLListener annotations for the same PU
                     throw new RuntimeException("Found multiple fields [" + old + ", " + field
                         + "] annotated as a SQLListener for pu [" + puName + "]. Remove one of the anntations.");
+                }
+            }
+        }
+        return res;
+    }
+
+    private Map<String, Field> getSqlCallListenerFieldMap(Class<?> cls) {
+        Map<String, Field> res = new HashMap<String, Field>();
+        for (Field field : cls.getDeclaredFields()) {
+            SQLCallListener listener = field.getAnnotation(SQLCallListener.class);
+            if (listener != null) {
+                if (!List.class.isAssignableFrom(field.getType())) {
+                    throw new RuntimeException("@SQLCallListener anntation can only be placed on a List<String> field. Found on [" + field + "].");
+                }
+                String puName = listener.name();
+                Field old = res.put(puName, field);
+                if (old != null) {
+                    // Found two SQLCallListener annotations for the same PU
+                    throw new RuntimeException("Found multiple fields [" + old + ", " + field
+                        + "] annotated as a SQLCallListener for pu [" + puName + "]. Remove one of the anntations.");
                 }
             }
         }
@@ -234,7 +269,32 @@ public class EmfRunnerInjector {
                 throw new RuntimeException(e);
             }
         }
+    }
 
+    private class SqlCallCollector extends SessionEventAdapter {
+        private List<String> _sql;
+
+        SqlCallCollector() {
+            _sql = new ArrayList<String>();
+        }
+
+        @Override
+        public void preExecuteCall(SessionEvent event) {
+            super.preExecuteQuery(event);
+            Call call = event.getCall();
+            if(call instanceof DatabaseCall) {
+                _sql.add(((DatabaseCall)call).getSQLString());
+            }
+        }
+
+        private void inject(Object instance, Field into) {
+            into.setAccessible(true);
+            try {
+                into.set(instance, _sql);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -4368,7 +4368,7 @@ public abstract class Expression implements Serializable, Cloneable {
      */
     public Expression trim(Object substring) {
         ExpressionOperator anOperator = getOperator(ExpressionOperator.Trim2);
-        return anOperator.expressionForWithBaseLast(this, substring);
+        return anOperator.expressionFor(this, substring);
     }
 
     /**
