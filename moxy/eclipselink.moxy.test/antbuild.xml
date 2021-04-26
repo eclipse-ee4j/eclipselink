@@ -367,11 +367,31 @@
         <condition property="version.qualifier" value="${version.qualifier}" else="qualifier">
             <isset property="version.qualifier"/>
         </condition>
+        <loadfile
+            encoding="UTF-8"
+            property="asm.version"
+            srcFile="${moxytest.2.buildsys.dir}/compdeps/pom.xml" >
+                <filterchain>
+                    <tokenfilter>
+                        <containsregex
+                            pattern="&lt;eclipselink.asm.version&gt;(.*)&lt;/eclipselink.asm.version&gt;$"
+                            replace="\1" />
+                    </tokenfilter>
+                    <striplinebreaks/>
+                    <deletecharacters chars=" "/>
+                </filterchain>
+        </loadfile>
+
         <echo message="Launching Maven build with the following parameters:"/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
         <echo message="    -Dmaven.home=${M2_HOME}"/>
         <echo message="    -Dbuild.qualifier=${version.qualifier}"/>
         <echo message="    -Drelease.version=${release.version}"/>
+        <echo message="    -Djaxb-api.jar=${jaxb-api.jar}"/>
+        <echo message="    -Djaxrs.jar=${jaxrs.jar}"/>
+        <echo message="    -Dasm.jar=${asm.jar}"/>
+        <echo message="    -Dasm.version=${asm.version}"/>
+        <echo message="    -Dtest.junit.jvm=${test.junit.jvm}"/>
         <java jvm="${test.junit.jvm.exec}" dir="${basedir}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
             <jvmarg value="-Dmaven.home=${M2_HOME}"/>
@@ -385,6 +405,7 @@
             <arg line="-Djaxb-api.jar=${jaxb-api.jar}"/>
             <arg line="-Djaxrs.jar=${jaxrs.jar}"/>
             <arg line="-Dasm.jar=${asm.jar}"/>
+            <arg line="-Dasm.version=${asm.version}"/>
             <arg line="-Dtest.junit.jvm=${test.junit.jvm}"/>
             <classpath>
                 <fileset dir="${M2_HOME}/boot">
