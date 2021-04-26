@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,7 @@ package org.eclipse.persistence.internal.jpa.rs.weaving;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.dynamic.EclipseLinkClassWriter;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
@@ -103,11 +103,11 @@ public class CollectionProxyClassWriter implements EclipseLinkClassWriter, Opcod
     @Override
     public byte[] writeClass(DynamicClassLoader loader, String className) {
 
-        final ClassWriter cw = new ClassWriter(0);
+        final EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter(0);
         MethodVisitor mv;
 
         // public class Proxy extends SuperType implements CollectionProxy
-        cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, getASMClassName(), null, getASMParentClassName(), new String[]{INTERFACE});
+        cw.visit(ACC_PUBLIC + ACC_SUPER, getASMClassName(), null, getASMParentClassName(), new String[]{INTERFACE});
 
         // private List<LinkV2> links;
         final FieldVisitor fv = cw.visitField(ACC_PRIVATE, "links", "Ljava/util/List;", "Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/LinkV2;>;", null);

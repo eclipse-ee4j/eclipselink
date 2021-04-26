@@ -161,6 +161,8 @@
         <test.xml.parser>org.eclipse.persistence.platform.xml.jaxp.JAXPParser</test.xml.parser>
 
         <!--Eclipse Dependencies version-->
+        <!-- TODO: FIX ME before merge-->
+        <eclipselink.asm.version>9.1.0-SNAPSHOT</eclipselink.asm.version>
         <activation.version>2.0.1</activation.version>
         <annotation.version>2.0.0</annotation.version>
         <cdi.version>3.0.0</cdi.version>
@@ -190,8 +192,6 @@
         <apache.felix.framework.version>7.0.0</apache.felix.framework.version>
         <!-- CQ #21133 -->
         <ant.version>1.10.9</ant.version>
-        <!-- CQ #23047 -->
-        <asm.version>9.1</asm.version>
         <commonj.sdo.version>2.1.1</commonj.sdo.version>
         <derby.version>10.14.2.0</derby.version>
         <!-- CQ #21134, 21135, 21136, 21137 -->
@@ -233,8 +233,6 @@
 
     <!-- Default modules set and added to by all profiles -->
     <modules>
-
-        <module>plugins/org.eclipse.persistence.asm</module>
         <module>jpa/org.eclipse.persistence.jpa.jpql</module>
 
         <module>foundation/org.eclipse.persistence.core</module>
@@ -272,12 +270,12 @@
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>${project.version}</version>
+                <version>${eclipselink.asm.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.asm</artifactId>
-                <version>${project.version}</version>
+                <version>${eclipselink.asm.version}</version>
                 <classifier>sources</classifier>
             </dependency>
 
@@ -541,25 +539,6 @@
                 <type>test-jar</type>
             </dependency>
 
-            <!--Source dependencies used for repackaging-->
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm</artifactId>
-                <version>${asm.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm-commons</artifactId>
-                <version>${asm.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.ow2.asm</groupId>
-                <artifactId>asm-tree</artifactId>
-                <version>${asm.version}</version>
-                <classifier>sources</classifier>
-            </dependency>
             <!--API/Implementation dependencies-->
             <dependency>
                 <groupId>jakarta.activation</groupId>

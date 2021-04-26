@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 
 import commonj.sdo.helper.HelperContext;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
 
 /*
  * Dynamically generate the implementation class for the SDO type.  If the type has an instance
@@ -105,14 +106,14 @@ public class DynamicClassWriter {
      * class is created dynamically from them.
      */
     public byte[] createClass() {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
 
         if (null == type.getInstanceClass()) {
-            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), null);
         } else {
             String[] interfaces = new String[1];
             interfaces[0] = type.getInstanceClassName().replace('.', '/');
-            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), interfaces);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, typeImplClassDescriptor, null, Type.getType(parentClass).getInternalName(), interfaces);
             addPropertyIndices(cw);
             for (Object object : type.getDeclaredProperties()) {
                 SDOProperty sdoProperty = (SDOProperty) object;
