@@ -100,7 +100,7 @@ public class EclipseLinkASMClassWriter extends ClassWriter {
         }
         Integer version = versionMap.get(v);
         if (version == null) {
-            // current JDK is iether too new
+            // current JDK is either too new
             String latest = versionMap.lastKey();
             if (latest.compareTo(v) < 0) {
                 LOG.log(Level.WARNING, "Java SE ''{0}'' is not fully supported yet. Report this error to the EclipseLink open source project.", v);
