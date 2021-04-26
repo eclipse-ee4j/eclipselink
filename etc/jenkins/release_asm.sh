@@ -88,7 +88,9 @@ ASM_STAGING_KEY=$(echo ${ASM_STAGING_DESC} | sed -e 's/\./\\\./g')
 echo '-[ EclipseLink ASM release version ]--------------------------------------------------------'
 set_version 'ASM' "${ASM_DIR}" "${ASM_RELEASE_VERSION}" "${ASM_GROUP_ID}" "${ASM_ARTIFACT_ID}" ''
 
-drop_artifacts "${ASM_STAGING_KEY}" "${ASM_DIR}"
+if [ "${OVERWRITE}" = 'true' ]; then
+  drop_artifacts "${ASM_STAGING_KEY}" "${ASM_DIR}"
+fi
 
 echo '-[ Deploy artifacts to staging repository ]-----------------------------'
 # Verify, sign and deploy release
