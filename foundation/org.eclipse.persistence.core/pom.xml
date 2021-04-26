@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -224,6 +224,7 @@
                                     *
                                 </Export-Package>
                                 <Import-Package>
+                                    org.eclipse.persistence.internal.libraries.asm*;version="${version;==;${@}}",
                                     javax.rmi;version=!;resolution:=optional,
                                     javax.rmi.CORBA;version=!;resolution:=optional,
                                     org.omg.CORBA;version=!;resolution:=optional,

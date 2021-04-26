@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,6 +93,7 @@ import org.eclipse.persistence.internal.jaxb.many.MultiDimensionalArrayValue;
 import org.eclipse.persistence.internal.jaxb.many.MultiDimensionalCollectionValue;
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
@@ -4294,22 +4295,22 @@ public final class AnnotationsProcessor {
 
         Type mapType = Type.getType(L + mapClass.getRawName().replace(DOT_CHR, SLASH_CHR) + SEMI_COLON);
 
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
 
         String sig = "Lorg/eclipse/persistence/internal/jaxb/many/MapValue<L" + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;>;";
-        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
+        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "org/eclipse/persistence/internal/jaxb/many/MapValue", null);
 
         // Write Field: @... public Map entry
         String fieldSig = L + mapType.getInternalName() + "<L" + internalKeyName + ";L" + internalValueName + ";>;";
         FieldVisitor fv = cw.visitField(Opcodes.ACC_PUBLIC, "entry", L + mapType.getInternalName() + SEMI_COLON, fieldSig, null);
-        AnnotationVisitor av = fv.visitAnnotation(Type.getDescriptor(XmlElement.class), true);
+        fv.visitAnnotation(Type.getDescriptor(XmlElement.class), true);
         if (typeMappingInfo != null) {
             Annotation[] annotations = typeMappingInfo.getAnnotations();
             if (annotations != null) {
                 for (Annotation nextAnnotation : annotations) {
                     if (nextAnnotation != null && !(nextAnnotation instanceof XmlElement) && !(nextAnnotation instanceof XmlJavaTypeAdapter)) {
                         String annotationClassName = nextAnnotation.annotationType().getName();
-                        av = fv.visitAnnotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
+                        AnnotationVisitor av = fv.visitAnnotation(L + annotationClassName.replace(DOT_CHR, SLASH_CHR) + SEMI_COLON, true);
                         for (Method next : nextAnnotation.annotationType().getDeclaredMethods()) {
                             try {
                                 Object nextValue = next.invoke(nextAnnotation, new Object[] { });
@@ -4387,7 +4388,7 @@ public final class AnnotationsProcessor {
         mv.visitEnd();
 
         // Write @XmlType(namespace)
-        av = cw.visitAnnotation("Ljakarta/xml/bind/annotation/XmlType;", true);
+        AnnotationVisitor av = cw.visitAnnotation("Ljakarta/xml/bind/annotation/XmlType;", true);
         av.visit("namespace", namespace);
 
         cw.visitEnd();
@@ -4598,19 +4599,19 @@ public final class AnnotationsProcessor {
     }
 
     private byte[] generateManyValue(TypeMappingInfo typeMappingInfo, String namespace, Class superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
         generateManyValueClass(cw, typeMappingInfo, namespace, superType, classNameSeparatedBySlash, componentType, containerType);
         cw.visitEnd();
         return cw.toByteArray();
     }
 
-    private void generateManyValueClass(ClassWriter cw, TypeMappingInfo typeMappingInfo, String namespace, Class superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
+    private void generateManyValueClass(EclipseLinkASMClassWriter cw, TypeMappingInfo typeMappingInfo, String namespace, Class superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
         String componentClassNameSeparatedBySlash = getObjectType(componentType).getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         String containerClassNameSeperatedBySlash = containerType.getQualifiedName().replace(DOT_CHR, SLASH_CHR);
         if("[B".equals(componentClassNameSeparatedBySlash)) {
-            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<" + componentClassNameSeparatedBySlash + ">;", Type.getInternalName(superType), null);
         } else {
-            cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
+            cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, classNameSeparatedBySlash, "L" + Type.getInternalName(superType) + "<L" + componentClassNameSeparatedBySlash + ";>;", Type.getInternalName(superType), null);
         }
 
         // Write @XmlType(namespace)
@@ -4786,7 +4787,7 @@ public final class AnnotationsProcessor {
     }
 
     private byte[] generateMultiDimensionalManyValueClass(TypeMappingInfo typeMappingInfo, String namespace, Class superType, String classNameSeparatedBySlash, JavaClass componentType, JavaClass containerType) {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
         generateManyValueClass(cw, typeMappingInfo, namespace, superType, classNameSeparatedBySlash, componentType, containerType);
         generateMultiDimensionalManyValueClass(cw, componentType);
         cw.visitEnd();
