@@ -37,6 +37,11 @@
             <url>file:/${basedir}/../org.eclipse.persistence.compdeps.internal/target/repository</url>
         </repository>
         <repository>
+            <id>jakarta.oss.sonatype.org</id>
+            <name>OSS Sonatype Staging</name>
+            <url>https://jakarta.oss.sonatype.org/content/groups/staging</url>
+        </repository>
+        <repository>
             <id>oss.sonatype.org</id>
             <name>OSS Sonatype Staging</name>
             <url>https://oss.sonatype.org/content/groups/staging</url>
