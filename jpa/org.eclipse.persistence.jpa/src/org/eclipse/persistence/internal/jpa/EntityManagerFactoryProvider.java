@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -94,10 +95,12 @@ public class EntityManagerFactoryProvider {
      * @param setup
      */
     public static void addEntityManagerSetupImpl(String name, EntityManagerSetupImpl setup){
-        if (name == null){
-            emSetupImpls.put("", setup);
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            if (name == null){
+                EntityManagerFactoryProvider.emSetupImpls.put("", setup);
+            }
+            EntityManagerFactoryProvider.emSetupImpls.put(name, setup);
         }
-        emSetupImpls.put(name, setup);
     }
 
     /**
@@ -223,14 +226,16 @@ public class EntityManagerFactoryProvider {
      * Return the setup class for a given entity manager name
      * @param emName
      */
-    public static EntityManagerSetupImpl getEntityManagerSetupImpl(String emName){
-        if (emName == null){
-            return emSetupImpls.get("");
+    public static EntityManagerSetupImpl getEntityManagerSetupImpl(String emName) {
+        synchronized (EntityManagerFactoryProvider.emSetupImpls){
+            if (emName == null){
+                return EntityManagerFactoryProvider.emSetupImpls.get("");
+            }
+            return EntityManagerFactoryProvider.emSetupImpls.get(emName);
         }
-        return emSetupImpls.get(emName);
     }
 
-    public static Map<String, EntityManagerSetupImpl>getEmSetupImpls(){
+    public static Map<String, EntityManagerSetupImpl> getEmSetupImpls(){
         return emSetupImpls;
     }
 

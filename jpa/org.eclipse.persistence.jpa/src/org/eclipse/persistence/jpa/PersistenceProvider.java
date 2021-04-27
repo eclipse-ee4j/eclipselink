@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -462,22 +462,24 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      */
     @Override
     public LoadState isLoadedWithReference(Object entity, String attributeName){
-        Iterator<EntityManagerSetupImpl> setups = EntityManagerFactoryProvider.getEmSetupImpls().values().iterator();
-        while (setups.hasNext()){
-            EntityManagerSetupImpl setup = setups.next();
-            if (setup.isDeployed()){
-                Boolean isLoaded = EntityManagerFactoryImpl.isLoaded(entity, setup.getSession());
-                if (isLoaded != null){
-                    if (isLoaded.booleanValue() && attributeName != null){
-                        isLoaded = EntityManagerFactoryImpl.isLoaded(entity, attributeName, setup.getSession());
-                    }
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            Iterator<EntityManagerSetupImpl> setups = EntityManagerFactoryProvider.emSetupImpls.values().iterator();
+            while (setups.hasNext()){
+                EntityManagerSetupImpl setup = setups.next();
+                if (setup.isDeployed()){
+                    Boolean isLoaded = EntityManagerFactoryImpl.isLoaded(entity, setup.getSession());
                     if (isLoaded != null){
-                        return isLoaded.booleanValue() ? LoadState.LOADED : LoadState.NOT_LOADED;
+                        if (isLoaded.booleanValue() && attributeName != null){
+                            isLoaded = EntityManagerFactoryImpl.isLoaded(entity, attributeName, setup.getSession());
+                        }
+                        if (isLoaded != null){
+                            return isLoaded.booleanValue() ? LoadState.LOADED : LoadState.NOT_LOADED;
+                        }
                     }
                 }
             }
+            return LoadState.UNKNOWN;
         }
-        return LoadState.UNKNOWN;
      }
 
     /**
