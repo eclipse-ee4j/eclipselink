@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2013, 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -62,7 +62,7 @@ public class RuntimeFactory {
                 if (emSetupImpl != null) {
                     if (puInfo.getClassLoader() != emSetupImpl.getPersistenceUnitInfo().getClassLoader()) {
                         emSetupImpl.undeploy();
-                        EntityManagerFactoryProvider.getEmSetupImpls().remove(sessionName);
+                        EntityManagerFactoryProvider.emSetupImpls.remove(sessionName);
 
                         SessionManager manager = SessionManager.getManager();
                         if (manager.getSessions().containsKey(sessionName)) {

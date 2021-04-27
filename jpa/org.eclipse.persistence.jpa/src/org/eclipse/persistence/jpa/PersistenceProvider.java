@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2015 Oracle and/or its affiliates, IBM Corporation. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the 
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0 
  * which accompanies this distribution. 
@@ -419,7 +419,7 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
         }
         return LoadState.UNKNOWN;
      }
-    
+
     /**
      * If the provider determines that the entity has been provided
      * by itself and that the state of the specified attribute has
@@ -443,24 +443,26 @@ public class PersistenceProvider implements javax.persistence.spi.PersistencePro
      * @return load status of the attribute
      */
     public LoadState isLoadedWithReference(Object entity, String attributeName){
-        Iterator<EntityManagerSetupImpl> setups = EntityManagerFactoryProvider.getEmSetupImpls().values().iterator();
-        while (setups.hasNext()){
-            EntityManagerSetupImpl setup = setups.next();
-            if (setup.isDeployed()){
-                Boolean isLoaded = EntityManagerFactoryImpl.isLoaded(entity, setup.getSession());
-                if (isLoaded != null){
-                    if (isLoaded.booleanValue() && attributeName != null){
-                        isLoaded = EntityManagerFactoryImpl.isLoaded(entity, attributeName, setup.getSession());
-                    }
-                    if (isLoaded != null){
-                        return isLoaded.booleanValue() ? LoadState.LOADED : LoadState.NOT_LOADED;
+        synchronized (EntityManagerFactoryProvider.emSetupImpls) {
+            Iterator<EntityManagerSetupImpl> setups = EntityManagerFactoryProvider.emSetupImpls.values().iterator();
+            while (setups.hasNext()) {
+                EntityManagerSetupImpl setup = setups.next();
+                if (setup.isDeployed()) {
+                    Boolean isLoaded = EntityManagerFactoryImpl.isLoaded(entity, setup.getSession());
+                    if (isLoaded != null) {
+                        if (isLoaded.booleanValue() && attributeName != null) {
+                            isLoaded = EntityManagerFactoryImpl.isLoaded(entity, attributeName, setup.getSession());
+                        }
+                        if (isLoaded != null) {
+                            return isLoaded.booleanValue() ? LoadState.LOADED : LoadState.NOT_LOADED;
+                        }
                     }
                 }
             }
+            return LoadState.UNKNOWN;
         }
-        return LoadState.UNKNOWN;
      }
-    
+
     /**
      * If the provider determines that the entity has been provided
      * by itself and that the state of all attributes for which
