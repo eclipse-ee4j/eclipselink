@@ -1,6 +1,6 @@
 <!--
 
-    Copyright (c) 2018, 2019 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -145,6 +145,7 @@
         <property name="extensions.depend.dir" value="../${nosql_test.2.base.dir}/extension.lib.external"/>
         <property name="junit.lib" value="${extensions.depend.dir}/junit.jar"/>
         <property name="jacocoagent.lib" value="${extensions.depend.dir}/${jacocoagent.jar}"/>
+        <property name="asm.lib" value="${nosql_test.2.common.plugins.dir}/${asm.jar}"/>
         <echo message="nosql_test.src.dir     ='${nosql_test.src.dir}'"/>
         <echo message="nosql_test.resource.dir='${nosql_test.resource.dir}'"/>
         <echo message="nosql_test.classes.dir ='${nosql_test.classes.dir}'"/>
@@ -196,9 +197,6 @@
         />
         <selectbundle basename="${antlr}" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,9.0.0)" property="antlr.lib" includepath="true"
-        />
-        <selectbundle basename="${asm}" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
-            criterion="[2.0.0,9.0.0)" property="asm.lib" includepath="true"
         />
         <selectbundle basename="org.eclipse.persistence.jpa" directory="${nosql_test.build.location}/${nosql_test.2.common.plugins.dir}" separator="_"
             criterion="[2.0.0,9.0.0)" property="oep.jpa.lib" includepath="true"
@@ -306,7 +304,7 @@
         <echo message="Using EclipseLink classes directly as 'product' in compile dependency."/>
         <path id="nosql_test.product.path">
             <pathelement path="${nosql_test.2.common.plugins.dir}/${antlr}"/>
-            <pathelement path="${nosql_test.2.common.plugins.dir}/${asm}"/>
+            <pathelement path="${nosql_test.2.common.plugins.dir}/${asm.jar}"/>
             <pathelement path="${nosql_test.2.jpa.dir}/${classes.dir}"/>
             <pathelement path="${nosql_test.2.jpa.dir}/${resource.dir}"/>
             <pathelement path="${nosql_test.2.core.dir}/${classes.dir}"/>

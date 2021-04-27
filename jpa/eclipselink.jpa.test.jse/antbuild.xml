@@ -60,7 +60,7 @@
     <property name="jboss.weld.core.impl" value="${jse.el.plugins.dir}/${jboss-weld-core-impl.jar}"/>
     <fileset id="jse.antlr.jar.path" dir="${jse.el.plugins.dir}" includes="*antlr_*.jar"/>
     <pathconvert property="jse.antlr.jar" refid="jse.antlr.jar.path"/>
-    <fileset id="jse.asm.jar.path" dir="${jse.el.plugins.dir}" includes="*asm_*.jar"/>
+    <fileset id="jse.asm.jar.path" dir="${jse.el.plugins.dir}" includes="org.eclipse.persistence.asm.jar"/>
     <pathconvert property="jse.asm.jar" refid="jse.asm.jar.path"/>
     <property name="jse.core.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.core_${version.string}.jar"/>
     <property name="jse.jpa.jar" value="${jse.el.plugins.dir}/org.eclipse.persistence.jpa_${version.string}.jar"/>

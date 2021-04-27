@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!--
 
-    Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -122,9 +122,6 @@
         <property name="version.string"        value="${release.version}.${version.qualifier}"/>
 
         <!-- dependency properties -->
-        <selectbundle basename="${asm.prefix}"  directory="${dbwsbldrtest.2.common.plugins.dir}"
-                     criterion="${asm.criteria}" property="asm.jar"
-        />
         <selectbundle basename="${dbwsbldr.prefix}"  directory="${dbwsbldrtest.2.common.plugins.dir}"
                      criterion="${dbwsbldr.criteria}" property="dbwsbldr.jar"
         />

@@ -74,7 +74,7 @@ import org.eclipse.persistence.internal.jaxb.many.JAXBArrayAttributeAccessor;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
 import org.eclipse.persistence.internal.jaxb.many.MapValue;
 import org.eclipse.persistence.internal.jaxb.many.MapValueAttributeAccessor;
-import org.eclipse.persistence.internal.libraries.asm.ClassWriter;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkASMClassWriter;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
@@ -1976,7 +1976,7 @@ public class MappingsGenerator {
 
     private Class generateMapEntryClass(String className, String keyType, String valueType){
 
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
 
         String qualifiedInternalClassName = className.replace('.', '/');
         String qualifiedInternalKeyClassName = keyType.replace('.', '/');
@@ -1989,7 +1989,7 @@ public class MappingsGenerator {
         }
 
         String sig = "Ljava/lang/Object;Lorg/eclipse/persistence/internal/jaxb/many/MapEntry<L"+qualifiedInternalKeyClassName+";" + valuePrefix + qualifiedInternalValueClassName+";>;";
-        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
+        cw.visit(Opcodes.ACC_PUBLIC + Opcodes.ACC_SUPER, qualifiedInternalClassName, sig, "java/lang/Object", new String[] { "org/eclipse/persistence/internal/jaxb/many/MapEntry" });
 
         cw.visitField(Opcodes.ACC_PRIVATE, "key", "L"+qualifiedInternalKeyClassName+";", null, null);
 
@@ -3284,10 +3284,10 @@ public class MappingsGenerator {
     }
 
     public Class generateWrapperClass(String className, String attributeType, boolean isList, QName theQName) {
-        ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        EclipseLinkASMClassWriter cw = new EclipseLinkASMClassWriter();
 
         String sig = null;
-        cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
+        cw.visit(Opcodes.ACC_PUBLIC, className.replace(".", "/"), sig, Type.getType(WrappedValue.class).getInternalName(), null);
 
         String fieldType = null;
         if(isList){

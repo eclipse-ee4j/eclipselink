@@ -190,7 +190,7 @@
         <pathelement path="${eclipselink.sdo.plugins}/${commonj.sdo.jar}"/>
         <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
-        <pathelement path="${eclipselink.plugins}/${asm}"/>
+        <pathelement path="${eclipselink.plugins}/${asm.jar}"/>
         <pathelement path="${eclipselink.plugins}/${glassfish-corba-omgapi.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-impl.jar}"/>
@@ -558,11 +558,10 @@
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
 
-    <target name="clean-plugins" description="Clean files from plugins directory except antlr and asm.">
+    <target name="clean-plugins" description="Clean files from plugins directory except antlr.">
         <delete>
             <fileset dir="${plugins.dir}" includes="*.jar">
                 <exclude name="**/org.eclipse.persistence.antlr**"/>
-                <exclude name="**/org.eclipse.persistence.asm**"/>
                 <exclude name="**/readme.for.distribution**"/>
                 <exclude name="**/javax.persistence_unsigned_for_testing_1.0.0.jar"/>
             </fileset>
@@ -591,7 +590,7 @@
         <ant antfile="antbuild.xml" dir="${eclipselink.extension.oracle.nosql.test}" target="clean"/>
     </target>
 
-    <!-- Clean internal compilation dependencies (ASM, ANTLR). -->
+    <!-- Clean internal compilation dependencies (ANTLR). -->
     <target name="clean-internal-compdeps" description="Clean local p2 repository of internal compiler dependencies">
         <java dir="${eclipselink.compdeps.internal}" fork="true" failonerror="true" classname="org.codehaus.plexus.classworlds.launcher.Launcher">
             <jvmarg value="-Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
@@ -606,7 +605,7 @@
         </java>
     </target>
 
-    <!-- Prepare/copy internal compilation dependencies (ASM, ANTLR) into local Tycho repository. -->
+    <!-- Prepare/copy internal compilation dependencies (ANTLR) into local Tycho repository. -->
     <target name="generate-internal-compdeps" if="generate.compdeps" depends="set-compdeps" description="Build local p2 repository of internal compiler dependencies">
         <echo message="Generating local internal 'Compile Dependency P2 Repository' using Tycho."/>
         <echo message="Launching Maven build with the following parameters:"/>
@@ -641,7 +640,7 @@
         </java>
     </target>
 
-    <!-- Prepare/copy local Tycho repository from internal dependencies (ASM, ANTLR) and external (javax APIs, various implementations) resolved from Maven central repository. -->
+    <!-- Prepare/copy local Tycho repository from internal dependencies (ANTLR) and external (javax APIs, various implementations) resolved from Maven central repository. -->
     <target name="generate-local-compdeps" if="generate.compdeps" depends="set-compdeps, generate-internal-compdeps, clean-plugins" description="Build local p2 repository of local compiler dependencies">
         <echo message="Generating local 'Compile Dependency P2 Repository' using Tycho."/>
         <echo message="    -Dclassworlds.conf=${M2_HOME}/bin/m2.conf"/>
@@ -673,6 +672,8 @@
         </macrodef>
 
          <!--Populate plugins directory from local compdeps repository.-->
+        <copy-plugin from="org.eclipse.persistence.asm.source*.jar" to="${asm.src.jar}"/>
+        <copy-plugin from="org.eclipse.persistence.asm_*.jar" to="${asm.jar}"/>
         <copy-plugin from="jakarta.enterprise.cdi-api*.jar" to="${cdi-api.jar}"/>
         <copy-plugin from="ch.qos.logback.classic*.jar" to="${logback-classic.jar}"/>
         <copy-plugin from="ch.qos.logback.core*.jar" to="${logback-core.jar}"/>
@@ -1004,7 +1005,7 @@
             <!-- Include all non-duplicate content from bOSGi bundles -->
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
-                <include name="org.eclipse.persistence.asm*.jar"/>
+                <include name="${asm.jar}"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
                 <include name="org.eclipse.persistence.oracle_*.jar"/>
                 <exclude name="*.jpa.jpql*.jar"/>
@@ -1230,7 +1231,7 @@
                 <include name="${license-files}"/>
             </zipfileset>
             <zipgroupfileset dir="${eclipselink.plugins}">
-                <include name="${asm}.source_${version.string}.jar"/>
+                <include name="${asm.src.jar}"/>
                 <include name="${antlr}.source_${version.string}.jar"/>
                 <include name="org.eclipse.persistence*.source*.jar"/>
                 <include name="eclipselink-moxy-dynamicxjc.source*.jar"/>
