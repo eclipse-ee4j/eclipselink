@@ -31,6 +31,7 @@ import jakarta.persistence.criteria.Selection;
 import jakarta.persistence.metamodel.Metamodel;
 import jakarta.persistence.metamodel.Type.PersistenceType;
 
+import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.jpa.metamodel.MetamodelImpl;
@@ -549,14 +550,41 @@ public class CriteriaQueryImpl<T> extends AbstractQueryImpl<T> implements Criter
                     }
                 }
             }
-            if (this.where != null && ((InternalSelection) this.where).getCurrentNode() != null  &&
-                    ((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass() != null) {
-                reportQuery.setReferenceClass(((InternalSelection) this.where).getCurrentNode().getBuilder().getQueryClass());
-                reportQuery.setExpressionBuilder(((InternalSelection) this.where).getCurrentNode().getBuilder());
-            } else {
-                reportQuery.setExpressionBuilder(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder());
-                reportQuery.setReferenceClass(((InternalSelection) this.selection.getCompoundSelectionItems().get(0)).getCurrentNode().getBuilder().getQueryClass());
+
+            ExpressionBuilder builder = null;
+            Class<?> queryClazz = null;
+            // First check the WHERE clause
+            if(this.where != null && ((InternalSelection) this.where).getCurrentNode() != null) {
+                builder = ((InternalSelection) this.where).getCurrentNode().getBuilder();
+                queryClazz = builder.getQueryClass();
             }
+            // Check all the SELECTION items next
+            if(queryClazz == null && this.selection != null) {
+                for(Selection<?> s : this.selection.getCompoundSelectionItems()) {
+                    if(((InternalSelection) s).getCurrentNode() != null ) {
+                        builder = ((InternalSelection) s).getCurrentNode().getBuilder();
+                        queryClazz = builder.getQueryClass();
+                        if(queryClazz != null) {
+                            break;
+                        }
+                    }
+                }
+            }
+            // Fallback on the root
+            if(queryClazz == null && this.roots != null) {
+                for(Root<?> r : this.roots) {
+                    if(((RootImpl<?>) r).getCurrentNode() != null ) {
+                        builder = ((RootImpl<?>) r).getCurrentNode().getBuilder();
+                        queryClazz = builder.getQueryClass();
+                        if(queryClazz != null) {
+                            break;
+                        }
+                    }
+                }
+            }
+            reportQuery.setExpressionBuilder(builder);
+            reportQuery.setReferenceClass(queryClazz);
+
             query = reportQuery;
             if (this.groupBy != null && !this.groupBy.isEmpty()) {
                 for (Expression<?> exp : this.groupBy) {
