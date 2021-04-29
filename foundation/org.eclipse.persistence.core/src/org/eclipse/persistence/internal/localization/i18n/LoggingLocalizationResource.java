@@ -100,7 +100,7 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "register_new_for_persist", "PERSIST operation called on: {0}." },
         { "all_registered_clones", "All Registered Clones:" },
         { "new_objects", "New Objects:" },
-        { "cache_thread_info", "Cached entity ({0}) with Id ({1}) was stored into cache by another thread (id: {2} name: {3}), than current thread (id: {4} name: {5})" },
+        { "cache_thread_info", "Cached entity ({0}) with Id ({1}) was prepared and stored into cache by another thread (id: {2} name: {3}), than current thread (id: {4} name: {5})" },
         { "unit_of_work_thread_info", "Current unit of work in session ({0}) was created by another thread (id: {1} name: {2}), than current thread (id: {3} name: {4})" },
         { "unit_of_work_thread_info_thread_dump", "Creation thread (id: {0} name: {1}) stack trace:\n{2}\n\n" +
                 "Current thread (id: {3} name: {4}) stack trace:\n{5}" },
