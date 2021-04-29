@@ -108,6 +108,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "locked_object", "Locked Object : {0}" },
         { "depth", "Depth : {0}" },
         { "cachekey_released", "This thread is no longer holding the lock.  It must not be a blocking thread."},
+        { "cache_thread_info", "Cached entity ({0}) with Id ({1}) was prepared and stored into cache by another thread (id: {2} name: {3}), than current thread (id: {4} name: {5})" },
         { "deferred_locks", "Deferred lock on : {0}" },
         { "deferred_locks_released", "All deferred locks for thread \"{0}\" have been released." },
         { "acquiring_deferred_lock", "Thread \"{1}\" has acquired a deferred lock on object : {0} in order to avoid deadlock." },

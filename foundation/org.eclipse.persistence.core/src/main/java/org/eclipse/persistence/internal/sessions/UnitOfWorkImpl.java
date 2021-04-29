@@ -4068,7 +4068,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
                 objectToRegisterId = this.getId(objectToRegister);
             }
             if (cacheKey != null && currentThread.hashCode() != cacheKey.CREATION_THREAD_HASHCODE) {
-                log(SessionLog.SEVERE, SessionLog.THREAD, "cache_thread_info", new Object[]{objectToRegister.getClass(), objectToRegisterId,
+                log(SessionLog.FINE, SessionLog.THREAD, "cache_thread_info", new Object[]{objectToRegister.getClass(), objectToRegisterId,
                         cacheKey.CREATION_THREAD_ID, cacheKey.CREATION_THREAD_NAME,
                         currentThread.getId(), currentThread.getName()});
             }
