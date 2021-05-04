@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,6 +15,7 @@
 //       - Bug#280350: NoSuchFieldException on deploy when using parent's compound PK class as derived ID
 package org.eclipse.persistence.testing.models.jpa.advanced.derivedid;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -36,6 +37,7 @@ public class LackeyCrewMember {
     Lackey lackey;
 
     @Id
+    @Column(name = "JPA_LACKEYCREW_RANK")
     int rank;
 
     public Lackey getLackey() {
