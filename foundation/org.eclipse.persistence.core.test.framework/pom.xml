@@ -49,18 +49,19 @@
         </dependency>
     </dependencies>
 
-<!--    <build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
+                    <release>8</release>
+                    <detectOfflineLinks>false</detectOfflineLinks>
                     <additionalJOptions>
                         <additionalJOption>-Xdoclint:-html</additionalJOption>
                     </additionalJOptions>
                 </configuration>
             </plugin>
         </plugins>
-    </build>-->
+    </build>
 </project>

@@ -243,72 +243,6 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- included sources artifacts -->
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.core</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.corba</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.oracle</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.moxy.utils.xjc</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.sdo</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.dbws</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-
         <!-- artifacts for zip -->
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
@@ -359,49 +293,6 @@
 
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.dbws.builder</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.extension</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.jpars</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.oracleddlparser</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.nosql</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.oracle.nosql</artifactId>
-            <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpars</artifactId>
             <classifier>javadoc</classifier>
             <scope>provided</scope>
@@ -431,36 +322,8 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>unpack-classes</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <excludeTransitive>true</excludeTransitive>
-                            <includeGroupIds>${project.groupId}</includeGroupIds>
-                            <includeScope>provided</includeScope>
-                            <includeArtifactIds>
-                                org.eclipse.persistence.asm,
-                                org.eclipse.persistence.core,
-                                org.eclipse.persistence.corba,
-                                org.eclipse.persistence.dbws,
-                                org.eclipse.persistence.jpa,
-                                org.eclipse.persistence.jpa.jpql,
-                                org.eclipse.persistence.moxy,
-                                org.eclipse.persistence.moxy.utils.xjc,
-                                org.eclipse.persistence.oracle,
-                                org.eclipse.persistence.sdo
-                            </includeArtifactIds>
-                            <excludeClassifiers>sources,javadoc</excludeClassifiers>
-                            <excludes>META-INF/MANIFEST.MF,*.html,org/eclipse/persistence/jpa/jpql/tools/**</excludes>
-                            <overWriteSnapshots>true</overWriteSnapshots>
-                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>unpack-sources</id>
-                        <phase>prepare-package</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>unpack-dependencies</goal>
                         </goals>
@@ -468,7 +331,7 @@
                             <excludeTransitive>true</excludeTransitive>
                             <includeGroupIds>${project.groupId}</includeGroupIds>
                             <includeScope>provided</includeScope>
-                            <includeClassifiers>sources</includeClassifiers>
+                            <classifier>sources</classifier>
                             <includeArtifactIds>
                                 org.eclipse.persistence.asm,
                                 org.eclipse.persistence.core,
@@ -481,7 +344,7 @@
                                 org.eclipse.persistence.oracle,
                                 org.eclipse.persistence.sdo
                             </includeArtifactIds>
-                            <excludes>META-INF/MANIFEST.MF,*.html,org/eclipse/persistence/jpa/jpql/tools/**</excludes>
+                            <excludes>module-info.*,META-INF/versions/**,META-INF/MANIFEST.MF,*.html,org/eclipse/persistence/jpa/jpql/tools/**</excludes>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <outputDirectory>${gen.src.dir}</outputDirectory>
                         </configuration>
@@ -567,14 +430,13 @@
                                     <excludes>
                                         <exclude>**/*.java</exclude>
                                     </excludes>
-                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                         </configuration>
                     </execution>
                     <execution>
                         <id>add-generated-sources</id>
-                        <phase>prepare-package</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>add-source</goal>
                         </goals>
