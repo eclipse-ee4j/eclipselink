@@ -259,7 +259,6 @@
                                 <include>org.eclipse.persistence.testing.jaxb.json.JSONTestSuite</include>
                                 <include>org.eclipse.persistence.testing.jaxb.rs.RESTfulTestSuite</include>
                                 <include>org.eclipse.persistence.testing.moxy.unit.**.*TestCase</include>
-                                <include>org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyNonDefaultTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyNotSetTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyNotSetTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyTestCase</include>
