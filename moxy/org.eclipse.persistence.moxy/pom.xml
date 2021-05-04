@@ -187,6 +187,21 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <compilerArgs>
+                                <arg>--add-exports</arg>
+                                <arg>com.sun.tools.xjc/com.sun.xml.xsom.impl.parser=org.eclipse.persistence.moxy</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!--Run specified tests/test suite-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -483,6 +498,13 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <additionalOptions>--add-exports com.sun.tools.xjc/com.sun.xml.xsom.impl.parser=org.eclipse.persistence.moxy</additionalOptions>
+                </configuration>
             </plugin>
         </plugins>
     </build>
