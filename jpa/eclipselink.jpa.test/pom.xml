@@ -270,7 +270,7 @@
                         <phase>generate-test-sources</phase>
                         <configuration>
                             <outputDirectory>${project.build.directory}/generated-test-sources/canonical-meta-model-src</outputDirectory>
-                            <compilerArguments>-Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-canonical-meta-model/persistence.xml
+                            <compilerArguments>-Aeclipselink.canonicalmodel.use_generated=false -Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-canonical-meta-model/persistence.xml
                             </compilerArguments>
                             <includes>
                                 <include>org/eclipse/persistence/testing/models/jpa/advanced/*.java</include>
@@ -285,7 +285,7 @@
                         <phase>generate-test-sources</phase>
                         <configuration>
                             <outputDirectory>${project.build.directory}/generated-test-sources/inheritance-model-src</outputDirectory>
-                            <compilerArguments>-Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-inheritance-model/persistence.xml</compilerArguments>
+                            <compilerArguments>-Aeclipselink.canonicalmodel.use_generated=false -Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-inheritance-model/persistence.xml</compilerArguments>
                             <includes>
                                 <include>org/eclipse/persistence/testing/models/jpa/inheritance/*.java</include>
                                 <include>org/eclipse/persistence/testing/models/jpa/inheritance/listeners/*.java</include>
@@ -301,7 +301,7 @@
                         <phase>generate-test-sources</phase>
                         <configuration>
                             <outputDirectory>${project.build.directory}/generated-test-sources/jpa-metamodel-src</outputDirectory>
-                            <compilerArguments>-Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-metamodel-model/persistence.xml</compilerArguments>
+                            <compilerArguments>-Aeclipselink.canonicalmodel.use_generated=false -Aeclipselink.persistencexml=${project.basedir}/${integration.test.resources.directory}/eclipselink-metamodel-model/persistence.xml</compilerArguments>
                             <includes>
                                 <include>org/eclipse/persistence/testing/models/jpa/metamodel/*.java</include>
                             </includes>

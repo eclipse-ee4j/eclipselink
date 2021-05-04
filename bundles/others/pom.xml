@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -359,6 +359,23 @@
             <artifactId>jakarta.xml.bind-api</artifactId>
             <classifier>sources</classifier>
         </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.jpars</artifactId>
+            <classifier>javadoc</classifier>
+            <scope>provided</scope>
+            <!-- ### fix me -->
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.sdo</artifactId>
+            <classifier>javadoc</classifier>
+            <scope>provided</scope>
+            <!-- ### fix me -->
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -378,7 +395,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <doclint>none</doclint>
                     <detectOfflineLinks>false</detectOfflineLinks>
                     <use>false</use>
                     <quiet>true</quiet>
@@ -443,24 +460,7 @@
                             <finalName>eclipselink</finalName>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>eclipselink-jpars-javadoc.jar</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/apidocs/eclipselink-jpars-javadoc.jar/</outputDirectory>
-                            <includeDependencySources>true</includeDependencySources>
-                            <doctitle><![CDATA[${javadoc.jpars.prefixTitle}]]></doctitle>
-                            <header><![CDATA[${javadoc.jpars.prefixTitle}]]></header>
-                            <windowtitle>${javadoc.jpars.prefixTitle}</windowtitle>
-                            <dependencySourceIncludes>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpars</dependencySourceInclude>
-                            </dependencySourceIncludes>
-                            <finalName>eclipselink-jpars</finalName>
-                        </configuration>
-                    </execution>
+                    <!--Disabled by default-->
                     <execution>
                         <id>nosql-javadoc.jar</id>
                         <phase>prepare-package</phase>
@@ -468,6 +468,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <skip>true</skip>
                             <outputDirectory>${project.build.directory}/apidocs/nosql-javadoc.jar/</outputDirectory>
                             <includeDependencySources>true</includeDependencySources>
                             <doctitle><![CDATA[${javadoc.nosql.prefixTitle}]]></doctitle>
@@ -482,26 +483,6 @@
                                 <sourceFileExclude>**/org/eclipse/persistence/internal/**</sourceFileExclude>
                             </sourceFileExcludes>
                             <finalName>nosql</finalName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>sdo-javadoc.jar</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/apidocs/sdo-javadoc.jar/</outputDirectory>
-                            <includeDependencySources>true</includeDependencySources>
-                            <doctitle><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></doctitle>
-                            <header><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></header>
-                            <windowtitle>${javadoc.prefixTitle}, ${javadoc.postfixTitle}</windowtitle>
-                            <dependencySourceIncludes>
-                                <!--Eclipselink SDO modules-->
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.sdo</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:commonj.sdo</dependencySourceInclude>
-                            </dependencySourceIncludes>
-                            <finalName>sdo</finalName>
                         </configuration>
                     </execution>
                 </executions>
@@ -531,13 +512,26 @@
                                     <version>${jpa.api.version}</version>
                                     <outputDirectory>${project.build.directory}/${archive.tmp.dir}/eclipselink-test-src.zip/jpa/plugins/</outputDirectory>
                                 </artifactItem>
-                                <artifactItem>
-                                    <groupId>${project.parent.groupId}</groupId>
-                                    <artifactId>commonj.sdo</artifactId>
-                                    <outputDirectory>${project.build.directory}/${archive.tmp.dir}/eclipselink-test-src.zip/sdo/plugins/</outputDirectory>
-                                    <destFileName>commonj.sdo_2.1.1.v201112051852.jar</destFileName>
-                                </artifactItem>
                             </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>sdo-jpars-javadoc.jar</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <excludeTransitive>true</excludeTransitive>
+                            <includeGroupIds>${project.groupId}</includeGroupIds>
+                            <includeScope>provided</includeScope>
+                            <classifier>javadoc</classifier>
+                            <includeArtifactIds>
+                                org.eclipse.persistence.jpars,
+                                org.eclipse.persistence.sdo
+                            </includeArtifactIds>
+                            <stripVersion>true</stripVersion>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
