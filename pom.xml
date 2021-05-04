@@ -202,7 +202,6 @@
         <!-- CQ #23049 -->
         <jgroups.version>4.2.11.Final</jgroups.version>
         <jmh.version>1.27</jmh.version>
-        <jmockit.version>1.35</jmockit.version>
         <junit.version>4.13.2</junit.version>
         <!-- CQ #21138 -->
         <mongodb.version>3.12.7</mongodb.version>
@@ -814,11 +813,6 @@
                 <groupId>org.hamcrest</groupId>
                 <artifactId>hamcrest-core</artifactId>
                 <version>${hamcrest.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jmockit</groupId>
-                <artifactId>jmockit</artifactId>
-                <version>${jmockit.version}</version>
             </dependency>
             <!--APIs and other libs used in test classes-->
             <dependency>
