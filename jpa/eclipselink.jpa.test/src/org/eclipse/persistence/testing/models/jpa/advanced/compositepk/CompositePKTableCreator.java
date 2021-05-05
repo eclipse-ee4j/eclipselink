@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -671,7 +671,7 @@ public class CompositePKTableCreator extends TogglingFastTableCreator {
         table.setName("JPA_LACKEYCREW");
 
         FieldDefinition fieldNAME = new FieldDefinition();
-        fieldNAME.setName("RANK");
+        fieldNAME.setName("JPA_LACKEYCREW_RANK");
         fieldNAME.setTypeName("NUMERIC");
         fieldNAME.setSize(15);
         fieldNAME.setShouldAllowNull(false);

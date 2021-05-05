@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2020 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -25,7 +25,12 @@ import java.util.*;
 import java.io.*;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.SQLException;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 
@@ -823,6 +828,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             return Helper.timestampFromCalendar((Calendar)sourceObject);
         } else if (sourceObject instanceof Long) {
             timestamp = Helper.timestampFromLong((Long)sourceObject);
+        } else if (sourceObject instanceof LocalDateTime) {
+            timestamp = Timestamp.valueOf((LocalDateTime) sourceObject);
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.TIMESTAMP);
         }
@@ -1080,6 +1087,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
             date = Helper.utilDateFromLong((Long)sourceObject);
         } else if (sourceObject instanceof java.util.Date) {
             date = new java.util.Date(((java.util.Date) sourceObject).getTime());
+        } else if (sourceObject instanceof LocalDateTime) {
+            date = Helper.utilDateFromTimestamp(java.sql.Timestamp.valueOf((LocalDateTime) sourceObject));
         } else {
             throw ConversionException.couldNotBeConverted(sourceObject, ClassConstants.UTILDATE);
         }
