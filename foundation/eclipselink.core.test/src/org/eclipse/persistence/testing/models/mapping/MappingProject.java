@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,6 @@ import org.eclipse.persistence.mappings.converters.TypeConversionConverter;
 
 import org.eclipse.persistence.sessions.Project;
 
-import org.eclipse.persistence.testing.models.mapping.Address;
-import org.eclipse.persistence.testing.models.mapping.Computer;
-import org.eclipse.persistence.testing.models.mapping.Employee;
-import org.eclipse.persistence.testing.models.mapping.Monitor;
-import org.eclipse.persistence.testing.models.mapping.Shipment;
 
 public class MappingProject extends Project {
     public MappingProject() {
@@ -483,7 +478,7 @@ public class MappingProject extends Project {
         transformationmapping1.setGetMethodName("getDesignation");
         transformationmapping1.setSetMethodName("setDesignation");
         transformationmapping1.setAttributeTransformation("getRankFromRow");
-        transformationmapping1.addFieldTransformation("MAP_EMP.RANK", "getRankFromObject");
+        transformationmapping1.addFieldTransformation("MAP_EMP.ERANK", "getRankFromObject");
         descriptor.addMapping(transformationmapping1);
 
         // SECTION: TYPECONVERSIONMAPPING
