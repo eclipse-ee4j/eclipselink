@@ -102,11 +102,6 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.jmockit</groupId>
-            <artifactId>jmockit</artifactId>
-            <scope>test</scope>
-        </dependency>
         <!--APIs and other libs used in test classes-->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
@@ -242,8 +237,6 @@
                             <goal>test</goal>
                         </goals>
                         <configuration>
-                            <!---javaagent:${org.jmockit:jmockit:jar} is required for JDK 9 and higher.-->
-                            <argLine>-javaagent:${org.jmockit:jmockit:jar}</argLine>
                             <skipTests>${test-skip-moxy-jaxb}</skipTests>
                             <reportNameSuffix>test-moxy-jaxb</reportNameSuffix>
                             <forkCount>1</forkCount>
@@ -266,10 +259,35 @@
                                 <include>org.eclipse.persistence.testing.jaxb.json.JSONTestSuite</include>
                                 <include>org.eclipse.persistence.testing.jaxb.rs.RESTfulTestSuite</include>
                                 <include>org.eclipse.persistence.testing.moxy.unit.**.*TestCase</include>
-                                <include>org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlidref.XmlIdSystemPropertyNotSetTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyNotSetTestCase</include>
                                 <include>org.eclipse.persistence.testing.jaxb.annotations.xmlvalue.XmlValueSystemPropertyTestCase</include>
+                            </includes>
+                            <excludes>
+                                <exclude>org.eclipse.persistence.testing.moxy.unit.**.*NonDefaultTestCase</exclude>
+                                <exclude>org.eclipse.persistence.testing.jaxb.**.*NonDefaultTestCase</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-moxy-jaxb-non-default-system-properties</id>
+                        <goals>
+                            <goal>test</goal>
+                        </goals>
+                        <configuration>
+                            <skipTests>${test-skip-moxy-jaxb}</skipTests>
+                            <reportNameSuffix>test-moxy-jaxb-non-default-system-properties</reportNameSuffix>
+                            <systemPropertyVariables>
+                                <org.eclipse.persistence.moxy.annotation.xml-id-extension>true</org.eclipse.persistence.moxy.annotation.xml-id-extension>
+                                <org.eclipse.persistence.moxy.annotation.xml-value-extension>true</org.eclipse.persistence.moxy.annotation.xml-value-extension>
+                                <org.eclipse.persistence.json.type-compatibility>true</org.eclipse.persistence.json.type-compatibility>
+                                <org.eclipse.persistence.json.use-xsd-types-prefix>true</org.eclipse.persistence.json.use-xsd-types-prefix>
+                                <eclipselink.logging.level.moxy>FINE</eclipselink.logging.level.moxy>
+                                <eclipselink.logging.payload.moxy>true</eclipselink.logging.payload.moxy>
+                            </systemPropertyVariables>
+                            <includes>
+                                <include>org.eclipse.persistence.testing.moxy.unit.**.*NonDefaultTestCase</include>
+                                <include>org.eclipse.persistence.testing.jaxb.**.*NonDefaultTestCase</include>
                             </includes>
                         </configuration>
                     </execution>
