@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,72 +11,28 @@
  */
 
 // Contributors:
-//  - Martin Vojtek - 2.6.0 - Initial implementation
+//     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.moxy.unit.jaxb;
 
-import static org.junit.Assert.assertTrue;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
-
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.MOXySystemProperties;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 /**
- * Tests MOXySystemProperties class.
- *
- * @author Martin Vojtek
- *
+ * Tests MOXySystemProperties class. With default values.
  */
-@RunWith(JMockit.class)
 public class MOXySystemPropertiesTestCase {
 
     @Test
-    public void getBooleanWithSecurityManager() {
-
-        final String propertyName = "propertyName";
-
-        new MockUp<MOXySystemProperties>() {
-            @Mock
-            private Boolean runDoPrivileged(final String propertyName) {
-                return true;
-            }
-        };
-
-        new Expectations(PrivilegedAccessHelper.class) {{
-            PrivilegedAccessHelper.shouldUsePrivilegedAccess(); result = true;
-        }};
-
-        Boolean result = Deencapsulation.invoke(MOXySystemProperties.class, "getBoolean", propertyName);
-
-        assertTrue(result);
-
+    public void testProperties() {
+        assertFalse(MOXySystemProperties.xmlIdExtension);
+        assertFalse(MOXySystemProperties.xmlValueExtension);
+        assertFalse(MOXySystemProperties.jsonTypeCompatibility);
+        assertFalse(MOXySystemProperties.jsonUseXsdTypesPrefix);
+        assertEquals("INFO", MOXySystemProperties.moxyLoggingLevel);
+        assertFalse(MOXySystemProperties.moxyLogPayload);
     }
 
-    @Test
-    public void getBooleanWithoutSecurityManager() {
-
-        final String propertyName = "propertyName";
-
-        new MockUp<MOXySystemProperties>() {
-            @Mock
-            private Boolean getSystemPropertyValue(final String propertyName) {
-                return true;
-            }
-        };
-
-        new Expectations(PrivilegedAccessHelper.class) {{
-            PrivilegedAccessHelper.shouldUsePrivilegedAccess(); result = false;
-        }};
-
-        Boolean result = Deencapsulation.invoke(MOXySystemProperties.class, "getBoolean", propertyName);
-
-        assertTrue(result);
-
-    }
 }

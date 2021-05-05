@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,50 +11,30 @@
  */
 
 // Contributors:
-//     Martin Vojtek - 2.6 - initial implementation
+//     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.jaxb.annotations.xmlidref;
+
+import jakarta.xml.bind.JAXBException;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
-import mockit.integration.junit4.JMockit;
-
-import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.jaxb.compiler.AnnotationsProcessor;
-import org.eclipse.persistence.jaxb.compiler.Property;
-import org.eclipse.persistence.jaxb.javamodel.Helper;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.javamodel.JavaHasAnnotations;
-import org.eclipse.persistence.oxm.annotations.XmlIDExtension;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 
 /**
- * Tests useXmlIdExtension method when system property org.eclipse.persistence.moxy.annotation.xml-id-extension is not set.
+ * Tests verify, that expected MOXy ErrorCode (50016) is returned during JAXBContext creation when system property org.eclipse.persistence.moxy.annotation.xml-id-extension is not set.
  */
-@RunWith(JMockit.class)
-public class XmlIdSystemPropertyNotSetTestCase {
+public class XmlIdSystemPropertyNotSetTestCase{
+
+    private static final Class<?>[] DOMAIN_CLASSES = new Class<?>[]{OwnerIntegerId.class, ThingIntegerId.class};
 
     @Test
-    public void testSystemXmlIdExtensionNotSet(final @Mocked Property property, final @Mocked Helper helper, final @Mocked JavaClass javaClass) {
-        new Expectations(System.class) {{
-            property.getActualType(); result = javaClass;
-            javaClass.getQualifiedName(); result = "java.lang.Integer";
-            System.getProperty("org.eclipse.persistence.moxy.annotation.xml-id-extension"); result = "false";
-            helper.isAnnotationPresent((JavaHasAnnotations)any, XmlIDExtension.class); result = false;
-            property.isXmlIdExtension(); result = false;
-        }};
-
-        AnnotationsProcessor processor = new AnnotationsProcessor(helper);
+    public void testSystemXmlIdExtensionNotSet() {
         try {
-            Deencapsulation.invoke(processor, "validateXmlIdStringType", property);
+            JAXBContextFactory.createContext(DOMAIN_CLASSES, null);
             fail("Expected JAXBException.");
         } catch (JAXBException expected) {
-            assertEquals(50016, expected.getErrorCode());
+            assertEquals(50016, ((org.eclipse.persistence.exceptions.JAXBException)expected.getLinkedException()).getErrorCode());
         }
-
     }
-
 }
