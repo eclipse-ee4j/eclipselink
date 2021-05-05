@@ -12,6 +12,8 @@
 //  RELEASE_VERSION        - Version to release
 //  NEXT_VERSION           - Next snapshot version to set (e.g. 3.0.1-SNAPSHOT).
 //  DRY_RUN                - Do not publish artifacts to OSSRH and code changes to GitHub.
+//  OVERWRITE_GIT          - Allows to overwrite existing version in git
+//  OVERWRITE_STAGING      - Allows to overwrite existing version in OSSRH (Jakarta) staging repositories
 
 
 pipeline {
