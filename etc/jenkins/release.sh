@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -16,15 +16,16 @@ HELP_PLUGIN='org.apache.maven.plugins:maven-help-plugin:3.1.0'
 # $1 -  ECLIPSELINK_VERSION         - Version to release
 # $2 -  NEXT_ECLIPSELINK_VERSION    - Next snapshot version to set (e.g. 3.0.1-SNAPSHOT).
 # $3 -  DRY_RUN                     - Do not publish artifacts to OSSRH and code changes to GitHub.
-# $4 -  OVERWRITE                   - Allows to overwrite existing version in git and OSSRH staging repositories
+# $4 -  OVERWRITE_GIT               - Allows to overwrite existing version in git
+# $5 -  OVERWRITE_STAGING           - Allows to overwrite existing version in OSSRH (Jakarta) staging repositories
 
 echo '-[ EclipseLink Release ]-----------------------------------------------------------'
-. /etc/profile
 
 ECLIPSELINK_VERSION="${1}"
 NEXT_ECLIPSELINK_VERSION="${2}"
 DRY_RUN="${3}"
-OVERWRITE="${4}"
+OVERWRITE_GIT="${4}"
+OVERWRITE_STAGING="${5}"
 
 
 export MAVEN_SKIP_RC="true"
@@ -52,7 +53,7 @@ else
   GIT_ORIGIN=`git remote`
   echo '-[ Prepare branch ]-------------------------------------------------------------'
   if [[ -n `git branch -r | grep "${GIT_ORIGIN}/${RELEASE_BRANCH}"` ]]; then
-    if [ "${OVERWRITE}" = 'true' ]; then
+    if [ "${OVERWRITE_GIT}" = 'true' ]; then
       echo "${GIT_ORIGIN}/${RELEASE_BRANCH} branch already exists, deleting"
       git push --delete origin "${RELEASE_BRANCH}" && true
     else
@@ -62,7 +63,7 @@ else
   fi
   echo '-[ Release tag cleanup ]--------------------------------------------------------'
   if [[ -n `git ls-remote --tags ${GIT_ORIGIN} | grep "${RELEASE_TAG}"` ]]; then
-    if [ "${OVERWRITE}" = 'true' ]; then
+    if [ "${OVERWRITE_GIT}" = 'true' ]; then
       echo "${RELEASE_TAG} tag already exists, deleting"
       git push --delete origin "${RELEASE_TAG}" && true
     else
@@ -90,7 +91,9 @@ ECLIPSELINK_STAGING_KEY=$(echo ${ECLIPSELINK_STAGING_DESC} | sed -e 's/\./\\\./g
 echo '-[ EclipseLink release version ]--------------------------------------------------------'
 set_version 'ECLIPSELINK' "${ECLIPSELINK_DIR}" "${ECLIPSELINK_RELEASE_VERSION}" "${ECLIPSELINK_GROUP_ID}" "${ECLIPSELINK_ARTIFACT_ID}" ''
 
-drop_artifacts "${ECLIPSELINK_STAGING_KEY}" "${ECLIPSELINK_DIR}"
+if [ "${OVERWRITE_STAGING}" = 'true' ]; then
+  drop_artifacts "${ECLIPSELINK_STAGING_KEY}" "${ECLIPSELINK_DIR}"
+fi
 
 echo '-[ Build project mvn clean install ]-----------------------------'
 #This step is needed to populate local Maven repository with required but not deployed artifacts

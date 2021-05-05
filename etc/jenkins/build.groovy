@@ -99,6 +99,10 @@ spec:
 """
         }
     }
+    tools {
+        maven 'apache-maven-latest'
+        jdk 'openjdk-jdk11-latest'
+    }
     stages {
         // Initialize build environment
         stage('Init') {
@@ -210,6 +214,21 @@ spec:
                     }
                 }
             }
+        }
+    }
+    post {
+        // Send a mail on unsuccessful and fixed builds
+        unsuccessful { // means unstable || failure || aborted
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',
+                    body: '''Check console output at $BUILD_URL to view the results.''',
+                    recipientProviders: [culprits(), requestor()],
+                    to: '${NOTIFICATION_ADDRESS}'
+        }
+        fixed { // back to normal
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER is back to normal!',
+                    body: '''Check console output at $BUILD_URL to view the results.''',
+                    recipientProviders: [culprits(), requestor()],
+                    to: '${NOTIFICATION_ADDRESS}'
         }
     }
 }
