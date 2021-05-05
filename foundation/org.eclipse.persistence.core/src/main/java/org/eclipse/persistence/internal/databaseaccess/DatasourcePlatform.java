@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019, 2020 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -369,7 +369,8 @@ public class DatasourcePlatform implements Platform {
             return new java.sql.Timestamp(System.currentTimeMillis());
         } else {
             getTimestampQuery().setSessionName(sessionName);
-            return (java.sql.Timestamp)session.executeQuery(getTimestampQuery());
+            Object result = session.executeQuery(getTimestampQuery());
+            return (java.sql.Timestamp) session.getDatasourcePlatform().convertObject(result, ClassConstants.TIMESTAMP);
         }
     }
 
