@@ -15,15 +15,18 @@
 
 #
 # Arguments:
-#  $1 - ASM_VERSION
-#  $2 - NEXT_ASM_VERSION
-#  $3 - DRY_RUN
-#  $4 - OVERWRITE
+# $1 -  ASM_VERSION                 - Version to release
+# $2 -  NEXT_ASM_VERSION            - Next snapshot version to set (e.g. 3.0.1-SNAPSHOT).
+# $3 -  DRY_RUN                     - Do not publish artifacts to OSSRH and code changes to GitHub.
+# $4 -  OVERWRITE_GIT               - Allows to overwrite existing version in git
+# $5 -  OVERWRITE_STAGING           - Allows to overwrite existing version in OSSRH (Jakarta) staging repositories
+
 
 ASM_VERSION="${1}"
 NEXT_ASM_VERSION="${2}"
 DRY_RUN="${3}"
-OVERWRITE="${4}"
+OVERWRITE_GIT="${4}"
+OVERWRITE_STAGING="${5}"
 
 
 export MAVEN_SKIP_RC="true"
@@ -50,7 +53,7 @@ else
   GIT_ORIGIN=`git remote`
   echo '-[ Prepare branch ]-------------------------------------------------------------'
   if [[ -n `git branch -r | grep "${GIT_ORIGIN}/${RELEASE_BRANCH}"` ]]; then
-    if [ "${OVERWRITE}" = 'true' ]; then
+    if [ "${OVERWRITE_GIT}" = 'true' ]; then
       echo "${GIT_ORIGIN}/${RELEASE_BRANCH} branch already exists, deleting"
       git push --delete origin "${RELEASE_BRANCH}" && true
     else
@@ -60,7 +63,7 @@ else
   fi
   echo '-[ Release tag cleanup ]--------------------------------------------------------'
   if [[ -n `git ls-remote --tags ${GIT_ORIGIN} | grep "${RELEASE_TAG}"` ]]; then
-    if [ "${OVERWRITE}" = 'true' ]; then
+    if [ "${OVERWRITE_GIT}" = 'true' ]; then
       echo "${RELEASE_TAG} tag already exists, deleting"
       git push --delete origin "${RELEASE_TAG}" && true
     else
@@ -88,8 +91,8 @@ ASM_STAGING_KEY=$(echo ${ASM_STAGING_DESC} | sed -e 's/\./\\\./g')
 echo '-[ EclipseLink ASM release version ]--------------------------------------------------------'
 set_version 'ASM' "${ASM_DIR}" "${ASM_RELEASE_VERSION}" "${ASM_GROUP_ID}" "${ASM_ARTIFACT_ID}" ''
 
-if [ "${OVERWRITE}" = 'true' ]; then
-  drop_artifacts "${ASM_STAGING_KEY}" "${ASM_DIR}"
+if [ "${OVERWRITE_STAGING}" = 'true' ]; then
+  drop_artifacts "${ECLIPSELINK_STAGING_KEY}" "${ECLIPSELINK_DIR}"
 fi
 
 echo '-[ Deploy artifacts to staging repository ]-----------------------------'
