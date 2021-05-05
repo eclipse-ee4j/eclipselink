@@ -98,7 +98,7 @@ public class SchemaGeneratorTestCase {
 
         // Verify that XML-Transformation property is added to XML schema
         for (Property property: props) {
-            assertTrue(outputSchema.indexOf(property.getPropertyName()) != -1);
+            assertTrue(outputSchema.contains(property.getPropertyName()));
         }
     }
 

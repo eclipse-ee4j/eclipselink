@@ -37,6 +37,8 @@ import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
 
 import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.Employee;
 
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.NormalHoursAttributeTransformer;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.StartTimeTransformer;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -78,12 +80,12 @@ public class TransformerPropertyBuilderTestCase {
         assertEquals("end-time", props.get(1).getPropertyName());
         // Verification of result of org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.getReturnTypeFromTransformer(...)
         // Verify property types
-        assertEquals("java.lang.String", props.get(0).getType().getName());
-        assertEquals("java.lang.String", props.get(1).getType().getName());
+        assertEquals(String.class.getName(), props.get(0).getType().getName());
+        assertEquals(String.class.getName(), props.get(1).getType().getName());
 
-        assertEquals("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.NormalHoursAttributeTransformer", normalHoursProperty.getXmlTransformation().getXmlReadTransformer().getTransformerClass());
-        assertEquals("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.StartTimeTransformer", normalHoursProperty.getXmlTransformation().getXmlWriteTransformer().get(0).getTransformerClass());
-        assertEquals("java.lang.String", normalHoursProperty.getGenericType().getName());
+        assertEquals(NormalHoursAttributeTransformer.class.getName(), normalHoursProperty.getXmlTransformation().getXmlReadTransformer().getTransformerClass());
+        assertEquals(StartTimeTransformer.class.getName() , normalHoursProperty.getXmlTransformation().getXmlWriteTransformer().get(0).getTransformerClass());
+        assertEquals(String.class.getName(), normalHoursProperty.getGenericType().getName());
 
         // Indirect call of org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.getTransformerJavaClass(...) with invalid TransformerClass name
         try {
