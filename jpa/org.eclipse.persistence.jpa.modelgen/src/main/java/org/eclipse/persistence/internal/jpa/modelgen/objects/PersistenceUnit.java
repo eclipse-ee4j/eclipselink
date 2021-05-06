@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -281,19 +281,24 @@ public class PersistenceUnit {
             addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getEclipseLinkOrmProject());
         } catch (XMLMarshalException e) {
             try {
-                // Try JPA 2.2 project
-                addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_2Project());
-            } catch (XMLMarshalException xme) {
+                // Try Persistence 3.0 project
+                addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm3_0Project());
+            } catch (XMLMarshalException xe) {
                 try {
-                    // Try JPA 2.1 project
-                    addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_1Project());
-                } catch (XMLMarshalException ee) {
+                    // Try JPA 2.2 project
+                    addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_2Project());
+                } catch (XMLMarshalException xme) {
                     try {
-                        // Try JPA 2.0 project
-                        addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_0Project());
-                    } catch (XMLMarshalException eee) {
-                        // Try JPA 1.0 project (don't catch exceptions at this point)
-                        addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm1_0Project());
+                        // Try JPA 2.1 project
+                        addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_1Project());
+                    } catch (XMLMarshalException ee) {
+                        try {
+                            // Try JPA 2.0 project
+                            addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm2_0Project());
+                        } catch (XMLMarshalException eee) {
+                            // Try JPA 1.0 project (don't catch exceptions at this point)
+                            addXMLEntityMappings(mappingFile, XMLEntityMappingsReader.getOrm1_0Project());
+                        }
                     }
                 }
             }
