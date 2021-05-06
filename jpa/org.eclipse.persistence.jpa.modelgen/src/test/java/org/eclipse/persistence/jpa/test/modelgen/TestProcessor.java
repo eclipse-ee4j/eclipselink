@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -261,6 +261,12 @@ public class TestProcessor {
         } catch (IOException x) {
             throw x;
         }
+        File oxml = new File(cpDir, "META-INF/orm.xml");
+        try (BufferedWriter writer = Files.newBufferedWriter(oxml.toPath(), StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE)) {
+            writer.write(OXML, 0, OXML.length());
+        } catch (IOException x) {
+            throw x;
+        }
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
@@ -311,11 +317,11 @@ public class TestProcessor {
         }
     }
 
-    private static final String PXML = "<persistence xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"\n" +
+    private static final String PXML = "<persistence xmlns=\"https://jakarta.ee/xml/ns/persistence\"\n" +
             "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
-            "  xsi:schemaLocation=\"http://xmlns.jcp.org/xml/ns/persistence\n" +
-            "    http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd\"\n" +
-            "  version=\"2.2\">\n" +
+            "  xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence\n" +
+            "    https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd\"\n" +
+            "  version=\"3.0\">\n" +
             "     <persistence-unit name=\"sample-pu\" transaction-type=\"RESOURCE_LOCAL\">\n" +
             "          <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>\n" +
             "          <exclude-unlisted-classes>false</exclude-unlisted-classes>\n" +
@@ -323,6 +329,12 @@ public class TestProcessor {
             "          </properties>\n" +
             "     </persistence-unit>\n" +
             "</persistence>";
+
+    private static final String OXML = "<entity-mappings xmlns=\"https://jakarta.ee/xml/ns/persistence/orm\"\n" +
+"             xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
+"             xsi:schemaLocation=\"https://jakarta.ee/xml/ns/persistence/orm https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd\"\n" +
+"             version=\"3.0\">" +
+            "</entity-mappings>";
 
     private static final String PXML_LOG_BEG =
             "<persistence xmlns=\"http://xmlns.jcp.org/xml/ns/persistence\"\n" +
