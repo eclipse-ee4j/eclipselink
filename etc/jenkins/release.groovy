@@ -12,7 +12,9 @@
 //  RELEASE_VERSION        - Version to release
 //  NEXT_VERSION           - Next snapshot version to set (e.g. 3.0.1-SNAPSHOT).
 //  DRY_RUN                - Do not publish artifacts to OSSRH and code changes to GitHub.
-
+//  OVERWRITE_GIT          - Allows to overwrite existing version in git
+//  OVERWRITE_STAGING      - Allows to overwrite existing version in OSSRH (Jakarta) staging repositories
+//  NOTIFICATION_ADDRESS   - E-Mail address where Jenkins job send notification in case of failure or return back to normal
 
 pipeline {
     agent {
@@ -133,11 +135,26 @@ spec:
                     git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
                     sshagent([SSH_CREDENTIALS_ID]) {
                         sh """
-                            etc/jenkins/release.sh "${RELEASE_VERSION}" "${NEXT_VERSION}" "${DRY_RUN}" "${OVERWRITE}"
+                            etc/jenkins/release.sh "${RELEASE_VERSION}" "${NEXT_VERSION}" "${DRY_RUN}" "${OVERWRITE_GIT}" "${OVERWRITE_STAGING}"
                         """
                     }
                 }
             }
+        }
+    }
+    post {
+        // Send a mail on unsuccessful and fixed builds
+        unsuccessful { // means unstable || failure || aborted
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',
+                    body: '''Check console output at $BUILD_URL to view the results.''',
+                    recipientProviders: [culprits(), requestor()],
+                    to: '${NOTIFICATION_ADDRESS}'
+        }
+        fixed { // back to normal
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER is back to normal!',
+                    body: '''Check console output at $BUILD_URL to view the results.''',
+                    recipientProviders: [culprits(), requestor()],
+                    to: '${NOTIFICATION_ADDRESS}'
         }
     }
 }
