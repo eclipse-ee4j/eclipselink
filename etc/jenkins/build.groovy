@@ -17,6 +17,7 @@
 //  BUILD_RESULTS_TARGET_DIR    - Location in the projects-storage.eclipse.org server for nightly builds (jar files and test results)
 //  CONTINUOUS_BUILD            - false - full nightly build with LRG and server tests and nightly build publish
 //                                true - continuous build with SRG tests without publishing nightly build results
+//  NOTIFICATION_ADDRESS        - E-Mail address where Jenkins job send notification in case of failure or return back to normal
 
 
 pipeline {
@@ -210,6 +211,21 @@ spec:
                     }
                 }
             }
+        }
+    }
+    post {
+        // Send a mail on unsuccessful and fixed builds
+        unsuccessful { // means unstable || failure || aborted
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',
+                    body: '''Check console output at $BUILD_URL to view the results.''',
+                    recipientProviders: [culprits(), requestor()],
+                    to: '${NOTIFICATION_ADDRESS}'
+        }
+        fixed { // back to normal
+            emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER is back to normal!',
+                    body: '''Check console output at $BUILD_URL to view the results.''',
+                    recipientProviders: [culprits(), requestor()],
+                    to: '${NOTIFICATION_ADDRESS}'
         }
     }
 }
