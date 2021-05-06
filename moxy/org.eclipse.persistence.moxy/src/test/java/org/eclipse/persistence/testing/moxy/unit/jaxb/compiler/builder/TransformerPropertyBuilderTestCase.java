@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -11,225 +11,89 @@
  */
 
 // Contributors:
-//  - Martin Vojtek - 2.6 - Initial implementation
+//     Oracle - initial API and implementation
 package org.eclipse.persistence.testing.moxy.unit.jaxb.compiler.builder;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-
-import java.util.ArrayList;
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import javax.xml.namespace.QName;
-
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Invocation;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import mockit.Tested;
-import mockit.Verifications;
-import mockit.integration.junit4.JMockit;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
 
 import org.eclipse.persistence.exceptions.JAXBException;
+import org.eclipse.persistence.internal.jaxb.JaxbClassLoader;
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.JAXBContextProperties;
+import org.eclipse.persistence.jaxb.compiler.Generator;
 import org.eclipse.persistence.jaxb.compiler.Property;
 import org.eclipse.persistence.jaxb.compiler.TypeInfo;
-import org.eclipse.persistence.jaxb.compiler.XMLProcessor;
 import org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder;
-import org.eclipse.persistence.jaxb.compiler.builder.helper.TransformerReflectionHelper;
 import org.eclipse.persistence.jaxb.javamodel.Helper;
-import org.eclipse.persistence.jaxb.javamodel.JavaClass;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation;
-import org.eclipse.persistence.jaxb.xmlmodel.XmlTransformation.XmlWriteTransformer;
-import org.junit.Before;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
+import org.eclipse.persistence.jaxb.xmlmodel.XmlBindings;
+
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.Employee;
+
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.NormalHoursAttributeTransformer;
+import org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation.StartTimeTransformer;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Tests TransformerPropertyBuilder methods.
  *
- * @author Martin Vojtek
- *
  */
-@RunWith(JMockit.class)
 public class TransformerPropertyBuilderTestCase {
 
-    @Mocked Property property;
-    @Mocked TypeInfo typeInfo;
-    @Mocked Helper helper;
-    String attributeToken = "testAttributeToken";
-    @Tested TransformerPropertyBuilder builder;
-
-    @Before
-    public void init() {
-        builder = new TransformerPropertyBuilder(property, typeInfo, helper, attributeToken);
-    }
+    private static final Class<?>[] DOMAIN_CLASSES = new Class<?>[]{Employee.class};
+    private static final String EMPLOYEE_CLASS_NAME = Employee.class.getTypeName();
+    private static final String BINDINGS_DOC = "org/eclipse/persistence/testing/jaxb/externalizedmetadata/mappings/xmltransformation/eclipselink-oxm.xml";
+    private static final String XML_TRANSFORMATION_PROPERTY_NAME = "normalHours";
 
     @Test
-    public void buildProperties(final @Mocked XmlTransformation xmlTransformation, final @Mocked XmlWriteTransformer transformer1, final @Mocked XmlWriteTransformer transformer2) {
+    public void testTransformerPropertyBuilder() {
+        InputStream inputStream = ClassLoader.getSystemResourceAsStream(BINDINGS_DOC);
+        HashMap<String, Source> metadataSourceMap = new HashMap<>();
+        metadataSourceMap.put("org.eclipse.persistence.testing.jaxb.externalizedmetadata.mappings.xmltransformation", new StreamSource(inputStream));
+        Map<String, Map<String, Source>> properties = new HashMap<>();
+        properties.put(JAXBContextProperties.OXM_METADATA_SOURCE, metadataSourceMap);
+        Map<String, XmlBindings> bindings = JAXBContextFactory.getXmlBindingsFromProperties(properties, Thread.currentThread().getContextClassLoader());
+        JavaModelInputImpl jModelInput = new JavaModelInputImpl(DOMAIN_CLASSES, new JavaModelImpl(new JaxbClassLoader(Thread.currentThread().getContextClassLoader(), DOMAIN_CLASSES)));
+        Helper helper = new Helper(jModelInput.getJavaModel());
+        Generator generator = new Generator(jModelInput, bindings, Thread.currentThread().getContextClassLoader(), "", false);
+        TypeInfo typeInfo = generator.getAnnotationsProcessor().getTypeInfos().get(EMPLOYEE_CLASS_NAME);
+        Property normalHoursProperty = typeInfo.getProperties().get(XML_TRANSFORMATION_PROPERTY_NAME);
+        ChildSchemaGenerator childSchemaGenerator = new ChildSchemaGenerator(helper);
+        TransformerPropertyBuilder transformerPropertyBuilder = childSchemaGenerator.getTransformerPropertyBuilder(normalHoursProperty, typeInfo);
+        // Indirect call of org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.getPropertyName(...) and org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.buildPropertyFromTransformer(...)
+        // Indirect call of org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.getTransformerJavaClass(...) with booth options writeTransformer.isSetTransformerClass() true,false
+        List<Property> props = transformerPropertyBuilder.buildProperties();
+        assertEquals(2, props.size());
+        // Verification of result of org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.getPropertyName(...)
+        // Verify property names
+        assertEquals("start-time", props.get(0).getPropertyName());
+        assertEquals("end-time", props.get(1).getPropertyName());
+        // Verification of result of org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.getReturnTypeFromTransformer(...)
+        // Verify property types
+        assertEquals(String.class.getName(), props.get(0).getType().getName());
+        assertEquals(String.class.getName(), props.get(1).getType().getName());
 
-        final Property property1 = new Property();
-        final Property property2 = new Property();
+        assertEquals(NormalHoursAttributeTransformer.class.getName(), normalHoursProperty.getXmlTransformation().getXmlReadTransformer().getTransformerClass());
+        assertEquals(StartTimeTransformer.class.getName() , normalHoursProperty.getXmlTransformation().getXmlWriteTransformer().get(0).getTransformerClass());
+        assertEquals(String.class.getName(), normalHoursProperty.getGenericType().getName());
 
-        new MockUp<TransformerPropertyBuilder>() {
-            @Mock
-            private String getPropertyName(Invocation invocation, Property property, XmlWriteTransformer writeTransformer) {
-                return property.getPropertyName() + invocation.getInvocationCount();
-            }
-
-            @Mock
-            private Property buildPropertyFromTransformer(Invocation invocation, String pname, TypeInfo typeInfo, XmlWriteTransformer writeTransformer) {
-                return invocation.getInvocationCount() == 1 ? property1 : property2;
-            }
-        };
-
-        new Expectations() {{
-            property.getXmlTransformation(); result = xmlTransformation;
-            List<XmlWriteTransformer> transformers = new ArrayList<>();
-            transformers.add(transformer1);
-            transformers.add(transformer2);
-            xmlTransformation.getXmlWriteTransformer(); result = transformers;
-        }};
-
-        List<Property> properties = builder.buildProperties();
-
-        assertEquals(2, properties.size());
-        assertSame(property1, properties.get(0));
-        assertSame(property2, properties.get(1));
-    }
-
-    @Test
-    public void getPropertyName(final @Mocked XmlWriteTransformer transformer, final @Mocked XMLProcessor xmlProcessor) {
-
-        final String expectedResult = "expectedResult";
-
-        new Expectations(TransformerPropertyBuilder.class) {{
-            String xmlPath = "xmlPath";
-            transformer.getXmlPath(); result = xmlPath;
-            XMLProcessor.getNameFromXPath(xmlPath, property.getPropertyName(), false); result = expectedResult;
-        }};
-
-        String propertyName = Deencapsulation.invoke(builder, "getPropertyName", property, transformer);
-
-        assertSame(expectedResult, propertyName);
-    }
-
-    @Test
-    public void buildPropertyFromTransformer(final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass type, final @Mocked Property propety) {
-
-        final String xmlPath = "xmlPath";
-        final String pname = "customPname";
-
-        new MockUp<TransformerPropertyBuilder>() {
-            @Mock
-            private JavaClass getReturnTypeFromTransformer(TypeInfo typeInfo, XmlWriteTransformer writeTransformer) {
-                return type;
-            }
-
-        };
-
-        new Expectations() {{
-            transformer.getXmlPath(); result = xmlPath;
-        }};
-
-        final Property resultProperty = Deencapsulation.invoke(builder, "buildPropertyFromTransformer", pname, typeInfo, transformer);
-
-        new Verifications() {{
-            resultProperty.setPropertyName(pname);
-            resultProperty.setXmlPath(xmlPath);
-            resultProperty.setSchemaName(new QName(pname));
-            resultProperty.setType(type);
-        }};
-    }
-
-    @Test
-    public void getReturnTypeFromTransformer_isSetTransformerClass(final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass javaClass, final @Mocked TransformerReflectionHelper transformerReflectionHelper, final @Mocked JavaClass resultJavaClass) {
-        new MockUp<TransformerPropertyBuilder>() {
-            @Mock
-            private JavaClass getTransformerJavaClass(TypeInfo typeInfo, XmlWriteTransformer writeTransformer) {
-                return javaClass;
-            }
-
-            @Mock
-            private TransformerReflectionHelper getTransformerReflectionHelper() {
-                return transformerReflectionHelper;
-            }
-        };
-
-        new Expectations() {{
-            transformer.isSetTransformerClass(); result = true;
-            transformerReflectionHelper.getReturnTypeForWriteTransformationMethodTransformer(javaClass); result = resultJavaClass;
-        }};
-
-        final JavaClass returnType = Deencapsulation.invoke(builder, "getReturnTypeFromTransformer", typeInfo, transformer);
-
-        assertSame(resultJavaClass, returnType);
-    }
-
-    @Test
-    public void getReturnTypeFromTransformer_isNotSetTransformerClass(final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass javaClass, final @Mocked TransformerReflectionHelper transformerReflectionHelper, final @Mocked JavaClass resultJavaClass) {
-
-        new Expectations(TransformerPropertyBuilder.class) {{
-            Deencapsulation.invoke(builder, "getTransformerJavaClass", typeInfo, transformer); result = javaClass;
-            transformer.isSetTransformerClass(); result = false;
-
-            Deencapsulation.invoke(builder, "getTransformerReflectionHelper"); result = transformerReflectionHelper;
-
-            String transformerMethod = "transformerMethod";
-            transformer.getMethod(); result = transformerMethod;
-
-            transformerReflectionHelper.getReturnTypeForWriteTransformationMethod(transformerMethod, javaClass); result = resultJavaClass;
-        }};
-
-        final JavaClass returnType = Deencapsulation.invoke(builder, "getReturnTypeFromTransformer", typeInfo, transformer);
-
-        assertSame(resultJavaClass, returnType);
-    }
-
-    @Test
-    public void getTransformerJavaClass_isSetTransformerClass(final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass resultJavaClass) {
-        new Expectations(TransformerPropertyBuilder.class) {{
-            transformer.isSetTransformerClass(); result = true;
-            String transformerClass = "transformerClass";
-            transformer.getTransformerClass(); result = transformerClass;
-            helper.getJavaClass(transformerClass); result = resultJavaClass;
-        }};
-
-        final JavaClass returnType = Deencapsulation.invoke(builder, "getTransformerJavaClass", typeInfo, transformer);
-
-        assertSame(resultJavaClass, returnType);
-    }
-
-    @Test
-    public void getTransformerJavaClass_isSetTransformerClass_throwsJAXBExcpetion(final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass resultJavaClass) {
-        new Expectations(TransformerPropertyBuilder.class) {{
-            transformer.isSetTransformerClass(); result = true;
-            String transformerClass = "transformerClass";
-            transformer.getTransformerClass(); result = transformerClass;
-            helper.getJavaClass(transformerClass); result = JAXBException.transformerClassNotFound(transformerClass);
-            transformer.getTransformerClass(); result = transformerClass;
-        }};
-
+        // Indirect call of org.eclipse.persistence.jaxb.compiler.builder.TransformerPropertyBuilder.getTransformerJavaClass(...) with invalid TransformerClass name
         try {
-            Deencapsulation.invoke(builder, "getTransformerJavaClass", typeInfo, transformer);
-            fail("JAXBException should be thrown");
-        } catch(JAXBException exception) {
-
+            normalHoursProperty.getXmlTransformation().getXmlWriteTransformer().get(0).setTransformerClass("xxx.xxx.WrongClassName");
+            props = transformerPropertyBuilder.buildProperties();
+            fail("Expected JAXBException.");
+        } catch (JAXBException expected) {
+            assertEquals(50054, expected.getErrorCode());
         }
     }
-
-    @Test
-    public void getTransformerJavaClass_isNotSetTransformerClass(final @Mocked TypeInfo typeInfo, final @Mocked XmlWriteTransformer transformer, final @Mocked JavaClass resultJavaClass) {
-        new Expectations(TransformerPropertyBuilder.class) {{
-            transformer.isSetTransformerClass(); result = false;
-            helper.getJavaClass(typeInfo.getJavaClassName()); result = resultJavaClass;
-        }};
-
-        final JavaClass returnType = Deencapsulation.invoke(builder, "getTransformerJavaClass", typeInfo, transformer);
-
-        assertSame(resultJavaClass, returnType);
-    }
-
 }
