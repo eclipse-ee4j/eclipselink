@@ -13,9 +13,10 @@
 //   NEXT_ASM_VERSION  - Next EclipseLink ASM snapshot version to set (e.g. 1.2.4-SNAPSHOT)
 //   BRANCH            - Branch to release
 //   DRY_RUN           - Do not publish artifacts to OSSRH and code changes to GitHub
-//   OVERWRITE         - Allows to overwrite existing version in git and OSSRH staging repositories
+//   OVERWRITE_GIT     - Allows to overwrite existing version in git
+//   OVERWRITE_STAGING - Allows to overwrite existing version in OSSRH (Jakarta) staging repositories
 
-// Job internal argumets:
+// Job internal arguments:
 //   GIT_USER_NAME       - Git user name (for commits)
 //   GIT_USER_EMAIL      - Git user e-mail (for commits)
 //   GIT_BRANCH_RELEASE  - Git branch to release
@@ -142,7 +143,7 @@ spec:
                     git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
                     sshagent([SSH_CREDENTIALS_ID]) {
                         sh '''
-                            etc/jenkins/release_asm.sh "${ASM_VERSION}" "${NEXT_ASM_VERSION}" "${DRY_RUN}" "${OVERWRITE}"
+                            etc/jenkins/release_asm.sh "${ASM_VERSION}" "${NEXT_ASM_VERSION}" "${DRY_RUN}" "${OVERWRITE_GIT}" "${OVERWRITE_STAGING}"
                         '''
                     }
                 }
