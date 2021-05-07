@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,9 @@
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,18 +25,17 @@ import java.util.Map;
 import jakarta.xml.bind.annotation.XmlEnum;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.AnnotationProxy;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 
 import com.sun.codemodel.JAnnotationArrayMember;
+import com.sun.codemodel.JAnnotationClassValue;
+import com.sun.codemodel.JAnnotationStringValue;
 import com.sun.codemodel.JAnnotationUse;
 import com.sun.codemodel.JAnnotationValue;
 import com.sun.codemodel.JClass;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JStringLiteral;
+import com.sun.codemodel.JType;
 
 /**
  * INTERNAL:
@@ -60,19 +60,6 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
     private JAnnotationUse xjcAnnotation;
     private DynamicClassLoader dynamicClassLoader;
 
-    private static Field JANNOTATIONUSE_CLAZZ = null;
-    private static Field JANNOTATIONUSE_MEMBERVALUES = null;
-    private static Field JANNOTATIONARRAYMEMBER_VALUES = null;
-    static {
-        try {
-            JANNOTATIONUSE_CLAZZ = PrivilegedAccessHelper.getDeclaredField(JAnnotationUse.class, "clazz", true);
-            JANNOTATIONUSE_MEMBERVALUES = PrivilegedAccessHelper.getDeclaredField(JAnnotationUse.class, "memberValues", true);
-            JANNOTATIONARRAYMEMBER_VALUES = PrivilegedAccessHelper.getDeclaredField(JAnnotationArrayMember.class, "values", true);
-        } catch (Exception e) {
-            throw JAXBException.errorCreatingDynamicJAXBContext(e);
-        }
-    }
-
     /**
      * Construct a new instance of <code>XJCJavaAnnotationImpl</code>.
      *
@@ -92,96 +79,53 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
     @SuppressWarnings("unchecked")
     public Annotation getJavaAnnotation() {
         try {
-            Map<String, Object> components = new HashMap<String, Object>();
+            Map<String, Object> components = new HashMap<>();
 
             // First, get all the default values for this annotation class.
-            Object xjcRefClass = PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_CLAZZ, xjcAnnotation);
-            // Cannot cache this field because JReferencedClass is a protected class.
-            Field _classField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "_class", true);
-            Class<Annotation> annotationClass = (Class<Annotation>) PrivilegedAccessHelper.getValueFromField(_classField, xjcRefClass);
+            Class<Annotation> annotationClass = (Class<Annotation>) getJavaAnnotationClass();
             Method[] methods = annotationClass.getDeclaredMethods();
             for (int i = 0; i < methods.length; i++) {
                 components.put(methods[i].getName(), methods[i].getDefaultValue());
             }
 
             // Get the property values for this annotation instance.
-            Map<Object, Object> memberValues = (Map<Object, Object>) PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_MEMBERVALUES, xjcAnnotation);
+            Map<String, JAnnotationValue> memberValues = xjcAnnotation.getAnnotationMembers();
             if (memberValues == null) {
                 // Return an annotation with just the defaults set.
                 return AnnotationProxy.getProxy(components, annotationClass, dynamicClassLoader, XMLConversionManager.getDefaultManager());
             }
 
+            boolean isXmlEnum = annotationClass.equals(XmlEnum.class);
             // Now overwrite the default values with anything we find in the XJC annotation instance.
-            for (Object key : memberValues.keySet()) {
-                JAnnotationValue xjcValue = (JAnnotationValue) memberValues.get(key);
+            for (String key : memberValues.keySet()) {
+                JAnnotationValue xjcValue = memberValues.get(key);
                 if (xjcValue instanceof JAnnotationArrayMember) {
-                    List<Object> values = (List<Object>) PrivilegedAccessHelper.getValueFromField(JANNOTATIONARRAYMEMBER_VALUES, xjcValue);
-                    Object[] valuesArray = new Object[values.size()];
-                    for (int i = 0; i < values.size(); i++) {
-                        if (values.get(i) instanceof JAnnotationUse) {
-                            JAnnotationUse xjcAnno = (JAnnotationUse) values.get(i);
+                    Collection<JAnnotationValue> values = ((JAnnotationArrayMember) xjcValue).annotations2();
+                    List<Object> valuesArray = new ArrayList<>(values.size());
+                    for (JAnnotationValue val : values) {
+                        if (val instanceof JAnnotationUse) {
+                            JAnnotationUse xjcAnno = (JAnnotationUse) val;
                             XJCJavaAnnotationImpl anno = new XJCJavaAnnotationImpl(xjcAnno, dynamicClassLoader);
-                            valuesArray[i] = anno.getJavaAnnotation();
+                            valuesArray.add(anno.getJavaAnnotation());
+                        } else if (val instanceof JAnnotationStringValue) {
+                            JAnnotationStringValue value = (JAnnotationStringValue) val;
+                            valuesArray.add(value.toString());
+                        } else if (val instanceof JAnnotationClassValue) {
+                            JAnnotationClassValue cval = (JAnnotationClassValue) val;
+                            valuesArray.add(getValueFromClsValue(cval, isXmlEnum));
                         } else {
-                            Field valueField = PrivilegedAccessHelper.getDeclaredField(values.get(i).getClass(), "value", true);
-                            Object value = PrivilegedAccessHelper.getValueFromField(valueField, values.get(i));
-                            if (value instanceof JStringLiteral) {
-                                JStringLiteral strvalue = (JStringLiteral) value;
-                                valuesArray[i] = strvalue.str;
-                            } else {
-                                // XmlSeeAlso.value = Array of JDefinedClasses
-                                Field valClField = PrivilegedAccessHelper.getDeclaredField(value.getClass(), "val$cl", true);
-                                JDefinedClass wrappedValue = (JDefinedClass) PrivilegedAccessHelper.getValueFromField(valClField, value);
-                                Class<?> tempDynClass = dynamicClassLoader.createDynamicClass(wrappedValue.fullName());
-                                valuesArray[i] = tempDynClass;
-                            }
+                            throw new RuntimeException("got " + val.getClass().getName());
                         }
                     }
-                    components.put(key.toString(), valuesArray);
-                } else if (xjcValue.getClass().getName().contains("JAnnotationStringValue")) {
-                    // JAnnotationStringValue is a package-protected class so need to compare class name.
-                    // Cannot cache this field because JAnnotationStringValue is a protected class.
-                    Field valueField = PrivilegedAccessHelper.getDeclaredField(xjcValue.getClass(), "value", true);
-                    Object objValue = PrivilegedAccessHelper.getValueFromField(valueField, xjcValue);
-                    if (objValue instanceof JStringLiteral) {
-                        JStringLiteral value = (JStringLiteral) objValue;
-                        String stringValue = value.str;
-                        components.put(key.toString(), stringValue);
-                    } else if (objValue.getClass().getName().contains("JAtom")) {
-                        // e.g. XmlElement.required = JAtom
-                        // Cannot cache this field because JAtom is a protected class.
-                        Field whatField = PrivilegedAccessHelper.getDeclaredField(objValue.getClass(), "what", true);
-                        String value = (String) PrivilegedAccessHelper.getValueFromField(whatField, objValue);
-                        components.put(key.toString(), value);
-                    } else if (objValue.getClass().getName().contains("JExpr$1")) {
-                        // XmlJavaTypeAdapter contains a JDefinedClass
-                        Field valClField = PrivilegedAccessHelper.getDeclaredField(objValue.getClass(), "val$cl", true);
-                        JClass wrappedValue = (JClass) PrivilegedAccessHelper.getValueFromField(valClField, objValue);
-                        Object tempDynClass = null;
-
-                        if (!(wrappedValue.getTypeParameters().isEmpty())) {
-                            // Parameterized type, so get the actual parameter type and create that.
-                            wrappedValue = wrappedValue.getTypeParameters().get(0);
-                        }
-
-                        try {
-                            // Attempt to look up the class normally
-                            tempDynClass = Class.forName(wrappedValue.fullName());
-                        } catch (Exception e) {
-                            if (annotationClass.equals(XmlEnum.class)) {
-                                tempDynClass = String.class;
-                            } else {
-                                tempDynClass = dynamicClassLoader.createDynamicClass(wrappedValue.fullName());
-                            }
-                        }
-                        components.put(key.toString(), tempDynClass);
-                    }
+                    components.put(key, valuesArray.toArray(new Object[valuesArray.size()]));
+                } else if (xjcValue instanceof JAnnotationStringValue) {
+                    JAnnotationStringValue value = (JAnnotationStringValue) xjcValue;
+                    components.put(key, value.toString());
+                } else if (xjcValue instanceof JAnnotationClassValue) {
+                    JAnnotationClassValue cval = (JAnnotationClassValue) xjcValue;
+                    components.put(key, getValueFromClsValue(cval, isXmlEnum));
                 } else {
-                    // e.g. XmlSchema.elementFormDefault = JAnnotationUse$1
-                    // Cannot cache this field because JAtom is a protected class.
-                    Field valValueField = PrivilegedAccessHelper.getDeclaredField(xjcValue.getClass(), "val$value", true);
-                    Object value = PrivilegedAccessHelper.getValueFromField(valValueField, xjcValue);
-                    components.put(key.toString(), value);
+                    throw new RuntimeException("got " + xjcValue.getClass().getName());
                 }
             }
 
@@ -198,12 +142,8 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
      */
     public Class<?> getJavaAnnotationClass() {
         try {
-            Object xjcRefClass = PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_CLAZZ, xjcAnnotation);
-            // Cannot cache this field because JReferencedClass is a protected class.
-            Field _classField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "_class", true);
-            Class<?> annotationClass = (Class<?>) PrivilegedAccessHelper.getValueFromField(_classField, xjcRefClass);
-            return annotationClass;
-        } catch (Exception e) {
+            return Class.forName(getName());
+        } catch (ClassNotFoundException e) {
             return null;
         }
     }
@@ -219,14 +159,34 @@ public class XJCJavaAnnotationImpl implements JavaAnnotation {
     @Override
     @SuppressWarnings("unchecked")
     public String getName() {
-        try {
-            Object xjcRefClass = PrivilegedAccessHelper.getValueFromField(JANNOTATIONUSE_CLAZZ, xjcAnnotation);
-            Field _classField = PrivilegedAccessHelper.getDeclaredField(xjcRefClass.getClass(), "_class", true);
-            Annotation annotationClass = (Annotation) PrivilegedAccessHelper.getValueFromField(_classField, xjcRefClass);
-            return annotationClass.annotationType().getName();
-        } catch (Exception e) {
-            return null;
-        }
+        return xjcAnnotation.getAnnotationClass().binaryName();
     }
 
+    private Object getValueFromClsValue(JAnnotationClassValue value, boolean isXmlEnum) {
+        JClass cls = value.type();
+        for (JType param : cls.getTypeParameters()) {
+            String name = param.boxify().fullName();
+            getTempClass(name, isXmlEnum);
+        }
+        Class<?> tempDynClass = getTempClass(cls.fullName(), isXmlEnum);
+        if (tempDynClass.isEnum() && !isXmlEnum) {
+            return Enum.valueOf(tempDynClass.asSubclass(Enum.class), value.value());
+        }
+        return tempDynClass;
+    }
+
+    private Class<?> getTempClass(String name, boolean isXmlEnum) {
+        Class<?> tempDynClass;
+        try {
+            // Attempt to look up the class normally
+            tempDynClass = Class.forName(name);
+        } catch (ClassNotFoundException e) {
+            if (isXmlEnum) {
+                tempDynClass = String.class;
+            } else {
+                tempDynClass = dynamicClassLoader.createDynamicClass(name);
+            }
+        }
+        return tempDynClass;
+    }
 }

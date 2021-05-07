@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -129,8 +129,8 @@ public class MultipleBindingsSimpleTestCases extends JAXBWithJSONTestCases{
         protected Map getProperties() {
             Map overrides = new HashMap();
 
-            InputStream iStream = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm1.xml");
-            InputStream iStream2 = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm2.xml");
+            InputStream iStream = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm1.xml");
+            InputStream iStream2 = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/simple-oxm2.xml");
 
             ArrayList<Object> bindingsList = new ArrayList();
             bindingsList.add(new StreamSource(iStream));

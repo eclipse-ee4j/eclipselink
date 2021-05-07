@@ -47,16 +47,6 @@
             <artifactId>jakarta.xml.bind-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.mail</groupId>
-            <artifactId>jakarta.mail-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
             <optional>true</optional>
@@ -87,12 +77,10 @@
         <dependency>
             <groupId>com.sun.activation</groupId>
             <artifactId>jakarta.activation</artifactId>
-            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <scope>runtime</scope>
         </dependency>
 
         <!--Test dependencies-->
@@ -178,21 +166,6 @@
                                     *
                                 </Import-Package>
                             </instructions>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-compile</id>
-                        <configuration>
-                            <compilerArgs>
-                                <arg>--add-exports</arg>
-                                <arg>com.sun.tools.xjc/com.sun.xml.xsom.impl.parser=org.eclipse.persistence.moxy</arg>
-                            </compilerArgs>
                         </configuration>
                     </execution>
                 </executions>
@@ -517,13 +490,146 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--
+            To run tests on JPMS, remove all surefire executions except of the default-test
+            and uncomment following:
+            -->
+<!--        <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <configuration>
-                    <additionalOptions>--add-exports com.sun.tools.xjc/com.sun.xml.xsom.impl.parser=org.eclipse.persistence.moxy</additionalOptions>
-                </configuration>
-            </plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-junitlauncher</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-junit</artifactId>
+                        <version>${ant.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <record name="${project.build.directory}/build.txt" loglevel="verbose" action="start" />
+
+                                <path id="moxy.test.module.path">
+                                    <pathelement path="${project.build.outputDirectory}"/>
+                                    <pathelement path="${project.build.testOutputDirectory}"/>
+
+                                    <pathelement path="${org.glassfish:jakarta.json:jar}"/>
+
+                                    <pathelement path="${org.eclipse.persistence:org.eclipse.persistence.asm:jar}"/>
+                                    <pathelement path="${org.eclipse.persistence:org.eclipse.persistence.core:jar}"/>
+
+                                    <pathelement path="${jakarta.annotation:jakarta.annotation-api:jar}"/>
+                                    <pathelement path="${jakarta.el:jakarta.el-api:jar}"/>
+                                    <pathelement path="${jakarta.inject:jakarta.inject-api:jar}"/>
+                                    <pathelement path="${jakarta.validation:jakarta.validation-api:jar}"/>
+                                    <pathelement path="${jakarta.ws.rs:jakarta.ws.rs-api:jar}"/>
+                                    <pathelement path="${jakarta.xml.bind:jakarta.xml.bind-api:jar}"/>
+
+                                    <pathelement path="${com.fasterxml:classmate:jar}"/>
+                                    <pathelement path="${com.sun.activation:jakarta.activation:jar}"/>
+                                    <pathelement path="${com.sun.mail:jakarta.mail:jar}"/>
+                                    <pathelement path="${com.sun.xml.bind:jaxb-core:jar}"/>
+                                    <pathelement path="${com.sun.xml.bind:jaxb-impl:jar}"/>
+                                    <pathelement path="${com.sun.xml.bind:jaxb-xjc:jar}"/>
+
+                                    <pathelement path="${org.glassfish:jakarta.el:jar}"/>
+                                    <pathelement path="${org.glassfish.jersey.core:jersey-common:jar}"/>
+                                    <pathelement path="${org.hamcrest:hamcrest-core:jar}"/>
+                                    <pathelement path="${org.hibernate.validator:hibernate-validator:jar}"/>
+                                    <pathelement path="${org.jboss.logging:jboss-logging:jar}"/>
+                                    <pathelement path="${junit:junit:jar}"/>
+                                </path>
+
+                                <path id="moxy.test.class.path">
+                                    <pathelement path="${org.glassfish.hk2:osgi-resource-locator:jar}"/>
+                                </path>
+
+                                <echo message="Running moxy tests on JPMS"/>
+                                <property name="report.dir" location="${project.build.directory}"/>
+                                <property name="src.dir" location="${project.build.testSourceDirectory}"/>
+                                <property name="build.dir" location="${project.build.directory}/ant-run"/>
+                                <delete dir="${report.dir}/jaxb" failonerror="false"/>
+                                <mkdir dir="${report.dir}/jaxb"/>
+                                <mkdir dir="${build.dir}"/>
+                                <mkdir dir="${build.dir}/tmp"/>
+
+                                <junit fork="true" failureproperty="junit.failed.jaxb" logfailedtests="true" showoutput="yes" printsummary="yes"
+                                       dir="${build.dir}" tempdir="${build.dir}/tmp" >
+                                    <jvmarg value="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"/>
+                                    <modulepath refid="moxy.test.module.path"/>
+                                    <classpath refid="moxy.test.class.path"/>
+                                    <jvmarg value="-ea"/>
+                                    <jvmarg line="- -add-modules jakarta.json,org.eclipse.persistence.moxy.test,com.fasterxml.classmate"/>
+                                    <sysproperty key="platformType" value="SAX"/>
+                                    <sysproperty key="metadataType" value="JAVA"/>
+                                    <sysproperty key="useLogging" value="false"/>
+                                    <sysproperty key="eclipselink.xml.platform" value="org.eclipse.persistence.platform.xml.jaxp.JAXPPlatform"/>
+                                    <sysproperty key="parser" value="org.eclipse.persistence.platform.xml.jaxp.JAXPParser"/>
+                                    <batchtest todir="${report.dir}/jaxb">
+                                        <fileset dir="${src.dir}">
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite2.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite3.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBTestSuite4.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/JAXBBeanValidationTestSuite.java" />
+                                            <include name="org/eclipse/persistence/testing/jaxb/beanvalidation/BeanValidationHelperTestCase.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/listofobjects/JAXBListOfObjectsSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/annotations/AnnotationsTestSuite.java"/>
+                                            <include
+                                                name="org/eclipse/persistence/testing/jaxb/externalizedmetadata/ExternalizedMetadataTestSuite.java"/>
+                                            <include
+                                                name="org/eclipse/persistence/testing/jaxb/javadoc/JavadocAnnotationExamplesTestSuite.java"/>
+                                            <include
+                                                name="org/eclipse/persistence/testing/jaxb/typemappinginfo/TypeMappingInfoTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/schemagen/SchemaGenTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/xmladapter/XmlAdapterTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/dynamic/DynamicJAXBTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/json/JSONTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/rs/RESTfulTestSuite.java"/>
+                                            <include name="org/eclipse/persistence/testing/moxy/unit/**/*TestCase.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/annotations/xmlidref/XmlIdSystemPropertyNotSetTestCase.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/annotations/xmlidref/XmlValueSystemPropertyNotSetTestCase.java"/>
+                                            <include name="org/eclipse/persistence/testing/jaxb/annotations/xmlidref/XmlValueSystemPropertyTestCase.java"/>
+                                        </fileset>
+                                        <formatter type="xml"/>
+                                    </batchtest>
+                                </junit>
+
+                                <junitreport todir="${report.dir}/jaxb">
+                                    <fileset dir="${report.dir}/jaxb">
+                                        <include name="**/*.xml"/>
+                                    </fileset>
+                                    <report todir="${report.dir}/jaxb"/>
+                                </junitreport>
+
+                                <fail message="TESTS FAILED !">
+                                    <condition>
+                                        <and>
+                                            <isset property="junit.failed.jaxb"/>
+                                            <istrue value="${test.fail.fast}"/>
+                                        </and>
+                                    </condition>
+                                </fail>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>-->
         </plugins>
     </build>
 

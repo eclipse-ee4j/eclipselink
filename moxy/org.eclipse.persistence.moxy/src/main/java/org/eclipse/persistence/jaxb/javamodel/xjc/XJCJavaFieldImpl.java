@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Rick Barkhouse - 2.1 - initial implementation
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +21,6 @@ import java.util.List;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
 import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
@@ -35,7 +33,6 @@ import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JPrimitiveType;
 import com.sun.codemodel.JType;
-import com.sun.codemodel.JVar;
 
 /**
  * INTERNAL:
@@ -61,18 +58,6 @@ public class XJCJavaFieldImpl implements JavaField {
     private JCodeModel jCodeModel;
     private DynamicClassLoader dynamicClassLoader;
     private JavaClass owningClass;
-
-    private static Field JVAR_ANNOTATIONS = null;
-    private static Field JARRAYCLASS_COMPONENTTYPE = null;
-    static {
-        try {
-            JVAR_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JVar.class, "annotations", true);
-            Class<?> c = Class.forName("com.sun.codemodel.JArrayClass");
-            JARRAYCLASS_COMPONENTTYPE = PrivilegedAccessHelper.getDeclaredField(c, "componentType", true);
-        } catch (Exception e) {
-            throw JAXBException.errorCreatingDynamicJAXBContext(e);
-        }
-    }
 
     /**
      * Construct a new instance of <code>XJCJavaFieldImpl</code>.
@@ -101,17 +86,7 @@ public class XJCJavaFieldImpl implements JavaField {
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
-            Collection<JAnnotationUse> annotations = null;
-
-            try {
-                annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JVAR_ANNOTATIONS, xjcField);
-            } catch (Exception e) {
-            }
-
-            if (annotations == null) {
-                return null;
-            }
-
+            Collection<JAnnotationUse> annotations = xjcField.annotations();
             for (JAnnotationUse annotationUse : annotations) {
                 XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
                 if (xjcAnnotation.getJavaAnnotationClass().getCanonicalName().equals(aClass.getQualifiedName())) {
@@ -133,20 +108,12 @@ public class XJCJavaFieldImpl implements JavaField {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
-        ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
+        ArrayList<JavaAnnotation> annotationsList = new ArrayList<>();
 
-        Collection<JAnnotationUse> annotations = null;
-
-        try {
-            annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JVAR_ANNOTATIONS, xjcField);
-        } catch (Exception e) {
-        }
-
-        if (annotations != null) {
-            for (JAnnotationUse annotationUse : annotations) {
-                XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
-                annotationsList.add(xjcAnnotation);
-            }
+        Collection<JAnnotationUse> annotations = xjcField.annotations();
+        for (JAnnotationUse annotationUse : annotations) {
+            XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
+            annotationsList.add(xjcAnnotation);
         }
         return annotationsList;
     }
@@ -182,19 +149,9 @@ public class XJCJavaFieldImpl implements JavaField {
     @SuppressWarnings("unchecked")
     public JavaClass getResolvedType() {
         JType type = xjcField.type();
-        JType basis = null;
+        JType basis = type.erasure();
         boolean isArray = false;
         boolean isPrimitive = false;
-
-        try {
-            // Check to see if this type has a 'basis' field.
-            // This would indicate it is a "parameterized type" (e.g. List<Employee>).
-            // Cannot cache this field because JNarrowedClass is a protected class.
-            Field basisField = PrivilegedAccessHelper.getDeclaredField(type.getClass(), "basis", true);
-            basis = (JClass) PrivilegedAccessHelper.getValueFromField(basisField, type);
-        } catch (Exception e) {
-            // "basis" field not found
-        }
 
         JClass classToReturn = null;
 
@@ -205,7 +162,7 @@ public class XJCJavaFieldImpl implements JavaField {
             isArray = true;
             classToReturn = (JClass) type;
             try {
-                JType componentType = (JType) PrivilegedAccessHelper.getValueFromField(JARRAYCLASS_COMPONENTTYPE, type);
+                JType componentType = type.elementType();
                 if (componentType.isPrimitive()) {
                     isPrimitive = true;
                 }
@@ -220,16 +177,10 @@ public class XJCJavaFieldImpl implements JavaField {
             }
         }
 
-        if (basis != null) {
-            try {
-                // Cannot cache this field because JNarrowedClass is a protected class.
-                Field argsField = PrivilegedAccessHelper.getDeclaredField(type.getClass(), "args", true);
-                List<JClass> args = (List<JClass>) PrivilegedAccessHelper.getValueFromField(argsField, type);
-                for (JClass jClass : args) {
-                    ((JDefinedClass) classToReturn).generify("param", jClass);
-                }
-            } catch (Exception e) {
-                throw JAXBException.errorCreatingDynamicJAXBContext(e);
+        if (basis instanceof JClass) {
+            List<JClass> args = ((JClass) type).getTypeParameters();
+            for (JClass jClass : args) {
+                ((JDefinedClass) classToReturn).generify("param", jClass);
             }
         }
 

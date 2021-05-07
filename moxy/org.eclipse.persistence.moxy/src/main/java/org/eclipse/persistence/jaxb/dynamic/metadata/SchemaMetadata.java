@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,7 +17,6 @@ package org.eclipse.persistence.jaxb.dynamic.metadata;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,7 +29,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.dynamic.DynamicJAXBContextFactory;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaModelInput;
@@ -63,24 +61,18 @@ public class SchemaMetadata extends Metadata {
     private static final String DEFAULT_SYSTEM_ID = "sysid";
 
     private SchemaCompiler schemaCompiler;
-    private Field JDEFINEDCLASS_ENUMCONSTANTS = null;
 
     private List<InputSource> externalBindings;
 
     @SuppressWarnings("unchecked")
     public SchemaMetadata(DynamicClassLoader dynamicClassLoader, Map<String, Object> properties) throws JAXBException {
         super(dynamicClassLoader, properties);
-        try {
-            JDEFINEDCLASS_ENUMCONSTANTS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "enumConstantsByName", true);
-        } catch (Exception e) {
-            throw new JAXBException(org.eclipse.persistence.exceptions.JAXBException.errorCreatingDynamicJAXBContext(e));
-        }
 
         try {
             if (properties != null) {
                 Object propValue = properties.get(DynamicJAXBContextFactory.EXTERNAL_BINDINGS_KEY);
                 if (propValue != null) {
-                    externalBindings = new ArrayList<InputSource>();
+                    externalBindings = new ArrayList<>();
                     if (propValue instanceof List<?>) {
                         List<Source> xjbSources = (List<Source>) propValue;
                         for (Source source : xjbSources) {
@@ -164,7 +156,7 @@ public class SchemaMetadata extends Metadata {
         JCodeModel codeModel = model.generateCode(new Plugin[0], null);
 
         // Create EclipseLink JavaModel objects for each of XJC's JDefinedClasses
-        ArrayList<JDefinedClass> classesToProcess = new ArrayList<JDefinedClass>();
+        ArrayList<JDefinedClass> classesToProcess = new ArrayList<>();
         Iterator<JPackage> packages = codeModel.packages();
         while (packages.hasNext()) {
             JPackage pkg = packages.next();
@@ -176,7 +168,7 @@ public class SchemaMetadata extends Metadata {
         }
 
         // Look for Inner Classes and add them
-        ArrayList<JDefinedClass> innerClasses = new ArrayList<JDefinedClass>();
+        ArrayList<JDefinedClass> innerClasses = new ArrayList<>();
         for (int i = 0; i < classesToProcess.size(); i++) {
             innerClasses.addAll(getInnerClasses(classesToProcess.get(i)));
         }
@@ -199,7 +191,7 @@ public class SchemaMetadata extends Metadata {
     private HashSet<JDefinedClass> getInnerClasses(JDefinedClass xjcClass) {
         // Check this xjcClass for inner classes.  If one is found, search that one too.
 
-        HashSet<JDefinedClass> classesToReturn = new HashSet<JDefinedClass>();
+        HashSet<JDefinedClass> classesToReturn = new HashSet<>();
         Iterator<JDefinedClass> it = xjcClass.classes();
 
         while (it.hasNext()) {
@@ -225,7 +217,7 @@ public class SchemaMetadata extends Metadata {
                 // If this is an enum, trigger a dynamic class generation, because we won't
                 // be creating a descriptor for it
                 if (definedClass.getClassType().equals(ClassType.ENUM)) {
-                    Map<String, JEnumConstant> enumConstants = (Map<String, JEnumConstant>) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_ENUMCONSTANTS, definedClass);
+                    Map<String, JEnumConstant> enumConstants = definedClass.enumConstants();
                     Object[] enumValues = enumConstants.keySet().toArray();
                     dynamicClassLoader.addEnum(definedClass.fullName(), enumValues);
                 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -97,10 +97,10 @@ public class MultipleBindingsFourFilesTestCases extends JAXBWithJSONTestCases {
             StreamSource src3 = null;
             StreamSource src4 = null;
 
-            InputStream iStream = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm1.xml");
-            InputStream iStream2 = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm2.xml");
-            InputStream iStream3 = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm3.xml");
-            InputStream iStream4 = classLoader.getResourceAsStream("./org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm4.xml");
+            InputStream iStream = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm1.xml");
+            InputStream iStream2 = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm2.xml");
+            InputStream iStream3 = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm3.xml");
+            InputStream iStream4 = classLoader.getResourceAsStream("org/eclipse/persistence/testing/jaxb/externalizedmetadata/multiplebindings/eclipselink-oxm4.xml");
           //  InputStream iStreamCopy = classLoader.getResourceAsStream("eclipselink-oxm1.xml");
 
             try {

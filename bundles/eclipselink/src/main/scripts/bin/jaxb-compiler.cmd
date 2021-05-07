@@ -25,13 +25,10 @@ set JVM_ARGS=-Xmx256m -Djakarta.xml.bind.JAXBContextFactory=org.eclipse.persiste
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\moxy\jakarta.json.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-xjc.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jaxb-core.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.activation.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.validation-api.jar
+set CLASSPATH=%THIS%..\jlib\moxy
 set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\moxy\jakarta.xml.bind-api.jar
+set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\jpa\jakarta.persistence-api.jar
+
 set MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC
 set JAVA_ARGS=%*
 
@@ -59,7 +56,7 @@ goto :EOF
 
 :JDK9_OR_GREATER
 rem Java
-%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH% %MAIN_CLASS% %JAVA_ARGS%
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% --add-modules jakarta.validation -p %CLASSPATH% -m eclipselink/%MAIN_CLASS% %JAVA_ARGS%
 @endlocal
 goto :EOF
 

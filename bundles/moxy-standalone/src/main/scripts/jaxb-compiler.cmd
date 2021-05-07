@@ -25,7 +25,7 @@ set JVM_ARGS=-Xmx256m -Djakarta.xml.bind.JAXBContextFactory=org.eclipse.persiste
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\*
+set CLASSPATH=%THIS%..\jlib
 set MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC
 set JAVA_ARGS=%*
 
@@ -53,7 +53,7 @@ goto :EOF
 
 :JDK9_OR_GREATER
 rem Java
-%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp "%CLASSPATH%" %MAIN_CLASS% %JAVA_ARGS%
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% -p "%CLASSPATH%" -m org.eclipse.persistence.moxy.xjc %JAVA_ARGS%
 @endlocal
 goto :EOF
 

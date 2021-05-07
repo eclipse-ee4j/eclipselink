@@ -19,11 +19,16 @@ module eclipselink {
     requires java.sql;
     requires java.xml;
 
+    //following cannot be optional because we provide
+    //implementation of its spi/extension here
+    requires jakarta.persistence;
+    requires com.sun.tools.xjc;
+
+
     requires static jakarta.activation;
     requires static jakarta.annotation;
     requires static jakarta.json;
     requires static jakarta.mail;
-    requires static jakarta.persistence;
     requires static jakarta.validation;
     requires static jakarta.ws.rs;
     requires static jakarta.xml.bind;
@@ -33,7 +38,6 @@ module eclipselink {
     requires static jakarta.inject; //AM
     requires static jakarta.transaction; //AM
 
-    requires static com.sun.tools.xjc;
     requires static com.sun.xml.bind.core;
 
     exports org.eclipse.persistence.jpa.jpql;

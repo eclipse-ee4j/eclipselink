@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Rick Barkhouse - 2.1 - Initial implementation
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,10 +23,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.exceptions.JAXBException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
 import org.eclipse.persistence.internal.helper.ConversionManager;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.*;
 
 import com.sun.codemodel.ClassType;
@@ -37,7 +34,6 @@ import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMods;
 import com.sun.codemodel.JPrimitiveType;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JTypeVar;
@@ -72,10 +68,6 @@ public class XJCJavaClassImpl implements JavaClass {
 
     private DynamicClassLoader dynamicClassLoader;
 
-    private static Field JDEFINEDCLASS_ANNOTATIONS = null;
-    private static Field JDEFINEDCLASS_MODS = null;
-    private static Field JDEFINEDCLASS_SUPERCLASS = null;
-    private static Field JTYPEVAR_BOUND = null;
     private static final Map<String, JPrimitiveType> jPrimitiveTypes = new HashMap<String, JPrimitiveType>();
     static {
         JCodeModel tempCodeModel = new JCodeModel();
@@ -87,15 +79,6 @@ public class XJCJavaClassImpl implements JavaClass {
         jPrimitiveTypes.put("java.lang.Integer", tempCodeModel.INT);
         jPrimitiveTypes.put("java.lang.Long", tempCodeModel.LONG);
         jPrimitiveTypes.put("java.lang.Short", tempCodeModel.SHORT);
-
-        try {
-            JDEFINEDCLASS_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "annotations", true);
-            JDEFINEDCLASS_MODS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "mods", true);
-            JDEFINEDCLASS_SUPERCLASS = PrivilegedAccessHelper.getDeclaredField(JDefinedClass.class, "superClass", true);
-            JTYPEVAR_BOUND = PrivilegedAccessHelper.getDeclaredField(JTypeVar.class, "bound", true);
-        } catch (Exception e) {
-            throw JAXBException.errorCreatingDynamicJAXBContext(e);
-        }
     }
 
     /**
@@ -147,30 +130,20 @@ public class XJCJavaClassImpl implements JavaClass {
 
         if (null == typeParams || 0 == typeParams.length ) {
             if(arg != null){
-                java.util.List<JavaClass> theList = new ArrayList<JavaClass>(1);
+                java.util.List<JavaClass> theList = new ArrayList<>(1);
                 theList.add(arg);
                 return theList;
             }else{
-                return new ArrayList<JavaClass>(0);
+                return new ArrayList<>(0);
             }
         }
 
         try {
-            ArrayList<JavaClass> typeArguments = new ArrayList<JavaClass>(1);
+            ArrayList<JavaClass> typeArguments = new ArrayList<>(1);
             JTypeVar var = typeParams[typeParams.length - 1];
-            JClass xjcBoundClass = (JClass) PrivilegedAccessHelper.getValueFromField(JTYPEVAR_BOUND, var);
+            JClass xjcBoundClass = var.bound();
 
-            JType basis = null;
-            try {
-                // Check to see if this type has a 'basis' field.
-                // This would indicate it is a "parameterized type" (e.g. List<Employee>).
-                // Cannot cache this field because JNarrowedClass is a protected class.
-                Field basisField = PrivilegedAccessHelper.getDeclaredField(xjcBoundClass.getClass(), "basis", true);
-                basis = (JClass) PrivilegedAccessHelper.getValueFromField(basisField, xjcBoundClass);
-            } catch (Exception e) {
-                // "basis" field not found
-            }
-
+            JType basis = xjcBoundClass.erasure();
             JavaClass boundClass;
 
             if (basis != null) {
@@ -185,7 +158,7 @@ public class XJCJavaClassImpl implements JavaClass {
             typeArguments.add(boundClass);
             return typeArguments;
         } catch (Exception e) {
-            return new ArrayList<JavaClass>(0);
+            return new ArrayList<>(0);
         }
     }
 
@@ -242,7 +215,7 @@ public class XJCJavaClassImpl implements JavaClass {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaConstructor> getConstructors() {
-        ArrayList<JavaConstructor> constructors = new ArrayList<JavaConstructor>();
+        ArrayList<JavaConstructor> constructors = new ArrayList<>();
         Iterator<JMethod> it = xjcClass.constructors();
 
         while (it.hasNext()) {
@@ -259,7 +232,7 @@ public class XJCJavaClassImpl implements JavaClass {
      */
     @Override
     public Collection<JavaClass> getDeclaredClasses() {
-        ArrayList<JavaClass> declaredClasses = new ArrayList<JavaClass>();
+        ArrayList<JavaClass> declaredClasses = new ArrayList<>();
 
         Iterator<JDefinedClass> it  = xjcClass.classes();
 
@@ -322,7 +295,7 @@ public class XJCJavaClassImpl implements JavaClass {
     @Override
     public Collection<JavaField> getDeclaredFields() {
         Collection<JFieldVar> xjcFields = xjcClass.fields().values();
-        ArrayList<JavaField> fields = new ArrayList<JavaField>(xjcFields.size());
+        ArrayList<JavaField> fields = new ArrayList<>(xjcFields.size());
 
         for (JFieldVar jField : xjcFields) {
             fields.add(new XJCJavaFieldImpl(jField, jCodeModel, dynamicClassLoader, this));
@@ -410,7 +383,7 @@ public class XJCJavaClassImpl implements JavaClass {
     @Override
     public Collection<JavaMethod> getMethods() {
         Collection<JMethod> xjcMethods = xjcClass.methods();
-        ArrayList<JavaMethod> elinkMethods = new ArrayList<JavaMethod>(xjcMethods.size());
+        ArrayList<JavaMethod> elinkMethods = new ArrayList<>(xjcMethods.size());
 
         for (JMethod xjcMethod : xjcMethods) {
             elinkMethods.add(new XJCJavaMethodImpl(xjcMethod, jCodeModel, dynamicClassLoader, this));
@@ -428,15 +401,7 @@ public class XJCJavaClassImpl implements JavaClass {
      */
     @Override
     public int getModifiers() {
-        JMods xjcMods = null;
-
-        try {
-            xjcMods = (JMods) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_MODS, xjcClass);
-        } catch (Exception e) {
-            return 0;
-        }
-
-        return xjcMods.getValue();
+        return xjcClass.mods().getValue();
     }
 
     /**
@@ -539,7 +504,7 @@ public class XJCJavaClassImpl implements JavaClass {
     @Override
     public JavaClass getSuperclass() {
         try {
-            JClass superClass = (JClass) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_SUPERCLASS, xjcClass);
+            JClass superClass = xjcClass.superClass();
 
             if (superClass == null) // if null -> no need to continue
                 return null;
@@ -753,16 +718,7 @@ public class XJCJavaClassImpl implements JavaClass {
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
-            Collection<JAnnotationUse> annotations = null;
-            try {
-                annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_ANNOTATIONS, xjcClass);
-            } catch (Exception e) {
-            }
-
-            if (annotations == null) {
-                return null;
-            }
-
+            Collection<JAnnotationUse> annotations = xjcClass.annotations();
             for (JAnnotationUse annotationUse : annotations) {
                 XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
 
@@ -788,18 +744,8 @@ public class XJCJavaClassImpl implements JavaClass {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
-        ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
-
-        Collection<JAnnotationUse> annotations = null;
-        try {
-            annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JDEFINEDCLASS_ANNOTATIONS, xjcClass);
-        } catch (Exception e) {
-        }
-
-        if (annotations == null) {
-            return annotationsList;
-        }
-
+        ArrayList<JavaAnnotation> annotationsList = new ArrayList<>();
+        Collection<JAnnotationUse> annotations = xjcClass.annotations();
         for (JAnnotationUse annotationUse : annotations) {
             XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
             annotationsList.add(xjcAnnotation);

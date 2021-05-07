@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,7 +14,6 @@
 //     Rick Barkhouse - 2.1 - Initial implementation
 package org.eclipse.persistence.jaxb.javamodel.xjc;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
@@ -22,8 +21,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.persistence.dynamic.DynamicClassLoader;
-import org.eclipse.persistence.exceptions.JAXBException;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.jaxb.javamodel.JavaAnnotation;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
@@ -61,15 +58,6 @@ public class XJCJavaMethodImpl implements JavaMethod {
     private DynamicClassLoader dynamicClassLoader;
     private JavaClass owningClass;
 
-    private static Field JMETHOD_ANNOTATIONS = null;
-    static {
-        try {
-            JMETHOD_ANNOTATIONS = PrivilegedAccessHelper.getDeclaredField(JMethod.class, "annotations", true);
-        } catch (Exception e) {
-            throw JAXBException.errorCreatingDynamicJAXBContext(e);
-        }
-    }
-
     /**
      * Construct a new instance of <code>XJCJavaMethodImpl</code>.
      *
@@ -97,17 +85,7 @@ public class XJCJavaMethodImpl implements JavaMethod {
     @SuppressWarnings("unchecked")
     public JavaAnnotation getAnnotation(JavaClass aClass) {
         if (aClass != null) {
-            Collection<JAnnotationUse> annotations = null;
-
-            try {
-                annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JMETHOD_ANNOTATIONS, xjcMethod);
-            } catch (Exception e) {
-            }
-
-            if (annotations == null) {
-                return null;
-            }
-
+            Collection<JAnnotationUse> annotations = xjcMethod.annotations();
             for (JAnnotationUse annotationUse : annotations) {
                 XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
                 if (xjcAnnotation.getJavaAnnotationClass().getCanonicalName().equals(aClass.getQualifiedName())) {
@@ -129,19 +107,8 @@ public class XJCJavaMethodImpl implements JavaMethod {
     @Override
     @SuppressWarnings("unchecked")
     public Collection<JavaAnnotation> getAnnotations() {
-        ArrayList<JavaAnnotation> annotationsList = new ArrayList<JavaAnnotation>();
-
-        Collection<JAnnotationUse> annotations = null;
-
-        try {
-            annotations = (Collection<JAnnotationUse>) PrivilegedAccessHelper.getValueFromField(JMETHOD_ANNOTATIONS, xjcMethod);
-        } catch (Exception e) {
-        }
-
-        if (annotations == null) {
-            return annotationsList;
-        }
-
+        ArrayList<JavaAnnotation> annotationsList = new ArrayList<>();
+        Collection<JAnnotationUse> annotations = xjcMethod.annotations();
         for (JAnnotationUse annotationUse : annotations) {
             XJCJavaAnnotationImpl xjcAnnotation = new XJCJavaAnnotationImpl(annotationUse, dynamicClassLoader);
             annotationsList.add(xjcAnnotation);
@@ -206,27 +173,24 @@ public class XJCJavaMethodImpl implements JavaMethod {
     public JavaClass getReturnType() {
         JType type = xjcMethod.type();
         JavaClass returnClass = null;
-        JClass arg = null;
-        try {
-            Field argsField = PrivilegedAccessHelper.getDeclaredField(type.getClass(), "args", true);
-            List<JClass> args = (List<JClass>) PrivilegedAccessHelper.getValueFromField(argsField, type);
-             arg = args.get(0);
-        } catch (Exception e) {
-        }
 
         if (((XJCJavaClassImpl) getOwningClass()).getJavaModel() != null) {
-            returnClass =((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(type.fullName());
-        }
-        else {
+            returnClass = ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(type.fullName());
+        } else {
             try {
-            returnClass = new XJCJavaClassImpl(jCodeModel._class(type.fullName()), jCodeModel, dynamicClassLoader);
+                returnClass = new XJCJavaClassImpl(jCodeModel._class(type.fullName()), jCodeModel, dynamicClassLoader);
             } catch (JClassAlreadyExistsException ex) {
-            returnClass = new XJCJavaClassImpl(jCodeModel._getClass(type.fullName()), jCodeModel, dynamicClassLoader);
+                returnClass = new XJCJavaClassImpl(jCodeModel._getClass(type.fullName()), jCodeModel, dynamicClassLoader);
             }
         }
-        if(arg != null){
-            JavaClass argClass = ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(arg.fullName());
-            ((XJCJavaClassImpl)returnClass).setActualTypeArgument(argClass);
+        if (type instanceof JClass) {
+            JClass jcl = (JClass) type;
+            if (jcl.isParameterized()) {
+                List<JClass> args = jcl.getTypeParameters();
+                JClass arg = args.get(0);
+                JavaClass argClass = ((XJCJavaClassImpl) getOwningClass()).getJavaModel().getClass(arg.fullName());
+                ((XJCJavaClassImpl) returnClass).setActualTypeArgument(argClass);
+            }
         }
         return returnClass;
     }

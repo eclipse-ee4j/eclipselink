@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,8 @@ import org.eclipse.persistence.jaxb.javamodel.JavaConstructor;
 import org.eclipse.persistence.jaxb.javamodel.JavaField;
 import org.eclipse.persistence.jaxb.javamodel.JavaMethod;
 import org.eclipse.persistence.jaxb.javamodel.JavaPackage;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  * INTERNAL:
@@ -83,7 +85,7 @@ public class JavaClassImpl implements JavaClass {
     }
     @Override
     public Collection getActualTypeArguments() {
-        ArrayList<JavaClass> argCollection = new ArrayList<JavaClass>();
+        ArrayList<JavaClass> argCollection = new ArrayList<>();
         if (jType != null) {
             Type[] params = jType.getActualTypeArguments();
             for (Type type : params) {
@@ -140,7 +142,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection<JavaAnnotation> getAnnotations() {
-        List<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+        List<JavaAnnotation> annotationCollection = new ArrayList<>();
         if (!isMetadataComplete) {
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {
@@ -152,7 +154,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection<JavaClass> getDeclaredClasses() {
-        List<JavaClass> classCollection = new ArrayList<JavaClass>();
+        List<JavaClass> classCollection = new ArrayList<>();
         Class[] classes = jClass.getDeclaredClasses();
         for (Class javaClass : classes) {
             classCollection.add(javaModelImpl.getClass(javaClass));
@@ -171,11 +173,14 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection<JavaField> getDeclaredFields() {
-        List<JavaField> fieldCollection = new ArrayList<JavaField>();
+        List<JavaField> fieldCollection = new ArrayList<>();
         Field[] fields = PrivilegedAccessHelper.getDeclaredFields(jClass);
 
         for (Field field : fields) {
-            field.setAccessible(true);
+            if (!field.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, "Cannot setAccessible field {0} in {1}.",
+                        new String[]{field.getName(), jClass.getName()}, false);
+            }
             fieldCollection.add(getJavaField(field));
         }
         return fieldCollection;
@@ -205,7 +210,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection getDeclaredMethods() {
-        ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
+        ArrayList<JavaMethod> methodCollection = new ArrayList<>();
         Method[] methods = jClass.getDeclaredMethods();
         for (Method method : methods) {
             methodCollection.add(getJavaMethod(method));
@@ -282,7 +287,7 @@ public class JavaClassImpl implements JavaClass {
     }
 
     public Collection getFields() {
-        ArrayList<JavaField> fieldCollection = new ArrayList<JavaField>();
+        ArrayList<JavaField> fieldCollection = new ArrayList<>();
         Field[] fields = PrivilegedAccessHelper.getFields(jClass);
         for (Field field : fields) {
             fieldCollection.add(getJavaField(field));
@@ -319,7 +324,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection getMethods() {
-        ArrayList<JavaMethod> methodCollection = new ArrayList<JavaMethod>();
+        ArrayList<JavaMethod> methodCollection = new ArrayList<>();
         Method[] methods = PrivilegedAccessHelper.getMethods(jClass);
         for (Method method : methods) {
             methodCollection.add(getJavaMethod(method));
@@ -604,7 +609,7 @@ public class JavaClassImpl implements JavaClass {
 
     @Override
     public Collection getDeclaredAnnotations() {
-        List<JavaAnnotation> annotationCollection = new ArrayList<JavaAnnotation>();
+        List<JavaAnnotation> annotationCollection = new ArrayList<>();
         if (!isMetadataComplete) {
             Annotation[] annotations = javaModelImpl.getAnnotationHelper().getDeclaredAnnotations(getAnnotatedElement());
             for (Annotation annotation : annotations) {
