@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -2290,7 +2290,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      *
      * @param <R>
      */
-    public static class CaseImpl<R> extends FunctionExpressionImpl<R> implements Case<R>{
+    public class CaseImpl<R> extends FunctionExpressionImpl<R> implements Case<R>{
 
         protected <T> CaseImpl (Metamodel metamodel, Class<R> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions){
             super(metamodel, resultClass, expressionNode, compoundExpressions);
@@ -2299,7 +2299,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         protected <T> CaseImpl (Metamodel metamodel, Class<R> resultClass, org.eclipse.persistence.expressions.Expression expressionNode, List<Expression<?>> compoundExpressions, String operator){
             super(metamodel, resultClass, expressionNode, compoundExpressions, operator);
         }
-        
+
         /**
          * Add a when/then clause to the case expression.
          * @param condition  "when" condition
@@ -2312,6 +2312,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             ((FunctionExpression)currentNode).addChild(conditionExp);
             org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
             ((FunctionExpression)currentNode).addChild(resultExp);
+            Expression<R> resultLiteral = internalLiteral(result);
+
+            setJavaType((Class<R>) resultLiteral.getJavaType());
             return this;
         }
 
@@ -2328,6 +2331,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
             resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
             ((FunctionExpression)currentNode).addChild(resultExp);
+
+            setJavaType((Class<R>) result.getJavaType());
             return this;
         }
 
@@ -2339,6 +2344,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         public Expression<R> otherwise(R result){
               org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
             ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
+            Expression<R> resultLiteral = internalLiteral(result);
+
+            setJavaType((Class<R>) resultLiteral.getJavaType());
             return this;
         }
 
@@ -2351,6 +2359,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
             resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
             ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
+
+            setJavaType((Class<R>) result.getJavaType());
             return this;
         }
     }
@@ -2362,7 +2372,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
      * @param <C>
      * @param <R>
      */
-    public static class SimpleCaseImpl<C,R> extends FunctionExpressionImpl<R> implements SimpleCase<C, R>{
+    public class SimpleCaseImpl<C,R> extends FunctionExpressionImpl<R> implements SimpleCase<C, R>{
 
         private Expression<C> expression;
 
@@ -2377,7 +2387,7 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             this.expression = expression;
             expressionNode.addChild(((InternalSelection)expression).getCurrentNode());
         }
-        
+
         /**
          * Returns the expression to be tested against the
          * conditions.
@@ -2398,6 +2408,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             ((FunctionExpression)currentNode).addChild(conditionExp);
             org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
             ((FunctionExpression)currentNode).addChild(resultExp);
+            Expression<R> resultLiteral = internalLiteral(result);
+
+            setJavaType((Class<R>) resultLiteral.getJavaType());
             return this;
         }
 
@@ -2413,6 +2426,8 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
             org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
             resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
             ((FunctionExpression)currentNode).addChild(resultExp);
+
+            setJavaType((Class<R>) result.getJavaType());
             return this;
         }
 
@@ -2424,6 +2439,9 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
         public Expression<R> otherwise(R result){
             org.eclipse.persistence.expressions.Expression resultExp = org.eclipse.persistence.expressions.Expression.from(result, new ExpressionBuilder());
             ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
+            Expression<R> resultLiteral = internalLiteral(result);
+
+            setJavaType((Class<R>) resultLiteral.getJavaType());
             return this;
         }
 
@@ -2433,10 +2451,11 @@ public class CriteriaBuilderImpl implements JpaCriteriaBuilder, Serializable {
          * @return expression
          */
         public Expression<R> otherwise(Expression<? extends R> result){
-            
             org.eclipse.persistence.expressions.Expression resultExp = ((InternalSelection)result).getCurrentNode();
             resultExp = org.eclipse.persistence.expressions.Expression.from(resultExp, currentNode);
             ((ArgumentListFunctionExpression)currentNode).addRightMostChild(resultExp);
+
+            setJavaType((Class<R>) result.getJavaType());
             return this;
         }
     }
