@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle, IBM Corporation, and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -74,6 +74,11 @@ public abstract class SelectionImpl<X> implements Selection<X>, InternalSelectio
     public Class<? extends X> getJavaType() {
         return this.javaType;
     }
+
+    public void setJavaType(Class<X> javaType) {
+        this.javaType = javaType;
+    }
+
     /**
      * Return selection items composing a compound selection
      * @return list of selection items
