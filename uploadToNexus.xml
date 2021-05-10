@@ -261,29 +261,31 @@
                         <containsregex
                             pattern="&lt;jakarta.persistence.version&gt;(.*)&lt;/jakarta.persistence.version&gt;$"
                             replace="\1" />
+                        <trim/>
                     </tokenfilter>
                 </filterchain>
         </loadfile>
 
         <loadfile
             encoding="UTF-8"
-            property="asm.version"
+            property="asm.mvn.version"
             srcFile="${maven.2.buildsys.dir}/compdeps/pom.xml" >
                 <filterchain>
                     <tokenfilter>
                         <containsregex
                             pattern="&lt;eclipselink.asm.version&gt;(.*)&lt;/eclipselink.asm.version&gt;$"
                             replace="\1" />
+                        <trim/>
                     </tokenfilter>
                 </filterchain>
         </loadfile>
 
         <say  message="jpaapi.mvn.version = ${jpaapi.mvn.version}"      if="jpaapi.mvn.version"/>
         <say  message="sdoapi.mvn.version = ${sdoapi.mvn.version}"      if="sdoapi.mvn.version"/>
-        <echo message="asm.version        = ${asm.version}"             if="asm.version"/>
+        <say  message="asm.mvn.version    = ${asm.mvn.version}"         if="asm.mvn.version"/>
         <say  message="jpaapi.mvn.version:  Property not set!"      unless="jpaapi.mvn.version"/>
         <say  message="sdoapi.mvn.version:  Property not set!"      unless="sdoapi.mvn.version"/>
-        <say  message="asm.version:         Property not set!"      unless="asm.version"/>
+        <say  message="asm.mvn.version:     Property not set!"      unless="asm.mvn.version"/>
     </target>
 
     <target name="upload-maven-init" depends="discover-static-built-info">
@@ -312,7 +314,7 @@
         <property name="dep.persistence"   value="${dep.grp}org.eclipse.persistence${dep.art}${jpaapi.prefix}${dep.ver}${jpaapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <property name="dep.sdoapi"        value="${dep.grp}org.eclipse.persistence${dep.art}${sdoapi.prefix}${dep.ver}${sdoapi.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- These are EclipseLink maintained public API bundles published under the EclipseLink GroupID by different build -->
-        <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.asm${dep.ver}${asm.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
+        <property name="dep.asm"           value="${dep.grp}org.eclipse.persistence${dep.art}org.eclipse.persistence.asm${dep.ver}${asm.mvn.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
         <!-- APIs that are not EclipseLink's maintained public API bundles but are to be included in EclipseLink pom.xml.  -->
         <!-- These are EclipseLink jars so will be versioned with the build -->
         <property name="dep.antlr"         value="${dep.grp}org.eclipse.persistence${dep.art}${antlr.prefix}${dep.ver}${maven.version}${dep.type}jar${dep.scope}compile${dep.opt}false${dep.foot}"/>
