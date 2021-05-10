@@ -26,20 +26,31 @@
     </componentDescriptors>
     <dependencySets>
         <dependencySet>
+            <outputFileNameMapping>${artifact.artifactId}_${release.version}.${build.qualifier}.${artifact.extension}</outputFileNameMapping>
             <includes>
-                <include>org.eclipse.persistence:*</include>
+                <include>org.eclipse.persistence:*:*:*:${project.version}</include>
             </includes>
             <excludes>
                 <exclude>org.eclipse.persistence:*:*:tests</exclude>
+                <exclude>org.eclipse.persistence:org.eclipse.persistence.asm:*</exclude>
+                <exclude>org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:*</exclude>
+                <exclude>org.eclipse.persistence:commonj.sdo:*</exclude>
             </excludes>
             <scope>test</scope>
+        </dependencySet>
+        <dependencySet>
+            <outputFileNameMapping>${artifact.artifactId}_${artifact.version}.${artifact.extension}</outputFileNameMapping>
+            <includes>
+                <include>org.eclipse.persistence:org.eclipse.persistence.asm:*</include>
+                <include>org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:*</include>
+                <include>org.eclipse.persistence:commonj.sdo:*</include>
+            </includes>
         </dependencySet>
         <dependencySet>
             <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <excludes>
                 <exclude>com.sun:tools</exclude>
                 <exclude>junit:*</exclude>
-                <exclude>org.antlr:*</exclude>
                 <exclude>org.apache.ant:*</exclude>
                 <exclude>org.eclipse.persistence:*</exclude>
                 <exclude>org.hamcrest:*</exclude>
@@ -65,27 +76,6 @@
             <includes>
                 <include>jakarta.inject:jakarta.inject</include>
             </includes>
-            <scope>test</scope>
-        </dependencySet>
-        <!--Just for backward compatibility with Ant tests in eclipselink-test-src.zip-->
-        <dependencySet>
-            <outputFileNameMapping>${artifact.artifactId}_${release.version}.qualifier.${artifact.extension}</outputFileNameMapping>
-            <includes>
-                <include>org.eclipse.persistence:*</include>
-            </includes>
-            <excludes>
-                <exclude>org.eclipse.persistence:*:*:tests</exclude>
-            </excludes>
-            <scope>test</scope>
-        </dependencySet>
-        <dependencySet>
-            <outputFileNameMapping>org.eclipse.persistence.asm_7.0.0.v201811131354.jar</outputFileNameMapping>
-            <includes>
-                <include>org.eclipse.persistence:org.eclipse.persistence.asm</include>
-            </includes>
-            <excludes>
-                <exclude>org.eclipse.persistence:*:*:tests</exclude>
-            </excludes>
             <scope>test</scope>
         </dependencySet>
     </dependencySets>
