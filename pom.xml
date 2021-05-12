@@ -1461,7 +1461,6 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <minmemory>2G</minmemory>
-                    <maxmemory>2G</maxmemory>
                     <release>11</release>
                 </configuration>
             </plugin>
