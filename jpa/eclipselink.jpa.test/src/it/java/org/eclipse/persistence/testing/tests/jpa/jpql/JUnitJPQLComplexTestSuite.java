@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,7 +43,6 @@ import org.eclipse.persistence.indirection.IndirectCollection;
 import org.eclipse.persistence.internal.databaseaccess.DatasourceCall;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl;
 import org.eclipse.persistence.internal.jpa.QueryImpl;
 import org.eclipse.persistence.internal.queries.CallQueryMechanism;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -55,7 +54,6 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadObjectQuery;
 import org.eclipse.persistence.queries.ReportQuery;
-import org.eclipse.persistence.queries.SQLCall;
 import org.eclipse.persistence.sessions.DatabaseSession;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.testing.framework.QuerySQLTracker;
@@ -3539,7 +3537,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             String[] jpqlStrings = {"Select e.id from Employee e Order By FUNC('UNHEX', e.firstName)",
                                     "Select FUNC('CRC32', e.lastName) from Employee e",
                                     "Select FUNC('BINARY', e.firstName) from Employee e",
-                                    "Select FUNC('ENCRYPT', e.firstName), FUNC('ENCRYPT', e.lastName) from Employee e",
+                                    "Select FUNC('SHA2', e.firstName, 256), FUNC('SHA2', e.lastName, 256) from Employee e",
                                     "SELECT FUNC('UTC_DATE'), e.id FROM Employee e",
                                     "SELECT FUNC('CONCAT','GroupA', FUNC('SUBSTRING',e.firstName, 1, 2)) FROM Employee e WHERE TRIM(' ' FROM e.firstName) = e.firstName"
                                    };
