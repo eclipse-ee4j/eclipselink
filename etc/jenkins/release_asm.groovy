@@ -106,7 +106,7 @@ spec:
     }
 
     tools {
-        jdk 'openjdk-jdk11-latest'
+        jdk 'adoptopenjdk-hotspot-jdk11-latest'
         maven 'apache-maven-latest'
     }
 

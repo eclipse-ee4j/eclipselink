@@ -101,7 +101,7 @@ spec:
     }
     tools {
         maven 'apache-maven-latest'
-        jdk 'openjdk-jdk11-latest'
+        jdk 'adoptopenjdk-hotspot-jdk11-latest'
     }
     stages {
         // Initialize build environment
