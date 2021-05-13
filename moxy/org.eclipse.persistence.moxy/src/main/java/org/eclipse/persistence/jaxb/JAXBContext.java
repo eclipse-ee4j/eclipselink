@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,10 +49,12 @@ import jakarta.xml.bind.SchemaOutputResolver;
 import jakarta.xml.bind.ValidationEvent;
 import jakarta.xml.bind.ValidationEventHandler;
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
+import java.util.HashSet;
 import javax.xml.namespace.QName;
 import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.transform.Source;
+import org.eclipse.persistence.Version;
 
 import org.eclipse.persistence.core.queries.CoreAttributeGroup;
 import org.eclipse.persistence.core.sessions.CoreProject;
@@ -68,7 +70,6 @@ import org.eclipse.persistence.internal.jaxb.WrappedValue;
 import org.eclipse.persistence.internal.jaxb.json.schema.JsonSchemaGenerator;
 import org.eclipse.persistence.internal.jaxb.json.schema.model.JsonSchema;
 import org.eclipse.persistence.internal.jaxb.many.ManyValue;
-import org.eclipse.persistence.internal.localization.JAXBLocalization;
 import org.eclipse.persistence.internal.oxm.Constants;
 import org.eclipse.persistence.internal.oxm.Root;
 import org.eclipse.persistence.internal.oxm.XMLConversionManager;
@@ -85,6 +86,7 @@ import org.eclipse.persistence.jaxb.compiler.MarshalCallback;
 import org.eclipse.persistence.jaxb.compiler.UnmarshalCallback;
 import org.eclipse.persistence.jaxb.javamodel.JavaClass;
 import org.eclipse.persistence.jaxb.javamodel.reflection.AnnotationHelper;
+import org.eclipse.persistence.jaxb.javamodel.reflection.JavaClassImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelImpl;
 import org.eclipse.persistence.jaxb.javamodel.reflection.JavaModelInputImpl;
 import org.eclipse.persistence.jaxb.json.JsonSchemaOutputResolver;
@@ -832,14 +834,14 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             List<SessionEventListener> eventListeners = null;
 
             if (null == eventListenerFromProperties) {
-                eventListeners = new ArrayList<SessionEventListener>(1);
+                eventListeners = new ArrayList<>(1);
             } else {
                 if (eventListenerFromProperties instanceof SessionEventListener) {
-                    eventListeners = new ArrayList<SessionEventListener>(2);
+                    eventListeners = new ArrayList<>(2);
                     eventListeners.add((SessionEventListener) eventListenerFromProperties);
                 } else if (eventListenerFromProperties instanceof Collection) {
                     List<SessionEventListener> listeners = (List<SessionEventListener>) eventListenerFromProperties;
-                    eventListeners = new ArrayList<SessionEventListener>(listeners.size() + 1);
+                    eventListeners = new ArrayList<>(listeners.size() + 1);
                     eventListeners.addAll(listeners);
                 }
             }
@@ -865,7 +867,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         @Override
         protected JAXBContextState createContextState() throws jakarta.xml.bind.JAXBException {
             boolean foundMetadata = false;
-            List<Class> classes = new ArrayList<Class>();
+            List<Class> classes = new ArrayList<>();
 
             // Check properties map for eclipselink-oxm.xml entries
             Map<String, XmlBindings> xmlBindingMap = JAXBContextFactory.getXmlBindingsFromProperties(properties, classLoader);
@@ -920,11 +922,13 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 for (int i = 0; i < classes.size(); i++) {
                     classArray[i] = classes.get(i);
                 }
+                openToCore(classes);
                 return createContextState(classArray, xmlBindingMap);
             }
 
             Exception sessionLoadingException = null;
             try {
+                openToCore(classes);
                 XMLContext xmlContext = new XMLContext(contextPath, classLoader);
                 return new JAXBContextState(xmlContext);
             } catch (Exception exception) {
@@ -978,7 +982,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             }
 
             // create Map of package names to metadata complete indicators
-            Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
+            Map<String, Boolean> metadataComplete = new HashMap<>();
             for (String packageName : xmlBindings.keySet()) {
                 if (xmlBindings.get(packageName).isXmlMappingMetadataComplete()) {
                     metadataComplete.put(packageName, true);
@@ -1149,7 +1153,6 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                         }
                     })
                     : new JaxbClassLoader(classLoader, types);
-
             JavaModelImpl jModel;
             if (annotationHelper != null) {
                 jModel = new JavaModelImpl(loader, annotationHelper);
@@ -1160,7 +1163,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             if (xmlBindings != null) {
                 jModel.setHasXmlBindings(!xmlBindings.isEmpty());
                 // create Map of package names to metadata complete indicators
-                Map<String, Boolean> metadataComplete = new HashMap<String, Boolean>();
+                Map<String, Boolean> metadataComplete = new HashMap<>();
                 for (String packageName : xmlBindings.keySet()) {
                     if (xmlBindings.get(packageName).isXmlMappingMetadataComplete()) {
                         metadataComplete.put(packageName, true);
@@ -1175,6 +1178,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
             JavaModelInputImpl inputImpl = new JavaModelInputImpl(typesToBeBound, jModel);
             if (properties != null) enableFacetsIfPropertySetTrue(inputImpl, properties);
             try {
+                openToCore(inputImpl);
                 Generator generator = new Generator(inputImpl, typesToBeBound, inputImpl.getJavaClasses(), null, xmlBindings, classLoader, defaultTargetNamespace, enableXmlAccessorFactory);
                 JAXBContextState contextState = createContextState(generator, loader, typesToBeBound, properties);
                 return contextState;
@@ -1233,7 +1237,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         private static TypeMappingInfo[] getXmlBindingsClasses(XmlBindings xmlBindings, ClassLoader classLoader, TypeMappingInfo[] existingTypes) {
             JavaTypes jTypes = xmlBindings.getJavaTypes();
             if (jTypes != null) {
-                List<Class> existingClasses = new ArrayList<Class>(existingTypes.length);
+                List<Class> existingClasses = new ArrayList<>(existingTypes.length);
                 for (TypeMappingInfo typeMappingInfo : existingTypes) {
                     Type type = typeMappingInfo.getType();
                     if (type == null) {
@@ -1246,7 +1250,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                     }
                 }
 
-                List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<TypeMappingInfo>(jTypes.getJavaType().size());
+                List<TypeMappingInfo> additionalTypeMappingInfos = new ArrayList<>(jTypes.getJavaType().size());
 
                 for (JavaType javaType : jTypes.getJavaType()) {
                     try {
@@ -1326,7 +1330,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
 
         private Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> createAdaptersForAdapterClasses(Map<TypeMappingInfo, Class> typeMappingInfoToAdapterClasses) {
-            Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters = new HashMap<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter>();
+            Map<TypeMappingInfo, JAXBContext.RootLevelXmlAdapter> typeMappingInfoToAdapters = new HashMap<>();
             for (Entry<TypeMappingInfo, Class> entry : typeMappingInfoToAdapterClasses.entrySet()) {
                 Class adapterClass = entry.getValue();
                 if (adapterClass != null) {
@@ -1364,7 +1368,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
             for (Object descriptor : descriptors) {
                 Descriptor desc = (Descriptor) descriptor;
-                processXMLDescriptor(new ArrayList<Descriptor>(), desc, desc.getNonNullNamespaceResolver());
+                processXMLDescriptor(new ArrayList<>(), desc, desc.getNonNullNamespaceResolver());
             }
 
         }
@@ -1463,7 +1467,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
 
         private Map<TypeMappingInfo, QName> getTypeMappingInfoToSchemaType() {
             if (typeToTypeMappingInfo != null && typeToTypeMappingInfo.size() > 0) {
-                return new HashMap<TypeMappingInfo, QName>();
+                return new HashMap<>();
             }
             return generator.getAnnotationsProcessor().getTypeMappingInfosToSchemaTypes();
         }
@@ -1506,7 +1510,7 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         }
 
         private void initTypeToSchemaType() {
-            this.typeToSchemaType = new HashMap<Type, QName>();
+            this.typeToSchemaType = new HashMap<>();
 
             if (typeToTypeMappingInfo == null || typeToTypeMappingInfo.size() == 0) {
                 return;
@@ -1700,4 +1704,44 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
         Object propertyValue = properties.get(JAXBContextProperties.BEAN_VALIDATION_FACETS);
         if (propertyValue != null) inputImpl.setFacets((Boolean) propertyValue);
     }
+
+    private static void openToCore(JavaModelInputImpl input) {
+        JavaClass[] javaClasses = input.getJavaClasses();
+        Set<Class> classes = new HashSet<>();
+        for (JavaClass jc: javaClasses) {
+            classes.add(((JavaClassImpl) jc).getJavaClass());
+        }
+        openToCore(classes);
+    }
+
+    //we need to open what has been opened to us either directly
+    //or by jakarta.xml.bind API also to core on which we depend
+    //to allow reflection access to code we use from that module
+    private static void openToCore(Collection<Class> classes) {
+        // need to open to core IF we're not eclipselink.jar
+        if (NEEDS_OPEN) {
+            final Module moxyModule = JAXBContext.class.getModule();
+            final Module coreModule = Version.class.getModule();
+            for (Class cls : classes) {
+                Class jaxbClass = cls.isArray()
+                        ? cls.getComponentType() : cls;
+
+                final Module classModule = jaxbClass.getModule();
+                final String packageName = jaxbClass.getPackageName();
+                //no need for unnamed and java.base types
+                if (!classModule.isNamed() || classModule.getName().equals("java.base")) {
+                    continue;
+                }
+                //propagate openness to o.e.p.core module
+                if (classModule.isOpen(packageName, moxyModule) && !classModule.isOpen(packageName, coreModule)) {
+                    classModule.addOpens(packageName, coreModule);
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, "open_pkg",
+                            packageName, classModule.getName(), coreModule.getName());
+                }
+            }
+        }
+    }
+
+    private static final boolean NEEDS_OPEN = JAXBContext.class.getModule() != Version.class.getModule();
+
 }

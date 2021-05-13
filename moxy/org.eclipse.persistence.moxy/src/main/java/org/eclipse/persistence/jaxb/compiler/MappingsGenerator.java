@@ -217,9 +217,9 @@ public class MappingsGenerator {
         jotHashMap = helper.getJavaClass(HashMap.class);
         jotLinkedList = helper.getJavaClass(LinkedList.class);
         jotTreeSet = helper.getJavaClass(TreeSet.class);
-        qNamesToGeneratedClasses = new HashMap<QName, Class>();
-        qNamesToDeclaredClasses = new HashMap<QName, Class>();
-        classToGeneratedClasses = new HashMap<String, Class>();
+        qNamesToGeneratedClasses = new HashMap<>();
+        qNamesToDeclaredClasses = new HashMap<>();
+        classToGeneratedClasses = new HashMap<>();
         globalNamespaceResolver = new org.eclipse.persistence.oxm.NamespaceResolver();
         isDefaultNamespaceAllowed = true;
     }
@@ -355,7 +355,7 @@ public class MappingsGenerator {
     }
 
     private Map<String, List<CoreAttributeGroup>> processSubgraphs(List<XmlNamedSubgraph> subgraphs) {
-        Map<String, List<CoreAttributeGroup>> subgroups = new HashMap<String, List<CoreAttributeGroup>>();
+        Map<String, List<CoreAttributeGroup>> subgroups = new HashMap<>();
         //Iterate through once and create all the AttributeGroups
         for(XmlNamedSubgraph next: subgraphs) {
             String type = next.getType();
@@ -367,7 +367,7 @@ public class MappingsGenerator {
                 List<CoreAttributeGroup> groups = subgroups.get(group.getName());
                 groups.add(group);
             } else {
-                List<CoreAttributeGroup> groups = new ArrayList<CoreAttributeGroup>(1);
+                List<CoreAttributeGroup> groups = new ArrayList<>(1);
                 groups.add(group);
                 subgroups.put(group.getName(), groups);
             }
@@ -1130,8 +1130,8 @@ public class MappingsGenerator {
             }
             if (next.getXmlJoinNodes() != null) {
                 // handle XmlJoinNodes
-                List<Field> srcFlds = new ArrayList<Field>();
-                List<Field> tgtFlds = new ArrayList<Field>();
+                List<Field> srcFlds = new ArrayList<>();
+                List<Field> tgtFlds = new ArrayList<>();
                 for (XmlJoinNode xmlJoinNode: next.getXmlJoinNodes().getXmlJoinNode()) {
                     srcFlds.add(new XMLField(xmlJoinNode.getXmlPath()));
                     tgtFlds.add(new XMLField(xmlJoinNode.getReferencedXmlPath()));
@@ -1235,8 +1235,8 @@ public class MappingsGenerator {
 
             if (next.getXmlJoinNodes() != null) {
                 // handle XmlJoinNodes
-                List<Field> srcFlds = new ArrayList<Field>();
-                List<Field> tgtFlds = new ArrayList<Field>();
+                List<Field> srcFlds = new ArrayList<>();
+                List<Field> tgtFlds = new ArrayList<>();
                 for (XmlJoinNode xmlJoinNode: next.getXmlJoinNodes().getXmlJoinNode()) {
                     srcFlds.add(new XMLField(xmlJoinNode.getXmlPath()));
                     tgtFlds.add(new XMLField(xmlJoinNode.getReferencedXmlPath()));
@@ -2617,7 +2617,7 @@ public class MappingsGenerator {
     }
 
     private void generateInheritedMappingsForAnonymousType(TypeInfo info, Descriptor descriptor, JavaClass descriptorJavaClass, NamespaceInfo namespaceInfo) {
-        List<TypeInfo> mappedParents = new ArrayList<TypeInfo>();
+        List<TypeInfo> mappedParents = new ArrayList<>();
         JavaClass next = CompilerHelper.getNextMappedSuperClass(descriptorJavaClass, typeInfo, helper);
         while(next != null) {
             TypeInfo nextInfo = this.typeInfo.get(next.getName());
@@ -2977,7 +2977,7 @@ public class MappingsGenerator {
         if(this.globalElements == null && this.localElements == null) {
             return;
         }
-        List<ElementDeclaration> elements = new ArrayList<ElementDeclaration>();
+        List<ElementDeclaration> elements = new ArrayList<>();
         elements.addAll(this.localElements);
         elements.addAll(this.globalElements.values());
         for(ElementDeclaration nextElement:elements) {
@@ -3325,6 +3325,12 @@ public class MappingsGenerator {
         byte[] classBytes = cw.toByteArray();
         //byte[] classBytes = new byte[]{};
 
+        Module moxyModule = MappingsGenerator.class.getModule();
+        if (moxyModule.isNamed() && !moxyModule.isExported(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule())) {
+            // our generated classes live in unnamed module, therefore we need to export our private class
+            // to the unnamed module as we don't want to export internal package from eclipselink.jar
+            moxyModule.addExports(WrappedValue.class.getPackageName(), getJaxbClassLoader().getUnnamedModule());
+        }
         Class generatedClass = getJaxbClassLoader().generateClass(className, classBytes);
         return generatedClass;
     }
@@ -3342,7 +3348,7 @@ public class MappingsGenerator {
 
     private Map<MapEntryGeneratedKey, Class> getGeneratedMapEntryClasses() {
         if(generatedMapEntryClasses == null){
-            generatedMapEntryClasses = new HashMap<MapEntryGeneratedKey, Class>();
+            generatedMapEntryClasses = new HashMap<>();
         }
         return generatedMapEntryClasses;
     }
@@ -3405,8 +3411,8 @@ public class MappingsGenerator {
             IsSetNullPolicy isSetNullPolicy = new IsSetNullPolicy();
             isSetNullPolicy.setIsSetMethodName(xmlIsSetNullPolicy.getIsSetMethodName());
             // handle isSetParams
-            ArrayList<Object> parameters = new ArrayList<Object>();
-            ArrayList<Class> parameterTypes = new ArrayList<Class>();
+            ArrayList<Object> parameters = new ArrayList<>();
+            ArrayList<Class> parameterTypes = new ArrayList<>();
             List<XmlIsSetNullPolicy.IsSetParameter> params = xmlIsSetNullPolicy.getIsSetParameter();
             for (XmlIsSetNullPolicy.IsSetParameter param : params) {
                 String valueStr = param.getValue();

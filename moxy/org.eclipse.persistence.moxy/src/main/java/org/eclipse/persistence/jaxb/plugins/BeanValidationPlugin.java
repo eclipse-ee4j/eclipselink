@@ -26,9 +26,7 @@ import static com.sun.xml.xsom.XSFacet.FACET_PATTERN;
 import static com.sun.xml.xsom.XSFacet.FACET_TOTALDIGITS;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -52,13 +50,11 @@ import org.xml.sax.SAXParseException;
 
 import com.sun.codemodel.JAnnotationArrayMember;
 import com.sun.codemodel.JAnnotationUse;
-import com.sun.codemodel.JAnnotationValue;
 import com.sun.codemodel.JClass;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JExpressionImpl;
 import com.sun.codemodel.JFieldVar;
 import com.sun.codemodel.JFormatter;
-import com.sun.codemodel.JStringLiteral;
 import com.sun.codemodel.JType;
 import com.sun.tools.xjc.BadCommandLineException;
 import com.sun.tools.xjc.Options;
@@ -353,7 +349,7 @@ public class BeanValidationPlugin extends Plugin {
     }
 
     private void processSimpleType(XSParticle particle, XSSimpleType simpleType, JFieldVar fieldVar, List<FacetCustomization> customizations) {
-        Map<JAnnotationUse, FacetType> annotationsAndTheirOrigin = new HashMap<JAnnotationUse, FacetType>();
+        Map<JAnnotationUse, FacetType> annotationsAndTheirOrigin = new HashMap<>();
 
         applyAnnotations(particle, simpleType, fieldVar, annotationsAndTheirOrigin);
         applyCustomizations(fieldVar, customizations, annotationsAndTheirOrigin);
@@ -523,7 +519,7 @@ public class BeanValidationPlugin extends Plugin {
          * and returns them.
          */
         private List<FacetCustomization> detectCustomizations(CCustomizable ca) {
-            List<FacetCustomization> facetCustomizations = new ArrayList<FacetCustomization>();
+            List<FacetCustomization> facetCustomizations = new ArrayList<>();
             List<CPluginCustomization> pluginCustomizations = ca.getCustomizations();
             if (pluginCustomizations != null)
                 for (CPluginCustomization c : pluginCustomizations) {
@@ -756,7 +752,7 @@ public class BeanValidationPlugin extends Plugin {
      */
     private boolean isMoreSpecificBoundary(JFieldVar fieldVar, String boundaryValue, JAnnotationUse annotationUse,
                                            boolean xorComplement) {
-        String existingBoundaryValue = getExistingBoundaryValue(annotationUse);
+        String existingBoundaryValue = annotationUse.getAnnotationMembers().get(VALUE).toString();
 
         if (existingBoundaryValue == null) return true;
         else if (Long.valueOf(boundaryValue).compareTo(Long.valueOf(existingBoundaryValue)) > 0 ^ xorComplement)
@@ -788,12 +784,6 @@ public class BeanValidationPlugin extends Plugin {
              solved by this plugin. */
         }
         return clazz;
-    }
-
-    private String getExistingBoundaryValue(final JAnnotationUse jAnnotationUse) {
-        return securityEnabled
-            ? AccessController.doPrivileged(ExistingBoundaryValueActionExecutor.INSTANCE.with(jAnnotationUse))
-            : loadExistingBoundaryValue(jAnnotationUse);
     }
 
     private String eliminateShorthands(String regex) {
@@ -894,7 +884,7 @@ public class BeanValidationPlugin extends Plugin {
     private static final Set<String> nonFloatingDigitsClasses;
 
     static {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.add("byte");
         set.add("Byte");
         set.add("short");
@@ -920,26 +910,26 @@ public class BeanValidationPlugin extends Plugin {
     private static final Set<String> floatingDigitsClasses;
 
     static {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         set.add("float");
         set.add("Float");
         set.add("double");
         set.add("Double");
-        floatingDigitsClasses = Collections.unmodifiableSet(new HashSet<String>(set));
+        floatingDigitsClasses = Collections.unmodifiableSet(new HashSet<>(set));
     }
 
     private static final Map<String, MinMaxTuple> nonFloatingDigitsClassesBoundaries;
 
     static {
-        HashMap<String, MinMaxTuple> map = new HashMap<String, MinMaxTuple>();
-        map.put("byte", new MinMaxTuple<Byte>(Byte.MIN_VALUE, Byte.MAX_VALUE));
-        map.put("Byte", new MinMaxTuple<Byte>(Byte.MIN_VALUE, Byte.MAX_VALUE));
-        map.put("short", new MinMaxTuple<Short>(Short.MIN_VALUE, Short.MAX_VALUE));
-        map.put("Short", new MinMaxTuple<Short>(Short.MIN_VALUE, Short.MAX_VALUE));
-        map.put("int", new MinMaxTuple<Integer>(Integer.MIN_VALUE, Integer.MAX_VALUE));
-        map.put("Integer", new MinMaxTuple<Integer>(Integer.MIN_VALUE, Integer.MAX_VALUE));
-        map.put("long", new MinMaxTuple<Long>(Long.MIN_VALUE, Long.MAX_VALUE));
-        map.put("Long", new MinMaxTuple<Long>(Long.MIN_VALUE, Long.MAX_VALUE));
+        HashMap<String, MinMaxTuple> map = new HashMap<>();
+        map.put("byte", new MinMaxTuple<>(Byte.MIN_VALUE, Byte.MAX_VALUE));
+        map.put("Byte", new MinMaxTuple<>(Byte.MIN_VALUE, Byte.MAX_VALUE));
+        map.put("short", new MinMaxTuple<>(Short.MIN_VALUE, Short.MAX_VALUE));
+        map.put("Short", new MinMaxTuple<>(Short.MIN_VALUE, Short.MAX_VALUE));
+        map.put("int", new MinMaxTuple<>(Integer.MIN_VALUE, Integer.MAX_VALUE));
+        map.put("Integer", new MinMaxTuple<>(Integer.MIN_VALUE, Integer.MAX_VALUE));
+        map.put("long", new MinMaxTuple<>(Long.MIN_VALUE, Long.MAX_VALUE));
+        map.put("Long", new MinMaxTuple<>(Long.MIN_VALUE, Long.MAX_VALUE));
         nonFloatingDigitsClassesBoundaries = Collections.unmodifiableMap(map);
     }
 
@@ -977,42 +967,6 @@ public class BeanValidationPlugin extends Plugin {
 
     private static Class<?> loadClassInternal(String className) throws ClassNotFoundException {
         return Class.forName(className);
-    }
-
-    private static final class ExistingBoundaryValueActionExecutor {
-
-        private interface PrivilegedActionWith<T> extends PrivilegedAction<T> {
-            PrivilegedAction<T> with(JAnnotationUse jAnnotationUse);
-        }
-
-        private static final PrivilegedActionWith<String> INSTANCE = new PrivilegedActionWith<String>() {
-            private JAnnotationUse jAnnotationUse;
-
-            @Override
-            public String run() {
-                return loadExistingBoundaryValue(jAnnotationUse);
-            }
-
-            @Override
-            public PrivilegedAction<String> with(JAnnotationUse jAnnotationUse) {
-                this.jAnnotationUse = jAnnotationUse;
-                return this;
-            }
-        };
-    }
-
-    private static String loadExistingBoundaryValue(JAnnotationUse jAnnotationUse) {
-        JAnnotationValue jAnnotationValue = jAnnotationUse.getAnnotationMembers().get(VALUE);
-        Class<? extends JAnnotationValue> clazz = jAnnotationValue.getClass();
-        try {
-            Field theValueField = clazz.getDeclaredField(VALUE);
-            theValueField.setAccessible(true);
-            return ((JStringLiteral) theValueField.get(jAnnotationValue)).str;
-        } catch (Exception e) {
-            // Nothing we can do, user should be notified that his app is unable to
-            // execute this plugin correctly and not should not receive generated default values.
-            throw new RuntimeException(e);
-        }
     }
 
 }

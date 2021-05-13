@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,7 +39,7 @@ public class DifferentClassLoaderTestCases extends JAXBWithJSONTestCases {
         Class[] classes = new Class[2];
 
         URL[] urls = new URL[1];
-        urls[0] = Thread.currentThread().getContextClassLoader().getResource("./org/eclipse/persistence/testing/jaxb/classloader/test.jar");
+        urls[0] = Thread.currentThread().getContextClassLoader().getResource("org/eclipse/persistence/testing/jaxb/classloader/test.jar");
         URLClassLoader classLoaderA = new URLClassLoader(urls);
 
 

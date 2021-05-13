@@ -12,6 +12,7 @@
 
 module org.eclipse.persistence.moxy {
 
+    requires java.desktop;
     requires java.naming;
     requires java.xml;
 
@@ -21,11 +22,12 @@ module org.eclipse.persistence.moxy {
     requires static jakarta.validation;
     requires static jakarta.ws.rs;
     requires org.eclipse.persistence.asm;
-    requires org.eclipse.persistence.core;
+    requires transitive org.eclipse.persistence.core;
     requires static com.sun.tools.xjc;
     requires static com.sun.xml.bind.core;
 
     exports org.eclipse.persistence.jaxb;
+    opens org.eclipse.persistence.jaxb;
     exports org.eclipse.persistence.jaxb.attachment;
     exports org.eclipse.persistence.jaxb.compiler;
     exports org.eclipse.persistence.jaxb.compiler.builder;
@@ -42,9 +44,16 @@ module org.eclipse.persistence.moxy {
     exports org.eclipse.persistence.jaxb.plugins;
     exports org.eclipse.persistence.jaxb.rs;
     exports org.eclipse.persistence.jaxb.xmlmodel;
+    opens org.eclipse.persistence.jaxb.xmlmodel to jakarta.xml.bind;
 
     // dbws
     exports org.eclipse.persistence.internal.jaxb;
+
+    //tests
+    exports org.eclipse.persistence.internal.jaxb.many;
+
+    exports org.eclipse.persistence.internal.jaxb.json.schema;
+    exports org.eclipse.persistence.internal.jaxb.json.schema.model;
 
     provides com.sun.tools.xjc.Plugin with org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin;
 }

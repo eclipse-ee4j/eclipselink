@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,7 +52,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+import javax.tools.StandardLocation;
 
 import static org.eclipse.persistence.testing.jaxb.beanvalidation.ContentComparator.equalsXML;
 
@@ -112,7 +118,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
      * of post round-trip schema with the original, not identity.
      * This test should still pass even if changes are done to our code.
      */
-    public void testGoldenFileIdentity() throws Exception {
+    public void testGoldenFileIdentity() throws Throwable {
         pkg = "gf";
 
         roundTrip(GOLDEN_FILE_PATH, pkg);
@@ -125,7 +131,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
      * Also tests equality of generated Java classes from the original schema
      * and from the schema after round-trip.
      */
-    public void testEqualitySchemaAndJava() throws Exception {
+    public void testEqualitySchemaAndJava() throws Throwable {
         pkg = "rs";
 
         Class<?>[] cTenured = roundTrip(RICH_SCHEMA_PATH, pkg);
@@ -141,7 +147,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
      * Tests customizations, i.e. facet customizations + custom facets, i.e.
      * Future, Past, AssertTrue, AssertFalse.
      */
-    public void testFacetCustomizationsAndCustomFacets() throws Exception {
+    public void testFacetCustomizationsAndCustomFacets() throws Throwable {
         pkg = "cs";
 
         xjcGenerateJavaSourcesWithCustomizations(CUSTOMIZED_SCHEMA_PATH);
@@ -188,7 +194,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
      * Tests that the XJC detects all facets and generates their respective
      * annotations correctly.
      */
-    public void testAllFacetsAndAnnotations() throws Exception {
+    public void testAllFacetsAndAnnotations() throws Throwable {
         pkg = "rs";
 
         Class<?>[] c = roundTrip(RICH_SCHEMA_PATH, pkg);
@@ -325,7 +331,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
         assertTrue(minLength.getAnnotation(Size.class).min() == 0);
     }
 
-    private Class<?>[] roundTrip(String schemaPath, String pkg) throws Exception {
+    private Class<?>[] roundTrip(String schemaPath, String pkg) throws Throwable {
         xjcGenerateJavaSources(schemaPath);
         compileGeneratedSources(createCompileList(pkg));
         Class<?>[] classes = loadCompiledClasses(createLoadList(pkg));
@@ -349,20 +355,49 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
         gen.generateSchemaFiles(PATH_TO_SCHEMA_DIRECTORY, null);
     }
 
-    private void compileGeneratedSources(File... compileList) {
+    private void compileGeneratedSources(File... compileList) throws Exception {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<? super JavaFileObject> diag = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<? super JavaFileObject> diag = new DiagnosticCollector<>();
         StandardJavaFileManager fm = compiler.getStandardFileManager(diag, null, null);
+        List<File> pathElements = getPath("jdk.module.path");
+        if (!pathElements.isEmpty()) {
+            //running on module-path:
+            fm.setLocation(StandardLocation.MODULE_PATH, pathElements);
+            pathElements = getPath("java.class.path");
+            if (!pathElements.isEmpty()) {
+                fm.setLocation(StandardLocation.CLASS_PATH, pathElements);
+            }
+        } else {
+            //on cp - move everythig to mp
+            pathElements = getPath("java.class.path");
+            if (!pathElements.isEmpty()) {
+                fm.setLocation(StandardLocation.MODULE_PATH, pathElements);
+            }
+        }
+        fm.setLocation(StandardLocation.CLASS_OUTPUT, Arrays.asList(new File(TARGET_PATH)));
         Iterable<? extends JavaFileObject> compilationUnits = fm.getJavaFileObjectsFromFiles(Arrays.asList(compileList));
-        Iterable<String> options = Arrays.asList("-d", TARGET_PATH);
+        List<String> options = new ArrayList<>();
         JavaCompiler.CompilationTask task = compiler.getTask(new OutputStreamWriter(System.out), fm, diag, options,
                 null, compilationUnits);
 
         if (!task.call()) {
-            for (Diagnostic diagnostic : diag.getDiagnostics())
-                System.out.format("Error on line %d in %s", diagnostic.getLineNumber(), diagnostic);
+            for (Diagnostic diagnostic : diag.getDiagnostics()) {
+                System.out.format("Error on line %d in %s\n", diagnostic.getLineNumber(), diagnostic);
+            }
             fail("Compilation of generated classes failed. See the diagnostics output.");
         }
+    }
+
+    private List<File> getPath(String property) {
+        List<File> cp = new ArrayList<>();
+        String value = System.getProperty(property, "").trim();
+        if (!value.isEmpty()) {
+            StringTokenizer st = new StringTokenizer(value, File.pathSeparator);
+            while (st.hasMoreTokens()) {
+                cp.add(new File(st.nextToken()));
+            }
+        }
+        return cp;
     }
 
     private File[] createCompileList(String pkg) {
@@ -378,8 +413,9 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
                     new File(pkg + "/Strings.java")};
     }
 
-    private Class<?>[] loadCompiledClasses(String... loadList) throws ClassNotFoundException {
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    private Class<?>[] loadCompiledClasses(String... loadList) throws Throwable {
+        ClassLoader cl = new URLClassLoader(new URL[] {new File(TARGET_PATH).toURI().toURL()},
+                Thread.currentThread().getContextClassLoader());
         Class<?>[] loadedClasses = new Class[loadList.length];
         for (int i = 0; i < loadedClasses.length; i++)
             loadedClasses[i] = cl.loadClass(loadList[i]);

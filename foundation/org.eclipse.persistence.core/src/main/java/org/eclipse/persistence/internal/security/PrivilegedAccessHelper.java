@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,8 @@ import org.eclipse.persistence.config.SystemProperties;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.helper.JavaVersion;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.platform.server.ServerPlatformBase;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
 
@@ -214,7 +216,10 @@ public class PrivilegedAccessHelper {
             }
         }
         if (shouldSetAccessible) {
-            result.setAccessible(true);
+            if (!result.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible",
+                        "constructor", javaClass.getName());
+            }
         }
         return result;
     }
@@ -239,7 +244,10 @@ public class PrivilegedAccessHelper {
     public static Constructor getDeclaredConstructorFor(final Class javaClass, final Class[] args, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Constructor result = javaClass.getDeclaredConstructor(args);
         if (shouldSetAccessible) {
-            result.setAccessible(true);
+            if (!result.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible",
+                        "declared constructor", javaClass.getName());
+            }
         }
         return result;
     }
@@ -256,7 +264,10 @@ public class PrivilegedAccessHelper {
     public static Field getField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = findDeclaredField(javaClass, fieldName);
         if (shouldSetAccessible) {
-            field.setAccessible(true);
+            if (!field.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "field", fieldName, javaClass.getName());
+            }
         }
         return field;
     }
@@ -273,7 +284,10 @@ public class PrivilegedAccessHelper {
     public static Field getDeclaredField(final Class javaClass, final String fieldName, final boolean shouldSetAccessible) throws NoSuchFieldException {
         Field field = javaClass.getDeclaredField(fieldName);
         if (shouldSetAccessible) {
-            field.setAccessible(true);
+            if (!field.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "declared field", fieldName, javaClass.getName());
+            }
         }
         return field;
     }
@@ -323,7 +337,10 @@ public class PrivilegedAccessHelper {
     public static Method getMethod(final Class javaClass, final String methodName, final Class[] methodParameterTypes, final boolean shouldSetAccessible) throws NoSuchMethodException {
         Method method = findMethod(javaClass, methodName, methodParameterTypes);
         if (shouldSetAccessible) {
-            method.setAccessible(true);
+            if (!method.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "method", methodName, javaClass.getName());
+            }
         }
         return method;
     }
@@ -344,7 +361,10 @@ public class PrivilegedAccessHelper {
         // Return the (public) method - will traverse superclass(es) if necessary
         Method method = javaClass.getMethod(methodName, methodParameterTypes);
         if (shouldSetAccessible) {
-            method.setAccessible(true);
+            if (!method.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "public method", methodName, javaClass.getName());
+            }
         }
         return method;
     }
@@ -511,7 +531,10 @@ public class PrivilegedAccessHelper {
     public static Object invokeMethod(final Method method, final Object object, final Object[] parameters) throws IllegalAccessException, InvocationTargetException {
         // Ensure the method is accessible.
         if (!method.isAccessible()) {
-            method.setAccessible(true);
+            if (!method.trySetAccessible()) {
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "method", method.getName(), method.getDeclaringClass().getName() + " for invokation");
+            }
         }
         return method.invoke(object, parameters);
     }

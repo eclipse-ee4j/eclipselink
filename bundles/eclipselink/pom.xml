@@ -52,7 +52,6 @@
         <dependency>
             <groupId>jakarta.persistence</groupId>
             <artifactId>jakarta.persistence-api</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>jakarta.annotation</groupId>
@@ -79,7 +78,6 @@
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <!-- dbws: api dependencies -->
@@ -494,8 +492,6 @@
                             <compilerArgs>
                                 <arg>--add-reads</arg>
                                 <arg>eclipselink=ALL-UNNAMED</arg>
-                                <arg>--add-exports</arg>
-                                <arg>com.sun.tools.xjc/com.sun.xml.xsom.impl.parser=eclipselink</arg>
                             </compilerArgs>
                         </configuration>
                     </execution>
@@ -557,7 +553,6 @@
                 <configuration>
                     <additionalOptions>
                         --add-reads eclipselink=ALL-UNNAMED
-                        --add-exports com.sun.tools.xjc/com.sun.xml.xsom.impl.parser=eclipselink
                     </additionalOptions>
                     <doclint>none</doclint>
                     <detectOfflineLinks>false</detectOfflineLinks>
