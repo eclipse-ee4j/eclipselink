@@ -545,7 +545,10 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "moxy_set_jaxb_context_property", "Setting JAXBContext property (name/value): {0}/{1}"},
         { "invalid_tzone", "Invalid timezone conversion property {0} value: {1}.  Will attempt to resolve default." },
         { "invalid_default_tzone", "Invalid timezone conversion property {0} value: {1}.  Defaulting to UTC." },
-        { "using_conversion_tzone", "ConversionManager using default zone offset: {1}." }
+        { "using_conversion_tzone", "ConversionManager using default zone offset: {1}."},
+        { "open_pkg", "Opening package {0} in {1} to {2} for reflection access."},
+        { "set_accessible", "Cannot setAccessible {0} for {1}."},
+        { "set_accessible", "Cannot setAccessible {0} {1} in {2}."}
     };
 
     /**

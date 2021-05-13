@@ -25,38 +25,14 @@ set JVM_ARGS=-Xmx256m -Djakarta.xml.bind.JAXBContextFactory=org.eclipse.persiste
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\moxy
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\jpa\jakarta.persistence-api.jar
-
+set MODULEPATH=%THIS%..\jlib\moxy
+set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\eclipselink.jar
+set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\jpa\jakarta.persistence-api.jar
 set MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC
 set JAVA_ARGS=%*
 
-rem Set Java Version
-for /f "tokens=3" %%i in ('java -version 2^>^&1 ^| %SystemRoot%\system32\find.exe "version"') do (
-  set JAVA_VERSION1=%%i
-)
-for /f "tokens=1,2 delims=." %%j in ('echo %JAVA_VERSION1:~1,-1%') do (
-  if "1" EQU "%%j" (
-    set JAVA_VERSION2=%%k
-  ) else (
-    set JAVA_VERSION2=%%j
-  )
-)
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% --add-modules jakarta.validation -p %MODULEPATH% -m eclipselink/%MAIN_CLASS% %JAVA_ARGS%
 
-rem Remove -ea
-for /f "delims=-" %%i in ('echo %JAVA_VERSION2%') do set JAVA_VERSION=%%i
-echo Java major version: %JAVA_VERSION%
-
-if %JAVA_VERSION% GEQ 9 goto JDK9_OR_GREATER
-rem Java 8
-%JAVA_HOME%\bin\java.exe %JVM_ARGS% -cp %CLASSPATH% %MAIN_CLASS% %JAVA_ARGS%
-@endlocal
-goto :EOF
-
-:JDK9_OR_GREATER
-rem Java
-%JAVA_HOME%\bin\java.exe %JVM_ARGS% --add-modules jakarta.validation -p %CLASSPATH% -m eclipselink/%MAIN_CLASS% %JAVA_ARGS%
 @endlocal
 goto :EOF
 

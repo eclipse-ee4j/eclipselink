@@ -20,19 +20,8 @@ JVM_ARGS="-Xmx256m -Djakarta.xml.bind.JAXBContextFactory=org.eclipse.persistence
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../jlib
+MODULEPATH=`dirname $0`/../jlib
 MAIN_CLASS=org.eclipse.persistence.jaxb.xjc.MOXyXJC
 JAVA_ARGS="$@"
 
-JAVA_VERSION=`${JAVA_HOME}/bin/java -version 2>&1 | head -n 1 | cut -d'"' -f2 | sed -E 's/^(1\.)?([0-9]+).*$/\2/'`
-echo "Java major version: ${JAVA_VERSION}"
-
-# Check if supports module path
-if [ ${JAVA_VERSION} -lt 9 ];
-then
-    #Java 8
-    ${JAVA_HOME}/bin/java ${JVM_ARGS} -cp "${CLASSPATH}" ${MAIN_CLASS} ${JAVA_ARGS}
-else
-    #Java >8
-    ${JAVA_HOME}/bin/java ${JVM_ARGS} -p "${CLASSPATH}" -m org.eclipse.persistence.moxy.xjc ${JAVA_ARGS}
-fi
+${JAVA_HOME}/bin/java ${JVM_ARGS} -p "${MODULEPATH}" -m org.eclipse.persistence.moxy.xjc ${JAVA_ARGS}

@@ -217,8 +217,8 @@ public class PrivilegedAccessHelper {
         }
         if (shouldSetAccessible) {
             if (!result.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "Cannot setAccessible constructor for {0}.",
-                        new String[]{javaClass.getName()}, false);
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible",
+                        "constructor", javaClass.getName());
             }
         }
         return result;
@@ -245,8 +245,8 @@ public class PrivilegedAccessHelper {
         Constructor result = javaClass.getDeclaredConstructor(args);
         if (shouldSetAccessible) {
             if (!result.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "Cannot setAccessible declared constructor for {0}.",
-                        new String[]{javaClass.getName()}, false);
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible",
+                        "declared constructor", javaClass.getName());
             }
         }
         return result;
@@ -265,8 +265,8 @@ public class PrivilegedAccessHelper {
         Field field = findDeclaredField(javaClass, fieldName);
         if (shouldSetAccessible) {
             if (!field.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "Cannot setAccessible field {0} in {1}.",
-                        new String[]{fieldName, javaClass.getName()}, false);
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "field", fieldName, javaClass.getName());
             }
         }
         return field;
@@ -285,8 +285,8 @@ public class PrivilegedAccessHelper {
         Field field = javaClass.getDeclaredField(fieldName);
         if (shouldSetAccessible) {
             if (!field.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "Cannot setAccessible declared field {0} in {1}.",
-                        new String[]{fieldName, javaClass.getName()}, false);
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "declared field", fieldName, javaClass.getName());
             }
         }
         return field;
@@ -338,8 +338,8 @@ public class PrivilegedAccessHelper {
         Method method = findMethod(javaClass, methodName, methodParameterTypes);
         if (shouldSetAccessible) {
             if (!method.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "Cannot setAccessible method {0} in {1}.",
-                        new String[]{methodName, javaClass.getName()}, false);
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "method", methodName, javaClass.getName());
             }
         }
         return method;
@@ -362,8 +362,8 @@ public class PrivilegedAccessHelper {
         Method method = javaClass.getMethod(methodName, methodParameterTypes);
         if (shouldSetAccessible) {
             if (!method.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "Cannot setAccessible public method {0} in {1}.",
-                        new String[]{methodName, javaClass.getName()}, false);
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "public method", methodName, javaClass.getName());
             }
         }
         return method;
@@ -532,8 +532,8 @@ public class PrivilegedAccessHelper {
         // Ensure the method is accessible.
         if (!method.isAccessible()) {
             if (!method.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "Cannot setAccessible method {0} in {1} for invokation.",
-                        new String[]{method.getName(), method.getDeclaringClass().getName()}, false);
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "method", method.getName(), method.getDeclaringClass().getName() + " for invokation");
             }
         }
         return method.invoke(object, parameters);

@@ -1735,8 +1735,8 @@ public class JAXBContext extends jakarta.xml.bind.JAXBContext {
                 //propagate openness to o.e.p.core module
                 if (classModule.isOpen(packageName, moxyModule) && !classModule.isOpen(packageName, coreModule)) {
                     classModule.addOpens(packageName, coreModule);
-                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, "Openning package {0} in {1} to {2} for reflection access.",
-                            new String[]{packageName, classModule.getName(), coreModule.getName()}, false);
+                    AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, "open_pkg",
+                            packageName, classModule.getName(), coreModule.getName());
                 }
             }
         }

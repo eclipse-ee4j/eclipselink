@@ -392,7 +392,7 @@ public class BeanValidationBindingsTestCase extends junit.framework.TestCase {
         List<File> cp = new ArrayList<>();
         String value = System.getProperty(property, "").trim();
         if (!value.isEmpty()) {
-            StringTokenizer st = new StringTokenizer(value, ":");
+            StringTokenizer st = new StringTokenizer(value, File.pathSeparator);
             while (st.hasMoreTokens()) {
                 cp.add(new File(st.nextToken()));
             }
