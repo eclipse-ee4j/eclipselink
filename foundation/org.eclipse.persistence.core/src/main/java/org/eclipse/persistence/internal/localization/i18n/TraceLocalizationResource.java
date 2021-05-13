@@ -548,7 +548,7 @@ public class TraceLocalizationResource extends ListResourceBundle {
         { "using_conversion_tzone", "ConversionManager using default zone offset: {1}."},
         { "open_pkg", "Opening package {0} in {1} to {2} for reflection access."},
         { "set_accessible", "Cannot setAccessible {0} for {1}."},
-        { "set_accessible", "Cannot setAccessible {0} {1} in {2}."}
+        { "set_accessible_in", "Cannot setAccessible {0} {1} in {2}."}
     };
 
     /**
