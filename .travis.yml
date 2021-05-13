@@ -41,8 +41,6 @@ jobs:
   allow_failures:
     - env: MAVEN_TEST=jpa-lrg-server1-mysql
     - env: MAVEN_TEST=jpa-lrg-server2-mysql
-    - env: MAVEN_TEST=javadoc
-      jdk: openjdk11
     - jdk: openjdk-ea
 
 jdk:
