@@ -178,8 +178,8 @@ public class JavaClassImpl implements JavaClass {
 
         for (Field field : fields) {
             if (!field.trySetAccessible()) {
-                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MOXY, "Cannot setAccessible field {0} in {1}.",
-                        new String[]{field.getName(), jClass.getName()}, false);
+                AbstractSessionLog.getLog().log(SessionLog.FINE, SessionLog.MISC, "set_accessible_in",
+                        "field", field.getName(), jClass.getName());
             }
             fieldCollection.add(getJavaField(field));
         }
