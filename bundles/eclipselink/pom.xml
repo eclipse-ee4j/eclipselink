@@ -303,6 +303,41 @@
 
     <build>
         <plugins>
+            <!--Initialize build.date and build.time buildNumber properties. Used to generate version.properties in org.eclipse.persistence:eclipselink module-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>build.date</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                        <configuration>
+                            <timestampFormat>yyyyMMdd</timestampFormat>
+                            <timestampPropertyName>build.date</timestampPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build.time</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                        <configuration>
+                            <timestampFormat>HHmm</timestampFormat>
+                            <timestampPropertyName>build.time</timestampPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
@@ -430,6 +465,7 @@
                                     <excludes>
                                         <exclude>**/*.java</exclude>
                                     </excludes>
+                                    <filtering>true</filtering>
                                 </resource>
                             </resources>
                         </configuration>
