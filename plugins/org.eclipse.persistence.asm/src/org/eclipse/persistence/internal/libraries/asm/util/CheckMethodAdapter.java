@@ -784,7 +784,7 @@ public class CheckMethodAdapter extends MethodVisitor {
     checkVisitMaxsNotCalled();
     checkLabel(label, false, "label");
     if (labelInsnIndices.get(label) != null) {
-      throw new IllegalArgumentException("Already visited label");
+      throw new IllegalStateException("Already visited label");
     }
     labelInsnIndices.put(label, insnCount);
     super.visitLabel(label);

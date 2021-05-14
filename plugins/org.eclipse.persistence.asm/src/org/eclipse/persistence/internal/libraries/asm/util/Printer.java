@@ -1269,7 +1269,7 @@ public abstract class Printer {
   /**
    * Prints a the given class to the given output.
    *
-   * <p>Command line arguments: [-debug] &lt;binary class name or class file name &gt;
+   * <p>Command line arguments: [-nodebug] &lt;binary class name or class file name &gt;
    *
    * @param args the command line arguments.
    * @param usage the help message to show when command line arguments are incorrect.
@@ -1285,7 +1285,9 @@ public abstract class Printer {
       final PrintWriter output,
       final PrintWriter logger)
       throws IOException {
-    if (args.length < 1 || args.length > 2 || (args[0].equals("-debug") && args.length != 2)) {
+    if (args.length < 1
+        || args.length > 2
+        || ((args[0].equals("-debug") || args[0].equals("-nodebug")) && args.length != 2)) {
       logger.println(usage);
       return;
     }
@@ -1294,7 +1296,7 @@ public abstract class Printer {
 
     String className;
     int parsingOptions;
-    if (args[0].equals("-debug")) {
+    if (args[0].equals("-nodebug")) {
       className = args[1];
       parsingOptions = ClassReader.SKIP_DEBUG;
     } else {
@@ -1308,8 +1310,6 @@ public abstract class Printer {
       // Can't fix PMD warning for 1.5 compatibility.
       try (InputStream inputStream = new FileInputStream(className)) { // NOPMD(AvoidFileStream)
         new ClassReader(inputStream).accept(traceClassVisitor, parsingOptions);
-      } catch (IOException ioe) {
-        throw ioe;
       }
     } else {
       new ClassReader(className).accept(traceClassVisitor, parsingOptions);

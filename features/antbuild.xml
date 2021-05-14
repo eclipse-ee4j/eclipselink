@@ -259,7 +259,7 @@
         <property name="antlr.prefix" value="org.eclipse.persistence.antlr"/>
         <property name="antlr.criteria" value="[3.0,9.0)"/>
         <property name="asm.prefix" value="org.eclipse.persistence.asm"/>
-        <property name="asm.criteria" value="[3.0,9.0)"/>
+        <property name="asm.criteria" value="[3.0,9.1)"/>
         <property name="hermes.prefix" value="org.eclipse.persistence.jpa.jpql"/>
         <property name="hermes.criteria" value="[1.0,9.0)"/>
         <property name="oracleddl.prefix" value="org.eclipse.persistence.oracleddlparser"/>
