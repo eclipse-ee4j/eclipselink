@@ -599,8 +599,6 @@ public class OraclePlatform extends org.eclipse.persistence.platform.database.Da
         addOperator(operatorLocate2());
         addOperator(regexpOperator());
         addOperator(exceptOperator());
-        addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.LeftTrim2, "LTRIM"));
-        addOperator(ExpressionOperator.simpleTwoArgumentFunction(ExpressionOperator.RightTrim2, "RTRIM"));
     }
 
     /**
