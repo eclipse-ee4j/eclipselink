@@ -116,7 +116,7 @@ public class TestTrimFunction {
             if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = TRIM(LEADING 'A' FROM 'AAHELLO WORDAAAAA'))", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = LTRIM('A', 'AAHELLO WORDAAAAA'))", _sql.remove(0));
+                Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = LTRIM('AAHELLO WORDAAAAA', 'A'))", _sql.remove(0));
             }
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -135,7 +135,7 @@ public class TestTrimFunction {
             if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware()) {
                 Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = TRIM(LEADING 'A' FROM 'AAHELLO WORDAAAAA'))", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = LTRIM('A', 'AAHELLO WORDAAAAA'))", _sql.remove(0));
+                Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = LTRIM('AAHELLO WORDAAAAA', 'A'))", _sql.remove(0));
             }
         } finally {
             if (em.isOpen()) {
@@ -159,7 +159,7 @@ public class TestTrimFunction {
             if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware() || platform.isHSQL() || platform instanceof FirebirdPlatform) {
                 Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = TRIM(TRAILING 'A' FROM 'AAHELLO WORDAAAAA'))", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = RTRIM('A', 'AAHELLO WORDAAAAA'))", _sql.remove(0));
+                Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = RTRIM('AAHELLO WORDAAAAA', 'A'))", _sql.remove(0));
             }
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -178,7 +178,7 @@ public class TestTrimFunction {
             if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware() || platform.isHSQL() || platform instanceof FirebirdPlatform) {
                 Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = TRIM(TRAILING 'A' FROM 'AAHELLO WORDAAAAA'))", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = RTRIM('A', 'AAHELLO WORDAAAAA'))", _sql.remove(0));
+                Assert.assertEquals("SELECT STRVAL1 FROM TRIMENTITY WHERE (STRVAL1 = RTRIM('AAHELLO WORDAAAAA', 'A'))", _sql.remove(0));
             }
         } finally {
             if (em.isOpen()) {
@@ -249,7 +249,7 @@ public class TestTrimFunction {
             if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware()) {
                 Assert.assertEquals("SELECT TRIM(LEADING 'A' FROM 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT LTRIM('A', 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
+                Assert.assertEquals("SELECT LTRIM('AAHELLO WORDAAAAA', 'A') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             }
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -268,7 +268,7 @@ public class TestTrimFunction {
             if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware()) {
                 Assert.assertEquals("SELECT TRIM(LEADING 'A' FROM 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT LTRIM('A', 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
+                Assert.assertEquals("SELECT LTRIM('AAHELLO WORDAAAAA', 'A') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             }
         } finally {
             if (em.isOpen()) {
@@ -292,7 +292,7 @@ public class TestTrimFunction {
             if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware() || platform.isHSQL() || platform instanceof FirebirdPlatform) {
                 Assert.assertEquals("SELECT TRIM(TRAILING 'A' FROM 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT RTRIM('A', 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
+                Assert.assertEquals("SELECT RTRIM('AAHELLO WORDAAAAA', 'A') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             }
 
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -311,7 +311,7 @@ public class TestTrimFunction {
             if(platform.isMySQL() || platform.isDB2() || platform.isDerby() || platform.isSymfoware() || platform.isHSQL() || platform instanceof FirebirdPlatform) {
                 Assert.assertEquals("SELECT TRIM(TRAILING 'A' FROM 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             } else {
-                Assert.assertEquals("SELECT RTRIM('A', 'AAHELLO WORDAAAAA') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
+                Assert.assertEquals("SELECT RTRIM('AAHELLO WORDAAAAA', 'A') FROM TRIMENTITY WHERE (STRVAL1 = 'HELLO')", _sql.remove(0));
             }
         } finally {
             if (em.isOpen()) {
