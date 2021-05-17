@@ -1752,10 +1752,6 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator leftTrim2() {
         ExpressionOperator operator = simpleTwoArgumentFunction(LeftTrim2, "LTRIM");
-
-        // Bug 573094
-        int[] indices = { 1, 0 };
-        operator.setArgumentIndices(indices);
         return operator;
     }
 
@@ -2395,10 +2391,6 @@ public class ExpressionOperator implements Serializable {
      */
     public static ExpressionOperator rightTrim2() {
         ExpressionOperator operator = simpleTwoArgumentFunction(RightTrim2, "RTRIM");
-
-        // Bug 573094
-        int[] indices = { 1, 0 };
-        operator.setArgumentIndices(indices);
         return operator;
     }
 
