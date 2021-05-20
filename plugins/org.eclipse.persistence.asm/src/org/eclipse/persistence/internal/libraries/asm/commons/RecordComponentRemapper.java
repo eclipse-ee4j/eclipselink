@@ -74,7 +74,9 @@ public class RecordComponentRemapper extends RecordComponentVisitor {
   public AnnotationVisitor visitAnnotation(final String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitAnnotation(remapper.mapDesc(descriptor), visible);
-    return annotationVisitor == null ? null : createAnnotationRemapper(annotationVisitor);
+    return annotationVisitor == null
+        ? null
+        : createAnnotationRemapper(descriptor, annotationVisitor);
   }
 
   @Override
@@ -82,7 +84,9 @@ public class RecordComponentRemapper extends RecordComponentVisitor {
       final int typeRef, final TypePath typePath, final String descriptor, final boolean visible) {
     AnnotationVisitor annotationVisitor =
         super.visitTypeAnnotation(typeRef, typePath, remapper.mapDesc(descriptor), visible);
-    return annotationVisitor == null ? null : createAnnotationRemapper(annotationVisitor);
+    return annotationVisitor == null
+        ? null
+        : createAnnotationRemapper(descriptor, annotationVisitor);
   }
 
   /**
@@ -91,8 +95,24 @@ public class RecordComponentRemapper extends RecordComponentVisitor {
    *
    * @param annotationVisitor the AnnotationVisitor the remapper must delegate to.
    * @return the newly created remapper.
+   * @deprecated use {@link #createAnnotationRemapper(String, AnnotationVisitor)} instead.
    */
+  @Deprecated
   protected AnnotationVisitor createAnnotationRemapper(final AnnotationVisitor annotationVisitor) {
-    return new AnnotationRemapper(api, annotationVisitor, remapper);
+    return new AnnotationRemapper(api, /* descriptor = */ null, annotationVisitor, remapper);
+  }
+
+  /**
+   * Constructs a new remapper for annotations. The default implementation of this method returns a
+   * new {@link AnnotationRemapper}.
+   *
+   * @param descriptor the descriptor sof the visited annotation.
+   * @param annotationVisitor the AnnotationVisitor the remapper must delegate to.
+   * @return the newly created remapper.
+   */
+  protected AnnotationVisitor createAnnotationRemapper(
+      final String descriptor, final AnnotationVisitor annotationVisitor) {
+    return new AnnotationRemapper(api, descriptor, annotationVisitor, remapper)
+        .orDeprecatedValue(createAnnotationRemapper(annotationVisitor));
   }
 }

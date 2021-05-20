@@ -1091,7 +1091,7 @@ public class InstructionAdapter extends MethodVisitor {
       final String owner, final String name, final String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
       if (isInterface) {
-        throw new IllegalArgumentException("INVOKEVIRTUAL on interfaces require ASM 5");
+        throw new UnsupportedOperationException("INVOKEVIRTUAL on interfaces require ASM 5");
       }
       invokevirtual(owner, name, descriptor);
       return;
@@ -1129,7 +1129,7 @@ public class InstructionAdapter extends MethodVisitor {
       final String owner, final String name, final String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
       if (isInterface) {
-        throw new IllegalArgumentException("INVOKESPECIAL on interfaces require ASM 5");
+        throw new UnsupportedOperationException("INVOKESPECIAL on interfaces require ASM 5");
       }
       invokespecial(owner, name, descriptor);
       return;
@@ -1167,7 +1167,7 @@ public class InstructionAdapter extends MethodVisitor {
       final String owner, final String name, final String descriptor, final boolean isInterface) {
     if (api < Opcodes.ASM5) {
       if (isInterface) {
-        throw new IllegalArgumentException("INVOKESTATIC on interfaces require ASM 5");
+        throw new UnsupportedOperationException("INVOKESTATIC on interfaces require ASM 5");
       }
       invokestatic(owner, name, descriptor);
       return;

@@ -53,7 +53,7 @@ public class ASMifier extends Printer {
   /** The help message shown when command line arguments are incorrect. */
   private static final String USAGE =
       "Prints the ASM code to generate the given class.\n"
-          + "Usage: ASMifier [-debug] <fully qualified class name or class file name>";
+          + "Usage: ASMifier [-nodebug] <fully qualified class name or class file name>";
 
   /** A pseudo access flag used to distinguish class access flags. */
   private static final int ACCESS_CLASS = 0x40000;
@@ -106,6 +106,7 @@ public class ASMifier extends Printer {
     classVersions.put(Opcodes.V14, "V14");
     classVersions.put(Opcodes.V15, "V15");
     classVersions.put(Opcodes.V16, "V16");
+    classVersions.put(Opcodes.V17, "V17");
     CLASS_VERSIONS = Collections.unmodifiableMap(classVersions);
   }
 
@@ -150,7 +151,7 @@ public class ASMifier extends Printer {
   /**
    * Prints the ASM source code to generate the given class to the standard output.
    *
-   * <p>Usage: ASMifier [-debug] &lt;binary class name or class file name&gt;
+   * <p>Usage: ASMifier [-nodebug] &lt;binary class name or class file name&gt;
    *
    * @param args the command line arguments.
    * @throws IOException if the class cannot be found, or if an IOException occurs.
@@ -162,7 +163,7 @@ public class ASMifier extends Printer {
   /**
    * Prints the ASM source code to generate the given class to the given output.
    *
-   * <p>Usage: ASMifier [-debug] &lt;binary class name or class file name&gt;
+   * <p>Usage: ASMifier [-nodebug] &lt;binary class name or class file name&gt;
    *
    * @param args the command line arguments.
    * @param output where to print the result.
@@ -628,9 +629,7 @@ public class ASMifier extends Printer {
 
   @Override
   public void visitRecordComponentEnd() {
-    stringBuilder.setLength(0);
-    stringBuilder.append(name).append(VISIT_END);
-    text.add(stringBuilder.toString());
+    visitMemberEnd();
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -655,9 +654,7 @@ public class ASMifier extends Printer {
 
   @Override
   public void visitFieldEnd() {
-    stringBuilder.setLength(0);
-    stringBuilder.append(name).append(VISIT_END);
-    text.add(stringBuilder.toString());
+    visitMemberEnd();
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -1130,9 +1127,7 @@ public class ASMifier extends Printer {
 
   @Override
   public void visitMethodEnd() {
-    stringBuilder.setLength(0);
-    stringBuilder.append(name).append(VISIT_END);
-    text.add(stringBuilder.toString());
+    visitMemberEnd();
   }
 
   // -----------------------------------------------------------------------------------------------
@@ -1239,6 +1234,13 @@ public class ASMifier extends Printer {
       stringBuilder.append(name).append(".visitAttribute(attribute);\n");
       stringBuilder.append("}\n");
     }
+    text.add(stringBuilder.toString());
+  }
+
+  /** Visits the end of a field, record component or method. */
+  private void visitMemberEnd() {
+    stringBuilder.setLength(0);
+    stringBuilder.append(name).append(VISIT_END);
     text.add(stringBuilder.toString());
   }
 

@@ -49,7 +49,7 @@ public class SignatureRemapper extends SignatureVisitor {
    * Constructs a new {@link SignatureRemapper}. <i>Subclasses must not use this constructor</i>.
    * Instead, they must use the {@link #SignatureRemapper(int,SignatureVisitor,Remapper)} version.
    *
-   * @param signatureVisitor the signature visitor this remapper must deleted to.
+   * @param signatureVisitor the signature visitor this remapper must delegate to.
    * @param remapper the remapper to use to remap the types in the visited signature.
    */
   public SignatureRemapper(final SignatureVisitor signatureVisitor, final Remapper remapper) {
@@ -63,7 +63,7 @@ public class SignatureRemapper extends SignatureVisitor {
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM4}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM5},{@link
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM6}, {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM7}, {@link
    *     org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM8} or {@link org.eclipse.persistence.internal.libraries.asm.Opcodes#ASM9}.
-   * @param signatureVisitor the signature visitor this remapper must deleted to.
+   * @param signatureVisitor the signature visitor this remapper must delegate to.
    * @param remapper the remapper to use to remap the types in the visited signature.
    */
   protected SignatureRemapper(
