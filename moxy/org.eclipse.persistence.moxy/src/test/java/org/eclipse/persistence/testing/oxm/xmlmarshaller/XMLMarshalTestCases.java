@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,9 +30,11 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 
 import org.eclipse.persistence.exceptions.XMLMarshalException;
+import org.eclipse.persistence.oxm.CharacterEscapeHandler;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLDescriptor;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.oxm.record.FormattedOutputStreamRecord;
 import org.eclipse.persistence.platform.xml.SAXDocumentBuilder;
 import org.eclipse.persistence.testing.oxm.OXTestCase;
 import org.w3c.dom.Attr;
@@ -436,6 +438,24 @@ public class XMLMarshalTestCases extends OXTestCase {
             marshaller.marshal(emailAddress, writer);
             this.assertEquals("<user-id>user</user-id><domain>domain</domain>", writer.toString());
         }
+
+        /**
+         * Test for custom CharacterEscapeHandler and FormattedOutputStreamRecord with custom ByteArrayOutputStream output.
+         */
+        public void testMarshalWithCharacterEscapeHandlerToFormattedOutputStreamRecord() {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            FormattedOutputStreamRecord record = new FormattedOutputStreamRecord();
+            record.setOutputStream(byteArrayOutputStream);
+            EmailAddress emailAddress = new EmailAddress();
+            emailAddress.setDomain("%domain%%%");
+            emailAddress.setUserID("%user%%%");
+            marshaller.setFormattedOutput(false);
+            marshaller.setFragment(true);
+            CharacterEscapeHandler characterEscapeHandler = new CustomCharacterEscapeHandler();
+            marshaller.setCharacterEscapeHandler(characterEscapeHandler);
+            marshaller.marshal(emailAddress, record);
+            this.assertEquals("<user-id>*user***</user-id><domain>*domain***</domain>", removeWhiteSpaceFromString(byteArrayOutputStream.toString()));
+    }
 
         //Null Test Cases=========================================================================================
         public void testMarshalObjectToNullContentHandler() {
