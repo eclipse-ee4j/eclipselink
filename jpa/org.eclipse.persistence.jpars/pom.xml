@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    Copyright (c) 2019, 2020 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
 
     This program and the accompanying materials are made available under the
     terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,10 +32,10 @@
     <properties>
         <!--Properties used for test resources filtering/replacement-->
         <!--DB connection properties-->
-        <DB_USER>${db.user}</DB_USER>
-        <DB_PWD>${db.pwd}</DB_PWD>
-        <DB_DRIVER>${db.driver}</DB_DRIVER>
-        <DB_URL>${db.url}</DB_URL>
+        <db_user>${db.user}</db_user>
+        <db_pwd>${db.pwd}</db_pwd>
+        <db_driver>${db.driver}</db_driver>
+        <db_url>${db.url}</db_url>
 
         <test-skip-jpa-jpars>${skipTests}</test-skip-jpa-jpars>
     </properties>
