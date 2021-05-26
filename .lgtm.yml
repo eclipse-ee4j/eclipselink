@@ -17,5 +17,8 @@ path_classifiers:
 extraction:
   java:
     index:
-      build_command: "mvn -DskipTests clean package"
+      java_version: 11
+      maven:
+        version: 3.6.3
+      build_command: "mvn -DskipTests -Denforcer.skip clean package"
 
