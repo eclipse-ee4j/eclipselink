@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 1998, 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v1.0 and Eclipse Distribution License v. 1.0
  * which accompanies this distribution.
@@ -63,6 +63,7 @@ import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BIGDECIMAL;
 import static org.eclipse.persistence.internal.helper.ClassConstants.BOOLEAN;
 import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlDate_Class;
+import static org.eclipse.persistence.internal.helper.ClassConstants.JavaSqlTimestamp_Class;
 import static org.eclipse.persistence.internal.helper.ClassConstants.STRING;
 import static org.eclipse.persistence.internal.xr.QNameTransformer.SCHEMA_QNAMES;
 import static org.eclipse.persistence.internal.xr.Util.OPAQUE;
@@ -666,6 +667,9 @@ public class Util {
             }
             if (DATE_STR.equals(typeName)) {
                 return JavaSqlDate_Class;
+            }
+            if (TIMESTAMP_STR.equals(typeName)) {
+                return JavaSqlTimestamp_Class;
             }
         }
         return STRING;
