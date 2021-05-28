@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2018 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -791,6 +791,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
                 rcm.propagateCommand(command);
             }
         }
+        if (session.getProject().allowExtendedCacheLogging()) {
+            session.log(SessionLog.FINEST, SessionLog.CACHE, "cache_item_invalidation", new Object[] {theClass, primaryKey, Thread.currentThread().getId(), Thread.currentThread().getName()});
+        }
     }
 
     /**
@@ -890,6 +893,9 @@ public class IdentityMapAccessor implements org.eclipse.persistence.sessions.Ide
             }
         }
         invalidateQueryCache(myClass);
+        if (session.getProject().allowExtendedCacheLogging()) {
+            session.log(SessionLog.FINEST, SessionLog.CACHE, "cache_class_invalidation", new Object[] {myClass, Thread.currentThread().getId(), Thread.currentThread().getName()});
+        }
     }
 
     /**
