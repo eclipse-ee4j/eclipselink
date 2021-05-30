@@ -71,7 +71,7 @@ public enum LogCategory {
     SERVER(     (byte)0x13, SessionLog.SERVER),
     SQL(        (byte)0x14, SessionLog.SQL),
     TRANSACTION((byte)0x15, SessionLog.TRANSACTION),
-    WEAVER(     (byte)0x16, SessionLog.WEAVER);
+    WEAVER(     (byte)0x16, SessionLog.WEAVER),
     THREAD(     (byte)0x17, SessionLog.THREAD);
 
     /** Logging categories enumeration length. */
