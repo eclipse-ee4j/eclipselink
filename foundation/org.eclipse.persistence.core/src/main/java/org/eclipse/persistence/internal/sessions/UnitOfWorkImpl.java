@@ -4048,6 +4048,7 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
         }
         CacheKey cacheKey = null;
         Object objectToRegisterId = null;
+        Thread currentThread = Thread.currentThread();
         if (project.allowExtendedCacheLogging()) {
             //Not null if objectToRegister exist in cache
             Session rootSession = this.getRootSession(null).getParent() == null ? this.getRootSession(null) : this.getRootSession(null).getParent();
@@ -4058,20 +4059,13 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
             } else {
                 log(SessionLog.FINEST, SessionLog.CACHE, "cache_miss", new Object[] {objectToRegister.getClass(), objectToRegisterId});
             }
-        }
-        if (project.allowExtendedThreadLogging()) {
-            Thread currentThread = Thread.currentThread();
-            if (cacheKey == null) {
-                cacheKey = ((org.eclipse.persistence.internal.sessions.IdentityMapAccessor) this.getRootSession(null).getParent().getIdentityMapAccessor()).getCacheKeyForObject(objectToRegister);
-            }
-            if (objectToRegisterId == null) {
-                objectToRegisterId = this.getId(objectToRegister);
-            }
             if (cacheKey != null && currentThread.hashCode() != cacheKey.CREATION_THREAD_HASHCODE) {
-                log(SessionLog.SEVERE, SessionLog.THREAD, "cache_thread_info", new Object[]{objectToRegister.getClass(), objectToRegisterId,
+                log(SessionLog.FINEST, SessionLog.CACHE, "cache_thread_info", new Object[]{objectToRegister.getClass(), objectToRegisterId,
                         cacheKey.CREATION_THREAD_ID, cacheKey.CREATION_THREAD_NAME,
                         currentThread.getId(), currentThread.getName()});
             }
+        }
+        if (project.allowExtendedThreadLogging()) {
             if (this.CREATION_THREAD_HASHCODE != currentThread.hashCode()) {
                 log(SessionLog.SEVERE, SessionLog.THREAD, "unit_of_work_thread_info", new Object[]{this.getName(),
                         this.CREATION_THREAD_ID, this.CREATION_THREAD_NAME,
