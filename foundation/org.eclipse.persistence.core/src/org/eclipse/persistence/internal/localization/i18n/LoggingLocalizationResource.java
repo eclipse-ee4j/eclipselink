@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2014, 2020 IBM Corporation and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -101,7 +101,9 @@ public class LoggingLocalizationResource extends ListResourceBundle {
         { "register_new_for_persist", "PERSIST operation called on: {0}." },
         { "all_registered_clones", "All Registered Clones:" },
         { "new_objects", "New Objects:" },
-
+        { "unit_of_work_thread_info", "Current unit of work in session ({0}) was created by another thread (id: {1} name: {2}), than current thread (id: {3} name: {4})" },
+        { "unit_of_work_thread_info_thread_dump", "Creation thread (id: {0} name: {1}) stack trace:\n{2}\n\n" +
+                "Current thread (id: {3} name: {4}) stack trace:\n{5}" },
         { "failed_to_propogate_to", "CacheSynchronization : Failed to propagate to {0}.  {1}" },
         { "exception_thrown_when_attempting_to_shutdown_cache_synch", "Exception thrown when attempting to shutdown cache synch: {0}" },
         { "corrupted_session_announcement", "SessionID: {0}  Discovery manager received corrupted session announcement - ignoring." },

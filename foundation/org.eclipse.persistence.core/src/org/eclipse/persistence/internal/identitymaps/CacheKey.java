@@ -31,6 +31,11 @@ import org.eclipse.persistence.sessions.Record;
  */
 public class CacheKey extends ConcurrencyManager implements Cloneable {
 
+    //These constants are used in extended cache logging to compare cache item creation thread and thread which picking item from the cache
+    public final long CREATION_THREAD_ID = Thread.currentThread().getId();
+    public final String CREATION_THREAD_NAME = String.copyValueOf(Thread.currentThread().getName().toCharArray());
+    public final long CREATION_THREAD_HASHCODE = Thread.currentThread().hashCode();
+
     /** The key holds the vector of primary key values for the object. */
     protected Object key;
 

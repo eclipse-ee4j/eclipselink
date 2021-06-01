@@ -1127,7 +1127,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 session.load(domainObject, group, query.getDescriptor(), false);
             }
         }
-
+        if (session.getProject().allowExtendedCacheLogging() && cacheKey != null && cacheKey.getObject() != null) {
+            session.log(SessionLog.FINEST, SessionLog.CACHE, "cache_item_creation", new Object[] {domainObject.getClass(), primaryKey, Thread.currentThread().getId(), Thread.currentThread().getName()});
+        }
         if (returnCacheKey) {
             return cacheKey;
         } else {
@@ -1289,7 +1291,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
         if (!cacheHit) {
             concreteDescriptor.getObjectBuilder().instantiateEagerMappings(protectedObject, session);
         }
-
+        if (session.getProject().allowExtendedCacheLogging() && cacheKey != null && cacheKey.getObject() != null) {
+            session.log(SessionLog.FINEST, SessionLog.CACHE, "cache_item_creation", new Object[] {protectedObject.getClass(), primaryKey, Thread.currentThread().getId(), Thread.currentThread().getName()});
+        }
         if (returnCacheKey) {
             return cacheKey;
         } else {
@@ -4369,6 +4373,9 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
                 cacheKey.setReadTime(query.getExecutionTime());
                 concreteDescriptor.getObjectBuilder().buildAttributesIntoObject(domainObject, cacheKey, databaseRow, query, joinManager, fetchGroup, true, session);
             }
+        }
+        if (session.getProject().allowExtendedCacheLogging() && cacheKey != null && cacheKey.getObject() != null) {
+            session.log(SessionLog.FINEST, SessionLog.CACHE, "cache_item_refresh", new Object[] {domainObject.getClass(), cacheKey.getKey(), Thread.currentThread().getId(), Thread.currentThread().getName()});
         }
         return cacheHit;
     }

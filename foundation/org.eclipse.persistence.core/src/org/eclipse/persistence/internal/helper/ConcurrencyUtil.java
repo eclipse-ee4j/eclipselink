@@ -891,7 +891,7 @@ public class ConcurrencyUtil {
      *
      * @return get the stack trace of the current thread.
      */
-    private String enrichGenerateThreadDumpForCurrentThread() {
+    public String enrichGenerateThreadDumpForCurrentThread() {
         final Thread currentThread = Thread.currentThread();
         final long currentThreadId = currentThread.getId();
 
