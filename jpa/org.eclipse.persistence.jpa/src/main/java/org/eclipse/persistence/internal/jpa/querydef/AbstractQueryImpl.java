@@ -112,13 +112,13 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * @return the modified query
      */
     @Override
-    public AbstractQuery<T> having(Expression<Boolean> restriction){
-        if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()){
+    public AbstractQuery<T> having(Expression<Boolean> restriction) {
+        findRootAndParameters(restriction);
+        if (((InternalExpression)restriction).isCompoundExpression() || ((InternalExpression)restriction).isPredicate()) {
             this.havingClause = (Predicate) restriction;
-        }else{
+        } else {
             this.havingClause = queryBuilder.isTrue(restriction);
         }
-
         return this;
     }
 
@@ -133,12 +133,13 @@ public abstract class AbstractQueryImpl<T> extends CommonAbstractCriteriaImpl<T>
      * @return the modified query
      */
     @Override
-    public AbstractQuery<T> having(Predicate... restrictions){
+    public AbstractQuery<T> having(Predicate... restrictions) {
         if (restrictions != null && restrictions.length > 0) {
             Predicate conjunction = this.queryBuilder.conjunction();
             for (Predicate predicate : restrictions) {
                 conjunction = this.queryBuilder.and(conjunction, predicate);
             }
+            findRootAndParameters(conjunction);
             this.havingClause = conjunction;
         }
         return this;
