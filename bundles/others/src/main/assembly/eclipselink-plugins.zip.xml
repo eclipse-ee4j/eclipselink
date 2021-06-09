@@ -26,7 +26,6 @@
     </componentDescriptors>
     <dependencySets>
         <dependencySet>
-            <outputFileNameMapping>${artifact.artifactId}_${release.version}.${build.qualifier}.${artifact.extension}</outputFileNameMapping>
             <includes>
                 <include>org.eclipse.persistence:*:*:*:${project.version}</include>
             </includes>
@@ -39,7 +38,6 @@
             <scope>test</scope>
         </dependencySet>
         <dependencySet>
-            <outputFileNameMapping>${artifact.artifactId}_${artifact.version}.${artifact.extension}</outputFileNameMapping>
             <includes>
                 <include>org.eclipse.persistence:org.eclipse.persistence.asm:*</include>
                 <include>org.eclipse.persistence:org.eclipse.persistence.oracleddlparser:*</include>
@@ -47,7 +45,6 @@
             </includes>
         </dependencySet>
         <dependencySet>
-            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
             <excludes>
                 <exclude>com.sun:tools</exclude>
                 <exclude>junit:*</exclude>
@@ -72,7 +69,6 @@
             <scope>test</scope>
         </dependencySet>
         <dependencySet>
-            <outputFileNameMapping>jakarta.inject.jar</outputFileNameMapping>
             <includes>
                 <include>jakarta.inject:jakarta.inject</include>
             </includes>
