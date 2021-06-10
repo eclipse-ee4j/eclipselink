@@ -1200,6 +1200,45 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--Initialize build.date and build.time buildNumber properties. Used to generate version.properties in org.eclipse.persistence:eclipselink module and artifacts in the bundles-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <configuration>
+                    <revisionOnScmFailure>false</revisionOnScmFailure>
+                    <shortRevisionLength>10</shortRevisionLength>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>build.date</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                        <configuration>
+                            <timestampFormat>yyyyMMdd</timestampFormat>
+                            <timestampPropertyName>build.date</timestampPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build.time</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                        <configuration>
+                            <timestampFormat>HHmm</timestampFormat>
+                            <timestampPropertyName>build.time</timestampPropertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>create</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -1293,7 +1332,10 @@
                     <niceManifest>true</niceManifest>
                     <instructions>
                         <_noextraheaders>true</_noextraheaders>
-                        <Bundle-Version>${release.version}</Bundle-Version>
+                        <Implementation-Version>${project.version}</Implementation-Version>
+                        <Implementation-SCM-Revision>${buildNumber}</Implementation-SCM-Revision>
+                        <Implementation-SCM-Branch>${scmBranch}</Implementation-SCM-Branch>
+                        <Bundle-Version>${release.version}.v${build.date}${build.time}</Bundle-Version>
                         <Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
                         <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
                     </instructions>
