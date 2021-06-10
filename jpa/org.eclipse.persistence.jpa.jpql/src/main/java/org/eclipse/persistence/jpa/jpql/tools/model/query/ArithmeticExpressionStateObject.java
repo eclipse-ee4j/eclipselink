@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ArithmeticTermBNF;
  * This expression represents an arithmetic expression, which means the first and second expressions
  * are aggregated with an arithmetic sign.
  *
- * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression &lt;identifier&gt; arithmetic_term</code><p></div>
+ * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression &lt;identifier&gt; arithmetic_term</code><br/></div>
  *
  * @see AdditionExpressionStateObject
  * @see DivisionExpressionStateObject

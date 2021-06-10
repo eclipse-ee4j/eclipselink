@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -359,7 +359,7 @@ public final class InExpression extends AbstractExpression {
     /**
      * Determines whether what was parsed after the <code>IN</code> identifier is a single input
      * parameter:
-     * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><p></div>
+     * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><br/></div>
      *
      * @return <code>true</code> if what is following the <code>IN</code> identifier is a single
      * input parameter (without the left or right parenthesis); <code>false</code> otherwise

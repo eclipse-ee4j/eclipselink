@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                      (simple_arithmetic_expression) |
  *                                                      input_parameter |
  *                                                      functions_returning_numerics |
- *                                                      aggregate_expression</code><p></div>
+ *                                                      aggregate_expression</code><br/></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
@@ -33,7 +33,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                      input_parameter |
  *                                                      functions_returning_numerics |
  *                                                      aggregate_expression |
- *                                                      case_expression</code><p></div>
+ *                                                      case_expression</code><br/></div>
  *
  * JPA 2.1:
  * <div><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
@@ -44,7 +44,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                      aggregate_expression |
  *                                                      case_expression |
  *                                                      function_invocation |
- *                                                      (subquery)</code><p></div>
+ *                                                      (subquery)</code><br/></div>
  *
  * @version 2.5
  * @since 2.3

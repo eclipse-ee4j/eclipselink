@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -95,7 +95,7 @@ public abstract class AbstractStateObject implements StateObject {
      * <p>
      * or
      *
-     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></div>
+     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><br/></div>
      *
      * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
      * @return <code>true</code> if the call was successfully executed; <code>false</code> otherwise
@@ -142,7 +142,7 @@ public abstract class AbstractStateObject implements StateObject {
      * <p>
      * or
      *
-     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></div>
+     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><br/></div>
      *
      * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
      * @param type The type found in the hierarchy of the given {@link StateObjectVisitor} that will

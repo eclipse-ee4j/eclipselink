@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,12 +28,12 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * execution of a query. A <code><b>JOIN</b></code> is specified over an entity and its related
  * entities.
  *
- * <div><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code><p></div>
+ * <div><b>BNF:</b> <code>join ::= join_spec join_association_path_expression [AS] identification_variable</code><br/></div>
  * <p>
  * A <b>JOIN FETCH</b> enables the fetching of an association as a side effect of the execution of
  * a query. A <b>JOIN FETCH</b> is specified over an entity and its related entities.
  *
- * <div><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code><p></div>
+ * <div><b>BNF:</b> <code>fetch_join ::= join_spec FETCH join_association_path_expression</code><br/></div>
  *
  * @see Join
  *

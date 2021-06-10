@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a range variable declaration expression used by the <b>DELETE</b> clause, which
  * accepts collection and aggregate expression, which is used by invalid queries.
  *
- * <div><b>BNF:</b> <code>range_variable_declaration ::= entity_name [AS] identification_variable</code><p></div>
+ * <div><b>BNF:</b> <code>range_variable_declaration ::= entity_name [AS] identification_variable</code><br/></div>
  *
  * @version 2.4
  * @since 2.3

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for a range variable declaration expression.
- * <p>
+ * <br/>
  * JPA:
  * <div><b>BNF:</b> <code>range_variable_declaration ::= entity_name [AS] identification_variable</code></div>
- * <p>
+ * <br/>
  * EclipseLink 2.4:
  * <div><b>BNF:</b> <code>range_variable_declaration ::= { range_variable_declaration | (subquery) } [AS] identification_variable</code></div>
- * <p>
+ * <br/>
  *
  * @version 2.4
  * @since 2.3

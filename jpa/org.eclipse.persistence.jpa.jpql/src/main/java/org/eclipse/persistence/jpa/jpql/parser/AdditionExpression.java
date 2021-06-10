@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * One of the four binary operators. An addition is a mathematical operation representing the
  * combination of two operands together.
  *
- * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression + arithmetic_term</code><p></div>
+ * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression + arithmetic_term</code><br/></div>
  *
  * @version 2.4
  * @since 2.3

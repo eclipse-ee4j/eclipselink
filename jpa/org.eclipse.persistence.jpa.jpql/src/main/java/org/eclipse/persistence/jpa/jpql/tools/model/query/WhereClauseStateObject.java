@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * select objects or values that satisfy the expression. The <code><b>WHERE</b></code> clause
  * restricts the result of a select statement or the scope of an update or delete operation.
  *
- * <div><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code><p></div>
+ * <div><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code><br/></div>
  *
  * @see WhereClause
  *

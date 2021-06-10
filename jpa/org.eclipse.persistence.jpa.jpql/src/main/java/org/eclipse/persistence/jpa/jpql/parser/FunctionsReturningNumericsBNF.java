@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                               LOCATE(string_primary, string_primary[, simple_arithmetic_expression]) |
  *                                                               ABS(simple_arithmetic_expression) | SQRT(simple_arithmetic_expression) |
  *                                                               MOD(simple_arithmetic_expression, simple_arithmetic_expression) |
- *                                                               SIZE(collection_valued_path_expression)</code><p></div>
+ *                                                               SIZE(collection_valued_path_expression)</code><br/></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>functions_returning_numerics::= LENGTH(string_primary) |
@@ -31,7 +31,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                               ABS(simple_arithmetic_expression) | SQRT(simple_arithmetic_expression) |
  *                                                               MOD(simple_arithmetic_expression, simple_arithmetic_expression) |
  *                                                               SIZE(collection_valued_path_expression) |
- *                                                               INDEX(identification_variable)</code><p></div>
+ *                                                               INDEX(identification_variable)</code><br/></div>
  *
  * @version 2.4
  * @since 2.3

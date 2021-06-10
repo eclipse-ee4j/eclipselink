@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpressionFactory.Paramet
  * <p>
  * New to JPA 2.1.
  *
- * <div><b>BNF:</b> <code>func_expression ::= &lt;identifier&gt;('function_name' {, func_item}*)</code><p></div>
+ * <div><b>BNF:</b> <code>func_expression ::= &lt;identifier&gt;('function_name' {, func_item}*)</code><br/></div>
  *
  * @version 2.5
  * @since 2.4

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div><b>BNF:</b> <code>datetime_primary ::= state_field_path_expression |
  *                                                    input_parameter |
  *                                                    functions_returning_datetime |
- *                                                    aggregate_expression</code><p></div>
+ *                                                    aggregate_expression</code><br/></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>datetime_primary ::= state_field_path_expression |
@@ -30,7 +30,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                    functions_returning_datetime |
  *                                                    aggregate_expression |
  *                                                    case_expression |
- *                                                    date_time_timestamp_literal</code><p></div>
+ *                                                    date_time_timestamp_literal</code><br/></div>
  *
  * @version 2.4
  * @since 2.3

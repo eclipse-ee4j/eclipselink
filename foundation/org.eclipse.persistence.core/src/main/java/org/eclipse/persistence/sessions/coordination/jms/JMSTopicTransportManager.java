@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,13 +23,13 @@ import org.eclipse.persistence.internal.sessions.coordination.jms.JMSTopicRemote
 import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 
 /**
- * <p>
+ * <br/>
  * <b>Purpose</b>: Provide a transport implementation for the Remote Command Module (RCM) that both publishes
  * and subscribes to a JMS topic.
- * <p>
+ * <br/>
  * <b>Description</b>: This class manages two connections to the same known JMS Topic:
  * external connection for publishing, local connection for receiving messages.
- * <p>
+ * <br/>
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */

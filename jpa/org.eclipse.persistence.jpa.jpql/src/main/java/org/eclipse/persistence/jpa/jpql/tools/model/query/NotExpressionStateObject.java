@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NotExpression;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
- * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><br/></div>
  *
  * @see NotExpression
  *

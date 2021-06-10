@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 /**
  * This expression wraps a sub-expression within parenthesis.
  *
- * <div><b>BNF:</b> <code>expression ::= (sub_expression)</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= (sub_expression)</code><br/></div>
  *
  * @version 2.5
  * @since 2.3

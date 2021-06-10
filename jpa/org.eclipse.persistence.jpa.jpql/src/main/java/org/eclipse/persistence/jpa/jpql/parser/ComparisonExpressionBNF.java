@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,7 +25,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                         datetime_expression comparison_operator {datetime_expression | all_or_any_expression} |
  *                                                         entity_expression { = | {@literal <>} } {entity_expression | all_or_any_expression} |
  *                                                         arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression}</code>
- * <p></div>
+ * <br/></div>
  * JPA 2.0, 2.1:
  * <div><b>BNF:</b> <code>comparison_expression ::= string_expression comparison_operator {string_expression | all_or_any_expression} |
  *                                                         boolean_expression { = | {@literal <>} } {boolean_expression | all_or_any_expression} |
@@ -34,7 +34,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                         entity_expression { = | {@literal <>} } {entity_expression | all_or_any_expression} |
  *                                                         arithmetic_expression comparison_operator {arithmetic_expression | all_or_any_expression} |
  *                                                         entity_type_expression { = | {@literal <>} } entity_type_expression}</code>
- * <p></div>
+ * <br/></div>
  *
  * @version 2.5
  * @since 2.3

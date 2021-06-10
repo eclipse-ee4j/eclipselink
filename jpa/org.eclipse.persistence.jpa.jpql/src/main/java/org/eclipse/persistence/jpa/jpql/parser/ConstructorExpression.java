@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * more Java instances. The specified class is not required to be an entity or to be mapped to the
  * database. The constructor name must be fully qualified.
  *
- * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><p></div>
+ * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><br/></div>
  *
  * @version 2.5
  * @since 2.3

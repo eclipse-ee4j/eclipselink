@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,23 +25,23 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 /**
- * <p><b>Purpose</b>:
+ * <br/><b>Purpose</b>:
  * Allows a class to be a <code>QueryRedirector</code> without implementing
  * {@link QueryRedirector QueryRedirector}.
  *
- * <p><b>Description</b>:
+ * <br/><b>Description</b>:
  * Normally to define a Redirector a Class must implement <code>QueryRedirector</code> and
  * the required {@link QueryRedirector#invokeQuery QueryRedirector.invokeQuery(DatabaseQuery, Record, Session)}.
- * <p>
+ * <br/>
  * To maintain transparency it is possible to instead only define a static
  * method that takes the same arguments as <code>invokeQuery</code>.
- * <p>
+ * <br/>
  * An instance of <code>MethodBaseQueryRedirector</code> can be constructed, taking the name of that static
  * method and the <code>Class</code> in which it is defined as parameters.
- * <p>
+ * <br/>
  * Whenever <code>invokeQuery</code> is called on this instance reflection will
  * automatically be used to invoke the custom method instead.
- * <p>
+ * <br/>
  * <b>Advantages</b>:
  * <ul>
  * <li> The Redirector class and method name can be specified dynamically.
@@ -56,7 +56,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * <li> An extra step is added as the real <code>invokeQuery</code> method is called
  * dynamically.
  * </ul>
- * <p><b>Example</b>:
+ * <br/><b>Example</b>:
  * <BLOCKQUOTE><PRE>
  * // First create a named query, define a redirector for it, and add the query
  * // to the query manager.
@@ -82,7 +82,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * ((ReadObjectQuery) query).setSelectionObject(arguments.get("employee"));
  * return session.executeQuery(query);
  * }
- * }</PRE></BLOCKQUOTE><p>
+ * }</PRE></BLOCKQUOTE><br/>
  *
  * @see QueryRedirector
  * @author James Sutherland

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,13 +17,13 @@ package org.eclipse.persistence.sessions.coordination;
 import org.eclipse.persistence.internal.sessions.*;
 
 /**
- * <p>
+ * <br/>
  * <b>Purpose</b>: Provide a remote command implementation for remote cache
  * merges of changes.
- * <p>
+ * <br/>
  * <b>Description</b>: This command provides the implementation for cache
  * synchronization using RCM.
- * <P>
+ * <br/>
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  *
