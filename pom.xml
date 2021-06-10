@@ -1292,7 +1292,8 @@
                 <configuration>
                     <niceManifest>true</niceManifest>
                     <instructions>
-                         <_noextraheaders>true</_noextraheaders>
+                        <_noextraheaders>true</_noextraheaders>
+                        <Bundle-Version>${release.version}</Bundle-Version>
                         <Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
                         <HK2-Bundle-Name>${project.groupId}:${project.artifactId}</HK2-Bundle-Name>
                     </instructions>
