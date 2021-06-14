@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div><b>BNF:</b> <code>constructor_item ::= single_valued_path_expression |
  *                                                    scalar_expression |
  *                                                    aggregate_expression |
- *                                                    identification_variable</code><br/></div>
+ *                                                    identification_variable</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

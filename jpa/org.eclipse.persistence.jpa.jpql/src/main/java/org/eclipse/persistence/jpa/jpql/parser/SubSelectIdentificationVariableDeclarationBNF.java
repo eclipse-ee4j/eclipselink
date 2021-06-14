@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div><b>BNF:</b> <code>subselect_identification_variable_declaration ::= identification_variable_declaration |
  * derived_path_expression [AS] identification_variable {join}* |
- * derived_collection_member_declaration</code><br/></div>
+ * derived_collection_member_declaration</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

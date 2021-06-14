@@ -22,7 +22,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div><b>BNF:</b> <code>datetime_primary ::= state_field_path_expression |
  *                                                    input_parameter |
  *                                                    functions_returning_datetime |
- *                                                    aggregate_expression</code><br/></div>
+ *                                                    aggregate_expression</code><p></p></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>datetime_primary ::= state_field_path_expression |
@@ -30,7 +30,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                    functions_returning_datetime |
  *                                                    aggregate_expression |
  *                                                    case_expression |
- *                                                    date_time_timestamp_literal</code><br/></div>
+ *                                                    date_time_timestamp_literal</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

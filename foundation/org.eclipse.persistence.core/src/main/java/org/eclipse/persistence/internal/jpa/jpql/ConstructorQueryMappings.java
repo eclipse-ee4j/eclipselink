@@ -137,8 +137,8 @@ public final class ConstructorQueryMappings {
     /**
      * This visitor visits the constructor items and adds the attribute type mapped to the name.
      * <p/>
-     * Example:<br/>
-     * e.name -> "name" : String<br/>
+     * Example:<p></p>
+     * e.name -> "name" : String<p></p>
      * e.address.zipcode -> "zipcode" : int
      */
     private class ConstructorItemVisitor extends AbstractEclipseLinkExpressionVisitor {

@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <code><b>CONNECT BY</b></code> specifies the relationship between parent rows and child rows of
  * the hierarchy.
  *
- * <div><b>BNF:</b> <code>hierarchical_query_clause ::= [start_with_clause] connectby_clause [order_siblings_by_clause]</code><br/></div>
+ * <div><b>BNF:</b> <code>hierarchical_query_clause ::= [start_with_clause] connectby_clause [order_siblings_by_clause]</code><p></p></div>
  *
  * @see StartWithClause
  * @see ConnectByClause

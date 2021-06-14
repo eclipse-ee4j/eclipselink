@@ -23,7 +23,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     string_primary |
  *                                                     enum_primary |
  *                                                     datetime_primary |
- *                                                     boolean_primary</code><br/></div>
+ *                                                     boolean_primary</code><p></p></div>
  *
  * JPA 2.0
  * <div><b>BNF:</b> <code>scalar_expression ::= simple_arithmetic_expression |
@@ -32,7 +32,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     datetime_primary |
  *                                                     boolean_primary |
  *                                                     case_expression |
- *                                                     entity_type_expression</code><br/></div>
+ *                                                     entity_type_expression</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

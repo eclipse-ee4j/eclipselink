@@ -47,12 +47,12 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  *  Test results: http://wiki.eclipse.org/EclipseLink/Development/DatabasePlatform/SymfowarePlatform/TestResults <br>
  *  Contributed by: Fujitsu Ltd.<br>
  *  Contributed under bug: 288715
- *  <br/>
+ *  <p></p>
  *
  *  Developed on Symfoware Server V10<br>
  *  Initial SRG Passes on Symfoware Server V10<br>
  *
- *  <br/><b>Feature Testing</b><br>
+ *  <p></p><b>Feature Testing</b><br>
  * ----------------------
  * <ul>
  * <li> DDL Generation - Succeeds
@@ -71,7 +71,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> Auto Detection - Succeeds
  * </ul>
  *
- * <br/><b>Limitations</b><br>
+ * <p></p><b>Limitations</b><br>
  * ----------------
  * <ul>
  * <li> Reserved SQL keywords cannot be used as table, column or sequence names. Use a different name, or enclose the name in double quotes. For example: @Column(name="\"LANGUAGE\"")
@@ -99,7 +99,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> A subquery cannot be specified on both sides of a comparison predicate or a quantified predicate. (bug 378313)
  * <li> A base table name to be updated cannot be identical to table name in from clause in query or subquery specification (bug 381302)
  * </ul>
- * <b>Additional Notes</b><br/>
+ * <b>Additional Notes</b><p></p>
  * ----------------
  * <ul>
  * <li> When using DDL generation, indices are automatically generated for primary and unique keys.
@@ -107,7 +107,7 @@ import org.eclipse.persistence.queries.ValueReadQuery;
  * <li> When input parameters are used as arguments to the TRIM function, they are substituted with their values before the SQL statement is sent to the JDBC driver.
  * <li> When an input parameter is used as argument to the UPPER, LOWER or LENGTH functions, it is substituted with its value before the SQL statement is sent to the JDBC driver.
  * </ul>
- * <br/>
+ * <p></p>
  *
  *  @author Dies Koper
  *  @author Wu Jie

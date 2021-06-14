@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  * entity abstract schema type, more than one identification variable ranging over the abstract
  * schema type is needed in the <code><b>FROM</b></code> clause.
  *
- * <div><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code><br/></div>
+ * <div><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code><p></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration RangeVariableDeclaration
  *

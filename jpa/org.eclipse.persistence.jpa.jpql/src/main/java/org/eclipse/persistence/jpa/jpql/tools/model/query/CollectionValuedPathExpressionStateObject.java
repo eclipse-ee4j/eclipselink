@@ -28,7 +28,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
  * collection-valued field is a collection of values of the abstract schema type of the related
  * entity or element type.
  *
- * <div><b>BNF:</b> <code>collection_valued_path_expression ::= general_identification_variable.{single_valued_object_field.}*collection_valued_field</code><br/></div>
+ * <div><b>BNF:</b> <code>collection_valued_path_expression ::= general_identification_variable.{single_valued_object_field.}*collection_valued_field</code><p></p></div>
  *
  * @see CollectionValuedPathExpression
  *

@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.parser.FunctionExpressionFactory.Paramet
  * <p>
  * New to JPA 2.1.
  *
- * <div><b>BNF:</b> <code>func_expression ::= &lt;identifier&gt;('function_name' {, func_item}*)</code><br/></div>
+ * <div><b>BNF:</b> <code>func_expression ::= &lt;identifier&gt;('function_name' {, func_item}*)</code><p></p></div>
  *
  * @version 2.5
  * @since 2.4

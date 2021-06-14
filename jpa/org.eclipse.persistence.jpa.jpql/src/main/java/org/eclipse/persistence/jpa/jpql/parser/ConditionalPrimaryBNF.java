@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a conditional primary expression.
  *
- * <div><b>BNF:</b> <code>conditional_primary ::= simple_cond_expression | (conditional_expression)</code><br/></div>
+ * <div><b>BNF:</b> <code>conditional_primary ::= simple_cond_expression | (conditional_expression)</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

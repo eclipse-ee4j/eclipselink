@@ -24,7 +24,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                      (simple_arithmetic_expression) |
  *                                                      input_parameter |
  *                                                      functions_returning_numerics |
- *                                                      aggregate_expression</code><br/></div>
+ *                                                      aggregate_expression</code><p></p></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
@@ -33,7 +33,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                      input_parameter |
  *                                                      functions_returning_numerics |
  *                                                      aggregate_expression |
- *                                                      case_expression</code><br/></div>
+ *                                                      case_expression</code><p></p></div>
  *
  * JPA 2.1:
  * <div><b>BNF:</b> <code>arithmetic_primary ::= state_field_path_expression |
@@ -44,7 +44,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                      aggregate_expression |
  *                                                      case_expression |
  *                                                      function_invocation |
- *                                                      (subquery)</code><br/></div>
+ *                                                      (subquery)</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

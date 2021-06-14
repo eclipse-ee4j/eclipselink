@@ -17,13 +17,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for the parameter of the <code><b>UPPER</b></code> expression.
- * <br/>
+ * <p></p>
  * JPA 1.0, 2.0:
  * <div><b>BNF:</b> <code>expression ::= UPPER(string_primary)</code></div>
- * <br/>
+ * <p></p>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= UPPER(string_expression)</code></div>
- * <br/>
+ * <p></p>
  *
  * @version 2.5
  * @since 2.4

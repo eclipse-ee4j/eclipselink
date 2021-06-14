@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the update statement.
  *
- * <div><b>BNF:</b> <code>update_statement ::= update_clause [where_clause]</code><br/></div>
+ * <div><b>BNF:</b> <code>update_statement ::= update_clause [where_clause]</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

@@ -16,7 +16,7 @@
 package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
- * <div><b>BNFL</b> <code>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]</code><br/></div>
+ * <div><b>BNFL</b> <code>subquery ::= simple_select_clause subquery_from_clause [where_clause] [groupby_clause] [having_clause]</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

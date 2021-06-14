@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div><b>BNF:</b> <code>func_item ::= literal |
  *                                             state_field_path_expression |
  *                                             input_parameter |
- *                                             scalar_expression</code><br/></div>
+ *                                             scalar_expression</code><p></p></div>
  *
  * @version 2.5
  * @since 2.4

@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 /**
  * A compound {@link StateObject} has a left and right expressions combined by an identifier.
  *
- * <div><b>BNF:</b> <code>expression ::= left_expression &lt;identifier&gt; right_expression</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= left_expression &lt;identifier&gt; right_expression</code><p></p></div>
  *
  * @see CompoundExpression
  *

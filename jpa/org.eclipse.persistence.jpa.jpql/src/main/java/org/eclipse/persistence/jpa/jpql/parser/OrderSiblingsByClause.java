@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * or <code><b>GROUP BY</b></code> should not be used, as they will destroy the hierarchical order
  * of the <code><b>CONNECT BY</b></code> results.
  *
- * <div><b>BNF:</b> <code>order_sibling_by_clause ::= <b>ORDER SIBLINGS BY</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code><br/></div>
+ * <div><b>BNF:</b> <code>order_sibling_by_clause ::= <b>ORDER SIBLINGS BY</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code><p></p></div>
  *
  * @version 2.5
  * @since 2.5

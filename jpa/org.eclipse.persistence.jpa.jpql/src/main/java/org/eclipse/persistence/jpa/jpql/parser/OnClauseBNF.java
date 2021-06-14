@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the on clause.
  *
- * <div><b>BNF:</b> <code>on_clause ::= ON conditional_expression</code><br/></div>
+ * <div><b>BNF:</b> <code>on_clause ::= ON conditional_expression</code><p></p></div>
  *
  * @version 2.4
  * @since 2.4

@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a conditional factor expression.
  *
- * <div><b>BNF:</b> <code>conditional_factor ::= [ NOT ] conditional_primary</code><br/></div>
+ * <div><b>BNF:</b> <code>conditional_factor ::= [ NOT ] conditional_primary</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

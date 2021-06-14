@@ -455,7 +455,7 @@ public class SDOCopyHelper implements CopyHelper {
 
         /**
          * Prerequisites: - the copy tree has been built and the doMap has been
-         * fully populated with containment nodes.<br/> Iterate the doMap and
+         * fully populated with containment nodes.<p></p> Iterate the doMap and
          * for each containment dataObject populate the sequence
          */
 

@@ -30,7 +30,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * Arithmetic operations use numeric promotion. Standard bracketing () for ordering expression
  * evaluation is supported.
  *
- * <div><b>BNF:</b> <code>expression ::= identifier conditional_expression</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= identifier conditional_expression</code><p></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.AbstractConditionalClause AbstractConditionalClause
  *

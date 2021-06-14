@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * query clause. <b>CONNECT BY</b> specifies the relationship between parent rows and child rows of
  * the hierarchy.
  *
- * <div><b>BNF:</b> <code>connectby_clause ::= <b>CONNECT BY</b> { single_valued_object_path_expression | collection_valued_path_expression }</code><br/></div>
+ * <div><b>BNF:</b> <code>connectby_clause ::= <b>CONNECT BY</b> { single_valued_object_path_expression | collection_valued_path_expression }</code><p></p></div>
  *
  * @version 2.5
  * @since 2.5

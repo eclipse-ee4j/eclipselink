@@ -20,7 +20,7 @@ import java.util.List;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

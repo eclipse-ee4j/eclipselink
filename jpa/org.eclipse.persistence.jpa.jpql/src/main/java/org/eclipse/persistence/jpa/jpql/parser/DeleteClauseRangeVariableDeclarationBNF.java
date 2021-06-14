@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a range variable declaration expression used by the <b>DELETE</b> clause, which
  * accepts collection and aggregate expression, which is used by invalid queries.
  *
- * <div><b>BNF:</b> <code>range_variable_declaration ::= entity_name [AS] identification_variable</code><br/></div>
+ * <div><b>BNF:</b> <code>range_variable_declaration ::= entity_name [AS] identification_variable</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

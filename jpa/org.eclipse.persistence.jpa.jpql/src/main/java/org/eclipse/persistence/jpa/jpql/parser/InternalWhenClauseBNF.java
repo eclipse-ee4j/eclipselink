@@ -18,9 +18,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the expression following the <b>WHEN</b> identifier.
  *
- * <div><b>BNF:</b> <code>when_clause ::= WHEN conditional_expression THEN scalar_expression</code><br/></div>
+ * <div><b>BNF:</b> <code>when_clause ::= WHEN conditional_expression THEN scalar_expression</code><p></p></div>
  * or
- * <div><b>BNF:</b> <code>simple_when_clause ::= WHEN scalar_expression THEN scalar_expression</code><br/></div>
+ * <div><b>BNF:</b> <code>simple_when_clause ::= WHEN scalar_expression THEN scalar_expression</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

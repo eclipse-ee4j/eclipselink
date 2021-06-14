@@ -27,7 +27,7 @@ import org.eclipse.persistence.sessions.SessionEventAdapter;
 
 /*
  * SAP MaxDB in general is configured to use transaction isolation level
- * READ_COMMITTED or SERIALIZABLE.<br/>
+ * READ_COMMITTED or SERIALIZABLE.<p></p>
  * That causes a few tests to hang, or fail with an error message saying that the table is locked
  * (depending on a setting on the database side): these tests begin transaction, update a row,
  * then (before the transaction has been committed) attempt to read the row through another connection.

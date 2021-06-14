@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * One of the aggregate functions. The arguments must be numeric. <code><b>AVG</b></code> returns
  * <code>Double</code>.
  *
- * <div><b>BNF:</b> <code>expression ::= AVG([DISTINCT] state_field_path_expression)</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= AVG([DISTINCT] state_field_path_expression)</code><p></p></div>
  *
  * @see AvgFunction
  *

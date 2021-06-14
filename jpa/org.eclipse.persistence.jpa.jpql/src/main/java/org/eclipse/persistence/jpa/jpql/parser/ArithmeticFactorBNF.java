@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for an arithmetic factor expression.
  *
- * <div><b>BNF:</b> <code>arithmetic_factor ::= [{ + | - }] arithmetic_primary</code><br/></div>
+ * <div><b>BNF:</b> <code>arithmetic_factor ::= [{ + | - }] arithmetic_primary</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

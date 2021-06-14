@@ -20,7 +20,7 @@ import org.eclipse.persistence.internal.oxm.mappings.Field;
  * INTERNAL:
  * <p><b>Purpose:</b> Used to hold the value returned from a DOMRecord and the field with which it
  * was associated. Returned from calls to DOMRecord that take a List of fields as a parameter.
- * <br/>
+ * <p></p>
  * @author mmacivor
  *
  */

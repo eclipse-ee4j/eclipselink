@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a simple case expression.
  *
- * <div><b>BNF:</b> <code>simple_case_expression::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><br/></div>
+ * <div><b>BNF:</b> <code>simple_case_expression::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

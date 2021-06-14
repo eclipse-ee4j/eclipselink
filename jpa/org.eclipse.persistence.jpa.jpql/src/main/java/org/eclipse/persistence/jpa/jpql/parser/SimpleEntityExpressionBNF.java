@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a simple entity expression.
  *
- * <div><b>BNF:</b> <code>simple_entity_expression ::= identification_variable | input_parameter</code><br/></div>
+ * <div><b>BNF:</b> <code>simple_entity_expression ::= identification_variable | input_parameter</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

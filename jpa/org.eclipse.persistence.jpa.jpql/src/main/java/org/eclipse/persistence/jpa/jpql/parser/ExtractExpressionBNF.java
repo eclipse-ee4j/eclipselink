@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for the <code>EXTRACT</code> function.
  *
  * <div><b>BNF:</b> <code>extract_expression ::= EXTRACT(date_part_literal [FROM] scalar_expression))</code></div>
- * <br/>
+ * <p></p>
  *
  * @version 2.4
  * @since 2.4

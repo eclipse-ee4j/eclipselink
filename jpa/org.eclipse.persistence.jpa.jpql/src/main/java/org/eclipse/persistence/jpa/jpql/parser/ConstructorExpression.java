@@ -26,7 +26,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * more Java instances. The specified class is not required to be an entity or to be mapped to the
  * database. The constructor name must be fully qualified.
  *
- * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><br/></div>
+ * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name(constructor_item {, constructor_item}*)</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

@@ -35,9 +35,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * unknown, the value of the expression is unknown.
  * <p>
  * JPA 1.0:
- * <div><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><br/></div>
+ * <div><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><p></p></div>
  * JPA 2.0
- * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><br/></div>
+ * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><p></p></div>
  *
  * @see InExpression
  *

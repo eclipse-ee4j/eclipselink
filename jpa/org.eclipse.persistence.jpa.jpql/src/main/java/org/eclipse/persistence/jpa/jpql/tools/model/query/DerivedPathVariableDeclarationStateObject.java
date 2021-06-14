@@ -18,10 +18,10 @@ package org.eclipse.persistence.jpa.jpql.tools.model.query;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
 
 /**
- * <div><b>BNF:</b> <code>subselect_identification_variable_declaration ::= derived_path_expression [AS] identification_variable {join}*</code><br/></div>
+ * <div><b>BNF:</b> <code>subselect_identification_variable_declaration ::= derived_path_expression [AS] identification_variable {join}*</code><p></p></div>
  *
  * <div><b>BNF:</b> <code>derived_path_expression ::= superquery_identification_variable.{single_valued_object_field.}*collection_valued_field |
- *                                                           superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field</code><br/></div>
+ *                                                           superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field</code><p></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration RangeVariableDeclaration
  *

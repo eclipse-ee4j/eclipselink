@@ -42,7 +42,7 @@ import org.eclipse.persistence.jpa.jpql.parser.OrExpression;
  * <tr><td><b>NULL</b></td><td>TRUE</td><td>NULL</td><td>NULL</td></tr>
  * </table>
  *
- * <div><b>BNF:</b> <code>conditional_expression ::= conditional_expression OR conditional_term</code><br/></div>
+ * <div><b>BNF:</b> <code>conditional_expression ::= conditional_expression OR conditional_term</code><p></p></div>
  *
  * @see OrExpression
  *

@@ -20,7 +20,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div><b>BNF:</b> <code>entity_type_expression ::= type_discriminator |
  *                                                          entity_type_literal |
- *                                                          input_parameter</code><br/></div>
+ *                                                          input_parameter</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

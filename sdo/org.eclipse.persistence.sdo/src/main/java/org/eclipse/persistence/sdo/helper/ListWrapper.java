@@ -688,11 +688,11 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * INTERNAL:
      * Return the occurrence number for the current index in this list.
      * The return value will be non-zero when there are duplicates of an object instance.
-     * Example: occurrence number of index 1 = 0, of index 2 = 1<br/>
-     *     [index]                              occurrence<br/>
-     *         [0]    ItemImpl  (id=58)        0<br/>
-     *        [1]    ItemImpl  (id=35)        0<br/>
-     *         [2]    ItemImpl  (id=35)           1<br/>
+     * Example: occurrence number of index 1 = 0, of index 2 = 1<p></p>
+     *     [index]                              occurrence<p></p>
+     *         [0]    ItemImpl  (id=58)        0<p></p>
+     *        [1]    ItemImpl  (id=35)        0<p></p>
+     *         [2]    ItemImpl  (id=35)           1<p></p>
      *
      * @param index
      * @return

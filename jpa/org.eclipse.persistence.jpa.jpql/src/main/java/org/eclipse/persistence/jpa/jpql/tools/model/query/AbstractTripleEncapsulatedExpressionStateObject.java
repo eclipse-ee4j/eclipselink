@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * This state object takes care of parsing an expression that encapsulates three expressions
  * separated by a comma.
  *
- * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code><p></p></div>
  *
  * @see LocateExpressionStateObject
  * @see SubstringExpressionStateObject

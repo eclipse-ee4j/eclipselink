@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a REGEXP expression.
  *
- * <div><b>BNF:</b> <code>regexp_expression ::= string_expression REGEXP pattern_value</code><br/></div>
+ * <div><b>BNF:</b> <code>regexp_expression ::= string_expression REGEXP pattern_value</code><p></p></div>
  *
  * @version 2.4
  * @since 2.4

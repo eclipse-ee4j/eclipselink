@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a constructor expression.
  *
- * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name ( constructor_item {, constructor_item}* )</code><br/></div>
+ * <div><b>BNF:</b> <code>constructor_expression ::= NEW constructor_name ( constructor_item {, constructor_item}* )</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

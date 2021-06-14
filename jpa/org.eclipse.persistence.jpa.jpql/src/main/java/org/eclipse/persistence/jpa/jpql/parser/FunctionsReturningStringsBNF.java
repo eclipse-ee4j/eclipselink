@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <div><b>BNF:</b> <code>functions_returning_strings ::= CONCAT(string_primary, string_primary {, string_primary}*) |
  * SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression]) |
  * TRIM([[trim_specification] [trim_character] FROM] string_primary) |
- * LOWER(string_primary) | UPPER(string_primary)</code><br/></div>
+ * LOWER(string_primary) | UPPER(string_primary)</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

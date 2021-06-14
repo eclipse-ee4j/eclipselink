@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * This is part of JPA 2.0.
  *
- * <div><b>BNF:</b> <code>expression ::= ENTRY(identification_variable)</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= ENTRY(identification_variable)</code><p></p></div>
  *
  * @see EntryExpression
  *

@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the update clause.
  *
- * <div><b>BNF:</b> <code>update_clause ::= UPDATE entity_name [[AS] identification_variable] SET update_item {, update_item}*</code><br/></div>
+ * <div><b>BNF:</b> <code>update_clause ::= UPDATE entity_name [[AS] identification_variable] SET update_item {, update_item}*</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

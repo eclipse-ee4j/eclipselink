@@ -22,7 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The <code><b>LOWER</b></code> function converts a string to lower case and it returns a string.
  *
- * <div><b>BNF:</b> <code>expression ::= LOWER(string_primary)</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= LOWER(string_primary)</code><p></p></div>
  *
  * @see LowerExpression
  *

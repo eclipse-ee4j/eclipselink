@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the <code><b>AS OF</b></code> clause.
  *
- * <div><b>BNF:</b> <code>exists_expression::= AS OF </code><br/></div>
+ * <div><b>BNF:</b> <code>exists_expression::= AS OF </code><p></p></div>
  *
  * @version 2.5
  * @since 2.5

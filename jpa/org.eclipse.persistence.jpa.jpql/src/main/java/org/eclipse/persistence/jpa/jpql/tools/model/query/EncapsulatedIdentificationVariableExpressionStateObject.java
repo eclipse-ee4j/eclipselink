@@ -25,7 +25,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.ITypeDeclaration;
 /**
  * This object represents an identification variable that is wrapped by a function.
  *
- * <div><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code><br/></div>
+ * <div><b>BNF:</b> <code>&lt;identifier&gt;(identification_variable)</code><p></p></div>
  *
  * @see EncapsulatedIdentificationVariableExpression
  *

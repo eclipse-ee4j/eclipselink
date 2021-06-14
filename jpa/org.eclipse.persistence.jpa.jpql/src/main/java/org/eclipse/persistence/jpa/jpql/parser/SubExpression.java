@@ -20,7 +20,7 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 /**
  * This expression wraps a sub-expression within parenthesis.
  *
- * <div><b>BNF:</b> <code>expression ::= (sub_expression)</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= (sub_expression)</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

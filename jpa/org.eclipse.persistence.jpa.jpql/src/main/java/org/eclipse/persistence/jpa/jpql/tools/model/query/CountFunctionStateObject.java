@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  *
  * <div><b>BNF:</b> <code>expression ::= COUNT ([DISTINCT] identification_variable |
  *                                                                state_field_path_expression |
- *                                                                single_valued_object_path_expression)</code><br/></div>
+ *                                                                single_valued_object_path_expression)</code><p></p></div>
  *
  * @see CountFunction
  *

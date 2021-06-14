@@ -32,7 +32,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                     identification_variable |
  *                                                     OBJECT(identification_variable) |
  *                                                     constructor_expression</code></div>
- * <br/>
+ * <p></p>
  *
  * @version 2.5
  * @since 2.3

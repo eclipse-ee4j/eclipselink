@@ -32,7 +32,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * is used, and there are no values to which <code><b>COUNT</b></code> can be applied, the result of
  * the aggregate function is 0.
  *
- * <div><b>BNF:</b> <code>expression ::= SUM([DISTINCT] state_field_path_expression)</code><br/></div>
+ * <div><b>BNF:</b> <code>expression ::= SUM([DISTINCT] state_field_path_expression)</code><p></p></div>
  *
  * @see SumFunction
  *

@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the update item expression.
  *
- * <div><b>BNF:</b> <code>update_item ::= [identification_variable.]{state_field | single_valued_object_field} = new_value</code><br/></div>
+ * <div><b>BNF:</b> <code>update_item ::= [identification_variable.]{state_field | single_valued_object_field} = new_value</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

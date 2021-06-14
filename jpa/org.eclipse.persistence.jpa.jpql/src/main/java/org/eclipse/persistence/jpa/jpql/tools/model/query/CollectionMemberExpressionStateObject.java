@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * the collection member expression is <b>NULL</b> or unknown, the value of the collection member
  * expression is unknown.
  *
- * <div><b>BNF:</b> <code>collection_member_expression ::= entity_or_value_expression [NOT] MEMBER [OF] collection_valued_path_expression</code><br/></div>
+ * <div><b>BNF:</b> <code>collection_member_expression ::= entity_or_value_expression [NOT] MEMBER [OF] collection_valued_path_expression</code><p></p></div>
  *
  * @see CollectionMemberExpression
  *

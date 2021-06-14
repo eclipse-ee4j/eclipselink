@@ -359,7 +359,7 @@ public final class InExpression extends AbstractExpression {
     /**
      * Determines whether what was parsed after the <code>IN</code> identifier is a single input
      * parameter:
-     * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><br/></div>
+     * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN collection_valued_input_parameter</code><p></p></div>
      *
      * @return <code>true</code> if what is following the <code>IN</code> identifier is a single
      * input parameter (without the left or right parenthesis); <code>false</code> otherwise

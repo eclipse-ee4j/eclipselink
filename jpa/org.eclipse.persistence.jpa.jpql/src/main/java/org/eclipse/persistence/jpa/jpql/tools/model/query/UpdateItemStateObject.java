@@ -28,7 +28,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * The <code>new_value</code> specified for an update operation must be compatible in type with the
  * field to which it is assigned.
  *
- * <div><b>BNF:</b> <code>update_item ::= [identification_variable.]{state_field | single_valued_association_field} = new_value</code><br/></div>
+ * <div><b>BNF:</b> <code>update_item ::= [identification_variable.]{state_field | single_valued_association_field} = new_value</code><p></p></div>
  *
  * @see UpdateItem
  *

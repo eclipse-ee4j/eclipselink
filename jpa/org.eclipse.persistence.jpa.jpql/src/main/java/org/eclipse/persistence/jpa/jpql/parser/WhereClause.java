@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * values that satisfy the expression. The <b>WHERE</b> clause restricts the result of a select
  * statement or the scope of an update or delete operation.
  *
- * <div><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code><br/></div>
+ * <div><b>BNF:</b> <code>where_clause ::= WHERE conditional_expression</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

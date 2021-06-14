@@ -19,9 +19,9 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF describes the expression being tested by the <code>IN</code> expression.
  * <p>
  * JPA 1.0:
- * <div><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><br/></div>
+ * <div><b>BNF:</b> <code>in_expression ::= state_field_path_expression [NOT] IN(in_item {, in_item}* | subquery)</code><p></p></div>
  * JPA 2.0
- * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><br/></div>
+ * <div><b>BNF:</b> <code>in_expression ::= {state_field_path_expression | type_discriminator} [NOT] IN { ( in_item {, in_item}* ) | (subquery) | collection_valued_input_parameter }</code><p></p></div>
  *
  * @version 2.4
  * @since 2.4

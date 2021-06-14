@@ -22,14 +22,14 @@ import org.eclipse.persistence.internal.helper.*;
 /**
  * <b>Purpose:</b>Wraps an immutable value for a past time.
  * A session, query, or expression can be as of a past time.
- * <br/>
+ * <p></p>
  * For Oracle 9R2 Flasback corresponds to the sub clause which appears between
  * the table and alias name in the FROM clause:
  * <code>SELECT ... FROM EMPLOYEE AS OF TIMESTAMP (value) t0, ...</code>
- * <br/>For generic historical schema support, a special criteria can be added to
+ * <p></p>For generic historical schema support, a special criteria can be added to
  * the where clause for each table in a select:
  * <code>((t0.ROW_START {@literal <=} value) AND ((t0.END IS NULL) OR (t1.END {@literal >} value)))</code>
- * <br/><b>Responsibilities:</b>
+ * <p></p><b>Responsibilities:</b>
  * <ul>
  * <li>By default AsOfClause is a timestamp.  To specify a system change number use AsOfSCNClause.
  * <li>For Oracle 9R2 Flashback prints the correct AS OF clause before the alias name in the FROM clause.

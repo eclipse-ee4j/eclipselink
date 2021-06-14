@@ -95,7 +95,7 @@ public abstract class AbstractStateObject implements StateObject {
      * <p>
      * or
      *
-     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><br/></div>
+     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></p></div>
      *
      * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
      * @return <code>true</code> if the call was successfully executed; <code>false</code> otherwise
@@ -142,7 +142,7 @@ public abstract class AbstractStateObject implements StateObject {
      * <p>
      * or
      *
-     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><br/></div>
+     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></p></div>
      *
      * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
      * @param type The type found in the hierarchy of the given {@link StateObjectVisitor} that will

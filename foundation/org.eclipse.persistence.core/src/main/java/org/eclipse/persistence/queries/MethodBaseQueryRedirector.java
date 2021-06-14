@@ -25,23 +25,23 @@ import org.eclipse.persistence.internal.security.PrivilegedMethodInvoker;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 
 /**
- * <br/><b>Purpose</b>:
+ * <p></p><b>Purpose</b>:
  * Allows a class to be a <code>QueryRedirector</code> without implementing
  * {@link QueryRedirector QueryRedirector}.
  *
- * <br/><b>Description</b>:
+ * <p></p><b>Description</b>:
  * Normally to define a Redirector a Class must implement <code>QueryRedirector</code> and
  * the required {@link QueryRedirector#invokeQuery QueryRedirector.invokeQuery(DatabaseQuery, Record, Session)}.
- * <br/>
+ * <p></p>
  * To maintain transparency it is possible to instead only define a static
  * method that takes the same arguments as <code>invokeQuery</code>.
- * <br/>
+ * <p></p>
  * An instance of <code>MethodBaseQueryRedirector</code> can be constructed, taking the name of that static
  * method and the <code>Class</code> in which it is defined as parameters.
- * <br/>
+ * <p></p>
  * Whenever <code>invokeQuery</code> is called on this instance reflection will
  * automatically be used to invoke the custom method instead.
- * <br/>
+ * <p></p>
  * <b>Advantages</b>:
  * <ul>
  * <li> The Redirector class and method name can be specified dynamically.
@@ -56,7 +56,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * <li> An extra step is added as the real <code>invokeQuery</code> method is called
  * dynamically.
  * </ul>
- * <br/><b>Example</b>:
+ * <p></p><b>Example</b>:
  * <BLOCKQUOTE><PRE>
  * // First create a named query, define a redirector for it, and add the query
  * // to the query manager.
@@ -82,7 +82,7 @@ import org.eclipse.persistence.internal.sessions.AbstractRecord;
  * ((ReadObjectQuery) query).setSelectionObject(arguments.get("employee"));
  * return session.executeQuery(query);
  * }
- * }</PRE></BLOCKQUOTE><br/>
+ * }</PRE></BLOCKQUOTE><p></p>
  *
  * @see QueryRedirector
  * @author James Sutherland

@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a <code><b>CONNECT BY</b></code> clause. This was added to the grammar with
  * EclipseLink 2.5.
  *
- * <div><b>BNF:</b> <code>CONNECT BY { single_valued_object_path_expression | collection_valued_path_expression }</code><br/></div>
+ * <div><b>BNF:</b> <code>CONNECT BY { single_valued_object_path_expression | collection_valued_path_expression }</code><p></p></div>
  *
  * @version 2.5
  * @since 2.5

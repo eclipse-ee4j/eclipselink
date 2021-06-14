@@ -19,7 +19,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for a case expression.
  *
  * <div><b>BNF:</b> <code>case_expression ::= general_case_expression |
- * simple_case_expression | coalesce_expression | nullif_expression</code><br/></div>
+ * simple_case_expression | coalesce_expression | nullif_expression</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

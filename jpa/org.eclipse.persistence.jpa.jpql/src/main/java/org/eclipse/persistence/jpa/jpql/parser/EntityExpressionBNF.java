@@ -20,11 +20,11 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA 1.0:
  * <div><b>BNF:</b> <code>entity_expression ::= single_valued_association_path_expression |
- *                                                     simple_entity_expression</code><br/></div>
+ *                                                     simple_entity_expression</code><p></p></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>entity_expression ::= single_valued_object_path_expression |
- *                                                     simple_entity_expression</code><br/></div>
+ *                                                     simple_entity_expression</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

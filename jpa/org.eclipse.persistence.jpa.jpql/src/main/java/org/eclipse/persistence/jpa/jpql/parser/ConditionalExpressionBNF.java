@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for a conditional expression.
  *
- * <div><b>BNF:</b> <code>conditional_expression ::= conditional_term | conditional_expression OR conditional_term</code><br/></div>
+ * <div><b>BNF:</b> <code>conditional_expression ::= conditional_term | conditional_expression OR conditional_term</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

@@ -19,7 +19,7 @@ import java.util.Collection;
 /**
  * <b>Purpose</b>:
  * Common interface to indirect collections.
- * <br/>
+ * <p></p>
  *
  * @author James Sutherland
  * @since TopLink 10.1.3

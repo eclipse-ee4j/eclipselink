@@ -22,7 +22,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * designate instances of a particular entity abstract schema type. The <b>FROM</b> clause can
  * contain multiple identification variable declarations separated by a comma (,).
  *
- * <div><b>BNF:</b> <code>subquery_from_clause ::= FROM subselect_identification_variable_declaration {, subselect_identification_variable_declaration}*</code><br/></div>
+ * <div><b>BNF:</b> <code>subquery_from_clause ::= FROM subselect_identification_variable_declaration {, subselect_identification_variable_declaration}*</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

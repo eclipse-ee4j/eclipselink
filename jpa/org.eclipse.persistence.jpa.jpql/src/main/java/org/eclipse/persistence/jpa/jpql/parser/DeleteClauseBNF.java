@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the delete clause.
  *
- * <div><b>BNF:</b> <code>delete_clause ::= DELETE FROM entity_name [[AS] identification_variable]</code><br/></div>
+ * <div><b>BNF:</b> <code>delete_clause ::= DELETE FROM entity_name [[AS] identification_variable]</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

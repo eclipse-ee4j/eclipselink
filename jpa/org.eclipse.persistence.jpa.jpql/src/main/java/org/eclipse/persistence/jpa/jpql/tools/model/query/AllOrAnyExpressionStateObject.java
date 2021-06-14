@@ -37,7 +37,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * are =, {@literal <, <=, >, >=, <>}. The result of the subquery must be like that of the other
  * argument to the comparison operator in type.
  *
- * <div><b>BNF:</b> <code>all_or_any_expression ::= {ALL|ANY|SOME}(subquery)</code><br/></div>
+ * <div><b>BNF:</b> <code>all_or_any_expression ::= {ALL|ANY|SOME}(subquery)</code><p></p></div>
  *
  * @see AllOrAnyExpression
  *

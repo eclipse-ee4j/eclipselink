@@ -17,16 +17,16 @@ package org.eclipse.persistence.jpa.jpql.parser;
 
 /**
  * The query BNF for the parameter of the <code><b>LENGTH</b></code> expression.
- * <br/>
+ * <p></p>
  * JPA 1.0:
  * <div><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)</div>
- * <br/>
+ * <p></p>
  * JPA 2.0:
  * <div><b>BNF</b> ::= SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])</div>
- * <br/>
+ * <p></p>
  * JPA 2.1:
  * <div><b>BNF</b> ::= SUBSTRING(string_expression, arithmetic_expression [, arithmetic_expression])</div>
- * <br/>
+ * <p></p>
  *
  * @version 2.5
  * @since 2.4

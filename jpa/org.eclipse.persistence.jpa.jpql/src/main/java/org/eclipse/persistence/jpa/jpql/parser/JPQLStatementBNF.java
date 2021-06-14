@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for the JPQL expression.
  *
- * <div><b>BNF:</b> QL_statement ::= <code>select_statement | update_statement | delete_statement</code><br/></div>
+ * <div><b>BNF:</b> QL_statement ::= <code>select_statement | update_statement | delete_statement</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

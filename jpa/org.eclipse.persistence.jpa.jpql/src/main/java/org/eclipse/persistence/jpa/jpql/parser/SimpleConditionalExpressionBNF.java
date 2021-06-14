@@ -26,7 +26,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *                                                          empty_collection_comparison_expression |
  *                                                          collection_member_expression |
  *                                                          exists_expression</code></div>
- * <br/>
+ * <p></p>
  *
  * @version 2.4
  * @since 2.3
