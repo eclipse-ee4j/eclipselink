@@ -32,7 +32,7 @@
 
     <properties>
         <nightlyDir>/nightlybuild/${release.version}/${build.date}</nightlyDir>
-        <nightlyVersion>${release.version}.v${build.date}-${buildNumber}</nightlyVersion>
+        <nightlyVersion>${release.version}.v${build.date}${build.time}-${buildNumber}</nightlyVersion>
         <nightlyTestReportsDir>${project.build.directory}${nightlyDir}/Eclipse</nightlyTestReportsDir>
     </properties>
 

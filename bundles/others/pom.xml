@@ -33,7 +33,7 @@
     <properties>
         <archive.tmp.dir>archive-tmp</archive.tmp.dir>
         <test.jars.tmp.dir>eclipselink-test-jars</test.jars.tmp.dir>
-        <nightlyVersion>${release.version}.v${build.date}-${buildNumber}</nightlyVersion>
+        <nightlyVersion>${release.version}.v${build.date}${build.time}-${buildNumber}</nightlyVersion>
 
         <!--Javadoc properties-->
         <javadoc.prefixTitle>EclipseLink ${release.version}</javadoc.prefixTitle>
