@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.persistence.annotations.CacheKeyType;
 import org.eclipse.persistence.annotations.IdValidation;
@@ -384,7 +385,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         this.hasSimplePrimaryKey = false;
         this.derivesIdMappings = new HashMap(5);
 
-        this.referencingClasses = new HashSet<>();
+        this.referencingClasses = new ConcurrentHashMap<>().newKeySet();
 
         // Policies
         this.objectBuilder = new ObjectBuilder(this);
@@ -1368,7 +1369,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         clonedDescriptor.setFields(NonSynchronizedVector.newInstance());
 
         // Referencing classes
-        referencingClasses = new HashSet<>();
+        referencingClasses = new ConcurrentHashMap<>().newKeySet();
 
         // Post-calculate changes
         if (this.mappingsPostCalculateChanges != null) {
