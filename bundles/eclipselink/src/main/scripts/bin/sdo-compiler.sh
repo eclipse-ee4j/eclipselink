@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
 #
 # This program and the accompanying materials are made available under the
 # terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,10 +20,10 @@ JVM_ARGS=-Xmx256m
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="
 
 # Please do not change any of the following lines:
-CLASSPATH=`dirname $0`/../jlib/sdo/commonj.sdo-2.1.1.jar:\
-`dirname $0`/../jlib/eclipselink.jar
+MODULEPATH=`dirname $0`/../jlib/moxy:\
+`dirname $0`/../jlib/eclipselink.jar:\
+`dirname $0`/../jlib/jpa/jakarta.persistence-api.jar
+MAIN_CLASS=org.eclipse.persistence.sdo.helper.SDOClassGenerator
 JAVA_ARGS="$@"
 
-${JAVA_HOME}/bin/java ${JVM_ARGS} -cp ${CLASSPATH} \
-    org.eclipse.persistence.sdo.helper.SDOClassGenerator ${JAVA_ARGS}
-
+${JAVA_HOME}/bin/java ${JVM_ARGS} -p "${MODULEPATH}" -m eclipselink/${MAIN_CLASS} ${JAVA_ARGS}

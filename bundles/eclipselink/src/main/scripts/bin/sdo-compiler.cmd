@@ -1,5 +1,5 @@
 @REM
-@REM Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+@REM Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
 @REM
 @REM This program and the accompanying materials are made available under the
 @REM terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,11 +25,13 @@ set JVM_ARGS=-Xmx256m
 set _FIXPATH=
 call :fixpath "%~dp0"
 set THIS=%_FIXPATH:~1%
-set CLASSPATH=%THIS%..\jlib\sdo\commonj.sdo-2.1.1.jar
-set CLASSPATH=%CLASSPATH%;%THIS%..\jlib\eclipselink.jar
+set MODULEPATH=%THIS%..\jlib\moxy
+set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\eclipselink.jar
+set MODULEPATH=%MODULEPATH%;%THIS%..\jlib\jpa\jakarta.persistence-api.jar
+set MAIN_CLASS=org.eclipse.persistence.sdo.helper.SDOClassGenerator
 set JAVA_ARGS=%*
 
-%JAVA_HOME%\bin\java.exe -cp %CLASSPATH% %JVM_ARGS% org.eclipse.persistence.sdo.helper.SDOClassGenerator %JAVA_ARGS%
+%JAVA_HOME%\bin\java.exe %JVM_ARGS% -p %MODULEPATH% -m eclipselink/%MAIN_CLASS% %JAVA_ARGS%
 
 @endlocal
 goto :EOF
