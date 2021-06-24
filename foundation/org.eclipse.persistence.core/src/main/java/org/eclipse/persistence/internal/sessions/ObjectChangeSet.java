@@ -39,10 +39,10 @@ import org.eclipse.persistence.queries.ReadObjectQuery;
 /**
  * <p>
  * <b>Purpose</b>: Hold the Records of change for a particular instance of an object.
- * <p>
+ * </p><p>
  * <b>Description</b>: This class uses the Primary Keys of the Object it represents,
  * and the class.
- * <p>
+ * </p>
  */
 public class ObjectChangeSet implements Serializable, Comparable<ObjectChangeSet>, org.eclipse.persistence.sessions.changesets.ObjectChangeSet {
     /** Allow change sets to be compared by changes for batching. */

@@ -33,7 +33,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IEntity;
  * <p>
  * <b>Note:</b> {@link EclipseLinkStateObjectVisitor} needs to be used to traverse this state object.
  * </p>
- * <div><b>BNF:</b> <code>join_treat ::= TREAT(collection_valued_path_expression [AS] entity_type_literal)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>join_treat ::= TREAT(collection_valued_path_expression [AS] entity_type_literal)</code></p></div>
  *
  * @see TreatExpression
  *

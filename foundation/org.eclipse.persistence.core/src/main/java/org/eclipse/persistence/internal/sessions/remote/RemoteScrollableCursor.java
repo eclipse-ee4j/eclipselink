@@ -24,10 +24,10 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 /**
  * <p><b>Purpose</b>:
  * The object is used as a wrapper to the ScrollableCursor object in the remote transaction (via RMI, CORBA, etc.)
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Wraps a database result set cursor to provide a stream to the remote client side on the resulting selected objects.
- * <p>
+ * </p>
  * Note: Most of the APIs only work with JDBC 2.0
  *
  * @author King (Yaoping) Wang

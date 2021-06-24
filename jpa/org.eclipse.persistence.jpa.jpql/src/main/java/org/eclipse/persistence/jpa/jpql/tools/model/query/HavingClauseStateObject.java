@@ -22,7 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The <code><b>HAVING</b></code> construct enables conditions to be specified that further restrict
  * the query result as restrictions upon the groups.
  *
- * <div><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>having_clause ::= HAVING conditional_expression</code></p></div>
  *
  * @see HavingClause
  *

@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * An ordering clause allows the objects or values that are returned by the query to be ordered.
  *
- * <div><b>BNF:</b> <code>orderby_clause ::= <b>&lt;identifier&gt;</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code><p></p></div>
+ * <div><b>BNF:</b> <code>orderby_clause ::= <b>&lt;identifier&gt;</b> {@link OrderByItem orderby_item} {, {@link OrderByItem orderby_item}}*</code></div>
  *
  * @version 2.5
  * @since 2.5

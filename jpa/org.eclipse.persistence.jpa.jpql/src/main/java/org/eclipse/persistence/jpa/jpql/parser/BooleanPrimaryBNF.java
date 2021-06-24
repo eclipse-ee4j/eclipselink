@@ -21,13 +21,13 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * JPA 1.0:
  * <div><b>BNF:</b> <code>boolean_primary ::= state_field_path_expression |
  *                                                   boolean_literal |
- *                                                   input_parameter</code><p></p></div>
+ *                                                   input_parameter</code></div>
  *
  * JPA 2.0:
  * <div><b>BNF:</b> <code>boolean_primary ::= state_field_path_expression |
  *                                                   boolean_literal |
  *                                                   input_parameter |
- *                                                   case_expression</code><p></p></div>
+ *                                                   case_expression</code></div>
  *
  * @version 2.5
  * @since 2.3

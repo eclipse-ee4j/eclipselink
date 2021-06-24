@@ -20,7 +20,6 @@ import org.eclipse.persistence.sessions.DatabaseRecord;
 /**
  * <p>
  * <b>Purpose</b>: Define a singleton empty record to avoid record creation when not required.
- * <p>
  * @since 11
  * @author James Sutherland
  */

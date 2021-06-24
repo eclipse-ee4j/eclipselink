@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * <div><b>BNF:</b> <code>general_case_expression ::= CASE when_clause {when_clause}* ELSE scalar_expression END</code></div>
  * or
- * <div><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code><p></p></div>
+ * <div><b>BNF:</b> <code>simple_case_expression ::= CASE case_operand simple_when_clause {simple_when_clause}* ELSE scalar_expression END</code></div>
  *
  * @version 2.5
  * @since 2.3

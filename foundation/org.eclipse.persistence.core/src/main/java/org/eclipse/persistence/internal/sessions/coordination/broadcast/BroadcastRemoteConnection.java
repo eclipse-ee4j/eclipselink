@@ -25,10 +25,10 @@ import org.eclipse.persistence.exceptions.RemoteCommandManagerException;
 /**
  * <p>
  * <b>Purpose</b>: Base class extending RemoteConnection for broadcasting RCM protocols: JMS and Oc4jJGroups.
- * <p>
+ * </p><p>
  * <b>Description</b>: Defines lifecycle states and most of the methods,
  * as well as exception processing and info logging.
- * <p>
+ * </p>
  * @author Andrei Ilitchev
  * @since OracleAS TopLink 11<i>g</i> (11.1.1)
  */

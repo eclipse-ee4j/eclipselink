@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * This expression handles parsing the identifier followed by an expression encapsulated within
  * parenthesis.
  *
- * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(expression)</code></p></div>
  *
  * @see AbstractEncapsulatedExpression
  *

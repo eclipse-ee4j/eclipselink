@@ -42,10 +42,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * used for binding by DatabaseCall:
  * descendants of DatabasePlatform may create instances of descendants of this class
  * in customModifyInDatabaseCall method.
- * <p>
+ * </p>
  * <b>Responsibilities</b>:
- * <ul>
- * </ul>
  */
 public class BindCallCustomParameter implements Serializable {
     /**

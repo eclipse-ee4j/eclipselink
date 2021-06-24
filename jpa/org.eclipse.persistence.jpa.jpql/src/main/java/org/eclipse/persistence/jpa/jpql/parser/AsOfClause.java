@@ -21,17 +21,17 @@ import org.eclipse.persistence.jpa.jpql.ExpressionTools;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
- * An <code><b>AS OF</b></code> clause is part of a flashback query, which provides ways to view
+ * <p>An <code><b>AS OF</b></code> clause is part of a flashback query, which provides ways to view
  * past states of database objects, or to return database objects to a previous state, without using
  * traditional point-in-time recovery.
- * <p></p>
+ * </p><p>
  * Specify <code><b>AS OF</b></code> to retrieve the single version of the rows returned by the
  * query at a particular change number (SCN) or timestamp. If you specify SCN, then the expression
  * must evaluate to a number. If you specify <code><b>TIMESTAMP</b></code>, then the expression must
  * evaluate to a timestamp value. Oracle Database returns rows as they existed at the specified
  * system change number or time.
- *
- * <div><b>BNF:</b> <code>asof_clause ::= AS OF { SCN | TIMESTAMP } scalar_expression</code></div><p></p>
+ * </p>
+ * <div><b>BNF:</b> <code>asof_clause ::= AS OF { SCN | TIMESTAMP } scalar_expression</code></div>
  *
  * @version 2.5
  * @since 2.5

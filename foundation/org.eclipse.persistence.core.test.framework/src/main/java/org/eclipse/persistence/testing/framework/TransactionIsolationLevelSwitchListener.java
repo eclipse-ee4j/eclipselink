@@ -28,8 +28,8 @@ import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 
 /*
- * Apache Derby and Symfoware in general are configured to use transaction isolation level
- * READ_COMMITTED or SERIALIZABLE.<p></p>
+ * <p>Apache Derby and Symfoware in general are configured to use transaction isolation level
+ * READ_COMMITTED or SERIALIZABLE.</p>
  * That causes a few tests to hang, or fail with an error message saying that the table is locked
  * (depending on a setting on the database side): these tests begin transaction, update a row,
  * then (before the transaction has been committed) attempt to read the row through another connection.

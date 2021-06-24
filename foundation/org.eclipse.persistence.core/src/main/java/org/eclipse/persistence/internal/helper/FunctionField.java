@@ -18,8 +18,8 @@ import org.eclipse.persistence.expressions.Expression;
 
 /**
  * INTERNAL:
- * <p><b>Purpose</b>:
- * Allow fields to have functions applied to them or be computed.<p>
+ * <p><b>Purpose</b>:</p>
+ * <p>Allow fields to have functions applied to them or be computed.</p>
  */
 public class FunctionField extends DatabaseField {
     protected Expression expression;

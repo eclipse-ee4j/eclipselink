@@ -17,11 +17,12 @@ package org.eclipse.persistence.indirection;
 
 /**
  * <b>Purpose</b>:
+ * <p>
  * Define an interface for a Container that can also act as an EclipseLink
  * "indirection" object; i.e. the Container will only read its contents from
  * the database when necessary (typically, on receipt of the first
  * Container-related message).
- * <p></p>
+ * </p>
  *
  * @see org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy
  * @author Big Country

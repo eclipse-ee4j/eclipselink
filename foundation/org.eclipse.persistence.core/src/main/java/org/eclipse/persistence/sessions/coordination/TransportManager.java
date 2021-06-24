@@ -33,14 +33,14 @@ import org.eclipse.persistence.internal.sessions.coordination.ConnectToHostComma
 import org.eclipse.persistence.internal.sessions.coordination.RemoteConnection;
 
 /**
- * <p></p>
+ * <p>
  * <b>Purpose</b>: Provide an abstract class that offers a common API to handling
  * remote command connections.
- * <p></p>
+ * </p><p>
  * <b>Description</b>: This class manages the remote connections to other RCM service
  * instances and posts the local connection to this service instance in a name
  * service so that other RCM service instances can connect to it.
- * <p></p>
+ * </p>
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */

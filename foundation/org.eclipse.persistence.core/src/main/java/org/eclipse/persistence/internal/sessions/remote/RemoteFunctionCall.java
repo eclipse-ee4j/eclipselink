@@ -23,9 +23,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * the size of the ever growing RemoteController and RemoteConnection framework
  * Note that the only difference between this interface and RemoteCommand is execute method
  * returning a value
- * <p>
+ * </p><p>
  * <b>Description</b>: Used as the Interface for making calls to the object
- * <p>
+ * </p>
  */
 public interface RemoteFunctionCall extends java.io.Serializable {
 

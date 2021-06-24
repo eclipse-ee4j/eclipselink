@@ -28,7 +28,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * Identification variables are case insensitive. An identification variable evaluates to a value of
  * the type of the expression used in declaring the variable.
  *
- * <div><b>BNF:</b> <code>identification_variable_declaration ::= range_variable_declaration { join | fetch_join }*</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>identification_variable_declaration ::= range_variable_declaration { join | fetch_join }*</code></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.IdentificationVariableDeclaration IdentificationVariableDeclaration
  *

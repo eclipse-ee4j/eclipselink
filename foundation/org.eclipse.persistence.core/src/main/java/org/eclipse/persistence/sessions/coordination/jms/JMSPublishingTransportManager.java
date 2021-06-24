@@ -30,13 +30,13 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 
 /**
- * <p></p>
+ * <p>
  * <b>Purpose</b>: Provide a transport implementation for the Remote Command Module (RCM) that publishes
  * to a JMS topic.
- * <p></p>
+ * </p><p>
  * <b>Description</b>: This class manages two connections: an external connection for publishing to JMS,
  *  and a local connection which can be used to process JMS messages received from an application JMS listener.
- * <p></p>
+ * </p>
  * @author Chris Delahunt
  * @since EclipseLink 2.1
  */

@@ -20,7 +20,7 @@ import org.eclipse.persistence.sessions.Record;
 /**
  * <p>
  * <b>Purpose</b>: To record the changes for attributes that can be represented as Transformation Mapping
- * <p>
+ * </p>
  */
 public class TransformationMappingChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.TransformationMappingChangeRecord {
     protected AbstractRecord rowCollection;

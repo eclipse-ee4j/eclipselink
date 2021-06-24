@@ -23,6 +23,7 @@ import java.util.Map;
 /**
  * <p>
  * <b>Purpose</b>: Synchronous and asynchronous propagation of remote commands
+ * </p>
  * <p>
  * <b>Description</b>: Maintains a reference to the RemoteCommandManager to obtain
  * the connection information required to send the commands. In sync mode the caller
@@ -30,7 +31,7 @@ import java.util.Map;
  * async mode then a CommandPropagator instance is further created for each of the
  * connections and control is returned to the caller while the threads send the
  * command to the remote services.
- * <p>
+ * </p>
  */
 public class CommandPropagator implements Runnable {
 

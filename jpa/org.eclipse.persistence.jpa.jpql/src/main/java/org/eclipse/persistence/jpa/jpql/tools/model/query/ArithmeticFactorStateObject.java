@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 /**
  * This state object simply adds a plus or minus sign to the arithmetic primary expression.
  *
- * <div><b>BNF:</b> <code>arithmetic_factor ::= [{+|-}] arithmetic_primary</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>arithmetic_factor ::= [{+|-}] arithmetic_primary</code></p></div>
  *
  * @see ArithmeticFactor
  *

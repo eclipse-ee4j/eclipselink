@@ -75,8 +75,8 @@ import org.xml.sax.ext.Locator2Impl;
 
 /**
  * <p><b>Purpose:</b>Provide an implementation of ContentHandler that is used by TopLink OXM to
- * build mapped Java Objects from SAX events.
- * <p><b>Responsibilities:</b>
+ * build mapped Java Objects from SAX events.</p>
+ * <p><b>Responsibilities:</b></p>
  * <ul>
  * <li>Implement the ContentHandler and LexicalHandler interfaces</li>
  * <li>Make calls into the appropriate NodeValues based on the incoming SAXEvents</li>

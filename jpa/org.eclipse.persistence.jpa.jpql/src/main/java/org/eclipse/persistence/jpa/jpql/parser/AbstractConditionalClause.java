@@ -29,7 +29,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * Arithmetic operations use numeric promotion. Standard bracketing () for ordering expression
  * evaluation is supported.
  *
- * <div><b>BNF:</b> <code>expression ::= identifier conditional_expression</code><p></p></div>
+ * <div><b>BNF:</b> <code>expression ::= identifier conditional_expression</code></div>
  *
  * @see HavingClause
  * @see OnClause

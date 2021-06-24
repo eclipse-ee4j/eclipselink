@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * Returns the same type as the first expression.
  *
- * <div><b>BNF:</b> <code>nullif_expression::= NULLIF(scalar_expression, scalar_expression)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>nullif_expression::= NULLIF(scalar_expression, scalar_expression)</code></p></div>
  *
  * @see NullIfExpression
  *

@@ -1004,9 +1004,9 @@ public class DatabaseLogin extends DatasourceLogin {
      * the JDBC driver supports batch writing. EclipseLink's internal batch writing is disabled.<p>
      * Calling this method with an argument of false indicates to EclipseLink that the
      * JDBC driver does not support batch writing. This will revert to the default
-     * behavior which is to delegate to EclipseLink's internal batch writing.
+     * behavior which is to delegate to EclipseLink's internal batch writing.</p>
      * @param usesJDBCBatchWriting boolean true delegates batch writing to the
-     * JDBC driver and false delegates batch writing to EclipseLink.</p>
+     * JDBC driver and false delegates batch writing to EclipseLink.
      */
     public void setUsesJDBCBatchWriting(boolean usesJDBCBatchWriting) {
         getPlatform().setUsesJDBCBatchWriting(usesJDBCBatchWriting);

@@ -20,9 +20,9 @@ import org.eclipse.persistence.exceptions.*;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
- * <p></p>
+ * <p>
  * <b>Purpose</b>: Allow for indexes to be created.
- * <p></p>
+ * </p>
  * @author James Sutherland
  * @since EclipseLink 2.2
  */

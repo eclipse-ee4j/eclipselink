@@ -23,10 +23,10 @@ import org.eclipse.persistence.exceptions.*;
 /**
  * <p><b>Purpose</b>:
  * The object is used as a wrapper to the CursoredStream object in the remote transaction (via RMI, CORBA, etc.)
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Wraps a database result set cursor to provide a stream to the remote client side on the resulting selected objects.
- *
+ * </p>
  * @author King (Yaoping) Wang
  * @since TOPLink/Java 3.0
  */

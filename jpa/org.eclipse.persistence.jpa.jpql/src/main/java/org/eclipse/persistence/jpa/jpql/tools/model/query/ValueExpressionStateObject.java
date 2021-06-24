@@ -25,7 +25,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * This is part of JPA 2.0.
  *
- * <div><b>BNF:</b> <code>VALUE(identification_variable)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>VALUE(identification_variable)</code></p></div>
  *
  * @see ValueExpression
  *

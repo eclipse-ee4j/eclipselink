@@ -25,9 +25,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * Part of JPA 2.0.
  *
- * <div><b>BNF:</b> <code>type_discriminator ::= TYPE(identification_variable |
+ * <div><p><b>BNF:</b> <code>type_discriminator ::= TYPE(identification_variable |
  *                                                           single_valued_object_path_expression |
- *                                                           input_parameter)</code><p></p></div>
+ *                                                           input_parameter)</code></p></div>
  *
  * @see TypeExpression
  *

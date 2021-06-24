@@ -50,11 +50,12 @@ import org.junit.Assert;
 /**
  * <p>
  * <b>Purpose</b>: Test EJBQL exceptions.
- * <p>
+ * </p>
  * <b>Description</b>: This class creates a test suite, initializes the database
  * and adds tests to the suite.
  * <p>
  * <b>Responsibilities</b>:
+ * </p>
  * <ul>
  * <li> Run tests for expected EJBQL exceptions thrown
  * </ul>

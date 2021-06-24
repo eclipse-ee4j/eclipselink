@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.parser.NotExpression;
 import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 
 /**
- * <div><b>BNF:</b> <code>expression ::= NOT conditional_primary</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= NOT conditional_primary</code></p></div>
  *
  * @see NotExpression
  *

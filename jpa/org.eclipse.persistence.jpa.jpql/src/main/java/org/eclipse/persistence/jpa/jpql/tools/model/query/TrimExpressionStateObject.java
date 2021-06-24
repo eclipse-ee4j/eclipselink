@@ -33,7 +33,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * <code><b>BOTH</b></code> is assumed. The <code><b>TRIM</b></code> function returns the trimmed
  * string.
  *
- * <div><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= TRIM([[trim_specification] [trim_character] FROM] string_primary)</code></p></div>
  *
  * @see TrimExpression
  *

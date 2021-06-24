@@ -21,7 +21,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * TODO:
  *
- * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression / arithmetic_term</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression / arithmetic_term</code></p></div>
  *
  * @see DivisionExpression
  *

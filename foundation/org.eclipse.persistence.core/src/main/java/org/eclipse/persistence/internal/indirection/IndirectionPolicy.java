@@ -39,26 +39,26 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 
 /**
  * <h2>Purpose</h2>:
+ * <p>
  * An IndirectionPolicy acts as a 'rules' holder that determines
  * the behavior of a ForeignReferenceMapping (or TransformationMapping)
  * with respect to indirection, or lack thereof.
- * <p>
+ * </p>
  * <h3>Description</h3>:
+ * <p>
  * IndirectionPolicy is an abstract class that defines the protocol to be implemented by
  * subclasses so that the assorted DatabaseMappings can use an assortment of
- * indirection policies:<ul>
+ * indirection policies:</p><ul>
  * <li> no indirection policy (read everything from database)
  * <li> basic indirection policy (use ValueHolders)
  * <li> transparent indirection policy (collections only)
  * <li> proxy indirection policy (transparent 1:1 indirection using JDK 1.3's <CODE>Proxy</CODE>)
  * </ul>
  *
- * <p>
  * <h3>Responsibilities</h3>:
  *     <ul>
  *     <li>instantiate the various IndirectionPolicies
  *     </ul>
- * <p>
  *
  * @see ForeignReferenceMapping
  * @author Mike Norman

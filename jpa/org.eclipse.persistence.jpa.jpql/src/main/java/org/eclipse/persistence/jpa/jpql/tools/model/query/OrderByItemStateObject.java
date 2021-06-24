@@ -49,7 +49,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * <p>
  * JPA 1.0: <div><b>BNF:</b> <code>orderby_item ::= state_field_path_expression [ ASC | DESC ]</code></div>
  * <p>
- * JPA 2.0 <div><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code><p></p></div>
+ * JPA 2.0 <div><p><b>BNF:</b> <code>orderby_item ::= state_field_path_expression | result_variable [ ASC | DESC ]</code></p></div>
  *
  * @see OrderByItem
  *

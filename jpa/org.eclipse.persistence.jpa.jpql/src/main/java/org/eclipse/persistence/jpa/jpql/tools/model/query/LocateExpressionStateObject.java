@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The first position in a string is denoted by 1. If the string is not found, 0 is returned. The
  * <code><b>LENGTH</b></code> function returns the length of the string in characters as an integer.
  *
- * <div><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code></p></div>
  *
  * @see LocateExpression
  *

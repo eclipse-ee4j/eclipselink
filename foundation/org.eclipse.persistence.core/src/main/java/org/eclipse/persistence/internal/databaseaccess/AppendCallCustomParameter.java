@@ -24,10 +24,8 @@ import java.io.IOException;
  * used by DatabasePlatform to append parameter to DatabaseCall:
  * descendants of DatabasePlatform may create instances of implementers of this class
  * of this interface in customModifyInDatabaseCall method.
- * <p>
+ * </p>
  * <b>Responsibilities</b>:
- * <ul>
- * </ul>
  */
 public interface AppendCallCustomParameter {
 

@@ -34,6 +34,10 @@ import org.omg.CORBA.portable.ServantObject;
 import org.omg.CORBA_2_3.portable.InputStream;
 import org.omg.CORBA_2_3.portable.OutputStream;
 
+/**
+ * TODO
+ *
+ */
 public class _RMIRemoteCommandConnection_Stub extends Stub implements RMIRemoteCommandConnection {
     
     private static final String[] _type_ids = {

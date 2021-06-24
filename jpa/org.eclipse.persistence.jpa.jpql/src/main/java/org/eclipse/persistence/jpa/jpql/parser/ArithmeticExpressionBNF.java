@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for an arithmetic expression.
  *
- * <div><b>BNF:</b> <code>arithmetic_expression ::= simple_arithmetic_expression | (subquery)</code><p></p></div>
+ * <div><b>BNF:</b> <code>arithmetic_expression ::= simple_arithmetic_expression | (subquery)</code></div>
  *
  * @version 2.4
  * @since 2.3

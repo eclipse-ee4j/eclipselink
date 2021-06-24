@@ -29,9 +29,9 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * <p><b>Purpose</b>: A SortedCollectionContainerPolicy is ContainerPolicy whose
  * container class implements the SortedInterface interface.
  * Added for BUG # 3233263
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
- * Provide the functionality to operate on an instance of a SortedSet.
+ * Provide the functionality to operate on an instance of a SortedSet.</p>
  *
  * @see ContainerPolicy
  * @see MapContainerPolicy

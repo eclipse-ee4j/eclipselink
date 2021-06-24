@@ -38,7 +38,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <div><b>BNF:</b> <code>aggregate_expression ::= { AVG | MAX | MIN | SUM } ([DISTINCT] state_field_path_expression) |
  *                          COUNT ([DISTINCT] identification_variable |
  *                                            state_field_path_expression |
- *                                            single_valued_object_path_expression)</code><p></p></div>
+ *                                            single_valued_object_path_expression)</code></div>
  *
  * @see AvgFunction
  * @see CountFunction

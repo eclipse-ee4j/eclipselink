@@ -21,9 +21,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <b>Purpose</b>: This Interfaces provides the reference part of an remote command framework
  * Whereby, TopLink can issue commands to distributed servers.  This framework reduces
  * the size of the ever growing RemoteController and RemoteConnection framework
- * <p>
+ * </p><p>
  * <b>Description</b>: Used as the Interface for making calls to the object
- * <p>
+ * </p>
  */
 public interface RemoteCommand extends java.io.Serializable {
 

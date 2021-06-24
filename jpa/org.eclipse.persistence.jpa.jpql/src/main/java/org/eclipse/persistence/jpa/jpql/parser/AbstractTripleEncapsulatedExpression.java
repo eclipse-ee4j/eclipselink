@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * This {@link Expression} takes care of parsing an expression that encapsulates three expressions
  * separated by a comma.
  *
- * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code><p></p></div>
+ * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression, third_expression)</code></div>
  *
  * @see LocateExpression
  * @see SubstringExpression

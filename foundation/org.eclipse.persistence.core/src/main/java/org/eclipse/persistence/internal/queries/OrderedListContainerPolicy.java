@@ -59,9 +59,9 @@ import org.eclipse.persistence.queries.ReadQuery;
 /**
  * <p><b>Purpose</b>: A OrderedListContainerPolicy is ContainerPolicy whose
  * container class implements the List interface and is ordered by an @OrderBy.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
- * Provide the functionality to operate on an instance of a List.
+ * Provide the functionality to operate on an instance of a List.</p>
  *
  * @see ContainerPolicy
  * @see CollectionContainerPolicy

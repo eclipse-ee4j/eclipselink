@@ -21,14 +21,14 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
  * <p>
  * <b>Purpose</b>: An abstract class that can be subclassed when internal
  * commands need to be added.
- * <p>
+ * </p><p>
  * <b>Description</b>: This command provides a framework for execution of
  * commands that are internal to EclipseLink. Commands that subclass this class will
  * not get converted or handed off to the CommandProcessor to be executed. They
  * will instead be executed by the RemoteCommandManager directly. Subclasses
  * should implement the executeWithRCM method to perform the execution steps that
  * are relevant to the command.
- * <p>
+ * </p>
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */

@@ -34,7 +34,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * single entity class (together with its subclasses, if any). Only one entity abstract schema type
  * may be specified in the <code><b>UPDATE</b></code> clause.
  *
- * <div><b>BNF:</b> <code>update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET update_item {, update_item}*</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>update_clause ::= UPDATE abstract_schema_name [[AS] identification_variable] SET update_item {, update_item}*</code></p></div>
  *
  * @see UpdateClause
  *

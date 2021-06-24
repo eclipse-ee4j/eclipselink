@@ -15,7 +15,7 @@
 package org.eclipse.persistence.oxm.mappings;
 /**
  * <p><b>Purpose:</b> Used in conjunction with XMLAnyObject/CollectionMapping and XMLCompositeObject/CollectionMapping
- * to specify when (if at all) to keep parts of the unmarshalled document as nodes.
+ * to specify when (if at all) to keep parts of the unmarshalled document as nodes.</p>
  *
  * <table>
  * <caption>UnmarshalKeepAsElementPolicy</caption>

@@ -52,10 +52,10 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for call queries.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Executes the appropriate call.
- *
+ * </p>
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */

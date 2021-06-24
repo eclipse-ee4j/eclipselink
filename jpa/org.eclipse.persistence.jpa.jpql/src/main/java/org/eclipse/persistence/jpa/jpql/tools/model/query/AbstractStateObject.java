@@ -95,7 +95,7 @@ public abstract class AbstractStateObject implements StateObject {
      * <p>
      * or
      *
-     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></p></div>
+     * <div><p><code>{public|protected|private} void visit(StateObject stateObject)</code></p></div>
      *
      * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
      * @return <code>true</code> if the call was successfully executed; <code>false</code> otherwise
@@ -138,11 +138,10 @@ public abstract class AbstractStateObject implements StateObject {
      * third-party provider. This method will programmatically invoke the <b>visit</b> method defined
      * on the given visitor which signature should be.
      *
-     * <div><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code></div>
-     * <p>
+     * <div><p><code>{public|protected|private} void visit(ThirdPartyStateObject stateObject)</code></p></div>
      * or
      *
-     * <div><code>{public|protected|private} void visit(StateObject stateObject)</code><p></p></div>
+     * <div><p><code>{public|protected|private} void visit(StateObject stateObject)</code></p></div>
      *
      * @param visitor The {@link StateObjectVisitor} to visit this {@link StateObject} programmatically
      * @param type The type found in the hierarchy of the given {@link StateObjectVisitor} that will

@@ -18,15 +18,16 @@ package org.eclipse.persistence.jpa.jpql.parser;
 import org.eclipse.persistence.jpa.jpql.WordParser;
 
 /**
+ * <p>
  * The <b>AND</b> logical operator chains multiple criteria together. A valid operand of an
  * <b>AND</b> operator must be one of: <b>TRUE</b>, <b>FALSE</b>, and <b>NULL</b>. The
  * <b>AND</b> operator has a higher precedence than the <b>OR</b> operator.
- * <p></p>
+ * </p><p>
  * <b>NULL</b> represents unknown. Therefore, if one operand is <b>NULL</b> and the other operand
  * is <b>FALSE</b> the result is <b>FALSE</b>, because one <b>FALSE</b> operand is sufficient for
  * a <b>FALSE</b> result. If one operand is <b>NULL</b> and the other operand is either
  * <b>TRUE</b> or <b>NULL</b>, the result is <b>NULL</b> (unknown).
- * <p></p>
+ * </p>
  *
  * <table border="1" style="border:1px outset darkgrey;">
  * <caption>The following table shows how the <code><b>AND</b></code> operator is evaluated based on its two operands:</caption>
@@ -36,7 +37,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * <tr><td><b>NULL</b> </td><td>   NULL    </td><td>   FALSE    </td><td>   NULL    </td></tr>
  * </table>
  *
- * <div><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code><p></p></div>
+ * <div><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code></div>
  *
  * @version 2.5
  * @since 2.3

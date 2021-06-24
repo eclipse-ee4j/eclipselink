@@ -57,9 +57,9 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 /**
  * <p><b>Purpose</b>: A MapContainerPolicy is ContainerPolicy whose container class
  * implements the Map interface.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
- * Provide the functionality to operate on an instance of a Map.
+ * Provide the functionality to operate on an instance of a Map.</p>
  *
  * @see ContainerPolicy
  * @see CollectionContainerPolicy

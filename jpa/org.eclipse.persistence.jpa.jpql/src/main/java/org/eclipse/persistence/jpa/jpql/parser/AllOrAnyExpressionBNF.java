@@ -18,7 +18,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
 /**
  * The query BNF for an all or any expression.
  *
- * <div><b>BNF:</b> <code>all_or_any_expression ::= { ALL | ANY | SOME} (subquery)</code><p></p></div>
+ * <div><b>BNF:</b> <code>all_or_any_expression ::= { ALL | ANY | SOME} (subquery)</code></div>
  *
  * @version 2.4
  * @since 2.3

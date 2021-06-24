@@ -21,9 +21,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * <b>Purpose</b>: RemoteFunctionCall's interface implementors that
  * don't use remoteSessionController parameter in execute method
  * may extend this class
- * <p>
+ * </p><p>
  * <b>Description</b>: Convenience abstract class
- * <p>
+ * </p>
  */
 public abstract class SimpleFunctionCall implements RemoteFunctionCall {
 

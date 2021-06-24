@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 /**
  * A result variable may be used to name a select item in the query result.
  *
- * <div><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>select_item ::= select_expression [[AS] result_variable]</code></p></div>
  *
  * @see ResultVariable
  *

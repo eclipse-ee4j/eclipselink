@@ -26,7 +26,7 @@ import org.eclipse.persistence.sessions.coordination.MetadataRefreshListener;
  * <p>
  * <b>Purpose</b>: A Command implementation used to signal JPA EntityManagerFactory to refresh its
  * metadata.
- * <p>
+ * </p>
  * @author Chris Delahunt
  * @since Eclipselink 2.3
  */

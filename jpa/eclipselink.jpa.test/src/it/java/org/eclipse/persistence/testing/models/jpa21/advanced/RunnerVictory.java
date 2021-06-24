@@ -21,7 +21,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 /**
- * Victory of an Runner in a competition.<p></p>
+ * <p>Victory of an Runner in a competition.</p>
  * Embedded class to verify {@code @Convert} annotation with {@code @ElementCollection} mapping.
  * @author Tomas Kraus
  */

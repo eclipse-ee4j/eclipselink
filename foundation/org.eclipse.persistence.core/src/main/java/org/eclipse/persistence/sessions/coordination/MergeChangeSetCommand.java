@@ -17,13 +17,13 @@ package org.eclipse.persistence.sessions.coordination;
 import org.eclipse.persistence.internal.sessions.*;
 
 /**
- * <p></p>
+ * <p>
  * <b>Purpose</b>: Provide a remote command implementation for remote cache
  * merges of changes.
- * <p></p>
+ * </p><p>
  * <b>Description</b>: This command provides the implementation for cache
  * synchronization using RCM.
- * <p></p>
+ * </p>
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  *

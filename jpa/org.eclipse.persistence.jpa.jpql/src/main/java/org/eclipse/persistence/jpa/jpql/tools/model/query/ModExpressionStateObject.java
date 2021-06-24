@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * <p>
  * It takes two integer arguments and returns an integer.
  *
- * <div><b>BNF:</b> <code>expression ::= MOD(simple_arithmetic_expression, simple_arithmetic_expression)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= MOD(simple_arithmetic_expression, simple_arithmetic_expression)</code></p></div>
  *
  * @see ModExpression
  *

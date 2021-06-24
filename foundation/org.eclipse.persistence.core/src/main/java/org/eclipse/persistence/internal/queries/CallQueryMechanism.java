@@ -33,10 +33,10 @@ import org.eclipse.persistence.queries.*;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for custom SQL and stored procedure queries.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Executes the appropriate call.
- *
+ * </p>
  * @author James Sutherland
  * @since TOPLink/Java 2.0
  */

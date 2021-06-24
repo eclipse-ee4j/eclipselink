@@ -22,14 +22,14 @@ import org.eclipse.persistence.sessions.coordination.ServiceId;
 import org.eclipse.persistence.sessions.coordination.TransportManager;
 
 /**
- * <p></p>
+ * <p>
  * <b>Purpose</b>: Base class transport manager for broadcasting RCM protocols: JMS and Oc4jJGroups.
- * <p></p>
+ * </p><p>
  * <b>Description</b>: The class doesn't use DiscoveryManager - instead
  * the class (and it's ancestors) implement createConnections method
  * that creates all the necessary connections. This method is called
  * by RemoteCommendManager during initialization.
- * <p></p>
+ * </p>
  * @author Andrei Ilitchev
  * @since OracleAS TopLink 11<i>g</i> (11.1.1)
  */

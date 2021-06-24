@@ -20,13 +20,13 @@ import org.eclipse.persistence.sessions.coordination.ServiceId;
  * <p>
  * <b>Purpose</b>: A structured message object to announce a new RCM service
  * instance becoming available
- * <p>
+ * </p><p>
  * <b>Description</b>: This object is sent over the multicast by a service wanting
  * to join the EclipseLink cluster. It is received by all other services subscribing
  * to the same channel. Receipt of this announcement triggers an exchange protocol
  * between the sending and receiving services to establish communications with all
  * of the other services on the channel.
- * <p>
+ * </p>
  */
 public class ServiceAnnouncement {
 

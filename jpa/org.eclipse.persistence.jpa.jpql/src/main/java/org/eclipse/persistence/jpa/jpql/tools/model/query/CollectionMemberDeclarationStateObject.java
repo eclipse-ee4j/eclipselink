@@ -36,9 +36,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * collection-valued association-field of an entity abstract schema type. The syntax for declaring a
  * collection member identification variable is as follows:
  *
- * <div><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>collection_member_declaration ::= IN(collection_valued_path_expression) [AS] identification_variable</code></p></div>
  * or
- * <div><b>BNF:</b> <code>derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>derived_collection_member_declaration ::= IN superquery_identification_variable.{single_valued_object_field.}*collection_valued_field</code></p></div>
  *
  * @see FromClauseStateObject
  * @see CollectionMemberDeclaration

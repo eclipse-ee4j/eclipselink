@@ -25,7 +25,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * qualified by the <code><b>OBJECT</b></code> operator. The <code><b>SELECT</b></code> clause must
  * not use the <code><b>OBJECT</b></code> operator to qualify path expressions.
  *
- * <div><b>BNF:</b> <code>expression ::= OBJECT(identification_variable)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= OBJECT(identification_variable)</code></p></div>
  *
  * @see ObjectExpression
  *

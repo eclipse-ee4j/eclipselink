@@ -19,9 +19,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 /**
  * <p>
  * <b>Purpose</b>: This class declares sequencing remote function calls classes
- * <p>
+ * </p><p>
  * <b>Description</b>: Provides the implementation for sequencing remote function calls
- * <p>
+ * </p>
  */
 public class SequencingFunctionCall {
     public static class DoesExist extends SimpleFunctionCall {

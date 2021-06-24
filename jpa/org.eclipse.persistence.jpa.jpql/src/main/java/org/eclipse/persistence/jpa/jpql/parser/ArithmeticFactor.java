@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * This expression simply adds a plus or minus sign to the arithmetic primary expression.
  *
- * <div><b>BNF:</b> <code>arithmetic_factor ::= [{+|-}] arithmetic_primary</code><p></p></div>
+ * <div><b>BNF:</b> <code>arithmetic_factor ::= [{+|-}] arithmetic_primary</code></div>
  *
  * @version 2.5
  * @since 2.3

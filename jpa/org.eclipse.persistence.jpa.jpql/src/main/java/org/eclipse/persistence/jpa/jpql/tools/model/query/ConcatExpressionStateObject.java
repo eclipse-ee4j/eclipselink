@@ -24,9 +24,9 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * The <code><b>CONCAT</b></code> function returns a string that is a concatenation of its arguments.
  * <p>
  * JPA 1.0:
- * <div><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary)</code></p></div>
  * JPA 2.0
- * <div><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary {, string_primary}*)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= CONCAT(string_primary, string_primary {, string_primary}*)</code></p></div>
  *
  * @see ConcatExpression
  *

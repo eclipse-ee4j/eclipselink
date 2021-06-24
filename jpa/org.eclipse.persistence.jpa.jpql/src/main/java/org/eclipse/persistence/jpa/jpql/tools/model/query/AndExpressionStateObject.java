@@ -43,7 +43,7 @@ import org.eclipse.persistence.jpa.jpql.parser.ConditionalTermBNF;
  * <tr><td><b>NULL</b> </td><td>   NULL    </td><td>   FALSE    </td><td>   NULL    </td></tr>
  * </table>
  *
- * <div><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>conditional_term ::= conditional_term AND conditional_factor</code></p></div>
  *
  * @see AndExpression
  *

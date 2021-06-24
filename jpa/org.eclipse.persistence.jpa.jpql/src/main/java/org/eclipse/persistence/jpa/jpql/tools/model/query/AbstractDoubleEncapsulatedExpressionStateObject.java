@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
  * This {@link StateObject} represents a JPQL expression that has a JPQL identifier followed by
  * two an encapsulated expression with parenthesis, the two expression are separated by a comma.
  *
- * <div><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression)</code><p></p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= &lt;identifier&gt;(first_expression, second_expression)</code></p></div>
  *
  * @see ModExpressionStateObject
  * @see NullIfExpressionStateObject
