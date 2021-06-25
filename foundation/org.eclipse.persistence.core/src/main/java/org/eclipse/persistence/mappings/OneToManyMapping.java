@@ -341,7 +341,8 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
                                                            Map<DatabaseField, DatabaseField> old2cloned) {
         Vector<DatabaseField> clonedSourceKeyFields = null;
         if (oldFlds != null) {
-            clonedSourceKeyFields = new Vector<>(oldFlds.size());
+            clonedSourceKeyFields =
+                    org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(oldFlds.size());
             for (DatabaseField old : oldFlds) {
                 DatabaseField cf = old.clone();
                 clonedSourceKeyFields.add(cf);
