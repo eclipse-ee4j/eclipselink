@@ -129,7 +129,6 @@ spec:
                     sh """
                         etc/jenkins/build.sh
                     """
-                    }
                 }
             }
         }
