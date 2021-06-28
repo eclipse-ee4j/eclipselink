@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+// Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
 //
 // This program and the accompanying materials are made available under the
 // terms of the Eclipse Distribution License v. 1.0, which is available at
@@ -108,13 +108,11 @@ spec:
             steps {
                 container('el-build') {
                     git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
-                    sshagent([SSH_CREDENTIALS_ID]) {
-                        sh """
-                            # Directory for JEE server binaries (WildFly, Glassfish)
-                            # Maven build automatically download and unpack them.
-                            mkdir ~/.eclipselinktests
-                            """
-                    }
+                    sh """
+                        # Directory for JEE server binaries (WildFly, Glassfish)
+                        # Maven build automatically download and unpack them.
+                        mkdir ~/.eclipselinktests
+                    """
                     withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
                         sh label: '', script: '''
                             gpg --batch --import "${KEYRING}"
@@ -137,11 +135,9 @@ spec:
             steps {
                 container('el-build') {
                     git branch: GIT_BRANCH_RELEASE, credentialsId: SSH_CREDENTIALS_ID, url: GIT_REPOSITORY_URL
-                    sshagent([SSH_CREDENTIALS_ID]) {
-                        sh """
-                            etc/jenkins/release.sh "${RELEASE_VERSION}" "${NEXT_VERSION}" "${DRY_RUN}" "${OVERWRITE_GIT}" "${OVERWRITE_STAGING}"
-                        """
-                    }
+                    sh """
+                        etc/jenkins/release.sh "${RELEASE_VERSION}" "${NEXT_VERSION}" "${DRY_RUN}" "${OVERWRITE_GIT}" "${OVERWRITE_STAGING}"
+                    """
                 }
             }
         }

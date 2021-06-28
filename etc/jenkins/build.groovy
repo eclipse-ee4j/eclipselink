@@ -13,7 +13,6 @@
 // Job input parameters (passed from Properties Content field from Jenkins job):
 //  GIT_REPOSITORY_URL          - Git repository location (URL)
 //  GIT_BRANCH                  - Git branch
-//  SSH_CREDENTIALS_ID          - SSH credentials is used to access Git repository at the GitHub
 //  BUILD_RESULTS_TARGET_DIR    - Location in the projects-storage.eclipse.org server for nightly builds (jar files and test results)
 //  CONTINUOUS_BUILD            - false - full nightly build with LRG and server tests and nightly build publish
 //                                true - continuous build with SRG tests without publishing nightly build results
@@ -109,11 +108,9 @@ spec:
             steps {
                 container('el-build') {
                     git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
-                    sshagent(['SSH_CREDENTIALS_ID']) {
-                        sh """
-                            etc/jenkins/init.sh
-                            """
-                    }
+                    sh """
+                        etc/jenkins/init.sh
+                    """
                     withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
                         sh label: '', script: '''
                             gpg --batch --import "${KEYRING}"
@@ -129,10 +126,9 @@ spec:
         stage('Build') {
             steps {
                 container('el-build') {
-                    sshagent(['SSH_CREDENTIALS_ID']) {
-                        sh """
-                            etc/jenkins/build.sh
-                        """
+                    sh """
+                        etc/jenkins/build.sh
+                    """
                     }
                 }
             }
@@ -183,11 +179,9 @@ spec:
         stage('Publish to snapshots') {
             steps {
                 container('el-build') {
-                    sshagent([SSH_CREDENTIALS_ID]) {
-                        sh """
-                            etc/jenkins/publish_snapshots.sh
-                            """
-                    }
+                    sh """
+                        etc/jenkins/publish_snapshots.sh
+                    """
                 }
             }
         }

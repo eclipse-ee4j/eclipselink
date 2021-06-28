@@ -53,13 +53,10 @@ pipeline {
         // Perform release
         stage('Build') {
             steps {
-                sshagent([SSH_CREDENTIALS_ID]) {
-                    sh '''
-                        etc/jenkins/build_asm.sh
-                    '''
-                }
+                sh '''
+                    etc/jenkins/build_asm.sh
+                '''
             }
         }
-
     }
 }
