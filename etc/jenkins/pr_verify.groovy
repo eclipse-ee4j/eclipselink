@@ -13,7 +13,6 @@
 // Job input parameters (passed from Properties Content field from Jenkins job):
 //  GIT_REPOSITORY_URL          - Git repository location (URL)
 //  GIT_BRANCH                  - Git branch
-//  SSH_CREDENTIALS_ID          - SSH credentials is used to access Git repository at the GitHub
 
 
 pipeline {
