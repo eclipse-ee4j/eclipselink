@@ -66,6 +66,9 @@ spec:
       requests:
         memory: "4Gi"
         cpu: "1"
+    volumeMounts:
+    - name: volume-known-hosts
+      mountPath: /home/jenkins/.ssh    
   - name: el-build
     resources:
       limits:
@@ -78,8 +81,6 @@ spec:
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
-    - name: volume-known-hosts
-      mountPath: /home/jenkins/.ssh      
     - name: settings-xml
       mountPath: /home/jenkins/.m2/settings.xml
       subPath: settings.xml
@@ -100,17 +101,19 @@ spec:
 """
         }
     }
+    tools {
+        maven 'apache-maven-latest'
+        jdk 'adoptopenjdk-hotspot-jdk11-latest'
+    }
     stages {
         // Initialize build environment
         stage('Init') {
             steps {
                 container('el-build') {
                     git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
-                    sshagent(['SSH_CREDENTIALS_ID']) {
-                        sh """
-                            etc/jenkins/init.sh
-                            """
-                    }
+                    sh """
+                        etc/jenkins/init.sh
+                    """
                     withCredentials([file(credentialsId: 'secret-subkeys.asc', variable: 'KEYRING')]) {
                         sh label: '', script: '''
                             gpg --batch --import "${KEYRING}"
@@ -126,11 +129,9 @@ spec:
         stage('Build') {
             steps {
                 container('el-build') {
-                    sshagent(['SSH_CREDENTIALS_ID']) {
-                        sh """
-                            etc/jenkins/build.sh
-                        """
-                    }
+                    sh """
+                        etc/jenkins/build.sh
+                    """
                 }
             }
         }
@@ -167,12 +168,10 @@ spec:
         // Publish to nightly
         stage('Publish to nightly') {
             steps {
-                container('el-build') {
-                    sshagent(['projects-storage.eclipse.org-bot-ssh']) {
-                        sh """
-                            etc/jenkins/publish_nightly.sh
-                            """
-                    }
+                sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                    sh """
+                        etc/jenkins/publish_nightly.sh
+                    """
                 }
             }
         }
@@ -180,11 +179,9 @@ spec:
         stage('Publish to snapshots') {
             steps {
                 container('el-build') {
-                    sshagent([SSH_CREDENTIALS_ID]) {
-                        sh """
-                            etc/jenkins/publish_snapshots.sh
-                            """
-                    }
+                    sh """
+                        etc/jenkins/publish_snapshots.sh
+                    """
                 }
             }
         }
