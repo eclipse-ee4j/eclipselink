@@ -64,6 +64,9 @@ spec:
       requests:
         memory: "4Gi"
         cpu: "1"
+    volumeMounts:
+    - name: volume-known-hosts
+      mountPath: /home/jenkins/.ssh    
   - name: el-build
     resources:
       limits:
@@ -76,8 +79,6 @@ spec:
     volumeMounts:
     - name: tools
       mountPath: /opt/tools
-    - name: volume-known-hosts
-      mountPath: /home/jenkins/.ssh      
     - name: settings-xml
       mountPath: /home/jenkins/.m2/settings.xml
       subPath: settings.xml
@@ -165,12 +166,10 @@ spec:
         // Publish to nightly
         stage('Publish to nightly') {
             steps {
-                container('el-build') {
-                    sshagent(['projects-storage.eclipse.org-bot-ssh']) {
-                        sh """
-                            etc/jenkins/publish_nightly.sh
-                            """
-                    }
+                sshagent(['projects-storage.eclipse.org-bot-ssh']) {
+                    sh """
+                        etc/jenkins/publish_nightly.sh
+                    """
                 }
             }
         }
