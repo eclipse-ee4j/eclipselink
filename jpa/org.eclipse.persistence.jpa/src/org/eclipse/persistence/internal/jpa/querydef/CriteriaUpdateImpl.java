@@ -78,6 +78,9 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     @Override
     public <Y, X extends Y> CriteriaUpdate<T> set(
             SingularAttribute<? super T, Y> attribute, X value) {
+        if(value instanceof Expression) {
+            findRootAndParameters((Expression)value);
+        }
         query.addUpdate(attribute.getName(), value);
         return this;
     }
@@ -85,6 +88,7 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     @Override
     public <Y> CriteriaUpdate<T> set(SingularAttribute<? super T, Y> attribute,
             Expression<? extends Y> value) {
+        findRootAndParameters(value);
         query.addUpdate(attribute.getName(), ((InternalSelection)value).getCurrentNode());
         return this;
     }
@@ -92,6 +96,9 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     public <Y, X extends Y> CriteriaUpdate<T> set(Path<Y> attribute, X value) {
+        if(value instanceof Expression) {
+            findRootAndParameters((Expression)value);
+        }
         query.addUpdate(((PathImpl)attribute).getCurrentNode(), value);
         return this;
     }
@@ -99,6 +106,7 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
     @Override
     public <Y> CriteriaUpdate<T> set(Path<Y> attribute,
             Expression<? extends Y> value) {
+        findRootAndParameters(value);
         query.addUpdate(((PathImpl)attribute).getCurrentNode(), ((InternalSelection)value).getCurrentNode());
         return this;
     }
@@ -106,6 +114,10 @@ public class CriteriaUpdateImpl<T> extends CommonAbstractCriteriaImpl<T> impleme
 
     @Override
     public CriteriaUpdate<T> set(String attributeName, Object value) {
+        if(value instanceof Expression) {
+            findRootAndParameters((Expression)value);
+            value = ((InternalSelection)value).getCurrentNode();
+        }
         query.addUpdate(attributeName, value);
         return this;
     }
