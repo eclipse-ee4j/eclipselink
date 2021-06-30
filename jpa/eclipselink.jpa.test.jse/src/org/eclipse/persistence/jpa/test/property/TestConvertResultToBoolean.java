@@ -21,11 +21,13 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.eclipse.persistence.internal.jpa.EntityManagerFactoryImpl;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.Property;
 import org.eclipse.persistence.jpa.test.property.model.GenericEntity;
+import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -67,8 +69,18 @@ public class TestConvertResultToBoolean {
             List<?> intList = query.getResultList();
             assertNotNull(intList);
             assertEquals(2, intList.size());
-            assertEquals(new Long(1), intList.get(0));
-            assertEquals(new Long(0), intList.get(1));
+
+            DatabasePlatform platform = getPlatform(emf);
+            if(platform.isDB2() || platform.isDerby()) {
+                assertEquals(new Integer(1), intList.get(0));
+                assertEquals(new Integer(0), intList.get(1));
+            } else if(platform.isOracle()) {
+                assertEquals(new java.math.BigDecimal(1), intList.get(0));
+                assertEquals(new java.math.BigDecimal(0), intList.get(1));
+            } else {
+                assertEquals(new Long(1), intList.get(0));
+                assertEquals(new Long(0), intList.get(1));
+            }
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -107,5 +119,9 @@ public class TestConvertResultToBoolean {
                 em.close();
             }
         }
+    }
+
+    private DatabasePlatform getPlatform(EntityManagerFactory emf) {
+        return ((EntityManagerFactoryImpl)emf).getServerSession().getPlatform();
     }
 }

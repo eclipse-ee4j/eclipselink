@@ -38,6 +38,7 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.QueryHints;
 import org.eclipse.persistence.config.SessionCustomizer;
 import org.eclipse.persistence.jpa.test.basic.model.Employee;
+import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
@@ -59,7 +60,7 @@ public class TestQueryHints implements PUPropertiesProvider {
 
     private final static int propertyTimeout  = 3099;
 
-    @Emf(name = "defaultEMF", classes = { Employee.class } )
+    @Emf(name = "defaultEMF", classes = { Employee.class }, createTables = DDLGen.DROP_CREATE )
     private EntityManagerFactory emf;
 
     /**
