@@ -28,5 +28,5 @@ public class CoalesceEntity {
     private java.math.BigDecimal bigDecimal;
 
     @Temporal(TemporalType.DATE)
-    private java.util.Date date;
+    private java.util.Date dateValue;
 }
