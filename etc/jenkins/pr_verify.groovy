@@ -105,7 +105,7 @@ spec:
         stage('Init') {
             steps {
                 container('el-build') {
-                    git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
+//                    git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
                     sh """
                         /opt/bin/mysql-start.sh
                         mkdir ~/.eclipselinktests
