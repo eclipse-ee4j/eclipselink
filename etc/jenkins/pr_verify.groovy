@@ -10,11 +10,6 @@
 //  SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
 //
 
-// Job input parameters (passed from Properties Content field from Jenkins job):
-//  GIT_REPOSITORY_URL          - Git repository location (URL)
-//  GIT_BRANCH                  - Git branch
-
-
 pipeline {
     agent {
         kubernetes {
@@ -104,7 +99,6 @@ spec:
         stage('Init') {
             steps {
                 container('el-build') {
-                    git branch: '${GIT_BRANCH}', url: '${GIT_REPOSITORY_URL}'
                     sh """
                         /opt/bin/mysql-start.sh
                         mkdir ~/.eclipselinktests
