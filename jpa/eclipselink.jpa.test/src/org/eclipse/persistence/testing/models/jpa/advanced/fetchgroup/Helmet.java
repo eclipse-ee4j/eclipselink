@@ -9,6 +9,8 @@
  *
  * Contributors:
  *     David Minsky - initial API and implementation
+ *     01/15/2016:2.7 Mythily Parthasarathy
+ *         - 485984-Added reference to Shelf entity
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup;
 
@@ -23,6 +25,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.Table;
 
@@ -48,6 +51,10 @@ public class Helmet {
     @Column(name="PROPERTY_VALUE")
     @MapKeyColumn(name="PROPERTY_NAME")
     protected Map<String, String> properties;
+
+    @ManyToOne(targetEntity = Shelf.class)
+    @JoinColumn(name = "SHELF_ID", referencedColumnName = "ID")
+    private Shelf shelf;
 
     public Helmet() {
         super();
@@ -84,6 +91,14 @@ public class Helmet {
     
     public void removeProperty(String propertyName) {
         getProperties().remove(propertyName);
+    }
+
+    public void setShelf(Shelf shelf) {
+        this.shelf = shelf;
+    }
+
+    public Shelf getShelf() {
+        return this.shelf;
     }
 
 }
