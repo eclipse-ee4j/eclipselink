@@ -17,6 +17,8 @@
  *       - 356197: Add new VPD type to MultitenantType
  *     11/10/2011-2.4 Guy Pelletier 
  *       - 357474: Address primaryKey option from tenant discriminator column
+ *     01/15/2016-2.7 Mythily Parthasarathy
+ *       - 485984: Retrieve FetchGroup info along with getReference() from cache
  *     08/07/2016-2.6 Dalia Abo Sheasha 
  *       - 499335: Multiple embeddable fields can't reference same object
  *     02/14/2018-2.7 Will Dazey
@@ -2255,7 +2257,12 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             buildAttributesIntoWorkingCopyClone(workingClone, originalCacheKey, query, joinManager, databaseRow, unitOfWork, wasAClone);
             // Set fetch group after building object if not a refresh to avoid checking fetch during building.           
             if ((!isARefresh) && fetchGroupManager != null) {
-                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
+                if (wasAnOriginal) {
+                    //485984: Save the FetchGroup from the original
+                    fetchGroupManager.setObjectFetchGroup(workingClone, fetchGroupManager.getObjectFetchGroup(original), unitOfWork);
+                } else {
+                    fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
+                }
             }
             Object backupClone = policy.buildBackupClone(workingClone, this, unitOfWork);
     

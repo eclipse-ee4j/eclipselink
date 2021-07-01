@@ -10,6 +10,8 @@
  * Contributors:
  *     01/19/2010-2.1 Guy Pelletier 
  *       - 211322: Add fetch-group(s) support to the EclipseLink-ORM.XML Schema
+ *     01/16/2016-2.7 Mythily Parthasarathy
+ *         485984: Added SHELF table and reference to SHELF in HELMET
  ******************************************************************************/  
 package org.eclipse.persistence.testing.models.jpa.advanced.fetchgroup;
 
@@ -25,6 +27,7 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         addTableDefinition(buildCHESTPROTECTORTable());
         addTableDefinition(buildHELMETTable());
         addTableDefinition(buildHELMET_PROPERTIESTable());
+        addTableDefinition(buildSHELFTable());
     }
     
     public static TableDefinition buildHOCKEYGEARTable(){
@@ -191,6 +194,16 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         fieldCOLOR.setUnique(false);
         fieldCOLOR.setIsIdentity(false);
         table.addField(fieldCOLOR);
+
+        FieldDefinition shelfFK = new FieldDefinition();
+        shelfFK.setName("SHELF_ID");
+        shelfFK.setTypeName("NUMERIC");
+        shelfFK.setSize(15);
+        shelfFK.setShouldAllowNull(true);
+        shelfFK.setIsPrimaryKey(false);
+        shelfFK.setUnique(false);
+        shelfFK.setIsIdentity(false);
+        table.addField(shelfFK);
         
         return table;
     }
@@ -231,6 +244,32 @@ public class AdvancedFetchGroupTableCreator extends TogglingFastTableCreator {
         
         return table;
     }
-    
+
+    public static TableDefinition buildSHELFTable() {
+        TableDefinition table = new TableDefinition();
+        table.setName("JPA_SHELF");
+
+        FieldDefinition fieldID = new FieldDefinition();
+        fieldID.setName("ID");
+        fieldID.setTypeName("NUMERIC");
+        fieldID.setSize(15);
+        fieldID.setShouldAllowNull(false);
+        fieldID.setIsPrimaryKey(true);
+        fieldID.setUnique(false);
+        fieldID.setIsIdentity(false);
+        table.addField(fieldID);
+
+        FieldDefinition fieldNAME = new FieldDefinition();
+        fieldNAME.setName("NAME");
+        fieldNAME.setTypeName("VARCHAR");
+        fieldNAME.setSize(42);
+        fieldNAME.setShouldAllowNull(true);
+        fieldNAME.setIsPrimaryKey(false);
+        fieldNAME.setUnique(false);
+        fieldNAME.setIsIdentity(false);
+        table.addField(fieldNAME);
+
+        return table;
+    }
 }
 
