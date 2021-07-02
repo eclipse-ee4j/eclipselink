@@ -324,7 +324,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
             // Outside of a transaction:
             //  - em close
             // Other safeguards, we will close the query if/when
-            //  - we hit the end of the results.
             //  - this query is garbage collected (finalize method)
             //
             // Deferring closing the call avoids having to go through all the
@@ -399,8 +398,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } catch (RuntimeException exception) {
             setRollbackOnly();
             throw new PersistenceException(exception);
-        } finally {
-            close(); // Close the connection once we're done.
         }
     }
 
@@ -693,8 +690,6 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
         } catch (Exception e) {
             setRollbackOnly();
             throw new PersistenceException(e);
-        } finally {
-            close(); // Close the connection once we're done.
         }
     }
 
