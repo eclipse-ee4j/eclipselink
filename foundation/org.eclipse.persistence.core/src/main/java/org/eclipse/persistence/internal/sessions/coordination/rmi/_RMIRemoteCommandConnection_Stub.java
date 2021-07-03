@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -34,6 +34,10 @@ import org.omg.CORBA.portable.ServantObject;
 import org.omg.CORBA_2_3.portable.InputStream;
 import org.omg.CORBA_2_3.portable.OutputStream;
 
+/**
+ * TODO
+ *
+ */
 public class _RMIRemoteCommandConnection_Stub extends Stub implements RMIRemoteCommandConnection {
     
     private static final String[] _type_ids = {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,10 +18,10 @@ package org.eclipse.persistence.jpa.jpql.tools.model.query;
 import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
 
 /**
- * <div><b>BNF:</b> <code>subselect_identification_variable_declaration ::= derived_path_expression [AS] identification_variable {join}*</code><p></div>
+ * <div><p><b>BNF:</b> <code>subselect_identification_variable_declaration ::= derived_path_expression [AS] identification_variable {join}*</code></p></div>
  *
- * <div><b>BNF:</b> <code>derived_path_expression ::= superquery_identification_variable.{single_valued_object_field.}*collection_valued_field |
- *                                                           superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field</code><p></div>
+ * <div><p><b>BNF:</b> <code>derived_path_expression ::= superquery_identification_variable.{single_valued_object_field.}*collection_valued_field |
+ *                                                           superquery_identification_variable.{single_valued_object_field.}*single_valued_object_field</code></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration RangeVariableDeclaration
  *

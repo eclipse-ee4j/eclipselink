@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,11 @@ import org.eclipse.persistence.sessions.coordination.TransportManager;
 /**
  * <p>
  * <b>Purpose</b>: Provide an RMI transport implementation for RCM.
- * <p>
+ * </p><p>
  * <b>Description</b>: This class manages the RMI remote connections to other
  * RCM service instances and posts the local RMI connection to this service instance
  * in a name service so that other RCM service instances can connect to it.
- * <p>
+ * </p>
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */

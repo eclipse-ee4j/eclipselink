@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * The <b>SIZE</b> function returns an integer value, the number of elements of the collection. If
  * the collection is empty, the <b>SIZE</b> function evaluates to zero.
  *
- * <div><b>BNF:</b> <code>expression ::= SIZE(collection_valued_path_expression)</code><p></div>
+ * <div><b>BNF:</b> <code>expression ::= SIZE(collection_valued_path_expression)</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

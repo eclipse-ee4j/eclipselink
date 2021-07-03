@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,7 +29,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The first position in a string is denoted by 1. If the string is not found, 0 is returned. The
  * <code><b>LENGTH</b></code> function returns the length of the string in characters as an integer.
  *
- * <div><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= LOCATE(string_primary, string_primary [, simple_arithmetic_expression])</code></p></div>
  *
  * @see LocateExpression
  *

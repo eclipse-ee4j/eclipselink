@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * The <code><b>SIZE</b></code> function returns an integer value, the number of elements of the
  * collection. If the collection is empty, the <code><b>SIZE</b></code> function evaluates to zero.
  *
- * <div><b>BNF:</b> <code>expression ::= SIZE(collection_valued_path_expression)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= SIZE(collection_valued_path_expression)</code></p></div>
  *
  * @see SizeExpression
  *

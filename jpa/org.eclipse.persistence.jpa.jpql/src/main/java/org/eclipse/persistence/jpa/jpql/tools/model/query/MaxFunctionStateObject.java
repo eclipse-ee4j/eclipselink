@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
  * (i.e., numeric types, string types, character types, or date types). The return type of this
  * function is based on the state-field's type.
  *
- * <div><b>BNF:</b> <code>expression ::= MAX([DISTINCT] state_field_path_expression)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= MAX([DISTINCT] state_field_path_expression)</code></p></div>
  *
  * @see MaxFunction
  *

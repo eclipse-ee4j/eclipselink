@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,11 +19,11 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The query BNF for the items of an <b>IN</b> expression.
  * <p>
  * JPA 1.0:
- * <div><b>BNF:</b> <code>in_item ::= ( actual_in_item {, actual_in_item}* | subquery)</code><p></div>
+ * <div><b>BNF:</b> <code>in_item ::= ( actual_in_item {, actual_in_item}* | subquery)</code><p></p></div>
  * <div><b>BNF:</b> <code>actual_in_item ::= literal | input_parameter</code></div>
  * <p>
  * JPA 2.0:
- * <div><b>BNF:</b> <code>in_item ::= ( actual_in_item {, actual_in_item}* ) | (subquery) | collection_valued_input_parameter</code><p></div>
+ * <div><b>BNF:</b> <code>in_item ::= ( actual_in_item {, actual_in_item}* ) | (subquery) | collection_valued_input_parameter</code><p></p></div>
  * <div><b>BNF:</b> <code>actual_in_item ::= literal | input_parameter</code></div>
  *
  * @version 2.5

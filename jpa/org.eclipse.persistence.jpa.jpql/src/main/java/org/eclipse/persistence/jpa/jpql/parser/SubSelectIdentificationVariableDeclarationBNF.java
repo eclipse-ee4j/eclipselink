@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  *
  * <div><b>BNF:</b> <code>subselect_identification_variable_declaration ::= identification_variable_declaration |
  * derived_path_expression [AS] identification_variable {join}* |
- * derived_collection_member_declaration</code><p></div>
+ * derived_collection_member_declaration</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

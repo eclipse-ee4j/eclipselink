@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -75,8 +75,8 @@ import org.xml.sax.ext.Locator2Impl;
 
 /**
  * <p><b>Purpose:</b>Provide an implementation of ContentHandler that is used by TopLink OXM to
- * build mapped Java Objects from SAX events.
- * <p><b>Responsibilities:</b>
+ * build mapped Java Objects from SAX events.</p>
+ * <p><b>Responsibilities:</b></p>
  * <ul>
  * <li>Implement the ContentHandler and LexicalHandler interfaces</li>
  * <li>Make calls into the appropriate NodeValues based on the incoming SAXEvents</li>

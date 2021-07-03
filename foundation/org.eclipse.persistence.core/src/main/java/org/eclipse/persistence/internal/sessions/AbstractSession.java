@@ -4584,12 +4584,10 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Return the log level
-     * </p><p>
+     * </p>
      *
      * @return the log level
-     * </p><p>
      * @param category  the string representation of a EclipseLink category, e.g. "sql", "transaction" ...
-     * </p>
      */
     @Override
     public int getLogLevel(String category) {
@@ -4600,9 +4598,8 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Return the log level
-     * </p><p>
-     * @return the log level
      * </p>
+     * @return the log level
      */
     @Override
     public int getLogLevel() {
@@ -4613,10 +4610,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Set the log level
-     * </p><p>
+     * </p>
      *
      * @param level     the new log level
-     * </p>
      */
     @Override
     public void setLogLevel(int level) {
@@ -4637,7 +4633,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
     /**
      * PUBLIC:
      * <p>
-     * Check if a message of the given level would actually be logged.
+     * Check if a message of the given level would actually be logged.</p>
      *
      * @return true if the given message level will be logged
      * @param level  the log request level
@@ -4655,14 +4651,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level and category that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p>
      */
     public void log(int level, String category, String message) {
         if (this.isLoggingOff) {
@@ -4678,16 +4671,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category and a parameter that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param param  a parameter of the message
-     * </p>
      */
     public void log(int level, String category, String message, Object param) {
         if (this.isLoggingOff) {
@@ -4703,18 +4692,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category and two parameters that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param param1  a parameter of the message
-     * </p><p>
      * @param param2  second parameter of the message
-     * </p>
      */
     public void log(int level, String category, String message, Object param1, Object param2) {
         if (this.isLoggingOff) {
@@ -4730,20 +4714,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category and three parameters that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param param1  a parameter of the message
-     * </p><p>
      * @param param2  second parameter of the message
-     * </p><p>
      * @param param3  third parameter of the message
-     * </p>
      */
     public void log(int level, String category, String message, Object param1, Object param2, Object param3) {
         if (this.isLoggingOff) {
@@ -4759,16 +4737,12 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category and an array of parameters that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param params  array of parameters to the message
-     * </p>
      */
     public void log(int level, String category, String message, Object[] params) {
         if (this.isLoggingOff) {
@@ -4781,18 +4755,13 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category, parameters and accessor that needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param params  array of parameters to the message
-     * </p><p>
      * @param accessor  the connection that generated the log entry
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p>
      */
     public void log(int level, String category, String message, Object[] params, Accessor accessor) {
         if (this.isLoggingOff) {
@@ -4805,20 +4774,14 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a message with level, category, parameters and accessor.  shouldTranslate determines if the message needs to be translated.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param message  the string message
-     * </p><p>
      * @param params  array of parameters to the message
-     * </p><p>
      * @param accessor  the connection that generated the log entry
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param shouldTranslate  true if the message needs to be translated.
-     * </p>
      */
     public void log(int level, String category, String message, Object[] params, Accessor accessor, boolean shouldTranslate) {
         if (this.isLoggingOff) {
@@ -4835,14 +4798,11 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * PUBLIC:
      * <p>
      * Log a throwable with level and category.
-     * </p><p>
+     * </p>
      *
      * @param level  the log request level value
-     * </p><p>
      * @param category  the string representation of a EclipseLink category.
-     * </p><p>
      * @param throwable  a Throwable
-     * </p>
      */
     public void logThrowable(int level, String category, Throwable throwable) {
         if (this.isLoggingOff) {
@@ -4861,10 +4821,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a severe level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void severe(String message, String category) {
         if (this.isLoggingOff) {
@@ -4878,10 +4837,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a warning level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void warning(String message, String category) {
         if (this.isLoggingOff) {
@@ -4895,10 +4853,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a info level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void info(String message, String category) {
         if (this.isLoggingOff) {
@@ -4912,10 +4869,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a config level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void config(String message, String category) {
         if (this.isLoggingOff) {
@@ -4929,10 +4885,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a fine level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void fine(String message, String category) {
         if (this.isLoggingOff) {
@@ -4946,10 +4901,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a finer level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void finer(String message, String category) {
         if (this.isLoggingOff) {
@@ -4963,10 +4917,9 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
      * <p>
      * This method is called when a finest level message needs to be logged.
      * The message will be translated
-     * </p><p>
+     * </p>
      *
      * @param message  the message key
-     * </p>
      */
     public void finest(String message, String category) {
         if (this.isLoggingOff) {

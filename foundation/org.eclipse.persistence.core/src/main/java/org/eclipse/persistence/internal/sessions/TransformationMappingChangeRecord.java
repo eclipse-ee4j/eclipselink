@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,7 +20,7 @@ import org.eclipse.persistence.sessions.Record;
 /**
  * <p>
  * <b>Purpose</b>: To record the changes for attributes that can be represented as Transformation Mapping
- * <p>
+ * </p>
  */
 public class TransformationMappingChangeRecord extends ChangeRecord implements org.eclipse.persistence.sessions.changesets.TransformationMappingChangeRecord {
     protected AbstractRecord rowCollection;

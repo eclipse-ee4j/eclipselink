@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * Bulk delete operation apply to entities of a single entity class (together with its subclasses,
  * if any).
  *
- * <div><b>BNF:</b> <code>delete_statement ::= delete_clause [where_clause]</code><p></div>
+ * <div><b>BNF:</b> <code>delete_statement ::= delete_clause [where_clause]</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

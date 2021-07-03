@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,10 @@
 package org.eclipse.persistence.oxm.mappings;
 /**
  * <p><b>Purpose:</b> Used in conjunction with XMLAnyObject/CollectionMapping and XMLCompositeObject/CollectionMapping
- * to specify when (if at all) to keep parts of the unmarshalled document as nodes.
+ * to specify when (if at all) to keep parts of the unmarshalled document as nodes.</p>
  *
  * <table>
- * <caption></caption>
+ * <caption>UnmarshalKeepAsElementPolicy</caption>
  * <tr>
  * <td>KEEP_ALL_AS_ELEMENT</td>
  * <td>Any xml matching this mapping will be brough into the object model as a node.</td>

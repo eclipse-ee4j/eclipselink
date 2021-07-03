@@ -110,7 +110,7 @@ import org.eclipse.persistence.sessions.Project;
 import org.eclipse.persistence.sessions.SessionEventListener;
 
 /**
- * <p><b>Purpose:</b>Provide a EclipseLink implementation of the JAXBContext interface.
+ * <p><b>Purpose:</b>Provide a EclipseLink implementation of the JAXBContext interface.</p>
  * <p><b>Responsibilities:</b><ul>
  * <li>Create Marshaller instances</li>
  * <li>Create Unmarshaller instances</li>
@@ -121,14 +121,14 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  * </ul>
  * <p>This is the EclipseLink JAXB 2.0 implementation of jakarta.xml.bind.JAXBContext. This class
  * is created by the JAXBContextFactory and is used to create Marshallers, Unmarshallers, Validators,
- * Binders and Introspectors. A JAXBContext can also be used to create Schema Files.
+ * Binders and Introspectors. A JAXBContext can also be used to create Schema Files.</p>
  * <p><b>Bootstrapping:</b>
  * When bootstrapping the JAXBContext from a EclipseLink externalized metadata file(s) a number of
  * input options are available.  The externalized metadata file (one per package) is passed in
  * through a property when creating the JAXBContext.  The key used in the properties map is
  * "eclipselink-oxm-xml".  The externalized metadata file can be set in the properties map in
- * one of three ways:
- * <p>i) For a single externalized metadata file, one of the following can be set in the properties map:<ul>
+ * one of three ways:</p>
+ * <p>i) For a single externalized metadata file, one of the following can be set in the properties map:</p><ul>
  * <li>java.io.File</li>
  * <li>java.io.InputStream</li>
  * <li>java.io.Reader</li>
@@ -142,14 +142,14 @@ import org.eclipse.persistence.sessions.SessionEventListener;
  * xml-bindings element in the externalized metadata file.
  * <p>ii) For multiple externalized metadata files where the package name is specified within each externalized
  * metadata file, a List can be used.  The entries in the List are to be one of the types listed in i) above.
- * <p>iii) For multiple externalized metadata files where the package name is not specified in each externalized
+ * </p><p>iii) For multiple externalized metadata files where the package name is not specified in each externalized
  * metadata file, a Map can be used.  The key must be a String (package name) and  each value in the Map
  * (externalized metadata file) is to be one of the types listed in i) above.
- * <p>Note that in each of the above cases the package name can be set via package-name attribute on the
+ * </p><p>Note that in each of the above cases the package name can be set via package-name attribute on the
  * xml-bindings element in the externalized metadata file.  If set, any java-type names in the given metadata
  * file that do not contain the package name will have that package name prepended to it.  Also note that a
  * List or Map can be used for a single externalized metadata file.
- * <p>
+ * </p>
  * @see jakarta.xml.bind.JAXBContext
  * @see org.eclipse.persistence.jaxb.JAXBMarshaller
  * @see org.eclipse.persistence.jaxb.JAXBUnmarshaller

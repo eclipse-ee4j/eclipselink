@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,13 +20,13 @@ import org.eclipse.persistence.sessions.coordination.ServiceId;
  * <p>
  * <b>Purpose</b>: A structured message object to announce a new RCM service
  * instance becoming available
- * <p>
+ * </p><p>
  * <b>Description</b>: This object is sent over the multicast by a service wanting
  * to join the EclipseLink cluster. It is received by all other services subscribing
  * to the same channel. Receipt of this announcement triggers an exchange protocol
  * between the sending and receiving services to establish communications with all
  * of the other services on the channel.
- * <p>
+ * </p>
  */
 public class ServiceAnnouncement {
 

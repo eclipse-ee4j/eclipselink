@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,12 +20,13 @@ import java.io.Serializable;
 /**
  * <p>
  * <b>Purpose</b>: Define a listener for object change tracking.
+ * </p>
  * <p>
  * <b>Description</b>: Listener is notified on a PropertyChangeEvent from the object it belongs to.
+ * </p>
  * <p>
  * <b>Responsibilities</b>: Set the flag to true when there is any change in the object.
- * <ul>
- * </ul>
+ * </p>
  */
 public class ObjectChangeListener implements PropertyChangeListener, Serializable {
     // when EclipseLink merges events should be ignored that are not issued by EclipseLink

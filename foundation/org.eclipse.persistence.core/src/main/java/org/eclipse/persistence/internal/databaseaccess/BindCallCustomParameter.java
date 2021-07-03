@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -42,10 +42,8 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * used for binding by DatabaseCall:
  * descendants of DatabasePlatform may create instances of descendants of this class
  * in customModifyInDatabaseCall method.
- * <p>
+ * </p>
  * <b>Responsibilities</b>:
- * <ul>
- * </ul>
  */
 public class BindCallCustomParameter implements Serializable {
     /**

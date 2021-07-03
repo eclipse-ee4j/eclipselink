@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,7 +21,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  * One of the four binary operators. A division is a mathematical operation of dividing one operand
  * (the dividend) by a second operand (the divisor).
  *
- * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression / arithmetic_term</code><p></div>
+ * <div><b>BNF:</b> <code>arithmetic_expression ::= arithmetic_expression / arithmetic_term</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

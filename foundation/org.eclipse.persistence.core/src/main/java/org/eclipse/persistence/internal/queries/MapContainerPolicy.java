@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -57,9 +57,9 @@ import org.eclipse.persistence.queries.DatabaseQuery;
 /**
  * <p><b>Purpose</b>: A MapContainerPolicy is ContainerPolicy whose container class
  * implements the Map interface.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
- * Provide the functionality to operate on an instance of a Map.
+ * Provide the functionality to operate on an instance of a Map.</p>
  *
  * @see ContainerPolicy
  * @see CollectionContainerPolicy

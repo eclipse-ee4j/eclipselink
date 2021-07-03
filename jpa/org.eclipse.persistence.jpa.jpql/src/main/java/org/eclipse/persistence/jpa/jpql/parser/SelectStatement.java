@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
 /**
  * A <code><b>SELECT</b></code> query is an operation that retrieves data from one or more tables or
  * views.
- * <p>
+ * <p></p>
  * JPA:
  * <div><b>BNF:</b> <code>select_statement ::= select_clause
  *                                                    from_clause
@@ -30,7 +30,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                    [groupby_clause]
  *                                                    [having_clause]
  *                                                    [orderby_clause]</code></div>
- * <p>
+ * <p></p>
  * EclipseLink 2.4:
  * <div><b>BNF:</b> <code>select_statement ::= select_clause
  *                                                    from_clause
@@ -39,7 +39,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                    [having_clause]
  *                                                    [orderby_clause]
  *                                                    {union_clause}*</code></div>
- * <p>
+ * <p></p>
  * HQL query (EclipseLink 2.5):
  * <div><b>BNF:</b> <code>select_statement ::= [select_clause]
  *                                                    from_clause
@@ -48,7 +48,7 @@ import org.eclipse.persistence.jpa.jpql.WordParser;
  *                                                    [having_clause]
  *                                                    [orderby_clause]
  *                                                    {union_clause}*</code></div>
- * <p>
+ * <p></p>
  *
  * @see FromClause
  * @see GroupByClause

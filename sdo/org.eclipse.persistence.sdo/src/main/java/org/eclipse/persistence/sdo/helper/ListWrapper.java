@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -688,11 +688,11 @@ public class ListWrapper implements List, Serializable, Cloneable {
      * INTERNAL:
      * Return the occurrence number for the current index in this list.
      * The return value will be non-zero when there are duplicates of an object instance.
-     * Example: occurrence number of index 1 = 0, of index 2 = 1<br/>
-     *     [index]                              occurrence<br/>
-     *         [0]    ItemImpl  (id=58)        0<br/>
-     *        [1]    ItemImpl  (id=35)        0<br/>
-     *         [2]    ItemImpl  (id=35)           1<br/>
+     * <p>Example: occurrence number of index 1 = 0, of index 2 = 1</p>
+     *     <p>[index]                              occurrence</p>
+     *         <p>[0]    ItemImpl  (id=58)        0</p>
+     *        <p>[1]    ItemImpl  (id=35)        0</p>
+     *         <p>[2]    ItemImpl  (id=35)           1</p>
      *
      * @param index
      * @return

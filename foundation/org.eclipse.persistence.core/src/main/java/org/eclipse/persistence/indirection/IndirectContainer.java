@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,11 +17,12 @@ package org.eclipse.persistence.indirection;
 
 /**
  * <b>Purpose</b>:
+ * <p>
  * Define an interface for a Container that can also act as an EclipseLink
  * "indirection" object; i.e. the Container will only read its contents from
  * the database when necessary (typically, on receipt of the first
  * Container-related message).
- * <p>
+ * </p>
  *
  * @see org.eclipse.persistence.internal.indirection.TransparentIndirectionPolicy
  * @author Big Country

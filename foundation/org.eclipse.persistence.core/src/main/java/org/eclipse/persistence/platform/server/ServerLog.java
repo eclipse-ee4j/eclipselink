@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,12 +24,11 @@ import org.eclipse.persistence.logging.*;
  * Basic logging class that provides framework for integration with the application
  * server log. This class is used when messages need to be logged through an application
  * server, e.g. OC4J.
- *
+ * </p>
  *  @see SessionLog
  *  @see AbstractSessionLog
  *  @see SessionLogEntry
  *  @see org.eclipse.persistence.sessions.Session Session
- * </p>
  */
 public class ServerLog extends AbstractSessionLog {
 
@@ -47,10 +46,9 @@ public class ServerLog extends AbstractSessionLog {
      * PUBLIC:
      * <p>
      * Log a SessionLogEntry
-     * </p><p>
+     * </p>
      *
      * @param entry SessionLogEntry that holds all the information for a TopLink logging event
-     * </p>
      */
     @Override
     public void log(SessionLogEntry entry) {
@@ -80,12 +78,10 @@ public class ServerLog extends AbstractSessionLog {
     /**
      * <p>
      * Log message to a writer by default.  It needs to be overridden by the subclasses.
-     * </p><p>
+     * </p>
      *
      * @param level the log request level
-     * </p><p>
      * @param message the formatted string message
-     * </p>
      */
     protected void basicLog(int level, String category, String message) {
         try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -390,12 +390,9 @@ public abstract class RuntimeServices {
     /**
      * <p>
      * Return the log level
-     * </p><p>
-     *
-     * @return the log level
-     * </p><p>
-     * @param category  the string representation of an EclipseLink category, e.g. "sql", "transaction" ...
      * </p>
+     * @param category  the string representation of an EclipseLink category, e.g. "sql", "transaction" ...
+     * @return the log level
      */
     public int getLogLevel(String category) {
         return getSession().getLogLevel(category);
@@ -404,10 +401,9 @@ public abstract class RuntimeServices {
     /**
      * <p>
      * Set the log level
-     * </p><p>
+     * </p>
      *
      * @param level     the new log level
-     * </p>
      */
     public void setLogLevel(int level) {
         getSession().setLogLevel(level);
@@ -416,13 +412,11 @@ public abstract class RuntimeServices {
     /**
      * <p>
      * Check if a message of the given level would actually be logged.
-     * </p><p>
+     * </p>
      *
-     * @return true if the given message level will be logged
-     * </p><p>
      * @param Level  the log request level
      * @param category  the string representation of an EclipseLink category
-     * </p>
+     * @return true if the given message level will be logged
      */
     public boolean shouldLog(int Level, String category) {
         return getSession().shouldLog(Level, category);

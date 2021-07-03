@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
 /**
  * <p>
  * <b>Purpose</b>: This class provides an implementation of an internal RCM Command.
+ * </p>
  * <p>
  * <b>Description</b>: This command is used by the RCM when it receives a connection
  * from a remote service. It adds the connection to its own list, and then sends this command
@@ -27,7 +28,7 @@ import org.eclipse.persistence.sessions.coordination.RemoteCommandManager;
  * this service, accompanying the command with a reference to this own service id.  The
  * remote service can then create a connection using the service id stored in the command and
  * add the connection to its connection list.
- * <p>
+ * </p>
  * @see org.eclipse.persistence.sessions.coordination.TransportManager
  * @author Steven Vo
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)

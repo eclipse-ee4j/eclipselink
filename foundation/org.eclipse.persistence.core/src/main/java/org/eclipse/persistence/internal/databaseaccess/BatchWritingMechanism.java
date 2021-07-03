@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,12 +21,12 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 
 /**
  * INTERNAL:
- *    BatchWritingMechanism is a private interface, used by the DatabaseAccessor. it provides the required
+ *    <p>BatchWritingMechanism is a private interface, used by the DatabaseAccessor. it provides the required
  *  behavior for batching statements, for write.<p>
  *    There are currently two types of the Mechanism implemented, one to handle the tradition dynamic SQL
  *  batching and another to handle Parameterized SQL.  Depending on what is passed to these mechanisms
- *  they may decide to switch the current one out to the alternative type.<p>
- *    In bug# 214910 this interface was switched to an abstract class<p>
+ *  they may decide to switch the current one out to the alternative type.</p>
+ *    <p>In bug# 214910 this interface was switched to an abstract class</p>
  *
  *    @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */

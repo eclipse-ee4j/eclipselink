@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.AbstractExpression.*;
 /**
  * A compound {@link StateObject} has a left and right expressions combined by an identifier.
  *
- * <div><b>BNF:</b> <code>expression ::= left_expression &lt;identifier&gt; right_expression</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= left_expression &lt;identifier&gt; right_expression</code></p></div>
  *
  * @see CompoundExpression
  *

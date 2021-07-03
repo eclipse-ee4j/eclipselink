@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,12 +20,12 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA 1.0:
  * <div><b>BNF:</b> <code>single_valued_path_expression ::= state_field_path_expression |
- *                                                                 single_valued_association_path_expression</code><p></div>
+ *                                                                 single_valued_association_path_expression</code><p></p></div>
  * <p>
  * JPA 2.0:
  * <div><b>BNF:</b> <code>single_valued_path_expression ::= qualified_identification_variable |
  *                                                                 state_field_path_expression |
- *                                                                 single_valued_object_path_expression</code><p></div>
+ *                                                                 single_valued_object_path_expression</code><p></p></div>
  *
  * @version 2.4
  * @since 2.3

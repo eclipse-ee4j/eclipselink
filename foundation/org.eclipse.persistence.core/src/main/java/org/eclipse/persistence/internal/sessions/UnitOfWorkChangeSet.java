@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,12 @@ import org.eclipse.persistence.queries.FetchGroup;
 /**
  * <p>
  * <b>Purpose</b>: This is the overall collection of changes.
+ * </p>
  * <p>
  * <b>Description</b>: It holds all of the object changes and
  * all ObjectChanges, with the same classType and primary keys, referenced in a changeSet should be
  * the same object.
- * <p>
+ * </p>
  */
 public class UnitOfWorkChangeSet implements Serializable, org.eclipse.persistence.sessions.changesets.UnitOfWorkChangeSet {
 

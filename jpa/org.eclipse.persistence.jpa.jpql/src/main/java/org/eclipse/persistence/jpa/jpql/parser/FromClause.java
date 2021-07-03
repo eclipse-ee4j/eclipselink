@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,10 +23,10 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * contain multiple identification variable declarations separated by a comma (,).
  * <p>
  * JPA 1.0, 2.0, 2.1, EclipseLink 1.0 - 2.4:
- * <div><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*</code><p></div>
+ * <div><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}*</code><p></p></div>
  *
  * EclipseLink 2.5:
- * <div><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}* [hierarchical_query_clause] [asof_clause]</code><p></div>
+ * <div><b>BNF:</b> <code>from_clause ::= FROM identification_variable_declaration {, {identification_variable_declaration | collection_member_declaration}}* [hierarchical_query_clause] [asof_clause]</code><p></p></div>
  *
  * @version 2.5
  * @since 2.3

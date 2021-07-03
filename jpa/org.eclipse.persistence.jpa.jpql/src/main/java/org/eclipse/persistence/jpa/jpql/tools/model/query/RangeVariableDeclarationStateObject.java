@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,7 +24,7 @@ import org.eclipse.persistence.jpa.jpql.tools.spi.IManagedType;
  * entity abstract schema type, more than one identification variable ranging over the abstract
  * schema type is needed in the <code><b>FROM</b></code> clause.
  *
- * <div><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code><p></div>
+ * <div><p><b>BNF:</b> <code>range_variable_declaration ::= abstract_schema_name [AS] identification_variable</code></p></div>
  *
  * @see org.eclipse.persistence.jpa.jpql.parser.RangeVariableDeclaration RangeVariableDeclaration
  *

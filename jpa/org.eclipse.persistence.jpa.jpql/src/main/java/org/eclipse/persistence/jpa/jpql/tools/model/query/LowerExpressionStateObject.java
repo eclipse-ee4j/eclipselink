@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,7 +22,7 @@ import static org.eclipse.persistence.jpa.jpql.parser.Expression.*;
 /**
  * The <code><b>LOWER</b></code> function converts a string to lower case and it returns a string.
  *
- * <div><b>BNF:</b> <code>expression ::= LOWER(string_primary)</code><p></div>
+ * <div><p><b>BNF:</b> <code>expression ::= LOWER(string_primary)</code></p></div>
  *
  * @see LowerExpression
  *

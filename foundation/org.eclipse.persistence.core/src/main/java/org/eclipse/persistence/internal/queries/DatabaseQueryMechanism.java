@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,10 +63,10 @@ import org.eclipse.persistence.tools.profiler.QueryMonitor;
  * for all types of queries.  Most of the work performed by the query framework is
  * performed in the query mechanism.  The query mechanism contains the internal
  * knowledge necessary to perform the specific database operation.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Provide a common protocol for query mechanism objects.
- * Provides all of the database specific work for the assigned query.
+ * Provides all of the database specific work for the assigned query.</p>
  *
  * @author Yvon Lavoie
  * @since TOPLink/Java 1.0

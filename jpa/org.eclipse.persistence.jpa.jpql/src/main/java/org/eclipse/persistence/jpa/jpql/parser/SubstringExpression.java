@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -19,17 +19,17 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * The second and third arguments of the <b>SUBSTRING</b> function denote the starting position and
  * length of the substring to be returned. These arguments are integers. The first position of a
  * string is denoted by 1. The <b>SUBSTRING</b> function returns a string.
- * <p>
+ * <p></p>
  * JPA 1.0:
  * <div><b>BNF</b> ::= <code>SUBSTRING(string_primary, simple_arithmetic_expression, simple_arithmetic_expression)</code></div>
- * <p>
+ * <p></p>
  * JPA 2.0:
  * <div><b>BNF</b> ::= <code>SUBSTRING(string_primary, simple_arithmetic_expression [, simple_arithmetic_expression])</code></div>
  * <p>
  * JPA 2.1:
  * <div><b>BNF</b> ::= <code>SUBSTRING(string_expression, arithmetic_expression [, arithmetic_expression])</code></div>
  *
- * <div>Example: <b>UPDATE</b> Employee e <b>SET</b> e.firstName = <b>SUBSTRING</b>('TopLink Workbench', 1, 8)<p></div>
+ * <div>Example: <b>UPDATE</b> Employee e <b>SET</b> e.firstName = <b>SUBSTRING</b>('TopLink Workbench', 1, 8)<p></p></div>
  *
  * @version 2.5
  * @since 2.3

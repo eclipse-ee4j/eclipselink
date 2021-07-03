@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,9 +29,9 @@ import org.eclipse.persistence.internal.security.PrivilegedNewInstanceFromClass;
  * <p><b>Purpose</b>: A SortedCollectionContainerPolicy is ContainerPolicy whose
  * container class implements the SortedInterface interface.
  * Added for BUG # 3233263
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
- * Provide the functionality to operate on an instance of a SortedSet.
+ * Provide the functionality to operate on an instance of a SortedSet.</p>
  *
  * @see ContainerPolicy
  * @see MapContainerPolicy

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,14 +22,28 @@ import java.rmi.RemoteException;
  * <p>
  * <b>Purpose</b>: The interface for the remote RMI object used for transporting
  * the remote command.
- * <p>
+ * </p><p>
  * <b>Description</b>: This interface is the RMI remote object interface that is
- * wrapped by the connection abstraction.
+ * wrapped by the connection abstraction.</p>
  *
  * @see org.eclipse.persistence.sessions.coordination.Command
  * @since OracleAS TopLink 10<i>g</i> (9.0.4)
  */
 public interface RMIRemoteCommandConnection extends Remote {
+    
+    /**
+     * TODO
+     * @param command TODO
+     * @return TODO
+     * @throws RemoteException TODO
+     */
     Object executeCommand(Command command) throws RemoteException;
+
+    /**
+     * TODO
+     * @param command TODO
+     * @return TODO
+     * @throws RemoteException TODO
+     */
     Object executeCommand(byte[] command) throws RemoteException;
 }

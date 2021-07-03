@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2006, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,7 +23,7 @@ package org.eclipse.persistence.jpa.jpql.parser;
  * <p>
  * JPA 2.1:
  * <div><b>BNF:</b> <code>expression ::= LOWER(string_expression)</code></div>
- * <p>
+ * <p></p>
  *
  * @version 2.5
  * @since 2.4

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -50,11 +50,12 @@ import org.junit.Assert;
 /**
  * <p>
  * <b>Purpose</b>: Test EJBQL exceptions.
- * <p>
+ * </p>
  * <b>Description</b>: This class creates a test suite, initializes the database
  * and adds tests to the suite.
  * <p>
  * <b>Responsibilities</b>:
+ * </p>
  * <ul>
  * <li> Run tests for expected EJBQL exceptions thrown
  * </ul>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,14 +29,13 @@ import org.eclipse.persistence.internal.sessions.*;
  * <b>Description</b>: All queries executed through this special lightweight
  * session will return results as of a past time.  Objects read will be cached
  * in a special isolated cache.
- * <p>
+ * </p>
  * <b>Responsibilities</b>:
  *    <ul>
  *    <li> Execute all read queries as of a past time.
  *    <li> Insure that all objects read are cached in an Identity map completely isolated from that of its parent.
  *    <li> Once a query has been uniquely prepared to read past objects, execute the call on the parent session.
  *    </ul>
- * <p>
  * @author Stephen McRitchie
  * @since OracleAS TopLink 10<i>g</i> (10.1.3)
  * @see org.eclipse.persistence.sessions.Session#acquireHistoricalSession

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,15 +45,15 @@ import commonj.sdo.impl.ExternalizableDelegator;
  *   web container session saving or directly in an application using the function
  *   ObjectOutputStream.writeObject(Object).
  *   The Serializable and Externalizable framework handles automatic or user defined
- *   reading/writing of streams depending on which interface functions are realized in the implementing classes.
+ *   reading/writing of streams depending on which interface functions are realized in the implementing classes.</p>
  *
  * <p>The Serializable interface has no operations - therefore a class that implements
  * it needs to add no additional functionality.
  *     Why do this? - For security.  The security manager in the JVM will only serialize objects at
  * runtime if they are flagged as Serializable (or Externalizable) so that by default
- * java classes do not expose themselves to serialization.  (See p49 of Java Security 2nd edition).
+ * java classes do not expose themselves to serialization.  (See p49 of Java Security 2nd edition).</p>
  *
- * <p>There are 3 levels of serialization control.
+ * <p>There are 3 levels of serialization control.</p>
  * <ul><li><i>1) Default Serialization</i><br>
  *     Here we make the class implement Serializable, mark non-serializable fields as
  * transient and implement no new functions.</li>
@@ -71,7 +71,7 @@ import commonj.sdo.impl.ExternalizableDelegator;
  * serialization format on page 64, section 6 - Java Serialization of DataObjects.
  *     The process will involve gzip serialization of the xml data with UTF representation of the
  * Xpath address of the current DataObject inside the entire tree along with its identification as root/no-root in
- * binary 1/0 format as follows.
+ * binary 1/0 format as follows.</p>
  *
  * <ul><li><b>Security:</b><br>
  *     The following public functions expose a data replacement vulnerability where an
@@ -87,12 +87,12 @@ import commonj.sdo.impl.ExternalizableDelegator;
  * invoke multithreaded clients.</li>
  *
  *     <li><b>Scalability:</b><br></li>
- *     <li>XML Serialization Size is 4GB:<br>
+ *     <li>XML Serialization Size is 4GB:<p>
  *     There is a limitation set by the SDO Specification on the size of the DataObject serialization.
  *     According to the spec we must use an integer to define the size of the GZIP buffer that is serialized.
  *     This size is limited to +/- 2GB.  This limitation is actually set by the JVM itself because a
  *     call to buffer.length returns a signed 32 bit integer.
- * <p></li>
+ * </p></li>
  * <li><b>Performance:</b><br>
  *    Using custom serialization via the Externalizable interface is 30% faster than the
  *    default java serialization because the JVM does not need to discover the class definition.</li>

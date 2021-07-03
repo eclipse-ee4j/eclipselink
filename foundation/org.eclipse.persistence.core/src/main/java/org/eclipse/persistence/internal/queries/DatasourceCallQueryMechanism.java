@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -52,10 +52,10 @@ import org.eclipse.persistence.queries.WriteObjectQuery;
 /**
  * <p><b>Purpose</b>:
  * Mechanism used for call queries.
- * <p>
+ * </p>
  * <p><b>Responsibilities</b>:
  * Executes the appropriate call.
- *
+ * </p>
  * @author James Sutherland
  * @since OracleAS TopLink 10<i>g</i> (10.0.3)
  */

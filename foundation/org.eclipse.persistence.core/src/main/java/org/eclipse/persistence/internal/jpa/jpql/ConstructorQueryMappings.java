@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -135,11 +135,12 @@ public final class ConstructorQueryMappings {
     }
 
     /**
+     * <p>
      * This visitor visits the constructor items and adds the attribute type mapped to the name.
-     * <p/>
-     * Example:<br/>
-     * e.name -> "name" : String<br/>
-     * e.address.zipcode -> "zipcode" : int
+     * </p>
+     * <p>Example:</p>
+     * <p>e.name -> "name" : String</p>
+     * <p>e.address.zipcode -> "zipcode" : int</p>
      */
     private class ConstructorItemVisitor extends AbstractEclipseLinkExpressionVisitor {
 

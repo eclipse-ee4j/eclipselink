@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,18 +38,18 @@ import org.eclipse.persistence.sessions.remote.DistributedSession;
 import org.eclipse.persistence.internal.sessions.remote.*;
 
 /**
- * <H2>ProxyIndirectionPolicy</H2>
+ * <h2>ProxyIndirectionPolicy</h2>
  *
- * Define the behavior for Proxy Indirection.<P>
+ * <p>Define the behavior for Proxy Indirection.</p>
  *
- * Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
+ * <p>Proxy Indirection uses the <CODE>Proxy</CODE> and <CODE>InvocationHandler</CODE> features
  * of JDK 1.3 to provide "transparent indirection" for 1:1 relationships.  In order to use Proxy
- * Indirection:<P>
+ * Indirection:</p>
  *
- * <UL>
- *        <LI>The target class must implement at least one public interface
- *        <LI>The attribute on the source class must be typed as that public interface
- * </UL>
+ * <ul>
+ *        <li>The target class must implement at least one public interface</li>
+ *        <li>The attribute on the source class must be typed as that public interface</li>
+ * </ul>
  *
  * In this policy, proxy objects are returned during object creation.  When a message other than
  * <CODE>toString</CODE> is called on the proxy the real object data is retrieved from the database.
