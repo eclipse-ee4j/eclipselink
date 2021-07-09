@@ -10,9 +10,10 @@
  * SPDX-License-Identifier: EPL-2.0 OR BSD-3-Clause
  */
 
-
 package org.eclipse.persistence.jpa.test.mapping;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
@@ -28,9 +29,8 @@ import org.junit.runner.RunWith;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,11 +62,11 @@ public class TestMultitenantOneToMany {
             em.createNativeQuery("CREATE TABLE tenant_1.parent(id bigint primary key)").executeUpdate();
             em.createNativeQuery("CREATE TABLE tenant_2.parent(id bigint primary key)").executeUpdate();
             em.createNativeQuery("CREATE TABLE tenant_1.children(id bigint NOT NULL, parent_id bigint, PRIMARY KEY " +
-                    "(id), CONSTRAINT parent_fkey FOREIGN KEY (parent_id) REFERENCES tenant_1.parent (id) ON UPDATE " +
-                    "CASCADE ON DELETE CASCADE)").executeUpdate();
+                    "(id), CONSTRAINT parent_fkey FOREIGN KEY (parent_id) REFERENCES tenant_1.parent (id))")
+                    .executeUpdate();
             em.createNativeQuery("CREATE TABLE tenant_2.children(id bigint NOT NULL, parent_id bigint, PRIMARY KEY " +
-                    "(id), CONSTRAINT parent_fkey FOREIGN KEY (parent_id) REFERENCES tenant_2.parent (id) ON UPDATE " +
-                    "CASCADE ON DELETE CASCADE)").executeUpdate();
+                    "(id), CONSTRAINT parent_fkey FOREIGN KEY (parent_id) REFERENCES tenant_2.parent (id))")
+                    .executeUpdate();
             em.createNativeQuery("INSERT INTO tenant_1.parent(id) VALUES(1)").executeUpdate();
             em.createNativeQuery("INSERT INTO tenant_2.parent(id) VALUES(2)").executeUpdate();
             em.createNativeQuery("INSERT INTO tenant_1.children(id, parent_id) VALUES(10, 1)").executeUpdate();
@@ -83,11 +83,10 @@ public class TestMultitenantOneToMany {
     }
 
     @After
-    public void tearDown() {
+    public void cleanUp() {
         EntityManager em = emf.createEntityManager();
         try {
             em.getTransaction().begin();
-
             em.createNativeQuery("DROP SCHEMA IF EXISTS tenant_1").executeUpdate();
             em.createNativeQuery("DROP SCHEMA IF EXISTS tenant_2").executeUpdate();
             em.getTransaction().commit();
@@ -103,16 +102,14 @@ public class TestMultitenantOneToMany {
 
     @Test
     public void testMultitenancySchemaDescriminatorWithOneToMany() {
-        EntityManager em = emf.createEntityManager();
         boolean awaitTermination = false;
         List<Future<ParentMultitenant>> parent1Results = new ArrayList<>();
         List<Future<ParentMultitenant>> parent2Results = new ArrayList<>();
         try {
-            em.getTransaction().begin();
             ExecutorService es = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-            for (int i = 1; i <= 1000; i++) {
-                parent1Results.add(es.submit(() -> execute("tenant_1", 1L)));
-                parent2Results.add(es.submit(() -> execute("tenant_2", 2L)));
+            for (int i = 1; i <= 10000; i++) {
+                parent1Results.add(es.submit(() -> load("tenant_1", 1L)));
+                parent2Results.add(es.submit(() -> load("tenant_2", 2L)));
             }
             es.shutdown();
             awaitTermination = es.awaitTermination(10, TimeUnit.MINUTES);
@@ -126,26 +123,15 @@ public class TestMultitenantOneToMany {
                 assertEquals(2L, (long) parent.getId());
                 assertEquals(11L, (long) parent.getChildren().get(0).getId());
             }
-            em.getTransaction().commit();
         } catch (Exception e) {
-            fail("Exception was caught: " + e);
-        } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            if (em.isOpen()) {
-                em.close();
-            }
-            if (!awaitTermination) {
-                fail("timeout elapsed before termination of the threads");
-            }
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            e.printStackTrace(pw);
+            fail("Exception was caught: " + sw.toString());
         }
-    }
-
-    private ParentMultitenant execute(String tenant, Long id) {
-        ParentMultitenant parent = load(tenant, id);
-        List<ChildMultitenant> children = parent.getChildren();
-        return parent;
+        if (!awaitTermination) {
+            fail("timeout elapsed before termination of the threads");
+        }
     }
 
     private ParentMultitenant load(String tenant, Long id) {
@@ -157,8 +143,11 @@ public class TestMultitenantOneToMany {
         } else {
             em = emf.createEntityManager();
         }
-        return em.find(ParentMultitenant.class, id);
-    }
+        ParentMultitenant parent = em.find(ParentMultitenant.class, id);
+        List<ChildMultitenant> children = parent.getChildren();
+        em.close();
+        return parent;
 
+    }
 
 }

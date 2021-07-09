@@ -1369,7 +1369,7 @@ public class ClassDescriptor extends CoreDescriptor<AttributeGroup, DescriptorEv
         clonedDescriptor.setFields(NonSynchronizedVector.newInstance());
 
         // Referencing classes
-        referencingClasses = new HashSet<>();
+        clonedDescriptor.referencingClasses = new HashSet<>(referencingClasses);
 
         // Post-calculate changes
         if (this.mappingsPostCalculateChanges != null) {
