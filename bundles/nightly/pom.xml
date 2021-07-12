@@ -32,7 +32,7 @@
 
     <properties>
         <nightlyDir>/nightlybuild/${release.version}/${build.date}</nightlyDir>
-        <nightlyVersion>-${release.version}.v${build.date}-${buildNumber}</nightlyVersion>
+        <nightlyVersion>${release.version}.v${build.date}${build.time}-${buildNumber}</nightlyVersion>
         <nightlyTestReportsDir>${project.build.directory}${nightlyDir}/Eclipse</nightlyTestReportsDir>
     </properties>
 
@@ -83,34 +83,6 @@
 
     <build>
         <plugins>
-            <!--Initialize build.date and build.time buildNumber properties. -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <configuration>
-                    <revisionOnScmFailure>false</revisionOnScmFailure>
-                    <shortRevisionLength>10</shortRevisionLength>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>build.date</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>create-timestamp</goal>
-                        </goals>
-                        <configuration>
-                            <timestampFormat>yyyyMMdd</timestampFormat>
-                            <timestampPropertyName>build.date</timestampPropertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>com.coderplus.maven.plugins</groupId>
                 <artifactId>copy-rename-maven-plugin</artifactId>
@@ -128,7 +100,7 @@
                                         ../../foundation/eclipselink.core.test/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-core-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-core-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -136,7 +108,7 @@
                                         ../../dbws/org.eclipse.persistence.dbws/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-dbws-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-dbws-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -144,7 +116,7 @@
                                         ../../utils/org.eclipse.persistence.dbws.builder/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-dbws-util-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-dbws-util-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -152,7 +124,7 @@
                                         ../../moxy/org.eclipse.persistence.moxy/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jaxb-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jaxb-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -160,7 +132,7 @@
                                         ../../jpa/eclipselink.jpa.test/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpa-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpa-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -168,7 +140,7 @@
                                         ../../jpa/eclipselink.jpa.wdf.test/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpa-wdf-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpa-wdf-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -176,7 +148,7 @@
                                         ../../jpa/org.eclipse.persistence.jpars/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpars-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-jpars-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -184,7 +156,7 @@
                                         ../../moxy/org.eclipse.persistence.moxy/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-oxm-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-oxm-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -192,7 +164,7 @@
                                         ../../sdo/org.eclipse.persistence.sdo/target/${project.build.testReports.subdirectory}/${project.build.testReports.summaryFile}.html
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-sdo-lrg${nightlyVersion}.html
+                                        ${project.build.directory}${nightlyDir}/Eclipse/eclipselink-sdo-lrg-${nightlyVersion}.html
                                     </destinationFile>
                                 </fileSet>
                             </fileSets>
@@ -209,31 +181,31 @@
                                 <fileSet>
                                     <sourceFile>../eclipselink/target/eclipselink-${project.version}.zip</sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink${nightlyVersion}.zip
+                                        ${project.build.directory}${nightlyDir}/eclipselink-${nightlyVersion}.zip
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>../others/target/eclipselink-plugins.zip</sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-plugins${nightlyVersion}.zip
+                                        ${project.build.directory}${nightlyDir}/eclipselink-plugins-${nightlyVersion}.zip
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>../others/target/eclipselink-plugins-nosql.zip</sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-plugins-nosql${nightlyVersion}.zip
+                                        ${project.build.directory}${nightlyDir}/eclipselink-plugins-nosql-${nightlyVersion}.zip
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>../others/target/eclipselink-test-jars.zip</sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-test-jars${nightlyVersion}.zip
+                                        ${project.build.directory}${nightlyDir}/eclipselink-test-jars-${nightlyVersion}.zip
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
                                     <sourceFile>../others/target/eclipselink-test-src.zip</sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-test-src${nightlyVersion}.zip
+                                        ${project.build.directory}${nightlyDir}/eclipselink-test-src-${nightlyVersion}.zip
                                     </destinationFile>
                                 </fileSet>
                                 <fileSet>
@@ -248,7 +220,7 @@
                                         ../eclipselink/target//${eclipselink.unzip.subdir}/eclipselink/jlib/eclipselink-sources.jar
                                     </sourceFile>
                                     <destinationFile>
-                                        ${project.build.directory}${nightlyDir}/eclipselink-src${nightlyVersion}.zip
+                                        ${project.build.directory}${nightlyDir}/eclipselink-src-${nightlyVersion}.zip
                                     </destinationFile>
                                 </fileSet>
                             </fileSets>

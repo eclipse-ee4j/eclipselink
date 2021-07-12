@@ -26,7 +26,7 @@
     </componentDescriptors>
     <dependencySets>
         <dependencySet>
-            <outputFileNameMapping>${artifact.artifactId}_${release.version}.${build.qualifier}.${artifact.extension}</outputFileNameMapping>
+            <outputFileNameMapping>${artifact.artifactId}_${nightlyVersion}.${artifact.extension}</outputFileNameMapping>
             <includes>
                 <include>org.eclipse.persistence:*:*:*:${project.version}</include>
             </includes>
