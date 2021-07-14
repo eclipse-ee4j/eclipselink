@@ -55,5 +55,6 @@ module org.eclipse.persistence.moxy {
     exports org.eclipse.persistence.internal.jaxb.json.schema;
     exports org.eclipse.persistence.internal.jaxb.json.schema.model;
 
+    provides jakarta.xml.bind.JAXBContextFactory with org.eclipse.persistence.jaxb.XMLBindingContextFactory;
     provides com.sun.tools.xjc.Plugin with org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin;
 }
