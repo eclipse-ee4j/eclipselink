@@ -197,7 +197,7 @@ module eclipselink {
     exports org.eclipse.persistence.jpa.rs.util.xmladapters;
 
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
-    provides jakarta.xml.bind.JAXBContextFactory with org.eclipse.persistence.jaxb.BindingContextFactory;
+    provides jakarta.xml.bind.JAXBContextFactory with org.eclipse.persistence.jaxb.XMLBindingContextFactory;
     provides com.sun.tools.xjc.Plugin with org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin;
 
 }
