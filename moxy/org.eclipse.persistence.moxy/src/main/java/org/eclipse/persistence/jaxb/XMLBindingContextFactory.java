@@ -21,7 +21,8 @@ import java.util.Map;
  * Context factory supporting Java SE service loading facilities.
  *
  * Redirects to {@link JAXBContextFactory}, which is not removed due to compatibility reasons.
- */public class XMLBindingContextFactory implements jakarta.xml.bind.JAXBContextFactory {
+ */
+public class XMLBindingContextFactory implements jakarta.xml.bind.JAXBContextFactory {
 
     public XMLBindingContextFactory() {
         //no-op

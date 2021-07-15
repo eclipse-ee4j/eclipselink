@@ -577,7 +577,6 @@
                 <groupId>com.sun.xml.ws</groupId>
                 <artifactId>jaxws-eclipselink-plugin</artifactId>
                 <version>${jaxwsrt.version}</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>jakarta.annotation</groupId>
