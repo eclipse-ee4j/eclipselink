@@ -100,6 +100,11 @@
             <artifactId>jaxws-rt</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-eclipselink-plugin</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!--JDBC driver (test dependency)-->
         <dependency>
             <groupId>${db.driver.groupId}</groupId>
