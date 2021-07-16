@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -309,7 +309,12 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     @Override
     public Object clone() {
         OneToManyMapping clone = (OneToManyMapping)super.clone();
-        clone.setTargetForeignKeysToSourceKeys(new HashMap<>(getTargetForeignKeysToSourceKeys()));
+
+        Map<DatabaseField, DatabaseField> old2cloned = new HashMap<>();
+        clone.sourceKeyFields = cloneDatabaseFieldVector(sourceKeyFields, old2cloned);
+        clone.targetForeignKeyFields = cloneDatabaseFieldVector(targetForeignKeyFields, old2cloned);
+        clone.setTargetForeignKeysToSourceKeys(cloneKeysMap(getTargetForeignKeysToSourceKeys(), old2cloned));
+        clone.sourceKeysToTargetForeignKeys = cloneKeysMap(getSourceKeysToTargetForeignKeys(), old2cloned);
 
         if (addTargetQuery != null){
             clone.addTargetQuery = (DataModifyQuery) this.addTargetQuery.clone();
@@ -318,6 +323,33 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         clone.removeAllTargetsQuery = (DataModifyQuery) this.removeAllTargetsQuery.clone();
 
         return clone;
+    }
+
+    private Map<DatabaseField, DatabaseField> cloneKeysMap(Map<DatabaseField, DatabaseField> toClone,
+                                                           Map<DatabaseField, DatabaseField> old2cloned) {
+        if (toClone == null) {
+            return null;
+        }
+        Map<DatabaseField, DatabaseField> cloneTarget2Src = new HashMap<>(toClone.size());
+        for (Map.Entry<DatabaseField, DatabaseField> e : toClone.entrySet()) {
+            cloneTarget2Src.put(old2cloned.get(e.getKey()), old2cloned.get(e.getValue()));
+        }
+        return cloneTarget2Src;
+    }
+
+    private Vector<DatabaseField> cloneDatabaseFieldVector(Vector<DatabaseField> oldFlds,
+                                                           Map<DatabaseField, DatabaseField> old2cloned) {
+        Vector<DatabaseField> clonedSourceKeyFields = null;
+        if (oldFlds != null) {
+            clonedSourceKeyFields =
+                    org.eclipse.persistence.internal.helper.NonSynchronizedVector.newInstance(oldFlds.size());
+            for (DatabaseField old : oldFlds) {
+                DatabaseField cf = old.clone();
+                clonedSourceKeyFields.add(cf);
+                old2cloned.put(old, cf);
+            }
+        }
+        return clonedSourceKeyFields;
     }
 
     /**
