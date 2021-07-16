@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020 Payara Services Ltd.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -56,7 +57,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * Should be filled out before initialize() is called:
      * fields added after initialization are ignored.
      */
-    protected List<Info> infos = new ArrayList();
+    protected List<Info> infos = new ArrayList<>();
 
     /**
      * The following attributes are initialized by initialize() method.
@@ -109,12 +110,12 @@ public class ReturningPolicy implements Serializable, Cloneable {
     protected void fieldIsNotFromDescriptor(DatabaseField field) {
         if (field.getTable().equals(getDescriptor().getDefaultTable())) {
             if (this.fieldsNotFromDescriptor_DefaultTable == null) {
-                this.fieldsNotFromDescriptor_DefaultTable = new HashMap();
+                this.fieldsNotFromDescriptor_DefaultTable = new HashMap<>();
             }
             this.fieldsNotFromDescriptor_DefaultTable.put(field, field);
         } else {
             if (this.fieldsNotFromDescriptor_OtherTables == null) {
-                this.fieldsNotFromDescriptor_OtherTables = new HashMap();
+                this.fieldsNotFromDescriptor_OtherTables = new HashMap<>();
             }
             this.fieldsNotFromDescriptor_OtherTables.put(field, field);
         }
@@ -199,15 +200,13 @@ public class ReturningPolicy implements Serializable, Cloneable {
         }
         if (this.tableToFieldsForGenerationMap[operation] == null) {
             // the method is called for the first time for this operation
-            this.tableToFieldsForGenerationMap[operation] = new HashMap();
+            this.tableToFieldsForGenerationMap[operation] = new HashMap<>();
         }
         Vector<DatabaseField> fieldsForGeneration = this.tableToFieldsForGenerationMap[operation].get(table);
         if (fieldsForGeneration == null) {
             // the method is called for the first time for this operation and this table
             fieldsForGeneration = new NonSynchronizedVector();
-            Iterator it = this.main[operation][ALL].iterator();
-            while (it.hasNext()) {
-                DatabaseField field = (DatabaseField)it.next();
+            for (DatabaseField field : this.main[operation][ALL]) {
                 if (field.getTable().equals(table)) {
                     fieldsForGeneration.add(field);
                 }
@@ -497,7 +496,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         @Override
         public int hashCode() {
             DatabaseField field = getField();
-            Class type = field != null ? field.getType() : null;
+            Class<?> type = field != null ? field.getType() : null;
             boolean isInsert = isInsert();
             boolean isInsertModeReturnOnly = isInsertModeReturnOnly();
             boolean isUpdate = isUpdate();
@@ -746,9 +745,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         Hashtable allFields = new Hashtable();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if (main[operation][ALL] != null) {
-                Iterator it = main[operation][ALL].iterator();
-                while (it.hasNext()) {
-                    DatabaseField field = (DatabaseField)it.next();
+                for (DatabaseField field : main[operation][ALL]) {
                     allFields.put(field, field);
                 }
             }
@@ -812,7 +809,7 @@ public class ReturningPolicy implements Serializable, Cloneable {
         if ((main[INSERT][MAPPED] == null) || main[INSERT][MAPPED].isEmpty()) {
             return;
         }
-        List primaryKeys = getDescriptor().getPrimaryKeyFields();
+        List<DatabaseField> primaryKeys = getDescriptor().getPrimaryKeyFields();
         for (int index = 0; (index < primaryKeys.size()) && !isUsedToSetPrimaryKey; index++) {
             this.isUsedToSetPrimaryKey = main[INSERT][MAPPED].contains(primaryKeys.get(index));
         }
@@ -822,10 +819,10 @@ public class ReturningPolicy implements Serializable, Cloneable {
         boolean ok = true;
         verifyField(session, field, getDescriptor());
         DatabaseMapping mapping;
-        List readOnlyMappings = getDescriptor().getObjectBuilder().getReadOnlyMappingsForField(field);
+        List<DatabaseMapping> readOnlyMappings = getDescriptor().getObjectBuilder().getReadOnlyMappingsForField(field);
         if (readOnlyMappings != null) {
             for (int j = 0; j < readOnlyMappings.size(); j++) {
-                mapping = (DatabaseMapping)readOnlyMappings.get(j);
+                mapping = readOnlyMappings.get(j);
                 ok &= verifyFieldAndMapping(session, field, getDescriptor(), mapping);
             }
         }
@@ -877,21 +874,17 @@ public class ReturningPolicy implements Serializable, Cloneable {
      * INTERNAL:
      */
     public void validationAfterDescriptorInitialization(AbstractSession session) {
-        Hashtable mapped = new Hashtable();
+        Hashtable<DatabaseField, DatabaseField> mapped = new Hashtable<>();
         for (int operation = INSERT; operation <= UPDATE; operation++) {
             if ((main[operation][MAPPED] != null) && !main[operation][MAPPED].isEmpty()) {
-                Iterator it = main[operation][MAPPED].iterator();
-                while (it.hasNext()) {
-                    DatabaseField field = (DatabaseField)it.next();
+                for (DatabaseField field : main[operation][MAPPED]) {
                     mapped.put(field, field);
                 }
             }
         }
         if (!mapped.isEmpty()) {
-            for (Enumeration fields = getDescriptor().getFields().elements();
-                     fields.hasMoreElements();) {
-                DatabaseField fieldInDescriptor = (DatabaseField)fields.nextElement();
-                DatabaseField fieldInMain = (DatabaseField)mapped.get(fieldInDescriptor);
+            for (DatabaseField fieldInDescriptor : getDescriptor().getFields()) {
+                DatabaseField fieldInMain = mapped.get(fieldInDescriptor);
                 if (fieldInMain != null) {
                     if (fieldInMain.getType() == null) {
                         if (getDescriptor().isReturnTypeRequiredForReturningPolicy()) {
