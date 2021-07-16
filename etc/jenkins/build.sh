@@ -13,4 +13,4 @@
 #  N/A
 
 echo '-[ EclipseLink Build ]-----------------------------------------------------------'
-mvn install -DskipTests -Poss-release
+mvn -V -B install -DskipTests -Poss-release

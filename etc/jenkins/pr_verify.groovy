@@ -120,7 +120,7 @@ spec:
                 container('el-build') {
                     sh """
                         echo '-[ EclipseLink Build ]-----------------------------------------------------------'
-                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B clean install -pl '!:eclipselink,!:org.eclipse.persistence.bundles.other,!:org.eclipse.persistence.distribution.tests,!:p2site' -DskipTests
+                        mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -V clean install -pl '!:eclipselink,!:org.eclipse.persistence.bundles.other,!:org.eclipse.persistence.distribution.tests,!:p2site' -DskipTests
                     """
                 }
             }
@@ -132,7 +132,7 @@ spec:
                     steps {
                         container('el-build') {
                             sh """
-                                mvn verify -pl :org.eclipse.persistence.core.test -P test-core-lrg,mysql
+                                mvn -B -V verify -pl :org.eclipse.persistence.core.test -P test-core-lrg,mysql
                             """
                         }
                     }
@@ -141,7 +141,7 @@ spec:
                     steps {
                         container('el-build') {
                             sh """
-                                mvn test -pl :org.eclipse.persistence.moxy -P test-moxy-lrg
+                                mvn -B -V test -pl :org.eclipse.persistence.moxy -P test-moxy-lrg
                             """
                         }
                     }
@@ -151,7 +151,7 @@ spec:
                         container('el-build') {
                             sh """
                                 /opt/bin/mongo-start.sh
-                                mvn verify -pl :org.eclipse.persistence.nosql -P mongodb
+                                mvn -B -V verify -pl :org.eclipse.persistence.nosql -P mongodb
                                 /opt/bin/mongo-stop.sh                                
                             """
                         }
@@ -164,7 +164,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn verify -pl :org.eclipse.persistence.jpa.test -P test-jpa-lrg,mysql
+                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.test -P test-jpa-lrg,mysql
                             """
                 }
             }
@@ -173,7 +173,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn verify -pl :org.eclipse.persistence.sdo -Ptest-sdo
+                                mvn -B -V verify -pl :org.eclipse.persistence.sdo -Ptest-sdo
                             """
                 }
             }
@@ -182,7 +182,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn verify -pl :org.eclipse.persistence.corba -P mysql
+                                mvn -B -V verify -pl :org.eclipse.persistence.corba -P mysql
                             """
                 }
             }
@@ -191,8 +191,8 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn clean install -pl :eclipselink
-                                mvn verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution.tests -P mysql;
+                                mvn -B -V clean install -pl :eclipselink
+                                mvn -B -V verify -pl :org.eclipse.persistence.jpa.modelgen.processor,:org.eclipse.persistence.jpa.jse.test,:org.eclipse.persistence.extension,:org.eclipse.persistence.jpa.jpql,:org.eclipse.persistence.jpa.wdf.test,:org.eclipse.persistence.jpars,:org.eclipse.persistence.dbws,:org.eclipse.persistence.dbws.builder,:eclipselink,:org.eclipse.persistence.distribution.tests -P mysql;
                             """
                 }
             }
@@ -201,7 +201,7 @@ spec:
             steps {
                 container('el-build') {
                     sh """
-                                mvn package -DskipTests -Poss-release
+                                mvn -B -V package -DskipTests -Poss-release
                             """
                 }
             }
