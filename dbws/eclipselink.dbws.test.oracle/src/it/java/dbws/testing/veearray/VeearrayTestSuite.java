@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -64,7 +64,7 @@ import org.eclipse.persistence.oxm.mappings.XMLCompositeCollectionMapping;
 import org.eclipse.persistence.oxm.mappings.XMLDirectMapping;
 import org.eclipse.persistence.oxm.schema.XMLSchemaReference;
 import org.eclipse.persistence.oxm.schema.XMLSchemaURLReference;
-import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatform;
@@ -250,7 +250,7 @@ public class VeearrayTestSuite {
         login.setPassword(password);
         login.setConnectionString(url);
         login.setDriverClassName(driver);
-        login.setDatasourcePlatform(new Oracle10Platform());
+        login.setDatasourcePlatform(new OraclePlatform());
         login.bindAllParameters();
         orProject.setDatasourceLogin(login);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,8 +38,8 @@ import org.eclipse.persistence.internal.sessions.DatabaseSessionImpl;
 import org.eclipse.persistence.internal.sessions.factories.ObjectPersistenceWorkbenchXMLProject;
 import org.eclipse.persistence.oxm.XMLContext;
 import org.eclipse.persistence.oxm.XMLMarshaller;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.platform.database.jdbc.JDBCTypes;
-import org.eclipse.persistence.platform.database.oracle.Oracle8Platform;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLStoredProcedureCall;
 import org.eclipse.persistence.platform.database.oracle.plsql.PLSQLrecord;
 import org.eclipse.persistence.queries.ReadObjectQuery;
@@ -277,7 +277,7 @@ public class PLSQLrecordWithCompatibleTypeInOutTestSet  {
         };
         Struct struct = null;
         try {
-            struct = ((Oracle8Platform)s.getPlatform()).createStruct(
+            struct = ((OraclePlatform)s.getPlatform()).createStruct(
                 "EMP_TYPE", attributes, ((DatabaseSessionImpl)s).getAccessor().getConnection());
         }
         catch (SQLException e1) {

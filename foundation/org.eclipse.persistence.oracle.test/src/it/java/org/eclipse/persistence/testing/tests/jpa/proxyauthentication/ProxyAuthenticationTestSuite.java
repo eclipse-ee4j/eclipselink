@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,19 +23,12 @@ import java.util.Properties;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
-import oracle.jdbc.OracleConnection;
-import oracle.jdbc.pool.OracleDataSource;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.internal.sessions.ExclusiveIsolatedClientSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.jpa.JpaEntityManagerFactory;
-
-import org.eclipse.persistence.platform.database.oracle.Oracle9Platform;
+import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
 import org.eclipse.persistence.sessions.SessionEvent;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.sessions.server.ConnectionPolicy;
@@ -43,6 +36,11 @@ import org.eclipse.persistence.sessions.server.ServerSession;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCaseHelper;
 import org.eclipse.persistence.testing.tests.proxyauthentication.thin.ProxyAuthenticationUsersAndProperties;
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import oracle.jdbc.OracleConnection;
+import oracle.jdbc.pool.OracleDataSource;
 
 /**
  * TestSuite to verifying that connectionUser and proxyUser are used as expected.
@@ -66,6 +64,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
     // writeUser is set by an event risen by ModifyQuery.
     private static String writeUser;
     public static class Listener extends SessionEventAdapter {
+        @Override
         public void outputParametersDetected(SessionEvent event) {
             writeUser = (String)((Map)event.getResult()).get("OUT");
         }
@@ -97,6 +96,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public String getPersistenceUnitName() {
         return PU_NAME;
     }
@@ -127,6 +127,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         return suite;
     }
 
+    @Override
     public void setUp() {
         // runs for the first time - setup user names and properties used by the tests.
         if(setupErrorMsg == null) {
@@ -134,7 +135,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
                 setupErrorMsg = "ProxyAuthentication tests currently can't run on server.";
             } else if(!getServerSession(PU_NAME).getPlatform().isOracle()) {
                 setupErrorMsg = "ProxyAuthentication test has not run, it runs only on Oracle and Oracle9Platform or higher required.";
-            } else if (! (getServerSession(PU_NAME).getPlatform() instanceof Oracle9Platform)) {
+            } else if (! (getServerSession(PU_NAME).getPlatform() instanceof Oracle11Platform)) {
                 setupErrorMsg = "ProxyAuthentication test has not run, Oracle9Platform or higher required.";
             } else {
                 // sets up all user names and properties used by the tests.
@@ -155,6 +156,7 @@ public class ProxyAuthenticationTestSuite extends JUnitTestCase {
         }
     }
 
+    @Override
     public void tearDown() {
         // clean-up
         if(setupErrorMsg.length() > 0) {

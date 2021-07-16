@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -2815,7 +2815,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      * Write LOB value - only on Oracle8 and up
      */
     public void writeLOB(DatabaseField field, Object value, ResultSet resultSet, AbstractSession session) throws SQLException {
-        // used by Oracle8Platform
+        // used by OraclePlatform
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,8 +15,11 @@
 package org.eclipse.persistence.testing.tests.lob;
 
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.platform.database.OraclePlatform;
 import org.eclipse.persistence.sessions.broker.SessionBroker;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestSuite;
+import org.eclipse.persistence.testing.framework.TestWarningException;
 
 public class LOBSessionBrokerTestModel extends TestModel {
     public LOBSessionBrokerTestModel() {
@@ -24,16 +27,18 @@ public class LOBSessionBrokerTestModel extends TestModel {
         setDescription("This suite tests TopLink LOB support with Oracle thin driver and SessionBroker.");
     }
 
+    @Override
     public void addRequiredSystems() {
         if (!getSession().getPlatform().isOracle()) {
             throw new TestWarningException("WARNING: This model is not supposed to be run on databases other than Oracle.");
         }
-        if (!(getSession().getPlatform() instanceof org.eclipse.persistence.platform.database.oracle.Oracle8Platform)) {
-            throw new TestWarningException("WARNING: This model requires Oracle8Platform or higher");
+        if (!(getSession().getPlatform() instanceof OraclePlatform)) {
+            throw new TestWarningException("WARNING: This model requires OraclePlatform or higher");
         }
         addRequiredSystem(new LOBImageModelSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getLOBInsertTestSuite());
         addTest(getLOBUpdateTestSuite());
@@ -56,6 +61,7 @@ public class LOBSessionBrokerTestModel extends TestModel {
         return suite;
     }
 
+    @Override
     public void setup() {
         if (!((AbstractSession)getSession()).isBroker()) {
             SessionBroker broker = new SessionBroker();
@@ -67,6 +73,7 @@ public class LOBSessionBrokerTestModel extends TestModel {
         }
     }
 
+    @Override
     public void reset() {
         if (((AbstractSession)getSession()).isBroker()) {
             SessionBroker broker = (SessionBroker)getSession();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,17 +14,24 @@
 //      ailitchev ported the original test written by dminsky
 package org.eclipse.persistence.testing.tests.types;
 
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+import java.util.Vector;
 
-import oracle.sql.*;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
+import org.eclipse.persistence.sessions.DatabaseRecord;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.platform.database.oracle.*;
-
-import org.eclipse.persistence.testing.framework.*;
+import oracle.sql.TIMESTAMPTZ;
 
 /**
  * Testcase for resolution of issues with TIMESTAMPTZ compatibility and correctness.
@@ -120,6 +127,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         return this.originalCalendarString;
     }
 
+    @Override
     public String toString() {
         return "Test #: " + getTestId() + " -> " + getOriginalCalendarString();
     }
@@ -140,11 +148,12 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         return tests;
     }
 
+    @Override
     public void setup() {
-        if (!(getSession().getPlatform() instanceof Oracle9Platform)) {
+        if (!(getSession().getPlatform() instanceof Oracle11Platform)) {
             throw new TestWarningException("Test is only supported on Oracle9 platform and above, as TIMESTAMPTZ is used");
         }
-        Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();
+        Oracle11Platform platform = (Oracle11Platform) getSession().getPlatform();
 
 //        this.oldPrintingValue = platform.getPrintCalendarIntoTimestampTZ();
         this.oldBindingValue = platform.shouldBindAllParameters();
@@ -158,6 +167,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void test() {
         // read data back from database literally in order to check contents of database rather than the driver's TIMESTAMPTZ
         String sql = "select TEST_ID, to_char(TSTZ_DATA,'MM/DD/YYYY hh24:mi:ss TZR') as TSTZ_DATA FROM " +  commonDescriptor().getTableName() +  " where TEST_ID = " + getTestId();
@@ -167,6 +177,7 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() throws Exception {
         String expectedResult = getOriginalCalendarString();
         if (this.result == null) {
@@ -179,9 +190,10 @@ public class CalendarToTSTZWithBindingTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         // Compatibility for Oracle 9 and above is checked in the setup() method
-        Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();
+        Oracle11Platform platform = (Oracle11Platform) getSession().getPlatform();
 //        platform.setPrintCalendarIntoTimestampTZ(this.oldPrintingValue);
         platform.setShouldBindAllParameters(this.oldBindingValue);
 

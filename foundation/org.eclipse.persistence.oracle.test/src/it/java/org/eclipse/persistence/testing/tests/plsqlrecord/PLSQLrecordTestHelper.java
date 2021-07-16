@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,13 +12,13 @@
 
 package org.eclipse.persistence.testing.tests.plsqlrecord;
 
+// JUnit imports
+import static org.junit.Assert.fail;
+
 // javase imports
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.Properties;
-
-// JUnit imports
-import static org.junit.Assert.fail;
 
 // EclipseLink imports
 import org.eclipse.persistence.internal.descriptors.TransformerBasedFieldTransformation;
@@ -27,7 +27,7 @@ import org.eclipse.persistence.mappings.DirectToFieldMapping;
 import org.eclipse.persistence.mappings.structures.ObjectRelationalDataTypeDescriptor;
 import org.eclipse.persistence.mappings.transformers.ConstantTransformer;
 import org.eclipse.persistence.oxm.mappings.XMLTransformationMapping;
-import org.eclipse.persistence.platform.database.oracle.Oracle10Platform;
+import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
 import org.eclipse.persistence.platform.xml.XMLComparer;
 import org.eclipse.persistence.platform.xml.XMLParser;
 import org.eclipse.persistence.platform.xml.XMLPlatformFactory;
@@ -132,7 +132,7 @@ public class PLSQLrecordTestHelper {
         login.setPassword(password);
         login.setConnectionString(url);
         login.setDriverClassName(driver);
-        login.setDatasourcePlatform(new Oracle10Platform());
+        login.setDatasourcePlatform(new Oracle11Platform());
         project.setDatasourceLogin(login);
         return project;
     }

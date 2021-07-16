@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -15,10 +15,16 @@
 package org.eclipse.persistence.internal.platform.database.oracle;
 
 import java.io.StringWriter;
-import java.sql.*;
-import java.util.*;
-import oracle.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.TimeZone;
+
 import org.eclipse.persistence.internal.helper.Helper;
+
+import oracle.sql.TIMESTAMPTZ;
+import oracle.sql.ZONEIDMAP;
 
 /**
  * Used as a helper class for TIMESTAMP, TIMESTAMPTZ and TIMESTAMPLTZ in oracle9.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,7 +16,9 @@ package org.eclipse.persistence.testing.tests.xdb;
 
 import org.eclipse.persistence.platform.database.DatabasePlatform;
 import org.eclipse.persistence.platform.database.OraclePlatform;
-import org.eclipse.persistence.testing.framework.*;
+import org.eclipse.persistence.testing.framework.TestModel;
+import org.eclipse.persistence.testing.framework.TestProblemException;
+import org.eclipse.persistence.testing.framework.TestSuite;
 
 public class XDBTestModelMWIntegration extends TestModel {
     DatabasePlatform oldPlatform = null;
@@ -25,10 +27,12 @@ public class XDBTestModelMWIntegration extends TestModel {
         setDescription("Tests Oracle XDB Specific features");
     }
 
+    @Override
     public void addTests() {
         addTest(getXDBTestSuite());
     }
 
+    @Override
     public void reset() {
         this.getSession().getLogin().setPlatform(oldPlatform);
         getDatabaseSession().logout();
@@ -49,13 +53,14 @@ public class XDBTestModelMWIntegration extends TestModel {
         return testSuite;
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         addForcedRequiredSystem(new XMLTypeEmployeeSystemXML());
         oldPlatform = getSession().getPlatform();
         if (!(oldPlatform instanceof OraclePlatform)) {
             throw new TestProblemException("This model is intended for Oracle databases through OCI");
         }
-        this.getSession().getLogin().setPlatform(new org.eclipse.persistence.platform.database.oracle.Oracle9Platform());
+        this.getSession().getLogin().setPlatform(new org.eclipse.persistence.platform.database.oracle.Oracle11Platform());
         getDatabaseSession().logout();
         getDatabaseSession().login();
         try {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -14,19 +14,27 @@
 //     dminsky - initial API and implementation
 package org.eclipse.persistence.testing.tests.types;
 
-import java.text.*;
-import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.Vector;
 
-import oracle.sql.*;
+import org.eclipse.persistence.descriptors.RelationalDescriptor;
+import org.eclipse.persistence.expressions.Expression;
+import org.eclipse.persistence.expressions.ExpressionBuilder;
+import org.eclipse.persistence.platform.database.oracle.Oracle11Platform;
+import org.eclipse.persistence.queries.ReadObjectQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
+import org.eclipse.persistence.testing.framework.QuerySQLTracker;
+import org.eclipse.persistence.testing.framework.TestCase;
+import org.eclipse.persistence.testing.framework.TestErrorException;
+import org.eclipse.persistence.testing.framework.TestWarningException;
+import org.eclipse.persistence.tools.schemaframework.TableDefinition;
 
-import org.eclipse.persistence.sessions.*;
-import org.eclipse.persistence.descriptors.*;
-import org.eclipse.persistence.expressions.*;
-import org.eclipse.persistence.queries.*;
-import org.eclipse.persistence.tools.schemaframework.*;
-import org.eclipse.persistence.platform.database.oracle.*;
-
-import org.eclipse.persistence.testing.framework.*;
+import oracle.sql.TIMESTAMPTZ;
 
 /**
  * EL Bug 249500 - Daylight savings time is not printed in native SQL run against Oracle 9i and above
@@ -137,6 +145,7 @@ public class CalendarDaylightSavingsTest extends TestCase {
         return testCalendars;
     }
 
+    @Override
     public String toString() {
         return "Test #: " + getTestId() + " -> " + formatCalendarAsString(this.calendar);
     }
@@ -152,11 +161,12 @@ public class CalendarDaylightSavingsTest extends TestCase {
         return tests;
     }
 
+    @Override
     public void setup() {
-        if (!(getSession().getPlatform() instanceof Oracle9Platform)) {
+        if (!(getSession().getPlatform() instanceof Oracle11Platform)) {
             throw new TestWarningException("Test is only supported on Oracle9 platform and above, as TIMESTAMPTZ is used");
         }
-        Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();
+        Oracle11Platform platform = (Oracle11Platform) getSession().getPlatform();
 
         this.oldBindingValue = platform.shouldBindAllParameters();
         this.oldNativeSqlValue = platform.usesNativeSQL();
@@ -183,6 +193,7 @@ public class CalendarDaylightSavingsTest extends TestCase {
         sqlTracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         // write myself out to the database
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -203,6 +214,7 @@ public class CalendarDaylightSavingsTest extends TestCase {
         result = (CalendarDaylightSavingsTest)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         final String TZR = "TZR";
         final String TZR_TZD = "TZR TZD";
@@ -232,9 +244,10 @@ public class CalendarDaylightSavingsTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         // Compatibility for Oracle 9 and above is checked in the setup() method
-        Oracle9Platform platform = (Oracle9Platform) getSession().getPlatform();
+        Oracle11Platform platform = (Oracle11Platform) getSession().getPlatform();
         platform.setUsesNativeSQL(this.oldNativeSqlValue);
         platform.setShouldBindAllParameters(this.oldBindingValue);
         // reset the SQL tracker
