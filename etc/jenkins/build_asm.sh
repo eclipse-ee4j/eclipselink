@@ -13,4 +13,4 @@
 
 echo '-[ EclipseLink ASM Build ]------------------------------------------------'
 (cd ${ASM_DIR} && \
-  mvn clean install -Poss-release)
+  mvn -V -B clean install -Poss-release)

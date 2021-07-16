@@ -53,7 +53,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
 </project>
 ' > 'download/pom.xml'
 
-mvn -U -C -B -f download/pom.xml \
+mvn -V -U -C -B -f download/pom.xml \
     -Pstaging -Psnapshots \
     -Dartifact=org.eclipse.persistence:org.eclipse.persistence.distribution:${ECLIPSELINK_VERSION}:zip \
     -DoutputDirectory="${WORKSPACE}/download" \

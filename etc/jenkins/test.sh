@@ -16,11 +16,11 @@ echo '-[ EclipseLink Tests LRG ]------------------------------------------------
 
 if [ ${CONTINUOUS_BUILD} = "true" ]; then
     echo '-[ EclipseLink SRG Tests ]-----------------------------------------------------------'
-    mvn verify
+    mvn -B -V verify
 else
     echo '-[ EclipseLink LRG Tests ]-----------------------------------------------------------'
     /opt/bin/mysql-start.sh
-    mvn verify -Pmysql,test-lrg
+    mvn -B -V verify -Pmysql,test-lrg
     /opt/bin/mysql-stop.sh
 fi
 

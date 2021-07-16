@@ -47,7 +47,7 @@ next_version() {
 #  "${1}_RELEASE_VERSION" - Release version
 read_version() {
   local VERSION_VAR="${1}_VERSION"
-  local SNAPSHOT_VERSION=`(cd ${2} && mvn -B ${HELP_PLUGIN}:evaluate -Dexpression=project.version 2> /dev/null | grep -E '^[0-9]+(\.[0-9]+)+-SNAPSHOT$')`
+  local SNAPSHOT_VERSION=`(cd ${2} && mvn -V -B ${HELP_PLUGIN}:evaluate -Dexpression=project.version 2> /dev/null | grep -E '^[0-9]+(\.[0-9]+)+-SNAPSHOT$')`
   if [ -z "${!VERSION_VAR}" ]; then
     local RELEASE_VERSION="${SNAPSHOT_VERSION/-SNAPSHOT/}"
   else
@@ -67,8 +67,8 @@ read_version() {
 #  "${1}_GROUP_ID" - Maven groupId
 #  "${1}_ARTIFACT_ID" - Maven artifactId
 read_mvn_id() {
-  local GROUP_ID=`(cd ${2} && mvn -B ${HELP_PLUGIN}:evaluate -Dexpression=project.groupId | grep -Ev '(^\[)')`
-  local ARTIFACT_ID=`(cd ${2} && mvn -B ${HELP_PLUGIN}:evaluate -Dexpression=project.artifactId | grep -Ev '(^\[)')`
+  local GROUP_ID=`(cd ${2} && mvn -B -V ${HELP_PLUGIN}:evaluate -Dexpression=project.groupId | grep -Ev '(^\[)')`
+  local ARTIFACT_ID=`(cd ${2} && mvn -B -V ${HELP_PLUGIN}:evaluate -Dexpression=project.artifactId | grep -Ev '(^\[)')`
   echo "${1} Group ID:    ${GROUP_ID}"
   echo "${1} Artifact ID: ${ARTIFACT_ID}"
   eval "${1}_GROUP_ID"="${GROUP_ID}"
@@ -87,7 +87,7 @@ set_version() {
   echo '--[ Set version ]---------------------------------------------------------------'
   # Set release version
   (cd ${2} && \
-    mvn -U -C \
+    mvn -V -B -U -C \
         ${6} \
         -DnewVersion="${3}" \
         -DgenerateBackupPoms=false \

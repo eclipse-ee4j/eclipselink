@@ -18,7 +18,7 @@ else
     echo '-[ EclipseLink Test Server ]-----------------------------------------------------------'
     echo '-[ INFO Server tests are temporary disabled until server with Jakarta packages will be available]-'
 #    /opt/bin/mysql-start.sh
-#    mvn --batch-mode verify -pl :org.eclipse.persistence.jpa.test -P server-test-jpa-lrg1,mysql
-#    mvn --batch-mode verify -pl :org.eclipse.persistence.jpa.test -P server-test-jpa-lrg2,mysql
+#    mvn -V --batch-mode verify -pl :org.eclipse.persistence.jpa.test -P server-test-jpa-lrg1,mysql
+#    mvn -V --batch-mode verify -pl :org.eclipse.persistence.jpa.test -P server-test-jpa-lrg2,mysql
 #    /opt/bin/mysql-stop.sh
 fi

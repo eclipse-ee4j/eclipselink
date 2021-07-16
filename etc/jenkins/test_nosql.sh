@@ -14,5 +14,5 @@
 
 echo '-[ EclipseLink Test NoSQL ]-----------------------------------------------------------'
 /opt/bin/mongo-start.sh
-mvn verify -pl :org.eclipse.persistence.nosql -P mongodb
+mvn -B -V verify -pl :org.eclipse.persistence.nosql -P mongodb
 /opt/bin/mongo-stop.sh
