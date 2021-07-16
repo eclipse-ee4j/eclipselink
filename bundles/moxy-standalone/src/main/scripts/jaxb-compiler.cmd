@@ -15,7 +15,7 @@
 call "%~dp0setenv.cmd"
 
 @REM User may increase Java memory setting(s) if desired:
-set JVM_ARGS=-Xmx256m -Djakarta.xml.bind.JAXBContextFactory=org.eclipse.persistence.jaxb.JAXBContextFactory
+set JVM_ARGS=-Xmx256m
 
 @REM If going through a proxy, set the proxy host and proxy port below, then uncomment the line
 @REM set JVM_ARGS=%JVM_ARGS% -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort=

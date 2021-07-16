@@ -35,6 +35,11 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>

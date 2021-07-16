@@ -14,7 +14,7 @@
 . `dirname $0`/setenv.sh
 
 # User may increase Java memory setting(s) if desired:
-JVM_ARGS="-Xmx256m -Djakarta.xml.bind.JAXBContextFactory=org.eclipse.persistence.jaxb.JAXBContextFactory"
+JVM_ARGS="-Xmx256m"
 
 # If going through a proxy, set the proxy host and proxy port below, then uncomment the line
 # JVM_ARGS="${JVM_ARGS} -DproxySet=true -Dhttp.proxyHost= -Dhttp.proxyPort="

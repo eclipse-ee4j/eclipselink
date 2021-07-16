@@ -22,6 +22,7 @@ module eclipselink {
     //following cannot be optional because we provide
     //implementation of its spi/extension here
     requires jakarta.persistence;
+    requires jakarta.xml.bind;
     requires com.sun.tools.xjc;
 
 
@@ -31,7 +32,6 @@ module eclipselink {
     requires static jakarta.mail;
     requires static jakarta.validation;
     requires static jakarta.ws.rs;
-    requires static jakarta.xml.bind;
 
     requires static jakarta.cdi; //AM
     requires static jakarta.el; //AM
@@ -197,6 +197,7 @@ module eclipselink {
     exports org.eclipse.persistence.jpa.rs.util.xmladapters;
 
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
+    provides jakarta.xml.bind.JAXBContextFactory with org.eclipse.persistence.jaxb.XMLBindingContextFactory;
     provides com.sun.tools.xjc.Plugin with org.eclipse.persistence.jaxb.plugins.BeanValidationPlugin;
 
 }
