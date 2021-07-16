@@ -67,11 +67,12 @@
             <includes>
                 <include>jakarta.xml.bind:jakarta.xml.bind-api</include>
                 <include>jakarta.validation:jakarta.validation-api</include>
+                <include>jakarta.json:jakarta.json-api</include>
                 <include>com.sun.activation:jakarta.activation</include>
-                <include>org.glassfish:jakarta.json</include>
                 <include>com.sun.mail:jakarta.mail</include>
                 <include>com.sun.xml.bind:jaxb-core</include>
                 <include>com.sun.xml.bind:jaxb-xjc</include>
+                <include>org.eclipse.parsson:parsson</include>
             </includes>
         </dependencySet>
         <dependencySet>
