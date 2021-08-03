@@ -168,8 +168,8 @@
         <ejb.version>4.0.0</ejb.version>
         <el.version>4.0.1</el.version>
         <glassfish.version>6.2.0</glassfish.version>
-        <jaxwsrt.version>3.0.1</jaxwsrt.version>
-        <jaxb.version>3.0.2-b01</jaxb.version>
+        <jaxwsrt.version>3.0.2</jaxwsrt.version>
+        <jaxb.version>3.0.2</jaxb.version>
         <jaxb.api.version>3.0.1</jaxb.api.version>
         <soap.api.version>2.0.1</soap.api.version>
         <jersey.version>3.0.2</jersey.version>
