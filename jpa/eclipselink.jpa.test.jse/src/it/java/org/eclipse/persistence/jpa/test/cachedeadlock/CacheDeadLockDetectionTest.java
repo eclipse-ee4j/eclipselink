@@ -128,8 +128,8 @@ public class CacheDeadLockDetectionTest {
             } catch (Exception ignore) {
             }
             try {
-                session.executeNonSelectingSQL("CREATE TABLE cachedeadlock_master (id integer PRIMARY KEY, name varchar(200))");
-                session.executeNonSelectingSQL("CREATE TABLE cachedeadlock_detail (id integer PRIMARY KEY, id_fk integer , name varchar(200))");
+                session.executeNonSelectingSQL("CREATE TABLE cachedeadlock_master (id integer NOT NULL, name varchar(200), PRIMARY KEY(id))");
+                session.executeNonSelectingSQL("CREATE TABLE cachedeadlock_detail (id integer NOT NULL, id_fk integer , name varchar(200), PRIMARY KEY(id))");
                 session.executeNonSelectingSQL("ALTER TABLE cachedeadlock_detail ADD CONSTRAINT fk_cachedeadlock_detail FOREIGN KEY ( id_fk ) REFERENCES cachedeadlock_master (ID)");
             } catch (Exception ignore) {
             }
