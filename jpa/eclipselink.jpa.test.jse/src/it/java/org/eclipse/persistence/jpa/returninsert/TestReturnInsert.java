@@ -14,7 +14,8 @@
 //     Oracle - initial API and implementation
 package org.eclipse.persistence.jpa.returninsert;
 
-import java.time.Instant;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import jakarta.persistence.EntityManager;
@@ -305,7 +306,11 @@ public class TestReturnInsert {
     //Prepare primary key for ReturnInsertMaster
     private ReturnInsertMasterPK createReturnInsertMasterPK() {
         ReturnInsertMasterPK ReturnInsertMasterPK = new ReturnInsertMasterPK();
-        ReturnInsertMasterPK.setId(Date.from(Instant.ofEpochMilli(0)));
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+            Date date = dateFormat.parse("1970-01-01 00:00:00.0");
+            ReturnInsertMasterPK.setId(date);
+        } catch (Exception e) { }
         ReturnInsertMasterPK.setCol1(1L);
         return ReturnInsertMasterPK;
     }
@@ -339,7 +344,11 @@ public class TestReturnInsert {
     //Prepare primary key for ReturnInsertDetail
     private ReturnInsertDetailPK createReturnInsertDetailPK() {
         ReturnInsertDetailPK returnInsertDetailPK = new ReturnInsertDetailPK();
-        returnInsertDetailPK.setId(Date.from(Instant.ofEpochMilli(0)));
+        try {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S");
+            Date date = dateFormat.parse("1970-01-01 00:00:00.0");
+            returnInsertDetailPK.setId(date);
+        } catch (Exception e) { }
         returnInsertDetailPK.setCol1(1L);
         returnInsertDetailPK.setCol2("abc");
         return returnInsertDetailPK;
