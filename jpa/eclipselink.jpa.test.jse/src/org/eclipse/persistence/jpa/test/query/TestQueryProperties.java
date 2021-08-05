@@ -60,7 +60,7 @@ public class TestQueryProperties implements PUPropertiesProvider {
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "SECONDS") })
     private EntityManagerFactory emfTimeoutSeconds;
 
-    @Emf(name = "timeoutWithUnitMintuesEMF", classes = { QueryEmployee.class }, properties = { 
+    @Emf(name = "timeoutWithUnitMintuesEMF", classes = { QueryEmployee.class }, createTables = DDLGen.DROP_CREATE, properties = { 
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT, value = "" + TestQueryProperties.propertyTimeout),
             @Property(name = PersistenceUnitProperties.QUERY_TIMEOUT_UNIT, value = "MINUTES") })
     private EntityManagerFactory emfTimeoutMinutes;
