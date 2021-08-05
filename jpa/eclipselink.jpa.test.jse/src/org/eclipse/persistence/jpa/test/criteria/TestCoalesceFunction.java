@@ -177,7 +177,7 @@ public class TestCoalesceFunction {
 
             Subquery<Date> countQuery = criteriaQuery.subquery(Date.class);
             Root<CoalesceEntity> countRoot = countQuery.from(CoalesceEntity.class);
-            countQuery.select(countRoot.get(CoalesceEntity_.date));
+            countQuery.select(countRoot.get(CoalesceEntity_.dateValue));
 
             // Pass the literal value directly
             Expression<Date> coalesceExp = builder.coalesce(countQuery, new Date());
@@ -206,7 +206,7 @@ public class TestCoalesceFunction {
 
             Subquery<Date> countQuery = criteriaQuery.subquery(Date.class);
             Root<CoalesceEntity> countRoot = countQuery.from(CoalesceEntity.class);
-            countQuery.select(countRoot.get(CoalesceEntity_.date));
+            countQuery.select(countRoot.get(CoalesceEntity_.dateValue));
 
             // create a ConstantExpression from the literal value
             Expression<Date> coalesceExp = builder.coalesce(countQuery, builder.literal(new Date()));
