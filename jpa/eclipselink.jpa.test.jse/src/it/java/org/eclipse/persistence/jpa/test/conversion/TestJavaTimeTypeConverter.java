@@ -17,6 +17,9 @@
 
 package org.eclipse.persistence.jpa.test.conversion;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,8 +29,6 @@ import java.time.OffsetTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
-
-import java.util.TimeZone;
 
 import org.eclipse.persistence.exceptions.ConversionException;
 import org.eclipse.persistence.internal.helper.ClassConstants;
@@ -63,24 +64,21 @@ public class TestJavaTimeTypeConverter {
         Assert.assertEquals(1, ld.getDayOfMonth());
         Assert.assertEquals(2020,  ld.getYear());
     }
-    
-    @Test
-    public void timeConvertUtilDateToLocalDate() {
-        Calendar cal = Calendar.getInstance();
 
-        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
-        cal.set(2020, 0, 1, 0, 0, 0);
-        Date date = cal.getTime();
+    @Test
+    public void timeConvertUtilDateToLocalDate() throws ParseException {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Date date = dateFormat.parse("2020-01-01 24:00:00.000");
         Assert.assertEquals(2020 - 1900, date.getYear());
         Assert.assertEquals(0, date.getMonth());
-        Assert.assertEquals(1, date.getDate());
+        Assert.assertEquals(2, date.getDate());
 
         LocalDate ld = (LocalDate) cm.convertObject(date, ClassConstants.TIME_LDATE);
 
         Assert.assertNotNull(ld);
-        Assert.assertEquals(Month.JANUARY, ld.getMonth());
-        Assert.assertEquals(1, ld.getDayOfMonth());
         Assert.assertEquals(2020, ld.getYear());
+        Assert.assertEquals(Month.JANUARY, ld.getMonth());
+        Assert.assertEquals(2, ld.getDayOfMonth());
     }
 
     @Test
