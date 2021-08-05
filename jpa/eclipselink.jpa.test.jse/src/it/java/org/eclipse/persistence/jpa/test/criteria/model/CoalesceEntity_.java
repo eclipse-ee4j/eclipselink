@@ -20,5 +20,5 @@ public class CoalesceEntity_ {
     public static volatile SingularAttribute<CoalesceEntity, Integer> id;
     public static volatile SingularAttribute<CoalesceEntity, String> description;
     public static volatile SingularAttribute<CoalesceEntity, java.math.BigDecimal> bigDecimal;
-    public static volatile SingularAttribute<CoalesceEntity, java.util.Date> date;
+    public static volatile SingularAttribute<CoalesceEntity, java.util.Date> dateValue;
 }

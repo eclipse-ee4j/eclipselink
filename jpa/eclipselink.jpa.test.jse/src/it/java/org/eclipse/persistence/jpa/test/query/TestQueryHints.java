@@ -41,7 +41,6 @@ import org.eclipse.persistence.jpa.test.framework.DDLGen;
 import org.eclipse.persistence.jpa.test.framework.Emf;
 import org.eclipse.persistence.jpa.test.framework.EmfRunner;
 import org.eclipse.persistence.jpa.test.framework.PUPropertiesProvider;
-import org.eclipse.persistence.jpa.test.query.TestQueryProperties.PreparedStatementInvocationHandler;
 import org.eclipse.persistence.jpa.test.query.model.QueryEmployee;
 import org.eclipse.persistence.queries.ScrollableCursor;
 import org.eclipse.persistence.sessions.Connector;
