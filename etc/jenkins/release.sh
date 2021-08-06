@@ -20,7 +20,6 @@ HELP_PLUGIN='org.apache.maven.plugins:maven-help-plugin:3.1.0'
 # $5 -  OVERWRITE_STAGING           - Allows to overwrite existing version in OSSRH (Jakarta) staging repositories
 
 echo '-[ EclipseLink Release ]-----------------------------------------------------------'
-. /etc/profile
 
 ECLIPSELINK_VERSION="${1}"
 NEXT_ECLIPSELINK_VERSION="${2}"
@@ -97,7 +96,7 @@ fi
 
 echo '-[ Build project mvn clean install ]-----------------------------'
 #This step is needed to populate local Maven repository with required but not deployed artifacts
-mvn --no-transfer-progress -DskipTests clean install
+mvn --no-transfer-progress -V -DskipTests clean install
 #Deploy selected artifacts. There is Maven property -Ddeploy to control which modules will be deployed
 echo '-[ Deploy artifacts to staging repository ]-----------------------------'
 # Verify, sign and deploy release
