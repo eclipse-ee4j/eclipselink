@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
@@ -41,7 +42,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  * @see org.eclipse.persistence.internal.jpa.weaving.MethodWeaver
  */
 
-public class ClassWeaver extends ClassVisitor implements Opcodes {
+public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
 
     // PersistenceWeaved
     public static final String PERSISTENCE_WEAVED_SHORT_SIGNATURE = "org/eclipse/persistence/internal/weaving/PersistenceWeaved";
@@ -215,7 +216,7 @@ public class ClassWeaver extends ClassVisitor implements Opcodes {
     }
 
     public ClassWeaver(ClassVisitor classWriter, ClassDetails classDetails) {
-        super(ASM9, classWriter);
+        super(classWriter);
         this.classDetails = classDetails;
     }
 

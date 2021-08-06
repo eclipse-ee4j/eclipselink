@@ -38,11 +38,15 @@ import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataDescriptor;
 import org.eclipse.persistence.internal.jpa.metadata.MetadataLogger;
 import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkAnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
 import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkFieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkMethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
@@ -239,14 +243,14 @@ public class MetadataAsmFactory extends MetadataFactory {
     /**
      * Walk the class byte codes and collect the class info.
      */
-    public class ClassMetadataVisitor extends ClassVisitor {
+    public class ClassMetadataVisitor extends EclipseLinkClassVisitor {
 
         private boolean isLazy;
         private boolean processedMemeber;
         private MetadataClass classMetadata;
 
         ClassMetadataVisitor(MetadataClass metadataClass, boolean isLazy) {
-            super(Opcodes.ASM9);
+            super();
             this.isLazy = isLazy;
             this.classMetadata = metadataClass;
         }
@@ -331,7 +335,7 @@ public class MetadataAsmFactory extends MetadataFactory {
      *
      * @see MetadataAnnotationArrayVisitor for population of array attributes
      */
-    class MetadataAnnotationVisitor extends AnnotationVisitor {
+    class MetadataAnnotationVisitor extends EclipseLinkAnnotationVisitor {
 
         /**
          * Element the annotation is being applied to. If this is null the
@@ -350,7 +354,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         MetadataAnnotationVisitor(MetadataAnnotatedElement element, String name, boolean isRegular) {
-            super(Opcodes.ASM9);
+            super();
             this.element = element;
             this.annotation = new MetadataAnnotation();
             this.annotation.setName(processDescription(name, false).get(0));
@@ -358,7 +362,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         }
 
         public MetadataAnnotationVisitor(MetadataAnnotation annotation) {
-            super(Opcodes.ASM9);
+            super();
             this.annotation = annotation;
         }
 
@@ -401,7 +405,7 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Specialized visitor to handle the population of arrays of annotation
      * values.
      */
-    class MetadataAnnotationArrayVisitor extends AnnotationVisitor {
+    class MetadataAnnotationArrayVisitor extends EclipseLinkAnnotationVisitor {
 
         private MetadataAnnotation annotation;
 
@@ -410,7 +414,7 @@ public class MetadataAsmFactory extends MetadataFactory {
         private List<Object> values;
 
         public MetadataAnnotationArrayVisitor(MetadataAnnotation annotation, String name) {
-            super(Opcodes.ASM9);
+            super();
             this.annotation = annotation;
             this.attributeName = name;
             this.values = new ArrayList<Object>();
@@ -444,12 +448,12 @@ public class MetadataAsmFactory extends MetadataFactory {
      * Factory for the creation of {@link MetadataField} handling basic type,
      * generics, and annotations.
      */
-    class MetadataFieldVisitor extends FieldVisitor {
+    class MetadataFieldVisitor extends EclipseLinkFieldVisitor {
 
         private MetadataField field;
 
         public MetadataFieldVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, Object value) {
-            super(Opcodes.ASM9);
+            super();
             this.field = new MetadataField(classMetadata);
             this.field.setModifiers(access);
             this.field.setName(name);
@@ -479,12 +483,12 @@ public class MetadataAsmFactory extends MetadataFactory {
      */
     // Note: Subclassed EmptyListener to minimize signature requirements for
     // ignored MethodVisitor API
-    class MetadataMethodVisitor extends MethodVisitor {
+    class MetadataMethodVisitor extends EclipseLinkMethodVisitor {
 
         private MetadataMethod method;
 
         public MetadataMethodVisitor(MetadataClass classMetadata, int access, String name, String desc, String signature, String[] exceptions) {
-            super(Opcodes.ASM9);
+            super();
             this.method = new MetadataMethod(MetadataAsmFactory.this, classMetadata);
 
             this.method.setName(name);
