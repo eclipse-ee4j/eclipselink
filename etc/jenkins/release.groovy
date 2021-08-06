@@ -57,18 +57,18 @@ spec:
   - name: jnlp
     resources:
       limits:
-        memory: "1Gi"
+        memory: "2Gi"
         cpu: "1"
       requests:
-        memory: "1Gi"
+        memory: "2Gi"
         cpu: "500m"
   - name: el-build
     resources:
       limits:
-        memory: "2Gi"
+        memory: "4Gi"
         cpu: "2"
       requests:
-        memory: "2Gi"
+        memory: "4Gi"
         cpu: "1.5"
     image: tkraus/el-build:1.1.9
     volumeMounts:

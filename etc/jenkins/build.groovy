@@ -101,7 +101,7 @@ spec:
     }
     tools {
         maven 'apache-maven-latest'
-        jdk 'adoptopenjdk-hotspot-jdk11-latest'
+        jdk 'openjdk-jdk17-latest'
     }
     stages {
         // Initialize build environment
@@ -183,32 +183,31 @@ spec:
                 }
             }
         }
-        stage('Proceed test results') {
-            steps {
-                script {
-                    //Multiple Jenkins junit plugin calls due java.nio.channels.ClosedChannelException in new/cloud Eclipse.org build infrastructure if it's called once
-                    //Retry is there to try (in case of crash) junit test upload again.
-                    retryCount = 5
-                    junitReportFiles = [
-                            'bundles/**/target/surefire-reports/*.xml,bundles/**/target/failsafe-reports/*.xml',
-                            'dbws/**/target/surefire-reports/*.xml,dbws/**/target/failsafe-reports/*.xml',
-                            'foundation/**/target/surefire-reports/*.xml,foundation/**/target/failsafe-reports/*.xml',
-                            'jpa/**/target/surefire-reports/*.xml,jpa/**/target/failsafe-reports/*.xml',
-                            'moxy/**/target/surefire-reports/*.xml,moxy/**/target/failsafe-reports/*.xml',
-                            'sdo/**/target/surefire-reports/*.xml,sdo/**/target/failsafe-reports/*.xml',
-                            'utils/**/target/surefire-reports/*.xml,utils/**/target/failsafe-reports/*.xml'
-                    ]
-                    for (item in junitReportFiles) {
-                        echo 'Processing file: ' + item
-                        retry(retryCount) {
-                            junit allowEmptyResults: true, testResults: item
-                        }
+    }
+    post {
+        always{
+            script {
+                //Multiple Jenkins junit plugin calls due java.nio.channels.ClosedChannelException in new/cloud Eclipse.org build infrastructure if it's called once
+                //Retry is there to try (in case of crash) junit test upload again.
+                retryCount = 5
+                junitReportFiles = [
+                        'bundles/**/target/surefire-reports/*.xml,bundles/**/target/failsafe-reports/*.xml',
+                        'dbws/**/target/surefire-reports/*.xml,dbws/**/target/failsafe-reports/*.xml',
+                        'foundation/**/target/surefire-reports/*.xml,foundation/**/target/failsafe-reports/*.xml',
+                        'jpa/**/target/surefire-reports/*.xml,jpa/**/target/failsafe-reports/*.xml',
+                        'moxy/**/target/surefire-reports/*.xml,moxy/**/target/failsafe-reports/*.xml',
+                        'sdo/**/target/surefire-reports/*.xml,sdo/**/target/failsafe-reports/*.xml',
+                        'utils/**/target/surefire-reports/*.xml,utils/**/target/failsafe-reports/*.xml'
+                ]
+                for (item in junitReportFiles) {
+                    echo 'Processing file: ' + item
+                    retry(retryCount) {
+                        junit allowEmptyResults: true, testResults: item
                     }
                 }
             }
+            recordIssues(tools: [spotBugs(useRankAsPriority: true), java(), javaDoc()])
         }
-    }
-    post {
         // Send a mail on unsuccessful and fixed builds
         unsuccessful { // means unstable || failure || aborted
             emailext subject: 'Build $BUILD_STATUS $PROJECT_NAME #$BUILD_NUMBER failed!',

@@ -92,7 +92,7 @@ spec:
     }
     tools {
         maven 'apache-maven-latest'
-        jdk 'adoptopenjdk-hotspot-latest'
+        jdk 'openjdk-jdk17-latest'
     }
     stages {
         // Initialize build environment
@@ -246,6 +246,7 @@ spec:
                     }
                 }
             }
+            recordIssues(tools: [spotBugs(useRankAsPriority: true), java(), javaDoc()])
         }
     }
 }
