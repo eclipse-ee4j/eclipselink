@@ -100,64 +100,6 @@ Apache Java Servlet API (2.4)
 
 * License: Apache License, 2.0
 
-ASM (1.5.3)
-
-* License: New BSD license
-
-asm (3.3.1)
-
-* License: New BSD License
-
-ASM (5.0.1)
-
-* License: New BSD License
-
-ASM (5.1.0)
-
-* License: New BSD License
-* Project: http://asm.ow2.org
-* Source: http://download.forge.ow2.org/asm/asm-5.1.tar.gz
-
-asm (6.0)
-
-* License: BSD 3-Clause
-* Project: http://asm.ow2.org
-* Source:
-   http://forge.ow2.org/project/download.php?group_id=23&file_id=21864
-
-ASM (6.0)
-
-* License: New BSD license
-
-ASM (6.1.1)
-
-* License: BSD-3-Clause
-* Project: http://asm.ow2.org
-* Source: https://gitlab.ow2.org/asm/asm/tags/ASM_6_1_1
-
-asm (6.2)
-
-* License: BSD-3-Clause
-
-asm (7.1)
-
-* License: BSD-3-Clause
-
-ASM (7.2)
-
-* License: Pending
-
-ASM (7.3.1)
-
-* License: BSD-3-Clause
-
-ASM (8.0.1)
-
-* License: BSD-3-Clause
-
-ASM 9 (n/a)
-
-
 atinject (Package javax.inject) (1.0)
 
 * License: Apache License, 2.0
