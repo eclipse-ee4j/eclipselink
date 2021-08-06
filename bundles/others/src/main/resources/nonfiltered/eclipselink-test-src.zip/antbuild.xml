@@ -177,7 +177,6 @@
         <pathelement path="${eclipselink.jar}"/>
         <pathelement path="${eclipselink.sdo.plugins}/${commonj.sdo.jar}"/>
         <pathelement path="${eclipselink.plugins}/${antlr}"/>
-        <pathelement path="${eclipselink.plugins}/${asm}"/>
         <pathelement path="${eclipselink.plugins}/${activation.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-api.jar}"/>
         <pathelement path="${eclipselink.plugins}/${jaxb-core.jar}"/>
@@ -523,11 +522,10 @@
         <delete file="${eclipselink.tst.src.prefix}${eclipselink.zip.suffix}" failonerror="false"/>
         <antcall target="clean-oracle-if-dependencies"/>
     </target>
-    <target name="clean-plugins" description="Clean files from plugins directory except antlr and asm.">
+    <target name="clean-plugins" description="Clean files from plugins directory except antlr">
         <delete>
             <fileset dir="${plugins.dir}" includes="*.jar">
                 <exclude name="**/org.eclipse.persistence.antlr**"/>
-                <exclude name="**/org.eclipse.persistence.asm**"/>
                 <exclude name="**/readme.for.distribution**"/>
                 <exclude name="**/org.eclipse.persistence.oracle*.jar"/>
             </fileset>
@@ -909,7 +907,6 @@
             <!-- Include all non-duplicate content from bOSGi bundles -->
             <zipgroupfileset dir="${eclipselink.plugins}">
                 <include name="org.eclipse.persistence*${version.string}.jar"/>
-                <include name="org.eclipse.persistence.asm*.jar"/>
                 <include name="org.eclipse.persistence.antlr*.jar"/>
                 <include name="org.eclipse.persistence.oracle_*.jar"/>
                 <exclude name="*.corba*.jar"/>
@@ -1011,7 +1008,6 @@
                 <include name="${license-files}"/>
             </zipfileset>
             <zipgroupfileset dir="${eclipselink.plugins}">
-                <include name="${asm}.source_${version.string}.jar"/>
                 <include name="${antlr}.source_${version.string}.jar"/>
                 <include name="org.eclipse.persistence*.source*.jar"/>
                 <include name="eclipselink-moxy-dynamicxjc.source*.jar"/>
