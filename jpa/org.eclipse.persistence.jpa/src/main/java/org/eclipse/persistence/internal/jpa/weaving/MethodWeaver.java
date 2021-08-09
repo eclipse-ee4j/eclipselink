@@ -19,6 +19,7 @@
 //ASM imports
 import org.eclipse.persistence.internal.descriptors.VirtualAttributeMethodInfo;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
+import org.eclipse.persistence.internal.libraries.asm.EclipseLinkMethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Label;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Opcodes;
@@ -34,7 +35,7 @@ import org.eclipse.persistence.internal.libraries.asm.Type;
  *
  */
 
-public class MethodWeaver extends MethodVisitor implements Opcodes {
+public class MethodWeaver extends EclipseLinkMethodVisitor implements Opcodes {
 
     protected ClassWeaver tcw;
     protected String methodName;
@@ -44,7 +45,7 @@ public class MethodWeaver extends MethodVisitor implements Opcodes {
     protected boolean methodStarted = false;
 
     public MethodWeaver(ClassWeaver tcw, String methodName, String methodDescriptor, MethodVisitor mv) {
-        super(ASM8, mv);
+        super(mv);
         this.tcw = tcw;
         this.methodName = methodName;
         this.methodDescriptor = methodDescriptor;
