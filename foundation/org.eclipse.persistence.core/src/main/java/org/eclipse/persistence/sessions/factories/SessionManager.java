@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -179,7 +179,7 @@ public class SessionManager {
      */
     public void destroy() {
         if (supportPartitions) {
-            if (managers.remove(getPartitionID()) == null) {
+            if (!managers.isEmpty() && managers.remove(getPartitionID()) == null) {
                 //should not happen
                 LOG.log(SessionLog.WARNING, "session_manager_no_partition", new Object[0]);
            }
