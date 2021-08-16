@@ -1205,6 +1205,7 @@
                     </compilerArgs>
                 </configuration>
             </plugin>
+            <!--Resolve EclipseLink Parent project root directory-->
             <plugin>
                 <groupId>org.codehaus.gmaven</groupId>
                 <artifactId>groovy-maven-plugin</artifactId>
@@ -1218,27 +1219,18 @@
                         <configuration>
                             <source>
                                 <![CDATA[
-                                def rootPom = project;
-                                log.info("Current project parent [rootPom.parent]:  " + rootPom.parent);
-                                log.info("Current project parent basedir [rootPom.parent.basedir]:  " + rootPom.parent.basedir);
-                                while (rootPom.parent.basedir != null) {
-                                    log.info("Current project [rootPom]:  " + rootPom);
-                                    log.info("Current project basedir [rootPom.basedir]:  " + rootPom.basedir);
-                                    log.info("parent project [rootPom.parent]:  " + rootPom.parent);
-                                    log.info("parent project basedir [rootPom.parent.basedir]:  " + rootPom.parent.basedir);
-                                    rootPom = rootPom.parent;
-                                }
-                                project.properties.setProperty("project.root.location", rootPom.basedir.toString());
-                                log.info("EclipseLink Parent project directory [project.root.location]:  " + project.properties['project.root.location']);
-                                log.info("Topmost parent directory [rootPom.basedir]:  " + rootPom.basedir);
+                                    def rootPom = project;
+                                    while (rootPom.parent.groupId != "org.eclipse.ee4j") {
+                                        rootPom = rootPom.parent;
+                                    }
+                                    project.properties.setProperty("project.root.location", rootPom.basedir.toString());
+                                    log.info("EclipseLink Parent project directory [project.root.location]:  " + project.properties['project.root.location']);
                                 ]]>
                             </source>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
-
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
