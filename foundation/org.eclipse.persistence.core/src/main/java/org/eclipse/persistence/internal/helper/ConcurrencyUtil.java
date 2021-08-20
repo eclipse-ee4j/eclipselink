@@ -360,7 +360,7 @@ public class ConcurrencyUtil {
             String canonicalName = cacheKeyObject != null ? cacheKeyObject.getClass().getCanonicalName()
                     : TraceLocalization.buildMessage("concurrency_util_owned_cache_key_null");
             return TraceLocalization.buildMessage("concurrency_util_owned_cache_key_is_cache_key", new Object[] {canonicalName, primaryKey,
-                    cacheKeyObject, String.valueOf(System.identityHashCode(cacheKeyObject)),
+                    String.valueOf(System.identityHashCode(cacheKeyObject)),
                     cacheKeyClass, String.valueOf(System.identityHashCode(cacheKey)),
                     activeThread, concurrencyManager.getNumberOfReaders(), concurrencyManagerId,
                     ConversionManager.getDefaultManager().convertObject(concurrencyManagerCreationDate, String.class).toString()
