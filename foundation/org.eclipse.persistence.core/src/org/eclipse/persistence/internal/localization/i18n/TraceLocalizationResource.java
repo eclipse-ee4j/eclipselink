@@ -136,12 +136,12 @@ public class TraceLocalizationResource extends ListResourceBundle {
                 + " The thread has been stuck for: ({3} ms) \n "
                 + " Bellow we will describe the ActiveLocks, DeferredLocks and ReadLocks for this thread. " },
         { "concurrency_util_owned_cache_key_null", "ObjectNull. Most likely not yet in server session cache and in the process of being created."},
-        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object: {2}) (object hash code: {3}) (cacheKeyClass: {4}) (cacheKey hash code: {5}) (current cache key owner/activeThread: {6}) (getNumberOfReaders: {7}) "
-                + " (concurrencyManagerId: {8}) (concurrencyManagerCreationDate: {9})"
-                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {10}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {11}) "
-                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {12})  "
-                + "(depth: {13}) ---"},
+        { "concurrency_util_owned_cache_key_is_cache_key", "--- CacheKey  ({0}):  (primaryKey: {1}) (object hash code: {2}) (cacheKeyClass: {3}) (cacheKey hash code: {4}) (current cache key owner/activeThread: {5}) (getNumberOfReaders: {6}) "
+                + " (concurrencyManagerId: {7}) (concurrencyManagerCreationDate: {8})"
+                + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {9}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReading:  {10}) "
+                + " (totalNumberOfTimeCacheKeyReleasedForReadingBlewUpExceptionDueToCacheKeyHavingReachedCounterZero:  {11})  "
+                + "(depth: {12}) ---"},
         { "concurrency_util_owned_cache_key_is_not_cache_key", "--- ConcurrencyManager: (ConcurrencyManagerClass: {0} ) (ConcurrencyManagerToString: {1}) (current cache key owner/activeThread: {2}) (concurrencyManagerId: {3}) (concurrencyManagerCreationDate: {4}) "
                 + "  (totalNumberOfTimeCacheKeyAcquiredForReading:  {5}) "
                 + " (totalNumberOfTimeCacheKeyReleasedForReading:  {6}) "
