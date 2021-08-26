@@ -162,7 +162,8 @@
 
         <!--Eclipse Dependencies version-->
         <eclipselink.asm.version>9.1.1</eclipselink.asm.version>
-        <activation.version>2.0.1</activation.version>
+        <activation-api.version>2.1.0-RC1</activation-api.version>
+        <angus-activation.version>1.0.0-M1</angus-activation.version>
         <annotation.version>2.0.0</annotation.version>
         <cdi.version>3.0.0</cdi.version>
         <ejb.version>4.0.0</ejb.version>
@@ -542,12 +543,12 @@
             <dependency>
                 <groupId>jakarta.activation</groupId>
                 <artifactId>jakarta.activation-api</artifactId>
-                <version>${activation.version}</version>
+                <version>${activation-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.activation</groupId>
-                <artifactId>jakarta.activation</artifactId>
-                <version>${activation.version}</version>
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-activation</artifactId>
+                <version>${angus-activation.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.mail</groupId>

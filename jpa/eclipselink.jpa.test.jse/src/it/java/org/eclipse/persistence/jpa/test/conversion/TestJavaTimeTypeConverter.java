@@ -26,7 +26,10 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.TemporalField;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -69,13 +72,19 @@ public class TestJavaTimeTypeConverter {
     public void timeConvertUtilDateToLocalDate() throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Date date = dateFormat.parse("2020-01-01 24:00:00.000");
-        Assert.assertEquals(2020 - 1900, date.getYear());
-        Assert.assertEquals(0, date.getMonth());
-        Assert.assertEquals(2, date.getDate());
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        Assert.assertEquals(2020, cal.get(Calendar.YEAR));
+        Assert.assertEquals(0, cal.get(Calendar.MONTH));
+        Assert.assertEquals(2, cal.get(Calendar.DAY_OF_MONTH));
 
         LocalDate ld = (LocalDate) cm.convertObject(date, ClassConstants.TIME_LDATE);
+        ZonedDateTime check = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
 
         Assert.assertNotNull(ld);
+        Assert.assertEquals(check.getYear(), ld.getYear());
+        Assert.assertEquals(check.getMonth(), ld.getMonth());
+        Assert.assertEquals(check.getDayOfMonth(), ld.getDayOfMonth());
         Assert.assertEquals(2020, ld.getYear());
         Assert.assertEquals(Month.JANUARY, ld.getMonth());
         Assert.assertEquals(2, ld.getDayOfMonth());
