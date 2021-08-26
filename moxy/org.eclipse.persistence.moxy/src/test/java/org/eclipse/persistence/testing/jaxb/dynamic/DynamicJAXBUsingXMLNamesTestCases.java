@@ -41,6 +41,14 @@ public class DynamicJAXBUsingXMLNamesTestCases extends TestCase {
         super(name);
     }
 
+    public void setUp() {
+        System.setProperty(JAXBContext.JAXB_CONTEXT_FACTORY, DynamicJAXBContextFactory.class.getName());
+    }
+
+    public void tearDown() {
+        System.clearProperty(JAXBContext.JAXB_CONTEXT_FACTORY);
+    }
+
     @Override
     public String getName() {
         return "Dynamic JAXB: Using XML Names: " + super.getName();

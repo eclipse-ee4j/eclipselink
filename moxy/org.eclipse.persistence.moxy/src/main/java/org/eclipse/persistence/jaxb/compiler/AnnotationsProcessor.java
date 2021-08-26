@@ -3841,7 +3841,7 @@ public final class AnnotationsProcessor {
                 XmlElementDecl elementDecl = (XmlElementDecl) helper.getAnnotation(next, XmlElementDecl.class);
                 url = elementDecl.namespace();
                 localName = elementDecl.name();
-                scopeClass = elementDecl.scope();
+                scopeClass = (Class<XmlElementDecl.GLOBAL>) elementDecl.scope();
                 if (!elementDecl.substitutionHeadName().equals(EMPTY_STRING)) {
                     String subHeadLocal = elementDecl.substitutionHeadName();
                     String subHeadNamespace = elementDecl.substitutionHeadNamespace();

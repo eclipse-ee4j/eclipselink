@@ -29,6 +29,24 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
  */
 public class JAXBContextProperties {
 
+    /**
+     * The name of the property used to specify which JAXB Context Factory
+     * will be used for context creation.
+     * Default {@code JAXBContextFactory} will be used when this property
+     * is not set.
+     */
+    public static final String MOXY_FACTORY_TYPE = "eclipselink.moxy.factory.type";
+
+    /**
+     * Supported values of {@code eclipselink.moxy.factory.type} property.
+     */
+    public static final class FactoryType {
+        /** Use default {@code JAXBContextFactory} for context creation. */
+        public static final String DEFAULT = "default";
+        /** Use {@code DynamicJAXBContextFactory} for context creation. */
+        public static final String DYNAMIC = "dynamic";
+    }
+
     /**`
      * The name of the property used to specify a value that will be prepended
      * to all keys that are mapped to an XML attribute. By default there is no

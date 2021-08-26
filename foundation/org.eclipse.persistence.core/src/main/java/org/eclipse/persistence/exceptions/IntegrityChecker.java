@@ -19,6 +19,8 @@ import java.io.*;
 import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
+import org.eclipse.persistence.logging.AbstractSessionLog;
+import org.eclipse.persistence.logging.SessionLog;
 
 /**
  *    <p><b>Purpose</b>: IntegrityChecker is used for catching all the descriptor exceptions,
@@ -148,6 +150,7 @@ public class IntegrityChecker implements Serializable {
      * This method will throw the exception or add the exceptions into a vector depending on the value of shouldCatchExceptions.
      */
     public void handleError(RuntimeException runtimeException) {
+        SessionLog log = AbstractSessionLog.getLog();
         if (!shouldCatchExceptions()) {
             throw runtimeException;
         }

@@ -1260,7 +1260,6 @@ public class DescriptorException extends ValidationException {
 
     public static DescriptorException nullPointerWhileConstructorInstantiation(ClassDescriptor descriptor, Throwable exception) {
         Object[] args = {  };
-
         DescriptorException descriptorException = new DescriptorException(ExceptionMessageGenerator.buildMessage(DescriptorException.class, NULL_POINTER_WHILE_CONSTRUCTOR_INSTANTIATION, args), descriptor, exception);
         descriptorException.setErrorCode(NULL_POINTER_WHILE_CONSTRUCTOR_INSTANTIATION);
         return descriptorException;

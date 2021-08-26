@@ -186,14 +186,15 @@
         <el.version>4.0.1</el.version>
         <glassfish.version>6.2.0</glassfish.version>
         <jaxwsrt.version>3.0.1</jaxwsrt.version>
-        <jaxb.version>3.0.2-b01</jaxb.version>
-        <jaxb.api.version>3.0.1</jaxb.api.version>
-        <soap.api.version>2.0.1</soap.api.version>
+        <jaxb.version>3.1.0-M1</jaxb.version>
+        <jaxb.api.version>4.0.1-SNAPSHOT</jaxb.api.version>
+        <soap.api.version>3.0.0-RC1</soap.api.version>
         <jersey.version>3.0.2</jersey.version>
         <jms.version>3.0.0</jms.version>
         <json.version>2.0.1</json.version>
         <jpa.api.version>3.0.0</jpa.api.version>
-        <mail.version>2.0.1</mail.version>
+        <mail-api.version>2.1.0-RC1</mail-api.version>
+        <angus-mail.version>1.0.0-M1</angus-mail.version>
         <oracle.ddlparser.version>3.0.0</oracle.ddlparser.version>
         <org.glassfish.corba.version>4.2.4</org.glassfish.corba.version>
         <parsson.version>1.0.0</parsson.version>
@@ -586,9 +587,14 @@
                 <version>${angus-activation.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun.mail</groupId>
-                <artifactId>jakarta.mail</artifactId>
-                <version>${mail.version}</version>
+                <groupId>jakarta.mail</groupId>
+                <artifactId>jakarta.mail-api</artifactId>
+                <version>${mail-api.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-mail</artifactId>
+                <version>${angus-mail.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.xml.bind</groupId>

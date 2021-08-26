@@ -33,6 +33,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 
 import junit.framework.TestCase;
+import org.eclipse.persistence.jaxb.JAXBUnmarshaller;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -48,7 +49,7 @@ public class UnmarshallerTestCases extends TestCase  {
     private final static String CONTROL_EMPLOYEE_NAME = "Jane Doe";
 
     private JAXBContext jaxbContext;
-    private Unmarshaller unmarshaller;
+    private JAXBUnmarshaller unmarshaller;
     private DocumentBuilder parser;
     private String contextPath;
 
@@ -61,7 +62,7 @@ public class UnmarshallerTestCases extends TestCase  {
         contextPath = System.getProperty("jaxb.test.contextpath", JAXBSAXTestSuite.CONTEXT_PATH);
 
         jaxbContext = JAXBContext.newInstance(contextPath, getClass().getClassLoader());
-        unmarshaller = jaxbContext.createUnmarshaller();
+        unmarshaller = (JAXBUnmarshaller) jaxbContext.createUnmarshaller();
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setIgnoringElementContentWhitespace(true);
         parser = builderFactory.newDocumentBuilder();
