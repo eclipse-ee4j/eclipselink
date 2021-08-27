@@ -72,11 +72,9 @@ public class TestJavaTimeTypeConverter {
     public void timeConvertUtilDateToLocalDate() throws ParseException {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         Date date = dateFormat.parse("2020-01-01 24:00:00.000");
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        Assert.assertEquals(2020, cal.get(Calendar.YEAR));
-        Assert.assertEquals(0, cal.get(Calendar.MONTH));
-        Assert.assertEquals(2, cal.get(Calendar.DAY_OF_MONTH));
+        Assert.assertEquals(2020 - 1900, date.getYear());
+        Assert.assertEquals(0, date.getMonth());
+        Assert.assertEquals(2, date.getDate());
 
         LocalDate ld = (LocalDate) cm.convertObject(date, ClassConstants.TIME_LDATE);
         ZonedDateTime check = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
