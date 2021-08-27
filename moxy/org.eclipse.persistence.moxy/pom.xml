@@ -75,8 +75,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>jakarta.activation</artifactId>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-activation</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.mail</groupId>

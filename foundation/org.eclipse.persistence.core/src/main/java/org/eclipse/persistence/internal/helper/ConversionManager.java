@@ -861,9 +861,8 @@ public class ConversionManager extends CoreConversionManager implements Serializ
         } else if (sourceObject instanceof java.sql.Timestamp) {
             localDate = ((java.sql.Timestamp) sourceObject).toLocalDateTime().toLocalDate();
         } else if (sourceObject instanceof java.util.Date) {
-            // handles sql.Time
-            java.util.Date date = (java.util.Date) sourceObject;
-            localDate = java.time.LocalDate.ofEpochDay(date.toInstant().getEpochSecond() / (60 * 60 * 24)); // Conv sec to day
+            // handles sql.Time too
+            localDate = ((java.util.Date) sourceObject).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         } else if (sourceObject instanceof Calendar) {
             Calendar cal = (Calendar) sourceObject;
             localDate = java.time.LocalDate.of(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
