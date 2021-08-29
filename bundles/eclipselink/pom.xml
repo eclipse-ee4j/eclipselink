@@ -640,7 +640,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <doclint>none</doclint>
                     <detectOfflineLinks>false</detectOfflineLinks>
                     <use>false</use>
                     <quiet>true</quiet>

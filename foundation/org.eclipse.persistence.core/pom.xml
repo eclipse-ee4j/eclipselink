@@ -30,6 +30,10 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <!-- Too many to fix -->
+        <jdoc.doclint>-missing</jdoc.doclint>
+    </properties>
     <dependencies>
         <!--Other modules-->
         <dependency>

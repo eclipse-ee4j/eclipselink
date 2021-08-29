@@ -97,6 +97,11 @@
     <properties>
         <!-- TOOL Properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jdoc.doclint>all</jdoc.doclint>
+        <!-- exclude big groups from the Xlint -->
+        <comp.xlint>-Xlint:all,-rawtypes,-unchecked</comp.xlint>
+        <warn.limit>150</warn.limit>
+
         <!-- PROJECT Properties -->
         <build.type>SNAPSHOT</build.type>
         <maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
@@ -1180,8 +1185,17 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <release>8</release>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
+                    <compilerArgs combine.children="append">
+                        <arg>${comp.xlint}</arg>
+                        <arg>-Xdoclint:-missing</arg>
+                        <arg>-Xmaxwarns</arg>
+                        <arg>${warn.limit}</arg>
+                        <arg>-Xmaxerrs</arg>
+                        <arg>${warn.limit}</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
@@ -1499,7 +1513,16 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-                    <source>8</source>
+                    <additionalOptions combine.children="append">
+                        <additionalOption>-Xmaxwarns</additionalOption>
+                        <additionalOption>${warn.limit}</additionalOption>
+                        <additionalOption>-Xmaxerrs</additionalOption>
+                        <additionalOption>${warn.limit}</additionalOption>
+                    </additionalOptions>
+                    <minmemory>2G</minmemory>
+                    <release>8</release>
+                    <doclint>${jdoc.doclint}</doclint>
+                    <quiet>true</quiet>
                 </configuration>
             </plugin>
             <plugin>
