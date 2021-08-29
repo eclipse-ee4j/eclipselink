@@ -66,6 +66,12 @@ public class TestProcessor {
     public void testProc() throws Exception {
         TestFO entity = new TestFO("org.Sample",
                 "package org; import jakarta.persistence.Entity; @Entity public class Sample { public  Sample() {} public int getX() {return 1;} interface A {}}");
+        TestFO nonSC = new TestFO("some.IF",
+                "package some; public class IF { public IF() {}}");
+        TestFO nonAnn = new TestFO("custom.Ann",
+                "package custom; public @interface Ann { }");
+        TestFO nonExt = new TestFO("external.Cls",
+                "package external; public class Cls { public Cls(){}}");
         TestFO nonEntity = new TestFO("org.NotE",
                 "package org; import jakarta.persistence.Entity; public class NotE extends some.IF { public  NotE() {} @custom.Ann public external.Cls getW() {return new Object();}}");
         TestFO generated8 = new TestFO("org.Gen8",
@@ -75,7 +81,7 @@ public class TestProcessor {
 
         Result result = runProject("testProc",
                 getJavacOptions("-Aeclipselink.logging.level.processor=OFF"),
-                Arrays.asList(entity, nonEntity, generated8, generated9));
+                Arrays.asList(entity, nonSC, nonAnn, nonExt, nonEntity, generated8, generated9));
 
         File outputFile = new File(result.srcOut, "org/Sample_.java");
         Assert.assertTrue("Model file not generated", outputFile.exists());
