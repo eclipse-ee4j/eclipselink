@@ -16,7 +16,8 @@ module org.eclipse.persistence.core {
     requires java.management;
     requires java.naming;
     requires java.rmi;
-    requires java.sql;
+    requires transitive java.sql;
+    requires transitive java.xml;
 
     requires static jakarta.activation;
     requires static jakarta.annotation;
