@@ -13,15 +13,14 @@
 
 module org.eclipse.persistence.jpa.modelgen {
 
-    requires java.compiler;
+    requires transitive java.compiler;
 
-    requires jakarta.persistence;
     requires jakarta.annotation;
 
-    requires org.eclipse.persistence.jpa;
-    requires org.eclipse.persistence.core;
+    requires transitive org.eclipse.persistence.jpa;
 
     exports org.eclipse.persistence.internal.jpa.modelgen;
+    exports org.eclipse.persistence.internal.jpa.modelgen.objects;
 
     provides javax.annotation.processing.Processor with
            org.eclipse.persistence.internal.jpa.modelgen.CanonicalModelProcessor;

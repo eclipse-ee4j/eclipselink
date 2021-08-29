@@ -14,10 +14,10 @@ module org.eclipse.persistence.jpa {
     requires java.rmi;
 
     requires org.eclipse.persistence.asm;
-    requires org.eclipse.persistence.core;
+    requires transitive org.eclipse.persistence.core;
     requires org.eclipse.persistence.jpa.jpql;
 
-    requires jakarta.persistence;
+    requires transitive jakarta.persistence;
 
     requires static jakarta.transaction;
     requires static jakarta.validation;
