@@ -66,6 +66,20 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <release>8</release>
+                    <!-- openjdk11 fails without this being set -->
+                    <detectOfflineLinks>false</detectOfflineLinks>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>java11-dependencies</id>

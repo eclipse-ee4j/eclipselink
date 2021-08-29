@@ -32,6 +32,7 @@
 
     <properties>
         <dep.sources.mr>${project.build.directory}/generated-sources/dependencies-mr</dep.sources.mr>
+        <jdoc.doclint>-missing</jdoc.doclint>
 
         <test-skip-sdo-srg>${skipTests}</test-skip-sdo-srg>
         <test-skip-sdo>true</test-skip-sdo>
@@ -115,7 +116,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+           <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
@@ -283,6 +284,13 @@
                             <Multi-Release>true</Multi-Release>
                         </manifestEntries>
                     </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <doclint>none</doclint>
                 </configuration>
             </plugin>
         </plugins>

@@ -144,7 +144,7 @@
     <echo message="JDK version detected: '${java.version}'"/>
     <fail message="A non-compatible version of JDK was detected! Build won't run properly unless running on at least JDK 1.8!." unless="compat.jdk"/>
 
-    <property name="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:none"/>
+    <property name="javadoc.additionParams" value="${javadoc.additionParamsCommon} -Xdoclint:-missing"/>
     <condition property="is.new.jdk" value="true" else="false">
         <not><matches pattern='"[1-8]\..*"' string="${java.version}"/></not>
     </condition>
