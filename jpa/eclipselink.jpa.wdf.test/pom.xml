@@ -85,6 +85,11 @@
             <version>${db.driver.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.corba</groupId>
+            <artifactId>glassfish-corba-omgapi</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -290,30 +295,6 @@
     </build>
 
     <profiles>
-        <profile>
-            <id>java11-dependencies</id>
-            <activation>
-                <jdk>[11,)</jdk>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>org.glassfish.corba</groupId>
-                    <artifactId>glassfish-corba-omgapi</artifactId>
-                    <scope>test</scope>
-                </dependency>
-            </dependencies>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>derby</id>
             <activation>
