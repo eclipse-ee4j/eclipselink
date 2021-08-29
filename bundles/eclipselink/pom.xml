@@ -450,6 +450,29 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <configuration>
+                            <!-- reduce number of duplicates -->
+                            <showDeprecation>false</showDeprecation>
+                            <compilerArgs combine.children="override">
+                                <arg>-Xlint:module,requires-transitive-automatic,requires-automatic,opens,exports</arg>
+                                <arg>-Xdoclint:none</arg>
+                                <arg>-Xmaxwarns</arg>
+                                <arg>${warn.limit}</arg>
+                                <arg>-Xmaxerrs</arg>
+                                <arg>${warn.limit}</arg>
+                                <arg>--add-reads</arg>
+                                <arg>eclipselink=ALL-UNNAMED</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive combine.self="override">
@@ -566,38 +589,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <!-- sdo: api dependencies -->
-        <profile>
-            <id>jdk8</id>
-            <activation>
-                <jdk>1.8</jdk>
-            </activation>
-            <dependencies>
-                <!-- Required on Java SE 8 -->
-                <dependency>
-                    <groupId>org.eclipse.persistence</groupId>
-                    <artifactId>commonj.sdo</artifactId>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>jdk9</id>
-            <activation>
-                <jdk>(1.8,)</jdk>
-            </activation>
-            <dependencies>
-                <!-- Let's treat this as provided for now on JDK 9+ since we're including this under META-INF/versions/9
-                     to get around the split package problem with commonj.sdo.impl.HelperProviderImpl -->
-                <dependency>
-                    <groupId>org.eclipse.persistence</groupId>
-                    <artifactId>commonj.sdo</artifactId>
-                    <scope>provided</scope>
-                    <optional>true</optional>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>
 </project>
