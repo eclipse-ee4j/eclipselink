@@ -99,7 +99,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdoc.doclint>all</jdoc.doclint>
         <!-- exclude big groups from the Xlint -->
-        <comp.xlint>-Xlint:all,-rawtypes,-unchecked</comp.xlint>
+        <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial</comp.xlint>
+        <!-- -Xdoclint:-missing does not seem to work properly on the infra -->
+        <comp.xdoclint>-Xdoclint:none</comp.xdoclint>
         <warn.limit>150</warn.limit>
 
         <!-- PROJECT Properties -->
@@ -1190,7 +1192,7 @@
                     <showDeprecation>true</showDeprecation>
                     <compilerArgs combine.children="append">
                         <arg>${comp.xlint}</arg>
-                        <arg>-Xdoclint:-missing</arg>
+                        <arg>${comp.xdoclint}</arg>
                         <arg>-Xmaxwarns</arg>
                         <arg>${warn.limit}</arg>
                         <arg>-Xmaxerrs</arg>
