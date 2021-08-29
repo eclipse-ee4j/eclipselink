@@ -488,7 +488,15 @@
                     <execution>
                         <id>default-compile</id>
                         <configuration>
-                            <compilerArgs>
+                            <!-- reduce number of duplicates -->
+                            <showDeprecation>false</showDeprecation>
+                            <compilerArgs combine.children="override">
+                                <arg>-Xlint:module,requires-transitive-automatic,requires-automatic,opens,exports</arg>
+                                <arg>-Xdoclint:none</arg>
+                                <arg>-Xmaxwarns</arg>
+                                <arg>${warn.limit}</arg>
+                                <arg>-Xmaxerrs</arg>
+                                <arg>${warn.limit}</arg>
                                 <arg>--add-reads</arg>
                                 <arg>eclipselink=ALL-UNNAMED</arg>
                             </compilerArgs>
@@ -550,12 +558,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+                    <!-- reduce number of duplicates, all issues were already reported earlier -->
+                    <doclint>none</doclint>
                     <additionalOptions>
                         --add-reads eclipselink=ALL-UNNAMED
                     </additionalOptions>
                     <detectOfflineLinks>false</detectOfflineLinks>
                     <use>false</use>
-                    <quiet>true</quiet>
                     <includeDependencySources>false</includeDependencySources>
                     <doctitle><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></doctitle>
                     <header><![CDATA[${javadoc.prefixTitle}, ${javadoc.postfixTitle}]]></header>
