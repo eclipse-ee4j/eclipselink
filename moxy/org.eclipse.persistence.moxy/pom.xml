@@ -31,6 +31,8 @@
     </parent>
 
     <properties>
+        <comp.xlint>-Xlint:all,-rawtypes,-unchecked,-serial,-exports</comp.xlint>
+
         <test-skip-moxy-jaxb-srg>${skipTests}</test-skip-moxy-jaxb-srg>
         <test-skip-moxy-jaxb>true</test-skip-moxy-jaxb>
         <test-skip-moxy-oxm-srg>${skipTests}</test-skip-moxy-oxm-srg>
