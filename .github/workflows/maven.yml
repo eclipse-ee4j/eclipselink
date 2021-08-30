@@ -13,9 +13,12 @@
 name: EclipseLink PR build
 
 on:
+  push:
+    branches: [ main, master, '3.0' ]
   pull_request:
-    branches: [ main, master ]
-
+    branches: [ main, master, '3.0' ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 jobs:
   build:
     name: Test on JDK ${{ matrix.java_version }}
@@ -26,6 +29,17 @@ jobs:
         java_version: [ 17-ea ]
 
     steps:
+      - name: Cancel previous runs of this workflow
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          all_but_latest: true
+          access_token: ${{ github.token }}
+      - name: Start MySQL Database
+        run: |
+          sudo systemctl start mysql.service
+          mysql -e 'SET GLOBAL log_bin_trust_function_creators = 1;' -uroot -proot
+          mysql -e 'CREATE DATABASE ecltests;' -uroot -proot
+          mysql -e 'SHOW DATABASES;' -uroot -proot
       - name: Cache local Maven repository
         uses: actions/cache@v2
         with:
@@ -41,4 +55,4 @@ jobs:
           distribution: 'zulu'
           java-version: ${{ matrix.java_version }}
       - name: Verify
-        run: mvn -B -V -U -C -Pstaging,oss-release clean verify -Dgpg.skip=true -Dwarn.limit=2500 -Dcomp.xlint=-Xlint:all,-rawtypes
+        run: mvn -B -V -U -C -Pstaging,oss-release,test-lrg,mysql clean verify -Dgpg.skip=true -Dwarn.limit=15 -Dcomp.xlint=-Xlint:none

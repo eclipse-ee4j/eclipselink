@@ -427,7 +427,7 @@
                     </execution>
                     <execution>
                         <id>stage</id>
-                        <phase>install</phase>
+                        <phase>verify</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
