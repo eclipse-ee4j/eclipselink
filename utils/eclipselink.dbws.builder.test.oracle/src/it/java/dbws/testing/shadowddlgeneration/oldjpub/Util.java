@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,7 +111,7 @@ public class Util {
     }
 
     public static String getDefaultTypeLen(String type) {
-        return (String)m_defaultTypeLen.get(type.toUpperCase().replace(' ', '_'));
+        return m_defaultTypeLen.get(type.toUpperCase().replace(' ', '_'));
     }
 
     public static String printTypeWithLength(String type, int length, int precision, int scale) {
@@ -266,7 +266,7 @@ public class Util {
     }
 
     public static String unreserveSql(String word) {
-        String unreserve = (String)m_sqlReservedMap.get(word.toUpperCase());
+        String unreserve = m_sqlReservedMap.get(word.toUpperCase());
         if (unreserve == null) {
             unreserve = word;
         }

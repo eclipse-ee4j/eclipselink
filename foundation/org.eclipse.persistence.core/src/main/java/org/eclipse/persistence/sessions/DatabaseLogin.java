@@ -819,7 +819,7 @@ public class DatabaseLogin extends DatasourceLogin {
      * PUBLIC:
      * The default value to substitute for database NULLs can be configured
      * on a per-class basis.
-     * Example: login.setDefaultNullValue(long.class, new Long(0))
+     * Example: login.setDefaultNullValue(long.class, Long.valueOf(0))
      */
     @Override
     public void setDefaultNullValue(Class type, Object value) {

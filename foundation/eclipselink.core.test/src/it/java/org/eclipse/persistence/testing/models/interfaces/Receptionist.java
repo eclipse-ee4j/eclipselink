@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,9 +22,9 @@ public class Receptionist extends AdministrativeJob {
     public static Receptionist example1() {
         Receptionist example = new Receptionist();
 
-        example.setWordsPerMinute(new Integer(50));
-        example.setSalary(new Float(22500.00));
-        example.setMinimumSalary(new Float(22000.00));
+        example.setWordsPerMinute(Integer.valueOf(50));
+        example.setSalary(Float.valueOf(22500.00f));
+        example.setMinimumSalary(Float.valueOf(22000.00f));
 
         return example;
     }
@@ -32,9 +32,9 @@ public class Receptionist extends AdministrativeJob {
     public static Receptionist example2() {
         Receptionist example = new Receptionist();
 
-        example.setWordsPerMinute(new Integer(50));
-        example.setSalary(new Float(23450.00));
-        example.setMinimumSalary(new Float(22000.00));
+        example.setWordsPerMinute(Integer.valueOf(50));
+        example.setSalary(Float.valueOf(23450.00f));
+        example.setMinimumSalary(Float.valueOf(22000.00f));
 
         return example;
     }
@@ -42,9 +42,9 @@ public class Receptionist extends AdministrativeJob {
     public static Receptionist example3() {
         Receptionist example = new Receptionist();
 
-        example.setWordsPerMinute(new Integer(60));
-        example.setSalary(new Float(26450.00));
-        example.setMinimumSalary(new Float(22000.00));
+        example.setWordsPerMinute(Integer.valueOf(60));
+        example.setSalary(Float.valueOf(26450.00f));
+        example.setMinimumSalary(Float.valueOf(22000.00f));
 
         return example;
     }

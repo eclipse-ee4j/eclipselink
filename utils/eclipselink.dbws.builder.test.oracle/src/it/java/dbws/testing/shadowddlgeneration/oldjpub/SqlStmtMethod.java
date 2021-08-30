@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -145,18 +145,18 @@ public abstract class SqlStmtMethod extends ProcedureMethod {
         m_sqlStmtParamModes = new int[sqlStmtParamNamesV.size()];
         for (int j = 0; j < sqlStmtParamNamesV.size(); j++) {
             int jj = sqlStmtParamNamesV.size() - j - 1;
-            m_sqlStmtParamNames[jj] = (String)sqlStmtParamNamesV.get(j);
-            m_sqlStmtParamTypes[jj] = (TypeClass)sqlStmtParamTypesV.get(j);
-            m_sqlStmtParamModes[jj] = ((Integer)(sqlStmtParamModesV.get(j))).intValue();
+            m_sqlStmtParamNames[jj] = sqlStmtParamNamesV.get(j);
+            m_sqlStmtParamTypes[jj] = sqlStmtParamTypesV.get(j);
+            m_sqlStmtParamModes[jj] = sqlStmtParamModesV.get(j).intValue();
         }
         m_paramNames = new String[uniqueParamNamesV.size()];
         m_paramTypes = new TypeClass[uniqueParamNamesV.size()];
         m_paramModes = new int[uniqueParamNamesV.size()];
         for (int j = 0; j < uniqueParamNamesV.size(); j++) {
             int jj = uniqueParamNamesV.size() - j - 1;
-            m_paramNames[jj] = (String)uniqueParamNamesV.get(j);
-            m_paramTypes[jj] = (TypeClass)uniqueParamTypesV.get(j);
-            m_paramModes[jj] = ((Integer)(uniqueParamModesV.get(j))).intValue();
+            m_paramNames[jj] = uniqueParamNamesV.get(j);
+            m_paramTypes[jj] = uniqueParamTypesV.get(j);
+            m_paramModes[jj] = uniqueParamModesV.get(j).intValue();
         }
     }
 

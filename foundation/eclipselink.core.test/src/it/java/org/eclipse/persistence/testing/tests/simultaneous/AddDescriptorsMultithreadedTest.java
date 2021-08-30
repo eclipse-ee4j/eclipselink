@@ -147,7 +147,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         long timeToSleepBetweenAddingDescriptors;
         InterfaceHashtableProject project;
         static int numberOfCompletedTests = 0;
-        static Object lock = new Boolean(true);
+        static Object lock = Boolean.valueOf(true);
         public void test() {
             DatabaseSession dbSession;
             if (getSession().isDatabaseSession()) {
@@ -320,7 +320,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         int testNumber;
         int numberOfTests;
         static int numberOfCompletedTests = 0;
-        static Object lock = new Boolean(true);
+        static Object lock = Boolean.valueOf(true);
         public void test() {
             // Test execution causes deadlock on SQL Server
             if (getAbstractSession().getParent().getPlatform().isSQLServer()) {

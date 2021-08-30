@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -322,7 +322,7 @@ public class SqlType extends TypeClass {
         String sqlTypeDecl = "";
         if (isPlsqlRecord() && !getSqlName().isReused()) {
             sqlTypeDecl += "CREATE OR REPLACE TYPE " + getTargetTypeName() + " AS OBJECT (\n";
-            List<AttributeField> fields = ((PlsqlRecordType)this).getFields(true);
+            List<AttributeField> fields = this.getFields(true);
             for (int i = 0; i < fields.size(); i++) {
                 if (i != 0) {
                     sqlTypeDecl += ",\n";
@@ -372,7 +372,7 @@ public class SqlType extends TypeClass {
             sqlConvPkgDecl += "\t-- Redefine a PL/SQL RECORD type originally defined via CURSOR%ROWTYPE"
                 + "\n";
             sqlConvPkgDecl += "\tTYPE " + getTypeName() + " IS RECORD (\n";
-            List<AttributeField> fields = ((PlsqlRecordType)this).getFields(true);
+            List<AttributeField> fields = this.getFields(true);
             for (int i = 0; i < fields.size(); i++) {
                 if (i != 0) {
                     sqlConvPkgDecl += ",\n";
