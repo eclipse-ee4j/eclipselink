@@ -205,9 +205,9 @@ public class MappingProject extends Project {
         objecttypemapping.setAttributeName("isMacintosh");
         objecttypemapping.setIsReadOnly(false);
         objecttypemapping.setFieldName("MAP_COM.IS_MAC");
-        objecttypeconverter.addConversionValue("No", new Boolean(false));
-        objecttypeconverter.addConversionValue("Yes", new Boolean(true));
-        objecttypemapping.setNullValue(new Boolean(false));
+        objecttypeconverter.addConversionValue("No", Boolean.valueOf(false));
+        objecttypeconverter.addConversionValue("Yes", Boolean.valueOf(true));
+        objecttypemapping.setNullValue(Boolean.valueOf(false));
         objecttypemapping.setConverter(objecttypeconverter);
         descriptor.addMapping(objecttypemapping);
 
@@ -807,8 +807,8 @@ public class MappingProject extends Project {
         validMapping.setAttributeName("valid");
         validMapping.setFieldName("MAP_PERIPHERAL.VALID");
         ObjectTypeConverter validMappingConverter = new ObjectTypeConverter();
-        validMappingConverter.addConversionValue(new Character('N'), new java.lang.Boolean("false"));
-        validMappingConverter.addConversionValue(new Character('Y'), new java.lang.Boolean("true"));
+        validMappingConverter.addConversionValue(Character.valueOf('N'), new java.lang.Boolean("false"));
+        validMappingConverter.addConversionValue(Character.valueOf('Y'), new java.lang.Boolean("true"));
         validMapping.setConverter(validMappingConverter);
         descriptor.addMapping(validMapping);
 

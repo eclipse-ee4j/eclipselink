@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -543,7 +543,7 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
      * _persistence_checkFetchedForSet("variableName");
      * _persistence_initialize_variableName_vh();
      * _persistence_propertyChange("variableName", this.variableName, argument);
-     * // if change tracking enabled, wrapping primitives, i.e. new Long(item)
+     * // if change tracking enabled, wrapping primitives, i.e. Long.valueOf(item)
      * this.variableName = argument;
      * _persistence_variableName_vh.setValue(variableName); // if lazy enabled }
      */
@@ -591,7 +591,7 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
             cv_set.visitLdcInsn(attribute);
 
             // if the attribute is a primitive, wrap it
-            // e.g. if it is an integer: new Integer(attribute)
+            // e.g. if it is an integer: Integer.valueOf(attribute)
             // This is the first part of the wrapping
             String wrapper = ClassWeaver.wrapperFor(attributeDetails.getReferenceClassType().getSort());
             if (wrapper != null) {
@@ -605,11 +605,11 @@ public class ClassWeaver extends EclipseLinkClassVisitor implements Opcodes {
 
             if (wrapper != null) {
                 // invoke the constructor for wrapping
-                // e.g. new Integer(variableName)
+                // e.g. Integer.valueOf(variableName)
                 cv_set.visitMethodInsn(INVOKESPECIAL, wrapper, "<init>", "(" + attributeDetails.getReferenceClassType().getDescriptor() + ")V", false);
 
                 // wrap the method argument
-                // e.g. new Integer(argument)
+                // e.g. Integer.valueOf(argument)
                 cv_set.visitTypeInsn(NEW, wrapper);
                 cv_set.visitInsn(DUP);
                 cv_set.visitVarInsn(opcode, 1);

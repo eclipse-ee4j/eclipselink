@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2014 IBM Corporation. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  * Copyright (c) 2008 Daryl Davis. All rights reserved.
@@ -1558,14 +1558,14 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             beginTransaction(em);
 
             Lobtest lobtest = new Lobtest();
-            Byte b1 = new Byte("1");
-            Byte b2 = new Byte("2");
+            Byte b1 = Byte.valueOf("1");
+            Byte b2 = Byte.valueOf("2");
             lobtest.setContentdata(new byte[]{b1, b2});
 
             lobtest.setUuid("123456789");
 
             pk.setDocid("blah");
-            pk.setVersionid(new BigInteger(new Long(System.currentTimeMillis()).toString()));
+            pk.setVersionid(new BigInteger(Long.valueOf(System.currentTimeMillis()).toString()));
             lobtest.setLobtestPK(pk);
 
             em.persist(lobtest);

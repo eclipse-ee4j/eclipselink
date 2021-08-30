@@ -90,7 +90,7 @@ public class DatasourcePlatform implements Platform {
     protected String endDelimiter = null;
 
     /** Ensures that only one thread at a time can add/remove sequences */
-    protected Object sequencesLock = new Boolean(true);
+    protected Object sequencesLock = Boolean.valueOf(true);
 
     /** If the native sequence type is not supported, if table sequencing should be used. */
     protected boolean defaultNativeSequenceToTable;
