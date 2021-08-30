@@ -88,7 +88,7 @@ public class TestQueryCase {
             assertEquals("B", dto01.get(0).getItemString2());
             assertEquals("C", dto01.get(0).getItemString3());
             assertEquals("D", dto01.get(0).getItemString4());
-            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -147,7 +147,7 @@ public class TestQueryCase {
             assertEquals("B", dto01.get(0).getItemString2());
             assertEquals("C", dto01.get(0).getItemString3());
             assertEquals("D", dto01.get(0).getItemString4());
-            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -211,7 +211,7 @@ public class TestQueryCase {
             assertEquals("B", dto01.get(0).getItemString2());
             assertEquals("C", dto01.get(0).getItemString3());
             assertEquals("D", dto01.get(0).getItemString4());
-            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -303,7 +303,7 @@ public class TestQueryCase {
             assertEquals("B", dto01.get(0).getItemString2());
             assertEquals("C", dto01.get(0).getItemString3());
             assertEquals("D", dto01.get(0).getItemString4());
-            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -356,7 +356,7 @@ public class TestQueryCase {
             assertEquals("B", dto01.get(0).getItemString2());
             assertEquals("C", dto01.get(0).getItemString3());
             assertEquals("D", dto01.get(0).getItemString4());
-            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -417,7 +417,7 @@ public class TestQueryCase {
             assertEquals("B", dto01.get(0).getItemString2());
             assertEquals("C", dto01.get(0).getItemString3());
             assertEquals("D", dto01.get(0).getItemString4());
-            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -480,7 +480,7 @@ public class TestQueryCase {
             assertEquals("B", dto01.get(0).getItemString2());
             assertEquals("C", dto01.get(0).getItemString3());
             assertEquals("D", dto01.get(0).getItemString4());
-            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -561,7 +561,7 @@ public class TestQueryCase {
             assertEquals("B", dto01.get(0).getItemString2());
             assertEquals("C", dto01.get(0).getItemString3());
             assertEquals("D", dto01.get(0).getItemString4());
-            assertEquals(new Integer(1), dto01.get(0).getItemInteger1());
+            assertEquals(Integer.valueOf(1), dto01.get(0).getItemInteger1());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -614,8 +614,8 @@ public class TestQueryCase {
             assertEquals("Other", dto01.get(0).getStr2());
             assertNull(dto01.get(0).getStr3());
             assertNull(dto01.get(0).getStr4());
-            assertEquals(new Integer(2), dto01.get(0).getInteger1());
-            assertEquals(new Integer(2), dto01.get(0).getInteger2());
+            assertEquals(Integer.valueOf(2), dto01.get(0).getInteger1());
+            assertEquals(Integer.valueOf(2), dto01.get(0).getInteger2());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -648,12 +648,12 @@ public class TestQueryCase {
                 .otherwise("Other");
 
             Expression<Long> selectCase2 = cb.<Long>selectCase()
-                .when(cb.equal(root.get(EntityTbl01_.itemString3), "C"), new Long(1))
-                .otherwise(new Long(0));
+                .when(cb.equal(root.get(EntityTbl01_.itemString3), "C"), Long.valueOf(1))
+                .otherwise(Long.valueOf(0));
 
             Expression<Long> selectCase3 = cb.<Long>selectCase()
-                .when(cb.equal(root.get(EntityTbl01_.itemString4), "D"), new Long(1))
-                .otherwise(new Long(0));
+                .when(cb.equal(root.get(EntityTbl01_.itemString4), "D"), Long.valueOf(1))
+                .otherwise(Long.valueOf(0));
 
             cquery.select(cb.construct(Dto01.class, 
                     root.get(EntityTbl01_.itemString1),
@@ -672,8 +672,8 @@ public class TestQueryCase {
             assertEquals("Other", dto01.get(0).getStr2());
             assertNull(dto01.get(0).getStr3());
             assertNull(dto01.get(0).getStr4());
-            assertEquals(new Integer(2), dto01.get(0).getInteger1());
-            assertEquals(new Integer(2), dto01.get(0).getInteger2());
+            assertEquals(Integer.valueOf(2), dto01.get(0).getInteger1());
+            assertEquals(Integer.valueOf(2), dto01.get(0).getInteger2());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -737,8 +737,8 @@ public class TestQueryCase {
             assertEquals("Other", dto01.get(0).getStr2());
             assertNull(dto01.get(0).getStr3());
             assertNull(dto01.get(0).getStr4());
-            assertEquals(new Integer(2), dto01.get(0).getInteger1());
-            assertEquals(new Integer(2), dto01.get(0).getInteger2());
+            assertEquals(Integer.valueOf(2), dto01.get(0).getInteger1());
+            assertEquals(Integer.valueOf(2), dto01.get(0).getInteger2());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -802,8 +802,8 @@ public class TestQueryCase {
             query.setParameter(resultParam2, "Other");
             query.setParameter(checkParam2, "C");
             query.setParameter(checkParam3, "D");
-            query.setParameter(resultParam3, new Long(1));
-            query.setParameter(resultParam4, new Long(1));
+            query.setParameter(resultParam3, Long.valueOf(1));
+            query.setParameter(resultParam4, Long.valueOf(1));
             List<Dto01> dto01 = query.getResultList();
 
             assertNotNull(dto01);
@@ -812,8 +812,8 @@ public class TestQueryCase {
             assertEquals("Other", dto01.get(0).getStr2());
             assertNull(dto01.get(0).getStr3());
             assertNull(dto01.get(0).getStr4());
-            assertEquals(new Integer(2), dto01.get(0).getInteger1());
-            assertEquals(new Integer(2), dto01.get(0).getInteger2());
+            assertEquals(Integer.valueOf(2), dto01.get(0).getInteger1());
+            assertEquals(Integer.valueOf(2), dto01.get(0).getInteger2());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -847,8 +847,8 @@ public class TestQueryCase {
             List<Integer> intList = query.getResultList();
             assertNotNull(intList);
             assertEquals(2, intList.size());
-            assertEquals(new Integer(100), intList.get(0));
-            assertEquals(new Integer(100), intList.get(1));
+            assertEquals(Integer.valueOf(100), intList.get(0));
+            assertEquals(Integer.valueOf(100), intList.get(1));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -886,8 +886,8 @@ public class TestQueryCase {
             List<Integer> intList = query.getResultList();
             assertNotNull(intList);
             assertEquals(2, intList.size());
-            assertEquals(new Integer(100), intList.get(0));
-            assertEquals(new Integer(100), intList.get(1));
+            assertEquals(Integer.valueOf(100), intList.get(0));
+            assertEquals(Integer.valueOf(100), intList.get(1));
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -926,8 +926,8 @@ public class TestQueryCase {
             List<Number> intList = query.getResultList();
             assertNotNull(intList);
             assertEquals(2, intList.size());
-            assertEquals(new Integer(100).intValue(), intList.get(0).intValue());
-            assertEquals(new Integer(100).intValue(), intList.get(1).intValue());
+            assertEquals(Integer.valueOf(100).intValue(), intList.get(0).intValue());
+            assertEquals(Integer.valueOf(100).intValue(), intList.get(1).intValue());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
@@ -979,8 +979,8 @@ public class TestQueryCase {
             List<Number> intList = query.getResultList();
             assertNotNull(intList);
             assertEquals(2, intList.size());
-            assertEquals(new Integer(100).intValue(), intList.get(0).intValue());
-            assertEquals(new Integer(100).intValue(), intList.get(1).intValue());
+            assertEquals(Integer.valueOf(100).intValue(), intList.get(0).intValue());
+            assertEquals(Integer.valueOf(100).intValue(), intList.get(1).intValue());
         } finally {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();

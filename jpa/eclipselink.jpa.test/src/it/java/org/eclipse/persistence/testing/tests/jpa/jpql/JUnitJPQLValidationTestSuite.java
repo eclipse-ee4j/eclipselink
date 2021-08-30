@@ -646,7 +646,7 @@ public class JUnitJPQLValidationTestSuite extends JUnitTestCase
         Query query = em.createQuery("Select e from Employee e where e.firstName = :fname AND e.lastName = :lname ");
         try {
             query.setParameter("fname", "foo");
-            query.setParameter("lname", new Integer(1));
+            query.setParameter("lname", Integer.valueOf(1));
             query.getResultList();
         } catch (IllegalArgumentException ex) {
             assertTrue("Failed to throw expected IllegalArgumentException, when parameter with incorrect type is used", ex.getMessage().contains("attempted to set a value of type"));
