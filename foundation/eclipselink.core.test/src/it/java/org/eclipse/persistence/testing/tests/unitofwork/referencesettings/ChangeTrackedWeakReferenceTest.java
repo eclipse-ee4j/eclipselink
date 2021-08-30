@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.tests.unitofwork.changeflag.model.ALCTEmp
 import org.eclipse.persistence.testing.framework.TestErrorException;
 
 public class ChangeTrackedWeakReferenceTest extends AutoVerifyTestCase {
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork(ReferenceMode.FORCE_WEAK);
         Collection collection = uow.readAllObjects(ALCTEmployee.class);

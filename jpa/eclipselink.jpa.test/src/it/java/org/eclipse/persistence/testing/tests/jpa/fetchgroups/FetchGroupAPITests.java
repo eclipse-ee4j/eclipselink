@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -355,7 +355,7 @@ public class FetchGroupAPITests extends TestCase {
         assertEquals(1, fg.getItems().size());
         assertTrue(fg.getItems().containsKey("test"));
 
-        AttributeItem testFI = (AttributeItem) fg.getItems().get("test");
+        AttributeItem testFI = fg.getItems().get("test");
         assertNotNull(testFI);
         assertEquals("test", testFI.getAttributeName());
         assertNotNull(testFI.getGroup());
@@ -447,7 +447,7 @@ public class FetchGroupAPITests extends TestCase {
         assertEquals(1, fg.getItems().size());
         assertTrue(fg.getItems().containsKey("test"));
 
-        AttributeItem testFI = (AttributeItem) fg.getItems().get("test");
+        AttributeItem testFI = fg.getItems().get("test");
         assertNotNull(testFI);
         assertEquals("test", testFI.getAttributeName());
 
@@ -456,7 +456,7 @@ public class FetchGroupAPITests extends TestCase {
         assertEquals("test", testFI.getAttributeName());
         assertNotNull(testFI.getGroup());
 
-        AttributeItem testFI2 = (AttributeItem) testFI.getGroup().getItems().get("test");
+        AttributeItem testFI2 = testFI.getGroup().getItems().get("test");
         assertNotNull(testFI2);
         assertEquals("test", testFI2.getAttributeName());
         assertNotNull(testFI2.getGroup());

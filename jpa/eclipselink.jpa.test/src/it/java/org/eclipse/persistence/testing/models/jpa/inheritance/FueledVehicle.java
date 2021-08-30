@@ -28,6 +28,7 @@ public class FueledVehicle extends Vehicle implements Cloneable {
     private String fuelType;
     private String colour;
 
+    @Override
     public Object clone() {
         try {
             return super.clone();
@@ -36,11 +37,13 @@ public class FueledVehicle extends Vehicle implements Cloneable {
         }
     }
 
+    @Override
     public void change() {
         this.setPassengerCapacity(Integer.valueOf(100));
         this.setFuelType("HOT AIR");
     }
 
+    @Override
     @Column(name="COLOUR")
     public String getColor() {
         return colour;
@@ -61,6 +64,7 @@ public class FueledVehicle extends Vehicle implements Cloneable {
         return fuelType;
     }
 
+    @Override
     public void setColor(String colour) {
         this.colour = colour;
     }

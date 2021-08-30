@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class JoinInAggregateAndOwnerTest extends TestCase {
         setDescription("Test joining on an attribute that exists both on an aggregate and its parent.");
     }
 
+    @Override
     public void setup() {
         ClassDescriptor descriptor = getSession().getClassDescriptor(GolfClub.class);
         OneToOneMapping mapping = (OneToOneMapping)descriptor.getMappingForAttributeName("manufacturer");
@@ -67,6 +68,7 @@ public class JoinInAggregateAndOwnerTest extends TestCase {
         clubId = club.getId();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ExpressionBuilder clubs = new ExpressionBuilder();
@@ -86,6 +88,7 @@ public class JoinInAggregateAndOwnerTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (initialWriteFailed) {
             throw new TestErrorException("Aggregate attribute should be equal to parent attribute and it is not.");
@@ -95,6 +98,7 @@ public class JoinInAggregateAndOwnerTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

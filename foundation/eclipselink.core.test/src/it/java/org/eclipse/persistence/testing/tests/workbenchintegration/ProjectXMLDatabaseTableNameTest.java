@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,12 +34,15 @@ public class ProjectXMLDatabaseTableNameTest extends AutoVerifyTestCase {
         setDescription("Tests that fully qualified table names are written out.");
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     protected void setup() throws Exception {
     }
 
+    @Override
     public void test() {
         Project project1 = new EmployeeProject();
         m_tableNameBeforeWrite = project1.getDescriptor(Address.class).getTableName();
@@ -56,6 +59,7 @@ public class ProjectXMLDatabaseTableNameTest extends AutoVerifyTestCase {
                 project2.getDescriptor(Address.class).getTable(m_tableNameBeforeWrite).getQualifiedName();
     }
 
+    @Override
     protected void verify() {
         if (!m_tableNameAfterWrite.equals(TABLE_NAME_QUALIFIER + "." + m_tableNameBeforeWrite)) {
             throw new TestErrorException("The table name was incorrectly written out. Expected: " +

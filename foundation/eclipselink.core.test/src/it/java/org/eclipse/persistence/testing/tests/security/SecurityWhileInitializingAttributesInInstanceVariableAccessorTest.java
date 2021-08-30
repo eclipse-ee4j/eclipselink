@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class SecurityWhileInitializingAttributesInInstanceVariableAccessorTest e
         super("This tests Security While Initializing Attributes In Instance Variable Accessor (TL-ERROR 86)", VariableAccessor.class);
     }
 
+    @Override
     protected void setup() {
         super.setup();
         expectedException = DescriptorException.securityWhileInitializingAttributesInInstanceVariableAccessor("p_name", "SecurityWhileInitializingAttributesInInstanceVariableAccessorTest", new Exception());
@@ -39,6 +40,7 @@ public class SecurityWhileInitializingAttributesInInstanceVariableAccessorTest e
         accessor = mapping.getAttributeAccessor();
     }
 
+    @Override
     public void test() {
         try {
             accessor.initializeAttributes(getTestClass());

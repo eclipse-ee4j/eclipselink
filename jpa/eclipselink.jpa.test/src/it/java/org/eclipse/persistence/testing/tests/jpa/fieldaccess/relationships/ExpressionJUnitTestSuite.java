@@ -36,6 +36,7 @@ public class ExpressionJUnitTestSuite extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp () {
         super.setUp();
         clearCache("fieldaccess");

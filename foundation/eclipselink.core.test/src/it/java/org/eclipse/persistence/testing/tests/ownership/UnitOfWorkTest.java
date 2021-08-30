@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
         objectCCollection.addElement(ObjectC.example5(objectB));
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -71,6 +72,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
         this.unitOfWorkWorkingCopy = this.unitOfWork.registerObject(this.objectToBeWritten);
     }
 
+    @Override
     protected void test() {
         changeUnitOfWorkWorkingCopy();
         // Use the original session for comparision
@@ -84,6 +86,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         if (!(compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten))) {
             throw new TestErrorException("The object in the unit of work has not been commited properly to its parent");

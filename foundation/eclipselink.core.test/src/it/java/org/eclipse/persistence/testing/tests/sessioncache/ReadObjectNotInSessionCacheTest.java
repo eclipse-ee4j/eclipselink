@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class ReadObjectNotInSessionCacheTest extends TestCase {
         setDescription("The test ensures we don't merge an object into the session cache when we dont need to.");
     }
 
+    @Override
     protected void setup() {
         checkNoWaitSupported();
 
@@ -40,6 +41,7 @@ public class ReadObjectNotInSessionCacheTest extends TestCase {
         getSession().getDescriptor(Employee.class).setUnitOfWorkCacheIsolationLevel(ClassDescriptor.ISOLATE_CACHE_ALWAYS);
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ReadObjectQuery query = new ReadObjectQuery(Employee.class);
@@ -50,6 +52,7 @@ public class ReadObjectNotInSessionCacheTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         IdentityMap im = ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
         if ((im != null) && (im.getSize() > 0)) {
@@ -57,6 +60,7 @@ public class ReadObjectNotInSessionCacheTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

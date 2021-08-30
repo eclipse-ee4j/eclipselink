@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -187,6 +187,7 @@ public class ZTestCase extends AutoVerifyTestCase {
     /**
      * Override the TestCase method to call the zunit method.
      */
+    @Override
     public void reset() {
         this.tearDown();
     }
@@ -194,6 +195,7 @@ public class ZTestCase extends AutoVerifyTestCase {
     /**
      * Override the TestCase method to call the zunit method.
      */
+    @Override
     protected void setup() {
         this.setUp();
     }
@@ -202,6 +204,7 @@ public class ZTestCase extends AutoVerifyTestCase {
      * Set up the fixture (e.g. open a network connection).
      * This method is called before a test is executed.
      */
+    @Override
     protected void setUp() {
     }
 
@@ -209,12 +212,14 @@ public class ZTestCase extends AutoVerifyTestCase {
      * Tear down the fixture (e.g. close a network connection).
      * This method is called after a test is executed.
      */
+    @Override
     protected void tearDown() {
     }
 
     /**
      * Reflectively invoke the test method.
      */
+    @Override
     protected void test() throws Exception {
         try {
             this.invokeTest();

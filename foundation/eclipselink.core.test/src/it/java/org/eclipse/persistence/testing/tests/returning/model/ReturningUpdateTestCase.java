@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class ReturningUpdateTestCase extends TestCase {
     UnitOfWorkChangeSet uowChangeSet;
 
     class Listener extends SessionEventAdapter {
+        @Override
         public void postCalculateUnitOfWorkChangeSet(SessionEvent event) {
             uowChangeSet = (UnitOfWorkChangeSet)event.getProperty("UnitOfWorkChangeSet");
         }
@@ -57,6 +58,7 @@ public class ReturningUpdateTestCase extends TestCase {
         this.control = control;
     }
 
+    @Override
     protected void setup() {
         workingObject = (Class1)originalObject.clone();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -65,6 +67,7 @@ public class ReturningUpdateTestCase extends TestCase {
         objectBeforeChange = (Class1)workingObject.clone();
     }
 
+    @Override
     protected void test() {
         if (useUOW) {
             getSession().getEventManager().addListener(listener);
@@ -78,6 +81,7 @@ public class ReturningUpdateTestCase extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         Class1 controlObject = (Class1)control.getObjectForUpdate(getSession(), objectBeforeChange, changedObject, useUOW);
         if (!workingObject.isValid()) {
@@ -116,6 +120,7 @@ public class ReturningUpdateTestCase extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (useUOW) {
             getSession().getEventManager().removeListener(listener);

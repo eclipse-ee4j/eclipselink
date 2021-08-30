@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,11 +35,13 @@ public class Cascaded12MInheritanceListOnSuperOptimisticLockingTest extends Auto
     private int catVersion = 0;
     private int apptVersion = 0;
 
+    @Override
     public void setup()  {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         cat = new Cat();
@@ -64,6 +66,7 @@ public class Cascaded12MInheritanceListOnSuperOptimisticLockingTest extends Auto
         uow.commit();
     }
 
+    @Override
     public void verify(){
         cat = (Cat)getSession().refreshObject(cat);
         if (cat.getVersion() <= catVersion){
@@ -71,6 +74,7 @@ public class Cascaded12MInheritanceListOnSuperOptimisticLockingTest extends Auto
         }
     }
 
+    @Override
     public void reset()  {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
         setDescription("This test verifies that useScrollableCursor together with shouldCacheStatement on a query returns correct results");
     }
 
+    @Override
     protected void setup() {
         this.origionalBindingState = this.getSession().getPlatform().shouldBindAllParameters();
 
@@ -71,6 +72,7 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
         this.getSession().getPlatform().setShouldCacheAllStatements(true);
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery query1 = new ReadAllQuery();
@@ -108,6 +110,7 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (caughtException != null) {
             throw new TestErrorException("Exception is thrown because scrollable cursor is used on a cached statement.  A new statement should be built when scrollable cursor is used.");
@@ -117,6 +120,7 @@ public class ScrollableCursorStatementCachingReadTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         this.getSession().getPlatform().setShouldCacheAllStatements(this.origionalStatementCachingState);
         this.getSession().getPlatform().setShouldBindAllParameters(this.origionalBindingState);

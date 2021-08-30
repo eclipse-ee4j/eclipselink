@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,12 @@ public class MultipleTablePrimaryKeyNotSpecifiedTest extends ExceptionTest {
         setDescription("This tests Multiple Table Primary Key Not Specified (TL-ERROR 47)");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.multipleTablePrimaryKeyNotSpecified(new RelationalDescriptor());
     }
 
+    @Override
     public void test() {
         RelationalDescriptor descriptor = new RelationalDescriptor();
         ObjectBuilder objectBuilder = descriptor.getObjectBuilder();

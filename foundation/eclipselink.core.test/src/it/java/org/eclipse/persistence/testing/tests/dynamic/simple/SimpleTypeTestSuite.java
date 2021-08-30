@@ -29,10 +29,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 //EclipseLink imports
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -53,6 +49,7 @@ import org.eclipse.persistence.sessions.UnitOfWork;
 
 //domain-specific (testing) imports
 import static org.eclipse.persistence.testing.tests.dynamic.DynamicTestingHelper.createSession;
+import static org.junit.Assert.*;
 
 public class SimpleTypeTestSuite {
 
@@ -141,7 +138,7 @@ public class SimpleTypeTestSuite {
 
     @Test
     public void verifyDefaultValuesFromDescriptor() throws Exception {
-        DynamicType simpleType = (DynamicType)dynamicHelper.getType("Simple");
+        DynamicType simpleType = dynamicHelper.getType("Simple");
         assertNotNull(simpleType);
 
         DynamicEntity simpleInstance = (DynamicEntity) simpleType.getDescriptor().getObjectBuilder().buildNewInstance();

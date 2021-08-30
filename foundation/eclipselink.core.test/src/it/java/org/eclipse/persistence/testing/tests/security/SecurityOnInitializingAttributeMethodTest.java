@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class SecurityOnInitializingAttributeMethodTest extends ExceptionTestSave
         super("This tests security on initializing attribute method (TL-ERROR 84)", c);
     }
 
+    @Override
     protected void setup() {
         super.setup();
         expectedException = DescriptorException.securityOnInitializingAttributeMethod("buildNormalHours", mapping, new Exception());
@@ -45,6 +46,7 @@ public class SecurityOnInitializingAttributeMethodTest extends ExceptionTestSave
         mapping.setDescriptor(getTestDescriptor());
     }
 
+    @Override
     public void test() {
         try {
             mapping.initialize((AbstractSession)getSession());

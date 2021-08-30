@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class PostCommitEventPrimaryKeyTest extends AutoVerifyTestCase {
     // The following is an anonymous class which is used for event listenign
     // it simply calls the commitOccurred() method.
     private SessionEventAdapter eventAdapter = new SessionEventAdapter() {
+            @Override
             public void postCommitUnitOfWork(SessionEvent event) {
                 commitOccurred(event);
             }
@@ -60,12 +61,14 @@ public class PostCommitEventPrimaryKeyTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         getSession().getEventManager().addListener(eventAdapter);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee employee = (Employee)uow.registerObject(new Employee());
@@ -79,12 +82,14 @@ public class PostCommitEventPrimaryKeyTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (emptyKey) {
             throw new TestErrorException("The change set for a Variable One-to-one mapping retured with a Null Primary Key.");
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

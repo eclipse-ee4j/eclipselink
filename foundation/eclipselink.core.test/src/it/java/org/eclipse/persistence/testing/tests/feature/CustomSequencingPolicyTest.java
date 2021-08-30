@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,14 @@ public class CustomSequencingPolicyTest extends AutoVerifyTestCase {
         setDescription("Test custom sequencing policy, which produces sequences of type String");
     }
 
+    @Override
     protected void setup() {
         originalSequence = getSession().getLogin().getPlatform().getDefaultSequence();
         getSession().getPlatform().setDefaultSequence(new SampleStringSequencingPolicy(originalSequence.getName(), "", originalSequence.getPreallocationSize()));
         ((DatabaseSession)getSession()).getSequencingControl().resetSequencing();
     }
 
+    @Override
     protected void test() {
         obj1 = new SeqTestClass2();
         obj2 = new SeqTestClass2();
@@ -57,6 +59,7 @@ public class CustomSequencingPolicyTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() throws Exception {
         if (obj1.getPkey() == null) {
             throw (new TestErrorException("Has not assigned seq string to an object with no pk"));
@@ -72,6 +75,7 @@ public class CustomSequencingPolicyTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteObject(obj1);

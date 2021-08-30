@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class DeleteObjectTest extends TransactionalTestCase {
         this.originalObject = originalObject;
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -62,6 +63,7 @@ public class DeleteObjectTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     protected void test() {
         getDatabaseSession().deleteObject(this.objectFromDatabase);
     }
@@ -69,6 +71,7 @@ public class DeleteObjectTest extends TransactionalTestCase {
     /**
      * Verify if the object and its privately owned parts have all been deleted.
      */
+    @Override
     protected void verify() {
         if (!(verifyDelete(this.objectFromDatabase))) {
             throw new TestErrorException("The object '" + this.originalObject + "' was not completely deleted from the database.");

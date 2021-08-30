@@ -30,6 +30,7 @@ public class ParallelBuilderReportItemTest extends ReportQueryTestCase {
         setDescription("ReportItems originating from parallel builders.");
     }
 
+    @Override
     protected void buildExpectedResults() throws Exception {
         ExpressionBuilder husbandsAndWives = new ExpressionBuilder();
 
@@ -62,6 +63,7 @@ public class ParallelBuilderReportItemTest extends ReportQueryTestCase {
         }
     }
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
 

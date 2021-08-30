@@ -44,6 +44,7 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -232,7 +233,7 @@ public class ConverterTestSuite extends JUnitTestCase {
                 }//else this error is expected and can be ignored
             } catch (RuntimeException unexpected) {
                 if (ResponsibilityConverter.THROW_EXCEPTION_IN_TO_ENTITY_ATTRIBUTE.equals(unexpected.getMessage())) {
-                    this.fail("Application exception thrown from convertToEntityAttribute was not wrapped in a PersistenceException");
+                    fail("Application exception thrown from convertToEntityAttribute was not wrapped in a PersistenceException");
                 }
                 throw unexpected;
             }
@@ -280,7 +281,7 @@ public class ConverterTestSuite extends JUnitTestCase {
 
             } catch (RuntimeException unexpected) {
                 if (ResponsibilityConverter.THROW_EXCEPTION_IN_TO_DATABASE_COLUMN.equals(unexpected.getMessage())) {
-                    this.fail("Application exception thrown from convertToDatabaseColumn was not wrapped in a PersistenceException");
+                    fail("Application exception thrown from convertToDatabaseColumn was not wrapped in a PersistenceException");
                 }
                 throw unexpected;
             }

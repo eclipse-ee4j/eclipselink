@@ -29,6 +29,7 @@ public class Scenario1_5a extends ReportQueryTestCase {
         setDescription("DTF mappings of subclass");
     }
 
+    @Override
     protected void buildExpectedResults() {
         Vector projects = getSession().readAllObjects(LargeProject.class);
 
@@ -41,6 +42,7 @@ public class Scenario1_5a extends ReportQueryTestCase {
         }
     }
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());

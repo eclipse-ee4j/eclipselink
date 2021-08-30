@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -58,6 +58,7 @@ public class FeatureTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
         addRequiredSystem(new org.eclipse.persistence.testing.models.aggregate.AggregateSystem());
@@ -81,6 +82,7 @@ public class FeatureTestModel extends TestModel {
         }
     }
 
+    @Override
     public void addTests() {
         addTest(new IdentityMapTestSuite());
         addTest(new ExpressionTestSuite());
@@ -119,6 +121,7 @@ public class FeatureTestModel extends TestModel {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
+    @Override
     public void addSRGTests() {
         addTest(new ExpressionTestSuite(true));
         addTest(new QueryFrameworkTestSuite(true));

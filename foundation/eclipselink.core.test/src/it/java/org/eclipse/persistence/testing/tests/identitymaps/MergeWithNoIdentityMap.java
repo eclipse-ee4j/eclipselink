@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,16 +25,19 @@ public class MergeWithNoIdentityMap extends RegisterInIdentityMapTest {
         super(mapClass);
     }
 
+    @Override
     public String getDescription() {
         return "This test verifies that ValueHolders are not triggered when object is updated";
     }
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getDescriptor(Employee.class).getQueryManager().checkCacheForDoesExist();
         getSession().getDescriptor(Employee.class).setOptimisticLockingPolicy(lockPolicy);
     }
 
+    @Override
     public void setup() {
         super.setup();
         // Avoid infinite loop at registration time of object
@@ -44,6 +47,7 @@ public class MergeWithNoIdentityMap extends RegisterInIdentityMapTest {
         getSession().getDescriptor(Employee.class).setOptimisticLockingPolicy(null);
     }
 
+    @Override
     public void test() {
         Employee employee = (Employee)getSession().readObject(Employee.class);
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -52,6 +56,7 @@ public class MergeWithNoIdentityMap extends RegisterInIdentityMapTest {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (clone.address.isInstantiated() || clone.manager.isInstantiated() || clone.managedEmployees.isInstantiated() || clone.phoneNumbers.isInstantiated() || clone.projects.isInstantiated()) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("Unexpected triggerings of ValueHolders during an updat -  NoIdentityMap");

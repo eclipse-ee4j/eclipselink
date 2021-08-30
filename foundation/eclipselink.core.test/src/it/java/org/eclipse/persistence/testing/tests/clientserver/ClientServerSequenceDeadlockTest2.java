@@ -49,6 +49,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
     /**
      *
      */
+    @Override
     public void setup() {
         this.login = (DatabaseLogin)getSession().getLogin().clone();
         this.server = new Server(this.login);
@@ -73,6 +74,7 @@ public class ClientServerSequenceDeadlockTest2 extends ClientServerSequenceDeadl
     /**
      *
      */
+    @Override
     public void test() {
         for (int i = 0; i < NUM_CLIENTS; i++) {
             EmployeeSeqDeadlockClient client = (EmployeeSeqDeadlockClient)clients.elementAt(i);

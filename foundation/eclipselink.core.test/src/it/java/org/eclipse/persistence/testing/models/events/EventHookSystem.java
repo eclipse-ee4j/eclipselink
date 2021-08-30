@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.persistence.tools.schemaframework.*;
 public class EventHookSystem extends TestSystem {
     public static int POST_CALCULATE_UOW_CHANGE_SET = 0;
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         Vector descriptors = new Vector();
         descriptors.add(Order.descriptor());
@@ -33,6 +34,7 @@ public class EventHookSystem extends TestSystem {
         descriptors.add(getCustomerDescriptor());
         descriptors.add(getEmailAccountDescriptor());
         session.getEventManager().addListener(new SessionEventAdapter() {
+                @Override
                 public void postCalculateUnitOfWorkChangeSet(SessionEvent event) {
                     POST_CALCULATE_UOW_CHANGE_SET++;
                 }
@@ -43,6 +45,7 @@ public class EventHookSystem extends TestSystem {
         session.addDescriptors(new AboutToInsertProject());
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
@@ -111,6 +114,7 @@ public class EventHookSystem extends TestSystem {
         return emailDescriptor;
     }
 
+    @Override
     public void populate(DatabaseSession session) {
     }
 }

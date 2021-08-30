@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,11 +74,13 @@ CursoredStreamTest extends AutoVerifyTestCase {
         size = aSize;
     }
 
+    @Override
     protected void setup() {
         setNormalQueryObjects(getSession().readAllObjects(getReferenceClass(), joinExpression));
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery query = new ReadAllQuery();
@@ -117,6 +119,7 @@ CursoredStreamTest extends AutoVerifyTestCase {
     /**
      * Verify if number of query objects matches number of cursor objects
      */
+    @Override
     protected void verify() {
         if (getNormalQueryObjects().size() != getCursoredQueryObjects().size()) {
             throw new TestErrorException("The number of streamed objects does not match the number of objects stored on the database.  Expected: " +

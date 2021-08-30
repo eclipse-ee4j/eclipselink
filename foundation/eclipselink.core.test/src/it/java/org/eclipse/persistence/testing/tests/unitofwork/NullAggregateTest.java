@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,12 @@ public class NullAggregateTest extends TransactionalTestCase {
         setDescription("Test that the unit of work mergeClone still works when object identity is lost.");
     }
 
+    @Override
     public void reset() {
         super.reset();
     }
 
+    @Override
     public void setup() {
         super.setup();
         this.unitOfWork = getSession().acquireUnitOfWork();
@@ -46,6 +48,7 @@ public class NullAggregateTest extends TransactionalTestCase {
         this.cloneCopy = (Employee)unitOfWork.registerObject(this.workingCopy);
     }
 
+    @Override
     public void test() {
         try {
             this.cloneCopy.setPeriod(new EmploymentPeriod(new java.sql.Date(System.currentTimeMillis()),
@@ -56,6 +59,7 @@ public class NullAggregateTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void verify() {
     }
 }

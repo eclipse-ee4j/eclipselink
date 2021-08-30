@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,11 +29,13 @@ public class OptimisticLockingDeleteRowTest extends AutoVerifyTestCase {
         setDescription("This test verifies that an optimistic lock exception is thrown when underlying database row is delete");
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
 
@@ -45,12 +47,14 @@ public class OptimisticLockingDeleteRowTest extends AutoVerifyTestCase {
         originalObject = getSession().readObject(guy);
     }
 
+    @Override
     public void test() {
         // Delete the row from the database
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM SALARY WHERE EMP_ID = (Select EMP_ID from EMPLOYEE where F_NAME = 'guy')"));
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM EMPLOYEE WHERE F_NAME = 'guy'"));
     }
 
+    @Override
     protected void verify() {
         boolean exceptionCaught = false;
 

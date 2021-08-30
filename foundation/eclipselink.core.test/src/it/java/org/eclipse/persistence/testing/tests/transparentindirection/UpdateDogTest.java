@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ public class UpdateDogTest extends TransactionalTestCase {
     public Dog theDog;
     public SalesRep newRep;
 
+    @Override
     public void test() {
         Session session = getSession();
         UnitOfWork uow = session.acquireUnitOfWork();
@@ -37,6 +38,7 @@ public class UpdateDogTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void verify() {
         Session session = getSession();
         session.getIdentityMapAccessor().initializeIdentityMap(Dog.class);

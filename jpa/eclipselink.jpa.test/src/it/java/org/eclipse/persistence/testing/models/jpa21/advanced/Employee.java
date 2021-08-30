@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -247,6 +247,7 @@ public class Employee implements Serializable, Cloneable {
         getResponsibilities().add(responsibility);
     }
 
+    @Override
     public Employee clone() {
         Employee clone = null;
         try {

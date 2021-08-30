@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,11 +38,13 @@ public class TreeSetComparatorTest extends AutoVerifyTestCase {
         super();
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         m_exceptionCaught = false;
 
@@ -55,6 +57,7 @@ public class TreeSetComparatorTest extends AutoVerifyTestCase {
         deleteUow.commit();
     }
 
+    @Override
     public void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -74,6 +77,7 @@ public class TreeSetComparatorTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (m_exceptionCaught) {
             throw new TestErrorException("Class cast exception caught on TreeSet merge");

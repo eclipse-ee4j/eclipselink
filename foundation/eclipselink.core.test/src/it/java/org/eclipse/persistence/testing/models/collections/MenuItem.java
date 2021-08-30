@@ -31,10 +31,12 @@ public class MenuItem implements ChangeTracker {
         super();
     }
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }

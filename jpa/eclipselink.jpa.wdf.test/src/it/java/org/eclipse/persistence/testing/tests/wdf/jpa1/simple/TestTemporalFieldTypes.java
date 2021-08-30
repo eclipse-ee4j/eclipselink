@@ -21,7 +21,7 @@ import java.util.GregorianCalendar;
 
 import jakarta.persistence.EntityManager;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.eclipse.persistence.testing.framework.wdf.JPAEnvironment;
 import org.eclipse.persistence.testing.models.wdf.jpa1.types.BasicTypesFieldAccess;

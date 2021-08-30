@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class TimestampDateTest extends PerformanceComparisonTestCase {
         addGetDate();
     }
 
+    @Override
     public void setup() throws Exception {
         connection = (Connection)((AbstractSession)getSession()).getAccessor().getDatasourceConnection();
         sql = "SELECT START_DATE FROM EMPLOYEE";
@@ -42,6 +43,7 @@ public class TimestampDateTest extends PerformanceComparisonTestCase {
     /**
      * getObject.
      */
+    @Override
     public void test() throws Exception {
         PreparedStatement statement = connection.prepareStatement(sql);
         ResultSet result = statement.executeQuery();
@@ -65,6 +67,7 @@ public class TimestampDateTest extends PerformanceComparisonTestCase {
      */
     public void addGetDate() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() throws Exception {
                 PreparedStatement statement = connection.prepareStatement(sql);
                 ResultSet result = statement.executeQuery();

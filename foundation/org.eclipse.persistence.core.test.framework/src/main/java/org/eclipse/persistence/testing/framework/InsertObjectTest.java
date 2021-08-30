@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class InsertObjectTest extends WriteObjectTest {
         setDescription("The test inserting of the intended object, '" + originalObject + "', from the database and checks if it was inserted properly");
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
 
@@ -46,6 +47,7 @@ public class InsertObjectTest extends WriteObjectTest {
         this.objectToBeWritten = this.originalObject;
     }
 
+    @Override
     protected void test() {
         getDatabaseSession().insertObject(this.objectToBeWritten);
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -85,10 +85,12 @@ public class UnitOfWorkTest extends WriteObjectTest {
         vehicles.addElement(Bus.example2(company));
     }
 
+    @Override
     protected void setup() {
         super.setup();
     }
 
+    @Override
     protected void test() {
         {
             // Acquire first unit of work
@@ -115,6 +117,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         try {
             if (!(((AbstractSession)getSession()).compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten))) {

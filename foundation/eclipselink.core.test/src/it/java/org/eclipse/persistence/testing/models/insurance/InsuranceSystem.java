@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class InsuranceSystem extends TestSystem {
     /**
      * Recreate the insurance database.
      */
+    @Override
     public void createTables(DatabaseSession session) {
         if (!SchemaManager.FAST_TABLE_CREATOR) {
             try {
@@ -86,6 +87,7 @@ public class InsuranceSystem extends TestSystem {
     /**
      * Populate the database with example instance of the domain using session.
      */
+    @Override
     public void populate(DatabaseSession session) throws DatabaseException {
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         PolicyHolder example;
@@ -109,6 +111,7 @@ public class InsuranceSystem extends TestSystem {
         unitOfWork.commit();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new InsuranceProject();

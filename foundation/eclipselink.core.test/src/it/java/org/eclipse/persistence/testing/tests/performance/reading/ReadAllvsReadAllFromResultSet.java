@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class ReadAllvsReadAllFromResultSet extends PerformanceComparisonTestCase
         addTest(readAllFromResultSet());
     }
 
+    @Override
     public void setup() {
         query = new ReadAllQuery(Address.class);
         resultSetQuery = new ReadAllQuery(Address.class);
@@ -39,6 +40,7 @@ public class ReadAllvsReadAllFromResultSet extends PerformanceComparisonTestCase
         //getSession().getDescriptor(Address.class).setObjectChangePolicy(new AttributeChangeTrackingPolicy());
     }
 
+    @Override
     public void reset() throws Exception {
         //getSession().getDescriptor(Address.class).setObjectChangePolicy(new DeferredChangeDetectionPolicy());
     }
@@ -46,6 +48,7 @@ public class ReadAllvsReadAllFromResultSet extends PerformanceComparisonTestCase
     /**
      * Read all address.
      */
+    @Override
     public void test() throws Exception {
         UnitOfWork unitOfWork = getSession().acquireUnitOfWork();
         unitOfWork.beginEarlyTransaction();
@@ -56,6 +59,7 @@ public class ReadAllvsReadAllFromResultSet extends PerformanceComparisonTestCase
 
     public PerformanceComparisonTestCase readAllFromResultSet() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 UnitOfWork unitOfWork = getSession().acquireUnitOfWork();
                 unitOfWork.beginEarlyTransaction();

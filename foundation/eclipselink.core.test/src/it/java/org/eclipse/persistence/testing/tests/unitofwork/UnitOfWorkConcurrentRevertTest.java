@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,11 +34,13 @@ public class UnitOfWorkConcurrentRevertTest extends org.eclipse.persistence.test
         setDescription("Test that a concurrent modification exception can be avoided by a reverting UnitOfWork.");
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         if (getSession().getPlatform().isHANA()) {
             // bug 403748
@@ -47,6 +49,7 @@ public class UnitOfWorkConcurrentRevertTest extends org.eclipse.persistence.test
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         UnitOfWork uow2 = getSession().acquireUnitOfWork();
@@ -58,11 +61,13 @@ public class UnitOfWorkConcurrentRevertTest extends org.eclipse.persistence.test
         uow.commit();
 
         Runnable runnable1 = new Runnable() {
+                @Override
                 public void run() {
                 }
             };
 
         Runnable runnable2 = new Runnable() {
+                @Override
                 public void run() {
                     try {
                         for (int count = 20; count > 0; --count) {
@@ -94,6 +99,7 @@ public class UnitOfWorkConcurrentRevertTest extends org.eclipse.persistence.test
         }
     }
 
+    @Override
     public void verify() {
         if (this.exception) {
             this.exception = false;

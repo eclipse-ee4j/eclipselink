@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,13 +27,16 @@ public class SessionBrokerClientQueryTestCase extends org.eclipse.persistence.te
     private Exception ex1;
     private Exception ex2;
 
+    @Override
     public void reset() {
 
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         if (!getAbstractSession().containsQuery(ServerBrokerTestModel.QUERY_NAME)) {
             throw new TestErrorException("The Query is not available to the client session");
@@ -55,6 +58,7 @@ public class SessionBrokerClientQueryTestCase extends org.eclipse.persistence.te
 
     }
 
+    @Override
     public void verify() {
         if (ex1 != null) {
             throw new TestErrorException("SessionBroker.executeQuery(String) throws an exception: " + ex1);

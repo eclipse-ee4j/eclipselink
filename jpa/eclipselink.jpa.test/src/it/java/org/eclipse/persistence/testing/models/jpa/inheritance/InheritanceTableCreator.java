@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -2457,6 +2457,7 @@ public class InheritanceTableCreator extends TogglingFastTableCreator {
     /**
      * Dropping old foreign keys from schema change.
      */
+    @Override
     public void replaceTables(DatabaseSession session) {
         try {
             if (session.getPlatform().supportsUniqueKeyConstraints()

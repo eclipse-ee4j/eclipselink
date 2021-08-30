@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -111,10 +111,12 @@ public class DynamicTestHelper {
         final SEPersistenceUnitInfo puInfo = myContentHandler.getPersistenceUnits().get(0);
         puInfo.setPersistenceUnitRootUrl(dynamicTestUrl);
         PersistenceProvider provider = new PersistenceProvider() {
+            @Override
             public EntityManagerFactory createContainerEntityManagerFactory(
                 PersistenceUnitInfo info, Map map) {
                 return null;
             }
+            @Override
             public EntityManagerFactory createEntityManagerFactory(String emName, Map map) {
                 if (emName.equals(puInfo.getPersistenceUnitName())) {
                     EntityManagerSetupImpl entityManagerSetupImpl =
@@ -129,13 +131,16 @@ public class DynamicTestHelper {
                     return null;
                 }
             }
+            @Override
             public ProviderUtil getProviderUtil() {
                 return null;
             }
 
+            @Override
             public void generateSchema(PersistenceUnitInfo info, Map map) {
             }
 
+            @Override
             public boolean generateSchema(String persistenceUnitName, Map map) {
                 // TODO Auto-generated method stub
                 return false;

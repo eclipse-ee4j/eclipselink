@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
-import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -88,6 +89,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
   }
 
   //This method is run at the end of EVERY test case method
+  @Override
   public void tearDown()
   {
       clearCache();
@@ -705,7 +707,7 @@ public class JUnitCriteriaUnitTestSuite extends JUnitTestCase
         } catch (IllegalArgumentException exception){
             expectedException = exception;
         }
-        this.assertNotNull("Expected IllegalArgumentException not thrown when using a non-existing constructor", expectedException);
+        assertNotNull("Expected IllegalArgumentException not thrown when using a non-existing constructor", expectedException);
     }
 
     public void testIsNullAndIsNotNull(){

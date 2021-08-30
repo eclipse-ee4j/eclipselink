@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class Scenario5_2a extends ReportQueryTestCase {
         setDescription("Cursored Stream using expressions");
     }
 
+    @Override
     protected void buildExpectedResults() {
         Vector employees = getSession().readAllObjects(Employee.class);
 
@@ -45,6 +46,7 @@ public class Scenario5_2a extends ReportQueryTestCase {
         }
     }
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());
@@ -55,10 +57,12 @@ public class Scenario5_2a extends ReportQueryTestCase {
         reportQuery.useCursoredStream(1, 1);
     }
 
+    @Override
     public void test() {
         stream = (CursoredStream)getSession().executeQuery(reportQuery);
     }
 
+    @Override
     protected void verify() {
         try {
             results = new Vector();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,19 +32,23 @@ public class InheritanceReadAllTest extends AutoVerifyTestCase  {
         setDescription("Tests ReadAllObjects using Proxy Indirection with target interfaces including super interfaces.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         ReadAllQuery q = new ReadAllQuery();
         q.setReferenceClass(Cubicle.class);
         cubicles = (Vector)getSession().executeQuery(q);
     }
 
+    @Override
     public void verify() {
         if (cubicles.size() != 3) {
             throw new TestErrorException("All Cubicles were not read in.  Expected 3, got " + cubicles.size() + ".");

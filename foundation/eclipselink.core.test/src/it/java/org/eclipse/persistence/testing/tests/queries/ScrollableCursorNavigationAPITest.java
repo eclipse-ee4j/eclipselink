@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
         }
     }
 
+    @Override
     protected void setup() {
         if (getSession().getPlatform().isDB2() || getSession().getPlatform().isAccess() ||
             getSession().getPlatform().isTimesTen() || getSession().getPlatform().isHANA()) {
@@ -85,6 +86,7 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
 
         ReadAllQuery query = new ReadAllQuery();
@@ -172,6 +174,7 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (configuration != null) {
             getExecutor().setSession(configuration.getUnitOfWork().getParent());
@@ -181,6 +184,7 @@ public class ScrollableCursorNavigationAPITest extends TestCase {
     }
 
 
+    @Override
     protected void verify() {
 
         if (navigationError != null) {

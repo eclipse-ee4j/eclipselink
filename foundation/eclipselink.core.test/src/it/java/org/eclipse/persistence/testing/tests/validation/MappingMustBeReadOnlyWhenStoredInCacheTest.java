@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class MappingMustBeReadOnlyWhenStoredInCacheTest extends ExceptionTest {
         setDescription("This tests Mapping must Be Read Only when stored in cache (TL-ERROR 119)");
     }
 
+    @Override
     protected void setup() {
 
         descriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
@@ -57,11 +58,13 @@ public class MappingMustBeReadOnlyWhenStoredInCacheTest extends ExceptionTest {
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         mapping.setIsReadOnly(orgReadOnly);
         getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         try {
             policy.initialize((AbstractSession)getSession());

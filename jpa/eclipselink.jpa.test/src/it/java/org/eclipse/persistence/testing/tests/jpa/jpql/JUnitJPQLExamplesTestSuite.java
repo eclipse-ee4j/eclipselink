@@ -22,7 +22,7 @@ import java.util.Vector;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -65,6 +65,7 @@ public class JUnitJPQLExamplesTestSuite extends JUnitTestCase {
     /**
      * This method is run at the end of EVERY test case method.
      */
+    @Override
     public void tearDown() {
         clearCache();
     }

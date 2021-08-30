@@ -83,6 +83,7 @@ public class FieldOffice implements ChangeTracker {
      * PUBLIC:
      * Return the PropertyChangeListener for the object.
      */
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return this.topLinkListener;
     }
@@ -91,6 +92,7 @@ public class FieldOffice implements ChangeTracker {
      * PUBLIC:
      * Set the PropertyChangeListener for the object.
      */
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.topLinkListener = listener;
     }

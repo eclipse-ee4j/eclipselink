@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         setDescription("Runs provided tests concurently with adding descriptors.");
     }
 
+    @Override
     protected void setup() {
         super.setup();
         allTestsShouldStop = false;
@@ -117,6 +118,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             setName("Timer("+timeToStopTests+")");
         }
         long timeToStopTests;
+        @Override
         public void test() {
             try {
                 Thread.sleep(timeToStopTests);
@@ -148,6 +150,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         InterfaceHashtableProject project;
         static int numberOfCompletedTests = 0;
         static Object lock = Boolean.valueOf(true);
+        @Override
         public void test() {
             DatabaseSession dbSession;
             if (getSession().isDatabaseSession()) {
@@ -200,6 +203,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
                 }
             }
         }
+        @Override
         protected void verify() {
             DatabaseSession dbSession;
             if (getSession().isDatabaseSession()) {
@@ -261,6 +265,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
             setName("SequencePreallocationTest");
         }
         int testNumber;
+        @Override
         public void test() {
             // Test execution causes deadlock on SQL Server
             if (getAbstractSession().getParent().getPlatform().isSQLServer()) {
@@ -321,6 +326,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
         int numberOfTests;
         static int numberOfCompletedTests = 0;
         static Object lock = Boolean.valueOf(true);
+        @Override
         public void test() {
             // Test execution causes deadlock on SQL Server
             if (getAbstractSession().getParent().getPlatform().isSQLServer()) {
@@ -357,6 +363,7 @@ public class AddDescriptorsMultithreadedTest extends MultithreadTestCase {
 
             }
         }
+        @Override
         public void reset() {
             // the last test deletes the objects created by all tests
             synchronized(lock) {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class CompareKeyWithBackupTest extends TestCase {
     protected Restaurant originalRestaurant = null;
     protected String menuType;
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         originalRestaurant = null;
@@ -48,11 +49,13 @@ public class CompareKeyWithBackupTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Restaurant restaurantClone = (Restaurant)uow.registerObject(originalRestaurant);
@@ -68,6 +71,7 @@ public class CompareKeyWithBackupTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (originalRestaurant.getMenus().containsKey(menuType)) {
             throw new TestErrorException("CR 4172 Even though the key in a Map did not change in the clone it was updated in the shared cache");

@@ -89,10 +89,12 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     public static int getIdCallCount = 0;
     public PropertyChangeListener listener;
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }
@@ -138,6 +140,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
+    @Override
     public void addManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
         if(getManagedEmployees().add(employee)) {
             collectionChange("managedEmployees", managedEmployees, employee, 0, true);
@@ -148,6 +151,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
+    @Override
     public void addPhoneNumber(PhoneNumber phoneNumber) {
         if(getPhoneNumbers().add(phoneNumber)) {
             collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 0, true);
@@ -155,12 +159,14 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         }
     }
 
+    @Override
     public void addProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
         if(getProjects().add(project)) {
             collectionChange("projects", projects, project, 0, true);
         }
     }
 
+    @Override
     public void addResponsibility(String responsibility) {
         if(getResponsibilitiesList().add(responsibility)) {
             collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 0, true);
@@ -191,6 +197,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Address getAddress() {
         return (Address)address.getValue();
     }
@@ -198,14 +205,17 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     /**
      * Return the last element of the Transformation mapped normalHours.
      */
+    @Override
     public Time getEndTime() {
         return getNormalHours()[1];
     }
 
+    @Override
     public String getFirstName() {
         return firstName;
     }
 
+    @Override
     public String getGender() {
         return gender;
     }
@@ -220,6 +230,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     /**
      * Return the persistent identifier of the receiver.
      */
+    @Override
     public BigDecimal getId() {
         getIdCallCount++;
         return id;
@@ -243,6 +254,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         addressId = newAddressId;
     }
 
+    @Override
     public String getLastName() {
         return lastName;
     }
@@ -251,6 +263,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Vector getManagedEmployees() {
         return (Vector)managedEmployees.getValue();
     }
@@ -259,14 +272,17 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public org.eclipse.persistence.testing.models.employee.interfaces.Employee getManager() {
         return (Employee)manager.getValue();
     }
 
+    @Override
     public Time[] getNormalHours() {
         return normalHours;
     }
 
+    @Override
     public EmploymentPeriod getPeriod() {
         return period;
     }
@@ -275,6 +291,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Vector getPhoneNumbers() {
         return (Vector)phoneNumbers.getValue();
     }
@@ -283,6 +300,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Vector getProjects() {
         return (Vector)projects.getValue();
     }
@@ -291,10 +309,12 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public Vector getResponsibilitiesList() {
         return (Vector)responsibilitiesList.getValue();
     }
 
+    @Override
     public int getSalary() {
         return salary;
     }
@@ -302,6 +322,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     /**
      * Return the first element of the Transformation mapped normalHours.
      */
+    @Override
     public java.sql.Time getStartTime() {
         return getNormalHours()[0];
     }
@@ -309,6 +330,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     /**
      * For bi-directional relationships, it is important to maintain both sides of the relationship when changing it.
      */
+    @Override
     public void removeManagedEmployee(org.eclipse.persistence.testing.models.employee.interfaces.Employee employee) {
         if(getManagedEmployees().removeElement(employee)) {
             collectionChange("managedEmployees", managedEmployees, employee, 1, true);
@@ -322,18 +344,21 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * and you can never change the primary key of an existing object.
      * Only in independent relationships should you null out the back reference.
      */
+    @Override
     public void removePhoneNumber(PhoneNumber phoneNumber) {
         if(getPhoneNumbers().removeElement(phoneNumber)) {
             collectionChange("phoneNumbers", phoneNumbers, phoneNumber, 1, true);
         }
     }
 
+    @Override
     public void removeProject(org.eclipse.persistence.testing.models.employee.interfaces.Project project) {
         if(getProjects().removeElement(project)) {
             collectionChange("projects", projects, project, 1, true);
         }
     }
 
+    @Override
     public void removeResponsibility(String responsibility) {
         if(getResponsibilitiesList().removeElement(responsibility)) {
             collectionChange("responsibilitiesList", responsibilitiesList, responsibility, 1, true);
@@ -344,6 +369,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setAddress(Address address) {
         propertyChange("address", this.address.getValue(), address);
         this.address.setValue(address);
@@ -361,22 +387,26 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     /**
      * Set the last element of the Transformation mapped normalHours.
      */
+    @Override
     public void setEndTime(Time endTime) {
         Time[] oldHours = new Time[] { getNormalHours()[0], getNormalHours()[1] };
         getNormalHours()[1] = endTime;
         propertyChange("normalHours", oldHours, normalHours);
     }
 
+    @Override
     public void setFemale() {
         propertyChange("gender", this.gender, "Female");
         setGender("Female");
     }
 
+    @Override
     public void setFirstName(String firstName) {
         propertyChange("firstName", getFirstName(), firstName);
         this.firstName = firstName;
     }
 
+    @Override
     public void setGender(String gender) {
         propertyChange("gender", this.gender, gender);
         this.gender = gender;
@@ -400,11 +430,13 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
         this.id = id;
     }
 
+    @Override
     public void setLastName(String lastName) {
         propertyChange("lastName", this.lastName, lastName);
         this.lastName = lastName;
     }
 
+    @Override
     public void setMale() {
         propertyChange("gender", this.gender, "Male");
         setGender("Male");
@@ -414,6 +446,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setManagedEmployees(Vector managedEmployees) {
         propertyChange("managedEmployees", this.managedEmployees.getValue(), managedEmployees);
         this.managedEmployees.setValue(managedEmployees);
@@ -424,17 +457,20 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setManager(org.eclipse.persistence.testing.models.employee.interfaces.Employee manager) {
         propertyChange("manager", this.manager.getValue(), manager);
         this.manager.setValue(manager);
     }
 
+    @Override
     public void setNormalHours(Time[] normalHours) {
         Time[] oldHours = this.normalHours;
         this.normalHours = normalHours;
         propertyChange("normalHours", oldHours, normalHours);
     }
 
+    @Override
     public void setPeriod(EmploymentPeriod period) {
         propertyChange("period", this.period, period);
         this.period = period;
@@ -444,6 +480,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setPhoneNumbers(Vector phoneNumbers) {
         propertyChange("phoneNumbers", this.phoneNumbers.getValue(), phoneNumbers);
         this.phoneNumbers.setValue(phoneNumbers);
@@ -453,6 +490,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setProjects(Vector projects) {
         propertyChange("projects", this.projects.getValue(), projects);
         this.projects.setValue(projects);
@@ -462,11 +500,13 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
      * Notice that the usage of value holders does not effect the public interface or usage of the class.
      * The get/set methods must however be changed to wrap/unwrap the value holder.
      */
+    @Override
     public void setResponsibilitiesList(Vector responsibilitiesList) {
         propertyChange("responsibilitiesList", this.responsibilitiesList.getValue(), responsibilitiesList);
         this.responsibilitiesList.setValue(responsibilitiesList);
     }
 
+    @Override
     public void setSalary(int salary) {
         propertyChange("salary", Integer.valueOf(this.salary), Integer.valueOf(salary));
         this.salary = salary;
@@ -475,6 +515,7 @@ public class Employee implements org.eclipse.persistence.testing.models.employee
     /**
      * Set the first element of the Transformation mapped normalHours.
      */
+    @Override
     public void setStartTime(Time startTime) {
         Time[] oldHours = new Time[] { getNormalHours()[0], getNormalHours()[1] };
         getNormalHours()[0] = startTime;

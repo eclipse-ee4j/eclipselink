@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
         setDescription("Test using no validation.");
     }
 
+    @Override
     public void reset() {
         super.reset();
         if(listener != null) {
@@ -44,6 +45,7 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     protected void setup() {
         if (getSession().isClientSession()) {
             listener = checkTransactionIsolation();
@@ -51,6 +53,7 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
         super.setup();
     }
 
+    @Override
     public void test() {
         testPartial();
         testFull();
@@ -103,6 +106,7 @@ public class ViolateObjectSpaceTest extends TransactionalTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object objectFromDatabase = getSession().readObject(objectToBeWritten);

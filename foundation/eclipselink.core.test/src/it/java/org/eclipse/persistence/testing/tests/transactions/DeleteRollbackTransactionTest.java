@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,7 @@ public class DeleteRollbackTransactionTest extends org.eclipse.persistence.testi
         searchExpression = exp1.or(exp2);
     }
 
+    @Override
     public String getDescription() {
         return "This test verifies that the commit transaction feature works for database inserts.";
     }
@@ -63,6 +64,7 @@ public class DeleteRollbackTransactionTest extends org.eclipse.persistence.testi
         return searchExpression;
     }
 
+    @Override
     public void reset() {
         // Check if there the employee object is in the database
         Employee databaseEmployee = (Employee)getSession().readObject(Employee.class, getSearchExpression());
@@ -73,6 +75,7 @@ public class DeleteRollbackTransactionTest extends org.eclipse.persistence.testi
         }
     }
 
+    @Override
     protected void resetVerify() {
         Session session = getSession();
 
@@ -85,17 +88,20 @@ public class DeleteRollbackTransactionTest extends org.eclipse.persistence.testi
         }
     }
 
+    @Override
     protected void setup() {
         // Add an example employee to the database
         getDatabaseSession().insertObject(getEmployee());
     }
 
+    @Override
     protected void test() {
         getDatabaseSession().beginTransaction();
         getDatabaseSession().deleteObject(getEmployee());
         getDatabaseSession().rollbackTransaction();
     }
 
+    @Override
     protected void verify() {
         Session session = getSession();
 

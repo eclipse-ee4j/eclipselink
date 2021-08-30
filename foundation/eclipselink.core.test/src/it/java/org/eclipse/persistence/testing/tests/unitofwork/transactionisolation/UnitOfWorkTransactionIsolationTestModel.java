@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,11 +39,13 @@ import org.eclipse.persistence.sessions.server.Server;
  * @author  smcritch
  */
 public class UnitOfWorkTransactionIsolationTestModel extends UnitOfWorkClientSessionTestModel {
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
         addRequiredSystem(new InsuranceSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(UnitOfWorkTransactionIsolationTestModel.getTransactionIsolationTestSuite());
     }
@@ -69,10 +71,11 @@ public class UnitOfWorkTransactionIsolationTestModel extends UnitOfWorkClientSes
         return suite;
     }
 
+    @Override
     public Server buildServerSession() {
         // possibly override to use more than one write connection.
         Server server =
-            ((org.eclipse.persistence.sessions.Project)getSession().getProject().clone()).createServerSession(1, 1);
+            getSession().getProject().clone().createServerSession(1, 1);
         server.useReadConnectionPool(1, 1);
         server.setSessionLog(getSession().getSessionLog());
         server.login();

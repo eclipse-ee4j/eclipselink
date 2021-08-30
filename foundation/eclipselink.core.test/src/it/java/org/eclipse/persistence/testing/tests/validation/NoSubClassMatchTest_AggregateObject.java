@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class NoSubClassMatchTest_AggregateObject extends ExceptionTest {
         setDescription("This tests No Sub Class Match (AggregateObjectMapping) (TL-ERROR 126) ");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.noSubClassMatch(null, new AggregateObjectMapping());
 
@@ -61,12 +62,14 @@ public class NoSubClassMatchTest_AggregateObject extends ExceptionTest {
         getSession().getIntegrityChecker().dontCatchExceptions();
     }
 
+    @Override
     public void reset() {
         getSession().setIntegrityChecker(orgIntegrityChecker);
         //This is needed because hidden in the test, getInheritancePolicy() is triggered that does lazy initialization.
         mapping.getReferenceDescriptor().setInheritancePolicy(orgInheritancePolicy);
     }
 
+    @Override
     public void test() {
         try {
             mapping.writeFromObjectIntoRowWithChangeRecord(changeRecord, new org.eclipse.persistence.sessions.DatabaseRecord(), (AbstractSession)getSession(), WriteType.UNDEFINED);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,11 +49,13 @@ public class QueryCacheHitTest extends TestCase {
         setDescription("Test to ensure that the database is not hit for queries that are cached, including cached zero results.");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         tracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         if (testType == NO_RESULTS_CACHED_DATAREAD) {
             testNoResultsCachedDataRead();
@@ -204,6 +206,7 @@ public class QueryCacheHitTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         tracker.remove();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

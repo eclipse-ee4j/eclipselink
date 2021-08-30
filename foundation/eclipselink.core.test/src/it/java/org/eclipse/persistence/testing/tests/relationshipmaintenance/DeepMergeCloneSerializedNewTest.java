@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class DeepMergeCloneSerializedNewTest extends org.eclipse.persistence.tes
         setDescription("This test verifies that deepMergeClone works after a serialized transaction");
     }
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             rollbackTransaction();
@@ -47,6 +48,7 @@ public class DeepMergeCloneSerializedNewTest extends org.eclipse.persistence.tes
         }
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("This test cannot be run through the remote.");
@@ -60,6 +62,7 @@ public class DeepMergeCloneSerializedNewTest extends org.eclipse.persistence.tes
      * sequence again.  Then deepMergeClone is attempted and the results are compared to verify that
      * the merge worked.
      */
+    @Override
     public void test() {
         try {
             ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
@@ -90,7 +93,7 @@ public class DeepMergeCloneSerializedNewTest extends org.eclipse.persistence.tes
 
             //add a new manager, test 1-m's
             Emp newEmp = new Emp();
-            newEmp.setEmpno(new Double((double)(System.currentTimeMillis()) % 10000));
+            newEmp.setEmpno(Double.valueOf((double)(System.currentTimeMillis()) % 10000));
             newEmp.setEname("THe New Guy" + System.currentTimeMillis());
             if ((deserialDept.getEmpCollection() != null) && (deserialDept.getEmpCollection().size() > 1)) {
                 deserialDept.getEmpCollection().remove(deserialDept.getEmpCollection().iterator().next());

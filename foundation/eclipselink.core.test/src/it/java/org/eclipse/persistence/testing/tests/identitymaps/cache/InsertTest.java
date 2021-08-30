@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ public class InsertTest extends AutoVerifyTestCase {
         this.cache = cache;
     }
 
+    @Override
     public void test() {
         Employee employee = new Employee();
         java.math.BigDecimal id = new java.math.BigDecimal(7777);
@@ -40,6 +41,7 @@ public class InsertTest extends AutoVerifyTestCase {
         this.employee = employee;
     }
 
+    @Override
     public void verify() {
         // Check to see if element just inserted is last element.
         java.math.BigDecimal id = new java.math.BigDecimal(7777);

@@ -33,6 +33,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         cacheSyncConfigValues.put(ListItem.class, Integer.valueOf(ClassDescriptor.SEND_OBJECT_CHANGES));
     }
 
+    @Override
     public void setup(){
         super.setup();
         // super.setup begins transaction with intention to keep it until reset.
@@ -51,6 +52,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         uow.commit();
     }
 
+    @Override
     public void test(){
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
         UnitOfWork uow = server.getDistributedSession().acquireUnitOfWork();
@@ -62,6 +64,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
         uow.commit();
     }
 
+    @Override
     public void verify(){
         // ensure the changes are propagated
         try{
@@ -86,6 +89,7 @@ public class NewObjectWithOptimisticLockingTest extends ConfigurableCacheSyncDis
 
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holder = (ListHolder)uow.readObject(ListHolder.class);

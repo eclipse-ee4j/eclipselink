@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,13 @@ public class ProjectClassGeneratorNonUnicodeTest extends ProjectClassGeneratorRe
         setDescription("Test if ProjectClassGenerator does not generate unicode escaped characters for non-ASCII characters");
     }
 
+    @Override
     protected void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class).getMappingForAttributeName("firstName").setAttributeName("\u5E08\u592B");
     }
 
+    @Override
     public void test() {
         try {
             ProjectClassGenerator generator = new ProjectClassGenerator(project);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class EMCascadingModifyAndMergeTest extends EntityContainerTestBase  {
     public Integer[] empIDs = new Integer[2];
     Employee employee;
 
+    @Override
     public void setup (){
         super.setup();
 
@@ -47,6 +48,7 @@ public class EMCascadingModifyAndMergeTest extends EntityContainerTestBase  {
         empIDs[0] = employee.getId();
     }
 
+    @Override
     public void test(){
         employee.setFirstName("Ivy");
         PhoneNumber phone = employee.getPhoneNumbers().iterator().next();
@@ -71,6 +73,7 @@ public class EMCascadingModifyAndMergeTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify(){
         //lets check the cache for the objects
         employee = getEntityManager().find(Employee.class, empIDs[0]);

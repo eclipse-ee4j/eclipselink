@@ -15,6 +15,7 @@
 package org.eclipse.persistence.testing.tests.returning.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.eclipse.persistence.sessions.*;
 
@@ -113,7 +114,7 @@ public abstract class BaseClass implements Cloneable {
             return null;
         }
         BigDecimal a2 = a_plus_minus_b_BigDecimal[0].add(a_plus_minus_b_BigDecimal[1]);
-        BigDecimal a = a2.divide(new BigDecimal(2), BigDecimal.ROUND_UNNECESSARY);
+        BigDecimal a = a2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
         return a;
     }
 
@@ -122,7 +123,7 @@ public abstract class BaseClass implements Cloneable {
             return null;
         }
         BigDecimal b2 = a_plus_minus_b_BigDecimal[0].subtract(a_plus_minus_b_BigDecimal[1]);
-        BigDecimal b = b2.divide(new BigDecimal(2), BigDecimal.ROUND_UNNECESSARY);
+        BigDecimal b = b2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
         return b;
     }
 
@@ -224,9 +225,9 @@ public abstract class BaseClass implements Cloneable {
                 return false;
             }
             BigDecimal a2 = a_plus_minus_b_BigDecimal[0].add(a_plus_minus_b_BigDecimal[1]);
-            BigDecimal a = a2.divide(new BigDecimal(2), BigDecimal.ROUND_UNNECESSARY);
+            BigDecimal a = a2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
             BigDecimal b2 = a_plus_minus_b_BigDecimal[0].subtract(a_plus_minus_b_BigDecimal[1]);
-            BigDecimal b = b2.divide(new BigDecimal(2), BigDecimal.ROUND_UNNECESSARY);
+            BigDecimal b = b2.divide(new BigDecimal(2), RoundingMode.UNNECESSARY);
             if (a_Integer.intValue() != a.intValue()) {
                 return false;
             }
@@ -263,6 +264,7 @@ public abstract class BaseClass implements Cloneable {
         }
     }
 
+    @Override
     public Object clone() {
         try {
             BaseClass clone = (BaseClass)super.clone();

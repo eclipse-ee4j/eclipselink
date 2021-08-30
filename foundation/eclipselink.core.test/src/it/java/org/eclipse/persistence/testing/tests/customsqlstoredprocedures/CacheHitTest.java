@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class CacheHitTest extends org.eclipse.persistence.testing.tests.queries.
         super(originalObject);
     }
 
+    @Override
     protected void setup() {
         if (!((getSession().getLogin().getPlatform().isOracle()) || (getSession().getLogin().getPlatform().isSQLServer()) || (getSession().getLogin().getPlatform().isSybase()) || (getSession().getLogin().getPlatform().isSQLAnywhere()) || (getSession().getLogin().getPlatform().isMySQL()) || (getSession().getLogin().getPlatform().isSymfoware()) || (getSession().getLogin().getPlatform().isPervasive()))) {
             throw new TestWarningException("This test is only valid for Database Systems supporting StoredProcedures");

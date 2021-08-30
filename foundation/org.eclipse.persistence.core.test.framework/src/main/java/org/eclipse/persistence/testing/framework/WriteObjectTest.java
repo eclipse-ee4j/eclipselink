@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -169,6 +169,7 @@ public class WriteObjectTest extends TransactionalTestCase {
         return testShouldMutate;
     }
 
+    @Override
     public void reset() {
         if (bindAllParametersOriginal != null) {
             getSession().getLogin().setShouldBindAllParameters(bindAllParametersOriginal.booleanValue());
@@ -211,6 +212,7 @@ public class WriteObjectTest extends TransactionalTestCase {
         bindAllParameters = Boolean.valueOf(value);
     }
 
+    @Override
     protected void setup() {
         if (shouldBindAllParameters() != null) {
             bindAllParametersOriginal = Boolean.valueOf(getSession().getLogin().shouldBindAllParameters());
@@ -248,6 +250,7 @@ public class WriteObjectTest extends TransactionalTestCase {
      * findAndMutateDirectToFieldMappingInObject method, and will then attempt
      * to write the object to the database.
      */
+    @Override
     protected void test() {
 
         if (makesTrivialUpdate() && testShouldMutate()) {
@@ -267,6 +270,7 @@ public class WriteObjectTest extends TransactionalTestCase {
      * to use the descriptors.  This will compare the objects and all of
      * their privately owned parts.
      */
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         this.objectFromDatabase = getSession().executeQuery(this.query);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,6 +74,7 @@ public class CustomSequenceTest extends AutoVerifyTestCase {
         new SchemaManager((DatabaseSession)getSession()).replaceObject(tabledefinition);
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -87,6 +88,7 @@ public class CustomSequenceTest extends AutoVerifyTestCase {
         ((DatabaseSession)getSession()).getSequencingControl().initializePreallocated();
     }
 
+    @Override
     public void setup() {
         org.eclipse.persistence.internal.databaseaccess.DatabasePlatform p = getSession().getProject().getLogin().getPlatform();
 
@@ -134,6 +136,7 @@ public class CustomSequenceTest extends AutoVerifyTestCase {
         ((DatabaseSession)getSession()).getSequencingControl().initializePreallocated();
     }
 
+    @Override
     public void test() {
         beginTransaction();
 
@@ -153,6 +156,7 @@ public class CustomSequenceTest extends AutoVerifyTestCase {
         uow2.commit();
     }
 
+    @Override
     public void verify() {
         //make sure the Employee was inserted and updated, and that the new Seq table was used.
         Employee verifyEmp = (Employee)getSession().readObject(this.newEmployee);

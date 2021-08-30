@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class MergeCloneWithReferencesWithNullTest extends org.eclipse.persistenc
         setDescription("This test verifies that mergeCloneWithReferences will not throw an exception when encountering a null within a collection.");
     }
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
@@ -36,6 +37,7 @@ public class MergeCloneWithReferencesWithNullTest extends org.eclipse.persistenc
         }
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("This test cannot be run through the remote.");
@@ -48,6 +50,7 @@ public class MergeCloneWithReferencesWithNullTest extends org.eclipse.persistenc
      * This testcase will attempt to call mergeCloneWithReferences on an object that contains
      * a collection that contains a null
      */
+    @Override
     public void test() {
         try {
             Employee empObject = (Employee)getSession().readObject(Employee.class);

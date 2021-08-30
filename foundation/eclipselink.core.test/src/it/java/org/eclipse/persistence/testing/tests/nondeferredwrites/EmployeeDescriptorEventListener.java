@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
     public EmployeeDescriptorEventListener() {
     }
 
+    @Override
     public void postDelete(DescriptorEvent event) {
         if (event.getQuery() == null) {
             throw new TestErrorException("Query not set.");
@@ -41,6 +42,7 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
         postDeleteExecuted = true;
     }
 
+    @Override
     public void postInsert(DescriptorEvent event) {
         if (event.getQuery() == null) {
             throw new TestErrorException("Query not set.");
@@ -51,6 +53,7 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
         postInsertExecuted = true;
     }
 
+    @Override
     public void postUpdate(DescriptorEvent event) {
         if (event.getQuery() == null) {
             throw new TestErrorException("Query not set.");
@@ -61,45 +64,58 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
         postUpdateExecuted = true;
     }
 
+    @Override
     public void aboutToInsert(DescriptorEvent event) {
     }
 
+    @Override
     public void aboutToUpdate(DescriptorEvent event) {
     }
 
+    @Override
     public void aboutToDelete(DescriptorEvent event) {
     }
 
+    @Override
     public void postBuild(DescriptorEvent event) {
     }
 
+    @Override
     public void postClone(DescriptorEvent event) {
     }
 
+    @Override
     public void postMerge(DescriptorEvent event) {
     }
 
+    @Override
     public void postRefresh(DescriptorEvent event) {
     }
 
+    @Override
     public void postWrite(DescriptorEvent event) {
     }
 
     public void preCreate(DescriptorEvent event) {
     }
 
+    @Override
     public void preDelete(DescriptorEvent event) {
     }
 
+    @Override
     public void preInsert(DescriptorEvent event) {
     }
 
+    @Override
     public void preRemove(DescriptorEvent event) {
     }
 
+    @Override
     public void preUpdate(DescriptorEvent event) {
     }
 
+    @Override
     public void preWrite(DescriptorEvent event) {
     }
 
@@ -116,6 +132,7 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
      * This event is only raised by the EntityManager.  It is raised when the
      * create operation is initiated on an object.
      */
+    @Override
     public void prePersist(DescriptorEvent event) {
     }
 
@@ -126,6 +143,7 @@ public class EmployeeDescriptorEventListener implements DescriptorEventListener 
      * event. For objects that have database changes, an aboutToUpdate will also
      * be triggered.
      */
+    @Override
     public void preUpdateWithChanges(DescriptorEvent event) {
     }
 

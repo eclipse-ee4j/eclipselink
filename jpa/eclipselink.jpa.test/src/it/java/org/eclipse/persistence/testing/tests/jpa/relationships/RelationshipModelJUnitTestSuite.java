@@ -819,7 +819,7 @@ public class RelationshipModelJUnitTestSuite extends JUnitTestCase {
             EntityManagerImpl impl = (EntityManagerImpl)JpaHelper.getEntityManager(em);
             uow = impl.getActivePersistenceContext(null);
             em.flush();
-            UnitOfWorkChangeSet uowChangeSet = (UnitOfWorkChangeSet)uow.getCumulativeUOWChangeSet();
+            UnitOfWorkChangeSet uowChangeSet = uow.getCumulativeUOWChangeSet();
             ObjectChangeSet customerChangeSet = uowChangeSet.getCloneToObjectChangeSet().get(cust);
             CollectionChangeRecord orderChangeRecord = (CollectionChangeRecord)customerChangeSet.getChangesForAttributeNamed("orders");
             Iterator<ObjectChangeSet> i = orderChangeRecord.getAddObjectList().keySet().iterator();

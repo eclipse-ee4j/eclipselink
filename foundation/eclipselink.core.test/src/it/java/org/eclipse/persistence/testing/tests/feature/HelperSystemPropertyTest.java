@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ public class HelperSystemPropertyTest extends AutoVerifyTestCase {
         setDescription("Tests to ensure the Helper statics which access System Properties are correctly set.");
     }
 
+    @Override
     public void verify() {
         if (!org.eclipse.persistence.internal.helper.Helper.cr().equals(System.getProperty("line.separator"))) {
             throw new TestErrorException("Helper.cr() returns the incorrect value.");

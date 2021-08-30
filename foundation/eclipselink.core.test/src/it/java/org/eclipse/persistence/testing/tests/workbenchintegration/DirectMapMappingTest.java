@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,12 +33,14 @@ public class DirectMapMappingTest extends AutoVerifyTestCase {
         setDescription("Test if DirectMapMapping is written out and read in properly");
     }
 
+    @Override
     public void test() {
         directMap = getSession().getDescriptor(DirectMapMappings.class).getMappingForAttributeName("directMap");
         directMapForBatchRead =
                 getSession().getDescriptor(DirectMapMappings.class).getMappingForAttributeName("directMapForBatchRead");
     }
 
+    @Override
     protected void verify() {
         if (directMap == null || directMapForBatchRead == null) {
             throw new TestErrorException("DirectMapMapping does not exist after written out and read in from xml");

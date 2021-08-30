@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class VerifyExclusiveConnectionTest extends ClientServerTest {
         setName(getName() + " " + str);
     }
 
+    @Override
     public void test() {
         this.server.getEventManager().addListener(new IsolatedSessionEventAdaptor(this));
         ((Session)this.clients.get(0)).readObject(IsolatedEmployee.class);
@@ -43,6 +44,7 @@ public class VerifyExclusiveConnectionTest extends ClientServerTest {
         this.clients.remove(0);
     }
 
+    @Override
     public void verify() {
         if (!this.isPostEventFired) {
             throw new TestErrorException("The post acquire Exclusive Connection event was not fired");
@@ -52,6 +54,7 @@ public class VerifyExclusiveConnectionTest extends ClientServerTest {
         }
     }
 
+    @Override
     public void setup() {
         super.setup();
         this.isPostEventFired = false;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class DirectCollectionMappingDeleteNullValueTest extends TestCase {
         super();
     }
 
+    @Override
     protected void setup() {
         // create and write an obj with a DirectCollectionMapping that has a null value
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -45,6 +46,7 @@ public class DirectCollectionMappingDeleteNullValueTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void test() {
         // remove the null value from the DirectCollectionMapping
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -53,6 +55,7 @@ public class DirectCollectionMappingDeleteNullValueTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         // verify the null value was removed
         Employee employee = (Employee) getSession().readObject(Employee.class, exp);
@@ -63,6 +66,7 @@ public class DirectCollectionMappingDeleteNullValueTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee employee = (Employee) uow.readObject(Employee.class, exp);

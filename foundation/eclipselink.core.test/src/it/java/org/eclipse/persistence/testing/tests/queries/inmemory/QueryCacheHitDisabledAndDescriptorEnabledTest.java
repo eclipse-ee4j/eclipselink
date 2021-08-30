@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,17 +24,20 @@ public class QueryCacheHitDisabledAndDescriptorEnabledTest extends QueryAndDescr
         setDescription("Test when cache hit is disabled in query and enabled in descriptor, cache is not checked");
     }
 
+    @Override
     protected void setup() {
         super.setup();
         descriptor.setShouldDisableCacheHits(false);
     }
 
+    @Override
     protected Object readObject(ReadObjectQuery query) {
         query.setCacheUsage(ObjectLevelReadQuery.DoNotCheckCache);
         query.refreshIdentityMapResult();
         return getSession().executeQuery(query);
     }
 
+    @Override
     protected void verify() {
         if (((org.eclipse.persistence.testing.models.employee.domain.Employee)objectRead).getFirstName().equals(firstName)) {
             throw new TestErrorException("Object read match but should not.");

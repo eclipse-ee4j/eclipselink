@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class Scenario2_2a extends ReportQueryTestCase {
         setDescription("Scenario 2.2a: Self join");
     }
 
+    @Override
     protected void buildExpectedResults() throws Exception {
         Vector employees = getSession().readAllObjects(Employee.class);
 
@@ -42,6 +43,7 @@ public class Scenario2_2a extends ReportQueryTestCase {
             }
         }
     }
+@Override
 protected void setup()  throws Exception
 {
         super.setup();

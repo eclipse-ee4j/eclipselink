@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,14 +34,17 @@ public class NestedAggregateCollectionAbstractTestCase extends org.eclipse.persi
         setName(getName() + AgentBuilderHelper.getNameInBrackets(cls));
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
     }
 
+    @Override
     public void setup() {
         beginTransaction();
     }
 
+    @Override
     public void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -67,6 +70,7 @@ public class NestedAggregateCollectionAbstractTestCase extends org.eclipse.persi
         }
     }
 
+    @Override
     public void verify() {
         if (instantiationExceptionOccurred) {
             throw new TestErrorException("EclipseLink attempted to merge an abstract class, when merging an aggregate collection.");

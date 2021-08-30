@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,7 @@ public class ExternalTransactionControllerInitializationTest extends AutoVerifyT
         return login;
     }
 
+    @Override
     public void test() {
         broker = new SessionBroker();
         CustomServerPlatform platform = new CustomServerPlatform(broker);
@@ -62,12 +63,14 @@ public class ExternalTransactionControllerInitializationTest extends AutoVerifyT
         broker.login();
     }
 
+    @Override
     public void verify() {
         if (!broker.hasExternalTransactionController()) {
             throw new TestErrorException("SessionBroker's external transaction controller was not initialized on login.");
         }
     }
 
+    @Override
     public void reset() {
         if (broker != null) {
             broker.logout();

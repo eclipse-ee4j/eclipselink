@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class Employee implements ContactHolder, java.io.Serializable, Cloneable 
     /**
      * This method was written to do a shallow clone of the employee object
      */
+    @Override
     public Object clone() {
         Employee clone = new Employee();
         clone.id = this.id;
@@ -98,10 +99,12 @@ public class Employee implements ContactHolder, java.io.Serializable, Cloneable 
         return example;
     }
 
+    @Override
     public Contact getContact() {
         return contact;
     }
 
+    @Override
     public Number getId() {
         return this.id;
     }
@@ -114,10 +117,12 @@ public class Employee implements ContactHolder, java.io.Serializable, Cloneable 
         return (Contact)secondaryContact.getValue();
     }
 
+    @Override
     public void setContact(Contact contact) {
         this.contact = contact;
     }
 
+    @Override
     public void setId(Number id) {
         this.id = id;
     }

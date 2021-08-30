@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
      */
 
     /* WARNING: THIS METHOD WILL BE REGENERATED. */
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         // user code begin {1}
         if (e.getSource() == getExitMenuItem()) {
@@ -898,6 +899,7 @@ public class TestingBrowserFrame extends javax.swing.JFrame implements java.awt.
      */
     protected static java.awt.event.WindowListener getWindowShutdown() {
         return new java.awt.event.WindowAdapter() {
+                @Override
                 public void windowClosing(java.awt.event.WindowEvent e) {
                     java.awt.Window window = e.getWindow();
                     window.setVisible(false);

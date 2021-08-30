@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();
@@ -72,6 +73,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
      * Return the name of the persistence context this test uses.
      * This allow a subclass test to set this only in one place.
      */
+    @Override
     public String getPersistenceUnitName() {
         return "fieldaccess";
     }
@@ -157,7 +159,7 @@ public class AdvancedJunitTest extends JUnitTestCase {
         rank.setId(0);
         entityManager.persist(rank);
         commitTransaction(entityManager);
-        this.assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
+        assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
 
         closeEntityManager(entityManager);
         clearCache();
@@ -168,11 +170,11 @@ public class AdvancedJunitTest extends JUnitTestCase {
         rank.setId(0);
         rank = entityManager.merge(rank);
         commitTransaction(entityManager);
-        this.assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
+        assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
 
         beginTransaction(entityManager);
         rank = entityManager.find(WorldRank.class, 0);
-        this.assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
+        assertTrue("Zero id assigned sequence value.", rank.getId() == 0);
         entityManager.remove(rank);
         commitTransaction(entityManager);
         closeEntityManager(entityManager);

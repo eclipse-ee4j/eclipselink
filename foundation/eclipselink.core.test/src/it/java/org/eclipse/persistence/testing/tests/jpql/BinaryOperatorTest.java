@@ -274,6 +274,7 @@ public class BinaryOperatorTest extends org.eclipse.persistence.testing.tests.jp
         return theSuite;
     }
 
+    @Override
     public void setup() {
         ReadAllQuery raq = new ReadAllQuery();
         raq.setSelectionCriteria(getOriginalObjectExpression());

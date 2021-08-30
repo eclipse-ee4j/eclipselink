@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class AgentBuilderTablesTest extends TestCase {
         super();
         this.setDescription("Test verifies that correct tables are used by nested aggregate collection mappings");
     }
+    @Override
     public void verify() {
         String errorMsg = "";
         errorMsg += verifyDescriptorWithAggColMappingsAndChildren(getSession().getDescriptor(Agent.class), false, "Agent");

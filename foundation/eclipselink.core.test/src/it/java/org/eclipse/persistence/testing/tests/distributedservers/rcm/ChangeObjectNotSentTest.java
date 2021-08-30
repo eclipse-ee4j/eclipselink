@@ -39,6 +39,7 @@ public class ChangeObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
         cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
     }
 
+    @Override
     public void setup() {
         super.setup();
         // Create an Employee
@@ -58,6 +59,7 @@ public class ChangeObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
         Object result = server.getDistributedSession().readObject(Employee.class, expression);
     }
 
+    @Override
     public void test() {
         // Change the employee and commit
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -66,6 +68,7 @@ public class ChangeObjectNotSentTest extends ConfigurableCacheSyncDistributedTes
         uow.commit();
     }
 
+    @Override
     public void verify() {
         // The employee should not changed in the distributed cache because the cache synchronization
         // setting did not allow the change to be passed.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -74,6 +74,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     }
 
     //This method is run at the end of EVERY test case method
+    @Override
     public void tearDown()
     {
         clearCache();
@@ -706,7 +707,7 @@ public class JUnitJPQLComplexAggregateTestSuite extends JUnitTestCase
     public void testMultipleCoalesce() {
         EntityManager em = createEntityManager();
         Query query = em.createQuery("SELECT SUM(COALESCE(e.roomNumber, 20)), SUM(COALESCE(e.salary, 10000)) FROM Employee e");
-        List result = (List) query.getResultList();
+        List result = query.getResultList();
         Assert.assertNotNull("testMultipleCoalesce Test Failed - Unable to fetch employee data", result);
         Assert.assertFalse("testMultipleCoalesce Test Failed - Unable to fetch employee data", result.isEmpty());
         Object[] aggregateResult = (Object[])result.get(0);

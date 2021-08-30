@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class ReadReferencedObjectNotInSessionCacheTest extends TestCase {
         setDescription("This test ensures that referenced objects are put in the session cache");
     }
 
+    @Override
     protected void setup() {
         checkNoWaitSupported();
 
@@ -43,6 +44,7 @@ public class ReadReferencedObjectNotInSessionCacheTest extends TestCase {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ReadObjectQuery query = new ReadObjectQuery(objectInCache);
@@ -56,6 +58,7 @@ public class ReadReferencedObjectNotInSessionCacheTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         Employee empVerify = (Employee)getSession().readObject(objectInCache);
         if (empVerify == null) {
@@ -74,6 +77,7 @@ public class ReadReferencedObjectNotInSessionCacheTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() throws Exception {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

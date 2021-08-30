@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class NestedUOWWithNewObjectRegisteredTwiceTest extends AutoVerifyTestCas
     PhoneNumber pNT02REL;
     PhoneNumber pNT02REG;
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
 
@@ -45,10 +46,12 @@ public class NestedUOWWithNewObjectRegisteredTwiceTest extends AutoVerifyTestCas
         uow.commit();
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
     }
 
+    @Override
     public void test() {
 
         Employee empRO =
@@ -82,6 +85,7 @@ public class NestedUOWWithNewObjectRegisteredTwiceTest extends AutoVerifyTestCas
         uowT0.commit();
     }
 
+    @Override
     protected void verify() {
         if (pNT02REL != pNT02REG) {
             throw new TestErrorException("PhoneNumber is registered twice in the nested unit of work");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class ClientSessionConstructorValidationTest extends org.eclipse.persiste
         setDescription("Verifies that the Client Session is constructed properly");
     }
 
+    @Override
     public void test() {
         this.server = new ServerSession(getSession().getLogin(), 1, 1);
         this.server.setExternalTransactionController(new JTATransactionController());
@@ -35,6 +36,7 @@ public class ClientSessionConstructorValidationTest extends org.eclipse.persiste
         this.client = this.server.acquireClientSession();
     }
 
+    @Override
     public void verify() {
         if (this.server.getExternalTransactionController().equals(this.client.getExternalTransactionController())) {
         } else {
@@ -42,6 +44,7 @@ public class ClientSessionConstructorValidationTest extends org.eclipse.persiste
         }
     }
 
+    @Override
     public void reset() {
         if(this.server != null) {
             this.server.logout();

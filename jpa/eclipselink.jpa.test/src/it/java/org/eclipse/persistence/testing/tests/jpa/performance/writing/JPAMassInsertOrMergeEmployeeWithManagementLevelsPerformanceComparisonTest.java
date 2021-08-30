@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,6 +60,7 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
         setDescription("This test compares the performance of "+ (shouldInsert ? "insert" : "merge") + (shouldUseSequencing ? " useSequencing " : " doNotUseSequencing ") + " Employee with " + nLevels + " levels of management; each manager has " + nDirects + " direct employees");
     }
 
+    @Override
     public void setup() throws Exception {
         id = 0;
         // Disable batch writing, as seems to give database issues.
@@ -90,6 +91,7 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
     /**
      * Insert employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         try {
@@ -147,6 +149,7 @@ public class JPAMassInsertOrMergeEmployeeWithManagementLevelsPerformanceComparis
         }
     }
 
+    @Override
     public void reset() throws Exception {
         // Delete all employees
         EntityManager manager = createEntityManager();

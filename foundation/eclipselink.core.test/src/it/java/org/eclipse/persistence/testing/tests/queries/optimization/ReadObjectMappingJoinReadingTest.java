@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,7 @@ public class ReadObjectMappingJoinReadingTest extends org.eclipse.persistence.te
     Employee employee;
     int oldJoinFetch;
 
+    @Override
     protected void setup() {
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         oldJoinFetch = ((OneToOneMapping)descriptor.getMappingForAttributeName("address")).getJoinFetch();
@@ -44,12 +45,14 @@ public class ReadObjectMappingJoinReadingTest extends org.eclipse.persistence.te
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Expression expression = new ExpressionBuilder().get("id").equal(employee.getId());
         employee = (Employee)uow.readObject(Employee.class, expression);
     }
 
+    @Override
     protected void verify() {
         Employee original = (Employee)getSession().readObject(employee);
         if (!original.address.isInstantiated()) {
@@ -58,6 +61,7 @@ public class ReadObjectMappingJoinReadingTest extends org.eclipse.persistence.te
         employee.getAddress().getCity();
     }
 
+    @Override
     public void reset() {
         ClassDescriptor descriptor = getSession().getDescriptor(Employee.class);
         ((OneToOneMapping)descriptor.getMappingForAttributeName("address")).setJoinFetch(oldJoinFetch);

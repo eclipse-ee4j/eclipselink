@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -74,6 +74,7 @@ public class ConversionManagerTestModelWithoutBinding extends TestModel {
         setDescription("This suite tests all possible conversions through direct field mapping.");
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         this.originalBindingState = this.getSession().getLogin().getPlatform().shouldBindAllParameters();
         this.originalStatementCachingState = this.getSession().getLogin().getPlatform().shouldCacheAllStatements();
@@ -83,6 +84,7 @@ public class ConversionManagerTestModelWithoutBinding extends TestModel {
         addForcedRequiredSystem(new ConversionManagerSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getReadAllTestSuite());
@@ -156,6 +158,7 @@ public class ConversionManagerTestModelWithoutBinding extends TestModel {
         return suite;
     }
 
+    @Override
     public void reset() {
         this.getSession().getLogin().getPlatform().setShouldCacheAllStatements(this.originalStatementCachingState);
         this.getSession().getLogin().getPlatform().setShouldBindAllParameters(this.originalBindingState);

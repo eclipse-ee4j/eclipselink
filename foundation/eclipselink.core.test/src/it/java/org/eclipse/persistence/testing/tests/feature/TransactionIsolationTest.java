@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class TransactionIsolationTest extends TestCase {
         setDescription("Tests the transaction isolation setting in login is set on the connection.");
     }
 
+    @Override
     public void setup() {
         try {
             level = ((AbstractSession)getSession()).getAccessor().getConnection().getTransactionIsolation();
@@ -36,6 +37,7 @@ public class TransactionIsolationTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         DatabaseLogin login = (DatabaseLogin)getSession().getLogin().clone();
         login.setTransactionIsolation(java.sql.Connection.TRANSACTION_SERIALIZABLE);

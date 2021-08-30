@@ -35,6 +35,7 @@ public class RelatedNewObjectCacheSyncTest extends ConfigurableCacheSyncDistribu
         cacheSyncConfigValues.put(Employee.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
     }
 
+    @Override
     public void setup() {
         super.setup();
         ExpressionBuilder employees = new ExpressionBuilder();
@@ -54,6 +55,7 @@ public class RelatedNewObjectCacheSyncTest extends ConfigurableCacheSyncDistribu
     /**
      * Create a new employee and commit.
      */
+    @Override
     public void test() {
         employee = (Employee)getSession().readObject(Employee.class, expression);
 
@@ -68,6 +70,7 @@ public class RelatedNewObjectCacheSyncTest extends ConfigurableCacheSyncDistribu
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (getObjectFromDistributedCache(manager) == null) {
             throw new TestErrorException("New employee was not added to distributed cache with " + " SEND_NEW_OBJECTS_WITH_CHANGES descriptor CacheSynchronizationTypeSetting.");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class FieldsLockingCachedUpdateCallsTest extends TestCase {
         setDescription("Performs two updates on an object using ChangedFieldsLockingPolicy - test for bug 5711476");
     }
 
+    @Override
     protected void setup() {
         rockBand = new RockBand();
         rockBand.name = "Original";
@@ -36,6 +37,7 @@ public class FieldsLockingCachedUpdateCallsTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         RockBand clone = (RockBand)uow.registerObject(rockBand);
@@ -49,6 +51,7 @@ public class FieldsLockingCachedUpdateCallsTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     public void reset() {
         if (rockBand != null) {
             UnitOfWork uow = getSession().acquireUnitOfWork();

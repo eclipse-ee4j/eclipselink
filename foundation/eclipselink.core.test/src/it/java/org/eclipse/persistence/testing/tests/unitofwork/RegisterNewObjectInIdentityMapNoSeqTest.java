@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -71,6 +71,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         return " " + idValidation + (keepSequencing ? " Sequencing" + (shouldAlwaysOverrideExistingValue ? " always overrides" : ""): "");
     }
 
+    @Override
     public void reset() {
         ClassDescriptor descriptor = getSession().getClassDescriptor(Weather.class);
         descriptor.setIdValidation(idValidationOriginal);
@@ -87,6 +88,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         zeroFailed = false;
         negativeFailed = false;
@@ -117,6 +119,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         }
     }
 
+    @Override
     public void test() {
         Session session = getSession();
         UnitOfWork uow = session.acquireUnitOfWork();
@@ -147,6 +150,7 @@ public class RegisterNewObjectInIdentityMapNoSeqTest extends AutoVerifyTestCase 
         }
     }
 
+    @Override
     public void verify() {
         String errorMsg = "";
         boolean zeroFailedExpected = false;

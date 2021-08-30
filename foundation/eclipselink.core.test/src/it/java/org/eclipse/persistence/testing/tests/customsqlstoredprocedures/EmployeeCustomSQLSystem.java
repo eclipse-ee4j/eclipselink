@@ -40,6 +40,7 @@ import org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem
  * </ul>
  */
 public class EmployeeCustomSQLSystem extends EmployeeSystem {
+    @Override
     public void addDescriptors(DatabaseSession session) {
         session.logout();
         super.addDescriptors(session);
@@ -521,6 +522,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
             this.returnString = theString;
         }
 
+        @Override
         protected void printReturn(Writer writer, AbstractSession session) throws ValidationException {
             try {
                 writer.write(returnString);
@@ -676,6 +678,7 @@ public class EmployeeCustomSQLSystem extends EmployeeSystem {
     /**
      * Also creates the procs.
      */
+    @Override
     public void createTables(DatabaseSession session) {
         super.createTables(session);
         org.eclipse.persistence.internal.databaseaccess.DatabasePlatform platform = session.getLogin().getPlatform();

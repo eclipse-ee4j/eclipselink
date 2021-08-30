@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,17 +33,20 @@ public class CacheExpiryUnitOfWorkReadTest extends CacheExpiryTest {
         setDescription("Test to ensure read time is correct in the UnitOfWork cache.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         uow = getSession().acquireUnitOfWork();
     }
 
+    @Override
     public void test() {
         sessionEmployee = (Employee)getSession().readObject(Employee.class);
         Employee uowEmployee = (Employee)uow.readObject(sessionEmployee);
         uow.release();
     }
 
+    @Override
     public void verify() {
         if (((UnitOfWorkImpl)uow).getIdentityMapAccessorInstance().getCacheKeyForObject(sessionEmployee).getReadTime() !=
             ((AbstractSession)getSession()).getIdentityMapAccessorInstance().getCacheKeyForObject(sessionEmployee).getReadTime()) {
@@ -52,6 +55,7 @@ public class CacheExpiryUnitOfWorkReadTest extends CacheExpiryTest {
         }
     }
 
+    @Override
     public void reset() {
         uow.release();
         super.reset();

@@ -61,6 +61,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();
@@ -104,6 +105,7 @@ public class CacheImplJUnitTest extends JUnitTestCase {
         return suite;
     }
 
+    @Override
     public String getPersistenceUnitName(){
         return "default1";
     }

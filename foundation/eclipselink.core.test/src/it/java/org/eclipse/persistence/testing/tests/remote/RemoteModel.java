@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public abstract class RemoteModel extends TestModel {
         setDescription("It tests TopLink three tier model.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new org.eclipse.persistence.testing.models.employee.relational.EmployeeSystem());
         addRequiredSystem(new org.eclipse.persistence.testing.models.insurance.InsuranceSystem());
@@ -48,6 +49,7 @@ public abstract class RemoteModel extends TestModel {
         addRequiredSystem(new org.eclipse.persistence.testing.tests.queries.report.ReportQuerySystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getBasicReadTestSuite());
         addTest(getBasicUnitOfWorkTestSuite());
@@ -61,7 +63,7 @@ public abstract class RemoteModel extends TestModel {
     }
 
     public Session buildServerSession() {
-        org.eclipse.persistence.sessions.server.ServerSession server = (org.eclipse.persistence.sessions.server.ServerSession)((org.eclipse.persistence.sessions.Project)getSession().getProject().clone()).createServerSession();
+        org.eclipse.persistence.sessions.server.ServerSession server = (org.eclipse.persistence.sessions.server.ServerSession)(getSession().getProject().clone()).createServerSession();
         server.setSessionLog(getSession().getSessionLog());
 
         server.login();
@@ -175,6 +177,7 @@ public abstract class RemoteModel extends TestModel {
         return suite;
     }
 
+    @Override
     public void reset() {
         // Setup might not be run yet.
         if (originalSession != null) {
@@ -189,5 +192,6 @@ public abstract class RemoteModel extends TestModel {
         serverSession = session;
     }
 
+    @Override
     public abstract void setup();
 }

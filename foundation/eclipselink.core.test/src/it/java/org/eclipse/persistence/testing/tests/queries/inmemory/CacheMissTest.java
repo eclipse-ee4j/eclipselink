@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,10 +34,12 @@ public class CacheMissTest extends CacheHitTest {
     /**
      * Query the object by primary key.
      */
+    @Override
     protected Object readObject() {
         return getSession().readObject(Employee.class, new ExpressionBuilder().get("id").notEqual(((Employee)objectToRead).getId()));
     }
 
+    @Override
     protected void verify() {
         if (objectRead == objectToRead) {
             throw new TestErrorException("Object read match but should not.");

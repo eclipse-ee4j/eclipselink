@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,8 +29,9 @@ public class ObjectTypeMappingDefaultNullValues extends TransactionalTestCase {
         super();
     }
 
+    @Override
     protected void test() {
-        Computer comp = new Computer().example10(new Employee());
+        Computer comp = Computer.example10(new Employee());
         getDatabaseSession().writeObject(comp);
 
     }
@@ -39,6 +40,7 @@ public class ObjectTypeMappingDefaultNullValues extends TransactionalTestCase {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Vector computers = getSession().readAllObjects(Computer.class, new ExpressionBuilder().get("isMacintosh").equal(null));

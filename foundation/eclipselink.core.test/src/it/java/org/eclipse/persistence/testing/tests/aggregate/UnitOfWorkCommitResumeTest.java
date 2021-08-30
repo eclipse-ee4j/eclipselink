@@ -101,10 +101,10 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
 
         //Third level aggregate object changed
         addressDescription.getPeriodDescription().getPeriod().setEndDate(Helper.dateFromYearMonthDate(1900 + ((changeVersion + 1975) % 2500), (changeVersion % 12) + 1, (changeVersion % 28) + 1));
-        ((Address)(addressDescription.getAddress().getValue())).setAddress(suffix + " Any Street");
+        addressDescription.getAddress().getValue().setAddress(suffix + " Any Street");
 
         // 1 to 1 mapped object changed
-        ((Computer)projectDescription.getComputer().getValue()).setDescription("Vic 20");
+        projectDescription.getComputer().getValue().setDescription("Vic 20");
 
         //1 level aggregate's 1:M mapping, removing an element
         responsibility.setResponsibility("Changed Reponsibility" + suffix);
@@ -131,6 +131,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
     /**
      * This method was created in VisualAge.
      */
+    @Override
     protected void setup() {
         super.setup();
 
@@ -145,6 +146,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         this.unitOfWork.commitAndResume();
 
@@ -159,6 +161,7 @@ public class UnitOfWorkCommitResumeTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         if (!(compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten))) {
             throw new TestErrorException("The object in the unit of work has not been commited properly to its parent");

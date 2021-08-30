@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class GettersAndSettersForProjectClassGeneratorTest extends AutoVerifyTes
         setDescription("The setters and getters for ProjectClassGenerator ");
     }
 
+    @Override
     public void reset() {
         File file = new File(generator.getOutputFileName());
         file.delete();
@@ -41,6 +42,7 @@ public class GettersAndSettersForProjectClassGeneratorTest extends AutoVerifyTes
         project = null;
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -48,6 +50,7 @@ public class GettersAndSettersForProjectClassGeneratorTest extends AutoVerifyTes
         generator = new ProjectClassGenerator();
     }
 
+    @Override
     public void test() {
         try {
             generator.setProject(project);
@@ -59,6 +62,7 @@ public class GettersAndSettersForProjectClassGeneratorTest extends AutoVerifyTes
         }
     }
 
+    @Override
     protected void verify() {
         Project projectTest = generator.getProject();
         String classTest = generator.getClassName();

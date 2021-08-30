@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ public class Beer<PK, ALCOHOL_CONTENT_TYPE, BeerDoubleType> extends Beverage<Bee
         BEER_POST_PERSIST_COUNT++;
     }
 
+    @Override
     public Object clone() throws CloneNotSupportedException {
         Beer beer = (Beer)super.clone();
         beer.setBeerConsumer(null);

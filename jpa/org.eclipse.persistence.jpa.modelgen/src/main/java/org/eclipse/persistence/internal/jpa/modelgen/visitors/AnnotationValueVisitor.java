@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -73,7 +73,7 @@ public class AnnotationValueVisitor<R, P> extends AbstractAnnotationValueVisitor
      */
     @Override
     public Object visitArray(List<? extends AnnotationValue> annotationValues, Object arg1) {
-        ArrayList<Object> values = new ArrayList<Object>();
+        ArrayList<Object> values = new ArrayList<>();
 
         for (AnnotationValue annotationValue : annotationValues) {
             values.add(annotationValue.accept(this, arg1));

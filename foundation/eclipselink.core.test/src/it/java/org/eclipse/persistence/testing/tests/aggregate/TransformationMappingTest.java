@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,16 +29,19 @@ public class TransformationMappingTest extends AutoVerifyTestCase {
     public TransformationMappingTest() {
     }
 
+    @Override
     public void reset() {
         Worker worker = (Worker)getSession().readObject(Worker.class);
         getDatabaseSession().deleteObject(worker);
     }
 
+    @Override
     public void setup() {
         myWorker = Worker.example1();
         getDatabaseSession().writeObject(myWorker);//don't use unit of work here
     }
 
+    @Override
     public void test() {
         Worker worker;
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -80,6 +83,7 @@ public class TransformationMappingTest extends AutoVerifyTestCase {
      * Insert the method's description here.
      * Creation date: (6/7/00 11:39:54 AM)
      */
+    @Override
     public void verify() {
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class WriteChangesFailed_TestCase extends AutoVerifyTestCase {
     Exception exception;
     public BigDecimal id = null;
 
+    @Override
     public void setup() {
         id = new BigDecimal(1);
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -46,6 +47,7 @@ public class WriteChangesFailed_TestCase extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -95,12 +97,14 @@ public class WriteChangesFailed_TestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception == null) {
             throw new TestErrorException("Exception not thrown in writeChanges where UnitOfWork was trying to add a duplicate object.");
         }
     }
 
+    @Override
     public void reset() {
         if (id == null) {
             return;
@@ -116,6 +120,7 @@ public class WriteChangesFailed_TestCase extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     protected void resetVerify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Expression expression = (new ExpressionBuilder()).get("id").equal(id);

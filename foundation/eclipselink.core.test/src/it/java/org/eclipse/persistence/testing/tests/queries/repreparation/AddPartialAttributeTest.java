@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,12 @@ public class AddPartialAttributeTest extends TestCase {
         setDescription("Test if SQL is reprepared the second time");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 
@@ -40,12 +42,14 @@ public class AddPartialAttributeTest extends TestCase {
         employees = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void test() {
         query.dontMaintainCache();
         query.addPartialAttribute("lastName");
         employees = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         if (!query.getCall().getSQLString().equals("SELECT t0.EMP_ID, t0.L_NAME FROM EMPLOYEE t0, SALARY t1 WHERE (t1.EMP_ID = t0.EMP_ID)")) {
             throw new TestErrorException("AddPartialAttributeTest failed.");

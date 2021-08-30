@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class DeepModifyTest extends AutoVerifyTestCase {
     public DeepModifyTest() {
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         ExpressionBuilder expBldr = new ExpressionBuilder();
@@ -42,11 +43,13 @@ public class DeepModifyTest extends AutoVerifyTestCase {
         m_employeeFromDatabase = (Employee)getSession().readObject(Employee.class, whatWeWant);
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void test() {
         /** Change a managed employee   */
         ((Employee)m_employeeFromDatabase.getManagedEmployees().elementAt(0)).setFirstName("MrFoobar");
@@ -62,6 +65,7 @@ public class DeepModifyTest extends AutoVerifyTestCase {
         getSession().executeQuery(query);
     }
 
+    @Override
     protected void verify() {
         Expression expression;
 

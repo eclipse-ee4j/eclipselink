@@ -33,6 +33,7 @@ public class PreInsertModifyChangeSetTest extends AutoVerifyTestCase {
     // The following is an anonymous class which is used for event listening
     // uses the preInsert event to change a change set.
     protected DescriptorEventAdapter eventAdapter = new DescriptorEventAdapter() {
+        @Override
         public void preInsert(DescriptorEvent event) {
             if (event.getQuery().getDescriptor() != null) {
                 event.updateAttributeWithObject("salary", Integer.valueOf(callCount));
@@ -45,11 +46,13 @@ public class PreInsertModifyChangeSetTest extends AutoVerifyTestCase {
         setDescription("Test to ensure change sets modified by events actually affect the cache.");
     }
 
+    @Override
     public void setup() {
         getSession().getDescriptor(Employee.class).getEventManager().addListener(eventAdapter);
         beginTransaction();
     }
 
+    @Override
     public void test() {
         // Create an employee.  This employee's last name will be modifed in a preWrite evetn
         employee = new Employee();
@@ -61,6 +64,7 @@ public class PreInsertModifyChangeSetTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         ExpressionBuilder emp = new ExpressionBuilder();
         Expression exp = emp.get("id").equal(employee.getId());
@@ -76,6 +80,7 @@ public class PreInsertModifyChangeSetTest extends AutoVerifyTestCase {
         callCount = 0;
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getDescriptor(Employee.class).getEventManager().removeListener(eventAdapter);

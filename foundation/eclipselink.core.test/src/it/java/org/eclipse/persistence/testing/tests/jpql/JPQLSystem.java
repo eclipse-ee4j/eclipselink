@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,6 +57,7 @@ public class JPQLSystem extends TestSystem {
         return employeeProject;
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = buildProject();
@@ -65,6 +66,7 @@ public class JPQLSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         new EmployeeTableCreator().replaceTables(session);
     }
@@ -72,6 +74,7 @@ public class JPQLSystem extends TestSystem {
     /**
      * Return a connected session using the default login.
      */
+    @Override
     public DatabaseSession login() {
         DatabaseSession session;
 
@@ -108,6 +111,7 @@ public class JPQLSystem extends TestSystem {
      * This method will instantiate all of the example instances and insert them into the database
      * using the given session.
      */
+    @Override
     public void populate(DatabaseSession session) {
         org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator system = new org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

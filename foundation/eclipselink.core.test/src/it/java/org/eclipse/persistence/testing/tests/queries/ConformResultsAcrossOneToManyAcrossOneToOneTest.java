@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,13 @@ public class ConformResultsAcrossOneToManyAcrossOneToOneTest extends org.eclipse
         super();
     }
 
+    @Override
     public void reset() {
         //clear the cache
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         unitOfWork = getSession().acquireUnitOfWork();
@@ -93,6 +95,7 @@ public class ConformResultsAcrossOneToManyAcrossOneToOneTest extends org.eclipse
         }
     }
 
+    @Override
     public void test() {
         //all the employees with city Perth should be
         //in the cache right now.
@@ -106,6 +109,7 @@ public class ConformResultsAcrossOneToManyAcrossOneToOneTest extends org.eclipse
 
     }
 
+    @Override
     public void verify() {
         try {
             if (allEmployees.size() == employeesInCache.size()) {

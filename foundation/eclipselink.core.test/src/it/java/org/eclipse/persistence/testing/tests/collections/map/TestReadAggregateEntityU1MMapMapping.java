@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,6 +47,7 @@ public class TestReadAggregateEntityU1MMapMapping extends TestCase {
         setName("TestReadAggregateEntityU1MMapMapping fetchJoin = " + fetchJoin);
     }
 
+    @Override
     public void setup(){
         mapping = (UnidirectionalOneToManyMapping)getSession().getProject().getDescriptor(AggregateEntityU1MMapHolder.class).getMappingForAttributeName("aggregateToEntityMap");
         oldFetchJoinValue = mapping.getJoinFetch();
@@ -75,10 +76,12 @@ public class TestReadAggregateEntityU1MMapMapping extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         holders = getSession().readAllObjects(AggregateEntityU1MMapHolder.class, holderExp);
     }
 
+    @Override
     public void verify(){
         if (holders == null || holders.size() != 1){
             throw new TestErrorException("Incorrect number of MapHolders was read.");
@@ -100,6 +103,7 @@ public class TestReadAggregateEntityU1MMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator i = holders.iterator();

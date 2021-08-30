@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,14 +26,17 @@ public class VPDIsolatedSessionEventAdaptor extends SessionEventAdapter {
         this.noRowsModified = false;
     }
 
+    @Override
     public void postAcquireExclusiveConnection(SessionEvent event) {
         event.getSession().executeNonSelectingCall(new SQLCall("CALL DBMS_SESSION.SET_IDENTIFIER(" + this.session_id + ")"));
     }
 
+    @Override
     public void preReleaseExclusiveConnection(SessionEvent event) {
         event.getSession().executeNonSelectingCall(new SQLCall("CALL DBMS_SESSION.CLEAR_IDENTIFIER()"));
     }
 
+    @Override
     public void noRowsModified(SessionEvent event) {
         this.noRowsModified = true;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.models.collections.map.AggregateAggregate
 
 public class TestUpdateAggregateAggregateMapMapping extends TestReadAggregateAggregateMapMapping {
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(AggregateAggregateMapHolder.class, holderExp);
@@ -40,6 +41,7 @@ public class TestUpdateAggregateAggregateMapMapping extends TestReadAggregateAgg
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object initialHolder = holders.get(0);

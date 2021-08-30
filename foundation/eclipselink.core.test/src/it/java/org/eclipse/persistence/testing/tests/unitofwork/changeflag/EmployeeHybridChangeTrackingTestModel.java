@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public class EmployeeHybridChangeTrackingTestModel extends EmployeeChangeFlagBas
         setDescription("This model tests reading/writing/deleting using the employee demo with Hybrid ChangeTracking policies.");
     }
 
+    @Override
     public void setup() {
         // Save change policies for the all employee demo class in order to restore them at reset time.
         employeeChangePolicy = getSession().getDescriptor(Employee.class).getObjectChangePolicy();
@@ -78,6 +79,7 @@ public class EmployeeHybridChangeTrackingTestModel extends EmployeeChangeFlagBas
         getSession().getDescriptor(PhoneNumber.class).setObjectChangePolicy(new DeferredChangeDetectionPolicy());
     }
 
+    @Override
     public void reset() {
         // restore old change policies.
         getSession().getDescriptor(Employee.class).setObjectChangePolicy(employeeChangePolicy);
@@ -92,6 +94,7 @@ public class EmployeeHybridChangeTrackingTestModel extends EmployeeChangeFlagBas
     /**
      * Add a subset of the UnitOfWork tests in order to test the actual test flag functionality.
      */
+    @Override
     public TestSuite getUnitOfWorkTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("Unit Of Work Update Test Suite");

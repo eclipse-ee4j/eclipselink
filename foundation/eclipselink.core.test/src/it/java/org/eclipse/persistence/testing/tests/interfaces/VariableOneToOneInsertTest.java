@@ -24,6 +24,7 @@ import org.eclipse.persistence.testing.models.interfaces.*;
 public class VariableOneToOneInsertTest extends TransactionalTestCase {
     public Company company;
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         this.company = new Company();

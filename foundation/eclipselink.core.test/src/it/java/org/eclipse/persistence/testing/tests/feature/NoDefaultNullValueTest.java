@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,12 +29,14 @@ public class NoDefaultNullValueTest extends AutoVerifyTestCase {
         setDescription("Verify that the appropriate values are put in the object when nulls are encountered on the database");
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         getSession().getLogin().getPlatform().getConversionManager().setDefaultNullValues(saveDefaultNullValues);
     }
 
+    @Override
     protected void setup() {
         // save current null values for later restoration
         saveDefaultNullValues = getSession().getLogin().getPlatform().getConversionManager().getDefaultNullValues();
@@ -53,6 +55,7 @@ public class NoDefaultNullValueTest extends AutoVerifyTestCase {
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("update SALARY set SALARY = null where EMP_ID = " + employee.getId()));
     }
 
+    @Override
     public void test() {
         // force a read from the database
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -63,6 +66,7 @@ public class NoDefaultNullValueTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
     }
 }

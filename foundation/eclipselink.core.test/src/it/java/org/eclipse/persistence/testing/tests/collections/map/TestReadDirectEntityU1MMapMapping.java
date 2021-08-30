@@ -47,6 +47,7 @@ public class TestReadDirectEntityU1MMapMapping extends TestCase {
         setName("TestReadDirectEntityU1MMapMapping fetchJoin = " + fetchJoin);
     }
 
+    @Override
     public void setup(){
         mapping = (UnidirectionalOneToManyMapping)getSession().getProject().getDescriptor(DirectEntityU1MMapHolder.class).getMappingForAttributeName("directToEntityMap");
         oldFetchJoinValue = mapping.getJoinFetch();
@@ -71,10 +72,12 @@ public class TestReadDirectEntityU1MMapMapping extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         holders = getSession().readAllObjects(DirectEntityU1MMapHolder.class, holderExp);
     }
 
+    @Override
     public void verify(){
         if (holders == null || holders.size() != 1){
             throw new TestErrorException("Incorrect number of MapHolders was read.");
@@ -94,6 +97,7 @@ public class TestReadDirectEntityU1MMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator i = holders.iterator();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,6 +22,7 @@ import org.eclipse.persistence.testing.models.employee.domain.*;
 public class SimpleLikeTestWithParameter extends JPQLParameterTestCase {
     protected final static int MIN_FIRSTNAME_LENGTH = 3;
 
+    @Override
     public void setup() {
         Vector employees = getSomeEmployees();
         // Bug 223005: Verify that we have at least 1 employee with the required field length otherwise an EclipseLinkException will be thrown

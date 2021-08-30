@@ -32,6 +32,7 @@ public class JPAReadAllEmployeeCompletelyPerformanceComparisonTest extends JPARe
     /**
      * Read all employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();

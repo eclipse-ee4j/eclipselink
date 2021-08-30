@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@ public class CacheAuditor extends CacheInterceptor {
     @Override
     protected CacheKeyInterceptor createCacheKeyInterceptor(CacheKey wrappedCacheKey) {
         return new CacheKeyInterceptor(wrappedCacheKey){
+            @Override
             public void release() {
                 wrappedKey.release();
                 if (shouldThrow){
@@ -69,6 +70,7 @@ public class CacheAuditor extends CacheInterceptor {
         };
     }
 
+    @Override
     public void release() {
     }
 

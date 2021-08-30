@@ -52,6 +52,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
     /**
      * Setup by setting the new cache synchronization type values on the appropriate descriptors.
      */
+    @Override
     public void setup() {
         oldCacheSyncConfigValues = new Hashtable();
         Enumeration keys = cacheSyncConfigValues.keys();
@@ -75,6 +76,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
      * that the cache synchronization setting will allow the compareObjects call made
      * in the superclass work return true.
      */
+    @Override
     public void verify() {
         this.objectFromDatabase = getSession().executeQuery(this.query);
         if (isObjectValidOnDistributedServer(objectFromDatabase)) {
@@ -86,6 +88,7 @@ public class ConfigurableUpdateChangeObjectTest extends UpdateChangeObjectTest {
     /**
      * Reset the cache synchronization types.
      */
+    @Override
     public void reset() {
         super.reset();
         Enumeration keys = oldCacheSyncConfigValues.keys();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class ProjectXMLTest extends AutoVerifyTestCase {
         setDescription("This test will verify that the isolation setting is set within the project xml");
     }
 
+    @Override
     public void setup() {
         employeeProject = new EmployeeProject();
         ClassDescriptor descriptor = employeeProject.getDescriptor(Employee.class);
@@ -40,6 +41,7 @@ public class ProjectXMLTest extends AutoVerifyTestCase {
         descriptor.setCMPPolicy(new CMPPolicy());
     }
 
+    @Override
     public void test() {
         // none - after_ejbcreate
         ClassDescriptor descriptor = employeeProject.getDescriptor(Employee.class);
@@ -77,6 +79,7 @@ public class ProjectXMLTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         File file = new File("NonDeferredProject.xml");
         file.delete();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,9 +40,10 @@ public class ServerSessionTestAdapter extends UniversalSessionTestAdapter {
         setDescription("In three-tier: " + wrappedTest.getDescription());
     }
 
+    @Override
     public Session setupTestSession(Session oldSession) {
         DatabaseLogin login = (DatabaseLogin)oldSession.getLogin().clone();
-        Project project = (Project)oldSession.getProject().clone();
+        Project project = oldSession.getProject().clone();
         project.setLogin(login);
         this.server = new Server(project);
         this.server.serverSession.setLog(oldSession.getLog());
@@ -52,6 +53,7 @@ public class ServerSessionTestAdapter extends UniversalSessionTestAdapter {
         return this.server.serverSession;
     }
 
+    @Override
     public void tearDownTestSession(Session testSession) {
         testSession.release();
         this.server.logout();

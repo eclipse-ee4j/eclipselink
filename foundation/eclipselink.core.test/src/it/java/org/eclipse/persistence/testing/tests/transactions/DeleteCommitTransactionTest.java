@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,6 +51,7 @@ public class DeleteCommitTransactionTest extends AutoVerifyTestCase {
         searchExpression = exp1.or(exp2);
     }
 
+    @Override
     public String getDescription() {
         return "This test verifies that the commit transaction feature works for database inserts.";
     }
@@ -63,6 +64,7 @@ public class DeleteCommitTransactionTest extends AutoVerifyTestCase {
         return searchExpression;
     }
 
+    @Override
     public void reset() {
         // Read the object from the database
         Employee databaseEmployee = (Employee)getSession().readObject(Employee.class, getSearchExpression());
@@ -74,6 +76,7 @@ public class DeleteCommitTransactionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void resetVerify() {
         Session session = getSession();
 
@@ -86,17 +89,20 @@ public class DeleteCommitTransactionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void setup() {
         // Add an example employee to the database
         getDatabaseSession().insertObject(getEmployee());
     }
 
+    @Override
     protected void test() {
         getDatabaseSession().beginTransaction();
         getDatabaseSession().deleteObject(getEmployee());
         getDatabaseSession().commitTransaction();
     }
 
+    @Override
     protected void verify() {
         Session session = getSession();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class StoredProcedureORParametersClientSessionTest extends StoredProcedur
         super(useCustomSQL);
     }
 
+    @Override
     public org.eclipse.persistence.sessions.Session getSession(){
         if ( (server ==null) || (!server.isConnected()) ){
             server = super.getSession().getProject().createServerSession(1,1);
@@ -40,6 +41,7 @@ public class StoredProcedureORParametersClientSessionTest extends StoredProcedur
         }
         return clientSession;
     }
+    @Override
     public void reset() throws Throwable {
         super.reset();
         if (clientSession!=null){
@@ -50,6 +52,7 @@ public class StoredProcedureORParametersClientSessionTest extends StoredProcedur
             server.logout();
         }
     }
+    @Override
     public void setup() {
         super.setup();
         getSession();

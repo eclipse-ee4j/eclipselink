@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class JPAMemoryLeakModel extends TestModel {
         setDescription("Memory tests that test for memory leaks.");
     }
 
+    @Override
     public void addTests() {
         addTest(buildReadTest());
         addTest(buildInsertTest());
@@ -53,6 +54,7 @@ public class JPAMemoryLeakModel extends TestModel {
     /**
      * Create/populate database.
      */
+    @Override
     public void setup() {
         setupProvider();
         getSession().logMessage(getExecutor().getEntityManagerFactory().getClass().toString());
@@ -106,7 +108,7 @@ public class JPAMemoryLeakModel extends TestModel {
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
-            provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
+            provider = (PersistenceProvider)Class.forName(providerClass).getConstructor().newInstance();
         } catch (Exception error) {
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
@@ -133,6 +135,7 @@ public class JPAMemoryLeakModel extends TestModel {
      */
     public TestCase buildInsertTest() {
         MemoryLeakTestCase test = new MemoryLeakTestCase() {
+            @Override
             public void test() {
                 EntityManager manager = createEntityManager();
                 ((JpaEntityManager)manager).getUnitOfWork().getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -156,6 +159,7 @@ public class JPAMemoryLeakModel extends TestModel {
                 manager.close();
             }
 
+            @Override
             public void reset() {
                 getSession().executeNonSelectingSQL("Delete from P_EMPLOYEE where F_NAME = 'NewGuy'");
             }
@@ -170,6 +174,7 @@ public class JPAMemoryLeakModel extends TestModel {
      */
     public TestCase buildUpdateTest() {
         MemoryLeakTestCase test = new MemoryLeakTestCase() {
+            @Override
             public void test() {
                 EntityManager manager = createEntityManager();
                 ((JpaEntityManager)manager).getUnitOfWork().getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -201,6 +206,7 @@ public class JPAMemoryLeakModel extends TestModel {
      */
     public TestCase buildExpressionCacheTest() {
         MemoryLeakTestCase test = new MemoryLeakTestCase() {
+            @Override
             public void test() {
                 EntityManager manager = createEntityManager();
                 manager.getTransaction().begin();
@@ -225,6 +231,7 @@ public class JPAMemoryLeakModel extends TestModel {
      */
     public TestCase buildReadTest() {
         MemoryLeakTestCase test = new MemoryLeakTestCase() {
+            @Override
             public void test() {
                 EntityManager manager = createEntityManager();
                 ((JpaEntityManager)manager).getUnitOfWork().getParent().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -251,6 +258,7 @@ public class JPAMemoryLeakModel extends TestModel {
      */
     public TestCase buildParameterizedBatchWriteTest() {
         MemoryLeakTestCase test = new MemoryLeakTestCase() {
+            @Override
             public void test() {
                 EntityManager manager = createEntityManager();
                 boolean usesBatchWriting = ((JpaEntityManager)manager).getServerSession().getPlatform().usesBatchWriting();
@@ -283,6 +291,7 @@ public class JPAMemoryLeakModel extends TestModel {
                 manager.close();
             }
 
+            @Override
             public void reset() {
                 getSession().executeNonSelectingSQL("Delete from P_EMPLOYEE where F_NAME = 'NewBatchGuy'");
             }

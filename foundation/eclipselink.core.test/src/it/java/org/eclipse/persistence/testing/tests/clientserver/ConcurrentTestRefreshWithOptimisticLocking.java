@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class ConcurrentTestRefreshWithOptimisticLocking extends org.eclipse.pers
         this.index = index;
     }
 
+    @Override
     public void reset() {
         ConcurrentTestRefreshWithOptimisticLocking.execute = false;
         for (int count = 0; count < numThreads; ++count) {
@@ -56,6 +57,7 @@ public class ConcurrentTestRefreshWithOptimisticLocking extends org.eclipse.pers
         ConcurrentTestRefreshWithOptimisticLocking.server.logout();
     }
 
+    @Override
     public void setup() {
         ConcurrentTestRefreshWithOptimisticLocking.execute = true;
         try {
@@ -70,7 +72,7 @@ public class ConcurrentTestRefreshWithOptimisticLocking extends org.eclipse.pers
             ConcurrentTestRefreshWithOptimisticLocking.server.serverSession.setSessionLog(getSession().getSessionLog());
             ConcurrentTestRefreshWithOptimisticLocking.server.login();
             ConcurrentTestRefreshWithOptimisticLocking.server.copyDescriptors(getSession());
-            ClassDescriptor empDesc = this.server.serverSession.getClassDescriptor(DeadLockEmployee.class);
+            ClassDescriptor empDesc = server.serverSession.getClassDescriptor(DeadLockEmployee.class);
             this.oldVersionRefresh = empDesc.shouldOnlyRefreshCacheIfNewerVersion();
             empDesc.onlyRefreshCacheIfNewerVersion();
 
@@ -84,6 +86,7 @@ public class ConcurrentTestRefreshWithOptimisticLocking extends org.eclipse.pers
         }
     }
 
+    @Override
     public void test() {
         for (int count = 0; count < numThreads; ++count) {
             ConcurrentTestRefreshWithOptimisticLocking.threadList[count].start();
@@ -98,6 +101,7 @@ public class ConcurrentTestRefreshWithOptimisticLocking extends org.eclipse.pers
         }
     }
 
+    @Override
     public void verify() {
         if (!execute) {
             for (int count = 0; count < numThreads; ++count) {
@@ -115,6 +119,7 @@ public class ConcurrentTestRefreshWithOptimisticLocking extends org.eclipse.pers
                 // If the type is set to checker then this set the thread
                 // to watch the other threads for deadlock.  If none occurs then
                 // the test will time out.
+                @Override
                 public void run() {
                     if (org.eclipse.persistence.testing.tests.clientserver.ConcurrentTestRefreshWithOptimisticLocking.this.isCheckerThread) {
                         watchOtherThreads();

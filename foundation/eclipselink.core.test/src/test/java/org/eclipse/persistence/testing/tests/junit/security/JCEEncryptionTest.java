@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -47,7 +47,7 @@ public class JCEEncryptionTest {
         try {
             ConversionManager cm = ConversionManager.getDefaultManager();
             Class securableClass = (Class)cm.convertObject(encryptionClassName, Class.class);
-            return (Securable)securableClass.newInstance();
+            return (Securable)securableClass.getConstructor().newInstance();
         } catch (Throwable e) {
             return null;
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -53,6 +53,7 @@ public class RegisterInIdentityMapTest extends TestCase {
         }
     }
 
+    @Override
     public String getDescription() {
         return "This test verifies an object was properly registerted in the identity map";
     }
@@ -80,6 +81,7 @@ public class RegisterInIdentityMapTest extends TestCase {
         return identityMapClass == NoIdentityMap.class;
     }
 
+    @Override
     public void setup() {
         originalIdentityMapClass = getSession().getDescriptor(Employee.class).getIdentityMapClass();
         originalIdentityMapSize = getSession().getDescriptor(Employee.class).getIdentityMapSize();
@@ -89,6 +91,7 @@ public class RegisterInIdentityMapTest extends TestCase {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void reset() {
         getSession().getDescriptor(Employee.class).setIdentityMapClass(originalIdentityMapClass);
         getSession().getDescriptor(Employee.class).setIdentityMapSize(originalIdentityMapSize);
@@ -98,10 +101,12 @@ public class RegisterInIdentityMapTest extends TestCase {
     /**
      *    Reading all of the Employee objects from the database should place them in the identity map.
      */
+    @Override
     public void test() {
         employees = getSession().readAllObjects(Employee.class);
     }
 
+    @Override
     public void verify() {
         if (isNoIdentityMap()) {
             verifyNoIdentityMap();

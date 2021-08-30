@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,7 @@ public class QueryCacheParameterizedResultsTest extends AutoVerifyTestCase {
         return testQuery;
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         query = getReadAllQuery();
@@ -62,6 +63,7 @@ public class QueryCacheParameterizedResultsTest extends AutoVerifyTestCase {
         tracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         results2 = (Vector)getSession().executeQuery(query, args2);
         query2SQLStatementCount = tracker.getSqlStatements().size();
@@ -69,6 +71,7 @@ public class QueryCacheParameterizedResultsTest extends AutoVerifyTestCase {
         query1SQLStatementCount = tracker.getSqlStatements().size();
     }
 
+    @Override
     public void verify() {
         if (query1SQLStatementCount != expectedQuery1SQLStatementCount) {
             throw new TestErrorException("An incorrect number of sql statements were executed in the first query " + ", the query cache was not used sucessfully: " + tracker.getSqlStatements().size());
@@ -92,6 +95,7 @@ public class QueryCacheParameterizedResultsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         tracker.remove();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

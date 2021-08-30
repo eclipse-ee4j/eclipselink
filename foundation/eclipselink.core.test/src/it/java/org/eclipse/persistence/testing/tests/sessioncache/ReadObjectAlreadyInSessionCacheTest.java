@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class ReadObjectAlreadyInSessionCacheTest extends TestCase {
         setDescription("The test that change are merged into the object in the session cache");
     }
 
+    @Override
     protected void setup() {
         checkNoWaitSupported();
 
@@ -38,6 +39,7 @@ public class ReadObjectAlreadyInSessionCacheTest extends TestCase {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ReadObjectQuery query = new ReadObjectQuery(objectInCache);
@@ -48,6 +50,7 @@ public class ReadObjectAlreadyInSessionCacheTest extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         //ensure changes were merged into the session cache
         Employee verifyObject = (Employee)getSession().readObject(objectInCache);
@@ -57,6 +60,7 @@ public class ReadObjectAlreadyInSessionCacheTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() throws Exception {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

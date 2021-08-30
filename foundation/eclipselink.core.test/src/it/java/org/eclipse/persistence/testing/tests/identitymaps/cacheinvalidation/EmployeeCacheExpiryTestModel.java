@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class EmployeeCacheExpiryTestModel extends EmployeeBasicTestModel {
         setDescription("An employee model which tests CRUD operations with a TimeToLiveExpiry policy where nothing expires.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         employeeCacheExpiryPolicy = getSession().getDescriptor(Employee.class).getCacheInvalidationPolicy();
@@ -44,6 +45,7 @@ public class EmployeeCacheExpiryTestModel extends EmployeeBasicTestModel {
         smallProjectCacheExpiryPolicy = getSession().getDescriptor(SmallProject.class).getCacheInvalidationPolicy();
     }
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getDescriptor(Employee.class).setCacheInvalidationPolicy(employeeCacheExpiryPolicy);

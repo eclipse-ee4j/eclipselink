@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,11 +40,13 @@ DistributedSystem extends TestSystem {
         project = new DistributedProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         session.logMessage("Project is from generated code");
         (session).addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         SchemaManager schemaManager = new SchemaManager(session);
 
@@ -83,6 +85,7 @@ DistributedSystem extends TestSystem {
     /**
      * Return a connected session using the default login.
      */
+    @Override
     public DatabaseSession login() {
         DatabaseSession session;
 
@@ -96,6 +99,7 @@ DistributedSystem extends TestSystem {
      *    This method will instantiate all of the example instances and insert them into the database
      *    using the given session.
      */
+    @Override
     public void populate(DatabaseSession session) {
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
 

@@ -1202,7 +1202,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
         // test
         // clear cache
-        this.clearCache(m_persistenceUnit);
+        clearCache(m_persistenceUnit);
         // read the employee from the db
         em = createEntityManager(m_persistenceUnit);
         employee = em.find(Employee.class,id);
@@ -2016,7 +2016,7 @@ public class EntityMappingsAdvancedJUnitTestCase extends JUnitTestCase {
 
             XMLEntityMappingsWriter writer = new XMLEntityMappingsWriter();
             FileOutputStream fileOut = new FileOutputStream("XMLWriteOutTest.xml");
-            writer.write(mappings, fileOut);
+            XMLEntityMappingsWriter.write(mappings, fileOut);
             fileOut.close();
 
             FileInputStream fileIn = new FileInputStream(fileOut.getFD());

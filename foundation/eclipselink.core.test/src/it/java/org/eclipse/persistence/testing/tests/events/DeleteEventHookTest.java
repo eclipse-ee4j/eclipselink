@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.events;
 import org.eclipse.persistence.testing.framework.*;
 
 public class DeleteEventHookTest extends EventHookTestCase {
+    @Override
     public void setup() {
         super.setup();
         getDatabaseSession().insertObject(getEmailAccount());
@@ -24,12 +25,14 @@ public class DeleteEventHookTest extends EventHookTestCase {
         getDatabaseSession().insertObject(getAddress());
     }
 
+    @Override
     protected void test() {
         getDatabaseSession().deleteObject(getEmailAccount());
         getDatabaseSession().deleteObject(getPhoneNumber());
         getDatabaseSession().deleteObject(getAddress());
     }
 
+    @Override
     protected void verify() {
         if (!getEmailAccount().preDeleteExecuted) {
             throw new TestErrorException("Event hook failed. The pre delete method on " + getEmailAccount() + " failed to execute.");

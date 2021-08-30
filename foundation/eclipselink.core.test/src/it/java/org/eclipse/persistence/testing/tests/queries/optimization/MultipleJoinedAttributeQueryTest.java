@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class MultipleJoinedAttributeQueryTest extends TestCase {
         setDescription("Test select list with multiple joined attributes specified in an order.");
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -59,6 +60,7 @@ public class MultipleJoinedAttributeQueryTest extends TestCase {
         owner = (CarOwner)uow.executeQuery(query);
     }
 
+    @Override
     public void verify() {
         if (owner == null || owner.getCar() == null || owner.getCar().getFuelType() == null) {
             throw new TestErrorException("CarOwner or Car or FuelType is not found.");

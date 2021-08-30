@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,14 +50,17 @@ public class UnitTestCase extends AutoVerifyTestCase {
         setName(name);
     }
 
+    @Override
     public void reset() {
         ((TestSuite)getContainer()).reset();
     }
 
+    @Override
     public void setup() {
         ((TestSuite)getContainer()).setup();
     }
 
+    @Override
     public void test() {
         String methodName = "_test" + getName();
         try {
@@ -81,6 +84,7 @@ public class UnitTestCase extends AutoVerifyTestCase {
     /**
      * Unit tests are so simple that they only require a test method.
      */
+    @Override
     public void verify() {
         // Do nothing.
     }

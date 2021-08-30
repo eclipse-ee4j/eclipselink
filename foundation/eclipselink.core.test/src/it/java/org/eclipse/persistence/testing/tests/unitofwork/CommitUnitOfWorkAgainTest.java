@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -21,12 +21,14 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 
 public class CommitUnitOfWorkAgainTest extends UnitOfWorkEventTest {
+    @Override
     public void setup() {
         super.setup();
         setDescription("Test after uow.commit(), uow must be released and not in active");
 
     }
 
+    @Override
     public void test() {
         //Test CR#2189
         UnitOfWork uow = getSession().acquireUnitOfWork();

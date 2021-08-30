@@ -382,6 +382,7 @@ public class NumericTester extends TypeTester {
         return "NumericTester(" + getTestName() + ")";
     }
 
+    @Override
     protected void verify(WriteTypeObjectTest testCase) throws TestException {
         if(getTestName().equals("MINIMUM") || getTestName().equals("MAXIMUM")) {
             // Bug 210153

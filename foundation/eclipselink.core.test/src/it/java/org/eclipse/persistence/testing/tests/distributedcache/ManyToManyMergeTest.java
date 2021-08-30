@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,12 +23,14 @@ public class ManyToManyMergeTest extends DistributedCacheMergeTest {
         super();
     }
 
+    @Override
     protected void modifyCollection(UnitOfWork uow, Object objectToModify) {
         SmallProject newSmallProjectWC = (SmallProject)uow.registerNewObject(newItemForCollection());
         ((Employee)objectToModify).addProject(newSmallProjectWC);
         //newSmallProjectWC.setTeamLeader((Employee)objectToModify);
     }
 
+    @Override
     protected int getCollectionSize(Object rootObject) {
         return ((Employee)rootObject).getProjects().size();
     }
@@ -40,6 +42,7 @@ public class ManyToManyMergeTest extends DistributedCacheMergeTest {
         return project;
     }*/
 
+         @Override
          protected Object buildOriginalObject() {
         Employee emp = new Employee();
         emp.setFirstName("Sally");

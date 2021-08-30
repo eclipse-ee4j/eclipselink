@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class CacheExpiryRemoteTest extends TestCase {
         setDescription("Ensure objects expire properly on a remote session.");
     }
 
+    @Override
     public void setup() {
         // get the server session from the RemoteModel - it is strange that getServerSession() returns a client session
         serverSession = ((ClientSession)org.eclipse.persistence.testing.tests.remote.RemoteModel.getServerSession()).getParent();
@@ -48,6 +49,7 @@ public class CacheExpiryRemoteTest extends TestCase {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         employee = (Employee)getSession().readObject(Employee.class);
         employeeName = employee.getFirstName();
@@ -55,6 +57,7 @@ public class CacheExpiryRemoteTest extends TestCase {
         ((Employee)(key.getObject())).setFirstName(employee.getFirstName() + "-mutated");
     }
 
+    @Override
     public void verify() {
         employee = (Employee)getSession().readObject(employee);
         if (employee.getFirstName().equals(employeeName + "-mutated")) {
@@ -64,6 +67,7 @@ public class CacheExpiryRemoteTest extends TestCase {
     }
 
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

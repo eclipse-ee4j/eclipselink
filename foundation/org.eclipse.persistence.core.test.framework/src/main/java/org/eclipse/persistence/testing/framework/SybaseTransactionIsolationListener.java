@@ -81,6 +81,7 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
         }
         return version >= requiredVersion;
     }
+    @Override
     public void postAcquireConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor)event.getResult()).getConnection();
         Statement stmt1 = null;
@@ -129,6 +130,7 @@ public class SybaseTransactionIsolationListener extends SessionEventAdapter {
             }
         }
     }
+    @Override
     public void preReleaseConnection(SessionEvent event) {
         Connection conn = ((DatabaseAccessor)event.getResult()).getConnection();
         Statement stmt = null;

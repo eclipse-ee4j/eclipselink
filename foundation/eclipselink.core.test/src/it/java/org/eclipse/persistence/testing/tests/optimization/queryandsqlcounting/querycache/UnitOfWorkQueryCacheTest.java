@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,15 +32,18 @@ public class UnitOfWorkQueryCacheTest extends NamedQueryQueryCacheTest {
         setDescription("Ensure cached queries work in a UnitOfWork.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         uow = getSession().acquireUnitOfWork();
     }
 
+    @Override
     public Session getSessionForQueryTest() {
         return uow;
     }
 
+    @Override
     public void verify() {
         super.verify();
         Iterator employees = ((Vector)results).iterator();

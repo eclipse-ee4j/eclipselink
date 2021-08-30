@@ -1485,6 +1485,7 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         super.addTests();
     }
 
+    @Override
     public void addTests() {
         setManager(PopulationManager.getDefaultManager());
         _addAllOfTest();
@@ -1617,10 +1618,12 @@ public class ExpressionUnitTestSuite extends ExpressionTestSuite {
         addTest(new UnitTestCase("ValueFromObjectTest"));
     }
 
+    @Override
     protected PopulationManager getManager() {
         return manager;
     }
 
+    @Override
     protected void setManager(PopulationManager theManager) {
         manager = theManager;
     }

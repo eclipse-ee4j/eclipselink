@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -18,10 +18,12 @@ package org.eclipse.persistence.testing.tests.validation;
  * This class is used to test an object without a descriptor in Unit of Work
  */
 public class UOWWithoutDescriptorTest extends ExceptionTest {
+    @Override
     public void setup() {
         this.expectedException = org.eclipse.persistence.exceptions.ValidationException.missingDescriptor(null);
     }
 
+    @Override
     public void test() {
         try {
             org.eclipse.persistence.sessions.UnitOfWork uow = getSession().acquireUnitOfWork();

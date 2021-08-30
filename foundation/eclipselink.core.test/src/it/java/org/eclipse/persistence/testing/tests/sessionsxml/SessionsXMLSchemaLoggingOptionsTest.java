@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class SessionsXMLSchemaLoggingOptionsTest extends AutoVerifyTestCase {
         setDescription("Test loading of a session xml with various logging options against the XML Schema");
     }
 
+    @Override
     public void reset() {
         if (employeeSession != null && employeeSession.isConnected()) {
             employeeSession.logout(); // If session is logged in, log it out
@@ -71,6 +72,7 @@ public class SessionsXMLSchemaLoggingOptionsTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSessionLoggingOptions.xml");
 
@@ -87,6 +89,7 @@ public class SessionsXMLSchemaLoggingOptionsTest extends AutoVerifyTestCase {
             employeeSession4 = (DatabaseSession)SessionManager.getManager().getSession(loader, "FalseSession", getClass().getClassLoader(), true, false); // refresh the session
     }
 
+    @Override
     protected void verify() {
         verifyFindStrings(sessionString, nullOptionsFileName);
         verifyFindStrings(connectionString, nullOptionsFileName);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -63,12 +63,14 @@ public class RegisterationUnitOfWorkTest extends WriteObjectTest {
                        "' registeration works properly by checking if different clones are returned for similar objects");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         this.unitOfWork = getSession().acquireUnitOfWork();
     }
 
+    @Override
     protected void test() {
         testRegisteringEqualObjects();
         testRegisteringUnequalObjects();

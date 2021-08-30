@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2020, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,10 +32,12 @@ public class NestedUnitOfWorkDeleteFromNestedObjectTest extends AutoVerifyTestCa
         setDescription("Test designed to verify that a object in relation deleted/removed in a nested unit of work are deleted/removed in main unit of work after commit of nested UOW.");
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         UnitOfWork nestedUow1 = uow.acquireUnitOfWork();
@@ -63,6 +65,7 @@ public class NestedUnitOfWorkDeleteFromNestedObjectTest extends AutoVerifyTestCa
         }
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

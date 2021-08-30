@@ -22,16 +22,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.Query;
 
-import junit.framework.*;
-
+import junit.framework.Test;
+import junit.framework.TestSuite;
 import org.eclipse.persistence.config.EntityManagerProperties;
 import org.eclipse.persistence.config.ExclusiveConnectionMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
-import org.eclipse.persistence.internal.helper.DatabaseTable;
-import org.eclipse.persistence.internal.jpa.EntityManagerImpl;
 import org.eclipse.persistence.internal.sessions.RepeatableWriteUnitOfWork;
-import org.eclipse.persistence.sequencing.TableSequence;
 import org.eclipse.persistence.sessions.SessionEventAdapter;
 import org.eclipse.persistence.jpa.JpaEntityManager;
 import org.eclipse.persistence.testing.framework.junit.JUnitTestCase;
@@ -52,6 +49,7 @@ import org.eclipse.persistence.testing.models.jpa.advanced.LargeProject;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleEntity;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleNature;
 import org.eclipse.persistence.testing.models.jpa.advanced.entities.SimpleLanguage;
+import org.junit.Assert;
 
 public class AdvancedJunitTest extends JUnitTestCase {
     public AdvancedJunitTest() {

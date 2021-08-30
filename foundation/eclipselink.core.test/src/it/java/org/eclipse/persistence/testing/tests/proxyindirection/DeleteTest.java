@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,15 +23,18 @@ public class DeleteTest extends AutoVerifyTestCase {
         setDescription("Tests deleting with private ownership with Proxy Indirection.");
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         Cubicle cube = (Cubicle)getSession().readObject(Cubicle.class, new ExpressionBuilder().get("employee").get("firstName").equal("Rick"));
 
@@ -39,6 +42,7 @@ public class DeleteTest extends AutoVerifyTestCase {
         // Rick should be deleted too.
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 

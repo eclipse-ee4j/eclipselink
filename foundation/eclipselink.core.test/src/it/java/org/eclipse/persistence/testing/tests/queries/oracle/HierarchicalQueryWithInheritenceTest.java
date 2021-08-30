@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,10 +25,13 @@ public class HierarchicalQueryWithInheritenceTest extends HierarchicalQueryTest
   public HierarchicalQueryWithInheritenceTest()
   {
   }
+  @Override
   public void setup() {
   }
+  @Override
   public void reset() {
   }
+  @Override
   public ReadAllQuery getQuery() {
     ReadAllQuery query = new ReadAllQuery(Engineer.class);
     ExpressionBuilder builder = new ExpressionBuilder();
@@ -37,6 +40,7 @@ public class HierarchicalQueryWithInheritenceTest extends HierarchicalQueryTest
     query.setHierarchicalQueryClause(startWith, connectBy, null);
     return query;
   }
+  @Override
   public Vector expectedResults() {
     Person p = (Person)getSession().readObject(Engineer.class, new ExpressionBuilder().get("name").equal("Steve"));
     Vector result = new Vector();

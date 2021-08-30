@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -51,11 +51,13 @@ public class InvalidateClassRecurseOptionTest extends AutoVerifyTestCase {
         this.setName(this.getName() + "(" + recurse + ")");
     }
 
+    @Override
     public void reset() {
         m_session.getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
         beginTransaction();
@@ -65,10 +67,12 @@ public class InvalidateClassRecurseOptionTest extends AutoVerifyTestCase {
         m_smallProjects = m_session.readAllObjects(SmallProject.class);
     }
 
+    @Override
     public void test() {
         m_session.getIdentityMapAccessor().invalidateClass(SmallProject.class, recurse);
     }
 
+    @Override
     protected void verify() {
         // Just check the first project of the vector
         if (recurse) {

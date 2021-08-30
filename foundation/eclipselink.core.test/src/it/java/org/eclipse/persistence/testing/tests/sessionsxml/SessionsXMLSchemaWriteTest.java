@@ -55,9 +55,11 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         setDescription("Test the writing portion of the session xml against the XML Schema");
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     protected void setup() throws Exception {
         m_resource = new File("XMLSchemaWriteTest.xml");
 
@@ -178,6 +180,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         writer.close();
     }
 
+    @Override
     public void test() {
         try {
             FileReader reader = new FileReader(m_resource);
@@ -193,6 +196,7 @@ public class SessionsXMLSchemaWriteTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (m_session == null) {
             throw new TestErrorException("The session on read back was null");

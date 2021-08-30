@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,12 @@ public class OrderingTest extends TestCase {
         setDescription("This test verifies the ordering feature works properly");
     }
 
+    @Override
     protected void setup() {
         customSQLRows = getSession().executeSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT * FROM EMPLOYEE ORDER BY L_NAME, F_NAME"));
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(new org.eclipse.persistence.testing.models.employee.domain.Employee().getClass());
@@ -45,6 +47,7 @@ public class OrderingTest extends TestCase {
 
     }
 
+    @Override
     protected void verify() {
         org.eclipse.persistence.sessions.Record row;
         Employee employee;

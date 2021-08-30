@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,10 +46,12 @@ public class EmployeeBasicTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getUpdateObjectTestSuite());
@@ -60,6 +62,7 @@ public class EmployeeBasicTestModel extends TestModel {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
+    @Override
     public void addSRGTests() {
         addTest(getSRGReadObjectTestSuite());
         addTest(getSRGUpdateObjectTestSuite());

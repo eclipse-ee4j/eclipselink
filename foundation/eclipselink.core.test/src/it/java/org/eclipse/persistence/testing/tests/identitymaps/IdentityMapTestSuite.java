@@ -53,6 +53,7 @@ public class IdentityMapTestSuite extends TestSuite {
         suite.addTest(new MultipleDeleteFromIdentityMapTest(identityMap, primaryKeys, employees, primaryKeys));
     }
 
+    @Override
     public void addTests() {
         addTest(getFullIdentityMapSuite());
         addTest(getNoIdentityMapSuite());

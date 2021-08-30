@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class ProjectXMLSortedCollectionMappingWithInvalidComparatorTest extends 
         setDescription("Tests sorted collection mapping with specified comparator can be written to or read from project XML correctly.");
     }
 
+    @Override
     protected void verify() {
         if (exception != null){
             if((exception.getMessage().indexOf("is not a valid comparator"))==-1){
@@ -39,6 +40,7 @@ public class ProjectXMLSortedCollectionMappingWithInvalidComparatorTest extends 
         }
     }
 
+    @Override
     public Class getComparator(){
         return ProjectXMLSortedCollectionMappingWithInvalidComparatorTest.ProjectComparator.class;
     }

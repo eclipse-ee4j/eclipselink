@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
         setDescription("Test the refreshing of an object graph after invalidation");
     }
 
+    @Override
     public void setup() {
         // for SQL tracker, do not bind
         this.oldBindingValue = getSession().getLogin().shouldBindAllParameters();
@@ -64,6 +65,7 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
         this.sqlTracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         // read object
         PolicyHolder policyHolderRead = (PolicyHolder) this.uow.readObject(PolicyHolder.example2());
@@ -71,6 +73,7 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
         assertNotNull(policyHolderRead);
     }
 
+    @Override
     public void verify() {
         // check for duplicates
         List statements = this.sqlTracker.getSqlStatements();
@@ -99,6 +102,7 @@ public class UnitOfWorkRefreshAfterInvalidationTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         // reset parameter binding

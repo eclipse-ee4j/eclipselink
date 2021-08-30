@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,15 +28,18 @@ public class BidirectionalMMDeleteTest extends AutoVerifyTestCase {
         super();
     }
 
+    @Override
     protected void setup() {
         movieToDelete = (Movie)getSession().readObject(Movie.class);
         beginTransaction();
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
     }
 
+    @Override
     protected void test() {
         Actor actor = (Actor)movieToDelete.getActors().elementAt(0);
         movieToDelete.getActors().removeElementAt(0);

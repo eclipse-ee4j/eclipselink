@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -88,6 +88,7 @@ public class CLOBTester extends TypeTester {
         longString = newString;
     }
 
+    @Override
     public void setup(Session session) {
         // Access and DB2 do not support BLOBS or CLOBS
         if (session.getPlatform().isAccess()) {
@@ -142,6 +143,7 @@ public class CLOBTester extends TypeTester {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify(WriteTypeObjectTest testCase) throws TestErrorException, TestWarningException {
         try {
             super.verify(testCase);

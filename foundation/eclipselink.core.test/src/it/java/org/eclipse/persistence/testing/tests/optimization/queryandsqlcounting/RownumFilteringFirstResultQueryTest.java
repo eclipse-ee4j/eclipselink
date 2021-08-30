@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class RownumFilteringFirstResultQueryTest extends RownumFilteringQueryTes
         this.queryToUse = new ReadAllQuery(classToQueryOn);
     }
 
+    @Override
     public void test(){
         int totalresults = ((java.util.Vector)getSession().executeQuery(getQuery())).size();
         expectedResultSize = totalresults - firstResult;
@@ -37,6 +38,7 @@ public class RownumFilteringFirstResultQueryTest extends RownumFilteringQueryTes
         super.test();
     }
 
+    @Override
     public void verify() {
         if ( resultSize != expectedResultSize){
             throw new TestErrorException("A ReadAllQuery with MaxRows="+maxRows+",FirstResult="+firstResult+" returned "+

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class NoSuchMethodWhileConvertingToMethodTest extends ExceptionTest {
         setDescription("This tests No Such Method While Converting To Method (TL-ERROR 58) " + " uses EmployeeWithProblems class");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.noSuchMethodWhileConvertingToMethod(null, null, null);
         orgDescriptor = ((DatabaseSession)getSession()).getDescriptor(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
@@ -45,6 +46,7 @@ public class NoSuchMethodWhileConvertingToMethodTest extends ExceptionTest {
     ClassDescriptor orgDescriptor;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
         ((DatabaseSession)getSession()).getDescriptors().remove(org.eclipse.persistence.testing.tests.validation.EmployeeWithProblems.class);
         if (orgDescriptor != null) {
@@ -55,6 +57,7 @@ public class NoSuchMethodWhileConvertingToMethodTest extends ExceptionTest {
         }
     }
 
+    @Override
     public void test() {
         try {
             ((DatabaseSession)getSession()).addDescriptor(descriptor());

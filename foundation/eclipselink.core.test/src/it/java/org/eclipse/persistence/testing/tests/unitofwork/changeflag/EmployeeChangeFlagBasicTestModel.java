@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -81,11 +81,13 @@ public class EmployeeChangeFlagBasicTestModel extends EmployeeBasicTestModel {
         setDescription("This model tests reading/writing/deleting using the employee demo with ObjectChangeTrackingPolicy flag.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
         addRequiredSystem(new CollectionsSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getUpdateObjectTestSuite());
@@ -286,6 +288,7 @@ public class EmployeeChangeFlagBasicTestModel extends EmployeeBasicTestModel {
         return suite;
     }
 
+    @Override
     public void setup() {
         // Save change policies for the all employee demo class in order to restore them at reset time.
         employeeChangePolicy = getSession().getDescriptor(Employee.class).getObjectChangePolicy();
@@ -315,6 +318,7 @@ public class EmployeeChangeFlagBasicTestModel extends EmployeeBasicTestModel {
         getSession().getDescriptor(PhoneNumber.class).setObjectChangePolicy(new ObjectChangeTrackingPolicy());
     }
 
+    @Override
     public void reset() {
         // restore old change policies.
         getSession().getDescriptor(Employee.class).setObjectChangePolicy(employeeChangePolicy);

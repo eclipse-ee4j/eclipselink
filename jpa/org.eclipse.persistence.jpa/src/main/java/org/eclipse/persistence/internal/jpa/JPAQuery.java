@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ import org.eclipse.persistence.sessions.Session;
 /**
  * <b>Purpose</b>:
  * A JPA placeholder Query object to store JPQL strings so that processing the string is delayed
- * until Login.<p>
+ * until Login.
  *
  * @author Chris Delahunt
  * @since TopLink Essentials
@@ -104,14 +104,14 @@ public class JPAQuery extends DatabaseQuery  {
 
     public void addResultClassNames(String className) {
         if (resultClassNames == null) {
-            resultClassNames = new ArrayList<String>();
+            resultClassNames = new ArrayList<>();
         }
         this.resultClassNames.add(className);
     }
 
     public void addResultSetMapping(String resultSetMapping){
         if (resultSetMappingNames == null) {
-            resultSetMappingNames = new ArrayList<String>();
+            resultSetMappingNames = new ArrayList<>();
         }
         this.resultSetMappingNames.add(resultSetMapping);
     }
@@ -237,7 +237,7 @@ public class JPAQuery extends DatabaseQuery  {
         ClassLoader loader = session.getDatasourcePlatform().getConversionManager().getLoader();
 
         if (resultClassName != null) {
-            Class clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
+            Class<?> clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
             query = EJBQueryImpl.buildSQLDatabaseQuery(clazz, sqlString, hints, loader, (AbstractSession)session);
         } else if (resultSetMappingNames != null) {
             query = EJBQueryImpl.buildSQLDatabaseQuery(resultSetMappingNames.get(0), sqlString, hints, loader, (AbstractSession)session);
@@ -259,7 +259,7 @@ public class JPAQuery extends DatabaseQuery  {
         ClassLoader loader = session.getDatasourcePlatform().getConversionManager().getLoader();
 
         if (resultClassNames != null) {
-            List<SQLResultSetMapping> resultSetMappings = new ArrayList<SQLResultSetMapping>();
+            List<SQLResultSetMapping> resultSetMappings = new ArrayList<>();
 
             for (String resultClass : resultClassNames) {
                 SQLResultSetMapping mapping = new SQLResultSetMapping(resultClass);
@@ -273,7 +273,7 @@ public class JPAQuery extends DatabaseQuery  {
         } else if (resultSetMappingNames != null) {
             query = StoredProcedureQueryImpl.buildResultSetMappingNameQuery(resultSetMappingNames, call, hints, loader, (AbstractSession)session);
         } else if (resultClassName != null) {
-            Class clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
+            Class<?> clazz = session.getDatasourcePlatform().getConversionManager().convertClassNameToClass(resultClassName);
             query = StoredProcedureQueryImpl.buildStoredProcedureQuery(clazz, call, hints, loader, (AbstractSession)session);
         } else {
             // Neither a resultClass or resultSetMapping is specified so place in a temp query on the session.
@@ -283,7 +283,7 @@ public class JPAQuery extends DatabaseQuery  {
             } else {
                 // Otherwise use a result set mapping query for stored procedure calls so users can use the execute
                 // method on it (JPA 2.1 API). Will return the same result, that is, Object[] in this case.
-                query = StoredProcedureQueryImpl.buildResultSetMappingQuery(new ArrayList<SQLResultSetMapping>(), call, hints, loader, (AbstractSession)session);
+                query = StoredProcedureQueryImpl.buildResultSetMappingQuery(new ArrayList<>(), call, hints, loader, (AbstractSession)session);
             }
         }
         query.setName(getName());

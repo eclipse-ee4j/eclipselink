@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class NLSEmployeeDeleteTest extends DeleteObjectTest {
         esession.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("update " + appendString + "\u304a\u3059\u305f set \u3059\u3042\u305b\u3042\u304d\u304a\u3064_\u3051\u3048 = null where \u3059\u3042\u305b\u3042\u304d\u304a\u3064_\u3051\u3048 = " + employee.getId()));
     }
 
+    @Override
     protected void setup() {
         super.setup();
         deleteDependencies(getAbstractSession(), (org.eclipse.persistence.testing.tests.nls.japanese.NLSEmployee)getOriginalObject());

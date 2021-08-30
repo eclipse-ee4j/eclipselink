@@ -27,6 +27,7 @@ public class QBEExcludedValues extends TestCase {
         this.setDescription("To test the Query By Example for values than have been declared to be excluded.");
     }
 
+    @Override
     public void setup() {
         //This method tests the excluded values list
         employee = new Employee();
@@ -39,6 +40,7 @@ public class QBEExcludedValues extends TestCase {
         //the query should only care about the first name value.
     }
 
+    @Override
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery();
         query.setReferenceClass(Employee.class);

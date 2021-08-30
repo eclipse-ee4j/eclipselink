@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class OneToManyVariableBackBatchReadingTest extends AutoVerifyTestCase {
         setDescription("Tests batch reading with a 1-m with a variable 1-1 back.");
     }
 
+    @Override
     public void test() {
         // First instantiate programs.
         List actors = getSession().readAllObjects(Actor.class);
@@ -40,11 +41,13 @@ public class OneToManyVariableBackBatchReadingTest extends AutoVerifyTestCase {
         result = (List)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         Documentary documentary = (Documentary)result.get(0);
         strongAssert((documentary.actors.size() > 0), "Test failed. Batched objects were not read.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }

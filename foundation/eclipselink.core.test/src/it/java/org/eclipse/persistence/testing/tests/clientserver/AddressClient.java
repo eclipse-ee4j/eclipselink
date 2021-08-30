@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class AddressClient extends Client2 {
      * This client thread runs in the background, and continuously switches
      * address of the employee back and forth. The code is a little weird.
      */
+    @Override
     public void run() {
         org.eclipse.persistence.testing.models.employee.domain.Address newAddress;
         Employee theEmployee;

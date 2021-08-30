@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,7 +61,7 @@ public class JGroupsSetupHelper extends BroadcastSetupHelper {
     @Override
     protected void createTransportManager(RemoteCommandManager rcm) {
         try {
-            TransportManager transport = (TransportManager)Class.forName("org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager").newInstance();
+            TransportManager transport = (TransportManager)Class.forName("org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager").getConstructor().newInstance();
             rcm.setTransportManager(transport);
         } catch (Exception exception) {
             throw new RuntimeException(exception);

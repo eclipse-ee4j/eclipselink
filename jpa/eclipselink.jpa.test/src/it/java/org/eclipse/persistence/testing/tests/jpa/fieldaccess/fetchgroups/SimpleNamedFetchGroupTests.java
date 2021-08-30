@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -65,6 +65,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
         return suite;
     }
 
+    @Override
     public void setUp() {
         super.setUp();
 
@@ -268,6 +269,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
         }
     }
 
+    @Override
     @Test
     public void managerFetchGroup() throws Exception {
         EntityManager em = createEntityManager("fieldaccess");
@@ -397,6 +399,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
         assertTrue(tracker._persistence_isAttributeFetched("lastName"));
     }
 
+    @Override
     @Test
     public void joinFetchEmployeeAddressWithDynamicFetchGroup() {
         EntityManager em = createEntityManager("fieldaccess");
@@ -413,6 +416,7 @@ public class SimpleNamedFetchGroupTests extends BaseFetchGroupTests {
         assertNotNull(emps);
     }
 
+    @Override
     @Test
     public void joinFetchEmployeeAddressPhoneWithDynamicFetchGroup() {
         EntityManager em = createEntityManager("fieldaccess");

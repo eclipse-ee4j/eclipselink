@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,19 +27,23 @@ public class SPGGenerateAmendmentClassTest extends TestCase {
     public SPGGenerateAmendmentClassTest() {
     }
 
+    @Override
     public void setup() {
         setManager(new SchemaManager(getDatabaseSession()));
         setGenerator(new StoredProcedureGenerator(getManager()));
         getGenerator().generateStoredProcedures();
     }
 
+    @Override
     public void test() {
         getGenerator().generateAmendmentClass(getClassWriter(), "packageName", "className");
     }
 
+    @Override
     public void verify() {
     }
 
+    @Override
     public void reset() {
         setManager(null);
         setGenerator(null);

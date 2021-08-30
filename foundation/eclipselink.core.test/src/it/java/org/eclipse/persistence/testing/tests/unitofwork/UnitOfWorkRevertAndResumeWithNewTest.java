@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,12 +29,14 @@ public class UnitOfWorkRevertAndResumeWithNewTest extends AutoVerifyTestCase {
     public UnitOfWorkRevertAndResumeWithNewTest() {
     }
 
+    @Override
     protected void setup() {
         this.addressId = ((Address)getSession().readObject(Address.class)).getId();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     protected void test() {
         if (getSession().isDistributedSession()) {
             throw new TestWarningException("Test unavailable on Remote UnitOfWork");
@@ -75,6 +77,7 @@ public class UnitOfWorkRevertAndResumeWithNewTest extends AutoVerifyTestCase {
         uow.commitAndResume();
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
     /**
      * Direct calls
      */
+    @Override
     public void test() throws Exception {
         String className = "org.eclipse.persistence.Version";
         String fieldName = "buildNumber";
@@ -74,7 +75,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
             ClassLoader clazzloader = clazz.getClassLoader();
             ClassLoader classloader = Thread.currentThread().getContextClassLoader();
             Class.forName(className, true, clazzloader);
-            version = (Version)clazz.newInstance();
+            version = (Version)clazz.getConstructor().newInstance();
 
             Field[] fields = clazz.getFields();
             Field field = getDeclaredField(clazz, fieldName, true);
@@ -113,6 +114,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
      */
     public void addDoPrivilegedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 testDoPrivileged();
             }
@@ -127,6 +129,7 @@ public class DoPrivilegedTest extends PerformanceComparisonTestCase {
      */
     public void addBypassDoPrivilegedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 testDoPrivileged();
             }

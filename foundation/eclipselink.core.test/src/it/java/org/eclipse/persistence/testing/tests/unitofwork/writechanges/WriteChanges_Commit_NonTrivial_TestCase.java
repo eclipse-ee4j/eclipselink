@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 public class WriteChanges_Commit_NonTrivial_TestCase extends AutoVerifyTestCase {
     public BigDecimal id = null;
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -52,6 +53,7 @@ public class WriteChanges_Commit_NonTrivial_TestCase extends AutoVerifyTestCase 
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         ;
@@ -64,6 +66,7 @@ public class WriteChanges_Commit_NonTrivial_TestCase extends AutoVerifyTestCase 
         }
     }
 
+    @Override
     public void reset() {
         if (id == null) {
             return;
@@ -79,6 +82,7 @@ public class WriteChanges_Commit_NonTrivial_TestCase extends AutoVerifyTestCase 
         uow.commit();
     }
 
+    @Override
     protected void resetVerify() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         ;

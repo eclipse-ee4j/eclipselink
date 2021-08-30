@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class NoSuchMethodWhileConstructorInstantiationOfFactoryTest extends Exce
     InstantiationPolicy policy;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     protected void setup() {
         descriptor = new RelationalDescriptor();
         //   descriptor.setJavaClass(ClassWithProblemConstructor.class);
@@ -51,10 +52,12 @@ public class NoSuchMethodWhileConstructorInstantiationOfFactoryTest extends Exce
         expectedException = DescriptorException.noSuchMethodWhileConstructorInstantiationOfFactory(descriptor, new Exception());
     }
 
+    @Override
     public void reset() {
         getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         try {
             policy.initialize((AbstractSession)getSession());
@@ -63,6 +66,6 @@ public class NoSuchMethodWhileConstructorInstantiationOfFactoryTest extends Exce
         }
     }
     //  public static String invalidMethod(DatabaseRecord row) throws java.lang.IllegalAccessException {
-    //    throw new java.lang.IllegalAccessException();
+    //    throw new IllegalAccessException();
     //  }
 }

@@ -91,6 +91,7 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
         return theTest;
     }
 
+    @Override
     public void test() {
         try {
             super.test();
@@ -99,6 +100,7 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
         }
     }
 
+    @Override
     public void setup() {
         //insert computer that we're looking for
         ibmpc = org.eclipse.persistence.testing.models.inheritance.Computer.example3a();
@@ -115,11 +117,13 @@ public class SelectSimpleBooleanTest extends JPQLTestCase {
         super.setup();
     }
 
+    @Override
     public void reset() {
         //remove the computer that we just inserted
         getDatabaseSession().deleteObject(ibmpc);
     }
 
+    @Override
     public void verify() throws Exception {
         if (getCaught() != null) {
             throw new TestErrorException(getName() + " Verify Failed:" + getCaught().getMessage());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class ChangedHintStringTest extends TestCase {
         setDescription("Tests setting a hint, executing, setting a different hint and executing again");
     }
 
+    @Override
     public void setup() {
         if (!(getSession().getPlatform().isOracle()))
             throw new TestWarningException("This test case is only intended for Oracle");
@@ -46,9 +47,11 @@ public class ChangedHintStringTest extends TestCase {
     */
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void test() {
         for (int i = 1; i < 3; i++) {
             if ((i % 2) != 0) {
@@ -59,6 +62,7 @@ public class ChangedHintStringTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         String sqlString = query.getSQLString();
         if (sqlString.indexOf(SECOND_HINT_STRING) == -1)

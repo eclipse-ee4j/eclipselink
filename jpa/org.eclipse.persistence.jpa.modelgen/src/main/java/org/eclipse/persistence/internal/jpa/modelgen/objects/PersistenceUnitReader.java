@@ -135,7 +135,7 @@ public class PersistenceUnitReader {
         HashSet<String> persistenceUnitList = null;
 
         if (persistenceUnits != null) {
-            persistenceUnitList = new HashSet<String>();
+            persistenceUnitList = new HashSet<>();
             StringTokenizer st = new StringTokenizer(persistenceUnits, ",");
 
             while (st.hasMoreTokens()) {

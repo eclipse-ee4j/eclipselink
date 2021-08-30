@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,14 +25,19 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
  */
 public class QueryTimeoutBatchDynamicDatabaseQueryTest extends QueryTimeoutBatchDatabaseQueryTest {
 
+    @Override
     protected boolean shouldBindAllParameters() { return false; }
+    @Override
     protected boolean shouldCacheAllStatements() { return true; }
+    @Override
     protected  int getNumberOfInserts() { return 1; }
 
+    @Override
     protected String getQuerySQLPrefix() {
         return "insert into employee (emp_id, version) SELECT ";
     }
 
+    @Override
     public void test() {
         super.test();
         if(!limitExceeded) {
@@ -45,6 +50,7 @@ public class QueryTimeoutBatchDynamicDatabaseQueryTest extends QueryTimeoutBatch
         setDescription("Test that the query timeout setting is passed to the JDBC layer in batch queries in parameterized SQL mode.");
     }
 
+    @Override
     public void verify() {
         if (!limitExceeded || (verifyErrorCode() && getExpectedErrorCode() != vendorErrorCodeEncountered))  {
             if(unsupportedPlatform) {

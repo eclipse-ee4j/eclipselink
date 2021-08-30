@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -107,6 +107,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
             this.address =address;
         }
 
+        @Override
         public void run() {
             UnitOfWork uow = session.acquireUnitOfWork();
             Project p = (Project) uow.readObject(project);
@@ -141,6 +142,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
             this.address = address;
         }
 
+        @Override
         public void run() {
             CacheKey cacheKey = null;
             synchronized (this.session) {
@@ -178,6 +180,7 @@ public class AppendLockTest extends AutoVerifyTestCase {
             this.project = project;
         }
 
+        @Override
         public void run() {
             synchronized (this.session) {
                 try {

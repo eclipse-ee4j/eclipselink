@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,8 @@ package org.eclipse.persistence.testing.tests.sessionsxml;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sequencing.NativeSequence;
 import org.eclipse.persistence.sessions.DatabaseSession;
+import org.eclipse.persistence.sessions.coordination.DiscoveryManager;
+import org.eclipse.persistence.sessions.coordination.TransportManager;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.sessions.server.ConnectionPool;
@@ -44,6 +46,7 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
         setDescription("Test default values from the XML schema.");
     }
 
+    @Override
     public void reset() {
         if (employeeSession != null && employeeSession.isConnected()) {
             employeeSession.logout(); // If session is logged in, log it out
@@ -52,6 +55,7 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSessionNoDefaultedTagsAllowed.xml");
 
@@ -61,6 +65,7 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
         serverSession = (ServerSession)SessionManager.getManager().getSession(loader, "ServerSession", getClass().getClassLoader(), false, true); // refresh the session
     }
 
+    @Override
     protected void verify() {
         if (employeeSession == null) {
             throw new TestErrorException("Employee session is null");
@@ -215,20 +220,20 @@ public class SessionsXMLSchemaDefaultValueTest extends AutoVerifyTestCase {
         if (!serverSession.getCommandManager().getTransportManager().getInitialContextFactoryName().equals(XMLSessionConfigProject.INITIAL_CONTEXT_FACTORY_NAME_DEFAULT)) {
             throw new TestErrorException("The initial context factory name had the wrong default value");
         }
-        if (serverSession.getCommandManager().getTransportManager().DEFAULT_REMOVE_CONNECTION_ON_ERROR_MODE != XMLSessionConfigProject.REMOVE_CONNECTION_ON_ERROR_DEFAULT) {
+        if (TransportManager.DEFAULT_REMOVE_CONNECTION_ON_ERROR_MODE != XMLSessionConfigProject.REMOVE_CONNECTION_ON_ERROR_DEFAULT) {
             throw new TestErrorException("The DEFAULT_REMOVE_CONNECTION_ON_ERROR_MODE had the wrong default value");
         }
 
-        if (!serverSession.getCommandManager().getDiscoveryManager().DEFAULT_MULTICAST_GROUP.equals(XMLSessionConfigProject.MULTICAST_GROUP_ADDRESS_DEFAULT)) {
+        if (!DiscoveryManager.DEFAULT_MULTICAST_GROUP.equals(XMLSessionConfigProject.MULTICAST_GROUP_ADDRESS_DEFAULT)) {
             throw new TestErrorException("The multicast group address had the wrong default value");
         }
-        if (serverSession.getCommandManager().getDiscoveryManager().DEFAULT_MULTICAST_PORT != XMLSessionConfigProject.MULTICAST_PORT_DEFAULT) {
+        if (DiscoveryManager.DEFAULT_MULTICAST_PORT != XMLSessionConfigProject.MULTICAST_PORT_DEFAULT) {
             throw new TestErrorException("The multicast port had the wrong default value");
         }
-        if (serverSession.getCommandManager().getDiscoveryManager().DEFAULT_ANNOUNCEMENT_DELAY != XMLSessionConfigProject.ANNOUNCEMENT_DELAY_DEFAULT) {
+        if (DiscoveryManager.DEFAULT_ANNOUNCEMENT_DELAY != XMLSessionConfigProject.ANNOUNCEMENT_DELAY_DEFAULT) {
             throw new TestErrorException("The announcement delay had the wrong default value");
         }
-        if (serverSession.getCommandManager().getDiscoveryManager().DEFAULT_PACKET_TIME_TO_LIVE != XMLSessionConfigProject.PACKET_TIME_TO_LIVE_DEFAULT) {
+        if (DiscoveryManager.DEFAULT_PACKET_TIME_TO_LIVE != XMLSessionConfigProject.PACKET_TIME_TO_LIVE_DEFAULT) {
             throw new TestErrorException("The packet time to live had the wrong default value");
         }
         /*

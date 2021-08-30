@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,13 +25,16 @@ public class OneToManyMaxRowsSettingTest extends org.eclipse.persistence.testing
         setDescription("Tests setup the limit for the maximum number of rows the query returns");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(org.eclipse.persistence.testing.models.employee.domain.Employee.class);
@@ -44,6 +47,7 @@ public class OneToManyMaxRowsSettingTest extends org.eclipse.persistence.testing
         ssns = (Vector)getSession().executeQuery(query2);
     }
 
+    @Override
     public void verify() {
         if (employees.size() != 5) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("ReadAllQuery with setMaxRows test failed. mismatched objects returned");

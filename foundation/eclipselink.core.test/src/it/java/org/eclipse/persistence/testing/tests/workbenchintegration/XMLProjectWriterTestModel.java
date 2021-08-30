@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,6 +46,7 @@ public class XMLProjectWriterTestModel extends TestModel {
     /**
      *  Add the Mapping Workbench Integration test system.
      */
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeWorkbenchIntegrationSystem());
         addRequiredSystem(new InheritanceWorkbenchIntegrationSystem());
@@ -61,6 +62,7 @@ public class XMLProjectWriterTestModel extends TestModel {
         addRequiredSystem(new MultipleTableModelWorkbenchIntegrationSystem());
     }
 
+    @Override
     public void addTests() {
         // Employee Tests
         TestSuite employeeSuite = new TestSuite();
@@ -161,6 +163,7 @@ public class XMLProjectWriterTestModel extends TestModel {
 
         //Insurance model test
         class TestSuiteOracleOnly extends TestSuite {
+            @Override
             public void setup() {
                 if(!getSession().getPlatform().isOracle9()) {
                     throw new TestWarningException("This test suite is intended for Oracle databases only.");

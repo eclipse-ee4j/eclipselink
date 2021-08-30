@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,12 +38,14 @@ public class ReadOnlyClassAggregateTestCase extends TestCase {
         super();
     }
 
+    @Override
     public void reset() {
         getSession().getProject().setDefaultReadOnlyClasses(new Vector());
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         // Build a new Employee to be inserted into the database.
@@ -54,6 +56,7 @@ public class ReadOnlyClassAggregateTestCase extends TestCase {
         employee.setAddressDescription(org.eclipse.persistence.testing.models.aggregate.AddressDescription.example4());
     }
 
+    @Override
     protected void test() {
         // Try to insert the new employee when some of its aggregate parts are read-only.
         // Get the unit of work.
@@ -68,6 +71,7 @@ public class ReadOnlyClassAggregateTestCase extends TestCase {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         // Check that the employee was written completely despite the two aggregate
         // classes being declared read-only.

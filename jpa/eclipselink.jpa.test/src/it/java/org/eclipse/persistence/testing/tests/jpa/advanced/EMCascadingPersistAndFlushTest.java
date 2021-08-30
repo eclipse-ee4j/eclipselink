@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class EMCascadingPersistAndFlushTest extends EntityContainerTestBase  {
     Project project = null;
     PhoneNumber phone = null;
 
+    @Override
     public void setup() {
         super.setup();
         if (CMP3TestModel.getServerSession().getDescriptor(Employee.class).getSequence().shouldAcquireValueAfterInsert() ||
@@ -43,6 +44,7 @@ public class EMCascadingPersistAndFlushTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void reset() {
         if(phones != null) {
             phones.clear();
@@ -50,6 +52,7 @@ public class EMCascadingPersistAndFlushTest extends EntityContainerTestBase  {
         super.reset();
     }
 
+    @Override
     public void test(){
 
         employee = new Employee();
@@ -97,6 +100,7 @@ public class EMCascadingPersistAndFlushTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify(){
         if(persistedItems.get("after persist Employee") == null) {
             throw new TestErrorException("Find after persist Employee: " + empIDs[0] + " is not found in the cache");

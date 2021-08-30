@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2008, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2008, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -20,6 +20,7 @@ import java.util.List;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.QueryHints;
@@ -113,7 +114,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
             closeEntityManager(em);
         }
 
-        this.assertTrue("Street from Address read using native query did not match the cache version", result.getStreet()!=null && result.getStreet().equals(a.getStreet()));
+        assertTrue("Street from Address read using native query did not match the cache version", result.getStreet()!=null && result.getStreet().equals(a.getStreet()));
     }
 
     /* Removed for 299926 when the default changed to false.
@@ -140,7 +141,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
                         );
 
             returnedAddress = (Address)q.getSingleResult();
-            this.assertNotNull("no address returned",returnedAddress);
+            assertNotNull("no address returned",returnedAddress);
             assertTrue("returned address does not match the expected address", session.compareObjects(returnedAddress, expectedAddress));
 
             //this query uses a resultsetmapping that looks for columns as camel case.
@@ -159,7 +160,7 @@ public class JUnitNativeQueryTestSuite  extends JUnitTestCase {
 
             returnedAddress = (Address)q.getSingleResult();
 
-            this.assertNotNull("no address returned",returnedAddress);
+            assertNotNull("no address returned",returnedAddress);
             assertTrue("returned address does not match the expected address", session.compareObjects(returnedAddress, expectedAddress));
         } finally {
             closeEntityManager(em);

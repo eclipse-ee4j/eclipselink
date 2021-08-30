@@ -37,9 +37,11 @@ public class ProjectXMLStoredProcedureCallTest extends TestCase {
         setDescription("Tests that sepecified stored procedure can read from XML and execute correctly.");
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle())) {
@@ -47,6 +49,7 @@ public class ProjectXMLStoredProcedureCallTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         Project project =
             XMLProjectReader.read("MWIntegrationCustomSQLEmployeeProject.xml", getClass().getClassLoader());
@@ -69,6 +72,7 @@ public class ProjectXMLStoredProcedureCallTest extends TestCase {
         UNamedstoredProcedureCall = (StoredProcedureCall)UNamedQuery.getCall();
     }
 
+    @Override
     protected void verify() {
         verifyNamedArgumentStoredProcedureCall();
         verifyUNamedArgumentStoredProcedureCall();

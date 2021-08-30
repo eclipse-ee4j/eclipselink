@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,10 +28,12 @@ public class Scenario1_8b extends ReportQueryTestCase {
         setDescription("Invalid item, transformation mapping (normalHours)");
     }
 
+    @Override
     protected void buildExpectedResults() {
         // Test should throw exception, so no results expected
     }
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());
@@ -40,6 +42,7 @@ public class Scenario1_8b extends ReportQueryTestCase {
         reportQuery.addAttribute("normalHours");
     }
 
+    @Override
     public void test() {
         try {
             results = (Vector)getSession().executeQuery(reportQuery);
@@ -49,6 +52,7 @@ public class Scenario1_8b extends ReportQueryTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         //Expecting a QueryException...
         if (results == null || results.size() != 1 || !(results.firstElement() instanceof QueryException)) {

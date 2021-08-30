@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class PerformDeletesFirstCollectionObjectRemovalTest extends TestCase {
         this.shouldPerformDeletesFirst = shouldPerformDeletesFirst;
     }
 
+    @Override
     protected void setup() {
         menusMapping = (OneToManyMapping)getSession().getDescriptor(
             Restaurant.class).getMappingForAttributeName("menus");
@@ -53,6 +54,7 @@ public class PerformDeletesFirstCollectionObjectRemovalTest extends TestCase {
         beginTransaction();
     }
 
+    @Override
     protected void test() {
         Restaurant restaurantOriginal = (Restaurant)getSession().readObject(
             Restaurant.class,
@@ -82,6 +84,7 @@ public class PerformDeletesFirstCollectionObjectRemovalTest extends TestCase {
         endSize = restaurantOriginal.getMenus().size();
     }
 
+    @Override
     protected void verify() {
         // we remove 1 element from the collection, so expected size is startSize - 1
         if (endSize != (startSize - 1)) {
@@ -98,6 +101,7 @@ public class PerformDeletesFirstCollectionObjectRemovalTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         menusMapping.setIsPrivateOwned(privateOwnedSetting);

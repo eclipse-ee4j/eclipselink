@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class InMemoryQueryKeyToAggregateTest extends AutoVerifyTestCase {
         this.shouldLoadObjectsIntoMemory = shouldLoadObjectsIntoMemory;
     }
 
+    @Override
     public void setup() {
         ClassDescriptor descriptor = getSession().getClassDescriptor(GolfClub.class);
         descriptor.addDirectQueryKey("stiffness", "GOLF_CLUB.SHAFT_STIFFNESS");
@@ -55,6 +56,7 @@ public class InMemoryQueryKeyToAggregateTest extends AutoVerifyTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         if (shouldLoadObjectsIntoMemory) {
@@ -68,12 +70,14 @@ public class InMemoryQueryKeyToAggregateTest extends AutoVerifyTestCase {
         club = (GolfClub)uow.executeQuery(query);
     }
 
+    @Override
     public void verify() {
         if ((club == null) || !(club.getId().equals(originalClub.getId()))) {
             throw new TestErrorException("Executing an in-memory query with a query key to an aggregate returns the wrong result.");
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         ClassDescriptor descriptor = getSession().getClassDescriptor(GolfClub.class);

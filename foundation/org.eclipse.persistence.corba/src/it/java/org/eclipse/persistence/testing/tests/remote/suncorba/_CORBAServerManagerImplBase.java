@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,7 +28,7 @@ public abstract class _CORBAServerManagerImplBase extends org.omg.CORBA.portable
   private static java.util.Hashtable _methods = new java.util.Hashtable ();
   static
   {
-    _methods.put ("createRemoteSessionController", new java.lang.Integer (0));
+    _methods.put ("createRemoteSessionController", Integer.valueOf(0));
   }
 
   // Type-specific CORBA::Object operations

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class EmployeeJoinFetchTestModel extends TestModel {
         super();
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         if (getSession().getPlatform().isHSQL()) {
             throw new TestWarningException("HSQL does not support complex outer joins correctly.");
@@ -44,6 +45,7 @@ public class EmployeeJoinFetchTestModel extends TestModel {
         addForcedRequiredSystem(system);
     }
 
+    @Override
     public void addTests() {
         addTest(EmployeeBasicTestModel.getReadObjectTestSuite());
         addTest(EmployeeBasicTestModel.getReadAllTestSuite());

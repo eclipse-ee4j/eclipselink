@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.PersistenceException;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.queries.FetchGroup;
@@ -86,6 +87,7 @@ public class ExtensibilityTests extends JUnitTestCase {
         return suite;
     }
 
+    @Override
     public String getPersistenceUnitName(){
         return "extensibility";
     }
@@ -237,7 +239,7 @@ public class ExtensibilityTests extends JUnitTestCase {
 
             em.refresh(emp);
 
-            numbers = ((List)emp.getExt("phoneNumbers"));
+            numbers = emp.getExt("phoneNumbers");
             assertTrue("The phoneNumbers were not properly saved", numbers.size() == 1);
 
             em.clear();
@@ -263,7 +265,7 @@ public class ExtensibilityTests extends JUnitTestCase {
     public void testSimpleRefresh(){
         EntityManagerFactory emf = getEntityManagerFactory();
         EntityManager em = emf.createEntityManager();
-        WeakReference<EntityManagerFactoryDelegate> emfRef = new WeakReference<EntityManagerFactoryDelegate>(((EntityManagerFactoryImpl)JpaHelper.getEntityManagerFactory(em)).unwrap());
+        WeakReference<EntityManagerFactoryDelegate> emfRef = new WeakReference<EntityManagerFactoryDelegate>(JpaHelper.getEntityManagerFactory(em).unwrap());
         ServerSession session = (ServerSession)getDatabaseSession();
         RelationalDescriptor addDescriptor = (RelationalDescriptor)session.getProject().getDescriptor(Address.class);
         assertTrue(addDescriptor.getMappingForAttributeName("pobox") != null);
@@ -551,9 +553,9 @@ public class ExtensibilityTests extends JUnitTestCase {
             em.clear();
             add = em.find(Address.class, add.getId());
             assertTrue(add.get("appartmentNumber").equals("444"));
-            this.assertNull("RCM Refresh command listener was not removed from old session", session.getRefreshMetadataListener());
+            assertNull("RCM Refresh command listener was not removed from old session", session.getRefreshMetadataListener());
             delegate = (EntityManagerFactoryDelegate)em.unwrap(JpaEntityManager.class).getEntityManagerFactory();
-            this.assertNotNull("RCM Refresh command listener was not added to the new session", ((AbstractSession)delegate.getDatabaseSession()).getRefreshMetadataListener());
+            assertNotNull("RCM Refresh command listener was not added to the new session", delegate.getDatabaseSession().getRefreshMetadataListener());
         } finally {
             if (isTransactionActive(em)) {
                 rollbackTransaction(em);

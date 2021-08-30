@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class OrderedListAttributeChangeTrackingJunitTest extends OrderedListJuni
         return new TestSetup(suite) {
             private ObjectChangePolicy origPolicy;
 
+            @Override
             protected void setUp() {
                 DatabaseSession session = JUnitTestCase.getServerSession();
                 new InheritedTableManager().replaceTables(session);
@@ -58,6 +59,7 @@ public class OrderedListAttributeChangeTrackingJunitTest extends OrderedListJuni
                 session.login();
             }
 
+            @Override
             protected void tearDown() {
                 new OrderedListAttributeChangeTrackingJunitTest().clearCache();
                 ServerSession session = JUnitTestCase.getServerSession();

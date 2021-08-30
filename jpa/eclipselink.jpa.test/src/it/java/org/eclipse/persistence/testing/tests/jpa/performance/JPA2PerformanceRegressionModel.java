@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,12 +46,14 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
         setDescription("Performance tests that compare JPA 2 performance.");
     }
 
+    @Override
     public void addTests() {
         addTest(getReadingTestSuite());
         addTest(getWritingTestSuite());
         addTest(getMiscTestSuite());
     }
 
+    @Override
     public TestSuite getReadingTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("JPA2ReadingTestSuite");
@@ -66,6 +68,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
         return suite;
     }
 
+    @Override
     public TestSuite getWritingTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("JPA2WritingTestSuite");
@@ -80,6 +83,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
         return suite;
     }
 
+    @Override
     public TestSuite getMiscTestSuite() {
         TestSuite suite = new TestSuite();
         suite.setName("JPAMiscTestSuite");
@@ -90,6 +94,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
         return suite;
     }
 
+    @Override
     public void setupDatabase(EntityManager manager) {
         // Create schema using session from entity manager to create sequences correctly.
         try {
@@ -104,6 +109,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
     /**
      * Create/populate database.
      */
+    @Override
     public void setup() {
         /*
         // Setup DataSource for apples to apples comparison (otherwise we crush them).
@@ -181,6 +187,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
     /**
      * Setup the JPA provider.
      */
+    @Override
     public void setupProvider() {
         if (org.eclipse.persistence.testing.framework.junit.JUnitTestCase.isOnServer()) {
             return;
@@ -189,7 +196,7 @@ public class JPA2PerformanceRegressionModel extends JPAPerformanceRegressionMode
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
-            provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
+            provider = (PersistenceProvider)Class.forName(providerClass).getConstructor().newInstance();
         } catch (Exception error) {
             throw new TestProblemException("Failed to create persistence provider.", error);
         }
