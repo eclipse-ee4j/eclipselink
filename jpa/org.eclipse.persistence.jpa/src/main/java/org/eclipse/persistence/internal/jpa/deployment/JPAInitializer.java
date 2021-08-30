@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -66,7 +66,10 @@ public abstract class JPAInitializer {
     protected Map<String, EntityManagerSetupImpl> initialEmSetupImpls;
 
     // Initializers keyed by their initializationClassloaders
-    protected static Map<ClassLoader, JPAInitializer> initializers = new Hashtable();
+    protected static Map<ClassLoader, JPAInitializer> initializers = new Hashtable<>();
+
+    protected JPAInitializer() {
+    }
 
     /**
      * Initialize the logging file if it is specified by the system property.

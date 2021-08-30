@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,10 +22,10 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface RangePartitioning {
 
-    public RangePartition addPartition();
-    public RangePartitioning setName(String name);
-    public Column setPartitionColumn();
-    public RangePartitioning setUnionUnpartitionableQueries(Boolean unionUnpartitionableQueries);
-    public RangePartitioning setPartitionValueType(String partitionValueType);
+    RangePartition addPartition();
+    RangePartitioning setName(String name);
+    Column setPartitionColumn();
+    RangePartitioning setUnionUnpartitionableQueries(Boolean unionUnpartitionableQueries);
+    RangePartitioning setPartitionValueType(String partitionValueType);
 
 }

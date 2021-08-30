@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,13 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface PersistenceUnitDefaults {
 
-    public EntityListener addEntityListener();
-    public TenantDiscriminatorColumn addTenantDiscriminatorColumn();
-    public PersistenceUnitDefaults setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public PersistenceUnitDefaults setCascadePersist(Boolean cascadePersist);
-    public PersistenceUnitDefaults setCatalog(String catalog);
-    public PersistenceUnitDefaults setDelimitedIdentifiers(Boolean delimitedIdentifiers);
-    public PersistenceUnitDefaults setSchema(String schema);
+    EntityListener addEntityListener();
+    TenantDiscriminatorColumn addTenantDiscriminatorColumn();
+    PersistenceUnitDefaults setAccess(String access);
+    AccessMethods setAccessMethods();
+    PersistenceUnitDefaults setCascadePersist(Boolean cascadePersist);
+    PersistenceUnitDefaults setCatalog(String catalog);
+    PersistenceUnitDefaults setDelimitedIdentifiers(Boolean delimitedIdentifiers);
+    PersistenceUnitDefaults setSchema(String schema);
 
 }

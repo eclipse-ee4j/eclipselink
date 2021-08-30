@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,7 +48,7 @@ public interface MetadataSource {
      *
      * @since EclipseLink 2.4
      */
-    public Map<String, Object> getPropertyOverrides(Map<String, Object> properties, ClassLoader classLoader, SessionLog log);
+    Map<String, Object> getPropertyOverrides(Map<String, Object> properties, ClassLoader classLoader, SessionLog log);
 
     /**
      * PUBLIC: This method is responsible for returning the object
@@ -65,5 +65,5 @@ public interface MetadataSource {
      * lazy OneToOne mapping after weaving has already occurred will result in
      * an exception if they are expected to have been woven into the class.
      */
-    public XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log);
+    XMLEntityMappings getEntityMappings(Map<String, Object> properties, ClassLoader classLoader, SessionLog log);
 }

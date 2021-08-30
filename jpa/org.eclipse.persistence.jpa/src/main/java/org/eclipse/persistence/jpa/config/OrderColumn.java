@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,11 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface OrderColumn {
 
-    public OrderColumn setColumnDefinition(String columnDefinition);
-    public OrderColumn setCorrectionType(String correctionType);
-    public OrderColumn setName(String name);
-    public OrderColumn setNullable(Boolean nullable);
-    public OrderColumn setInsertable(Boolean insertable);
-    public OrderColumn setUpdatable(Boolean updatable);
+    OrderColumn setColumnDefinition(String columnDefinition);
+    OrderColumn setCorrectionType(String correctionType);
+    OrderColumn setName(String name);
+    OrderColumn setNullable(Boolean nullable);
+    OrderColumn setInsertable(Boolean insertable);
+    OrderColumn setUpdatable(Boolean updatable);
 
 }

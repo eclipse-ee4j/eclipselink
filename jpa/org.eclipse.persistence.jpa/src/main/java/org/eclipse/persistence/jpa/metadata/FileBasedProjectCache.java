@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2012, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -20,12 +20,9 @@ package org.eclipse.persistence.jpa.metadata;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
-import java.security.AccessController;
 import java.util.Map;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
-import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
-import org.eclipse.persistence.internal.security.PrivilegedGetSystemProperty;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.sessions.Project;
 
@@ -36,8 +33,14 @@ import org.eclipse.persistence.sessions.Project;
  */
 public class FileBasedProjectCache implements ProjectCache {
 
+    /**
+     * Default constructor.
+     */
+    public FileBasedProjectCache() {
+    }
+
     @Override
-    public Project retrieveProject(Map properties, ClassLoader loader, SessionLog log) {
+    public Project retrieveProject(Map<String, ?> properties, ClassLoader loader, SessionLog log) {
         Project project = null;
         java.io.ObjectInputStream in = null;
         String fileName = (String)getConfigPropertyLogDebug(
@@ -67,7 +70,7 @@ public class FileBasedProjectCache implements ProjectCache {
     }
 
     @Override
-    public void storeProject(Project project, Map properties, SessionLog log) {
+    public void storeProject(Project project, Map<String, ?> properties, SessionLog log) {
         String fileName = (String)getConfigPropertyLogDebug(
                 PersistenceUnitProperties.PROJECT_CACHE_FILE,
                 properties, log);
@@ -101,26 +104,12 @@ public class FileBasedProjectCache implements ProjectCache {
     /**
      * Check the provided map for an object with the given name.  If that object is not available, check the
      * System properties.  Log the value returned if logging is enabled at the FINEST level
-     * @param propertyName
-     * @param properties
-     * @param log
-     * @return
+     * @param propertyName property name
+     * @param properties properties
+     * @param log logger
+     * @return object for the given name, null if not found
      */
-    public Object getConfigPropertyLogDebug(final String propertyName, Map properties, SessionLog log) {
-        Object value = null;
-        if (properties != null) {
-            value = properties.get(propertyName);
-        }
-        if (value == null) {
-            if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
-                value = AccessController.doPrivileged(new PrivilegedGetSystemProperty(propertyName));
-            } else {
-                value = System.getProperty(propertyName);
-            }
-        }
-        if ((value != null) && (log !=  null)) {
-            log.log(SessionLog.FINEST, SessionLog.PROPERTIES, "property_value_specified", new Object[]{propertyName, value});
-        }
-        return value;
+    public Object getConfigPropertyLogDebug(final String propertyName, Map<String, ?> properties, SessionLog log) {
+        return PropertyHelper.getConfigPropertyLogDebug(propertyName, properties, log);
     }
 }

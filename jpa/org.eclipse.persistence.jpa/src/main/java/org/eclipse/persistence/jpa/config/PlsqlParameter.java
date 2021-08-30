@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,13 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface PlsqlParameter {
 
-    public PlsqlParameter setDatabaseType(String databaseType);
-    public PlsqlParameter setDirection(String direction);
-    public PlsqlParameter setLength(Integer length);
-    public PlsqlParameter setName(String name);
-    public PlsqlParameter setOptional(Boolean optional);
-    public PlsqlParameter setPrecision(Integer precision);
-    public PlsqlParameter setQueryParameter(String queryParameter);
-    public PlsqlParameter setScale(Integer scale);
+    PlsqlParameter setDatabaseType(String databaseType);
+    PlsqlParameter setDirection(String direction);
+    PlsqlParameter setLength(Integer length);
+    PlsqlParameter setName(String name);
+    PlsqlParameter setOptional(Boolean optional);
+    PlsqlParameter setPrecision(Integer precision);
+    PlsqlParameter setQueryParameter(String queryParameter);
+    PlsqlParameter setScale(Integer scale);
 
 }

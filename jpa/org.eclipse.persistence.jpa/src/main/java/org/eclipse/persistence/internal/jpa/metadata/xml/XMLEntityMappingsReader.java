@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -91,6 +91,9 @@ public class XMLEntityMappingsReader {
     private static Schema m_orm2_2Schema;
     private static Schema m_orm3_0Schema;
     private static Schema m_eclipseLinkOrmSchema;
+
+    private XMLEntityMappingsReader() {
+    }
 
     /**
      * Check the orm.xml to determine which project and schema to use.

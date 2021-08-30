@@ -42,6 +42,8 @@ import org.eclipse.persistence.sessions.factories.SessionManager;
  * @since EclipseLink 2.5.1
  */
 public class RuntimeFactory {
+    private RuntimeFactory() {
+    }
 
     public EntityManagerFactory createEntityManagerFactory(PersistenceUnit pu) {
         EntityManagerSetupImpl emSetupImpl = null;

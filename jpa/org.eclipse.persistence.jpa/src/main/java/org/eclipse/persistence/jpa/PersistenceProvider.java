@@ -289,7 +289,7 @@ public class PersistenceProvider implements jakarta.persistence.spi.PersistenceP
                 provider = ((Class)provider).getName();
             }
             try{
-                if (!(((String)provider).equals(EntityManagerFactoryProvider.class.getName()) || ((String)provider).equals(PersistenceProvider.class.getName()))){
+                if (!(EntityManagerFactoryProvider.class.getName().equals(provider) || PersistenceProvider.class.getName().equals(provider))){
                     return false;
                     //user has requested another provider so lets ignore this request.
                 }

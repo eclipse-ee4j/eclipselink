@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -221,7 +221,7 @@ public class TableGeneratorMetadata extends TableMetadata {
 
         // Process the sequence name.
         if (m_pkColumnValue == null || m_pkColumnValue.equals("")) {
-            logger.logConfigMessage(logger.TABLE_GENERATOR_PK_COLUMN_VALUE, m_generatorName, getAccessibleObject(), getLocation());
+            logger.logConfigMessage(MetadataLogger.TABLE_GENERATOR_PK_COLUMN_VALUE, m_generatorName, getAccessibleObject(), getLocation());
             sequence.setName(m_generatorName);
         } else {
             sequence.setName(m_pkColumnValue);

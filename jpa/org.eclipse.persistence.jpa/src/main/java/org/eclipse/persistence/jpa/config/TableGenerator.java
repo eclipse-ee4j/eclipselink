@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,17 +22,17 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface TableGenerator {
 
-    public Index addIndex();
-    public UniqueConstraint addUniqueConstraint();
-    public TableGenerator setAllocationSize(Integer allocationSize);
-    public TableGenerator setCatalog(String catalog);
-    public TableGenerator setCreationSuffix(String creationSuffix);
-    public TableGenerator setInitialValue(Integer initialValue);
-    public TableGenerator setName(String name);
-    public TableGenerator setPKColumnName(String pkColumnName);
-    public TableGenerator setPKColumnValue(String pkColumnValue);
-    public TableGenerator setSchema(String schema);
-    public TableGenerator setTable(String table);
-    public TableGenerator setValueColumnName(String valueColumnName);
+    Index addIndex();
+    UniqueConstraint addUniqueConstraint();
+    TableGenerator setAllocationSize(Integer allocationSize);
+    TableGenerator setCatalog(String catalog);
+    TableGenerator setCreationSuffix(String creationSuffix);
+    TableGenerator setInitialValue(Integer initialValue);
+    TableGenerator setName(String name);
+    TableGenerator setPKColumnName(String pkColumnName);
+    TableGenerator setPKColumnValue(String pkColumnValue);
+    TableGenerator setSchema(String schema);
+    TableGenerator setTable(String table);
+    TableGenerator setValueColumnName(String valueColumnName);
 
 }

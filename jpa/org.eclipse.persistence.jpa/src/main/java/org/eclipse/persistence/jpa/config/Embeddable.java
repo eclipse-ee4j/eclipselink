@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,44 +22,44 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Embeddable {
 
-    public Array addArray();
-    public AssociationOverride addAssociationOverride();
-    public AttributeOverride addAttributeOverride();
-    public Basic addBasic();
-    public Converter addConverter();
-    public ElementCollection addElementCollection();
-    public Embedded addEmbedded();
-    public Id addId();
-    public ManyToMany addManyToMany();
-    public ManyToOne addManyToOne();
-    public ObjectTypeConverter addObjectTypeConverter();
-    public OneToMany addOneToMany();
-    public OneToOne addOneToOne();
-    public OracleArray addOracleArray();
-    public OracleObject addOracleObject();
-    public PlsqlRecord addPlsqlRecord();
-    public PlsqlTable addPlsqlTable();
-    public Property addProperty();
-    public StructConverter addStructConverter();
-    public Structure addStructure();
-    public Transformation addTransformation();
-    public Transient addTransient();
-    public TypeConverter addTypeConverter();
-    public VariableOneToOne addVariableOneToOne();
-    public Version addVersion();
-    public Embeddable setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public ChangeTracking setChangeTracking();
-    public Embeddable setClass(String cls);
-    public CloneCopyPolicy setCloneCopyPolicy();
-    public CopyPolicy setCopyPolicy();
-    public Embeddable setCustomizer(String customizer);
-    public EmbeddedId setEmbeddedId();
-    public Embeddable setExcludeDefaultMappings(Boolean excludeDefaultMappings);
-    public InstantiationCopyPolicy setInstantiationCopyPolicy();
-    public Embeddable setMetadataComplete(Boolean metadataComplete);
-    public NoSql setNoSql();
-    public Embeddable setParentClass(String parentClass);
-    public Struct setStruct();
+    Array addArray();
+    AssociationOverride addAssociationOverride();
+    AttributeOverride addAttributeOverride();
+    Basic addBasic();
+    Converter addConverter();
+    ElementCollection addElementCollection();
+    Embedded addEmbedded();
+    Id addId();
+    ManyToMany addManyToMany();
+    ManyToOne addManyToOne();
+    ObjectTypeConverter addObjectTypeConverter();
+    OneToMany addOneToMany();
+    OneToOne addOneToOne();
+    OracleArray addOracleArray();
+    OracleObject addOracleObject();
+    PlsqlRecord addPlsqlRecord();
+    PlsqlTable addPlsqlTable();
+    Property addProperty();
+    StructConverter addStructConverter();
+    Structure addStructure();
+    Transformation addTransformation();
+    Transient addTransient();
+    TypeConverter addTypeConverter();
+    VariableOneToOne addVariableOneToOne();
+    Version addVersion();
+    Embeddable setAccess(String access);
+    AccessMethods setAccessMethods();
+    ChangeTracking setChangeTracking();
+    Embeddable setClass(String cls);
+    CloneCopyPolicy setCloneCopyPolicy();
+    CopyPolicy setCopyPolicy();
+    Embeddable setCustomizer(String customizer);
+    EmbeddedId setEmbeddedId();
+    Embeddable setExcludeDefaultMappings(Boolean excludeDefaultMappings);
+    InstantiationCopyPolicy setInstantiationCopyPolicy();
+    Embeddable setMetadataComplete(Boolean metadataComplete);
+    NoSql setNoSql();
+    Embeddable setParentClass(String parentClass);
+    Struct setStruct();
 
 }

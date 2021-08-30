@@ -36,13 +36,13 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
      * Returns the DatabaseSession that the Factory will be using and
      * initializes it if it is not available.
      */
-    public DatabaseSessionImpl getDatabaseSession();
+    DatabaseSessionImpl getDatabaseSession();
 
     /**
      * Returns the ServerSession that the Factory will be using and
      * initializes it if it is not available.
      */
-    public ServerSession getServerSession();
+    ServerSession getServerSession();
 
     /**
      * Returns the SessionBroker that the Factory will be using and
@@ -51,7 +51,7 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
      * Calls to this method should only be made on entity managers
      * representing composite persistence units.
      */
-    public SessionBroker getSessionBroker();
+    SessionBroker getSessionBroker();
 
     /**
      * Gets the underlying implementation of the EntityManagerFactory.
@@ -60,7 +60,7 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
      * to refresh will not affect that metadata on this EntityManagerFactory.
      * @return
      */
-    public EntityManagerFactoryDelegate unwrap();
+    EntityManagerFactoryDelegate unwrap();
 
     /**
      * As this EntityManagerFactory to refresh itself.  This will cause the
@@ -68,7 +68,7 @@ public interface JpaEntityManagerFactory extends EntityManagerFactory, AutoClose
      * to be bootstrapped.  Existing EntityManagers will continue to use the old implementation
      * @param properties
      */
-    public void refreshMetadata(Map<String, Object> properties);
+    void refreshMetadata(Map<String, Object> properties);
 
 }
 
