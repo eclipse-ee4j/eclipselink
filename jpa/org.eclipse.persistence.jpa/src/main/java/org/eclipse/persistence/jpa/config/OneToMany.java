@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,50 +22,50 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface OneToMany {
 
-    public JoinColumn addJoinColumn();
-    public JoinField addJoinField();
-    public AssociationOverride addMapKeyAssociationOverride();
-    public AttributeOverride addMapKeyAttributeOverride();
-    public Convert addMapKeyConvert();
-    public JoinColumn addMapKeyJoinColumn();
-    public Property addProperty();
-    public OneToMany setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public OneToMany setAttributeType(String attributeType);
-    public BatchFetch setBatchFetch();
-    public Cascade setCascade();
-    public OneToMany setCascadeOnDelete(Boolean cascadeOnDelete);
-    public Converter setConverter();
-    public OneToMany setDeleteAll(Boolean deleteAll);
-    public OneToMany setFetch(String fetch);
-    public ForeignKey setForeignKey();
-    public HashPartitioning setHashPartitioning();
-    public OneToMany setJoinFetch(String joinFetch);
-    public JoinTable setJoinTable();
-    public MapKey setMapKey();
-    public OneToMany setMapKeyClass(String mapKeyClass);
-    public Column setMapKeyColumn();
-    public OneToMany setMapKeyConvert(String mapKeyConvert);
-    public Enumerated setMapKeyEnumerated();
-    public ForeignKey setMapKeyForeignKey();
-    public Temporal setMapKeyTemporal();
-    public OneToMany setMappedBy(String mappedBy);
-    public OneToMany setName(String name);
-    public OneToMany setNonCacheable(Boolean nonCacheable);
-    public ObjectTypeConverter setObjectTypeConverter();
-    public OneToMany setOrderBy(String orderBy);
-    public OrderColumn setOrderColumn();
-    public OneToMany setOrphanRemoval(Boolean orphanRemoval);
-    public Partitioning setPartitioning();
-    public PinnedPartitioning setPinnedPartitioning();
-    public OneToMany setPrivateOwned(Boolean privateOwned);
-    public RangePartitioning setRangePartitioning();
-    public ReplicationPartitioning setReplicationPartitioning();
-    public RoundRobinPartitioning setRoundRobinPartitioning();
-    public StructConverter setStructConverter();
-    public OneToMany setTargetEntity(String targetEntity);
-    public TypeConverter setTypeConverter();
-    public UnionPartitioning setUnionPartitioning();
-    public ValuePartitioning setValuePartitioning();
+    JoinColumn addJoinColumn();
+    JoinField addJoinField();
+    AssociationOverride addMapKeyAssociationOverride();
+    AttributeOverride addMapKeyAttributeOverride();
+    Convert addMapKeyConvert();
+    JoinColumn addMapKeyJoinColumn();
+    Property addProperty();
+    OneToMany setAccess(String access);
+    AccessMethods setAccessMethods();
+    OneToMany setAttributeType(String attributeType);
+    BatchFetch setBatchFetch();
+    Cascade setCascade();
+    OneToMany setCascadeOnDelete(Boolean cascadeOnDelete);
+    Converter setConverter();
+    OneToMany setDeleteAll(Boolean deleteAll);
+    OneToMany setFetch(String fetch);
+    ForeignKey setForeignKey();
+    HashPartitioning setHashPartitioning();
+    OneToMany setJoinFetch(String joinFetch);
+    JoinTable setJoinTable();
+    MapKey setMapKey();
+    OneToMany setMapKeyClass(String mapKeyClass);
+    Column setMapKeyColumn();
+    OneToMany setMapKeyConvert(String mapKeyConvert);
+    Enumerated setMapKeyEnumerated();
+    ForeignKey setMapKeyForeignKey();
+    Temporal setMapKeyTemporal();
+    OneToMany setMappedBy(String mappedBy);
+    OneToMany setName(String name);
+    OneToMany setNonCacheable(Boolean nonCacheable);
+    ObjectTypeConverter setObjectTypeConverter();
+    OneToMany setOrderBy(String orderBy);
+    OrderColumn setOrderColumn();
+    OneToMany setOrphanRemoval(Boolean orphanRemoval);
+    Partitioning setPartitioning();
+    PinnedPartitioning setPinnedPartitioning();
+    OneToMany setPrivateOwned(Boolean privateOwned);
+    RangePartitioning setRangePartitioning();
+    ReplicationPartitioning setReplicationPartitioning();
+    RoundRobinPartitioning setRoundRobinPartitioning();
+    StructConverter setStructConverter();
+    OneToMany setTargetEntity(String targetEntity);
+    TypeConverter setTypeConverter();
+    UnionPartitioning setUnionPartitioning();
+    ValuePartitioning setValuePartitioning();
 
 }

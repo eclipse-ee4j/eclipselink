@@ -29,27 +29,37 @@ module org.eclipse.persistence.jpa {
     exports org.eclipse.persistence.jpa.metadata;
     exports org.eclipse.persistence.tools.weaving.jpa;
 
-    // modelgen
-    exports org.eclipse.persistence.internal.jpa.deployment;
+
+    exports org.eclipse.persistence.internal.jpa;
+    exports org.eclipse.persistence.internal.jpa.deployment; // exp metadata/metadata.objects
+    exports org.eclipse.persistence.internal.jpa.metadata.xml;
+
+    //internals accessible through o.e.p.internal.jpa.metadata.xml
     exports org.eclipse.persistence.internal.jpa.metadata;
+    exports org.eclipse.persistence.internal.jpa.metadata.accessors;
     exports org.eclipse.persistence.internal.jpa.metadata.accessors.classes;
     exports org.eclipse.persistence.internal.jpa.metadata.accessors.mappings;
     exports org.eclipse.persistence.internal.jpa.metadata.accessors.objects;
-    exports org.eclipse.persistence.internal.jpa.metadata.xml;
-
-    // dbws
-    exports org.eclipse.persistence.internal.jpa;
-    exports org.eclipse.persistence.internal.jpa.weaving;
-
-    // dbws builder
-    exports org.eclipse.persistence.internal.jpa.metadata.accessors;
+    exports org.eclipse.persistence.internal.jpa.metadata.additionalcriteria;
+    exports org.eclipse.persistence.internal.jpa.metadata.cache;
+    exports org.eclipse.persistence.internal.jpa.metadata.changetracking;
     exports org.eclipse.persistence.internal.jpa.metadata.columns;
     exports org.eclipse.persistence.internal.jpa.metadata.converters;
+    exports org.eclipse.persistence.internal.jpa.metadata.copypolicy;
+    exports org.eclipse.persistence.internal.jpa.metadata.graphs;
+    exports org.eclipse.persistence.internal.jpa.metadata.inheritance;
+    exports org.eclipse.persistence.internal.jpa.metadata.listeners;
+    exports org.eclipse.persistence.internal.jpa.metadata.locking;
+    exports org.eclipse.persistence.internal.jpa.metadata.mappings;
+    exports org.eclipse.persistence.internal.jpa.metadata.multitenant;
+    exports org.eclipse.persistence.internal.jpa.metadata.nosql;
     exports org.eclipse.persistence.internal.jpa.metadata.partitioning;
     exports org.eclipse.persistence.internal.jpa.metadata.queries;
     exports org.eclipse.persistence.internal.jpa.metadata.sequencing;
+    exports org.eclipse.persistence.internal.jpa.metadata.sop;
     exports org.eclipse.persistence.internal.jpa.metadata.structures;
     exports org.eclipse.persistence.internal.jpa.metadata.tables;
+    exports org.eclipse.persistence.internal.jpa.metadata.transformers;
 
     provides jakarta.persistence.spi.PersistenceProvider with org.eclipse.persistence.jpa.PersistenceProvider;
 }

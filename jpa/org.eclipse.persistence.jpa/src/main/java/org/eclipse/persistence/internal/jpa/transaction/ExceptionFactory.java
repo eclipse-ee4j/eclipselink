@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,7 +12,7 @@
 
 // Contributors:
 //     Oracle - initial API and implementation from Oracle TopLink
-package org.eclipse.persistence.internal.jpa;
+package org.eclipse.persistence.internal.jpa.transaction;
 
 import java.io.StringWriter;
 import java.io.PrintWriter;
@@ -20,7 +20,7 @@ import java.sql.SQLException;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.RollbackException;
 
-public class ExceptionFactory {
+class ExceptionFactory {
     public ExceptionFactory() {
     }
 

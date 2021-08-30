@@ -89,6 +89,12 @@ public class EntityManagerFactoryProvider {
     };
 
     /**
+     * Default constructor to allow reflection.
+     */
+    public EntityManagerFactoryProvider() {
+    }
+
+    /**
      * Add an EntityManagerSetupImpl to the cached list
      * These are used to ensure all persistence units that are the same get the same underlying session
      * @param name

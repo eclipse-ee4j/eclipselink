@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.persistence.descriptors.DescriptorEventListener;
 
@@ -200,7 +201,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
      * methods from superclasses.
      */
     Method[] getCandidateCallbackMethodsForEntityListener() {
-        HashSet candidateMethods = new HashSet();
+        Set<Method> candidateMethods = new HashSet<>();
         Class listenerClass = m_listener.getListenerClass();
 
         // Add all the declared methods ...
@@ -219,7 +220,7 @@ public class EntityListenerMetadata extends ORMetadata implements Cloneable {
             candidateMethods.add(methods[i]);
         }
 
-        return (Method[]) candidateMethods.toArray(new Method[candidateMethods.size()]);
+        return candidateMethods.toArray(new Method[candidateMethods.size()]);
     }
 
     /**

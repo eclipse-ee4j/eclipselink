@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,9 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 public class MetadataHelper {
     public static final String JPA_ORM_FILE = "META-INF/orm.xml";
     public static final String ECLIPSELINK_ORM_FILE = "META-INF/eclipselink-orm.xml";
+
+    private MetadataHelper() {
+    }
 
     /**
      * INTERNAL:

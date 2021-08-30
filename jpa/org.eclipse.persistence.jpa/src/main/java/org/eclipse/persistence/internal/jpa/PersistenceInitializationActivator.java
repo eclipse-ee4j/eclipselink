@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,5 +24,5 @@ public interface PersistenceInitializationActivator {
      * Return whether the given class name identifies a persistence provider that is supported by
      * this PersistenceInitializationActivator
      */
-    public boolean isPersistenceProviderSupported(String providerClassName);
+    boolean isPersistenceProviderSupported(String providerClassName);
 }

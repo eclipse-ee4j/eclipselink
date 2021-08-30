@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 Hans Harz, Andrew Rustleund, IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -41,14 +41,12 @@ import org.eclipse.persistence.internal.libraries.asm.AnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.EclipseLinkAnnotationVisitor;
 import org.eclipse.persistence.internal.libraries.asm.Attribute;
 import org.eclipse.persistence.internal.libraries.asm.ClassReader;
-import org.eclipse.persistence.internal.libraries.asm.ClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassVisitor;
 import org.eclipse.persistence.internal.libraries.asm.EclipseLinkFieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.EclipseLinkClassReader;
 import org.eclipse.persistence.internal.libraries.asm.FieldVisitor;
 import org.eclipse.persistence.internal.libraries.asm.EclipseLinkMethodVisitor;
 import org.eclipse.persistence.internal.libraries.asm.MethodVisitor;
-import org.eclipse.persistence.internal.libraries.asm.Opcodes;
 import org.eclipse.persistence.internal.libraries.asm.Type;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
@@ -203,7 +201,7 @@ public class MetadataAsmFactory extends MetadataFactory {
 
             List<String> parentGenericTypes = parent.getGenericType();
             if (parentGenericTypes != null) {
-                List genericParentTemp = new ArrayList(genericTypes);
+                List<String> genericParentTemp = new ArrayList<>(genericTypes);
                 genericParentTemp.removeAll(child.getInterfaces());
 
                 int size = genericParentTemp.size();

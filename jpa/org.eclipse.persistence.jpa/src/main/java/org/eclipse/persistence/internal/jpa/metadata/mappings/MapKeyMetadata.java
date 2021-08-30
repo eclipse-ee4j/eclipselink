@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -120,7 +120,7 @@ public class MapKeyMetadata extends ORMetadata {
             // A persistent property or field name may have have been provided.
             // If one has not we will default to the primary key of the reference
             // class. The primary key cannot be composite at this point.
-            String fieldOrPropertyName = MetadataHelper.getName(m_name, referenceDescriptor.getIdAttributeName(), logger.MAP_KEY_ATTRIBUTE_NAME, logger, mappingAccessor.getAnnotatedElementName());
+            String fieldOrPropertyName = MetadataHelper.getName(m_name, referenceDescriptor.getIdAttributeName(), MetadataLogger.MAP_KEY_ATTRIBUTE_NAME, logger, mappingAccessor.getAnnotatedElementName());
 
             // Look up the referenceAccessor
             MetadataAccessor referenceAccessor = referenceDescriptor.getMappingAccessor(fieldOrPropertyName);

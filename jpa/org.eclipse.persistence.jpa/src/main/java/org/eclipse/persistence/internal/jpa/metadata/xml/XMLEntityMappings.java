@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -967,7 +967,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Create entity mappings object to write out.
         XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
 
-        ArrayList list = new ArrayList();
+        List<EntityAccessor> list = new ArrayList<>();
         list.add(accessor);
         xmlEntityMappings.setEntities(list);
 
@@ -992,7 +992,7 @@ public class XMLEntityMappings extends ORMetadata {
         // Create entity mappings object to write out.
         XMLEntityMappings xmlEntityMappings = newXMLEntityMappingsObject();
 
-        ArrayList list = new ArrayList();
+        List<MappedSuperclassAccessor> list = new ArrayList<>();
         list.add(accessor);
         xmlEntityMappings.setMappedSuperclasses(list);
 

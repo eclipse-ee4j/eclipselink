@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -12,12 +12,6 @@
 
 package org.eclipse.persistence.internal.jpa.rs.weaving;
 
-import static org.eclipse.persistence.internal.jpa.weaving.ClassWeaver.ITEM_LINKS_SIGNATURE;
-import static org.eclipse.persistence.internal.jpa.weaving.ClassWeaver.LINK_SIGNATURE;
-import static org.eclipse.persistence.internal.jpa.weaving.ClassWeaver.LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE;
-import static org.eclipse.persistence.internal.jpa.weaving.ClassWeaver.LIST_RELATIONSHIP_INFO_SIGNATURE;
-import static org.eclipse.persistence.internal.jpa.weaving.ClassWeaver.PERSISTENCE_FIELDNAME_PREFIX;
-import static org.eclipse.persistence.internal.jpa.weaving.ClassWeaver.WEAVED_REST_LAZY_SHORT_SIGNATURE;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ACC_PUBLIC;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ALOAD;
 import static org.eclipse.persistence.internal.libraries.asm.Opcodes.ARETURN;
@@ -39,6 +33,13 @@ import org.eclipse.persistence.internal.libraries.asm.Opcodes;
  * @since EclipseLink 3.0
  */
 public class RestDynamicClassWriter extends MetadataDynamicClassWriter {
+    //from org.eclipse.persistence.internal.jpa.weaving.ClassWeaver which we do not want to export from o.e.p.jpa
+    public static final String WEAVED_REST_LAZY_SHORT_SIGNATURE = "org/eclipse/persistence/internal/jpa/rs/weaving/PersistenceWeavedRest";
+    public static final String LIST_RELATIONSHIP_INFO_SIGNATURE = "Ljava/util/List;";
+    public static final String LIST_RELATIONSHIP_INFO_GENERIC_SIGNATURE = "Ljava/util/List<Lorg/eclipse/persistence/internal/jpa/rs/weaving/RelationshipInfo;>;";
+    public static final String LINK_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/Link;";
+    public static final String ITEM_LINKS_SIGNATURE = "Lorg/eclipse/persistence/internal/jpa/rs/metadata/model/ItemLinks;";
+    public static final String PERSISTENCE_FIELDNAME_PREFIX = "_persistence_";
 
     public RestDynamicClassWriter(MetadataDynamicClassWriter w) {
         super(w.getDescriptor());

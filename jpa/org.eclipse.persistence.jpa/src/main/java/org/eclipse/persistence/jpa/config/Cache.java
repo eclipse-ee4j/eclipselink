@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2019 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,15 +22,15 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Cache {
 
-    public Cache setAlwaysRefresh(Boolean alwaysRefresh);
-    public Cache setCoordinationType(String coordinationType);
-    public Cache setDatabaseChangeNotificationType(String databaseChangeNotificationType);
-    public Cache setDisableHits(Boolean disableHits);
-    public Cache setExpiry(Integer expiry);
-    public TimeOfDay setExpiryTimeOfDay();
-    public Cache setIsolation(String isolation);
-    public Cache setRefreshOnlyIfNewer(Boolean refreshOnlyIfNewer);
-    public Cache setSize(Integer size);
-    public Cache setType(String type);
+    Cache setAlwaysRefresh(Boolean alwaysRefresh);
+    Cache setCoordinationType(String coordinationType);
+    Cache setDatabaseChangeNotificationType(String databaseChangeNotificationType);
+    Cache setDisableHits(Boolean disableHits);
+    Cache setExpiry(Integer expiry);
+    TimeOfDay setExpiryTimeOfDay();
+    Cache setIsolation(String isolation);
+    Cache setRefreshOnlyIfNewer(Boolean refreshOnlyIfNewer);
+    Cache setSize(Integer size);
+    Cache setType(String type);
 
 }

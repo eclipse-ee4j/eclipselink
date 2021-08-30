@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -303,7 +303,7 @@ public class EntityListener<T> extends DescriptorEventAdapter {
             try {
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()){
                     try {
-                        AccessController.doPrivileged(new PrivilegedMethodInvoker(method, onObject, objectList));
+                        AccessController.doPrivileged(new PrivilegedMethodInvoker<Void>(method, onObject, objectList));
                     } catch (PrivilegedActionException exception) {
                         Exception throwableException = exception.getException();
                         if (throwableException instanceof IllegalAccessException) {

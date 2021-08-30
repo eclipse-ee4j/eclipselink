@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,7 +35,6 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.logging.AbstractSessionLog;
 import org.eclipse.persistence.logging.SessionLog;
 import org.eclipse.persistence.logging.SessionLogEntry;
-import org.eclipse.persistence.sessions.Session;
 
 /**
  * INTERNAL:
@@ -47,18 +46,6 @@ public class PersistenceWeaver implements ClassTransformer {
 
     /** Class name in JVM '/' format to {@link ClassDetails} map. */
     protected Map<String, ClassDetails> classDetailsMap;
-
-    /**
-     * INTERNAL:
-     * Creates an instance of dynamic byte code weaver.
-     * @param session EclipseLink session (not used so {@code null} value is OK).
-     * @param classDetailsMap Class name to {@link ClassDetails} map.
-     * @deprecated Session instance is no longer needed for logging. Will be removed in 2.8.
-     */
-    @Deprecated
-    public PersistenceWeaver(final Session session, final Map<String, ClassDetails> classDetailsMap) {
-        this.classDetailsMap = classDetailsMap;
-    }
 
     /**
      * INTERNAL:

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,12 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface StoredProcedureParameter {
 
-    public StoredProcedureParameter setJdbcType(Integer jdbcType);
-    public StoredProcedureParameter setJdbcTypeName(String jdbcTypeName);
-    public StoredProcedureParameter setMode(String mode);
-    public StoredProcedureParameter setName(String name);
-    public StoredProcedureParameter setOptional(Boolean optional);
-    public StoredProcedureParameter setQueryParameter(String queryParameter);
-    public StoredProcedureParameter setType(String type);
+    StoredProcedureParameter setJdbcType(Integer jdbcType);
+    StoredProcedureParameter setJdbcTypeName(String jdbcTypeName);
+    StoredProcedureParameter setMode(String mode);
+    StoredProcedureParameter setName(String name);
+    StoredProcedureParameter setOptional(Boolean optional);
+    StoredProcedureParameter setQueryParameter(String queryParameter);
+    StoredProcedureParameter setType(String type);
 
 }
