@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -59,6 +59,7 @@
 package org.eclipse.persistence.internal.jpa.metadata;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.ValidationException;
 
@@ -227,7 +228,7 @@ public class MetadataLogger {
     /*************************************************************************/
 
     protected AbstractSession m_session;
-    protected HashMap m_ctxStrings;
+    protected Map<String, String> m_ctxStrings;
 
     /**
      * INTERNAL:
@@ -236,7 +237,7 @@ public class MetadataLogger {
         m_session = session;
 
         // Initialize the context strings.
-        m_ctxStrings = new HashMap();
+        m_ctxStrings = new HashMap<>();
 
         // Generic override messages for XML and annotations.
         addContextString(OVERRIDE_ANNOTATION_WITH_XML);
@@ -387,7 +388,7 @@ public class MetadataLogger {
      * Return the logging context string for the given context.
      */
     protected String getLoggingContextString(String context) {
-        String ctxString = (String) m_ctxStrings.get(context);
+        String ctxString = m_ctxStrings.get(context);
 
         if (ctxString == null) {
            throw ValidationException.missingContextStringForContext(context);

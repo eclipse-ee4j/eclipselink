@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,11 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface SequenceGenerator {
 
-    public SequenceGenerator setAllocationSize(Integer allocationSize);
-    public SequenceGenerator setCatalog(String catalog);
-    public SequenceGenerator setInitialValue(Integer initialValue);
-    public SequenceGenerator setName(String name);
-    public SequenceGenerator setSchema(String schema);
-    public SequenceGenerator setSequenceName(String sequenceName);
+    SequenceGenerator setAllocationSize(Integer allocationSize);
+    SequenceGenerator setCatalog(String catalog);
+    SequenceGenerator setInitialValue(Integer initialValue);
+    SequenceGenerator setName(String name);
+    SequenceGenerator setSchema(String schema);
+    SequenceGenerator setSequenceName(String sequenceName);
 
 }

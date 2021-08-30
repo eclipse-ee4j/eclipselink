@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,52 +22,52 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface ElementCollection {
 
-    public AssociationOverride addAssociationOverride();
-    public AttributeOverride addAttributeOverride();
-    public Convert addConvert();
-    public AssociationOverride addMapKeyAssociationOverride();
-    public AttributeOverride addMapKeyAttributeOverride();
-    public Convert addMapKeyConvert();
-    public JoinColumn addMapKeyJoinColumn();
-    public Property addProperty();
-    public ElementCollection setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public ElementCollection setAttributeType(String attributeType);
-    public BatchFetch setBatchFetch();
-    public ElementCollection setCascadeOnDelete(Boolean cascadeOnDelete);
-    public CollectionTable setCollectionTable();
-    public Column setColumn();
-    public ElementCollection setCompositeMember(String compositeMember);
-    public ElementCollection setConvert(String convert);
-    public Converter setConverter();
-    public ElementCollection setDeleteAll(Boolean deleteAll);
-    public Enumerated setEnumerated();
-    public ElementCollection setFetch(String fetch);
-    public Field setField();
-    public HashPartitioning setHashPartitioning();
-    public ElementCollection setJoinFetch(String joinFetch);
-    public Lob setLob();
-    public MapKey setMapKey();
-    public ElementCollection setMapKeyClass(String mapKeyClass);
-    public Column setMapKeyColumn();
-    public ElementCollection setMapKeyConvert(String mapKeyConvert);
-    public Enumerated setMapKeyEnumerated();
-    public ForeignKey setMapKeyForeignKey();
-    public Temporal setMapKeyTemporal();
-    public ElementCollection setName(String name);
-    public ElementCollection setNonCacheable(Boolean nonCacheable);
-    public ObjectTypeConverter setObjectTypeConverter();
-    public ElementCollection setOrderBy(String orderBy);
-    public OrderColumn setOrderColumn();
-    public Partitioning setPartitioning();
-    public PinnedPartitioning setPinnedPartitioning();
-    public RangePartitioning setRangePartitioning();
-    public ReplicationPartitioning setReplicationPartitioning();
-    public RoundRobinPartitioning setRoundRobinPartitioning();
-    public StructConverter setStructConverter();
-    public ElementCollection setTargetClass(String targetClass);
-    public Temporal setTemporal();
-    public TypeConverter setTypeConverter();
-    public UnionPartitioning setUnionPartitioning();
-    public ValuePartitioning setValuePartitioning();
+    AssociationOverride addAssociationOverride();
+    AttributeOverride addAttributeOverride();
+    Convert addConvert();
+    AssociationOverride addMapKeyAssociationOverride();
+    AttributeOverride addMapKeyAttributeOverride();
+    Convert addMapKeyConvert();
+    JoinColumn addMapKeyJoinColumn();
+    Property addProperty();
+    ElementCollection setAccess(String access);
+    AccessMethods setAccessMethods();
+    ElementCollection setAttributeType(String attributeType);
+    BatchFetch setBatchFetch();
+    ElementCollection setCascadeOnDelete(Boolean cascadeOnDelete);
+    CollectionTable setCollectionTable();
+    Column setColumn();
+    ElementCollection setCompositeMember(String compositeMember);
+    ElementCollection setConvert(String convert);
+    Converter setConverter();
+    ElementCollection setDeleteAll(Boolean deleteAll);
+    Enumerated setEnumerated();
+    ElementCollection setFetch(String fetch);
+    Field setField();
+    HashPartitioning setHashPartitioning();
+    ElementCollection setJoinFetch(String joinFetch);
+    Lob setLob();
+    MapKey setMapKey();
+    ElementCollection setMapKeyClass(String mapKeyClass);
+    Column setMapKeyColumn();
+    ElementCollection setMapKeyConvert(String mapKeyConvert);
+    Enumerated setMapKeyEnumerated();
+    ForeignKey setMapKeyForeignKey();
+    Temporal setMapKeyTemporal();
+    ElementCollection setName(String name);
+    ElementCollection setNonCacheable(Boolean nonCacheable);
+    ObjectTypeConverter setObjectTypeConverter();
+    ElementCollection setOrderBy(String orderBy);
+    OrderColumn setOrderColumn();
+    Partitioning setPartitioning();
+    PinnedPartitioning setPinnedPartitioning();
+    RangePartitioning setRangePartitioning();
+    ReplicationPartitioning setReplicationPartitioning();
+    RoundRobinPartitioning setRoundRobinPartitioning();
+    StructConverter setStructConverter();
+    ElementCollection setTargetClass(String targetClass);
+    Temporal setTemporal();
+    TypeConverter setTypeConverter();
+    UnionPartitioning setUnionPartitioning();
+    ValuePartitioning setValuePartitioning();
 }

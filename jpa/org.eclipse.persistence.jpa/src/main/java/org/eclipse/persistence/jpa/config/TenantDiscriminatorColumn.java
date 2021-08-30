@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,12 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface TenantDiscriminatorColumn {
 
-    public TenantDiscriminatorColumn setColumnDefinition(String columnDefinition);
-    public TenantDiscriminatorColumn setContextProperty(String contextProperty);
-    public TenantDiscriminatorColumn setDiscriminatorType(String discriminatorType);
-    public TenantDiscriminatorColumn setLength(Integer length);
-    public TenantDiscriminatorColumn setName(String name);
-    public TenantDiscriminatorColumn setPrimaryKey(Boolean primaryKey);
-    public TenantDiscriminatorColumn setTable(String table);
+    TenantDiscriminatorColumn setColumnDefinition(String columnDefinition);
+    TenantDiscriminatorColumn setContextProperty(String contextProperty);
+    TenantDiscriminatorColumn setDiscriminatorType(String discriminatorType);
+    TenantDiscriminatorColumn setLength(Integer length);
+    TenantDiscriminatorColumn setName(String name);
+    TenantDiscriminatorColumn setPrimaryKey(Boolean primaryKey);
+    TenantDiscriminatorColumn setTable(String table);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -204,10 +204,8 @@ public class CMP3Policy extends CMPPolicy {
     @Override
     public Object getPKClassInstance() {
         try {
-            return getPKClass().newInstance();
-        } catch (IllegalAccessException ex) {
-            throw DescriptorException.exceptionAccessingPrimaryKeyInstance(this.getDescriptor(), ex);
-        } catch (InstantiationException ex){
+            return getPKClass().getConstructor().newInstance();
+        } catch (ReflectiveOperationException ex) {
             throw DescriptorException.exceptionAccessingPrimaryKeyInstance(this.getDescriptor(), ex);
         }
     }
@@ -329,7 +327,7 @@ public class CMP3Policy extends CMPPolicy {
                 while (mapping.isAggregateObjectMapping()) {
                     Object aggregate = mapping.getRealAttributeValueFromObject(toWriteInto, session);
                     if (aggregate == null) {
-                        aggregate = mapping.getReferenceDescriptor().getJavaClass().newInstance();
+                        aggregate = mapping.getReferenceDescriptor().getJavaClass().getConstructor().newInstance();
                         mapping.setRealAttributeValueInObject(toWriteInto, aggregate);
                     }
                     mapping = mapping.getReferenceDescriptor().getObjectBuilder().getMappingForAttributeName(keyElements[index].getAttributeName());

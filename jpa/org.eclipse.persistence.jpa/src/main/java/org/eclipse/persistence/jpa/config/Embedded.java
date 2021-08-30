@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,14 +22,14 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Embedded {
 
-    public AssociationOverride addAssociationOverride();
-    public AttributeOverride addAttributeOverride();
-    public Convert addConvert();
-    public Property addProperty();
-    public Embedded setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public Embedded setAttributeType(String attributeType);
-    public Field setField();
-    public Embedded setName(String name);
+    AssociationOverride addAssociationOverride();
+    AttributeOverride addAttributeOverride();
+    Convert addConvert();
+    Property addProperty();
+    Embedded setAccess(String access);
+    AccessMethods setAccessMethods();
+    Embedded setAttributeType(String attributeType);
+    Field setField();
+    Embedded setName(String name);
 
 }

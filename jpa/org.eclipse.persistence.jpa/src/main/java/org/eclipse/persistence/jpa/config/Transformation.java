@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,15 +22,15 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Transformation {
 
-    public Property addProperty();
-    public WriteTransformer addWriteTransformer();
-    public Transformation setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public Transformation setAttributeType(String attributeType);
-    public Transformation setFetch(String fetch);
-    public Transformation setMutable(Boolean mutable);
-    public Transformation setName(String name);
-    public Transformation setOptional(Boolean optional);
-    public ReadTransformer setReadTransformer();
+    Property addProperty();
+    WriteTransformer addWriteTransformer();
+    Transformation setAccess(String access);
+    AccessMethods setAccessMethods();
+    Transformation setAttributeType(String attributeType);
+    Transformation setFetch(String fetch);
+    Transformation setMutable(Boolean mutable);
+    Transformation setName(String name);
+    Transformation setOptional(Boolean optional);
+    ReadTransformer setReadTransformer();
 
 }

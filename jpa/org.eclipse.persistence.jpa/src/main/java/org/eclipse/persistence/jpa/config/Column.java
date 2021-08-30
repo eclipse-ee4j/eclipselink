@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,15 +22,15 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Column {
 
-    public Column setName(String name);
-    public Column setUnique(Boolean unique);
-    public Column setNullable(Boolean nullable);
-    public Column setInsertable(Boolean insertable);
-    public Column setUpdatable(Boolean updatable);
-    public Column setColumnDefinition(String columnDefinition);
-    public Column setTable(String table);
-    public Column setLength(Integer length);
-    public Column setPrecision(Integer precision);
-    public Column setScale(Integer scale);
+    Column setName(String name);
+    Column setUnique(Boolean unique);
+    Column setNullable(Boolean nullable);
+    Column setInsertable(Boolean insertable);
+    Column setUpdatable(Boolean updatable);
+    Column setColumnDefinition(String columnDefinition);
+    Column setTable(String table);
+    Column setLength(Integer length);
+    Column setPrecision(Integer precision);
+    Column setScale(Integer scale);
 
 }

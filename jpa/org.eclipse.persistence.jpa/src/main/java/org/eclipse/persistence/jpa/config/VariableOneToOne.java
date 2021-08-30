@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,28 +22,28 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface VariableOneToOne {
 
-    public DiscriminatorClass addDiscriminatorClass();
-    public JoinColumn addJoinColumn();
-    public Property addProperty();
-    public VariableOneToOne setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public Cascade setCascade();
-    public DiscriminatorColumn setDiscriminatorColumn();
-    public VariableOneToOne setFetch(String fetch);
-    public HashPartitioning setHashPartitioning();
-    public VariableOneToOne setName(String name);
-    public VariableOneToOne setNonCacheable(Boolean nonCacheable);
-    public VariableOneToOne setOptional(Boolean optional);
-    public VariableOneToOne setOrphanRemoval(Boolean orphanRemoval);
-    public VariableOneToOne setPartitioned(String partitioned);
-    public Partitioning setPartitioning();
-    public PinnedPartitioning setPinnedPartitioning();
-    public VariableOneToOne setPrivateOwned(Boolean privateOwned);
-    public RangePartitioning setRangePartitioning();
-    public ReplicationPartitioning setReplicationPartitioning();
-    public RoundRobinPartitioning setRoundRobinPartitioning();
-    public VariableOneToOne setTargetInterface(String targetInterface);
-    public UnionPartitioning setUnionPartitioning();
-    public ValuePartitioning setValuePartitioning();
+    DiscriminatorClass addDiscriminatorClass();
+    JoinColumn addJoinColumn();
+    Property addProperty();
+    VariableOneToOne setAccess(String access);
+    AccessMethods setAccessMethods();
+    Cascade setCascade();
+    DiscriminatorColumn setDiscriminatorColumn();
+    VariableOneToOne setFetch(String fetch);
+    HashPartitioning setHashPartitioning();
+    VariableOneToOne setName(String name);
+    VariableOneToOne setNonCacheable(Boolean nonCacheable);
+    VariableOneToOne setOptional(Boolean optional);
+    VariableOneToOne setOrphanRemoval(Boolean orphanRemoval);
+    VariableOneToOne setPartitioned(String partitioned);
+    Partitioning setPartitioning();
+    PinnedPartitioning setPinnedPartitioning();
+    VariableOneToOne setPrivateOwned(Boolean privateOwned);
+    RangePartitioning setRangePartitioning();
+    ReplicationPartitioning setReplicationPartitioning();
+    RoundRobinPartitioning setRoundRobinPartitioning();
+    VariableOneToOne setTargetInterface(String targetInterface);
+    UnionPartitioning setUnionPartitioning();
+    ValuePartitioning setValuePartitioning();
 
 }

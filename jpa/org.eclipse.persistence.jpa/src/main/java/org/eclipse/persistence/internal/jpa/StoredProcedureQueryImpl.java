@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2019 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -57,10 +57,7 @@ import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TemporalType;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
-import org.eclipse.persistence.internal.databaseaccess.Accessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseAccessor;
-import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
-import org.eclipse.persistence.internal.databaseaccess.OutputParameterForCallableStatement;
+import org.eclipse.persistence.internal.databaseaccess.*;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.jpa.querydef.ParameterExpressionImpl;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
@@ -435,11 +432,11 @@ public class StoredProcedureQueryImpl extends QueryImpl implements StoredProcedu
 
                 DatabaseField field = null;
 
-                if (parameterType == getCall().INOUT) {
+                if (parameterType == DatasourceCall.INOUT) {
                     field = (DatabaseField) ((Object[]) parameter)[0];
-                } else if (parameterType == getCall().IN) {
+                } else if (parameterType == DatasourceCall.IN) {
                     field = (DatabaseField) parameter;
-                } else if (parameterType == getCall().OUT || parameterType == getCall().OUT_CURSOR) {
+                } else if (parameterType == DatasourceCall.OUT || parameterType == DatasourceCall.OUT_CURSOR) {
                     if (parameter instanceof OutputParameterForCallableStatement) {
                         field = ((OutputParameterForCallableStatement) parameter).getOutputField();
                     } else {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,9 +36,13 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
  * @author Mitesh Meswani
  */
 public interface BeanValidationInitializationHelper {
-    public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader);
+    void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader);
 
-    static class BeanValidationInitializationHelperImpl implements BeanValidationInitializationHelper {
+    class BeanValidationInitializationHelperImpl implements BeanValidationInitializationHelper {
+
+        public BeanValidationInitializationHelperImpl() {
+        }
+
         @Override
         public void bootstrapBeanValidation(Map puProperties, AbstractSession session, ClassLoader appClassLoader) {
 
