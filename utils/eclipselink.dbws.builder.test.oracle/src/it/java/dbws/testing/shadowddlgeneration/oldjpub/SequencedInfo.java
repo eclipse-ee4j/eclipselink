@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ public abstract class SequencedInfo {
                 v.add(p[i]);
             }
             for (int i = 0; i < vLen; i++) {
-                p[i] = (SequencedInfo)v.get(vLen - i - 1);
+                p[i] = v.get(vLen - i - 1);
             }
         }
         return p;

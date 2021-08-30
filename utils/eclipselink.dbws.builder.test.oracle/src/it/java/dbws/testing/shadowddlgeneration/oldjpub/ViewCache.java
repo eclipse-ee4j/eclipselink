@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -304,11 +304,11 @@ public class ViewCache implements Externalizable {
                 stmt += " IS NOT NULL";
             }
             else if (values[i] instanceof java.lang.String) {
-                stmt += "='" + ((java.lang.String)values[i]) + "'";
+                stmt += "='" + values[i] + "'";
             }
             else if ((values[i] instanceof java.lang.String)
                 && ((String)values[i]).indexOf("%") > -1) {
-                stmt += " like '" + ((java.lang.String)values[i]) + "'";
+                stmt += " like '" + values[i] + "'";
             }
             else {
                 stmt += "=" + values[i];

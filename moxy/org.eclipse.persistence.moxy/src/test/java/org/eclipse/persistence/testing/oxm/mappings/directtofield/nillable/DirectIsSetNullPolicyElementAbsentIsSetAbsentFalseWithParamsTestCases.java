@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -46,7 +46,7 @@ public class DirectIsSetNullPolicyElementAbsentIsSetAbsentFalseWithParamsTestCas
 
         // TODO: verify EMPTY_STRING behavior
         //Object[] isSetParameters = {"x","y", false, (int)1, (short)1, (long)1, (double)1.0, (float)1.0, (byte)1};
-        Object[] isSetParameters = {"x","y", new Boolean(true), new Integer(255), new Short((short)32767), new Long(1), new Double(1.0), new Float(-1.0), new Byte((byte)32), new Character('C')};
+        Object[] isSetParameters = {"x","y", Boolean.valueOf(true), Integer.valueOf(255), Short.valueOf((short)32767), Long.valueOf(1), Double.valueOf(1.0), Float.valueOf(-1.0f), Byte.valueOf((byte)32), Character.valueOf('C')};
         //Object[] isSetParameters = {"x","y"};
 
         ((IsSetNullPolicy)aNullPolicy).setIsSetMethodName("isSetFirstName");

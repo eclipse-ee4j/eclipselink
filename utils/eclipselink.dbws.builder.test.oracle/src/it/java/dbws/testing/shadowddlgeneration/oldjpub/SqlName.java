@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -288,17 +288,17 @@ public class SqlName extends Name {
      */
     @Override
     public String getUseClass(String currPackage) {
-        return ((JavaName)getLangName()).getUseClass(currPackage);
+        return getLangName().getUseClass(currPackage);
     }
 
     @Override
     public String getUseClass() {
-        return ((JavaName)getLangName()).getUseClass();
+        return getLangName().getUseClass();
     }
 
     @Override
     public String getUseClass(boolean full) {
-        return ((JavaName)getLangName()).getUseClass(full);
+        return getLangName().getUseClass(full);
     }
 
     /**
@@ -306,7 +306,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getUsePackage() {
-        return ((JavaName)getLangName()).getUsePackage();
+        return getLangName().getUsePackage();
     }
 
     /**
@@ -314,7 +314,7 @@ public class SqlName extends Name {
      */
     @Override
     public boolean hasUseClass() {
-        return ((JavaName)getLangName()).hasUseClass();
+        return getLangName().hasUseClass();
     }
 
     /**
@@ -322,7 +322,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getUseItf() {
-        return ((JavaName)getLangName()).getUseItf();
+        return getLangName().getUseItf();
     }
 
     /**
@@ -337,7 +337,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getUseItfPackage() {
-        return ((JavaName)getLangName()).getUseItfPackage();
+        return getLangName().getUseItfPackage();
     }
 
     /**
@@ -430,7 +430,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getDeclItf() {
-        return ((JavaName)getLangName()).getDeclItf();
+        return getLangName().getDeclItf();
     }
 
     /**
@@ -445,7 +445,7 @@ public class SqlName extends Name {
      */
     @Override
     public String getDeclItfPackage() {
-        return ((JavaName)getLangName()).getDeclItfPackage();
+        return getLangName().getDeclItfPackage();
     }
 
     /**

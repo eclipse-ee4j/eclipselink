@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -96,14 +96,14 @@ public class ConversionDataObject {
         example.aPByte = 1;
         example.setAPByteArray(new byte[] { 1, 2, 3 });
         example.aPShort = 1;
-        example.aCharacter = new Character('a');
-        example.anInteger = new Integer(1);
-        example.aFloat = new Float(1.0);
-        example.aBoolean = new Boolean(false);
-        example.aLong = new Long(1L);
-        example.aDouble = new Double(1.0);
-        example.aByte = new Byte((byte)1);
-        example.aShort = new Short((short)1);
+        example.aCharacter = Character.valueOf('a');
+        example.anInteger = Integer.valueOf(1);
+        example.aFloat = Float.valueOf(1.0f);
+        example.aBoolean = Boolean.valueOf(false);
+        example.aLong = Long.valueOf(1L);
+        example.aDouble = Double.valueOf(1.0);
+        example.aByte = Byte.valueOf((byte)1);
+        example.aShort = Short.valueOf((short)1);
         example.aBigDecimal = new java.math.BigDecimal(1.0);
         example.aBigInteger = new java.math.BigInteger("1");
         example.aNumber = example.aBigDecimal;
@@ -155,14 +155,14 @@ public class ConversionDataObject {
         example.aPByte = 2;
         example.setAPByteArray(new byte[] { 4, 5, 6 });
         example.aPShort = 2;
-        example.aCharacter = new Character('b');
-        example.anInteger = new Integer(2);
-        example.aFloat = new Float(2.0);
-        example.aBoolean = new Boolean(true);
-        example.aLong = new Long(2L);
-        example.aDouble = new Double(2.0);
-        example.aByte = new Byte((byte)2);
-        example.aShort = new Short((short)2);
+        example.aCharacter = Character.valueOf('b');
+        example.anInteger = Integer.valueOf(2);
+        example.aFloat = Float.valueOf(2.0f);
+        example.aBoolean = Boolean.valueOf(true);
+        example.aLong = Long.valueOf(2L);
+        example.aDouble = Double.valueOf(2.0);
+        example.aByte = Byte.valueOf((byte)2);
+        example.aShort = Short.valueOf((short)2);
         example.aBigDecimal = new java.math.BigDecimal(2.0);
         example.aBigInteger = new java.math.BigInteger("2");
         example.aNumber = example.aBigDecimal;
@@ -213,14 +213,14 @@ public class ConversionDataObject {
         example.aPByte = 3;
         example.setAPByteArray(new byte[] { 7, 8, 9 });
         example.aPShort = 3;
-        example.aCharacter = new Character('c');
-        example.anInteger = new Integer(3);
-        example.aFloat = new Float(3.0);
-        example.aBoolean = new Boolean(true);
-        example.aLong = new Long(3L);
-        example.aDouble = new Double(3.0);
-        example.aByte = new Byte((byte)3);
-        example.aShort = new Short((short)3);
+        example.aCharacter = Character.valueOf('c');
+        example.anInteger = Integer.valueOf(3);
+        example.aFloat = Float.valueOf(3.0f);
+        example.aBoolean = Boolean.valueOf(true);
+        example.aLong = Long.valueOf(3L);
+        example.aDouble = Double.valueOf(3.0);
+        example.aByte = Byte.valueOf((byte)3);
+        example.aShort = Short.valueOf((short)3);
         example.aBigDecimal = new java.math.BigDecimal(3.0);
         example.aBigInteger = new java.math.BigInteger("3");
         example.aNumber = example.aBigDecimal;

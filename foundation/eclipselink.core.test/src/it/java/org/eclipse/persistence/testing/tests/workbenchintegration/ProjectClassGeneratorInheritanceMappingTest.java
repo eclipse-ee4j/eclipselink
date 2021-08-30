@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,10 +37,10 @@ public class ProjectClassGeneratorInheritanceMappingTest extends ProjectClassGen
         InheritancePolicy iPolicy = project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class).getInheritancePolicy();
 
         // Inheritance Properties.
-        iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, new Byte("1"));
-        iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class, new Short("2"));
-        iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.Project.class, new Long("3"));
-        iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.PhoneNumber.class, new Double("4.0"));
+        iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, Byte.valueOf("1"));
+        iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class, Short.valueOf("2"));
+        iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.Project.class, Long.valueOf("3"));
+        iPolicy.addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.PhoneNumber.class, Double.valueOf("4.0"));
     }
 
     /**

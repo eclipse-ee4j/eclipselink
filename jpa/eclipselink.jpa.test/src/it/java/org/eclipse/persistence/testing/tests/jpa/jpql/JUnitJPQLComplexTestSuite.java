@@ -785,8 +785,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee) expectedResult.elementAt(0);
         Employee emp2 = (Employee) expectedResult.elementAt(1);
 
-        double salarySquareRoot1 = Math.sqrt((new Double(emp1.getSalary()).doubleValue()));
-        double salarySquareRoot2 = Math.sqrt((new Double(emp2.getSalary()).doubleValue()));
+        double salarySquareRoot1 = Math.sqrt((Double.valueOf(emp1.getSalary()).doubleValue()));
+        double salarySquareRoot2 = Math.sqrt((Double.valueOf(emp2.getSalary()).doubleValue()));
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + salarySquareRoot1;
@@ -824,8 +824,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Employee emp1 = (Employee) expectedResult.elementAt(0);
         Employee emp2 = (Employee) expectedResult.elementAt(1);
 
-        double salarySquareRoot1 = Math.sqrt((new Double(emp1.getSalary()).doubleValue()));
-        double salarySquareRoot2 = Math.sqrt((new Double(emp2.getSalary()).doubleValue()));
+        double salarySquareRoot1 = Math.sqrt((Double.valueOf(emp1.getSalary()).doubleValue()));
+        double salarySquareRoot2 = Math.sqrt((Double.valueOf(emp2.getSalary()).doubleValue()));
 
         String ejbqlString = "SELECT OBJECT(emp) FROM Employee emp WHERE ";
         ejbqlString = ejbqlString + "(SQRT(emp.salary) = ";
@@ -1387,7 +1387,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
                 sum += e.getSalary();
             }
         }
-        LongHolder expectedResult = new LongHolder(new Long(sum), new Long(count));
+        LongHolder expectedResult = new LongHolder(Long.valueOf(sum), Long.valueOf(count));
 
         Assert.assertTrue("Constructor with aggregates argument Test Case Failed", result.equals(expectedResult));
     }
@@ -1404,7 +1404,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
             Collection managed = e.getManagedEmployees();
             if ((managed != null) && (managed.size() > 0)) {
                 EmployeeDetail d = new EmployeeDetail(
-                    e.getFirstName(), e.getLastName(), new Long(managed.size()));
+                    e.getFirstName(), e.getLastName(), Long.valueOf(managed.size()));
                 expectedResult.add(d);
             }
         }
@@ -2722,8 +2722,8 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         em.persist(consumer);
         em.flush();
         List expectedResult = new ArrayList();
-        expectedResult.add(new Integer(0));
-        expectedResult.add(new Integer(1));
+        expectedResult.add(Integer.valueOf(0));
+        expectedResult.add(Integer.valueOf(1));
         clearCache();
         String ejbqlString = "select index(d) from EXPERT_CONSUMER e join e.designations d";
 

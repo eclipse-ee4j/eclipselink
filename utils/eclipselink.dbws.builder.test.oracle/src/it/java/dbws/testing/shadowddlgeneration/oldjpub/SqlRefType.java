@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,7 +44,7 @@ public class SqlRefType extends SqlType {
 
     public String getTargetTypeName() {
         if (m_refeeType instanceof SqlType) {
-            return "REF " + ((SqlType)m_refeeType).getTargetTypeName();
+            return "REF " + m_refeeType.getTargetTypeName();
         }
         else {
             return getName();
@@ -53,7 +53,7 @@ public class SqlRefType extends SqlType {
 
     public String getTypeName() {
         if (m_refeeType instanceof SqlType) {
-            return "REF " + ((SqlType)m_refeeType).getTypeName();
+            return "REF " + m_refeeType.getTypeName();
         }
         else {
             return getName();
