@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,31 +22,31 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Id {
 
-    public Property addProperty();
-    public Id setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public Id setAttributeType(String attributeType);
-    public CacheIndex setCacheIndex();
-    public Column setColumn();
-    public Id setConvert(String convert);
-    public Converter setConverter();
-    public Enumerated setEnumerated();
-    public Id setFetch(String fetch);
-    public Field setField();
-    public GeneratedValue setGeneratedValue();
-    public Index setIndex();
-    public Lob setLob();
-    public Id setMutable(Boolean mutable);
-    public Id setName(String name);
-    public ObjectTypeConverter setObjectTypeConverter();
-    public Id setOptional(Boolean optional);
-    public ReturnInsert setReturnInsert();
-    public Id setReturnUpdate();
-    public SequenceGenerator setSequenceGenerator();
-    public StructConverter setStructConverter();
-    public TableGenerator setTableGenerator();
-    public Temporal setTemporal();
-    public TypeConverter setTypeConverter();
-    public UuidGenerator setUuidGenerator();
+    Property addProperty();
+    Id setAccess(String access);
+    AccessMethods setAccessMethods();
+    Id setAttributeType(String attributeType);
+    CacheIndex setCacheIndex();
+    Column setColumn();
+    Id setConvert(String convert);
+    Converter setConverter();
+    Enumerated setEnumerated();
+    Id setFetch(String fetch);
+    Field setField();
+    GeneratedValue setGeneratedValue();
+    Index setIndex();
+    Lob setLob();
+    Id setMutable(Boolean mutable);
+    Id setName(String name);
+    ObjectTypeConverter setObjectTypeConverter();
+    Id setOptional(Boolean optional);
+    ReturnInsert setReturnInsert();
+    Id setReturnUpdate();
+    SequenceGenerator setSequenceGenerator();
+    StructConverter setStructConverter();
+    TableGenerator setTableGenerator();
+    Temporal setTemporal();
+    TypeConverter setTypeConverter();
+    UuidGenerator setUuidGenerator();
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,12 +22,12 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface QueryRedirectors {
 
-    public QueryRedirectors setAllQueriesRedirector(String defaultRedirector);
-    public QueryRedirectors setDeleteRedirector(String deleteRedirector);
-    public QueryRedirectors setInsertRedirector(String insertRedirector);
-    public QueryRedirectors setReadAllRedirector(String readAllRedirector);
-    public QueryRedirectors setReadObjectRedirector(String readObjectRedirector);
-    public QueryRedirectors setReportRedirector(String reportRedirector);
-    public QueryRedirectors setUpdateRedirector(String updateRedirector);
+    QueryRedirectors setAllQueriesRedirector(String defaultRedirector);
+    QueryRedirectors setDeleteRedirector(String deleteRedirector);
+    QueryRedirectors setInsertRedirector(String insertRedirector);
+    QueryRedirectors setReadAllRedirector(String readAllRedirector);
+    QueryRedirectors setReadObjectRedirector(String readObjectRedirector);
+    QueryRedirectors setReportRedirector(String reportRedirector);
+    QueryRedirectors setUpdateRedirector(String updateRedirector);
 
 }

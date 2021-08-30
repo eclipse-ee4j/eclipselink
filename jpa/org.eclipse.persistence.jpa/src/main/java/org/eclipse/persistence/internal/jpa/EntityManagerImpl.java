@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2019 IBM Corporation and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -157,7 +157,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     protected enum OperationType {FIND, REFRESH, LOCK};
 
     /** Allows transparent transactions across JTA and local transactions. */
-    protected TransactionWrapperImpl transaction;
+    private TransactionWrapperImpl transaction;
 
     /** Store if this entity manager has been closed. */
     protected boolean isOpen;
@@ -255,7 +255,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     abstract static class PropertyProcessor {
         abstract void process(String name, Object value, EntityManagerImpl em);
     }
-    static Map<String, PropertyProcessor> processors = new HashMap() {
+    static Map<String, PropertyProcessor> processors = new HashMap<>() {
         {
             put(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, new PropertyProcessor() {
             @Override
@@ -377,10 +377,10 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             @Override
             void process(String name, Object value, EntityManagerImpl em) {
                 if( em.connectionPolicies != null) {
-                    Map mapOfProperties = (Map)value;
-                    Iterator it = mapOfProperties.keySet().iterator();
+                    Map<String, ?> mapOfProperties = (Map<String, ?>) value;
+                    Iterator<String> it = mapOfProperties.keySet().iterator();
                     while (it.hasNext()) {
-                        String sessionName = (String)it.next();
+                        String sessionName = it.next();
                         if (em.connectionPolicies.containsKey(sessionName)) {
                             // Property used to create ConnectionPolicy has changed - already existing ConnectionPolicy should be removed.
                             // A new one will be created when the new active persistence context is created.
@@ -508,7 +508,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
             this.connectionPolicy = ((ServerSession)this.databaseSession).getDefaultConnectionPolicy();
         } else if (this.databaseSession.isBroker()) {
             SessionBroker broker = (SessionBroker)this.databaseSession;
-            this.connectionPolicies = new HashMap(broker.getSessionsByName().size());
+            this.connectionPolicies = new HashMap<>(broker.getSessionsByName().size());
             Iterator<Map.Entry<String, AbstractSession>> it = broker.getSessionsByName().entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, AbstractSession> entry = it.next();
@@ -2157,7 +2157,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
                 // getProperties method always returns non-null Map
                 this.properties = this.extendedPersistenceContext.getParent().getProperties();
             } else {
-                this.properties = new HashMap();
+                this.properties = new HashMap<>();
             }
         }
 
@@ -2873,7 +2873,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
      */
     @Override
     public Map<String, Object> getProperties() {
-        Map sessionMap = new HashMap(getAbstractSession().getProperties());
+        Map<String, Object> sessionMap = new HashMap<>(getAbstractSession().getProperties());
         if (this.properties != null) {
             sessionMap.putAll(this.properties);
         }
@@ -3100,13 +3100,13 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
         }
         List<EntityGraph<? super T>> result = new ArrayList<EntityGraph<? super T>>();
         for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-            result.add(new EntityGraphImpl(group));
+            result.add(new EntityGraphImpl<>(group));
         }
         if (descriptor.hasInheritance()){
             while(descriptor.getInheritancePolicy().getParentDescriptor() != null){
                 descriptor = descriptor.getInheritancePolicy().getParentDescriptor();
                 for (AttributeGroup group : descriptor.getAttributeGroups().values()){
-                    result.add(new EntityGraphImpl(group));
+                    result.add(new EntityGraphImpl<>(group));
                 }
             }
         }

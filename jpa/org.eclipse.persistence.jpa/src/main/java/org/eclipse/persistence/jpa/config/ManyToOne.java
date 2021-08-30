@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,31 +22,31 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface ManyToOne {
 
-    public JoinColumn addJoinColumn();
-    public JoinField addJoinField();
-    public Property addProperty();
-    public ManyToOne setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public BatchFetch setBatchFetch();
-    public Cascade setCascade();
-    public ManyToOne setFetch(String fetch);
-    public ForeignKey setForeignKey();
-    public HashPartitioning setHashPartitioning();
-    public ManyToOne setId(Boolean id);
-    public ManyToOne setJoinFetch(String joinFetch);
-    public JoinTable setJoinTable();
-    public ManyToOne setMapsId(String mapsId);
-    public ManyToOne setName(String name);
-    public ManyToOne setNonCacheable(Boolean nonCacheable);
-    public ManyToOne setOptional(Boolean optional);
-    public ManyToOne setPartitioned(String partitioned);
-    public Partitioning setPartitioning();
-    public PinnedPartitioning setPinnedPartitioning();
-    public RangePartitioning setRangePartitioning();
-    public ReplicationPartitioning setReplicationPartitioning();
-    public RoundRobinPartitioning setRoundRobinPartitioning();
-    public ManyToOne setTargetEntity(String targetEntity);
-    public UnionPartitioning setUnionPartitioning();
-    public ValuePartitioning setValuePartitioning();
+    JoinColumn addJoinColumn();
+    JoinField addJoinField();
+    Property addProperty();
+    ManyToOne setAccess(String access);
+    AccessMethods setAccessMethods();
+    BatchFetch setBatchFetch();
+    Cascade setCascade();
+    ManyToOne setFetch(String fetch);
+    ForeignKey setForeignKey();
+    HashPartitioning setHashPartitioning();
+    ManyToOne setId(Boolean id);
+    ManyToOne setJoinFetch(String joinFetch);
+    JoinTable setJoinTable();
+    ManyToOne setMapsId(String mapsId);
+    ManyToOne setName(String name);
+    ManyToOne setNonCacheable(Boolean nonCacheable);
+    ManyToOne setOptional(Boolean optional);
+    ManyToOne setPartitioned(String partitioned);
+    Partitioning setPartitioning();
+    PinnedPartitioning setPinnedPartitioning();
+    RangePartitioning setRangePartitioning();
+    ReplicationPartitioning setReplicationPartitioning();
+    RoundRobinPartitioning setRoundRobinPartitioning();
+    ManyToOne setTargetEntity(String targetEntity);
+    UnionPartitioning setUnionPartitioning();
+    ValuePartitioning setValuePartitioning();
 
 }

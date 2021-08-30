@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,13 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface JoinColumn {
 
-    public JoinColumn setName(String name);
-    public JoinColumn setReferencedColumnName(String referencedColumnName);
-    public JoinColumn setUnique(Boolean unique);
-    public JoinColumn setNullable(Boolean nullable);
-    public JoinColumn setInsertable(Boolean insertable);
-    public JoinColumn setUpdatable(Boolean updatable);
-    public JoinColumn setColumnDefinition(String columnDefinition);
-    public JoinColumn setTable(String table);
+    JoinColumn setName(String name);
+    JoinColumn setReferencedColumnName(String referencedColumnName);
+    JoinColumn setUnique(Boolean unique);
+    JoinColumn setNullable(Boolean nullable);
+    JoinColumn setInsertable(Boolean insertable);
+    JoinColumn setUpdatable(Boolean updatable);
+    JoinColumn setColumnDefinition(String columnDefinition);
+    JoinColumn setTable(String table);
 
 }

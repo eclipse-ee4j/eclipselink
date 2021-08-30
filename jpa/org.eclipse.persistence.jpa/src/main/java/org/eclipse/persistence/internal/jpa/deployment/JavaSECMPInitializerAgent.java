@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,6 +31,10 @@ import java.lang.reflect.Method;
  * that no domain classes that use lazy loading may be references in any way other than reflective in the application
  */
 public class JavaSECMPInitializerAgent {
+
+    private JavaSECMPInitializerAgent() {
+    }
+
     public static void premain(String agentArgs, Instrumentation instr) throws Throwable {
         // Reflection allows:
         //  JavaSECMPInitializerAgent to be the *ONLY* class is the jar file specified in -javaagent;

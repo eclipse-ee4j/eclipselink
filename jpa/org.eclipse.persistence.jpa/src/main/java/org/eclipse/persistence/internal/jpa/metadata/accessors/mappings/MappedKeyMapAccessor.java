@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,55 +49,55 @@ public interface MappedKeyMapAccessor {
     /**
      * INTERNAL:
      */
-    public List<AssociationOverrideMetadata> getMapKeyAssociationOverrides();
+    List<AssociationOverrideMetadata> getMapKeyAssociationOverrides();
 
     /**
      * INTERNAL:
      */
-    public List<AttributeOverrideMetadata> getMapKeyAttributeOverrides();
+    List<AttributeOverrideMetadata> getMapKeyAttributeOverrides();
 
     /**
      * INTERNAL:
      */
-    public MapKeyMetadata getMapKey();
+    MapKeyMetadata getMapKey();
 
     /**
      * INTERNAL:
      */
-    public MetadataClass getMapKeyClass();
+    MetadataClass getMapKeyClass();
 
     /**
      * INTERNAL:
      */
-    public MetadataClass getMapKeyClassWithGenerics();
+    MetadataClass getMapKeyClassWithGenerics();
 
     /**
      * INTERNAL:
      */
-    public String getMapKeyConvert();
+    String getMapKeyConvert();
 
     /**
      * INTERNAL:
      */
-    public List<ConvertMetadata> getMapKeyConverts();
+    List<ConvertMetadata> getMapKeyConverts();
 
     /**
      * INTERNAL:
      */
-    public ColumnMetadata getMapKeyColumn();
+    ColumnMetadata getMapKeyColumn();
 
     /**
      * INTERNAL:
      */
-    public ForeignKeyMetadata getMapKeyForeignKey();
+    ForeignKeyMetadata getMapKeyForeignKey();
 
     /**
      * INTERNAL:
      */
-    public List<JoinColumnMetadata> getMapKeyJoinColumns();
+    List<JoinColumnMetadata> getMapKeyJoinColumns();
 
     /**
      * INTERNAL:
      */
-    public void setMapKeyClass(MetadataClass cls);
+    void setMapKeyClass(MetadataClass cls);
 }

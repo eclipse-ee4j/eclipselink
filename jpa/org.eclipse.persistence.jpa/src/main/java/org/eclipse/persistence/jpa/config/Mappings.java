@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,43 +22,43 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Mappings {
 
-    public Converter addConverter();
-    public ConverterClass addConverterClass();
-    public Embeddable addEmbeddable();
-    public Entity addEntity();
-    public HashPartitioning addHashPartitioning();
-    public MappedSuperclass addMappedSuperclass();
-    public NamedNativeQuery addNamedNativeQuery();
-    public NamedPlsqlStoredFunctionQuery addNamedPlsqlStoredFunctionQuery();
-    public NamedPlsqlStoredProcedureQuery addNamedPlsqlStoredProcedureQuery();
-    public NamedQuery addNamedQuery();
-    public NamedStoredFunctionQuery addNamedStoredFunctionQuery();
-    public NamedStoredProcedureQuery addNamedStoredProcedureQuery();
-    public ObjectTypeConverter addObjectTypeConverter();
-    public OracleArray addOracleArray();
-    public OracleObject addOracleObject();
-    public Partitioning addPartitioning();
-    public PinnedPartitioning addPinnedPartitioning();
-    public PlsqlRecord addPlsqlRecord();
-    public PlsqlTable addPlsqlTable();
-    public RangePartitioning addRangePartitioning();
-    public ReplicationPartitioning addReplicationPartititioning();
-    public RoundRobinPartitioning addRoundRobinPartitioning();
-    public SequenceGenerator addSequenceGenerator();
-    public SqlResultSetMapping addSqlResultSetMapping();
-    public StructConverter addStructConverter();
-    public TableGenerator addTableGenerator();
-    public TenantDiscriminatorColumn addTenantDiscriminatorColumn();
-    public TypeConverter addTypeConverter();
-    public UnionPartitioning addUnionPartitioning();
-    public UuidGenerator addUuidGenerator();
-    public ValuePartitioning addValuePartitioning();
-    public Mappings setAccess(String access);
-    public AccessMethods setAccessMethods();
-    public Mappings setCatalog(String catalog);
-    public Mappings setPackage(String pkg);
-    public PersistenceUnitMetadata setPersistenceUnitMetadata();
-    public Mappings setSchema(String schema);
-    public Mappings setVersion(String version);
+    Converter addConverter();
+    ConverterClass addConverterClass();
+    Embeddable addEmbeddable();
+    Entity addEntity();
+    HashPartitioning addHashPartitioning();
+    MappedSuperclass addMappedSuperclass();
+    NamedNativeQuery addNamedNativeQuery();
+    NamedPlsqlStoredFunctionQuery addNamedPlsqlStoredFunctionQuery();
+    NamedPlsqlStoredProcedureQuery addNamedPlsqlStoredProcedureQuery();
+    NamedQuery addNamedQuery();
+    NamedStoredFunctionQuery addNamedStoredFunctionQuery();
+    NamedStoredProcedureQuery addNamedStoredProcedureQuery();
+    ObjectTypeConverter addObjectTypeConverter();
+    OracleArray addOracleArray();
+    OracleObject addOracleObject();
+    Partitioning addPartitioning();
+    PinnedPartitioning addPinnedPartitioning();
+    PlsqlRecord addPlsqlRecord();
+    PlsqlTable addPlsqlTable();
+    RangePartitioning addRangePartitioning();
+    ReplicationPartitioning addReplicationPartititioning();
+    RoundRobinPartitioning addRoundRobinPartitioning();
+    SequenceGenerator addSequenceGenerator();
+    SqlResultSetMapping addSqlResultSetMapping();
+    StructConverter addStructConverter();
+    TableGenerator addTableGenerator();
+    TenantDiscriminatorColumn addTenantDiscriminatorColumn();
+    TypeConverter addTypeConverter();
+    UnionPartitioning addUnionPartitioning();
+    UuidGenerator addUuidGenerator();
+    ValuePartitioning addValuePartitioning();
+    Mappings setAccess(String access);
+    AccessMethods setAccessMethods();
+    Mappings setCatalog(String catalog);
+    Mappings setPackage(String pkg);
+    PersistenceUnitMetadata setPersistenceUnitMetadata();
+    Mappings setSchema(String schema);
+    Mappings setVersion(String version);
 
 }

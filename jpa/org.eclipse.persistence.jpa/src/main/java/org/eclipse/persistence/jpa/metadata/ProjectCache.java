@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,7 +40,7 @@ public interface ProjectCache {
      *
      * @since EclipseLink 2.4.1
      */
-    public Project retrieveProject(Map properties, ClassLoader loader, SessionLog log);
+    Project retrieveProject(Map<String, ?> properties, ClassLoader loader, SessionLog log);
 
     /**
      * PUBLIC: This method is responsible for caching a project instance representing the
@@ -48,7 +48,7 @@ public interface ProjectCache {
      *
      * @since EclipseLink 2.4.1
      */
-    public void storeProject(Project project, Map properties, SessionLog log);
+    void storeProject(Project project, Map<String, ?> properties, SessionLog log);
 
 
 }

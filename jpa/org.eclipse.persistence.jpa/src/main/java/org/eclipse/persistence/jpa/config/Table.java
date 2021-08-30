@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,11 +22,11 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface Table {
 
-    public Index addIndex();
-    public UniqueConstraint addUniqueConstraint();
-    public Table setCatalog(String catalog);
-    public Table setCreationSuffix(String creationSuffix);
-    public Table setName(String name);
-    public Table setSchema(String schema);
+    Index addIndex();
+    UniqueConstraint addUniqueConstraint();
+    Table setCatalog(String catalog);
+    Table setCreationSuffix(String creationSuffix);
+    Table setName(String name);
+    Table setSchema(String schema);
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 1998, 2018 IBM Corporation. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -1321,7 +1321,7 @@ public class MetadataProject {
 
                 if (PrivilegedAccessHelper.shouldUsePrivilegedAccess()) {
                     method = AccessController.doPrivileged(new PrivilegedGetDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null));
-                    m_sharedCacheMode = (SharedCacheMode) AccessController.doPrivileged(new PrivilegedMethodInvoker(method, m_persistenceUnitInfo));
+                    m_sharedCacheMode = AccessController.doPrivileged(new PrivilegedMethodInvoker<SharedCacheMode>(method, m_persistenceUnitInfo));
                 } else {
                     method = PrivilegedAccessHelper.getDeclaredMethod(PersistenceUnitInfo.class, "getSharedCacheMode", null);
                     m_sharedCacheMode = (SharedCacheMode) PrivilegedAccessHelper.invokeMethod(method, m_persistenceUnitInfo, null);
@@ -1594,8 +1594,8 @@ public class MetadataProject {
      * to be processed will be handled now.
      */
     protected void processAccessorsWithDerivedIDs() {
-        HashSet<ClassAccessor> processed = new HashSet();
-        HashSet<ClassAccessor> processing = new HashSet();
+        HashSet<ClassAccessor> processed = new HashSet<>();
+        HashSet<ClassAccessor> processing = new HashSet<>();
 
         for (ClassAccessor classAccessor : m_accessorsWithDerivedId.values()) {
             classAccessor.processDerivedId(processing, processed);

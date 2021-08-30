@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,7 +110,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public void addEnclosedClass(MetadataClass enclosedClass) {
         if (m_enclosedClasses == null) {
-            m_enclosedClasses = new ArrayList<MetadataClass>();
+            m_enclosedClasses = new ArrayList<>();
         }
 
         m_enclosedClasses.add(enclosedClass);
@@ -121,7 +121,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public void addField(MetadataField field) {
         if (m_fields == null) {
-            m_fields = new HashMap<String, MetadataField>();
+            m_fields = new HashMap<>();
         }
 
         m_fields.put(field.getName(), field);
@@ -132,7 +132,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public void addInterface(String interfaceName) {
         if (m_interfaces == null) {
-            m_interfaces = new ArrayList<String>();
+            m_interfaces = new ArrayList<>();
         }
 
         m_interfaces.add(interfaceName);
@@ -143,7 +143,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public void addMethod(MetadataMethod method) {
         if (m_methods == null) {
-            m_methods = new HashMap<String, MetadataMethod>();
+            m_methods = new HashMap<>();
         }
 
         m_methods.put(method.getName(), method);
@@ -243,7 +243,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public List<MetadataClass> getEnclosedClasses() {
         if (m_enclosedClasses == null) {
-            m_enclosedClasses = new ArrayList<MetadataClass>();
+            m_enclosedClasses = new ArrayList<>();
         }
 
         return m_enclosedClasses;
@@ -278,7 +278,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public Map<String, MetadataField> getFields() {
         if (m_fields == null) {
-            m_fields = new HashMap<String, MetadataField>();
+            m_fields = new HashMap<>();
 
             if (m_isLazy) {
                 m_factory.getMetadataClass(getName(), false);
@@ -293,7 +293,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public List<String> getInterfaces() {
         if (m_interfaces == null) {
-            m_interfaces = new ArrayList<String>();
+            m_interfaces = new ArrayList<>();
         }
 
         return m_interfaces;
@@ -312,7 +312,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      * Return the method with the name and argument types.
      */
     public MetadataMethod getMethod(String name, Class[] arguments) {
-        List<String> argumentNames = new ArrayList<String>(arguments.length);
+        List<String> argumentNames = new ArrayList<>(arguments.length);
 
         for (int index = 0; index < arguments.length; index++) {
             argumentNames.add(arguments[index].getName());
@@ -385,7 +385,7 @@ public class MetadataClass extends MetadataAnnotatedElement {
      */
     public Map<String, MetadataMethod> getMethods() {
         if (m_methods == null) {
-            m_methods = new HashMap<String, MetadataMethod>();
+            m_methods = new HashMap<>();
 
             if (m_isLazy) {
                 m_factory.getMetadataClass(getName(), false);

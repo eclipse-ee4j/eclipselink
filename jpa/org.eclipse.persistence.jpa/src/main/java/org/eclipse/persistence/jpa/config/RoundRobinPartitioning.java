@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,8 +22,8 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface RoundRobinPartitioning {
 
-    public RoundRobinPartitioning addConnectionPool(String connectionPool);
-    public RoundRobinPartitioning setName(String name);
-    public RoundRobinPartitioning setReplicateWrites(Boolean replicateWrites);
+    RoundRobinPartitioning addConnectionPool(String connectionPool);
+    RoundRobinPartitioning setName(String name);
+    RoundRobinPartitioning setReplicateWrites(Boolean replicateWrites);
 
 }

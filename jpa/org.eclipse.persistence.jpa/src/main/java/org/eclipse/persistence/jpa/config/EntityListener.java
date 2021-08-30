@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,13 +22,13 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface EntityListener {
 
-    public EntityListener setClass(String className);
-    public EntityListener setPostLoad(String methodName);
-    public EntityListener setPostPersist(String methodName);
-    public EntityListener setPostRemove(String methodName);
-    public EntityListener setPostUpdate(String methodName);
-    public EntityListener setPrePersist(String methodName);
-    public EntityListener setPreRemove(String methodName);
-    public EntityListener setPreUpdate(String methodName);
+    EntityListener setClass(String className);
+    EntityListener setPostLoad(String methodName);
+    EntityListener setPostPersist(String methodName);
+    EntityListener setPostRemove(String methodName);
+    EntityListener setPostUpdate(String methodName);
+    EntityListener setPrePersist(String methodName);
+    EntityListener setPreRemove(String methodName);
+    EntityListener setPreUpdate(String methodName);
 
 }

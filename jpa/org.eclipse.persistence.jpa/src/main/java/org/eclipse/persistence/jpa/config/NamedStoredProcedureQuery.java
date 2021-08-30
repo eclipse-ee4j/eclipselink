@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -22,14 +22,14 @@ package org.eclipse.persistence.jpa.config;
  */
 public interface NamedStoredProcedureQuery {
 
-    public QueryHint addQueryHint();
-    public StoredProcedureParameter addParameter();
-    public NamedStoredProcedureQuery addResultClass(String resultClass);
-    public NamedStoredProcedureQuery addResultSetMapping(String resultSetMapping);
-    public NamedStoredProcedureQuery setName(String name);
-    public NamedStoredProcedureQuery setProcedureName(String procedureName);
-    public NamedStoredProcedureQuery setReturnsResult(Boolean returnsResultSet);
-    public NamedStoredProcedureQuery setMultipleResultSets(Boolean multipleResultSets);
-    public NamedStoredProcedureQuery setCallByIndex(Boolean callByIndex);
+    QueryHint addQueryHint();
+    StoredProcedureParameter addParameter();
+    NamedStoredProcedureQuery addResultClass(String resultClass);
+    NamedStoredProcedureQuery addResultSetMapping(String resultSetMapping);
+    NamedStoredProcedureQuery setName(String name);
+    NamedStoredProcedureQuery setProcedureName(String procedureName);
+    NamedStoredProcedureQuery setReturnsResult(Boolean returnsResultSet);
+    NamedStoredProcedureQuery setMultipleResultSets(Boolean multipleResultSets);
+    NamedStoredProcedureQuery setCallByIndex(Boolean callByIndex);
 
 }
