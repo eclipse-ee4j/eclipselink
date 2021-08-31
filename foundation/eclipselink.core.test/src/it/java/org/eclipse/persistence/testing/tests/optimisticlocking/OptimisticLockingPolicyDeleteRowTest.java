@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class OptimisticLockingPolicyDeleteRowTest extends AutoVerifyTestCase {
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM GUITAR WHERE ID = " + ((Guitar)originalObject).id));
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -78,6 +79,7 @@ public class OptimisticLockingPolicyDeleteRowTest extends AutoVerifyTestCase {
         getSession().executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("DELETE FROM ROCKMUSICIAN WHERE ID = " + ((RockMusician)originalObject).id));
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         if (testClass.equals(Guitar.class)) {
@@ -91,6 +93,7 @@ public class OptimisticLockingPolicyDeleteRowTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         if (testClass.equals(Guitar.class)) {
             guitarTest();
@@ -103,6 +106,7 @@ public class OptimisticLockingPolicyDeleteRowTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         boolean exceptionCaught = false;
 

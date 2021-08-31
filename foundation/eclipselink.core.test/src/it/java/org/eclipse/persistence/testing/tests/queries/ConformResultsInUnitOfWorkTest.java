@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public abstract class ConformResultsInUnitOfWorkTest extends org.eclipse.persist
 
     public abstract void prepareTest();
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         rollbackTransaction();
@@ -36,6 +37,7 @@ public abstract class ConformResultsInUnitOfWorkTest extends org.eclipse.persist
         }
     }
 
+    @Override
     public void setup() {
         beginTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -48,11 +50,13 @@ public abstract class ConformResultsInUnitOfWorkTest extends org.eclipse.persist
         buildConformQuery();
     }
 
+    @Override
     public void test() {
         result = unitOfWork.executeQuery(conformedQuery);
         unitOfWork.release();
     }
 
+    @Override
     public abstract void verify();
 
     /**

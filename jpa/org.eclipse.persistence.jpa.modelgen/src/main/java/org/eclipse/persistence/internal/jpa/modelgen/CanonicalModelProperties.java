@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,13 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
  * @since EclipseLink 1.2
  */
 public abstract class CanonicalModelProperties {
+
+    /**
+     * Default constructor.
+     */
+    protected CanonicalModelProperties() {
+    }
+
     /**
      * This optional property specifies the prefix that will be added to the
      * start of the class name of any canonical model class generated.

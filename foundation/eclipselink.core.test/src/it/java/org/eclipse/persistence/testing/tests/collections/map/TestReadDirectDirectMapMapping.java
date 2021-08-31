@@ -43,6 +43,7 @@ public class TestReadDirectDirectMapMapping extends TestCase {
         setName("TestReadDirectDirectMapMapping fetchJoin = " + fetchJoin);
     }
 
+    @Override
     public void setup(){
         mapping = (DirectCollectionMapping)getSession().getProject().getDescriptor(DirectDirectMapHolder.class).getMappingForAttributeName("directToDirectMap");
         oldFetchJoinValue = mapping.getJoinFetch();
@@ -59,10 +60,12 @@ public class TestReadDirectDirectMapMapping extends TestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         holders = getSession().readAllObjects(DirectDirectMapHolder.class, holderExp);
     }
 
+    @Override
     public void verify(){
         if (holders == null || holders.size() != 1){
             throw new TestErrorException("Incorrect number of MapHolders was read.");
@@ -81,6 +84,7 @@ public class TestReadDirectDirectMapMapping extends TestCase {
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteAllObjects(holders);

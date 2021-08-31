@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class WriteChanges_ReportQuery_TestCase extends AutoVerifyTestCase {
     protected Exception exception;
     Vector result;
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         try {
@@ -54,12 +55,14 @@ public class WriteChanges_ReportQuery_TestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("Exception thrown during the test.", exception);
         }
     }
 
+    @Override
     public void reset() {
         result = null;
         exception = null;

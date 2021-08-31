@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
     /**
      * Normal.
      */
+    @Override
     public void test() throws Throwable {
         for (int index = 0; index < 100; index++) {
             doTest();
@@ -64,6 +65,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
 
+            @Override
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -90,6 +92,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
 
+            @Override
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -117,6 +120,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
 
+            @Override
             public final void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -148,6 +152,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
             /**
              * Allows any test specific setup before starting the test run.
              */
+            @Override
             public void startTest() {
                 if (method == null) {
                     Class[] argTypes = {  };
@@ -160,6 +165,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
                 }
             }
 
+            @Override
             public final void test() {
                 for (int index = 0; index < 100; index++) {
                     try {
@@ -189,6 +195,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
 
+            @Override
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     // Do something simple.
@@ -209,6 +216,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
     public void addNormalTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
 
+            @Override
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -232,6 +240,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
      */
     public void addNormalTest2() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     MethodTest.this.doTest();
@@ -249,6 +258,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected int index2 = 0;
 
+            @Override
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();
@@ -274,6 +284,7 @@ public class MethodTest extends PerformanceComparisonTestCase {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
             protected volatile int index2 = 0;
 
+            @Override
             public void test() {
                 for (int index = 0; index < 100; index++) {
                     doTest();

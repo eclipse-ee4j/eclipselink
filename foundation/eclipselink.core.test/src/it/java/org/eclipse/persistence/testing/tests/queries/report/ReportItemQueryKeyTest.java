@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ReportItemQueryKeyTest extends ReportQueryTestCase {
         setDescription("Tests recursive behavior of this method, especially when custom query keys are used.");
     }
 
+    @Override
     protected void buildExpectedResults() throws Exception {
 
         /* The expression is too complicated to easily extract what we expect back,
@@ -63,6 +64,7 @@ public class ReportItemQueryKeyTest extends ReportQueryTestCase {
         */
     }
 
+@Override
 protected void setup()  throws Exception
 {
     if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
@@ -97,11 +99,13 @@ protected void setup()  throws Exception
 
     }
 
+    @Override
     public void reset() {
         ClassDescriptor projectDescriptor = getSession().getClassDescriptor(Project.class);
         projectDescriptor.getQueryKeys().remove("teamLeaderX");
     }
 
+    @Override
     public void verify() {
         //super.verify();
         //ReportQueryResult aResult = (ReportQueryResult)results.firstElement();

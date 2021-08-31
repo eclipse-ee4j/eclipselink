@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  * Copyright (c) 2010 Frank Schwarz. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
@@ -69,6 +69,7 @@ public class DDLTableSuffixTestSuite extends DDLGenerationJUnitTestSuite {
     /**
      * The setup is done as a test, both to record its failure, and to allow execution in the server.
      */
+    @Override
     public void testSetup() {
         // Trigger DDL generation
         EntityManager em = createEntityManager(DDL_TABLE_CREATION_SUFFIX_PU);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,11 +37,13 @@ public class WorkingCloneCopyPolicyTest extends AutoVerifyTestCase {
         setDescription("Verify that the working clone copy policy is used correctly.");
     }
 
+    @Override
     public void reset() {
         this.descriptor.setCopyPolicy(this.originalPolicy);
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         this.descriptor = getSession().getDescriptor(Address.class);
         this.originalPolicy = this.descriptor.getCopyPolicy();
@@ -49,6 +51,7 @@ public class WorkingCloneCopyPolicyTest extends AutoVerifyTestCase {
         this.descriptor.getCopyPolicy().initialize(getSession());
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Address address = (Address)uow.readObject(Address.class);
@@ -60,10 +63,12 @@ public class WorkingCloneCopyPolicyTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() throws Exception {
     }
 
     protected class WorkingCloneCopyPolicy extends CloneCopyPolicy {
+        @Override
         public Object buildClone(Object domainObject, Session session) throws DescriptorException {
             return super.buildClone(domainObject, session);
         }
@@ -73,6 +78,7 @@ public class WorkingCloneCopyPolicyTest extends AutoVerifyTestCase {
          * In certain cases (ie CMP) where the behavior of creating a working copy can be different then
          * when creating the other clones.
          */
+        @Override
         public Object buildWorkingCopyClone(Object domainObject, Session session) throws DescriptorException {
             //not implemented to perform special operations.
             Object workingClone = this.buildClone(domainObject, session);

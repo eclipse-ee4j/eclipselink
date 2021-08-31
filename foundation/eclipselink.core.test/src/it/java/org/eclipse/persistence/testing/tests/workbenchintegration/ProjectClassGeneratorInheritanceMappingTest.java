@@ -33,6 +33,7 @@ public class ProjectClassGeneratorInheritanceMappingTest extends ProjectClassGen
     /**
      * Setup what we want written out.
      */
+    @Override
     public void setup() {
         InheritancePolicy iPolicy = project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Project.class).getInheritancePolicy();
 
@@ -46,14 +47,15 @@ public class ProjectClassGeneratorInheritanceMappingTest extends ProjectClassGen
     /**
      * Verify the Byte(String value) constructor is generated.
      */
+    @Override
     public void verify() {
-        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, new java.lang.Byte(\"1\"));";
+        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, Byte.valueOf(\"1\"));";
         super.verify();
-        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class, new java.lang.Short(\"2\"));";
+        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class, Short.valueOf(\"2\"));";
         super.verify();
-        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.Project.class, new java.lang.Long(\"3\"));";
+        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.Project.class, Long.valueOf(\"3\"));";
         super.verify();
-        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.PhoneNumber.class, new java.lang.Double(\"4.0\"));";
+        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.PhoneNumber.class, Double.valueOf(\"4.0\"));";
         super.verify();
     }
 

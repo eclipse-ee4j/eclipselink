@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,30 +50,37 @@ public class TestWrapper extends TestCase {
         setDescription(test.getDescription());
     }
 
+    @Override
     protected void setup() throws Throwable {
         test.setup();
     }
 
+    @Override
     protected void test() throws Throwable {
         test.test();
     }
 
+    @Override
     protected void verify() throws Throwable {
         test.verify();
     }
 
+    @Override
     public void reset() throws Throwable {
         test.reset();
     }
 
+    @Override
     protected void resetVerify() throws Throwable {
         test.resetVerify();
     }
 
+    @Override
     public TestExecutor getExecutor() {
         return test.getExecutor();
     }
 
+    @Override
     public void setExecutor(TestExecutor anExecutor) {
         test.setExecutor(anExecutor);
     }

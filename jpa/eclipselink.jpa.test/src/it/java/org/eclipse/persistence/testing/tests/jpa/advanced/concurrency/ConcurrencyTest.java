@@ -72,7 +72,7 @@ public class ConcurrencyTest extends JUnitTestCase {
             thread2.start();
             thread1.start();
             try {
-                Thread.currentThread().sleep(8000);
+                Thread.sleep(8000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -140,7 +140,7 @@ public class ConcurrencyTest extends JUnitTestCase {
 
             UnitOfWorkImpl uow = ((EntityManagerImpl) em).getActivePersistenceContext(null);
             try {
-                Thread.currentThread().sleep(20000);
+                Thread.sleep(20000);
                 synchronized (toWaitOn) {
                     toWaitOn.notifyAll();
                     toWaitOn.wait();

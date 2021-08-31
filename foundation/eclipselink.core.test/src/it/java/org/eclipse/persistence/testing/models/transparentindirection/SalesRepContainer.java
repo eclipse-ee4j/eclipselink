@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ public class SalesRepContainer extends Object implements Cloneable, Serializable
         return (SalesRep)valueHolder.getValue();
     }
 
+    @Override
     public synchronized ValueHolderInterface getValueHolder() {
         return valueHolder;
     }
@@ -46,6 +47,7 @@ public class SalesRepContainer extends Object implements Cloneable, Serializable
         valueHolder = new ValueHolder(rep);
     }
 
+    @Override
     public boolean isInstantiated() {
         return this.getValueHolder().isInstantiated();
     }
@@ -54,6 +56,7 @@ public class SalesRepContainer extends Object implements Cloneable, Serializable
         valueHolder.setValue(rep);
     }
 
+    @Override
     public void setValueHolder(ValueHolderInterface valueHolder) {
         this.valueHolder = valueHolder;
     }

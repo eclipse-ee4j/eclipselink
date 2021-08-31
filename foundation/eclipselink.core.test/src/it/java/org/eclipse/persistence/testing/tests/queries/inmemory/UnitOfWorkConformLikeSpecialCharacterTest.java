@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,17 +36,20 @@ public class UnitOfWorkConformLikeSpecialCharacterTest extends TestCase {
         employees = new Vector();
     }
 
+    @Override
     public void reset() {
         //clear the cache.
         uow.release();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         // read all the employees into the cache.
         uow = getSession().acquireUnitOfWork();
     }
 
+    @Override
     public void test() {
         // get an employee and change that employee to fit our expression
         ExpressionBuilder emp = new ExpressionBuilder();
@@ -65,6 +68,7 @@ public class UnitOfWorkConformLikeSpecialCharacterTest extends TestCase {
         employees = (Vector)uow.executeQuery(query);
     }
 
+    @Override
     public void verify() {
         if (employees.size() != 1) {
             throw new TestErrorException("Expected 1 employee but retured " + employees.size() + " for in-memory 'like' query with special characters.");

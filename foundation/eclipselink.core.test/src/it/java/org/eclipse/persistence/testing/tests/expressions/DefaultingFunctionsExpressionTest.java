@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class DefaultingFunctionsExpressionTest extends ReadAllExpressionTest {
      * so use a function we do support, but invoke it by database selector (LOWER)rather than
      * Java selector (toLowerCase)
      */
+    @Override
     public void setup() {
         // This is slightly tricky. We use the same function as toLowerCase,
         // but get the platform's name for it.

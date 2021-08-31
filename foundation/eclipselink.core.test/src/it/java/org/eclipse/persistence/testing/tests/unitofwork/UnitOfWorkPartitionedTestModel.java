@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,6 +23,7 @@ import org.eclipse.persistence.testing.framework.TestWarningException;
  */
 public class UnitOfWorkPartitionedTestModel extends UnitOfWorkClientSessionTestModel {
 
+    @Override
     public void setup() {
         if (getSession().getPlatform().isSybase()) {
             throw new TestWarningException("This cannot be run on Sybase as it conflicts with its transaction isolation level.");
@@ -33,6 +34,7 @@ public class UnitOfWorkPartitionedTestModel extends UnitOfWorkClientSessionTestM
     /**
      * Simulate a database cluster by having multiple pools to the same database.
      */
+    @Override
     public Server buildServerSession() {
         Server server =
             getSession().getProject().clone().createServerSession(1, 3);

@@ -192,7 +192,7 @@ public class TestProcessor {
     }
 
     private List<String> getJavacOptions(String... opts) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         String systemOpts = System.getProperty("test.junit.jvm.modules");
         if (systemOpts != null && systemOpts.contains("--add-modules")) {
             result.addAll(Arrays.asList(System.getProperty("test.junit.jvm.modules").split(" ")));
@@ -225,7 +225,7 @@ public class TestProcessor {
             throw x;
         }
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
 
         StandardJavaFileManager sfm = compiler.getStandardFileManager(diagnostics, null, null);
         URL apiUrl = Entity.class.getProtectionDomain().getCodeSource().getLocation();

@@ -192,6 +192,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
      * Method to handle events for the CaretListener interface.
      * @param e javax.swing.event.CaretEvent
      */
+    @Override
     public void caretUpdate(javax.swing.event.CaretEvent e) {
         // user code begin {1}
         // user code end
@@ -3153,6 +3154,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
                                      java.awt.event.KeyListener,
                                      java.beans.PropertyChangeListener,
                                      javax.swing.event.CaretListener {
+        @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() ==
                 LoginEditorPanel.this.getNativeSQLCheckbox()) {
@@ -3216,12 +3218,14 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             }
         }
 
+        @Override
         public void caretUpdate(javax.swing.event.CaretEvent e) {
             if (e.getSource() == LoginEditorPanel.this.getPasswordText()) {
                 connEtoC7(e);
             }
         }
 
+        @Override
         public void itemStateChanged(java.awt.event.ItemEvent e) {
             if (e.getSource() == LoginEditorPanel.this.getBridgeChoice()) {
                 connEtoC3(e);
@@ -3234,6 +3238,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             }
         }
 
+        @Override
         public void keyPressed(java.awt.event.KeyEvent e) {
             if (e.getSource() == LoginEditorPanel.this.getDriverURLText()) {
                 connPtoP3SetSource();
@@ -3273,6 +3278,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             }
         }
 
+        @Override
         public void keyReleased(java.awt.event.KeyEvent e) {
             if (e.getSource() == LoginEditorPanel.this.getDriverURLText()) {
                 connPtoP3SetSource();
@@ -3312,6 +3318,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             }
         }
 
+        @Override
         public void keyTyped(java.awt.event.KeyEvent e) {
             if (e.getSource() == LoginEditorPanel.this.getDriverURLText()) {
                 connPtoP3SetSource();
@@ -3351,6 +3358,7 @@ public class LoginEditorPanel extends JPanel implements javax.swing.event.CaretL
             }
         }
 
+        @Override
         public void propertyChange(java.beans.PropertyChangeEvent evt) {
             if ((evt.getSource() == LoginEditorPanel.this) &&
                 (evt.getPropertyName().equals("login"))) {

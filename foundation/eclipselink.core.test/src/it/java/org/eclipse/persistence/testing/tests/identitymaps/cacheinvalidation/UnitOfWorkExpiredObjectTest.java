@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class UnitOfWorkExpiredObjectTest extends CacheExpiryTest {
         setDescription("Ensure expired objects are still usable on a UnitOfWork.");
     }
 
+    @Override
     public void test() {
         employee = (Employee)getSession().readObject(Employee.class);
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -42,6 +43,7 @@ public class UnitOfWorkExpiredObjectTest extends CacheExpiryTest {
         employee = (Employee)getSession().readObject(employee);
     }
 
+    @Override
     public void verify() {
         if (!employee.getFirstName().equals(firstName)) {
             throw new TestErrorException("Using an employee in a UnitOfWork after invalidating it failed.");

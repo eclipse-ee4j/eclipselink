@@ -47,6 +47,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
         setDescription("This test verifies that Tranparent Map works with change tracking");
     }
 
+    @Override
     public void reset() {
         if (getAbstractSession().isInTransaction()) {
             getAbstractSession().rollbackTransaction();
@@ -54,6 +55,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
         }
     }
 
+    @Override
     public void setup() {
         if (getSession() instanceof org.eclipse.persistence.sessions.remote.RemoteSession) {
             throw new TestWarningException("This test cannot be run through the remote.");
@@ -68,6 +70,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
      * the merge worked.
      */
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         this.clone =
@@ -120,6 +123,7 @@ public class TransparentMapTest extends org.eclipse.persistence.testing.framewor
      * Checks to see that the names of the updated version and the origional are the same
      */
 
+    @Override
     public void verify() {
         Restaurant cachedRestaurant = (Restaurant)getSession().readObject(this.clone);
         Restaurant cachedRestaurant2 = (Restaurant)getSession().readObject(this.clone2);

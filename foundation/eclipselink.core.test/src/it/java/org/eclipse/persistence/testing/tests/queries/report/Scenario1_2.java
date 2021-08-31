@@ -29,6 +29,7 @@ public class Scenario1_2 extends ReportQueryTestCase {
         setDescription("DTF mappings with 1 Class & 2 Tables");
     }
 
+    @Override
     protected void buildExpectedResults() {
         Vector employees = getSession().readAllObjects(Employee.class);
 
@@ -44,6 +45,7 @@ public class Scenario1_2 extends ReportQueryTestCase {
         }
     }
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());

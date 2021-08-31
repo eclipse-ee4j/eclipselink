@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class DefaultReadOnlyClassTest extends TestCase {
         setDescription("Tests whether default read only classes are available on the client of a remote session.");
     }
 
+    @Override
     public void verify() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         boolean readOnly = uow.isClassReadOnly(DefaultReadOnlyTestClass.class);

@@ -49,6 +49,7 @@ public class SendNewObjectCacheSyncTest extends ConfigurableCacheSyncDistributed
     /**
      * Create a new employee and commit.
      */
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         employee = new Employee();
@@ -58,6 +59,7 @@ public class SendNewObjectCacheSyncTest extends ConfigurableCacheSyncDistributed
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (shouldSendObject && getObjectFromDistributedCache(employee) == null) {
             throw new TestErrorException("New employee was not added to distributed cache with " + " SEND_NEW_OBJECTS_WITH_CHANGES descriptor CacheSynchronizationTypeSetting.");

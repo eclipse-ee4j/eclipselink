@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class SQLLogToFileTest extends ManualVerifyTestCase {
         return logFileName;
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         // Set SQL logging to previous values
@@ -60,11 +61,13 @@ public class SQLLogToFileTest extends ManualVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         setLogging();
         beginTransaction();
     }
 
+    @Override
     public void test() {
         DatabaseSession session = getDatabaseSession();
         Employee anEmployee = (org.eclipse.persistence.testing.models.employee.domain.Employee)new org.eclipse.persistence.testing.models.employee.domain.EmployeePopulator().basicEmployeeExample1();

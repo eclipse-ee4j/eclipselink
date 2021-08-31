@@ -32,6 +32,7 @@ public class JPAReadObjectEmployeePerformanceComparisonTest extends PerformanceR
     /**
      * Get an employee id.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         employeeId = ((Employee)manager.createQuery("Select e from Employee e").getResultList().get(0)).getId();
@@ -41,6 +42,7 @@ public class JPAReadObjectEmployeePerformanceComparisonTest extends PerformanceR
     /**
      * Read object employee.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         manager.getTransaction().begin();

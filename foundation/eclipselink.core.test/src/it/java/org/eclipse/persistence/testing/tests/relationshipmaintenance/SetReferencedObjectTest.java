@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,16 +24,19 @@ public class SetReferencedObjectTest extends org.eclipse.persistence.testing.fra
     public SalesPerson sales = null;
     public SalesPerson secondSales = null;
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Iterator iterator = uow.readAllObjects(SalesPerson.class).iterator();
@@ -47,6 +50,7 @@ public class SetReferencedObjectTest extends org.eclipse.persistence.testing.fra
 
     }
 
+    @Override
     public void verify() {
         if ((this.fieldOfficeClone.getSalespeople().contains(this.sales)) || (this.sales.getFieldOffice() == null) || (this.secondSales.getFieldOffice() == null) || (!this.secondSales.getFieldOffice().getSalespeople().contains(this.sales))) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("Failed to set the backPointer information");

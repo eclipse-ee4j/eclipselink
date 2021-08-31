@@ -32,19 +32,23 @@ public class LargeProject extends Project implements org.eclipse.persistence.tes
         this.budget = 0.0;
     }
 
+    @Override
     public double getBudget() {
         return budget;
     }
 
+    @Override
     public Timestamp getMilestoneVersion() {
         return milestoneVersion;
     }
 
+    @Override
     public void setBudget(double budget) {
         propertyChange("budget", Double.valueOf(this.budget), Double.valueOf(budget));
         this.budget = budget;
     }
 
+    @Override
     public void setMilestoneVersion(Timestamp milestoneVersion) {
         propertyChange("milestoneVersion", this.milestoneVersion, milestoneVersion);
         this.milestoneVersion = milestoneVersion;

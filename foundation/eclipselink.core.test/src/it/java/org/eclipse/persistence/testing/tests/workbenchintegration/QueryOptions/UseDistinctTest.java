@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,13 +29,16 @@ public class UseDistinctTest extends AutoVerifyTestCase {
         setDescription("Test use distinct option");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         query =
                 (ReadAllQuery)getSession().getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class).getQueryManager().getQuery("useDistinctQuery");
@@ -44,6 +47,7 @@ public class UseDistinctTest extends AutoVerifyTestCase {
         employees = (Vector)getSession().executeQuery(queryCopy);
     }
 
+    @Override
     public void verify() {
         if (employees.size() != 10) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("ReadAllQuery with useDistinct test failed. Mismatched objects returned");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ public class ObjectChangeSetUpdateAttributeTest extends EventHookTestCase {
     public Customer customer;
     public ObjectChangeSet customerChangeSet;
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         beginTransaction();
@@ -34,6 +35,7 @@ public class ObjectChangeSetUpdateAttributeTest extends EventHookTestCase {
         Address.preUpdateCount = 0;
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Customer cloneCustomer = (Customer)uow.readObject(this.customer);
@@ -47,6 +49,7 @@ public class ObjectChangeSetUpdateAttributeTest extends EventHookTestCase {
         this.customerChangeSet = (ObjectChangeSet)uow.getUnitOfWorkChangeSet().getObjectChangeSetForClone(cloneCustomer);
     }
 
+    @Override
     public void verify() {
         Customer originalCustomer = (Customer)getSession().readObject(this.customer);
         try {

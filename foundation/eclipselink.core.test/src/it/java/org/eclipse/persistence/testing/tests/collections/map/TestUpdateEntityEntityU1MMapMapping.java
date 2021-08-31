@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class TestUpdateEntityEntityU1MMapMapping extends TestReadEntityEntityU1M
         setName("TestUpdateDirectEntity1MMapMapping privateOwned=" + usePrivateOwned);
     }
 
+    @Override
     public void setup(){
         mapping = (OneToManyMapping)getSession().getProject().getDescriptor(EntityEntityU1MMapHolder.class).getMappingForAttributeName("entityToEntityMap");
         oldPrivateOwnedValue = mapping.isPrivateOwned();
@@ -55,6 +56,7 @@ public class TestUpdateEntityEntityU1MMapMapping extends TestReadEntityEntityU1M
         super.setup();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(EntityEntityU1MMapHolder.class, holderExp);
@@ -76,6 +78,7 @@ public class TestUpdateEntityEntityU1MMapMapping extends TestReadEntityEntityU1M
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(EntityEntityU1MMapHolder.class, holderExp);
@@ -114,6 +117,7 @@ public class TestUpdateEntityEntityU1MMapMapping extends TestReadEntityEntityU1M
         }
     }
 
+    @Override
     public void reset(){
         super.reset();
         mapping.setIsPrivateOwned(oldPrivateOwnedValue);

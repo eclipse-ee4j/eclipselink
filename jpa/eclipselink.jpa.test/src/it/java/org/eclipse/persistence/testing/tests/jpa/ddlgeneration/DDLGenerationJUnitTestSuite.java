@@ -65,6 +65,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.eclipse.persistence.config.EntityManagerProperties;
@@ -217,7 +218,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
      * reads back in to verify the CREATE TABLE statements have the correct strings appended to them
      */
     public void testDDLTableCreationWithSuffix(){
-        if(this.isOnServer){
+        if(isOnServer){
             return;
         }
       //strings searched for:
@@ -513,7 +514,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        this.assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
+        assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
     }
 
     // Test for bug 322233, that optional field info defined in Overrides are used in DDL
@@ -552,7 +553,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             }
             closeEntityManager(em);
         }
-        this.assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
+        assertNotNull("Expected an exception persisting null into a field with nullable=false set on an override", expectedException);
     }
 
     // Test for relationships using candidate(unique) keys
@@ -1468,7 +1469,7 @@ public class DDLGenerationJUnitTestSuite extends JUnitTestCase {
             try {
                 fileStream = new FileInputStream(file);
             } catch (FileNotFoundException exception) {
-                this.warning("cannot load file "+fileName+ " due to error: "+exception);
+                warning("cannot load file "+fileName+ " due to error: "+exception);
                 throw ValidationException.fatalErrorOccurred(exception);
             }
         }

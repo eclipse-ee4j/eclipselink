@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ExceptionHandlerLoginIntegrityTest extends org.eclipse.persistence.
         setDescription("To test if login IntegrityExceptions are passed to the ExceptionHandler");
     }
 
+    @Override
     public void test() {
         try {
             session = project.createDatabaseSession();
@@ -50,12 +51,14 @@ public class ExceptionHandlerLoginIntegrityTest extends org.eclipse.persistence.
         }
     }
 
+    @Override
     public void verify() throws Exception {
         if (caughtException != null) {
             throw new TestErrorException("Test to see if IntegrityExceptions caused at boot time are passed " + "to the exceptionHandler failed.\n " + "----- ExceptionHandlerTest3 -----\n" + caughtException.getMessage());
         }
     }
 
+    @Override
     public void setup() {
         login = getSession().getLogin();
         project = new EmployeeProject();

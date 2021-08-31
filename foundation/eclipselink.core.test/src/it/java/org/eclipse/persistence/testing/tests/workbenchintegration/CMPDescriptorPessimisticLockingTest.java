@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,6 +38,7 @@ CMPDescriptorPessimisticLockingTest extends AutoVerifyTestCase {
         this.setDescription("Validate bean-level pessimistic locking configured with the CMPDescriptor");
     }
 
+    @Override
     protected void setup() {
         // Modify the employee project to use custom SQL queries
         EmployeeProject project = new EmployeeProject();
@@ -56,6 +57,7 @@ CMPDescriptorPessimisticLockingTest extends AutoVerifyTestCase {
         XMLProjectWriter.write(PROJECT_FILE, project);
     }
 
+    @Override
     protected void test() {
         // test run time project that should contains cusomtom sql queries
         Project project = XMLProjectReader.read(PROJECT_FILE, getClass().getClassLoader());

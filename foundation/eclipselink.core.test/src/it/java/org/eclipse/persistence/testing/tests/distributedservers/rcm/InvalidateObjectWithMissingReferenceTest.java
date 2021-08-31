@@ -48,6 +48,7 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
         cacheSyncConfigValues.put(Address.class, Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         Enumeration enumtr = DistributedServersModel.getDistributedServers().elements();
@@ -63,6 +64,7 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
         }
     }
 
+    @Override
     public void setup() {
         oldCacheSyncConfigValues = new Hashtable();
         Enumeration keys = cacheSyncConfigValues.keys();
@@ -90,6 +92,7 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
     }
 
 
+    @Override
     protected void test() {
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -117,6 +120,7 @@ public class InvalidateObjectWithMissingReferenceTest extends ConfigurableCacheS
     }
 
 
+    @Override
     protected void verify() {
         Employee remoteEmployee = (Employee)getObjectFromDistributedCache(this.originalObject);
         if ((remoteEmployee != null) && (remoteEmployee.getAddress() == null)) {

@@ -109,6 +109,7 @@ public class InheritedModelJunitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache();
@@ -1483,9 +1484,9 @@ public class InheritedModelJunitTest extends JUnitTestCase {
             em.flush();
 
             clearCache();
-            becksTag1 = (BecksTag)em.find(BecksTag.class, becksTag1.getId());
+            becksTag1 = em.find(BecksTag.class, becksTag1.getId());
             assertTrue("Key was deleted when it should not be.", becksTag1 != null);
-            becks1 = (Becks)em.find(Becks.class, becks1.getId());
+            becks1 = em.find(Becks.class, becks1.getId());
             assertTrue("Orphan removal did not remove the orphan", becks1 == null);
 
             rollbackTransaction(em);

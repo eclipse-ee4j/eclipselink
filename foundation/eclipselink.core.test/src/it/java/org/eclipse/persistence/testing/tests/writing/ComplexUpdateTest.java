@@ -50,10 +50,12 @@ public class ComplexUpdateTest extends WriteObjectTest {
         this.shouldCommitParent = true;
     }
 
+    @Override
     public String getName() {
         return super.getName() + Boolean.valueOf(usesUnitOfWork) + Boolean.valueOf(usesNestedUnitOfWork);
     }
 
+    @Override
     public void reset() {
         if (getExecutor().getSession().isUnitOfWork()) {
             getExecutor().setSession(((UnitOfWork)getSession()).getParent());
@@ -65,6 +67,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
         super.reset();
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -79,6 +82,7 @@ public class ComplexUpdateTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         changeObject();
         if (this.usesUnitOfWork) {

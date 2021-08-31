@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ComplexMethodTest extends PerformanceComparisonTestCase {
     /**
      * Normal.
      */
+    @Override
     public void test() throws Exception {
         Object value = this.map.get(this);
         this.map.put(this, value);
@@ -47,6 +48,7 @@ public class ComplexMethodTest extends PerformanceComparisonTestCase {
      */
     public void addSynchronizedTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public synchronized void test() {
                 Object value = ComplexMethodTest.this.map.get(this);
                 ComplexMethodTest.this.map.put(this, value);
@@ -62,6 +64,7 @@ public class ComplexMethodTest extends PerformanceComparisonTestCase {
      */
     public void addSynchronizedBlockTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 synchronized (this) {
                     Object value = ComplexMethodTest.this.map.get(this);
@@ -79,6 +82,7 @@ public class ComplexMethodTest extends PerformanceComparisonTestCase {
      */
     public void addFinalTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public final void test() {
                 Object value = ComplexMethodTest.this.map.get(this);
                 ComplexMethodTest.this.map.put(this, this);

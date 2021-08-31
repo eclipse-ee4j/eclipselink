@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
@@ -75,6 +75,7 @@ public class JUnitJPQLUnitTestSuite extends JUnitTestCase
   }
 
   //This method is run at the end of EVERY test case method
+  @Override
   public void tearDown()
   {
       clearCache();

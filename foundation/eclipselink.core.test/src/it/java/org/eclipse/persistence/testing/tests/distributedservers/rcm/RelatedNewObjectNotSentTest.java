@@ -47,6 +47,7 @@ public class RelatedNewObjectNotSentTest extends ConfigurableCacheSyncDistribute
         cacheSyncConfigValues.put(SmallProject.class, Integer.valueOf(ClassDescriptor.DO_NOT_SEND_CHANGES));
     }
 
+    @Override
     public void setup() {
         super.setup();
         ExpressionBuilder employees = new ExpressionBuilder();
@@ -63,6 +64,7 @@ public class RelatedNewObjectNotSentTest extends ConfigurableCacheSyncDistribute
         ((Employee)result).getResponsibilitiesList();
     }
 
+    @Override
     public void test() {
         employee = (Employee)getSession().readObject(Employee.class, expression);
 
@@ -84,6 +86,7 @@ public class RelatedNewObjectNotSentTest extends ConfigurableCacheSyncDistribute
         uow.commit();
     }
 
+    @Override
     public void verify() {
         Employee distributedEmployee = (Employee)getObjectFromDistributedCache(employee);
         Address distributedAddress = (Address)getObjectFromDistributedCache(address);

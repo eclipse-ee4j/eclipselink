@@ -33,6 +33,7 @@ public class InvalidCacheSyncTypeTest extends ConfigurableCacheSyncDistributedTe
         cacheSyncConfigValues.put(Employee.class, Integer.valueOf(type));
     }
 
+    @Override
     public void setup() {
         try {
             super.setup();
@@ -41,6 +42,7 @@ public class InvalidCacheSyncTypeTest extends ConfigurableCacheSyncDistributedTe
         }
     }
 
+    @Override
     public void verify() {
         if ((exception == null) && ((cacheSyncType < 0) || (cacheSyncType > 4))) {
             throw new TestErrorException("An exception is expected when an invalid cache sync type is set.");

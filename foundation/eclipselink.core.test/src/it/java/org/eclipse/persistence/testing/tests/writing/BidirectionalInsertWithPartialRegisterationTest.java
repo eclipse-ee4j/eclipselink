@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,11 +44,13 @@ public class BidirectionalInsertWithPartialRegisterationTest extends AutoVerifyT
         setDescription("This creates a new set of interrelated employees and projects and commits them.");
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
@@ -81,11 +83,13 @@ public class BidirectionalInsertWithPartialRegisterationTest extends AutoVerifyT
 
     }
 
+    @Override
     protected void test() {
         unitOfWork.commit();
 
     }
 
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 

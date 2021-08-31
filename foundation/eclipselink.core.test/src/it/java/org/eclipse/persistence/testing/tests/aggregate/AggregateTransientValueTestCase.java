@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class AggregateTransientValueTestCase extends org.eclipse.persistence.tes
         setDescription("Test that transient value in the aggregate object is not reset");
     }
 
+    @Override
     public void reset() {
         // Remove the transport added for this test
         DatabaseSession session = (DatabaseSession) getSession();
@@ -38,9 +39,11 @@ public class AggregateTransientValueTestCase extends org.eclipse.persistence.tes
         uow.commit();
     }
 
+    @Override
     public void setup(){
     }
 
+    @Override
     public void test() {
         transport = Transport.example6();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -55,6 +58,7 @@ public class AggregateTransientValueTestCase extends org.eclipse.persistence.tes
         transport = (Transport) session.readObject(Transport.class, expression);
     }
 
+    @Override
     public void verify(){
         if (transport.getVehicle() == null) {
             throw new TestErrorException("Transport.getVehicle() was null.");

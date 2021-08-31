@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,7 +32,7 @@ public class JGroupsConfigurationTest extends ConfigurableCacheSyncDistributedTe
         AbstractSession session = getAbstractSession();
         
         RemoteCommandManager rcm = new RemoteCommandManager(session);        
-        TransportManager transport = (TransportManager)Class.forName("org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager").newInstance();
+        TransportManager transport = (TransportManager)Class.forName("org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager").getConstructor().newInstance();
         rcm.setTransportManager(transport);
         transport.createLocalConnection();
         RemoteConnection connection = transport.getConnectionToLocalHost();
@@ -46,7 +46,7 @@ public class JGroupsConfigurationTest extends ConfigurableCacheSyncDistributedTe
         }
 
         rcm = new RemoteCommandManager(session);
-        transport = (TransportManager) Class.forName("org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager").newInstance();
+        transport = (TransportManager) Class.forName("org.eclipse.persistence.sessions.coordination.jgroups.JGroupsTransportManager").getConstructor().newInstance();
         transport.setConfig("org/eclipse/persistence/testing/config/distributedservers/rcm/jgroups/jgroups-udp-config.xml");
         rcm.setTransportManager(transport);
         transport.createLocalConnection();

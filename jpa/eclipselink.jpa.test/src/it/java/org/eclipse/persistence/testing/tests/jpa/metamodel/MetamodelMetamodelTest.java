@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -306,6 +306,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
         return suite;
     }
 
+    @Override
     public void setUp() {
         super.setUp();
     }
@@ -6271,7 +6272,7 @@ public class MetamodelMetamodelTest extends MetamodelTest {
             assertNotNull(metamodel.toString());
             assertNotNull(entityManufacturer_.getSingularAttribute("aBooleanObject").toString());
             // In the absence of a getPluralAttribute()
-            assertNotNull(((PluralAttribute)entityManufacturer_.getAttribute("computers")).toString());
+            assertNotNull(entityManufacturer_.getAttribute("computers").toString());
             assertNotNull(entityManufacturer_.getList("hardwareDesigners").toString());
             assertNotNull(entityManufacturer_.getMap("hardwareDesignersMap").toString());
             assertNotNull(entityManufacturer_.getSet("computers").toString());

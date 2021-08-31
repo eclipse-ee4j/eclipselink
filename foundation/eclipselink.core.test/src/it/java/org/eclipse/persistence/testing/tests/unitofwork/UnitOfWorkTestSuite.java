@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -48,6 +48,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
         setDescription("This suite tests updating objects with changed parts.");
     }
 
+    @Override
     public void addTests() {
         addTest(new MergeCloneWithReferencesWithNullTest());
         addTest(new MergeCloneWithReferencesTransparentIndirectionTest());
@@ -84,6 +85,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
 
+    @Override
     public void addSRGTests() {
         PopulationManager manager = PopulationManager.getDefaultManager();
         Employee employee = (Employee)manager.getObject(Employee.class, "0001");
@@ -226,6 +228,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
      */
     public TransactionalTestCase buildRefreshDeletedObjectTest() {
         TransactionalTestCase test = new TransactionalTestCase() {
+            @Override
             public void test() {
                 List employees = getSession().readAllObjects(Employee.class);
                 Employee employee = null;
@@ -259,6 +262,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
      */
     public TransactionalTestCase buildRefReadOnlyTest() {
         TransactionalTestCase test = new TransactionalTestCase() {
+            @Override
             public void setup() {
                 super.setup();
                 if (getSession().isRemoteSession()) {
@@ -266,6 +270,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                 }
                 getSession().getDescriptor(Address.class).setReadOnly();
             }
+            @Override
             public void test() {
                 UnitOfWork uow = getSession().acquireUnitOfWork();
                 Address address = (Address)uow.readObject(Address.class);
@@ -275,6 +280,7 @@ public class UnitOfWorkTestSuite extends TestSuite {
                 employee.setAddress(address);
                 uow.commit();
             }
+            @Override
             public void reset() {
                 super.reset();
                 getSession().getDescriptor(Address.class).setShouldBeReadOnly(false);
@@ -290,12 +296,14 @@ public class UnitOfWorkTestSuite extends TestSuite {
      */
     public TransactionalTestCase buildCacheIndexTest() {
         TransactionalTestCase test = new TransactionalTestCase() {
+            @Override
             public void setup() {
                 super.setup();
                 if (getSession().isRemoteSession()) {
                     throwWarning("Test not supported on remote session.");
                 }
             }
+            @Override
             public void test() {
                 QuerySQLTracker counter = new QuerySQLTracker(getSession());
                 try {

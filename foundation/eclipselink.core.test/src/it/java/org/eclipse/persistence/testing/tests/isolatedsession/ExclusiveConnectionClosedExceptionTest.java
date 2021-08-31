@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,12 +34,14 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
     protected int numReleaseExclusive;
     protected String errorMsg = "";
     class Listener extends SessionEventAdapter {
+        @Override
         public void postAcquireExclusiveConnection(SessionEvent event) {
             numAcquireExclusive++;
             // Bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception
             event.getSession().executeNonSelectingSQL("UPDATE ISOLATED_EMPLOYEE SET F_NAME = 'A' WHERE EMP_ID = 0");
         }
 
+        @Override
         public void preReleaseExclusiveConnection(SessionEvent event) {
             numReleaseExclusive++;
             // Bug 299048 - Triggering indirection on closed ExclusiveIsolatedSession may cause exception
@@ -64,6 +66,7 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
         this.server.getProject().setHasIsolatedClasses(true);
     }
 
+    @Override
     public void reset() {
         try {
             errorMsg = "";
@@ -78,6 +81,7 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         try {
             this.emps = getSession().readAllObjects(IsolatedEmployee.class);
@@ -95,6 +99,7 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery(IsolatedEmployee.class);
         ClientSession client1 = this.server.acquireClientSession();
@@ -121,6 +126,7 @@ public class ExclusiveConnectionClosedExceptionTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if(errorMsg.length() > 0) {
             throw new TestErrorException(errorMsg);

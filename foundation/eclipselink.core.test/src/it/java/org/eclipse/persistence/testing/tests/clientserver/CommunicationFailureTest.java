@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class CommunicationFailureTest extends AutoVerifyTestCase {
         this.setDescription("Tests that TopLink is correctly handling Accessors that experience exceptions.");
     }
 
+    @Override
     public void setup() {
         DatabaseLogin login = (DatabaseLogin)getSession().getLogin().clone();
         this.serverSession = getSession().getProject().createServerSession();
@@ -42,6 +43,7 @@ public class CommunicationFailureTest extends AutoVerifyTestCase {
         this.serverSession.login();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = this.serverSession.acquireUnitOfWork();
         QueryExecuteListener listener = new QueryExecuteListener(this);
@@ -58,9 +60,11 @@ public class CommunicationFailureTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
     }
 
+    @Override
     public void reset() {
         this.serverSession.logout();
     }
@@ -76,6 +80,7 @@ public class CommunicationFailureTest extends AutoVerifyTestCase {
          * This event is raised before the execution of every query against the session.
          * The event contains the query to be executed.
          */
+        @Override
         public void preExecuteQuery(SessionEvent event){
             test.non_txn_read = event.getQuery().getAccessor();
             event.getQuery().getAccessor().closeConnection();

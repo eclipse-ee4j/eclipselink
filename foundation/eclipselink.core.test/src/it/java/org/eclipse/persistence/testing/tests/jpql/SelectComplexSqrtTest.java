@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.jpql;
 import org.eclipse.persistence.testing.models.employee.domain.*;
 
 public class SelectComplexSqrtTest extends SqrtTestCase {
+    @Override
     public void setup() {
         setTestEmployees(getExtraEmployees());
         Employee emp1 = (Employee)getTestEmployees().firstElement();

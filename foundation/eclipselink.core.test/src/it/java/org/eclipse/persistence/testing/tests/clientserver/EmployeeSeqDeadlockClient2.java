@@ -26,6 +26,7 @@ public class EmployeeSeqDeadlockClient2 extends EmployeeSeqDeadlockClient {
         this.fifoIn = fifoIn;
     }
 
+    @Override
     public void run() {
         int i = 0;
 

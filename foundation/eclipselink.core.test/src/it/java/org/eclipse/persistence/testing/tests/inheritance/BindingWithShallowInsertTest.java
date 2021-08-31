@@ -33,6 +33,7 @@ public class BindingWithShallowInsertTest extends TestCase {
         setDescription("This test uses a set of mappings with a cycle to test shallow inserts. " + " It ensures that when a shallow insert occurs, null can properly be handled when binding parameters.");
     }
 
+    @Override
     public void setup() {
         caughtException = false;
         shouldBindParameters = getSession().getLogin().shouldBindAllParameters();
@@ -41,6 +42,7 @@ public class BindingWithShallowInsertTest extends TestCase {
         getAbstractSession().beginTransaction();
     }
 
+    @Override
     public void test() {
         try {
             worker = new ProjectWorker();
@@ -66,6 +68,7 @@ public class BindingWithShallowInsertTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException) {
             throw new TestErrorException("An ArrayIndexOutOfBoundsException is throw when running a shallow " + " insert with a null parameter when using binding. This likely means that the parameter fields on " + " the SQLCall are not being properly maintained in the translate method.");
@@ -77,6 +80,7 @@ public class BindingWithShallowInsertTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

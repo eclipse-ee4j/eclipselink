@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class InitializeDescriptorsBeforeLoginTest extends AutoVerifyTestCase {
         setDescription("Verifies that initializeDescriptors() may be called before login() and that sequencing settings may be altered in betwwen these two calls");
     }
 
+    @Override
     public void setup() {
         DatabaseLogin login = (DatabaseLogin)(getSession().getLogin().clone());
 
@@ -64,6 +65,7 @@ public class InitializeDescriptorsBeforeLoginTest extends AutoVerifyTestCase {
         databaseSession.setSessionLog(getSession().getSessionLog());
     }
 
+    @Override
     public void test() {
         try {
             ((DatabaseSessionImpl)databaseSession).initializeDescriptors();
@@ -74,6 +76,7 @@ public class InitializeDescriptorsBeforeLoginTest extends AutoVerifyTestCase {
         databaseSession.login();
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("initializeDescriptors() failed");
@@ -83,6 +86,7 @@ public class InitializeDescriptorsBeforeLoginTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (databaseSession != null) {
             if (databaseSession.isConnected()) {

@@ -40,6 +40,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
         this.shouldUseEmulatedDB = false;
     }
 
+    @Override
     public String getName() {
         String name = super.getName();
         if (shouldCache) {
@@ -92,6 +93,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
     /**
      * Configure parameterized SQL.
      */
+    @Override
     public void setup() {
         if (shouldUseParameterizedSQL()) {
             getSession().getLogin().cacheAllStatements();
@@ -169,6 +171,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
     /**
      * Clear cache.
      */
+    @Override
     public void test() throws Exception {
         if (!shouldCache()) {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -178,6 +181,7 @@ public abstract class PerformanceTest extends PerformanceRegressionTestCase {
     /**
      * Reset parameterized SQL.
      */
+    @Override
     public void reset() {
         if (shouldUseParameterizedSQL()) {
             getSession().getLogin().dontCacheAllStatements();

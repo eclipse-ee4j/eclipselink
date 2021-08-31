@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,10 +31,12 @@ public class NestedBatchReadingTest extends TestCase {
         setName(getName() + batchType);
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setBatchFetchType(batchType);
@@ -44,6 +46,7 @@ public class NestedBatchReadingTest extends TestCase {
         result = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         boolean foundClaims = false;
         for (Enumeration holdersEnum = result.elements(); holdersEnum.hasMoreElements(); ) {

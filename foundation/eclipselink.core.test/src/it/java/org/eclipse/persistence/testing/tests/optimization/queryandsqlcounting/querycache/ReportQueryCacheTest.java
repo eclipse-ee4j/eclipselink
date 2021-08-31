@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class ReportQueryCacheTest extends NamedQueryQueryCacheTest {
         setDescription("Ensure report queries can use query caching.");
     }
 
+    @Override
     public ReadQuery getQueryForTest() {
         ReportQuery testQuery = new ReportQuery();
         testQuery.setReferenceClass(Employee.class);
@@ -40,6 +41,7 @@ public class ReportQueryCacheTest extends NamedQueryQueryCacheTest {
         return testQuery;
     }
 
+    @Override
     public void verify() {
         super.verify();
         Iterator reportResults = ((Vector)results).iterator();

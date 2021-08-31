@@ -69,6 +69,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         AgentBuilderHelper.addCustomer(object, newCustomer);
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -86,6 +87,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         //    getSession().executeNonSelectingSQL("UPDATE HOUSE SET LOCATION = 'no where' WHERE (LOCATION = '33D King Edward Street')");
     }
 
+    @Override
     protected void test() {
         try {
             this.unitOfWork.commit();
@@ -94,6 +96,7 @@ public class AggregateCollectionUoWTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void verify() {
         // Using the original session for comparison verify that the changes were merged correctly
         if (!compareObjects(this.unitOfWorkWorkingCopy, this.objectToBeWritten)) {

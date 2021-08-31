@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
     public HashMap removedPhone = new HashMap(4);
     public HashMap removedAddress = new HashMap(4);
 
+    @Override
     public void setup (){
         super.setup();
         this.reset = true;
@@ -105,6 +106,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
 
     }
 
+    @Override
     public void reset (){
         if (reset){
             phones.clear();
@@ -113,6 +115,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
         super.reset();
     }
 
+    @Override
     public void test(){
         try {
             beginTransaction();
@@ -156,6 +159,7 @@ public class EMMultipleFlushTests extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify(){
         Employee employee = getEntityManager().find(Employee.class, empIDs[1]);
         if ( (!employee.getLastName().equals("Fourlang"))){

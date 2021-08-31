@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,16 +38,19 @@ public class QueryExceptionStringTest extends MultiNameQueriesTestCase {
         setDescription("Testing query error strings");
     }
 
+    @Override
     public void reset() {
         session.removeQuery(realQueryName);
         session.getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         session = (DatabaseSession)getSession();
         session.addQuery(realQueryName, getNamedQueryFirstName());
     }
 
+    @Override
     public void test() {
         // catch exception, this covers
         // executeQuery(String, Object)
@@ -93,6 +96,7 @@ public class QueryExceptionStringTest extends MultiNameQueriesTestCase {
         // executeQuery(DatabaseQuery, Vector)
     }
 
+    @Override
     public void verify() {
         if (exception1.indexOf(bogusQueryName) == -1) {
             throw new TestErrorException("Test failed on exception1 ... see testcase");

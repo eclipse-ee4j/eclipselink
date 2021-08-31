@@ -42,6 +42,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         setName("TestUpdateEntityDirectMapMapping privateOwned=" + usePrivateOwned);
     }
 
+    @Override
     public void setup(){
         DirectMapMapping mapping = (DirectMapMapping)getSession().getProject().getDescriptor(EntityDirectMapHolder.class).getMappingForAttributeName("entityToDirectMap");
         keyMapping = (ForeignReferenceMapping)((MappedKeyMapContainerPolicy)mapping.getContainerPolicy()).getKeyMapping();
@@ -50,6 +51,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         super.setup();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(EntityDirectMapHolder.class, holderExp);
@@ -69,6 +71,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         holders = getSession().readAllObjects(EntityDirectMapHolder.class, holderExp);
@@ -99,6 +102,7 @@ public class TestUpdateEntityDirectMapMapping extends TestReadEntityDirectMapMap
         }
     }
 
+    @Override
     public void reset(){
         super.reset();
         keyMapping.setIsPrivateOwned(oldKeyPrivateOwnedValue);

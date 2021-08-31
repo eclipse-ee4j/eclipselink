@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ public class BarSystem extends TestSystem {
 
     public BarSystem () {}
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new BarProject(session);
@@ -33,10 +34,12 @@ public class BarSystem extends TestSystem {
         (session).addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         new BarTableCreator().replaceTables(session);
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         BarPopulator populator = new BarPopulator();
         UnitOfWork unitOfWork = session.acquireUnitOfWork();

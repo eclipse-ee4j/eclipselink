@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class ProjectClassGeneratorOrderByQueryKeysTest extends ProjectClassGener
     /**
      * Setup what we want written out.
      */
+    @Override
     public void setup() {
         CollectionMapping mapping =
             (CollectionMapping)project.getDescriptor(org.eclipse.persistence.testing.models.employee.domain.Employee.class).getMappingForAttributeName(ATTRIBUTE_NAME);
@@ -49,6 +50,7 @@ public class ProjectClassGeneratorOrderByQueryKeysTest extends ProjectClassGener
     /**
      * We have 4 strings to verify
      */
+    @Override
     public void verify() {
         testString = "addAscendingOrdering(\"ascending1\")";
         super.verify();

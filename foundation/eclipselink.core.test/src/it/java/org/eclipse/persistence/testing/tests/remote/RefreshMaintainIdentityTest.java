@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class RefreshMaintainIdentityTest extends TestCase {
         setDescription("Test to ensure identity is maintained across valueholders in remote sessions.");
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -38,6 +39,7 @@ public class RefreshMaintainIdentityTest extends TestCase {
 
     }
 
+    @Override
     public void setup() {
         mastersShouldRefresh = getSession().getDescriptor(Master.class).shouldAlwaysRefreshCacheOnRemote();
         slavesShouldRefresh = getSession().getDescriptor(Slave.class).shouldAlwaysRefreshCacheOnRemote();
@@ -47,6 +49,7 @@ public class RefreshMaintainIdentityTest extends TestCase {
 
     }
 
+    @Override
     public void test() {
         getSession().getDescriptor(Master.class).setShouldAlwaysRefreshCacheOnRemote(true);
         getSession().getDescriptor(Slave.class).setShouldAlwaysRefreshCacheOnRemote(true);
@@ -63,6 +66,7 @@ public class RefreshMaintainIdentityTest extends TestCase {
         masters = getAllMasters();
     }
 
+    @Override
     protected void verify() {
         for (Enumeration slave_enum = slaves.elements(); slave_enum.hasMoreElements(); ) {
             Slave slave = (Slave)slave_enum.nextElement();

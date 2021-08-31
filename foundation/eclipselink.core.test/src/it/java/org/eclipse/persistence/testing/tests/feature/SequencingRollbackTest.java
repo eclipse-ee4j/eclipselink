@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -39,6 +39,7 @@ public class SequencingRollbackTest extends AutoVerifyTestCase {
         return getDatabaseSession().getSequencingControl();
     }
 
+    @Override
     public void setup() {
         shouldUseSeparateConnectionOriginal = getSequencingControl().shouldUseSeparateConnection();
 //    sequencePreallocationSizeOriginal = getSequencingControl().getPreallocationSize();
@@ -50,6 +51,7 @@ public class SequencingRollbackTest extends AutoVerifyTestCase {
 //    getSequencingControl().setPreallocationSize(2);
     }
 
+    @Override
     public void test() {
         beginTransaction();
 
@@ -67,12 +69,14 @@ public class SequencingRollbackTest extends AutoVerifyTestCase {
         failed = seqNum2 == seqNum4;
     }
 
+    @Override
     public void verify() {
         if (failed) {
             throw new TestErrorException("Duplication of sequence number has occurred");
         }
     }
 
+    @Override
     public void reset() {
         if (shouldUseSeparateConnectionOriginal != shouldUseSeparateConnection) {
             getSequencingControl().setShouldUseSeparateConnection(shouldUseSeparateConnectionOriginal);

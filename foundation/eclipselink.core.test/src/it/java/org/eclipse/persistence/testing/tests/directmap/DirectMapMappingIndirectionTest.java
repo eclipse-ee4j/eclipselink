@@ -31,16 +31,19 @@ public class DirectMapMappingIndirectionTest extends AutoVerifyTestCase {
         setDescription("Tests that objects deleted from the properties object in a DirectMapMapping are properly removed.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void test() throws Exception {
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -55,6 +58,7 @@ public class DirectMapMappingIndirectionTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void verify() throws Exception {
         if (!(resultMapping.indirectionDirectMap.getClass() == IndirectMapSubclass.class)) {
             throw new TestErrorException("DirectMap with transparent indirection does not properly use IndirectMap");

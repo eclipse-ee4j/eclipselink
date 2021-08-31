@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,12 @@ public class WriteLockValueSerializationTest extends AutoVerifyTestCase {
         setDescription("Ensure the hasVersionChange variable is not always set when ObjectChangeSet is serialized.");
     }
 
+    @Override
     public void setup() {
         serializationError = false;
     }
 
+    @Override
     public void test() {
         ObjectChangeSet changeSet = new ObjectChangeSet();
         try {
@@ -55,6 +57,7 @@ public class WriteLockValueSerializationTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (serializationError) {
             throw new TestErrorException("Object Change set returns true for hasChanges after serialization even though there are not changes.");

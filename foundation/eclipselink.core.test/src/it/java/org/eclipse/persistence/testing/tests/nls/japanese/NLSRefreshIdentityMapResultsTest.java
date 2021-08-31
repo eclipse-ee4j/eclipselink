@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,15 +27,18 @@ public class NLSRefreshIdentityMapResultsTest extends AutoVerifyTestCase {
         setDescription("[NLS_Japanese] This test verifies if the refresh identity map feature works properly");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         query = (ReadObjectQuery)getSession().getDescriptor(org.eclipse.persistence.testing.tests.nls.japanese.NLSEmployee.class).getQueryManager().getQuery("refreshIdentityMapResultsQuery");
         originalObject = (NLSEmployee)getSession().executeQuery(query);
     }
 
+    @Override
     public void test() {
         firstName = originalObject.getFirstName();
         //originalObject.setFirstName("Godzilla"); //need to convert to japanese
@@ -44,6 +47,7 @@ public class NLSRefreshIdentityMapResultsTest extends AutoVerifyTestCase {
         getSession().executeQuery(query);
     }
 
+    @Override
     protected void verify() {
         if (!(originalObject.getFirstName().equals(firstName))) {
             throw new TestErrorException("The refresh identity map results test failed.");

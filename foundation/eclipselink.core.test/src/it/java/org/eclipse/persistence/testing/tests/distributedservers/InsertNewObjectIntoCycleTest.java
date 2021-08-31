@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -25,6 +25,7 @@ public class InsertNewObjectIntoCycleTest extends TransactionalTestCase {
     //Must use a different thread in this test as the test is tezting for an infinite recursion
     public Thread thread;
 
+    @Override
     public void test() {
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
         originalEmployee = (Dist_Employee)server.getDistributedSession().readObject(Dist_Employee.class);
@@ -43,6 +44,7 @@ public class InsertNewObjectIntoCycleTest extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
         Dist_Employee emp = (Dist_Employee)server.getDistributedSession().readObject(originalEmployee);
@@ -52,6 +54,7 @@ public class InsertNewObjectIntoCycleTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);

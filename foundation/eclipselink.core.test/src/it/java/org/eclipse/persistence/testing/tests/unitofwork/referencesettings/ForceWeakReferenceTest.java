@@ -21,6 +21,7 @@ import org.eclipse.persistence.testing.framework.TestErrorException;
 import org.eclipse.persistence.testing.models.employee.domain.Employee;
 
 public class ForceWeakReferenceTest extends AutoVerifyTestCase {
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork(ReferenceMode.FORCE_WEAK);
         int size = uow.readAllObjects(Employee.class).size();
@@ -31,7 +32,7 @@ public class ForceWeakReferenceTest extends AutoVerifyTestCase {
             }
             System.gc();
             try{
-                Thread.currentThread().sleep(200);
+                Thread.sleep(200);
             }catch (InterruptedException ex){
             }
             System.gc();

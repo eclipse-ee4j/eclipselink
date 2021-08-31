@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class ShouldRegisterResultsInUnitOfWorkTest extends ConformResultsInUnitO
         }
     }
 
+    @Override
     public void buildConformQuery() {
         conformedQuery = new ReadAllQuery(Employee.class);
         conformedQuery.conformResultsInUnitOfWork();
@@ -50,6 +51,7 @@ public class ShouldRegisterResultsInUnitOfWorkTest extends ConformResultsInUnitO
         }
     }
 
+    @Override
     public void prepareTest() {
         // load in a deleted object, and 1 registered object.
         registeredEmp = (Employee)unitOfWork.readObject(Employee.class);
@@ -64,10 +66,12 @@ public class ShouldRegisterResultsInUnitOfWorkTest extends ConformResultsInUnitO
         }
     }
 
+    @Override
     public void test() {
         result = unitOfWork.executeQuery(conformedQuery);
     }
 
+    @Override
     public void verify() {
         try {
             // Check that no employees were registered and put in the UOW cache.
@@ -110,6 +114,7 @@ public class ShouldRegisterResultsInUnitOfWorkTest extends ConformResultsInUnitO
         }
     }
 
+    @Override
     public void reset() {
         if (descriptorSetting) {
             getSession().getDescriptor(Employee.class).setShouldRegisterResultsInUnitOfWork(true);

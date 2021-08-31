@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class BusListener2 extends ListenerSuperclass {
     public static int PRE_PERSIST_COUNT = 0;
     public static int POST_PERSIST_COUNT = 0;
 
+    @Override
     public void prePersist(Object bus) {
         PRE_PERSIST_COUNT++;
         ((Bus) bus).addPrePersistCalledListener(this.getClass());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class PartialAttributeTestWithJoinAttribute extends TestCase {
         setDescription("A partial attribute query where the partial attribute is also joined should not result in a null pointer exception.");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         ClassDescriptor descriptor = getSession().getClassDescriptor(Employee.class);
@@ -42,6 +43,7 @@ public class PartialAttributeTestWithJoinAttribute extends TestCase {
         descriptor.reInitializeJoinedAttributes();
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         ClassDescriptor descriptor = getSession().getClassDescriptor(Employee.class);
@@ -50,6 +52,7 @@ public class PartialAttributeTestWithJoinAttribute extends TestCase {
         descriptor.reInitializeJoinedAttributes();
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.dontMaintainCache();

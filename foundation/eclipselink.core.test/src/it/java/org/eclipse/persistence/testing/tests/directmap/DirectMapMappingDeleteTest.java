@@ -36,16 +36,19 @@ public class DirectMapMappingDeleteTest extends AutoVerifyTestCase {
         setDescription("Tests that objects deleted from the properties object in a DirectMapMapping are properly removed.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void test() throws Exception {
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -68,6 +71,7 @@ public class DirectMapMappingDeleteTest extends AutoVerifyTestCase {
         queryResult = (DirectMapMappings)getSession().executeQuery(new ReadObjectQuery(DirectMapMappings.class));
     }
 
+    @Override
     public void verify() throws Exception {
         if (queryResult.directMap.size() != 1) {
             throw new TestErrorException("Deletion from a direct map mapping failed ... object left in database");

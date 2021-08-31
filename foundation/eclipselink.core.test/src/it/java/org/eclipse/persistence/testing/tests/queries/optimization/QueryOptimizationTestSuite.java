@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -460,6 +460,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
         addTest(new QueryValidationTest());
     }
 
+    @Override
     public void addTests() {
         addJoinTests();
         addBatchTests();
@@ -470,6 +471,7 @@ public class QueryOptimizationTestSuite extends TestSuite {
 
     public TestCase buildBatch1mTest() {
         TestCase test = new TestCase() {
+            @Override
             public void test() {
                 getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
 

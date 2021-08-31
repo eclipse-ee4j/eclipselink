@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -93,7 +93,7 @@ public class DynamicClassLoaderTestSuite {
     }
 
     protected void checkMyClass(DynamicClassLoader dcl, Class<?> myDynamicClass)
-        throws ClassNotFoundException, InstantiationException, IllegalAccessException {
+        throws ClassNotFoundException, ReflectiveOperationException {
         assertNotNull(myDynamicClass);
         assertEquals(MY_CLASSNAME, myDynamicClass.getName());
         assertSame(DynamicEntityImpl.class, myDynamicClass.getSuperclass());
@@ -104,7 +104,7 @@ public class DynamicClassLoaderTestSuite {
         assertSame(myDynamicClass, ConversionManager.getDefaultManager().convertObject(MY_CLASSNAME, Class.class));
         assertSame(myDynamicClass, ConversionManager.getDefaultLoader().loadClass(MY_CLASSNAME));
         assertSame(myDynamicClass, ConversionManager.loadClass(MY_CLASSNAME));
-        Object newInstance = myDynamicClass.newInstance();
+        Object newInstance = myDynamicClass.getConstructor().newInstance();
         assertNotNull("newInstance is null", newInstance);
         Constructor<DynamicEntity>[] constructors =
             (Constructor<DynamicEntity>[])myDynamicClass.getConstructors();
@@ -160,7 +160,7 @@ public class DynamicClassLoaderTestSuite {
         assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
         assertSame(DefaultConstructor.class, dynamicClass.getSuperclass());
 
-        DefaultConstructor entity = (DefaultConstructor) dynamicClass.newInstance();
+        DefaultConstructor entity = (DefaultConstructor) dynamicClass.getConstructor().newInstance();
 
         assertNotNull(entity);
     }
@@ -177,7 +177,7 @@ public class DynamicClassLoaderTestSuite {
         assertSame(WriteReplace.class, dynamicClass.getSuperclass());
         assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
 
-        WriteReplace entity = (WriteReplace) dynamicClass.newInstance();
+        WriteReplace entity = (WriteReplace) dynamicClass.getConstructor().newInstance();
 
         assertNotNull(entity);
 
@@ -207,7 +207,7 @@ public class DynamicClassLoaderTestSuite {
         assertSame(WriteReplace.class, dynamicClass.getSuperclass());
         assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
 
-        WriteReplace entity = (WriteReplace) dynamicClass.newInstance();
+        WriteReplace entity = (WriteReplace) dynamicClass.getConstructor().newInstance();
 
         assertNotNull(entity);
 
@@ -237,7 +237,7 @@ public class DynamicClassLoaderTestSuite {
         assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
         assertSame(DefaultConstructor.class, dynamicClass.getSuperclass());
         EclipseLinkClassWriter firstWriter = dcl.getClassWriter(MY_CLASSNAME);
-        DefaultConstructor entity = (DefaultConstructor) dynamicClass.newInstance();
+        DefaultConstructor entity = (DefaultConstructor) dynamicClass.getConstructor().newInstance();
 
         assertNotNull(entity);
         assertNotNull("DCL does not contain expected writer", dcl.getClassWriter(MY_CLASSNAME));
@@ -263,7 +263,7 @@ public class DynamicClassLoaderTestSuite {
         assertSame(dynamicClass, dcl.loadClass(MY_CLASSNAME));
         assertSame(DefaultConstructor.class, dynamicClass.getSuperclass());
 
-        DefaultConstructor entity = (DefaultConstructor) dynamicClass.newInstance();
+        DefaultConstructor entity = (DefaultConstructor) dynamicClass.getConstructor().newInstance();
 
         assertNotNull(entity);
         assertNotNull("DCL does not contain expected writer", dcl.getClassWriter(MY_CLASSNAME));

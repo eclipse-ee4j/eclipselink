@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class ReadAllObjectsSharedDatabaseSessionConcurrentTest extends Concurren
     /**
      * Create the database session.
      */
+    @Override
     public void setup() {
         super.setup();
         session = new EmployeeProject().createDatabaseSession();
@@ -45,6 +46,7 @@ public class ReadAllObjectsSharedDatabaseSessionConcurrentTest extends Concurren
     /**
      * Find all employees
      */
+    @Override
     public void runTask() throws Exception {
         session.readAllObjects(Employee.class);
     }
@@ -52,6 +54,7 @@ public class ReadAllObjectsSharedDatabaseSessionConcurrentTest extends Concurren
     /**
      * Switch the descriptors back.
      */
+    @Override
     public void reset() {
         super.reset();
         session.logout();

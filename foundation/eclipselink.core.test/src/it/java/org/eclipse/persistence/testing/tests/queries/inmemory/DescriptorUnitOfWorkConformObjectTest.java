@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,12 +32,14 @@ public class DescriptorUnitOfWorkConformObjectTest extends UnitOfWorkConformObje
         setDescription("Tests that the query is done on the unit of work changes when " + "ShouldAlwaysConformResultsInUnitOfWork is set on the descriptor.");
     }
 
+    @Override
     public void reset() {
         //reset the ShouldAlwaysConformResultsInUnitOfWork setting on the descriptor
         employeeDescriptor.setShouldAlwaysConformResultsInUnitOfWork(shouldAlwaysConformResultsInUnitOfWork);
         super.reset();
     }
 
+    @Override
     protected void setup() {
         employeeDescriptor = getSession().getClassDescriptor(Employee.class);
         shouldAlwaysConformResultsInUnitOfWork = employeeDescriptor.shouldAlwaysConformResultsInUnitOfWork();

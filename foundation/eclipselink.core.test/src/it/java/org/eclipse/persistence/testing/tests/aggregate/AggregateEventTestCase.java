@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,16 +30,19 @@ import org.eclipse.persistence.testing.models.aggregate.Employee;
 public class AggregateEventTestCase extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public AggregateEventListener listener;
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         (getSession().getProject().getDescriptors().get(Employee.class)).getEventManager().removeListener(this.listener);
     }
 
+    @Override
     public void setup() {
         beginTransaction();
     }
 
+    @Override
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
         this.listener = new AggregateEventListener();
@@ -85,6 +88,7 @@ public class AggregateEventTestCase extends org.eclipse.persistence.testing.fram
         }
     }
 
+    @Override
     public void verify() {
     }
 }

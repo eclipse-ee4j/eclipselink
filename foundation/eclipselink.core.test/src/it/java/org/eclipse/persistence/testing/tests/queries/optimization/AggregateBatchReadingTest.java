@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,10 +32,12 @@ public class AggregateBatchReadingTest extends TestCase {
         setName(getName() + batchType);
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -47,6 +49,7 @@ public class AggregateBatchReadingTest extends TestCase {
         result = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         for (Enumeration employeesEnum = result.elements(); employeesEnum.hasMoreElements(); ) {
             ((Employee)employeesEnum.nextElement()).getAddressDescription().getAddress().getValue();

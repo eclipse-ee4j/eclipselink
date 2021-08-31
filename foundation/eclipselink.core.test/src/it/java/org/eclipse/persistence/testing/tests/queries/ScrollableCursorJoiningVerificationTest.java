@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class ScrollableCursorJoiningVerificationTest extends TestCase {
         setDescription("ScrollableCursor test with joining, verifying query results");
     }
 
+    @Override
     public void test() {
         if (getSession().getPlatform().isHANA() || getSession().getPlatform().isSQLServer()) {
             throw new TestWarningException("ScrollableCursor is not supported on this platform");
@@ -83,6 +84,7 @@ public class ScrollableCursorJoiningVerificationTest extends TestCase {
         cursor.close();
     }
 
+    @Override
     public void verify() {
         assertNotSame("Test data for non-cursored results should be nonzero", 0, nonCursoredResults.size());
         assertNotSame("Test data for cursored results should be nonzero", 0, forwardCursoredResults.size());
@@ -133,6 +135,7 @@ public class ScrollableCursorJoiningVerificationTest extends TestCase {
         return true;
     }
 
+    @Override
     public void reset() {
         this.forwardCursoredResults = null;
         this.nonCursoredResults = null;

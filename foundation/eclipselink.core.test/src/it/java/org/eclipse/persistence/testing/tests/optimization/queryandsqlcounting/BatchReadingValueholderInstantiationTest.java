@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,11 +42,13 @@ public class BatchReadingValueholderInstantiationTest extends TestCase {
         setDescription("Ensure the proper SQL statements are generated with batch reading when valueholders are triggered.");
     }
 
+    @Override
     public void setup() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         tracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.addBatchReadAttribute("manager");
@@ -82,6 +84,7 @@ public class BatchReadingValueholderInstantiationTest extends TestCase {
 
     }
 
+    @Override
     public void verify() {
         if (initialSQLStatements > EXPECTED_INITIAL_STATEMENTS) {
             throw new TestErrorException("A ReadAllQuery with batching executed an incorrect number of SQL Statements. " + " expected: " + EXPECTED_INITIAL_STATEMENTS + " got: " + initialSQLStatements);
@@ -103,6 +106,7 @@ public class BatchReadingValueholderInstantiationTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         tracker.remove();

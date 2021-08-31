@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,12 +36,14 @@ public class CacheExpiryAPITest extends CacheExpiryTest {
         setDescription("Test the specific API for Cache Expiry on the IdentityMapAccessor.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().getDescriptor(Employee.class).setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(10000));
         getSession().readAllObjects(Employee.class);
     }
 
+    @Override
     public void test() {
         // validate the IdentitityMapAccessor isValid method against the CacheKey.isValidMethod()
         Employee employee = (Employee)getSession().readObject(Employee.class);
@@ -105,6 +107,7 @@ public class CacheExpiryAPITest extends CacheExpiryTest {
         remainingTime = getAbstractSession().getIdentityMapAccessor().getRemainingValidTime(employee);
     }
 
+    @Override
     public void verify() {
         if (isValidSuccess != null) {
             throw new TestErrorException("IsValid() Failed. " + isValidSuccess);

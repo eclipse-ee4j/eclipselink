@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -50,6 +50,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
      * Increment the iteration count.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
+    @Override
     public synchronized void incrementIterations() {
         this.iterations++;
     }
@@ -58,6 +59,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
      * Reset the iteration count.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
+    @Override
     public synchronized void resetIterations() {
         this.iterations = 0;
     }
@@ -65,6 +67,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
     /**
      * Start 1 thread test.
      */
+    @Override
     public void startTest() {
         startTest(getMaxThreads());
     }
@@ -84,6 +87,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
     /**
      * Allows any test specific setup before starting the test run.
      */
+    @Override
     public void endTest() {
         // Suspend the worker threads,
         // suspend all no matter what number of threads was to even out performance.
@@ -108,6 +112,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
     /**
      * Start the worker threads.
      */
+    @Override
     public void setup() {
         this.workerThreads = new ArrayList(getMaxThreads());
         for (int index = 0; index < getMaxThreads(); index++) {
@@ -120,6 +125,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
     /**
      * Count REPEATS runs of the run method with 1 thread.
      */
+    @Override
     public void test() throws Exception {
         test(getMaxThreads());
     }
@@ -137,6 +143,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
     /**
      * Stop the worker threads.
      */
+    @Override
     public void reset() {
         // Stop the worker threads.
         for (int index = 0; index < getWorkerThreads().size(); index++) {
@@ -203,6 +210,7 @@ public abstract class ConcurrentPerformanceRegressionTest extends PerformanceReg
         /**
          * Run the test run method in a loop until killed.
          */
+        @Override
         public synchronized void run() {
             try {
                 while (!isDead) {

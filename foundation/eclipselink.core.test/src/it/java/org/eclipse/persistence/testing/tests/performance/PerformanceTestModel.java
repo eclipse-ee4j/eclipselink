@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,11 +38,13 @@ public class PerformanceTestModel extends TestModel {
         setDescription("This tests the performance of various toplink operations/ fine grained use cases.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
         addRequiredSystem(new org.eclipse.persistence.testing.models.bigbad.BigBadSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadingTestSuite());
         addTest(getWritingTestSuite());
@@ -318,6 +320,7 @@ public class PerformanceTestModel extends TestModel {
         return suite;
     }
 
+    @Override
     public void setup() {
         for (int j = 0; j < 100; j++) {
             Employee empInsert = new Employee();
@@ -358,6 +361,7 @@ public class PerformanceTestModel extends TestModel {
         getExecutor().setSession(session);
     }
 
+    @Override
     public void reset() {
         if (oldSession != null) {
             getDatabaseSession().logout();
@@ -368,6 +372,7 @@ public class PerformanceTestModel extends TestModel {
     /**
      * Also log the baseline version that was set.
      */
+    @Override
     protected void logHeadNote(Writer log) {
         super.logHeadNote(log);
         try {

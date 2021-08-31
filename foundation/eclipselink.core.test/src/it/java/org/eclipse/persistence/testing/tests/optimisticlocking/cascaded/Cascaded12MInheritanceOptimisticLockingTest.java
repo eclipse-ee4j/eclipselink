@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,11 +36,13 @@ public class Cascaded12MInheritanceOptimisticLockingTest extends AutoVerifyTestC
     private int catVersion = 0;
     private int toyVersion = 0;
 
+    @Override
     public void reset()  {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void setup()  {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         getAbstractSession().beginTransaction();
@@ -63,6 +65,7 @@ public class Cascaded12MInheritanceOptimisticLockingTest extends AutoVerifyTestC
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         cat = (Cat)uow.readObject(cat);
@@ -71,6 +74,7 @@ public class Cascaded12MInheritanceOptimisticLockingTest extends AutoVerifyTestC
         uow.commit();
     }
 
+    @Override
     public void verify(){
         cat = (Cat)getSession().refreshObject(cat);
         if (cat.getVersion() <= catVersion){

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,17 +24,20 @@ import org.eclipse.persistence.testing.framework.*;
 public class SessionEventTestCase extends TransactionalTestCase {
     public TestSessionListener listener;
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getEventManager().removeListener(this.listener);
     }
 
+    @Override
     public void setup() {
         super.setup();
         this.listener = new TestSessionListener();
         getSession().getEventManager().addListener(this.listener);
     }
 
+    @Override
     public void test() {
         // Bug 2834266 ensure UnitOfWork is not empty so transaction actually runs.
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -43,6 +46,7 @@ public class SessionEventTestCase extends TransactionalTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (!this.listener.preCalculateUnitOfWork) {
             throw new TestErrorException(" The pre Calculate UnitOfWork ChangeSet event did not fire");

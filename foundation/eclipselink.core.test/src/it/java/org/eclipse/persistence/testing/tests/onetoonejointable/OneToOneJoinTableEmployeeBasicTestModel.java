@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,10 +57,12 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new EmployeeSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getUpdateObjectTestSuite());
@@ -263,6 +265,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             usesUnitOfWork = true;
             setName("ManyToManyReadOnlyMappingUpdateTest");
         }
+        @Override
         public void setup() {
             // find Project with at least one Employee
             List<Project> projects = getSession().readAllObjects(Project.class);
@@ -276,6 +279,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             super.setup();
         }
         // remove all employees
+        @Override
         protected void changeObject() {
             Project project = (Project)this.workingCopy;
             int size = project.getEmployees().size();
@@ -299,11 +303,13 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             super();
             setName("AddRemoveTest");
         }
+        @Override
         public void setup() {
             useAddress = true;
             useProjects = true;
 
         }
+        @Override
         public void test() {
             employee = new Employee();
             employee.setFirstName("AddRemoveTest");
@@ -374,6 +380,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             uow.commit();
             employee = null;
         }
+        @Override
         public void reset() {
             UnitOfWork uow = getSession().acquireUnitOfWork();
             if(employee != null) {
@@ -407,6 +414,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
         }
         void setSelectionCriteria(ReadAllQuery query) {
         }
+        @Override
         public void test() {
             ReadAllQuery query = new ReadAllQuery();
             query.setReferenceClass(Employee.class);
@@ -434,6 +442,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             super();
             setName("JoinTest - select by first name");
         }
+        @Override
         void setSelectionCriteria(ReadAllQuery query) {
             query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").like("J%"));
         }
@@ -447,6 +456,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
         }
         void setSelectionCriteria(ReadAllQuery query) {
         }
+        @Override
         public void test() {
             // clear cache
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -511,6 +521,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             super();
             setName("EmployeeBatchReadingTest - select by first name");
         }
+        @Override
         void setSelectionCriteria(ReadAllQuery query) {
             query.setSelectionCriteria(query.getExpressionBuilder().get("firstName").like("J%"));
         }
@@ -522,6 +533,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             setName("ExpressionTestSuite");
             setDescription("This suite tests expressions.");
         }
+        @Override
         public void addTests() {
             addMultipleAndsTest();
             addMultipleAndsTest2();
@@ -715,6 +727,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             super(originalObject);
         }
 
+        @Override
         protected void setup() {
             super.setup();
             // Must drop references first to appease constraints.
@@ -727,6 +740,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             super(originalObject);
         }
 
+        @Override
         protected void setup() {
             super.setup();
             // Must drop references first to appease constraints.
@@ -739,6 +753,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             super(referenceClass, originalObjectsSize);
         }
 
+        @Override
         protected void setupBatchAttributes() {
             getQuery().addBatchReadAttribute("children");
             getQuery().addBatchReadAttribute("address");
@@ -746,6 +761,7 @@ public class OneToOneJoinTableEmployeeBasicTestModel extends TestModel {
             getQuery().addBatchReadAttribute("projects");
         }
 
+        @Override
         protected void testBatchAttributes() {
             Vector result = (Vector) this.objectsFromDatabase;
             List children = ((Employee) result.elementAt(0)).getChildren();

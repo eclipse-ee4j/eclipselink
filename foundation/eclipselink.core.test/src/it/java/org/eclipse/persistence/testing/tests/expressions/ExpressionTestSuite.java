@@ -1711,6 +1711,7 @@ public class ExpressionTestSuite extends TestSuite {
         addTest(test);
     }
 
+    @Override
     public void addTests() {
         addSRGTests();
         //Add new tests here, if any.
@@ -1745,6 +1746,7 @@ public class ExpressionTestSuite extends TestSuite {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
+    @Override
     public void addSRGTests() {
         setManager(PopulationManager.getDefaultManager());
 

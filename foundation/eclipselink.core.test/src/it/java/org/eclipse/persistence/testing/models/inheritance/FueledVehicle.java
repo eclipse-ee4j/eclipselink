@@ -19,6 +19,7 @@ public class FueledVehicle extends Vehicle {
     public String description;
     public String fuelType;
 
+    @Override
     public void change() {
         this.setPassengerCapacity(Integer.valueOf(100));
         this.addPartNumber("NEWPART 1");

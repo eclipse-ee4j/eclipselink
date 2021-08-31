@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
         setDescription("Ensure ConversionException and CacheSynchronizationException serialize correctly.");
     }
 
+    @Override
     public void setup() {
         conversionException = ConversionException.couldNotBeConverted(new Object(), String.class);
         Exception exception = new Exception();
@@ -42,6 +43,7 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
         UnitOfWorkChangeSet changeSet = new UnitOfWorkChangeSet();
     }
 
+    @Override
     public void test() {
         java.io.ByteArrayOutputStream byteOut = new java.io.ByteArrayOutputStream();
         try {
@@ -62,6 +64,7 @@ public class ExceptionSerializationTestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (conversionException.getSourceObject() != null) {
             throw new TestErrorException("Source Object was sent by serialization and it should not be.");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,18 +36,21 @@ public class UnitOfWorkConformLikeTest extends TestCase {
         employees = new Vector();
     }
 
+    @Override
     public void reset() {
         //clear the cache.
         uow.release();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
 
         // read all the employees into the cache.
         uow = getSession().acquireUnitOfWork();
     }
 
+    @Override
     public void test() {
         // get an employee and change that employee to fit our expression
         ExpressionBuilder emp = new ExpressionBuilder();
@@ -67,6 +70,7 @@ public class UnitOfWorkConformLikeTest extends TestCase {
 
     }
 
+    @Override
     public void verify() {
         if (employees.size() != 5) {
             throw new TestErrorException("Expected 5 employees but retured " + employees.size() + " for in-memory 'like' query.");

@@ -34,6 +34,7 @@ public class ConcurrencySemaphoreThread implements Runnable {
 
     private static AtomicInteger currentNoOfThreads = new AtomicInteger(0);
 
+    @Override
     public void run() {
         boolean semaphoreWasAcquired = false;
         try {
@@ -42,7 +43,7 @@ public class ConcurrencySemaphoreThread implements Runnable {
             //Current No of threads there can't be more than SEMAPHORE_MAX_NUMBER_THREADS
             assertTrue(currentNoOfThreads.incrementAndGet() <= SEMAPHORE_MAX_NUMBER_THREADS);
             //Instead of some code which should take some time is there sleep.
-            Thread.currentThread().sleep(300);
+            Thread.sleep(300);
         } catch (InterruptedException ex) {
             Assert.fail("Semaphore Test thread was interrupted.  Test failed to run properly");
         } finally {

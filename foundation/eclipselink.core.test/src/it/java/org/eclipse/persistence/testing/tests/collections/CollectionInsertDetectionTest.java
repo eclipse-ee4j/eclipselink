@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -17,6 +17,7 @@ package org.eclipse.persistence.testing.tests.collections;
 
 import java.math.BigDecimal;
 
+import junit.framework.TestCase;
 import org.eclipse.persistence.sessions.UnitOfWork;
 import org.eclipse.persistence.testing.framework.AutoVerifyTestCase;
 import org.eclipse.persistence.testing.models.collections.Location;
@@ -32,14 +33,17 @@ public class CollectionInsertDetectionTest extends AutoVerifyTestCase {
         super();
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.dontPerformValidation();
@@ -50,10 +54,10 @@ public class CollectionInsertDetectionTest extends AutoVerifyTestCase {
 
         uow.assignSequenceNumbers();
         BigDecimal id = location.getId();
-        this.assertNotNull("Location ID should be assigned", id );
+        assertNotNull("Location ID should be assigned", id );
         uow.commit();
 
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
-        this.assertNotNull("Location object was not inserted", getSession().readObject(location) );
+        assertNotNull("Location object was not inserted", getSession().readObject(location) );
     }
 }

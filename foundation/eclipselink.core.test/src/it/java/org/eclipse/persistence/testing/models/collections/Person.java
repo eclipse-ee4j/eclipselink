@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,12 @@ public abstract class Person implements Comparable, ChangeTracker {
         super();
     }
 
+    @Override
     public PropertyChangeListener _persistence_getPropertyChangeListener() {
         return listener;
     }
 
+    @Override
     public void _persistence_setPropertyChangeListener(PropertyChangeListener listener) {
         this.listener = listener;
     }
@@ -58,6 +60,7 @@ public abstract class Person implements Comparable, ChangeTracker {
         }
     }
 
+    @Override
     public int compareTo(Object o) {
         return this.lastName.compareTo(((Person)o).getLastName());
     }

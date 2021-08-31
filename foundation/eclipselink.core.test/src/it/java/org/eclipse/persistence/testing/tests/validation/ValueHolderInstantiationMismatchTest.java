@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class ValueHolderInstantiationMismatchTest extends ExceptionTest {
         setDescription("This tests Value Holder Instantiation Mismatch Test (TL-ERROR 125) " + "");
     }
 
+    @Override
     protected void setup() {
         expectedException = DescriptorException.valueHolderInstantiationMismatch(new java.util.Vector(), new OneToOneMapping());
         orgIntegrityChecker = getSession().getIntegrityChecker();
@@ -40,6 +41,7 @@ public class ValueHolderInstantiationMismatchTest extends ExceptionTest {
     }
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     public void reset() {
         if (orgIntegrityChecker != null)
             getSession().setIntegrityChecker(orgIntegrityChecker);
@@ -47,6 +49,7 @@ public class ValueHolderInstantiationMismatchTest extends ExceptionTest {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         try {
             getSession().setIntegrityChecker(new IntegrityChecker());

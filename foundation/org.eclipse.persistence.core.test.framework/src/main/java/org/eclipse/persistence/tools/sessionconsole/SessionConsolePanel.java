@@ -159,6 +159,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
     /**
      * Method to handle events for the ActionListener interface.
      */
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         try {
             if (e.getSource() == getCutMenuItem()) {
@@ -3115,6 +3116,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.ItemEvent
      */
+    @Override
     public void itemStateChanged(ItemEvent e) {
         if (e.getSource() == getLogProfileCheckbox()) {
             connEtoC14(e);
@@ -3164,11 +3166,13 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
         dialog
                 .setDialogTitle("Select Mapping Workbench project deployment XML file");
         javax.swing.filechooser.FileFilter filer = new javax.swing.filechooser.FileFilter() {
+            @Override
             public boolean accept(File file) {
                 return (file.getName().indexOf(".xml") != -1)
                         || file.isDirectory();
             }
 
+            @Override
             public String getDescription() {
                 return "XML Files (*.xml)";
             }
@@ -3284,6 +3288,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mouseClicked(MouseEvent e) {
     }
 
@@ -3293,6 +3298,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mouseEntered(MouseEvent e) {
     }
 
@@ -3302,6 +3308,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mouseExited(MouseEvent e) {
     }
 
@@ -3311,6 +3318,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mousePressed(MouseEvent e) {
     }
 
@@ -3320,6 +3328,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.MouseEvent
      */
+    @Override
     public void mouseReleased(MouseEvent e) {
         if (e.getSource() == getSQLText()) {
             connEtoC18(e);
@@ -3368,6 +3377,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param evt
      *                java.beans.PropertyChangeEvent
      */
+    @Override
     public void propertyChange(java.beans.PropertyChangeEvent evt) {
         if ((evt.getSource() == getBrowseProfileMenuItem())
                 && (evt.getPropertyName().equals("enabled"))) {
@@ -3734,6 +3744,7 @@ public class SessionConsolePanel extends JPanel implements ActionListener,
      * @param e
      *                event.ListSelectionEvent
      */
+    @Override
     public void valueChanged(ListSelectionEvent e) {
         if (e.getSource() == getClassList()) {
             connEtoC3(e);

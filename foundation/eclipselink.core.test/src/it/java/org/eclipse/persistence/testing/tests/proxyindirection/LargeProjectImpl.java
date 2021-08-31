@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,18 +27,22 @@ public class LargeProjectImpl extends ProjectImpl implements LargeProject, Proje
     public double budget;
     public String investor;
 
+    @Override
     public double getBudget() {
         return this.budget;
     }
 
+    @Override
     public String getInvestor() {
         return this.investor;
     }
 
+    @Override
     public void setBudget(double value) {
         this.budget = value;
     }
 
+    @Override
     public void setInvestor(String value) {
         this.investor = value;
     }

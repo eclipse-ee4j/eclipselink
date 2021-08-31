@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class ReadObjectQueryCacheTest extends NamedQueryQueryCacheTest {
         setDescription("Ensure query caches work for ReadObject queries.");
     }
 
+    @Override
     public ReadQuery getQueryForTest() {
         ReadObjectQuery testQuery = new ReadObjectQuery(Employee.class);
         ExpressionBuilder employees = new ExpressionBuilder();
@@ -36,6 +37,7 @@ public class ReadObjectQueryCacheTest extends NamedQueryQueryCacheTest {
         return testQuery;
     }
 
+    @Override
     public void verify() {
         if (tracker.getSqlStatements().size() != expectedSQLCount) {
             throw new TestErrorException("An incorrect number of SQL statements were generated: " + tracker.getSqlStatements().size() + ". This likely indicates a problem with the query cache.");

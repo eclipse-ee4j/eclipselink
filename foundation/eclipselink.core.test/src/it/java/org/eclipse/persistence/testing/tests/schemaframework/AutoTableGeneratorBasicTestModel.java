@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,6 +28,7 @@ public class AutoTableGeneratorBasicTestModel extends EmployeeBasicTestModel {
     /**
      * Swap a clean session to ensure only the desired descriptors are loaded.
      */
+    @Override
     public void addForcedRequiredSystems() {
         getExecutor().swapCleanDatabaseSession();
         // Must clear the employee system as the tables are replaced.
@@ -38,6 +39,7 @@ public class AutoTableGeneratorBasicTestModel extends EmployeeBasicTestModel {
     /**
      * Reset the swapped session.
      */
+    @Override
     public void reset() {
         getExecutor().resetSession();
     }

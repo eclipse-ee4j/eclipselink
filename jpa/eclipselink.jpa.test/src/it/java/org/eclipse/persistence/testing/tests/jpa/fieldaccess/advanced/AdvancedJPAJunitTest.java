@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -70,6 +70,7 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         super.setUp();
         clearCache("fieldaccess");
@@ -150,9 +151,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
         project = em.merge(project);
         lproject = em.merge(lproject);
         sproject = em.merge(sproject);
-        this.assertTrue("Project's default constructor wasn't used to create merged entity", project.getFieldOnlySetThroughConstructor()==1);
-        this.assertTrue("LargeProject's default constructor wasn't used to create merged entity", lproject.getFieldOnlySetThroughConstructor()==2);
-        this.assertTrue("Project's default constructor wasn't used to create merged SmallProject", sproject.getFieldOnlySetThroughConstructor()==1);
+        assertTrue("Project's default constructor wasn't used to create merged entity", project.getFieldOnlySetThroughConstructor()==1);
+        assertTrue("LargeProject's default constructor wasn't used to create merged entity", lproject.getFieldOnlySetThroughConstructor()==2);
+        assertTrue("Project's default constructor wasn't used to create merged SmallProject", sproject.getFieldOnlySetThroughConstructor()==1);
 
         try{
             em.flush();
@@ -175,9 +176,9 @@ public class AdvancedJPAJunitTest extends JUnitTestCase {
 
         closeEntityManager(em);
 
-        this.assertTrue("Project's default constructor wasn't used to create managed entity", project.getFieldOnlySetThroughConstructor()==1);
-        this.assertTrue("LargeProject's default constructor wasn't used to create managed entity", lproject.getFieldOnlySetThroughConstructor()==2);
-        this.assertTrue("Project's default constructor wasn't used to create managed SmallProject", sproject.getFieldOnlySetThroughConstructor()==1);
+        assertTrue("Project's default constructor wasn't used to create managed entity", project.getFieldOnlySetThroughConstructor()==1);
+        assertTrue("LargeProject's default constructor wasn't used to create managed entity", lproject.getFieldOnlySetThroughConstructor()==2);
+        assertTrue("Project's default constructor wasn't used to create managed SmallProject", sproject.getFieldOnlySetThroughConstructor()==1);
 
 
     }

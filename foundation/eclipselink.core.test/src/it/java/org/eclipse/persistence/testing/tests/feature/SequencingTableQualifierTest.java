@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class SequencingTableQualifierTest extends AutoVerifyTestCase {
         setDescription("Test to check that setting a sequencing table qualifier works correctly");
     }
 
+    @Override
     public void setup() {
         // cache existing sequence
         this.oldSequence = getDatabaseSession().getLogin().getDefaultSequence();
@@ -77,6 +78,7 @@ public class SequencingTableQualifierTest extends AutoVerifyTestCase {
         return new TableSequence("", 50, sequenceTableName, "SEQ_NAME", "SEQ_COUNT");
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getDatabaseSession().acquireUnitOfWork();
         try {
@@ -94,6 +96,7 @@ public class SequencingTableQualifierTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (this.storedException == null) {
             throw new TestErrorException("No exception thrown - sequencing table qualifier was not used");
@@ -106,6 +109,7 @@ public class SequencingTableQualifierTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         getDatabaseSession().logout();
         getDatabaseSession().getLogin().setDefaultSequence(this.oldSequence);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,10 +30,12 @@ public class ClearLastAccessedIdentityMapTest extends TestCase {
         setDescription("Ensure that after initializeIdentityMap is called, the old " + "identity map is not returned because of the caching of lastIdentityMapAccessed.");
     }
 
+    @Override
     public void setup() {
         mapNotRefreshed = false;
     }
 
+    @Override
     public void test() {
         IdentityMap originalMap = getAbstractSession().getIdentityMapAccessorInstance().getIdentityMap(Employee.class);
         getAbstractSession().getIdentityMapAccessorInstance().initializeIdentityMap(Employee.class);
@@ -43,6 +45,7 @@ public class ClearLastAccessedIdentityMapTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (mapNotRefreshed) {
             throw new TestErrorException("InitializeIdentityMap(Class) did not properly refresh the identity map cache.");

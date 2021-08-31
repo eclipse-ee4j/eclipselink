@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,8 +35,10 @@ public class WriteChanges_CommitFail_TestCase extends AutoVerifyTestCase {
     public EclipseLinkException exception = null;
     public UnitOfWorkImpl uow= null;
 
+    @Override
     public void test() {
         uow = new UnitOfWorkImpl((AbstractSession)getSession(), null){
+            @Override
             public void commitTransaction() throws DatabaseException {
                 //throw a bogus exception instead of committing.  Simulates an error when constraint checking is delayed until commit
                 if(beginCount==1){
@@ -46,6 +48,7 @@ public class WriteChanges_CommitFail_TestCase extends AutoVerifyTestCase {
                 getParent().commitTransaction();
             }
             int beginCount = 0;
+            @Override
             public void beginTransaction() throws DatabaseException {
                 //throw a bogus exception instead of committing.  Simulates an error when constraint checking is delayed until commit
                 beginCount++;
@@ -67,6 +70,7 @@ public class WriteChanges_CommitFail_TestCase extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (exception==null || (exception.getErrorCode() != DatabaseException.DATABASE_ACCESSOR_NOT_CONNECTED)){
             throw new TestErrorException("UnitOfWorkImpl commit did not throw original database exception and instead threw :"+exception);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class StoredProcedureTimestampTest extends TestCase {
         setName(getName() + " bind = " + shouldBindAllParameters);
     }
 
+    @Override
     public void setup() {
         //right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle())) {
@@ -42,6 +43,7 @@ public class StoredProcedureTimestampTest extends TestCase {
         }
     }
 
+    @Override
     public void test() {
         StoredProcedureCall call = new StoredProcedureCall();
         call.setProcedureName("StoredProcedure_Timestamp");
@@ -61,6 +63,7 @@ public class StoredProcedureTimestampTest extends TestCase {
     }
 
     //a java.util.Date object should return a java.sql.Timestamp object
+    @Override
     public void verify() {
         if (!(row.get("CURRENT_DATE")).getClass().equals(java.sql.Timestamp.class)) {
             throw new TestErrorException("Timestamp class not returned for java.util.Date");

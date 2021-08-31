@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -31,11 +31,13 @@ public class CustomSQLCursoredStreamReadTest extends AutoVerifyTestCase {
         setDescription("Tests that the additionalSizeQueryNotSpecified exception is thrown at the right time for a custom sql query.");
     }
 
+    @Override
     protected void setup() {
         m_exceptionCaughtOnSQLQueryExecution = false;
         m_exceptionCaughtOnSizeQueryExecution = false;
     }
 
+    @Override
     protected void test() {
         ReadAllQuery query = new ReadAllQuery(Employee.class);
         query.setSQLString("SELECT * FROM EMPLOYEE");
@@ -62,6 +64,7 @@ public class CustomSQLCursoredStreamReadTest extends AutoVerifyTestCase {
     /**
      *
      */
+    @Override
     protected void verify() throws Exception {
         if (m_exceptionCaughtOnSQLQueryExecution) {
             throw new TestErrorException("The additionalSizeQueryNotSpecified exception was thrown when preparing the custom sql query.");

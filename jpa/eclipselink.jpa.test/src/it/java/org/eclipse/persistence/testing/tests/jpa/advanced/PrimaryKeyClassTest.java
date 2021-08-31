@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
     protected Exception m_updateException;
     protected Exception m_deleteException;
 
+    @Override
     public void setup () {
         super.setup();
         this.reset = true;
@@ -42,6 +43,7 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void reset () {
         if (reset) {
             reset = false;
@@ -49,6 +51,7 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
         super.reset();
     }
 
+    @Override
     public void test() throws Exception {
         int empId = createTest();
         readTest(empId);
@@ -154,6 +157,7 @@ public class PrimaryKeyClassTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify() {
         if (m_createException != null) {
             throw new TestErrorException("Create exception was caught. " + m_createException);

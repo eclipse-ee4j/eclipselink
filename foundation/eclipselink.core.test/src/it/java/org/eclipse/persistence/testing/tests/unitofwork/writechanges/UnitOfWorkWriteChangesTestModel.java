@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -52,6 +52,7 @@ import org.eclipse.persistence.testing.tests.employee.EmployeeBasicTestModel;
  *  @since   release specific (what release of product did this appear in)
  */
 public class UnitOfWorkWriteChangesTestModel extends EmployeeBasicTestModel {
+    @Override
     public void addTests() {
         addTest(new BeginTransactionEarly_WriteChanges_TestCase());
         addTest(new WriteChanges_Commit_NonTrivial_TestCase());

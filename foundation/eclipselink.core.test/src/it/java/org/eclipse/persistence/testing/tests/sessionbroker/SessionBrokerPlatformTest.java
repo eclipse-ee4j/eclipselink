@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ import org.eclipse.persistence.testing.models.employee.domain.LargeProject;
 public class SessionBrokerPlatformTest extends TransactionalTestCase {
     public DatabasePlatform platform;
 
+    @Override
     public void setup() {
         super.setup();
         // CR2114; LargeProject.class passed as an argument
@@ -39,6 +40,7 @@ public class SessionBrokerPlatformTest extends TransactionalTestCase {
         getSession().getLogin().setPlatform(newPlatform);
     }
 
+    @Override
     public void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -51,6 +53,7 @@ public class SessionBrokerPlatformTest extends TransactionalTestCase {
         }
     }
 
+    @Override
     public void reset() {
         super.reset();
         getSession().getLogin().setPlatform(this.platform);

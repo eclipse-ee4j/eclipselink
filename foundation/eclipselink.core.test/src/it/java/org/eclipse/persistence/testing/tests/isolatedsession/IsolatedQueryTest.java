@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,6 +45,7 @@ public class IsolatedQueryTest extends AutoVerifyTestCase {
         this.server.getProject().setHasIsolatedClasses(true);
     }
 
+    @Override
     public void reset() {
         try {
             this.server.logout();
@@ -62,6 +63,7 @@ public class IsolatedQueryTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void setup() {
         try {
             this.emps = getSession().readAllObjects(IsolatedEmployee.class);
@@ -92,6 +94,7 @@ public class IsolatedQueryTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         ReadObjectQuery query = new ReadObjectQuery(IsolatedAddress.class);
         ExpressionBuilder builder = new ExpressionBuilder(IsolatedEmployee.class);
@@ -113,6 +116,7 @@ public class IsolatedQueryTest extends AutoVerifyTestCase {
         client1.release();
     }
 
+    @Override
     public void verify() {
     }
 }

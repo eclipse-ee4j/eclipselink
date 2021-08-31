@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -62,6 +62,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
         restaurant.addMenu(new Menu("four oclock tea"));
     }
 
+    @Override
     protected void setup() {
         super.setup();
 
@@ -76,6 +77,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
         }
     }
 
+    @Override
     protected void test() {
         this.unitOfWork.commit();
     }
@@ -84,6 +86,7 @@ public class UnitOfWorkTest extends WriteObjectTest {
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         getSession().logMessage("working copy     Restaurant: " + this.unitOfWorkWorkingCopy);
         getSession().logMessage("objectToBeWriten Restaurant: " + this.objectToBeWritten);

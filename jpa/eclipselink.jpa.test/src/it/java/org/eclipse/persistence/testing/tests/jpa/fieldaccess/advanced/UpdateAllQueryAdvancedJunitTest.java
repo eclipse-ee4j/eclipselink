@@ -50,6 +50,7 @@ public class UpdateAllQueryAdvancedJunitTest extends JUnitTestCase {
         super(name);
     }
 
+    @Override
     public void setUp() {
         if (getServerSession("fieldaccess").getPlatform().isSymfoware()) {
             warning("UpdateAllQueryAdvancedJunitTest skipped for this platform, "

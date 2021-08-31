@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -43,6 +43,7 @@ public class SessionManagerGetSessionNotFoundTest extends AutoVerifyTestCase {
         setDescription("Tests that the proper exception is thrown when a session is not found in the session.xml file");
     }
 
+    @Override
     public void reset() {
         if ((m_session != null) && m_session.isConnected()) {
             m_session.logout();
@@ -51,11 +52,13 @@ public class SessionManagerGetSessionNotFoundTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void setup() {
         m_session = null;
         m_exception = null;
     }
 
+    @Override
     public void test() {
         try {
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSession.xml");
@@ -65,6 +68,7 @@ public class SessionManagerGetSessionNotFoundTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (m_exception == null) {
             throw new TestErrorException("No exception was caught on the getSession call");

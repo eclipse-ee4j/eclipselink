@@ -31,6 +31,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         cacheSyncConfigValues.put(ListItem.class, Integer.valueOf(ClassDescriptor.SEND_NEW_OBJECTS_WITH_CHANGES));
     }
 
+    @Override
     public void setup(){
         super.setup();
 
@@ -45,6 +46,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         uow.commit();
     }
 
+    @Override
     public void test(){
         DistributedServer server = (DistributedServer)DistributedServersModel.getDistributedServers().get(0);
 
@@ -73,6 +75,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         uow.commit();
     }
 
+    @Override
     public void verify(){
         // ensure the changes are propgated
         try{
@@ -86,6 +89,7 @@ public class OrderedListNewObjectTest extends ConfigurableCacheSyncDistributedTe
         }
     }
 
+    @Override
     public void reset(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         ListHolder holder = (ListHolder)uow.readObject(ListHolder.class);

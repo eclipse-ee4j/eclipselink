@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public class ALCTEmployeeSystem extends TestSystem {
         project = new ALCTEmployeeProject();
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         if (project == null) {
             project = new ALCTEmployeeProject();
@@ -48,6 +49,7 @@ public class ALCTEmployeeSystem extends TestSystem {
         session.addDescriptors(project);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         dropTableConstraints(session);
         new ALCTEmployeeTableCreator().replaceTables(session);
@@ -62,6 +64,7 @@ public class ALCTEmployeeSystem extends TestSystem {
     /**
      * Return a connected session using the default login.
      */
+    @Override
     public DatabaseSession login() {
         DatabaseSession session;
 
@@ -75,6 +78,7 @@ public class ALCTEmployeeSystem extends TestSystem {
      *    This method will instantiate all of the example instances and insert them into the database
      *    using the given session.
      */
+    @Override
     public void populate(DatabaseSession session) {
         UnitOfWork unitOfWork = session.acquireUnitOfWork();
         ALCTEmployee emp = new ALCTEmployee();

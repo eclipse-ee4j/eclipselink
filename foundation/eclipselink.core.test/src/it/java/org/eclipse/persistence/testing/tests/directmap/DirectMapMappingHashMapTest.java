@@ -37,16 +37,19 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
         setDescription("Tests that nulls are properly supported for DirectMapMappings that use a HashMap.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
     }
 
+    @Override
     public void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
     }
 
+    @Override
     public void test() throws Exception {
         // Create a hashmap with a null in it.
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -68,6 +71,7 @@ public class DirectMapMappingHashMapTest extends AutoVerifyTestCase {
         queryResult = (DirectMapMappings)getSession().executeQuery(new ReadObjectQuery(DirectMapMappings.class));
     }
 
+    @Override
     public void verify() throws Exception {
         if (m_exception != null) {
             throw new TestErrorException("Null pointer exception was caught.");

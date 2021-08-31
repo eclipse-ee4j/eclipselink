@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -26,6 +26,7 @@ import org.eclipse.persistence.testing.tests.queries.report.ReportQueryTestCase;
 
 public class MapEntryDirectEntity1MReportQueryTest extends ReportQueryTestCase{
 
+    @Override
     protected void buildExpectedResults() {
         Vector holders = getSession().readAllObjects(DirectEntity1MMapHolder.class);
 
@@ -41,6 +42,7 @@ public class MapEntryDirectEntity1MReportQueryTest extends ReportQueryTestCase{
         }
     }
 
+    @Override
     protected void removeFromResult(ReportQueryResult result, Vector expected) {
         for (Enumeration e = expected.elements(); e.hasMoreElements();) {
             ReportQueryResult expectedResult = (ReportQueryResult)e.nextElement();
@@ -54,6 +56,7 @@ public class MapEntryDirectEntity1MReportQueryTest extends ReportQueryTestCase{
         getSession().logMessage("missing element: " + result);
     }
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
         reportQuery = new ReportQuery(new ExpressionBuilder());

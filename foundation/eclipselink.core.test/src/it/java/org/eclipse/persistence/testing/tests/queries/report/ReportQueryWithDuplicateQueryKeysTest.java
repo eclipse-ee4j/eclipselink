@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,6 +24,7 @@ public class ReportQueryWithDuplicateQueryKeysTest extends AutoVerifyTestCase {
     public ReportQueryWithDuplicateQueryKeysTest() {
     }
 
+    @Override
     public void setup() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Bar bar = new Bar();
@@ -44,6 +45,7 @@ public class ReportQueryWithDuplicateQueryKeysTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Bar bar = (Bar)uow.readObject(Bar.class);
@@ -55,6 +57,7 @@ public class ReportQueryWithDuplicateQueryKeysTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void test() {
         ExpressionBuilder builder = new ExpressionBuilder();
         ReportQuery reportQuery = new ReportQuery(Bar.class, builder);

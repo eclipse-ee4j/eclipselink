@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class Runner1 implements Runnable {
         this.emf = emf;
     }
 
+    @Override
     public void run() {
         try {
 
@@ -44,7 +45,7 @@ public class Runner1 implements Runnable {
             dept.getEquipment().put(equip.getId(), equip);
             UnitOfWorkImpl uow = ((EntityManagerImpl) em).getActivePersistenceContext(null);
             try {
-                Thread.currentThread().sleep(4000);
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
            }
             uow.issueSQLbeforeCompletion(true);
@@ -60,7 +61,7 @@ public class Runner1 implements Runnable {
                 cacheKey.notify();
             }
             try {
-                Thread.currentThread().sleep(4000);
+                Thread.sleep(4000);
             } catch (InterruptedException e) {
             }
             uow.mergeClonesAfterCompletion();

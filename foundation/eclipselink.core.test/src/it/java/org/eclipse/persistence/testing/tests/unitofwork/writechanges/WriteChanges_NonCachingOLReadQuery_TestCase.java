@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class WriteChanges_NonCachingOLReadQuery_TestCase extends AutoVerifyTestC
     protected Exception exception;
     Vector result;
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         try {
@@ -52,6 +53,7 @@ public class WriteChanges_NonCachingOLReadQuery_TestCase extends AutoVerifyTestC
         }
     }
 
+    @Override
     public void verify() {
         if (exception != null) {
             throw new TestErrorException("Should not have thrown exception, as long as the query is non-caching.",
@@ -62,6 +64,7 @@ public class WriteChanges_NonCachingOLReadQuery_TestCase extends AutoVerifyTestC
         }
     }
 
+    @Override
     public void reset() {
         result = null;
         exception = null;

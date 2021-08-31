@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,16 +35,19 @@ public class MemoryQueryLike extends TestCase {
         employees = new Vector();
     }
 
+    @Override
     public void reset() {
         //clear the cache.
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         // read all the employees into the cache.
         getSession().readAllObjects(Employee.class);
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.setReferenceClass(Employee.class);
@@ -57,6 +60,7 @@ public class MemoryQueryLike extends TestCase {
 
     }
 
+    @Override
     public void verify() {
         if (employees.size() != 1) {
             throw new TestErrorException("Expected 1 employees but retured " + employees.size() + " for in-memory 'like' query.");

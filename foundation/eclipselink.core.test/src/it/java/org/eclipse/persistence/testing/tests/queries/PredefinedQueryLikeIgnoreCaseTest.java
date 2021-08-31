@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class PredefinedQueryLikeIgnoreCaseTest extends ReadObjectTest {
     /**
      * Add the query to the descriptor.
      */
+    @Override
     protected void setup() {
         ExpressionBuilder builder = new ExpressionBuilder();
         Expression nameExpression = builder.get("firstName").likeIgnoreCase(builder.getParameter("NAME"));
@@ -64,6 +65,7 @@ public class PredefinedQueryLikeIgnoreCaseTest extends ReadObjectTest {
     /**
      * Execute the predefined query.
      */
+    @Override
     protected void test() {
         try {
             this.objectFromDatabase = getSession().executeQuery("likeIgnoreCase", Employee.class, "Bob");
@@ -75,6 +77,7 @@ public class PredefinedQueryLikeIgnoreCaseTest extends ReadObjectTest {
     /**
      * Verify that the object was returned.
      */
+    @Override
     protected void verify() {
         if (this.objectFromDatabase == null) {
             throw new TestErrorException("The object was not read from the database!!!");

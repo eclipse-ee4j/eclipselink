@@ -561,6 +561,7 @@ public class FlashbackUnitTestSuite extends TestSuite {
         }
     }
 
+    @Override
     public void addTests() {
         addTest(new UnitTestCase("AsOfCurrentTimeMillisTest"));
         // broken addTest(new UnitTestCase("AsOfCurrentTimeMillisParameterTest"));

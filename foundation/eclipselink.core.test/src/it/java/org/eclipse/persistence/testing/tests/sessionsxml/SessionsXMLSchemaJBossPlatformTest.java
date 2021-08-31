@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class SessionsXMLSchemaJBossPlatformTest extends AutoVerifyTestCase {
         setDescription("Tests loading a JBoss platform from the schema.");
     }
 
+    @Override
     public void reset() {
         if ((m_employeeSession != null) && m_employeeSession.isConnected()) {
             m_employeeSession.logout();
@@ -44,10 +45,12 @@ public class SessionsXMLSchemaJBossPlatformTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void setup() {
         m_exceptionCaught = null;
     }
 
+    @Override
     public void test() {
         try {
             XMLSessionConfigLoader loader = new XMLSessionConfigLoader("org/eclipse/persistence/testing/models/sessionsxml/XMLSchemaSessionJBossPlatform.xml");
@@ -58,6 +61,7 @@ public class SessionsXMLSchemaJBossPlatformTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (m_exceptionCaught != null) {
             throw new TestErrorException("Loading of the session failed: " + m_exceptionCaught);

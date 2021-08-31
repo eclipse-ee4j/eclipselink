@@ -36,6 +36,7 @@ public class PLSQLTestModel extends TestModel {
         setDescription("This model tests calling PLSQL stored procedures with PLSQL types.");
     }
 
+    @Override
     public void addRequiredSystems() {
         if (!getSession().getLogin().getPlatform().isOracle()) {
             warning("PLSQL is only supported on Oracle.");
@@ -44,6 +45,7 @@ public class PLSQLTestModel extends TestModel {
         addRequiredSystem(new PLSQLSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getSimpleTestSuite());
         addTest(getRecordTestSuite());

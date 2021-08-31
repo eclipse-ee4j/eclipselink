@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class InstantiationWhileConstructorInstantiationOfFactoryTest extends Exc
     InstantiationPolicy policy;
     IntegrityChecker orgIntegrityChecker;
 
+    @Override
     protected void setup() {
         descriptor = new RelationalDescriptor();
         //problems with ExceptionTest class are that it is abstact
@@ -50,10 +51,12 @@ public class InstantiationWhileConstructorInstantiationOfFactoryTest extends Exc
         expectedException = DescriptorException.instantiationWhileConstructorInstantiationOfFactory(descriptor, new Exception());
     }
 
+    @Override
     public void reset() {
         getSession().setIntegrityChecker(orgIntegrityChecker);
     }
 
+    @Override
     public void test() {
         try {
             policy.initialize((AbstractSession)getSession());

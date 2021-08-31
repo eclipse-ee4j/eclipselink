@@ -34,17 +34,20 @@ public class DirectMapMappingBatchReadTest extends AutoVerifyTestCase {
         setDescription("Tests that objects direct map mapping are batch read properly.");
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         rollbackTransaction();
         getSession().getEventManager().removeListener(sessionListener);
     }
 
+    @Override
     public void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         beginTransaction();
 
         sessionListener = new SessionEventAdapter() {
+                    @Override
                     public void postExecuteQuery(SessionEvent event) {
                         isPostExecutedQuery = true;
                     }
@@ -64,6 +67,7 @@ public class DirectMapMappingBatchReadTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() throws Exception {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class TargetInvocationWhileInstantiatingMethodBasedProxyTest extends Exce
     Object theReceiver;
 
 
+    @Override
     protected void setup() throws NoSuchMethodException {
         descriptor = new RelationalDescriptor();
         descriptor.setJavaClass(TargetInvocationWhileInstantiatingMethodBasedProxyTest.class);
@@ -59,6 +60,7 @@ public class TargetInvocationWhileInstantiatingMethodBasedProxyTest extends Exce
         expectedException = DescriptorException.targetInvocationWhileInstantiatingMethodBasedProxy(new Exception());
     }
 
+    @Override
     public void test() {
         try {
             valueHolder.getValue();
@@ -68,7 +70,7 @@ public class TargetInvocationWhileInstantiatingMethodBasedProxyTest extends Exce
     }
 
     public String invalidMethod(DatabaseRecord row) throws java.lang.IllegalAccessException {
-        throw new java.lang.IllegalAccessException();
+        throw new IllegalAccessException();
     }
 
 }

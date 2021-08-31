@@ -44,6 +44,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
     static HashMap sessionCalls = new HashMap();
     static HashMap descriptorCalls = new HashMap();
 
+    @Override
     public void customize(Session session) {
         String sessionName = session.getName();
         Integer numberOfCalls = (Integer)sessionCalls.get(sessionName);
@@ -57,6 +58,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         session.getEventManager().addListener(new AcquireReleaseListener());
 
         session.getEventManager().addListener(new SessionEventAdapter() {
+            @Override
             public void postLogin(SessionEvent event) {
                 if (event.getSession().getPlatform().isPostgreSQL()) {
                     event.getSession().setQueryTimeoutDefault(0);
@@ -65,6 +67,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
         });
     }
 
+    @Override
     public void customize(ClassDescriptor descriptor) {
         String javaClassName = descriptor.getJavaClass().getName();
         Integer numberOfCalls = (Integer)descriptorCalls.get(javaClassName);
@@ -199,6 +202,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
     }
     //**temp
     static class AcquireReleaseListener extends SessionEventAdapter {
+        @Override
         public void postAcquireConnection(SessionEvent event) {
             DatasourceAccessor accessor = (DatasourceAccessor)event.getResult();
             try {
@@ -213,6 +217,7 @@ public class Customizer implements SessionCustomizer, DescriptorCustomizer {
                 throw ex;
             }
         }
+        @Override
         public void preReleaseConnection(SessionEvent event) {
             DatasourceAccessor accessor = (DatasourceAccessor)event.getResult();
             try {

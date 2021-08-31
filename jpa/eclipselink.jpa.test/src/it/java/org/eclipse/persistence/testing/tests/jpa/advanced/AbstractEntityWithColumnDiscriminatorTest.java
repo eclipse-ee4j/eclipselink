@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -126,9 +126,9 @@ public class AbstractEntityWithColumnDiscriminatorTest extends JUnitTestCase {
     private static void assertCustomer(final RegisteredCustomer customer) {
         assertEquals(CUSTOMER_NAME, customer.getName());
         assertTrue(customer.getBillingAddress() instanceof AddressType1);
-        assertEquals(CUSTOMER_ADDR_BILLING, ((AddressType1) customer.getBillingAddress()).getStreet());
+        assertEquals(CUSTOMER_ADDR_BILLING, customer.getBillingAddress().getStreet());
         assertTrue(customer.getDeliveryAddress() instanceof AddressType2);
-        assertEquals(CUSTOMER_ADDR_DELIVERY, ((AddressType2) customer.getDeliveryAddress()).getStreet());
+        assertEquals(CUSTOMER_ADDR_DELIVERY, customer.getDeliveryAddress().getStreet());
     }
 
     /**

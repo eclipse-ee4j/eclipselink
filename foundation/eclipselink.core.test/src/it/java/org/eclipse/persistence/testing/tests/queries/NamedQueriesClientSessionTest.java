@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class NamedQueriesClientSessionTest extends MultiNameQueriesTestCase {
         setDescription("Verifies if a Named Queries with different argument sets" + " can be cached on Client Session");
     }
 
+    @Override
     public void reset() {
         // do not want to keep named queries on serverSession
         clientSession.removeQuery("namedQuerySameName");
@@ -50,6 +51,7 @@ public class NamedQueriesClientSessionTest extends MultiNameQueriesTestCase {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         org.eclipse.persistence.sessions.Project proj = new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
         proj.setDatasourceLogin(getSession().getDatasourceLogin().clone());
@@ -88,6 +90,7 @@ public class NamedQueriesClientSessionTest extends MultiNameQueriesTestCase {
     }
 
     // end of addNamedQueryFirstAndLastName
+    @Override
     public void test() {
         // Can more than one named query co-exist with the same name?
         // Same name "namedQuerySameName" added twice to the very same
@@ -101,6 +104,7 @@ public class NamedQueriesClientSessionTest extends MultiNameQueriesTestCase {
     }
 
     // end of test()
+    @Override
     public void verify() {
         if (caughtException != null) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("Multiple queries with the same named cached on the ClientSession.\n" + "Each with different argument sets.\n" + "This exception thrown while testing test case.\n" + "----- NamedQueriesClientSessionTest() -----\n");

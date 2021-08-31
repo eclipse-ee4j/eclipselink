@@ -23,6 +23,7 @@ public class TestUpdateDirectAggregateMapMapping extends TestReadDirectAggregate
 
     protected DirectAggregateMapHolder changedHolder = null;
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectAggregateMapHolder.class, holderExp);
@@ -38,6 +39,7 @@ public class TestUpdateDirectAggregateMapMapping extends TestReadDirectAggregate
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object initialHolder = holders.get(0);

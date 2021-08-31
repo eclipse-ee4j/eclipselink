@@ -73,10 +73,12 @@ public class ConversionManagerTestModel extends TestModel {
         setDescription("This suite tests all possible conversions through direct field mapping.");
     }
 
+    @Override
     public void addForcedRequiredSystems() {
         addForcedRequiredSystem(new ConversionManagerSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getReadObjectTestSuite());
         addTest(getReadAllTestSuite());

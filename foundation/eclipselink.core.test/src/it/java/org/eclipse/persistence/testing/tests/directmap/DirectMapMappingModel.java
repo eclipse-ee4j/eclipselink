@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,10 +29,12 @@ public class DirectMapMappingModel extends TestModel {
         setDescription("This model tests DirectMapMappings in Toplink.");
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new DirectMapMappingsSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(new MergeChangeSetWithDirectMapMappingTest());
         addTest(new MergeChangeSetWithIndirectDirectMapMappingTest());

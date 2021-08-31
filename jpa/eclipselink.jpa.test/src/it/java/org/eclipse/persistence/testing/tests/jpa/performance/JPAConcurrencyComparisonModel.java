@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -61,6 +61,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         setDescription("Performance tests that compare JPA concurrency.");
     }
 
+    @Override
     public void addTests() {
         addTest(new BasicMathConcurrentTest());
         addTest(getReadingTestSuite());
@@ -121,6 +122,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
     /**
      * Create/populate database.
      */
+    @Override
     public void setup() {
         /*
         // Setup DataSource for apples to apples comparison (otherwise we crush them).
@@ -205,7 +207,7 @@ public class JPAConcurrencyComparisonModel extends TestModel {
         String providerClass = "org.eclipse.persistence.jpa.PersistenceProvider";
         PersistenceProvider provider = null;
         try {
-            provider = (PersistenceProvider)Class.forName(providerClass).newInstance();
+            provider = (PersistenceProvider)Class.forName(providerClass).getConstructor().newInstance();
         } catch (Exception error) {
             throw new TestProblemException("Failed to create persistence provider.", error);
         }

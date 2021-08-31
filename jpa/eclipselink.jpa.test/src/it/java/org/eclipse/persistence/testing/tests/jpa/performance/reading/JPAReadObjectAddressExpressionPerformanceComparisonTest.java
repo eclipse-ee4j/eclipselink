@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class JPAReadObjectAddressExpressionPerformanceComparisonTest extends JPA
     /**
      * Get an address street.
      */
+    @Override
     public void setup() {
         EntityManager manager = createEntityManager();
         street = ((Address)manager.createQuery("Select a from Address a").getResultList().get(0)).getStreet();
@@ -42,6 +43,7 @@ public class JPAReadObjectAddressExpressionPerformanceComparisonTest extends JPA
     /**
      * Read address.
      */
+    @Override
     public void test() throws Exception {
         EntityManager manager = createEntityManager();
         Query query = manager.createQuery("Select a from Address a where a.street = :street");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class XMLAnnotationMergingTest extends EntityContainerTestBase  {
     protected boolean reset = false;    // reset gets called twice on error
     protected Exception m_exception;
 
+    @Override
     public void setup () {
         super.setup();
         this.reset = true;
@@ -38,6 +39,7 @@ public class XMLAnnotationMergingTest extends EntityContainerTestBase  {
         ((EntityManagerImpl)getEntityManager()).getActiveSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void reset () {
         if (reset) {
             reset = false;
@@ -45,6 +47,7 @@ public class XMLAnnotationMergingTest extends EntityContainerTestBase  {
         super.reset();
     }
 
+    @Override
     public void test() throws Exception {
         try {
             getEntityManager().createNamedQuery("findAllEmployeesByFirstName").setParameter("firstname", "Guy").getResultList();
@@ -53,6 +56,7 @@ public class XMLAnnotationMergingTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify() {
         // Check that the named query from employee was found.
         if (m_exception != null) {

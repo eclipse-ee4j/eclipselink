@@ -173,6 +173,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         return ok;
     }
 
+    @Override
     public void test() throws Exception {
         results = new Object[methods.size()];
         exceptions = new Throwable[methods.size()];
@@ -191,6 +192,7 @@ public class RemoteConnectionExceptionsTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         boolean errorHasOccured = false;
         String errorMessage = new String("Wrong exception/result thrown/returned by methods:");

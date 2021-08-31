@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,9 +34,11 @@ public class GetSizeRecurseOptionTest extends TestCase {
     public GetSizeRecurseOptionTest() {
     }
 
+    @Override
     public void reset() {
     }
 
+    @Override
     protected void setup() {
         m_session = getSession();
 
@@ -45,12 +47,14 @@ public class GetSizeRecurseOptionTest extends TestCase {
         m_session.readAllObjects(SmallProject.class);
     }
 
+    @Override
     public void test() {
         FullIdentityMap identityMap = (FullIdentityMap)((AbstractSession)m_session).getIdentityMapAccessorInstance().getIdentityMap(Project.class);
         m_fullSize = identityMap.getSize();
         m_smallSize = identityMap.getSize(SmallProject.class, false);
     }
 
+    @Override
     protected void verify() {
         if (m_smallSize >= m_fullSize) {
             throw new TestErrorException("The number of small projects exceeded or equalled the number of projects as a whole");

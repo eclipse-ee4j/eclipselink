@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class BatchWritingFlushQueryTest extends TestCase {
         setDescription("Test for the setForceBatchStatementExecution ModifyQuery option on Dynamic batch writing mechanism.");
     }
 
+    @Override
     public void setup() {
         //databaseSession needed for transaction begin/rollback
         DatabaseSession session = (DatabaseSession)getSession();
@@ -72,6 +73,7 @@ public class BatchWritingFlushQueryTest extends TestCase {
         tracker = new QuerySQLTracker(session);
     }
 
+    @Override
     public void reset() {
         DatabaseSession session = (DatabaseSession)getSession();
         DatabasePlatform platform = getSession().getPlatform();
@@ -84,6 +86,7 @@ public class BatchWritingFlushQueryTest extends TestCase {
         session.getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
 
@@ -106,6 +109,7 @@ public class BatchWritingFlushQueryTest extends TestCase {
     }
 
 
+    @Override
     public void verify() {
         if (initialSQLStatements != EXPECTED_INITIAL_STATEMENTS) {
             throw new TestErrorException("A DataModifyQuery with batchWriting executed resulting in incorrect number of SQL Statements. " +

@@ -49,12 +49,14 @@ public class ReadOnlyClassOneToManyTestCase extends AutoVerifyTestCase {
         super();
     }
 
+    @Override
     public void reset() {
         originalVehicle.setPassengerCapacity(origCapacity);
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     protected void setup() {
         beginTransaction();
         originalCompany = (Company)getSession().readObject(Company.class);
@@ -77,10 +79,12 @@ public class ReadOnlyClassOneToManyTestCase extends AutoVerifyTestCase {
         ((Vehicle)((Vector)cloneCompany.getVehicles().getValue()).firstElement()).setPassengerCapacity(Integer.valueOf(origCapacity.intValue() + 1));
     }
 
+    @Override
     protected void test() {
         uow.commit();
     }
 
+    @Override
     protected void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
 

@@ -30,6 +30,7 @@ public class ClientThread extends Thread {
         this.server = server;
     }
 
+    @Override
     public void run() {
         Session client = server.acquireClientSession("default");
         client.readAllObjects(Employee.class);

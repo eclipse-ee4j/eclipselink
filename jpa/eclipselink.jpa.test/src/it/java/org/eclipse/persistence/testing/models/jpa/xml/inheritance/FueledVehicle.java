@@ -53,6 +53,7 @@ public class FueledVehicle extends Vehicle {
         fuelType = type;
     }
 
+    @Override
     public void change() {
         this.setPassengerCapacity(Integer.valueOf(100));
         this.setFuelType("HOT AIR");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ import org.eclipse.persistence.testing.models.employee.domain.Employee;
 public class TransactionIsolationAlwaysRefreshTest extends TransactionIsolationRefreshTest {
     boolean didRefresh;
 
+    @Override
     protected void setup() throws Exception {
         super.setup();
         // Must override otherwise test is meaningless.
@@ -57,6 +58,7 @@ public class TransactionIsolationAlwaysRefreshTest extends TransactionIsolationR
         descriptor.setShouldAlwaysRefreshCache(true);
     }
 
+    @Override
     public void reset() throws Exception {
         super.reset();
         ClassDescriptor descriptor = getSession().getClassDescriptor(Employee.class);

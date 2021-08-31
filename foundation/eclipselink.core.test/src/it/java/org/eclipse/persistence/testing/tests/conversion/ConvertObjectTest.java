@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -45,10 +45,12 @@ public class ConvertObjectTest extends AutoVerifyTestCase {
         m_testingFailure = testingFailure;
     }
 
+    @Override
     public void setup() {
         m_failure = false;
     }
 
+    @Override
     public void test() {
         try {
             new ConversionManager().convertObject(m_testObj, m_targetClass);
@@ -59,12 +61,14 @@ public class ConvertObjectTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (m_failure) {
             throw (new TestErrorException("Conversion of '" + m_testObj + "' to '" + m_targetClass + "' falied."));
         }
     }
 
+    @Override
     public void reset() {
         m_failure = false;
         m_testingFailure = false;

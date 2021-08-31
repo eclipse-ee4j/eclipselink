@@ -37,6 +37,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
         setDescription("Tests cache synchronization with RCM.");
     }
 
+    @Override
     public void addRequiredSystems() {
         super.addRequiredSystems();
         addRequiredSystem(new IsolatedSessionSystem());
@@ -46,10 +47,12 @@ public class RCMDistributedServersModel extends DistributedServersModel {
     /**
      * Factory method for a DistributedServer.  Overridden by subclasses;
      */
+    @Override
     public DistributedServer createDistributedServer(Session session) {
         return new RCMDistributedServer((DatabaseSession)session);
     }
 
+    @Override
     public void addTests() {
         super.addTests();
         PopulationManager manager = PopulationManager.getDefaultManager();
@@ -114,6 +117,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
 
     }
 
+    @Override
     public void startCacheSynchronization() {
         RemoteCommandManager cm = new RemoteCommandManager((AbstractSession)getSession());
 
@@ -136,6 +140,7 @@ public class RCMDistributedServersModel extends DistributedServersModel {
         }
     }
 
+    @Override
     public void stopCacheSynchronization() {
         ((AbstractSession)getSession()).getCommandManager().shutdown();
         ((AbstractSession)getSession()).setCommandManager(null);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
     public Integer[] projIDs = new Integer[2];
     public HashMap persistedItems = new HashMap(4);
 
+    @Override
     public void setup (){
         super.setup();
 
@@ -89,6 +90,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
 
     }
 
+    @Override
     public void test(){
         try {
             beginTransaction();
@@ -185,6 +187,7 @@ public class EMModifyAndFlushTest extends EntityContainerTestBase  {
         }
     }
 
+    @Override
     public void verify(){
         Employee employee = (Employee)persistedItems.get("after flush Employee 0");
             if ( (!employee.getFirstName().equals("Wilfred"))){

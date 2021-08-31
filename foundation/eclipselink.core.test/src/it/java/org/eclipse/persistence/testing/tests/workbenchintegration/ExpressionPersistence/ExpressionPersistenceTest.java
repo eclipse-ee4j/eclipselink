@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class ExpressionPersistenceTest extends AutoVerifyTestCase {
         setDescription("Test that expressions persisted by the WorkBench in the deployent XML works correctly");
     }
 
+    @Override
     public void setup() {
         if ((queryName.startsWith("AddStandardDeviationReportQuery") ||
              queryName.startsWith("AddVarianceReportQuery")) &&
@@ -43,6 +44,7 @@ public class ExpressionPersistenceTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
         getSession().executeQuery(basicQuery);
         systemQuery =
@@ -50,6 +52,7 @@ public class ExpressionPersistenceTest extends AutoVerifyTestCase {
         getSession().executeQuery(systemQuery);
     }
 
+    @Override
     public void verify() {
         if (!basicQuery.getCall().getSQLString().equals(systemQuery.getCall().getSQLString())) {
             throw new TestErrorException("Persisted query not the same as original");

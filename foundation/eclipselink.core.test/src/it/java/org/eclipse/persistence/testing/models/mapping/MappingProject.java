@@ -807,8 +807,8 @@ public class MappingProject extends Project {
         validMapping.setAttributeName("valid");
         validMapping.setFieldName("MAP_PERIPHERAL.VALID");
         ObjectTypeConverter validMappingConverter = new ObjectTypeConverter();
-        validMappingConverter.addConversionValue(Character.valueOf('N'), new java.lang.Boolean("false"));
-        validMappingConverter.addConversionValue(Character.valueOf('Y'), new java.lang.Boolean("true"));
+        validMappingConverter.addConversionValue(Character.valueOf('N'), Boolean.valueOf("false"));
+        validMappingConverter.addConversionValue(Character.valueOf('Y'), Boolean.valueOf("true"));
         validMapping.setConverter(validMappingConverter);
         descriptor.addMapping(validMapping);
 

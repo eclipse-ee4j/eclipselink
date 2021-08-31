@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -57,11 +57,13 @@ public class
 TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
     UnitOfWork unitOfWork;
 
+    @Override
     protected void setup() throws Exception {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         unitOfWork = getSession().acquireUnitOfWork();
     }
 
+    @Override
     public void reset() throws Exception {
         if (unitOfWork != null) {
             getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -70,6 +72,7 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void test() {
 
 
@@ -133,6 +136,7 @@ TransactionIsolationBatchReadingTest extends AutoVerifyTestCase {
          * This event is raised before the execution of every query against the session.
          * The event contains the query to be executed.
          */
+        @Override
         public void preExecuteQuery(SessionEvent event) {
             throw new TestErrorException("Triggering a second batch valueholder of the same batch query is going to the database.  Query: " +
                                          event.getQuery());

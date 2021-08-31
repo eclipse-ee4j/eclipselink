@@ -22,6 +22,7 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
 
     protected DirectDirectMapHolder changedHolder = null;
 
+    @Override
     public void test(){
         UnitOfWork uow = getSession().acquireUnitOfWork();
         holders = uow.readAllObjects(DirectDirectMapHolder.class, holderExp);
@@ -35,6 +36,7 @@ public class TestUpdateDirectDirectMapMapping extends TestReadDirectDirectMapMap
         }
     }
 
+    @Override
     public void verify(){
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         Object initialHolder = holders.get(0);

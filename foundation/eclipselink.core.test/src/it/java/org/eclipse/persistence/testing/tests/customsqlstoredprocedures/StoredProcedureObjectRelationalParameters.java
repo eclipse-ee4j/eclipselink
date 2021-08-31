@@ -50,6 +50,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
         setName(getName() + " useCustomSQL = " + useCustomSQL);
     }
 
+    @Override
     public void setup() {
         // right now only the stored procedure is set up in Oracle
         if (!(getSession().getPlatform().isOracle9())) {
@@ -69,6 +70,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
     }
 
 
+    @Override
     public void test() {
         Vector args = new Vector();
         args.addElement(policyHolderIdToUse);//ssn
@@ -94,6 +96,7 @@ public class StoredProcedureObjectRelationalParameters extends TestCase{
         results3 = (Vector)getSession().executeQuery(getDeleteQuery(), args);
     }
 
+    @Override
     public void verify() {
         if ((results2.size()!=1) &&(results3.size()!=1)){
             throw new TestErrorException("Collections returned did not contain expected number of results");

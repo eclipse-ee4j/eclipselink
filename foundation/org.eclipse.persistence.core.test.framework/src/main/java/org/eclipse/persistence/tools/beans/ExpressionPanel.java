@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -748,6 +748,7 @@ public class ExpressionPanel extends JPanel {
     }
 
     class IvjEventHandler implements java.awt.event.ActionListener {
+        @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             if (e.getSource() == ExpressionPanel.this.getOrButton()) {
                 connEtoC1(e);

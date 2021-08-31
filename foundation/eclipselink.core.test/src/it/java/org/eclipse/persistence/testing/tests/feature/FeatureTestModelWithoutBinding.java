@@ -32,6 +32,7 @@ public class FeatureTestModelWithoutBinding extends FeatureTestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void reset() {
         if (origionalStatementCachingState != null) {
             this.getSession().getPlatform().setShouldCacheAllStatements(this.origionalStatementCachingState.booleanValue());
@@ -41,6 +42,7 @@ public class FeatureTestModelWithoutBinding extends FeatureTestModel {
         }
     }
 
+    @Override
     public void setup() {
         this.origionalBindingState = Boolean.valueOf(this.getSession().getPlatform().shouldBindAllParameters());
         this.origionalStatementCachingState = Boolean.valueOf(this.getSession().getPlatform().shouldCacheAllStatements());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -33,6 +33,7 @@ public class InterfaceProxyInvocationTest extends AutoVerifyTestCase {
         setDescription("Tests an attempt to invoke a method on a value-held proxy-indirection enabled object that is null");
     }
 
+    @Override
     public void setup() {
         // we need to delete all employees to remove all of the
         // rows from the employee table - this is the crux of this test
@@ -46,10 +47,12 @@ public class InterfaceProxyInvocationTest extends AutoVerifyTestCase {
         cubicle = (Cubicle)getSession().readObject(Cubicle.class);
     }
 
+    @Override
     public void test() {
         employee = cubicle.getEmployee();
     }
 
+    @Override
     public void verify() {
         boolean exceptionThrown = false;
 
@@ -79,6 +82,7 @@ public class InterfaceProxyInvocationTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
     }

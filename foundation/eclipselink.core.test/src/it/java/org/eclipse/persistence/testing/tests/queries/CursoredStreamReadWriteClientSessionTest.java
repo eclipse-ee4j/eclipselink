@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -38,11 +38,13 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
         setDescription("Verifies if a transaction is committed while using read & write connections in same client session with cursored stream used in read.");
     }
 
+    @Override
     public void reset() {
         this.clientSession.release();
         this.serverSession.logout();
     }
 
+    @Override
     public void setup() {
         org.eclipse.persistence.sessions.Project proj =
             new org.eclipse.persistence.testing.models.employee.relational.EmployeeProject();
@@ -59,6 +61,7 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
         this.addressId = emp.getAddress().getId().intValue();
     }
 
+    @Override
     public void test() {
         clientSession.beginTransaction();
         try {
@@ -100,6 +103,7 @@ public class CursoredStreamReadWriteClientSessionTest extends TestCase {
         }
     }
 
+    @Override
     public void verify() {
         if (caughtException == null) {
             return;

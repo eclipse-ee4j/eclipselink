@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public class CommitOrderTest extends TestCase {
         setDescription("Test to verify that the generated commit order is consistent with an expected commit order.");
     }
 
+    @Override
     public void test() {
         getSession().getProject().setDescriptors(new HashMap());
         ((DatabaseSession)getSession()).logout();
@@ -75,6 +76,7 @@ public class CommitOrderTest extends TestCase {
         orderDResults = getCommitOrderListAsString(getAbstractSession().getCommitManager().getCommitOrder());
     }
 
+    @Override
     public void verify() {
         if (!expectedCommitOrder.equals(orderAResults)) {
             throw new TestErrorException(getErrorMessage(orderAResults));
@@ -90,6 +92,7 @@ public class CommitOrderTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         ((DatabaseSession)getSession()).logout();
         ((DatabaseSession)getSession()).login();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class AggregateInheritanceTypeFieldTestCase extends org.eclipse.persisten
     public AggregateUpdateDescriptorListener listener = null;
     private int transportId = 0;
 
+    @Override
     public void reset() {
         // remove the Transport that was added for this test.
         DatabaseSession session = (DatabaseSession)getSession();
@@ -39,9 +40,11 @@ public class AggregateInheritanceTypeFieldTestCase extends org.eclipse.persisten
         uow.commit();
     }
 
+    @Override
     public void setup() {
     }
 
+    @Override
     public void test() {
         DatabaseSession session = (DatabaseSession)getSession();
 
@@ -60,6 +63,7 @@ public class AggregateInheritanceTypeFieldTestCase extends org.eclipse.persisten
         }
     }
 
+    @Override
     public void verify() {
     }
 }

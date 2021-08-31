@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -24,10 +24,12 @@ import org.eclipse.persistence.sessions.*;
  * Test the ordering feature.
  */
 public class OrderingMutipleTableTest extends OrderingTest {
+    @Override
     protected void setup() {
         customSQLRows = getSession().executeSelectingCall(new org.eclipse.persistence.queries.SQLCall("SELECT t1.PROJ_NAME FROM PROJECT t1, LPROJECT t2 WHERE t1.PROJ_ID = t2.PROJ_ID ORDER BY t2.BUDGET"));
     }
 
+    @Override
     public void test() {
         orderedQueryObjects = executeOrderingQuery(LargeProject.class, "budget");
     }
@@ -40,6 +42,7 @@ public class OrderingMutipleTableTest extends OrderingTest {
         return (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     protected void verify() {
         org.eclipse.persistence.sessions.Record row;
         org.eclipse.persistence.testing.models.employee.domain.Project project;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class LoopingJoinedAttributeTest extends TwoLevelJoinedAttributeTest {
         setDescription("Ensure objects that use joining in a cyclical manner work properly. (e.g. A joined to B joined to C joined to A))");
     }
 
+    @Override
     public void setup() {
         super.setup();
         // add a join between BabyMonitor and Baby what will complete a loop when combined with the superclass' joins
@@ -41,6 +42,7 @@ public class LoopingJoinedAttributeTest extends TwoLevelJoinedAttributeTest {
         descriptor.reInitializeJoinedAttributes();
     }
 
+    @Override
     public void reset() {
         super.reset();
         ClassDescriptor descriptor = getSession().getClassDescriptor(BabyMonitor.class);

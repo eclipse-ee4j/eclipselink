@@ -1847,7 +1847,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         EntityManager em = createEntityManager();
 
-        ((AbstractSession) getServerSession()).addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
+        getServerSession().addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
 
         Project expectedResult = (Project)getServerSession().readAllObjects(Project.class).firstElement();
         String projectName = expectedResult.getName();
@@ -1857,7 +1857,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
 
         List result = em.createQuery(ejbqlString).getResultList();
 
-        ((AbstractSession)getServerSession()).getAliasDescriptors().remove("ProjectBaseClass");
+        getServerSession().getAliasDescriptors().remove("ProjectBaseClass");
 
         Assert.assertTrue("Complex Inheritance test failed", comparer.compareObjects(result, expectedResult));
 
@@ -1874,7 +1874,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Session uow = getServerSession();
 
         if (!(getServerSession().containsQuery(queryName))) {
-            ((AbstractSession)getServerSession()).addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
+            getServerSession().addAlias("ProjectBaseClass", getServerSession().getDescriptor(Project.class));
 
             //Named query must be built and registered with the session
             ReadObjectQuery query = new ReadObjectQuery();
@@ -1888,7 +1888,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         Project result = (Project)uow.executeQuery("findLargeProjectByNameEJBQL",argument);
 
         getServerSession().removeQuery("findLargeProjectByBudgetEJBQL");
-        ((AbstractSession)getServerSession()).getAliasDescriptors().remove("ProjectBaseClass");
+        getServerSession().getAliasDescriptors().remove("ProjectBaseClass");
 
         Assert.assertTrue("Complex Inheritance using named query test failed", comparer.compareObjects(result, expectedResult));
 
@@ -4351,7 +4351,7 @@ public class JUnitJPQLComplexTestSuite extends JUnitTestCase
         if(!isOnServer()) {
             ReportQuery rq = (ReportQuery) ((QueryImpl) query).getDatabaseQueryInternal();
             CallQueryMechanism qm = rq != null ? (CallQueryMechanism) rq.getQueryMechanism() : null;
-            DatasourceCall sc = qm != null ? (DatasourceCall) qm.getDatabaseCall() : null;
+            DatasourceCall sc = qm != null ? qm.getDatabaseCall() : null;
             List params = sc != null ? sc.getParameters() : null;
             ParameterExpression pe = params != null && params.size() > 0 ? (ParameterExpression) params.get(0) : null;
             QueryKeyExpression qke = pe != null ? (QueryKeyExpression) pe.getLocalBase() : null;

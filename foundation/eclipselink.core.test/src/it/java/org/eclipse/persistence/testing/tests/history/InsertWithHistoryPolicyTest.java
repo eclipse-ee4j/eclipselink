@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class InsertWithHistoryPolicyTest extends TestCase {
         setDescription("Tests insert for bi-directional 1 - 1 mapping with history policy.");
     }
 
+    @Override
     protected void setup() {
         DatabasePlatform platform = getSession().getPlatform();
         if (platform.isMySQL()) {
@@ -85,6 +86,7 @@ public class InsertWithHistoryPolicyTest extends TestCase {
         isHistoryFirstCreation = false;
     }
 
+    @Override
     protected void test() {
         UnitOfWork uow = dbSession.acquireUnitOfWork();
         Baby baby = new Baby();
@@ -100,6 +102,7 @@ public class InsertWithHistoryPolicyTest extends TestCase {
         }
     }
 
+    @Override
     protected void verify() {
         if (caughtException != null) {
             if (caughtException.getDatabaseErrorCode() == 1400) {//SQLException: cannot insert NULL into (non-null defined column)

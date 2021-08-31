@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class ReadSoftCacheWeakIdentityMapTest extends ReadWeakIdentityMapTest {
         setDescription("This test verifies that the SoftCacheWeakIdentityMap holds onto the SoftReferences appropriately");
     }
 
+    @Override
     public void test() {
         if (getIdentityMap().getSize() == 0) {
             throw new TestWarningException("We did not fill the cache, the test is invalid.");
@@ -57,6 +58,7 @@ public class ReadSoftCacheWeakIdentityMapTest extends ReadWeakIdentityMapTest {
         System.gc();
     }
 
+    @Override
     public void verify() {
         // Ensure that some ref have garbage collected,
         // if not all through warning as different VM have different gc behavior.

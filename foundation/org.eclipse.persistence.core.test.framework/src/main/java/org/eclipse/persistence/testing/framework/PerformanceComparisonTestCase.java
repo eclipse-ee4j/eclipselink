@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -60,6 +60,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * Return the count of the iterations.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
+    @Override
     public int getIterations() {
         return iterations;
     }
@@ -68,6 +69,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * Increment the iteration count.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
+    @Override
     public void incrementIterations() {
         this.iterations++;
     }
@@ -76,6 +78,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * Reset the iteration count.
      * This is maintained by the test to allow concurrent tests to manage the count.
      */
+    @Override
     public void resetIterations() {
         this.iterations = 0;
     }
@@ -83,12 +86,14 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
     /**
      * Allows any test specific setup before starting the test run.
      */
+    @Override
     public void startTest() {
     }
 
     /**
      * Allows any test specific setup before starting the test run.
      */
+    @Override
     public void endTest() {
     }
 
@@ -97,6 +102,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * This is used to compute the number of test iterations to use,
      * the tests are then still timed based on that number of iterations.
      */
+    @Override
     public long getTestRunTime() {
         return testRunTime;
     }
@@ -106,6 +112,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * This is used to compute the number of test iterations to use,
      * the tests are then still timed based on that number of iterations.
      */
+    @Override
     public void setTestRunTime(long testRunTime) {
         this.testRunTime = testRunTime;
     }
@@ -113,6 +120,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
     /**
      * Return the allowable percentage difference for test compared to the baseline.
      */
+    @Override
     public double getAllowableDecrease() {
         return allowableDecrease;
     }
@@ -120,6 +128,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
     /**
      * Set the allowable percentage difference for test compared to the baseline.
      */
+    @Override
     public void setAllowableDecrease(double allowableDecrease) {
         this.allowableDecrease = allowableDecrease;
     }
@@ -127,6 +136,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
     /**
      * Return the performance tests to compare the base-line with.
      */
+    @Override
     public List getTests() {
         return tests;
     }
@@ -134,6 +144,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
     /**
      * Add a performance tests to compare the base-line with.
      */
+    @Override
     public void addTest(TestCase test) {
         getTests().add(test);
     }
@@ -143,6 +154,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * Executes this test case.
      * Log some debug info as perf tests sometimes take a long time or hang.
      */
+    @Override
     public void execute(TestExecutor executor) {
         System.out.println("Begin:" + getName());
         try {
@@ -156,6 +168,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * Executes this test comparison with the base-line.
      * Static allow reuse with EJB tests.
      */
+    @Override
     public void executeTest() throws Throwable {
         executeTest(this);
     }
@@ -225,6 +238,7 @@ public abstract class PerformanceComparisonTestCase extends TestCase implements 
      * Verify each test comparison is within the set limits.
      * Static allow reuse with EJB tests.
      */
+    @Override
     public void verify() {
         verify(this);
     }

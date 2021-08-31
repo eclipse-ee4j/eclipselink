@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -44,6 +44,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         setDescription("Test looking up objects in the UnitOfWork IdentityMap when an early transaction has been started");
     }
 
+    @Override
     public void setup() {
         // use 'simple' SQL statements instead of binding
         oldBindingValue = getSession().getLogin().shouldBindAllParameters();
@@ -65,6 +66,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         sqlTracker = new QuerySQLTracker(getSession());
     }
 
+    @Override
     public void test() {
         // read object
         PolicyHolder policyHolder = (PolicyHolder) uow.readObject(PolicyHolder.example2());
@@ -72,6 +74,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         assertNotNull(policyHolder);
     }
 
+    @Override
     public void verify() {
         // check for duplicates
         List statements = sqlTracker.getSqlStatements();
@@ -100,6 +103,7 @@ public class TransactionIsolationBuildObjectCacheHitTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
         // reset parameter binding

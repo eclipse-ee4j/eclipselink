@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public class LockOnCloneDeadlockAvoidanceTest extends AutoVerifyTestCase {
         this.setDescription("Tests that TopLink is correctly locking on cloning, and avoiding deadlocks");
     }
 
+    @Override
     public void setup() {
         if (getSession().isDistributedSession()) {
             throw new TestWarningException("Test unavailable on Remote UnitOfWork because of timing issues");
@@ -43,14 +44,17 @@ public class LockOnCloneDeadlockAvoidanceTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     public void test() {
         Thread thread1 = new Thread() {
+                @Override
                 public void run() {
                     UnitOfWork uow = getSession().acquireUnitOfWork();
                     cloned = (ConcurrentPerson)uow.registerObject(person);
                 }
             };
         Thread thread2 = new Thread() {
+                @Override
                 public void run() {
                     getSession().refreshObject(person.address);
                 }
@@ -77,6 +81,7 @@ public class LockOnCloneDeadlockAvoidanceTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         uow.deleteObject(this.person);

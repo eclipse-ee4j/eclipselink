@@ -34,6 +34,7 @@ public class NullValueTest extends AutoVerifyTestCase {
         setDescription("Verify that the appropriate values are put in the object when nulls are encountered on the database");
     }
 
+    @Override
     protected void setup() {
         // save current null values for later restoration
         saveDefaultDefaultNullValues = ConversionManager.getDefaultManager().getDefaultNullValues();
@@ -63,6 +64,7 @@ public class NullValueTest extends AutoVerifyTestCase {
         getSession().executeNonSelectingCall(new SQLCall("update SALARY set SALARY = null where EMP_ID = " + employee.getId()));
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -70,6 +72,7 @@ public class NullValueTest extends AutoVerifyTestCase {
         ConversionManager.getDefaultManager().setDefaultNullValues(saveDefaultDefaultNullValues);
     }
 
+    @Override
     public void test() {
         // force a read from the database
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -77,6 +80,7 @@ public class NullValueTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     protected void verify() {
         if (!employee.getAddress().getCity().equals("null")) {
             throw new TestErrorException("Null value not converted correctly for string.");

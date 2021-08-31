@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class EntityListenerTestBean implements InjectionTest {
     @PersistenceUnit(name="jpa22-sessionbean")
     private EntityManagerFactory emf;
 
+    @Override
     public boolean triggerInjection(){
         EntityListener.INJECTED_RETURN_VALUE = false;
         EntityListener.POST_CONSTRUCT_CALLS = 0;
@@ -38,6 +39,7 @@ public class EntityListenerTestBean implements InjectionTest {
         return EntityListener.INJECTED_RETURN_VALUE && EntityListener.POST_CONSTRUCT_CALLS == 1;
     }
 
+    @Override
     public boolean triggerPreDestroy(){
         EntityListener.PRE_DESTROY_CALLS = 0;
         emf.unwrap(JpaEntityManagerFactory.class).unwrap().close();

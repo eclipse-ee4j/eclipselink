@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class NullPasswordLoginTest extends org.eclipse.persistence.testing.frame
      * Insert the method's description here.
      * Creation date: (6/5/00 2:39:56 PM)
      */
+    @Override
     public void reset() {
         if (!getSession().isConnected()) {
             ((DatabaseSession)getSession()).login();
@@ -46,6 +47,7 @@ public class NullPasswordLoginTest extends org.eclipse.persistence.testing.frame
      * Insert the method's description here.
      * Creation date: (6/5/00 2:39:56 PM)
      */
+    @Override
     public void setup() {
         if (!getSession().getDatasourceLogin().getPlatform().isAccess()) {//Need MSACCESS for this test (null password)
             throw new TestWarningException("This test requires MSAccess or another database that will accept a null password");
@@ -56,6 +58,7 @@ public class NullPasswordLoginTest extends org.eclipse.persistence.testing.frame
      * Insert the method's description here.
      * Creation date: (6/5/00 2:39:56 PM)
      */
+    @Override
     public void test() {
         ((DatabaseSession)getSession()).logout();
         Login new_login = getSession().getDatasourceLogin().clone();
@@ -67,6 +70,7 @@ public class NullPasswordLoginTest extends org.eclipse.persistence.testing.frame
      * Insert the method's description here.
      * Creation date: (6/5/00 2:39:56 PM)
      */
+    @Override
     public void verify() {
     }
 }

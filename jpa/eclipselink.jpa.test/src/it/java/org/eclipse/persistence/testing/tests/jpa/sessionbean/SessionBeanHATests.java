@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -110,7 +110,7 @@ public class SessionBeanHATests extends JUnitTestCase {
                 if (employCount != jtaCount) {
                     fail("The count is " + employCount +", Failed to find all employees");
                 }
-                Thread.currentThread().sleep(3000);
+                Thread.sleep(3000);
             } catch (Exception e) {
                 fail(e.toString());
             }
@@ -133,7 +133,7 @@ public class SessionBeanHATests extends JUnitTestCase {
                 if (employCount != nonJTACount) {
                     fail("The count is " + employCount +", Failed to find all employees");
                 }
-                Thread.currentThread().sleep(3000);
+                Thread.sleep(3000);
             } catch (Exception e) {
                 fail(e.toString());
             }
@@ -238,7 +238,7 @@ public class SessionBeanHATests extends JUnitTestCase {
                 employee.setPhoneNumbers(phones);
 
                 getEmployeeService().update(employee);
-                Thread.currentThread().sleep(3000);
+                Thread.sleep(3000);
             } catch (Exception e) {
                 exceptTimes++;
                 //When shutdown one instance, and keep it down forever, we should except one exception during the shutdown, tests should continue after that
@@ -284,7 +284,7 @@ public class SessionBeanHATests extends JUnitTestCase {
 
         // wait all FindAllConcurrentlyThread's for finishing FindAll queries
         while(true){
-            Thread.currentThread().sleep(3000);
+            Thread.sleep(3000);
 
             boolean finished = true;
             for (int i = 0; i < helperRunnable.length; i++)

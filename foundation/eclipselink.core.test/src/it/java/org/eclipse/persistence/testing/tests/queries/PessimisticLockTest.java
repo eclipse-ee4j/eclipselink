@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -36,6 +36,7 @@ public class PessimisticLockTest extends RefreshTest {
         setDescription("This test verifies the pessimistic locking feature works properly");
     }
 
+    @Override
     public void reset() {
         super.reset();
         if (uow != null) {
@@ -43,6 +44,7 @@ public class PessimisticLockTest extends RefreshTest {
         }
     }
 
+    @Override
     public void test() throws Exception {
         checkSelectForUpateSupported();
         // HANA supports SELECT FOR UPDATE but not with queries that select from multiple tables

@@ -27,11 +27,13 @@ public class DirectMapMappingsSerializedConverterTestCase extends AutoVerifyTest
         setDescription("Ensure SerializedObjectConverter works with DirectMapMapping.");
     }
 
+    @Override
     public void setup() {
         beginTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
     }
 
+    @Override
     public void test() {
         // Create a directmapmapping with a few items in it
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -43,6 +45,7 @@ public class DirectMapMappingsSerializedConverterTestCase extends AutoVerifyTest
         uow.commit();
     }
 
+    @Override
     public void verify() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -52,6 +55,7 @@ public class DirectMapMappingsSerializedConverterTestCase extends AutoVerifyTest
         }
     }
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -28,11 +28,13 @@ public class RemoteValueHolderGarbageCollectedOriginalTest extends TestCase {
         setDescription("Tests committing changes in the UnitOfWork when the originals have been Garbage Collected from the Server");
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
         originalEmp = (Employee)getSession().readObject(Employee.class);
@@ -40,6 +42,7 @@ public class RemoteValueHolderGarbageCollectedOriginalTest extends TestCase {
         originalEmp.getAddress();
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee employeeClone = (Employee)uow.registerObject(originalEmp);

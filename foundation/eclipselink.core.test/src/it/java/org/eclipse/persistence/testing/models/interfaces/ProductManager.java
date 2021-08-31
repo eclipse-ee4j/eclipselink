@@ -75,14 +75,17 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         return example;
     }
 
+    @Override
     public BigInteger getGoldCardNumber() {
         return goldCardNumber;
     }
 
+    @Override
     public Number getJobCode() {
         return jobCode;
     }
 
+    @Override
     public Vector getManagedEmployees() {
         return (Vector)managedEmployees.getValue();
     }
@@ -91,6 +94,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         return product;
     }
 
+    @Override
     public Float getSalary() {
         return salary;
     }
@@ -111,6 +115,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         this.goldCardNumber = goldCardNumber;
     }
 
+    @Override
     public void setJobCode(Number jobCode) {
         this.jobCode = jobCode;
     }
@@ -123,6 +128,7 @@ public class ProductManager implements ManagerialJob, VIP, java.io.Serializable 
         this.product = product;
     }
 
+    @Override
     public void setSalary(Float salary) {
         this.salary = salary;
     }

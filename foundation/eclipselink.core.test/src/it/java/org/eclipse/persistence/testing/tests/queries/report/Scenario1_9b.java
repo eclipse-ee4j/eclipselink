@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -27,6 +27,7 @@ public class Scenario1_9b extends ReportQueryTestCase {
         setDescription("SUM aggregate function");
     }
 
+    @Override
     protected void buildExpectedResults() {
         Vector employees = getSession().readAllObjects(Employee.class);
         BigDecimal sum = new BigDecimal(0);
@@ -38,6 +39,7 @@ public class Scenario1_9b extends ReportQueryTestCase {
 
         addResult(new Object[] { sum }, null);
     }
+@Override
 protected void setup()  throws Exception
 {
         super.setup();
@@ -47,6 +49,7 @@ protected void setup()  throws Exception
         reportQuery.addSum("salary");
     }
 
+    @Override
     protected void verify() {
         if (results.size() != expectedResults.size()) {
             throw new TestErrorException("ReportQuery test failed: The result size are different");

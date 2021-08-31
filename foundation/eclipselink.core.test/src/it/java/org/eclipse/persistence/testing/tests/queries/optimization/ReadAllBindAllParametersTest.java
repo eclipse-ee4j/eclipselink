@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -41,6 +41,7 @@ public class ReadAllBindAllParametersTest extends AutoVerifyTestCase {
 
     }
 
+    @Override
     protected void setup() {
         shouldBindAllParametersSessionOriginal = getSession().getPlatform().shouldBindAllParameters();
 
@@ -59,6 +60,7 @@ public class ReadAllBindAllParametersTest extends AutoVerifyTestCase {
         return getSession().getLog().toString().indexOf("bind =>") != -1;
     }
 
+    @Override
     protected void test() {
         for (int i = 0; i <= 1; i++) {
             getSession().getPlatform().setShouldBindAllParameters(i != 0);
@@ -102,6 +104,7 @@ public class ReadAllBindAllParametersTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void verify() throws Exception {
         if (shouldBind() != wasBound()) {
             String message;
@@ -115,6 +118,7 @@ public class ReadAllBindAllParametersTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() {
         getSession().getPlatform().setShouldBindAllParameters(shouldBindAllParametersSessionOriginal);
 

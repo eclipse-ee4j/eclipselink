@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -23,11 +23,13 @@ import org.eclipse.persistence.testing.models.mapping.Cubicle;
 public class AddObjectNonPrimaryKeyManyToManyTest extends org.eclipse.persistence.testing.framework.AutoVerifyTestCase {
     public Cubicle cubicle;
 
+    @Override
     public void reset() {
         rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void setup() {
         if (getSession().getLogin().getPlatform().getDefaultSequence().shouldAcquireValueAfterInsert()) {
             throw new TestWarningException("This test doesn't work with 'after-insert' native sequencing");
@@ -35,6 +37,7 @@ public class AddObjectNonPrimaryKeyManyToManyTest extends org.eclipse.persistenc
         beginTransaction();
     }
 
+    @Override
     public void test() {
         try {
             UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -46,6 +49,7 @@ public class AddObjectNonPrimaryKeyManyToManyTest extends org.eclipse.persistenc
         }
     }
 
+    @Override
     public void verify() {
     }
 }

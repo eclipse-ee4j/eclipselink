@@ -33,17 +33,20 @@ public class DirectMapUnitOfWorkTest extends AutoVerifyTestCase {
         setDescription("Tests changing a DirectMap Withing a UnitOFWork");
     }
 
+    @Override
     public void setup() throws Exception {
         m_exceptionCaught = false;
         beginTransaction();
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }
 
+    @Override
     public void reset() {
         getSession().getIdentityMapAccessor().initializeIdentityMaps();// clears the cache and stuff?
         rollbackTransaction();
     }
 
+    @Override
     public void test() throws Exception {
         // put a new value in, will now be in the cache
         UnitOfWork uow1 = getSession().acquireUnitOfWork();
@@ -64,6 +67,7 @@ public class DirectMapUnitOfWorkTest extends AutoVerifyTestCase {
         mapsQueryResult = (DirectMapMappings)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() throws Exception {
         // Some checks to ensure it actually worked as expected
         if (!mapsQueryResult.directMap.containsKey(Integer.valueOf(1))) {

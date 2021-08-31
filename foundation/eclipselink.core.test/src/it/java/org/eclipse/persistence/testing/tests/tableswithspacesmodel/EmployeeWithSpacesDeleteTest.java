@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -54,6 +54,7 @@ public class EmployeeWithSpacesDeleteTest extends DeleteObjectTest {
         esession.executeNonSelectingCall(new org.eclipse.persistence.queries.SQLCall("update " + appendString + startQuoteChar + "EMPLOYEE TABLE" + endQuoteChar + " set MANAGER_ID = null where MANAGER_ID = " + employee.getId()));
     }
 
+    @Override
     protected void setup() {
         if (getSession().getPlatform().isSymfoware()) {
             throwWarning("Test system EmployeeWithSpacesSystem is not supported on Symfoware, "

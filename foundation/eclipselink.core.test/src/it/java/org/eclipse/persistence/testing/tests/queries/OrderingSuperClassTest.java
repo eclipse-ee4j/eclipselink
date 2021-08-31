@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2018, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -16,11 +16,13 @@ import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.testing.models.employee.domain.Project;
 
 public class OrderingSuperClassTest extends OrderingMutipleTableTest {
+    @Override
     protected void setup() {
         customSQLRows = getSession().executeSelectingCall(new org.eclipse.persistence.queries.SQLCall(
                 "SELECT t0.PROJ_NAME FROM PROJECT t0 ORDER BY t0.PROJ_NAME"));
     }
 
+    @Override
     public void test() {
         ReadAllQuery query = new ReadAllQuery();
         query.addAscendingOrdering("name");

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class ComplexUpdateEmployeeUnitOfWorkTest extends PerformanceTest {
     /**
      * Find an employee with a manager.
      */
+    @Override
     public void setup() {
         super.setup();
         allObjects = getSession().readAllObjects(Employee.class);
@@ -50,6 +51,7 @@ public class ComplexUpdateEmployeeUnitOfWorkTest extends PerformanceTest {
      * Read employee and clear the cache, test database read.
      * Tries to keep the test data the same by cycling the employee manager relationship.
      */
+    @Override
     public void test() throws Exception {
         super.test();
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -81,6 +83,7 @@ public class ComplexUpdateEmployeeUnitOfWorkTest extends PerformanceTest {
     /**
      * Ensure that the employee is reset to original state.
      */
+    @Override
     public void reset() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee employee = (Employee)uow.readObject(this.employee);

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class ComplexUpdateAndUnitOfWorkTestModel extends TestModel {
         this.isSRG = isSRG;
     }
 
+    @Override
     public void addRequiredSystems() {
         addRequiredSystem(new OwnershipSystem());
         addRequiredSystem(new IndirectListSystem());
@@ -42,6 +43,7 @@ public class ComplexUpdateAndUnitOfWorkTestModel extends TestModel {
         addRequiredSystem(new InheritanceSystem());
     }
 
+    @Override
     public void addTests() {
         addTest(getComplexUpdateTestSuite());
         addTest(getUnitOfWorkTestSuite());
@@ -49,6 +51,7 @@ public class ComplexUpdateAndUnitOfWorkTestModel extends TestModel {
     }
 
     //SRG test set is maintained by QA only, do NOT add any new tests into it.
+    @Override
     public void addSRGTests() {
         addTest(new org.eclipse.persistence.testing.tests.unitofwork.UnitOfWorkTestSuite(true));
     }

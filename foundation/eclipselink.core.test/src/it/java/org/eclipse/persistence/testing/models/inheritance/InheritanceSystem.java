@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class InheritanceSystem extends TestSystem {
         project = XMLProjectReader.read("org/eclipse/persistence/testing/models/inheritance/inheritance-project.xml", getClass().getClassLoader());
     }
 
+    @Override
     public void addDescriptors(DatabaseSession session) {
         // Oracle has bug in outjoins that require outerjoin of inheritance type.
         // This should really be handled by the platform during expression normalization...
@@ -50,6 +51,7 @@ public class InheritanceSystem extends TestSystem {
         session.getDescriptor(Animal_Matt.class).getInheritancePolicy().setShouldOuterJoinSubclasses(true);
     }
 
+    @Override
     public void createTables(DatabaseSession session) {
         dropTableConstraints(session);
         new InheritanceTableCreator().replaceTables(session);
@@ -132,6 +134,7 @@ public class InheritanceSystem extends TestSystem {
         }
     }
 
+    @Override
     public void populate(DatabaseSession session) {
         PopulationManager manager = PopulationManager.getDefaultManager();
 

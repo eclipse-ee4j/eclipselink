@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -40,6 +40,7 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
 
     protected abstract void buildExpectedResults() throws Exception;
 
+    @Override
     public String getName() {
         return super.getName() + ": " + getDescription();
     }
@@ -84,6 +85,7 @@ public abstract class ReportQueryTestCase extends AutoVerifyTestCase {
         }
     }
 
+@Override
 protected  void setup() throws Exception
 {
         results = new Vector();
@@ -91,10 +93,12 @@ protected  void setup() throws Exception
         buildExpectedResults();
     }
 
+    @Override
     public void test() {
         results = (Vector)getSession().executeQuery(reportQuery);
     }
 
+    @Override
     protected void verify() {
         getSession().logMessage("results: " + results);
         getSession().logMessage("expectedResults: " + expectedResults);

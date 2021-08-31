@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -42,6 +42,7 @@ public class UnitOfWorkConformReadObjectWithCriteriaTest extends TestCase {
         setDescription("UnitOfWorkConformReadObjectWithCriteriaTest");
     }
 
+    @Override
     public void setup() {
         this.employees = getSession().readAllObjects(Employee.class, new ExpressionBuilder().get("manager").notNull());
         for (Employee employee : employees) {
@@ -66,6 +67,7 @@ public class UnitOfWorkConformReadObjectWithCriteriaTest extends TestCase {
         this.uow = getSession().acquireUnitOfWork();
     }
 
+    @Override
     public void test() {
         for (Employee sampleEmployee : this.employees) {
             Employee sampleManager = (Employee)sampleEmployee.getManager();
@@ -88,6 +90,7 @@ public class UnitOfWorkConformReadObjectWithCriteriaTest extends TestCase {
         }
     }
 
+    @Override
     public void reset() {
         if (this.uow != null) {
             this.uow.release();

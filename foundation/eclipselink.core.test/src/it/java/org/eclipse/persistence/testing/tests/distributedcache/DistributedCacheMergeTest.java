@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -49,6 +49,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         setDescription("Testing");
     }
 
+    @Override
     protected void setup() throws Exception {
         originalSession = getExecutor().getSession();
         originalSession.getIdentityMapAccessor().initializeAllIdentityMaps();
@@ -111,6 +112,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         return session;
     }
 
+    @Override
     public void reset() throws Exception {
         int depth = semaphore.getDepth();
 
@@ -143,6 +145,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
         descriptor.setOptimisticLockingPolicy(policy);
     }
 
+    @Override
     protected void test() {
         Session clientSession1 = cluster1Session.acquireClientSession();
         Session clientSession2 = cluster2Session.acquireClientSession();
@@ -235,6 +238,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
 
     protected SessionEventListener buildCacheMergeBlockingListener() {
         return new SessionEventAdapter() {
+                @Override
                 public void preDistributedMergeUnitOfWorkChangeSet(SessionEvent event) {
                     try {
                         DistributedCacheMergeTest.semaphore.acquire();
@@ -243,6 +247,7 @@ public abstract class DistributedCacheMergeTest extends TestCase {
                     }
                 }
 
+                @Override
                 public void postDistributedMergeUnitOfWorkChangeSet(SessionEvent event) {
                     DistributedCacheMergeTest.semaphore.release();
                 }

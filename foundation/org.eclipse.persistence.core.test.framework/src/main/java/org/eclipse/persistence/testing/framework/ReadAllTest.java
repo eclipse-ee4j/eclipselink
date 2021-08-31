@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -90,6 +90,7 @@ public class ReadAllTest extends AutoVerifyTestCase {
         referenceClass = aClass;
     }
 
+    @Override
     protected void setup() {
         // Setup the query if not given.
         if (getQuery() == null) {
@@ -98,6 +99,7 @@ public class ReadAllTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     protected void test() {
         if (getQuery().getContainerPolicy().isCursorPolicy()) {
             this.objectsFromDatabase = new Vector();
@@ -123,6 +125,7 @@ public class ReadAllTest extends AutoVerifyTestCase {
     /**
      * Verify if number of objects returned, matches the number of object written.
      */
+    @Override
     protected void verify() throws Exception {
         if (getQuery().getContainerPolicy().isCursorPolicy()) {
             if (!(getOriginalObjectsSize() == ((Vector)this.objectsFromDatabase).size())) {
@@ -139,6 +142,7 @@ public class ReadAllTest extends AutoVerifyTestCase {
         }
     }
 
+    @Override
     public void reset() throws Exception {
         getSession().getIdentityMapAccessor().initializeAllIdentityMaps();
     }

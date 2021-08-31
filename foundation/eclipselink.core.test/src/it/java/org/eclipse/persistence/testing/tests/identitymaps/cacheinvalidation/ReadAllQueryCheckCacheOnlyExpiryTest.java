@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -34,6 +34,7 @@ public class ReadAllQueryCheckCacheOnlyExpiryTest extends CacheExpiryTest {
         setDescription("Test Cache Expiry a with a checkCacheOnly ReadAllQuery.");
     }
 
+    @Override
     public void setup() {
         super.setup();
         getSession().getDescriptor(Employee.class).setCacheInvalidationPolicy(new TimeToLiveCacheInvalidationPolicy(1000000));
@@ -70,6 +71,7 @@ public class ReadAllQueryCheckCacheOnlyExpiryTest extends CacheExpiryTest {
         getAbstractSession().getIdentityMapAccessor().invalidateObjects(addresses);
     }
 
+    @Override
     public void test() {
         // Execute a read all check cache only query for all the male employees.
         // It should return only the valid employees in the cache
@@ -78,6 +80,7 @@ public class ReadAllQueryCheckCacheOnlyExpiryTest extends CacheExpiryTest {
         returnedEmployees = (Vector)getSession().executeQuery(query);
     }
 
+    @Override
     public void verify() {
         if (!(returnedEmployees.size() == expectedEmployees)) {
             throw new TestErrorException("Check Cache Only Read All Query does not get the correct number" +

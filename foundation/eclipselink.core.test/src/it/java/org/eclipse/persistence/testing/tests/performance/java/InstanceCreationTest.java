@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class InstanceCreationTest extends PerformanceComparisonTestCase {
     /**
      * new Object.
      */
+    @Override
     public void test() throws Exception {
         new Object();
     }
@@ -44,6 +45,7 @@ public class InstanceCreationTest extends PerformanceComparisonTestCase {
      */
     public void addAddressTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 new Address();
             }
@@ -58,6 +60,7 @@ public class InstanceCreationTest extends PerformanceComparisonTestCase {
      */
     public void addEmployeeTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 new Employee();
             }
@@ -72,6 +75,7 @@ public class InstanceCreationTest extends PerformanceComparisonTestCase {
      */
     public void addCalendarTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             public void test() {
                 Calendar calendar = Calendar.getInstance();
                 calendar.set(1973, 10, 11);
@@ -87,6 +91,7 @@ public class InstanceCreationTest extends PerformanceComparisonTestCase {
      */
     public void addDateTest() {
         PerformanceComparisonTestCase test = new PerformanceComparisonTestCase() {
+            @Override
             @SuppressWarnings("deprecation")
             public void test() {
                 new Date(1973, 10, 11);

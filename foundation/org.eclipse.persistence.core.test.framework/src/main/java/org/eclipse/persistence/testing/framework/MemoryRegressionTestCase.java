@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -30,6 +30,7 @@ public abstract class MemoryRegressionTestCase extends PerformanceRegressionTest
     /**
      * Executes this test measuring the memory delta.
      */
+    @Override
     public void executeTest() throws Throwable {
         PerformanceComparisonTestResult result = new PerformanceComparisonTestResult(this, "Passed");
         setTestResult(result);

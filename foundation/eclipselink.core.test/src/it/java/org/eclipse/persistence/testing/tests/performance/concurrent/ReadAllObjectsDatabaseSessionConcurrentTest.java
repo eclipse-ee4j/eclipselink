@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class ReadAllObjectsDatabaseSessionConcurrentTest extends ConcurrentPerfo
     /**
      * Set thread local.
      */
+    @Override
     public void setup() {
         super.setup();
         session = new ThreadLocal();
@@ -40,6 +41,7 @@ public class ReadAllObjectsDatabaseSessionConcurrentTest extends ConcurrentPerfo
     /**
      * Find all employees
      */
+    @Override
     public void runTask() throws Exception {
         DatabaseSession dbSession = (DatabaseSession)session.get();
         if (dbSession == null) {
@@ -55,6 +57,7 @@ public class ReadAllObjectsDatabaseSessionConcurrentTest extends ConcurrentPerfo
     /**
      * Logout the main thread session, let the other garbage collect (hopefully).
      */
+    @Override
     public void reset() {
         super.reset();
         DatabaseSession dbSession = (DatabaseSession)session.get();

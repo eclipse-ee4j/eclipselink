@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -35,6 +35,7 @@ public class UpdateChangeObjectWithOptimisticLockTest extends ComplexUpdateTest 
         super(originalObject);
     }
 
+    @Override
     protected void changeObject() {
         Employee employee = (Employee)this.workingCopy;
         // Transformation
@@ -42,6 +43,7 @@ public class UpdateChangeObjectWithOptimisticLockTest extends ComplexUpdateTest 
         employee.setStartTime(Helper.timeFromHourMinuteSecond(1, 1, 1));
     }
 
+    @Override
     protected void test() {
         changeObject();
         // Ensure that the original has not been changed.
@@ -55,6 +57,7 @@ public class UpdateChangeObjectWithOptimisticLockTest extends ComplexUpdateTest 
      * Verify if the objects match completely through allowing the session to use the descriptors.
      * This will compare the objects and all of their privately owned parts.
      */
+    @Override
     protected void verify() {
         DatabaseSession remoteServer = ((DistributedServer)DistributedServersModel.getDistributedServers().get(0)).getDistributedSession();
         // The main session is now in transaction (started in TransactionalTestCase.setup).
@@ -64,7 +67,7 @@ public class UpdateChangeObjectWithOptimisticLockTest extends ComplexUpdateTest 
         // let's compare versions directly
         Employee remoteEmp = (Employee)remoteServer.executeQuery(this.query);
         long remoteVersion = (Long)remoteServer.getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(remoteEmp, remoteEmp.getId(), (AbstractSession)remoteServer);
-        long writtenVersion = (Long)getUnitOfWork().getParent().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue((Employee)objectToBeWritten, ((Employee)objectToBeWritten).getId(), (AbstractSession)getUnitOfWork().getParent());
+        long writtenVersion = (Long)getUnitOfWork().getParent().getDescriptor(Employee.class).getOptimisticLockingPolicy().getWriteLockValue(objectToBeWritten, ((Employee)objectToBeWritten).getId(), getUnitOfWork().getParent());
         if (remoteVersion != writtenVersion) {
             throw new TestErrorException("Failed to copy the version number to the remote system");
         }

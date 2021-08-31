@@ -36,6 +36,7 @@ public class AnotherClient extends Thread {
         this.clientSession.release();
     }
 
+    @Override
     public void run() {
         try {
             this.unitOfWork = this.clientSession.acquireUnitOfWork();

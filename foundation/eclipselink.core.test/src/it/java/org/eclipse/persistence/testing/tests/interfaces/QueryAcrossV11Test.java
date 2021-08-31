@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -29,6 +29,7 @@ public class QueryAcrossV11Test extends org.eclipse.persistence.testing.framewor
         expectedExceptionCode = org.eclipse.persistence.exceptions.QueryException.CANNOT_QUERY_ACROSS_VARIABLE_ONE_TO_ONE_MAPPING;
     }
 
+    @Override
     public void test() {
         try {
             getSession().readObject(Employee.class, new ExpressionBuilder().get("contact").get("id").equal(12));
@@ -37,6 +38,7 @@ public class QueryAcrossV11Test extends org.eclipse.persistence.testing.framewor
         }
     }
 
+    @Override
     public void verify() {
         if (storedException == null) {
             throw new org.eclipse.persistence.testing.framework.TestErrorException("NO EXCEPTION THROWN!!!  EXPECTING QueryException");

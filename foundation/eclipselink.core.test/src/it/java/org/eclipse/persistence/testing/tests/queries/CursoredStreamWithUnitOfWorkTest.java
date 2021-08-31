@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -37,6 +37,7 @@ public class CursoredStreamWithUnitOfWorkTest extends TestCase {
         return lastName;
     }
 
+    @Override
     public void reset() {
         getAbstractSession().rollbackTransaction();
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
@@ -54,6 +55,7 @@ public class CursoredStreamWithUnitOfWorkTest extends TestCase {
         this.lastName = newValue;
     }
 
+    @Override
     public void setup() {
         getAbstractSession().beginTransaction();
 
@@ -69,6 +71,7 @@ public class CursoredStreamWithUnitOfWorkTest extends TestCase {
         return employee;
     }
 
+    @Override
     public void test() {
 
         UnitOfWork uow = getSession().acquireUnitOfWork();
@@ -94,6 +97,7 @@ public class CursoredStreamWithUnitOfWorkTest extends TestCase {
 
     }
 
+    @Override
     public void verify() {
 
         ReadObjectQuery query = new ReadObjectQuery();

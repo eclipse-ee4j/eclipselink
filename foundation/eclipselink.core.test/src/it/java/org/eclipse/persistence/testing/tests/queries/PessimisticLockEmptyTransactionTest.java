@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2020 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2021 Oracle and/or its affiliates. All rights reserved.
  *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License v. 2.0 which is available at
@@ -32,6 +32,7 @@ public class PessimisticLockEmptyTransactionTest extends AutoVerifyTestCase {
 
     // anonymous inner class for event handling.
     protected SessionEventAdapter eventAdapter = new SessionEventAdapter() {
+        @Override
         public void postCommitUnitOfWork(SessionEvent event) {
             if (((AbstractSession)event.getSession()).isInTransaction()) {
                 stillInTransaction();
@@ -48,6 +49,7 @@ public class PessimisticLockEmptyTransactionTest extends AutoVerifyTestCase {
         stillInTransaction = true;
     }
 
+    @Override
     public void setup() {
         checkSelectForUpateSupported();
         // HANA supports SELECT FOR UPDATE but not with queries that select from multiple tables
@@ -60,6 +62,7 @@ public class PessimisticLockEmptyTransactionTest extends AutoVerifyTestCase {
         stillInTransaction = false;
     }
 
+    @Override
     public void test() {
         UnitOfWork uow = getSession().acquireUnitOfWork();
         Employee employeeObject = (Employee)uow.readObject(Employee.class);
@@ -67,12 +70,14 @@ public class PessimisticLockEmptyTransactionTest extends AutoVerifyTestCase {
         uow.commit();
     }
 
+    @Override
     public void verify() {
         if (stillInTransaction) {
             throw new TestErrorException("Unit of Work Commit did not close the transaction for empty transaction using Pessimistic Locking.");
         }
     }
 
+    @Override
     public void reset() {
         getSession().getEventManager().removeListener(eventAdapter);
         getSession().getIdentityMapAccessor().initializeIdentityMaps();
