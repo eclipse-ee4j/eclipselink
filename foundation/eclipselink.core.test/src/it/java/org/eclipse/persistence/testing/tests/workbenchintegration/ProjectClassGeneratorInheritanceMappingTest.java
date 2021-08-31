@@ -49,13 +49,13 @@ public class ProjectClassGeneratorInheritanceMappingTest extends ProjectClassGen
      */
     @Override
     public void verify() {
-        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, new Byte(\"1\"));";
+        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.SmallProject.class, Byte.valueOf(\"1\"));";
         super.verify();
         testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.LargeProject.class, Short.valueOf(\"2\"));";
         super.verify();
         testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.Project.class, Long.valueOf(\"3\"));";
         super.verify();
-        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.PhoneNumber.class, new Double(\"4.0\"));";
+        testString = "descriptor.getInheritancePolicy().addClassIndicator(org.eclipse.persistence.testing.models.employee.domain.PhoneNumber.class, Double.valueOf(\"4.0\"));";
         super.verify();
     }
 
