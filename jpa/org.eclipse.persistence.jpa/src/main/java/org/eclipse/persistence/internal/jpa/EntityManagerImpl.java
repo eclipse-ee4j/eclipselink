@@ -255,7 +255,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
     abstract static class PropertyProcessor {
         abstract void process(String name, Object value, EntityManagerImpl em);
     }
-    static Map<String, PropertyProcessor> processors = new HashMap<>() {
+    static Map<String, PropertyProcessor> processors = new HashMap<String, PropertyProcessor>() {
         {
             put(EntityManagerProperties.JOIN_EXISTING_TRANSACTION, new PropertyProcessor() {
             @Override
