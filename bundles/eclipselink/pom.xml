@@ -464,8 +464,6 @@
                                 <arg>${warn.limit}</arg>
                                 <arg>-Xmaxerrs</arg>
                                 <arg>${warn.limit}</arg>
-                                <arg>--add-reads</arg>
-                                <arg>eclipselink=ALL-UNNAMED</arg>
                             </compilerArgs>
                         </configuration>
                     </execution>
